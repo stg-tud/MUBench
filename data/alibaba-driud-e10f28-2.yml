@@ -1,0 +1,22 @@
+source:
+  name: GitHub
+project:
+  name: alibaba/druid
+  url:  https://github.com/alibaba/druid
+report: https://github.com/alibaba/druid/issues/222
+description: >
+  A call to Cipher.init() may throw an InvalidKeyException.
+crash:    yes
+internal: no
+api:
+  - javax.crypto.Cipher
+characteristics:
+  - missing catch
+pattern:
+  - single object
+challenges:
+  - multiple usages
+fix:
+  commit: https://github.com/alibaba/druid/commit/e10f2849d046265bf17360ab4aa9eb60fd3ab8de
+  files:
+    - name: src/main/java/com/alibaba/druid/filter/config/ConfigTools.java

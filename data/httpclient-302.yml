@@ -1,0 +1,26 @@
+source:
+  name: BugClassify
+  url:  https://www.st.cs.uni-saarland.de/softevo//bugclassify/
+project:
+  name: Apache HttpClient
+  url:  http://hc.apache.org/httpcomponents-client-ga/index.html
+report: https://issues.apache.org/jira/browse/HTTPCLIENT-302
+description: >
+  Exception on HttpConnection.writeRequest() leaves the connection open. The
+  fix introduces close() calls in respective catch blocks.
+crash:    no
+internal: yes
+api:
+  - org.apache.commons.httpclient.HttpConnection
+characteristics:
+  - missing call
+  - missing catch
+pattern:
+  - single object
+challenges:
+  - path dependent
+fix:
+  commit: http://svn.apache.org/viewvc?view=revision&revision=134494
+  files:
+    - name: jakarta/commons/proper/httpclient/trunk/src/java/org/apache/commons/httpclient/HttpMethodDirector.java
+      diff: http://svn.apache.org/viewvc/jakarta/commons/proper/httpclient/trunk/src/java/org/apache/commons/httpclient/HttpMethodDirector.java?r1=134493&r2=134494&pathrev=134494

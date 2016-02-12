@@ -1,0 +1,27 @@
+source:
+  name: BugClassify
+  url:  https://www.st.cs.uni-saarland.de/softevo//bugclassify/
+project:
+  name: Apache Jackrabbit
+  url:  https://jackrabbit.apache.org/jcr/index.html
+report: https://issues.apache.org/jira/browse/JCR-2580
+description: >
+  NodeState.getParentId() may return null and ItemStateManager.getItemState()
+  expects non-null parameter.
+crash:    yes
+internal: yes
+api:
+  - org.apache.jackrabbit.core.state.ItemStateManager
+  - org.apache.jackrabbit.core.state.NodeState
+characteristics:
+  - missing guard
+  - missing null check
+pattern:
+  - multiple objects
+challenges:
+  - path dependent
+fix:
+  commit: http://svn.apache.org/viewvc?view=revision&revision=926354
+  files:
+    - name: src/main/java/a/Client.javatrunk/jackrabbit-core/src/main/java/org/apache/jackrabbit/core/query/lucene/IndexingConfigurationImpl.java
+      diff: http://svn.apache.org/viewvc/jackrabbit/trunk/jackrabbit-core/src/main/java/org/apache/jackrabbit/core/query/lucene/IndexingConfigurationImpl.java?r1=926354&r2=926353&pathrev=926354

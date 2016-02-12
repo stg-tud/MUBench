@@ -1,0 +1,25 @@
+source:
+  name: BugClassify
+  url:  https://www.st.cs.uni-saarland.de/softevo//bugclassify/
+project:
+  name: Apache Lucene
+  url:  https://lucene.apache.org/core/
+report: https://issues.apache.org/jira/browse/LUCENE-2521
+description: >
+  MultiFields.getDeletedDocs() may return null.
+crash:    yes
+internal: yes
+api:
+  - org.apache.lucene.index.MultiFields
+  - org.apache.lucene.util.Bits
+characteristics:
+  - missing null check
+pattern:
+  - multiple objects
+challenges:
+  - multiple usages
+fix:
+  commit: http://svn.apache.org/viewvc?view=revision&revision=957486
+  files:
+    - name: lucene/dev/trunk/lucene/contrib/benchmark/src/java/org/apache/lucene/benchmark/byTask/tasks/DeleteByPercentTask.java
+      diff: http://svn.apache.org/viewvc/lucene/dev/trunk/lucene/contrib/benchmark/src/java/org/apache/lucene/benchmark/byTask/tasks/DeleteByPercentTask.java?r1=957486&r2=957485&pathrev=957486

@@ -1,0 +1,26 @@
+source:
+  name: BugClassify
+  url:  https://www.st.cs.uni-saarland.de/softevo//bugclassify/
+project:
+  name: Apache Lucene
+  url:  https://lucene.apache.org/core/
+report: https://issues.apache.org/jira/browse/LUCENE-754
+description: >
+  Map.get() and Map.put() are called with different (types of) objects as key.
+  There is another Map, for which the accidentially used key is the correct
+  key.
+crash:    no
+internal: no
+api:
+  - java.util.Map
+characteristics:
+  - violated parameter constraint
+pattern:
+  - single object
+challenges:
+  - multiple usages
+fix:
+  commit: http://svn.apache.org/viewvc?view=revision&revision=488908
+  files:
+    - name: trunk/src/java/org/apache/lucene/search/FieldCacheImpl.java
+      diff: http://svn.apache.org/viewvc/lucene/java/trunk/src/java/org/apache/lucene/search/FieldCacheImpl.java?r1=488908&r2=488907&pathrev=488908

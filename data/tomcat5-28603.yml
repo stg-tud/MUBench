@@ -1,0 +1,31 @@
+source:
+  name: BugClassify
+  url:  https://www.st.cs.uni-saarland.de/softevo//bugclassify/
+project:
+  name: Apache Tomcat 5
+  url:  http://tomcat.apache.org/
+report: https://bz.apache.org/bugzilla/show_bug.cgi?id=28603
+description: >
+  ServletWriter holds lock on file, such that the file cannot be deleted.
+  The writer is created as 'new ServletWriter(new PrintWriter(
+  new OutputStreamWriter(new FileOutputStream(javaFileName))))' while the file
+  is deleted using 'new File(javaFileName).delete()'.
+crash:    no
+internal: yes
+api:
+  - org.apache.jasper.compiler.ServletWriter
+  - java.io.File
+characteristics:
+  - missing call
+  - missing catch
+pattern:
+  - multiple objects
+challenges:
+  - path dependent
+fix:
+  description: >
+    Call ServletWriter.close() before attempting to delete the file.
+  commit: http://svn.apache.org/viewvc?view=revision&revision=305982
+  files:
+    - name: tomcat/jasper/trunk/jasper2/src/share/org/apache/jasper/compiler/Compiler.java
+      diff: http://svn.apache.org/viewvc/tomcat/jasper/trunk/jasper2/src/share/org/apache/jasper/compiler/Compiler.java?r1=305982&r2=305981&pathrev=305982

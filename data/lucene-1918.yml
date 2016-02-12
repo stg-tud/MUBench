@@ -1,0 +1,22 @@
+source:
+  name: BugClassify
+  url:  https://www.st.cs.uni-saarland.de/softevo//bugclassify/
+project:
+  name: Apache Lucene
+  url:  https://lucene.apache.org/core/
+report: https://issues.apache.org/jira/browse/LUCENE-1918
+description: >
+  Should catch NoSuchElementException around SortedMap.firstKey()
+crash:    yes
+internal: no
+api:
+  - java.io.SortedMap
+characteristics:
+  - missing catch
+pattern:
+  - single object
+fix:
+  commit: http://svn.apache.org/viewvc?view=revision&revision=816602
+  files:
+    - name: lucene/java/trunk/src/java/org/apache/lucene/index/ParallelReader.java
+      diff: http://svn.apache.org/viewvc/lucene/java/trunk/src/java/org/apache/lucene/index/ParallelReader.java?r1=816602&r2=816601&pathrev=816602

@@ -1,0 +1,35 @@
+source:
+  name: BugClassify
+  url:  https://www.st.cs.uni-saarland.de/softevo//bugclassify/
+project:
+  name: Apache Jackrabbit
+  url:  https://jackrabbit.apache.org/jcr/index.html
+report: https://issues.apache.org/jira/browse/JCR-14
+description: >
+  ObjectPersistenceManager.destroy() calls FileSystemResource.delete()
+  (which delegates to FileSystem.deleteFile()) without
+  checking FileSystemResource.fileExists() (which delegates to
+  FileSytem.fileExists()). FileSystem.deleteFile() throws, if the file
+  does not exist.
+  A refactoring was performed in the course of the fix, to remove duplication.
+crash:    yes
+internal: yes
+api:
+  - org.apache.jackrabbit.core.fs.FileSystem
+  - org.apache.jackrabbit.core.fs.FileSystemResource
+characteristics:
+  - missing guard
+pattern:
+  - single object
+challenges:
+  - multi-method
+  - path dependent
+fix:
+  commit: http://svn.apache.org/viewvc?view=revision&revision=55854
+  files:
+    - name: incubator/jackrabbit/trunk/src/java/org/apache/jackrabbit/core/state/obj/ObjectPersistenceManager.java
+      diff: http://svn.apache.org/viewvc/incubator/jackrabbit/trunk/src/java/org/apache/jackrabbit/core/state/obj/ObjectPersistenceManager.java?r1=55854&r2=55853&pathrev=55854
+    - name: incubator/jackrabbit/trunk/src/java/org/apache/jackrabbit/core/state/xml/XMLPersistenceManager.java
+      diff: http://svn.apache.org/viewvc/incubator/jackrabbit/trunk/src/java/org/apache/jackrabbit/core/state/xml/XMLPersistenceManager.java?r1=55854&r2=55853&pathrev=55854
+    - name: incubator/jackrabbit/trunk/src/java/org/apache/jackrabbit/core/fs/FileSystemResource.java
+      diff: http://svn.apache.org/viewvc/incubator/jackrabbit/trunk/src/java/org/apache/jackrabbit/core/fs/FileSystemResource.java?r1=55854&r2=55853&pathrev=55854

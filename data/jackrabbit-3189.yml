@@ -1,0 +1,25 @@
+source:
+  name: BugClassify
+  url:  https://www.st.cs.uni-saarland.de/softevo//bugclassify/
+project:
+  name: Apache Jackrabbit
+  url:  https://jackrabbit.apache.org/jcr/index.html
+report: https://issues.apache.org/jira/browse/JCR-3189
+description: >
+  Map.get() may return null and RepositoryConfig.create() expects non-null
+  parameter.
+crash:    yes
+internal: yes
+api:
+  - java.util.Map
+  - org.apache.jackrabbit.core.config.RepositoryConfig
+characteristics:
+  - missing guard
+  - missing null check
+pattern:
+  - multiple objects
+fix:
+  commit: http://svn.apache.org/viewvc?view=revision&revision=1232831
+  files:
+    - name: trunk/jackrabbit-jca/src/main/java/org/apache/jackrabbit/jca/JCARepositoryManager.java
+      diff: http://svn.apache.org/viewvc/jackrabbit/trunk/jackrabbit-jca/src/main/java/org/apache/jackrabbit/jca/JCARepositoryManager.java?r1=1232831&r2=1232830&pathrev=1232831
