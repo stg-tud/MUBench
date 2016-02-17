@@ -1,0 +1,17 @@
+source:
+  name: Survey
+description: >
+  Checks the return value of Map.put() to check whether the key was set before.
+  If the Map allows null values, this usage breaks.
+crash:    no
+internal: no
+api:
+  - java.util.Map
+characteristics:
+  - missing call
+pattern:
+  - single object
+fix:
+  description: >
+    Use Map.containsKey() to check whether a key is set.
+  commit: https://github.com/stg-tud/MUBench/blob/master/data/synthetic-mapnull.java

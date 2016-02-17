@@ -1,0 +1,19 @@
+source:
+  name: Survey
+description: >
+  Misses to check that there is another element before calling Iterator.next().
+crash:    yes
+internal: no
+api:
+  - java.util.Collection (and subclasses)
+  - java.util.Iterator
+characteristics:
+  - missing guard
+pattern:
+  - multiple objects
+challenges:
+  - path dependent
+fix:
+  description: >
+    Check iterator.hasNext() or ensure size of the collection.
+  commit: https://github.com/stg-tud/MUBench/blob/master/data/synthetic-hasnext.java

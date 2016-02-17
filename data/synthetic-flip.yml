@@ -1,0 +1,21 @@
+source:
+  name: Survey
+description: >
+  Misses to call ByteBuffer.flip() between writing to and reading from the
+  buffer (or vice versa). There's many ways to read/write buffer, some of which
+  fail if flip() is missing, while others just do nothing.
+  
+  StackOverflow:
+  http://stackoverflow.com/questions/10166011/how-to-use-java-nio-channels-filechannel-to-write-a-byte-to-a-file-basics/10166055
+crash:    yes
+internal: no
+api:
+  - java.nio.ByteBuffer
+characteristics:
+  - missing call
+pattern:
+  - single object
+fix:
+  description: >
+    Add a call to ByteBuffer.flip()
+  commit: https://github.com/stg-tud/MUBench/blob/master/data/synthetic-flip.java

@@ -1,0 +1,17 @@
+source:
+  name: Survey
+description: >
+  Calls JFrame.setPreferredSize() after JFrame.pack(), such that the size is
+  not respected when rendering the frame.
+crash:    no
+internal: no
+api:
+  - javax.swing.JFrame
+characteristics:
+  - wrong call order
+pattern:
+  - single object
+fix:
+  description: >
+    Call JFrame.setPreferredSize() before JFrame.pack().
+  commit: https://github.com/stg-tud/MUBench/blob/master/data/synthetic-pack-1.java
