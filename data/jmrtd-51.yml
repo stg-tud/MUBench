@@ -1,0 +1,22 @@
+source:
+  name: SourceForge
+project:
+  name: "JMRTD: Machine Readable Travel Documents"
+  url:  http://jmrtd.org/
+description: >
+  DataOutputStream is left open.
+crash:    no
+internal: no
+api:
+  - java.io.DataOutputStream
+characteristics:
+  - missing call
+pattern:
+  - multiple objects
+fix:
+  description: >
+    Add a call to DataOutputStream.close()
+  commit: https://sourceforge.net/p/jmrtd/code/51/
+  files:
+    - name: /passporthostapi/src/sos/mrtd/SecureMessagingWrapper.java
+      diff: https://sourceforge.net/p/jmrtd/code/51/tree//passporthostapi/src/sos/mrtd/SecureMessagingWrapper.java?diff=5058d727fd48f84fd52d6740:50

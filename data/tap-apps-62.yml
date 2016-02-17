@@ -1,0 +1,22 @@
+source:
+  name: SourceForge
+project:
+  name: OpenTAPAS
+  url:  http://tap-apps.sourceforge.net/
+description: >
+  Requests Cipher "Blowfish", which returns unsafe default configuration.
+crash:    no
+internal: no
+api:
+  - javax.crypto.Cipher
+characteristics:
+  - violated parameter constraint
+pattern:
+  - single object
+fix:
+  description: >
+    Request Cipher "Blowfish/ECB/NoPadding" instead (still insecure).
+  commit: https://sourceforge.net/p/tap-apps/code/62/
+  files:
+    - name: /trunk/opentapas/jconduits/source/org/jSyncManager/Conduit/NSMobileMessenger/NSMobileMessenger.java
+      diff: https://sourceforge.net/p/tap-apps/code/62/tree//trunk/opentapas/jconduits/source/org/jSyncManager/Conduit/NSMobileMessenger/NSMobileMessenger.java?diff=516ed98f2718467b8b821998:61

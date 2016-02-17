@@ -1,0 +1,23 @@
+source:
+  name: SourceForge
+project:
+  name: "JMRTD: Machine Readable Travel Documents"
+  url:  http://jmrtd.org/
+description: >
+  Passes Cipher.ENCRYPT_MODE to Cipher.init(), but uses the cipher for
+  decryption.
+crash:    no
+internal: no
+api:
+  - javax.crypto.Cipher
+characteristics:
+  - violated parameter constraint
+pattern:
+  - single object
+fix:
+  description: >
+    Pass Ciphter.DECRYPT_MODE instead.
+  commit: https://sourceforge.net/p/jmrtd/code/67/
+  files:
+    - name: /passporthostapi/src/sos/mrtd/PassportAuthService.java
+      diff: https://sourceforge.net/p/jmrtd/code/67/tree//passporthostapi/src/sos/mrtd/PassportAuthService.java?diff=5058d727fd48f84fd52d6740:66

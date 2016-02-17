@@ -1,0 +1,24 @@
+source:
+  name: SourceForge
+project:
+  name: "EL4J, an Extension Library for the J2EE"
+  url:  http://el4j.sourceforge.net/
+description: >
+  Used VM specific class sun.misc.BASE64Decoder for decoding after decryption.
+crash:    yes
+internal: no
+api:
+  - javax.crypto.spec.SecretKeySpec
+  - org.apache.common.codec.binary.Base64
+  - sun.misc.BASE64Decoder
+characteristics:
+  - wrong call
+pattern:
+  - multiple objects
+fix:
+  description: >
+    Use Apache Common's Base64.decodeBase64() instead.
+  commit: https://sourceforge.net/p/el4j/code/3198/
+  files:
+    - name: trunk/el4j/framework/modules/security/src/main/java/ch/elca/el4j/services/security/encryption/AESCipher.java
+      diff: https://sourceforge.net/p/el4j/code/3198/tree//trunk/el4j/framework/modules/security/src/main/java/ch/elca/el4j/services/security/encryption/AESCipher.java?diff=51827105e88f3d77c13030a0:3197

@@ -1,0 +1,21 @@
+source:
+  name: SourceForge
+project:
+  name: joscar
+  url:  http://joust.kano.net/
+description: >
+  Requests Cipher "Blowfish", which returns unsafe default configuration.
+crash:    no
+internal: no
+api:
+  - javax.crypto.Cipher
+characteristics:
+  - violated parameter constraint
+pattern:
+  - single object
+fix:
+  description: >
+    Request Cipher "Blowfish/CFB64/NoPadding" instead.
+  commit: http://joscar.googlecode.com/svn/trunk/joscar/src/net/kano/joscartests/TrillianEncSession.java?p=72
+  files:
+    - name: trunk/joscar/src/net/kano/joscartests/TrillianEncSession.java
