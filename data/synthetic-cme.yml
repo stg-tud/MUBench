@@ -42,7 +42,7 @@ api:
   - java.util.Collection (and subtypes)
   - java.util.Iterator
 characteristics:
-  - additional call
+  - superfluous call
 pattern:
   - multiple objects
 challenges:

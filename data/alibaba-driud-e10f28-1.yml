@@ -13,7 +13,7 @@ internal: no
 api:
   - javax.crypto.Cipher
 characteristics:
-  - additional call
+  - superfluous call
 pattern:
   - single object
 challenges:

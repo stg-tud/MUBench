@@ -13,7 +13,7 @@ internal: yes
 api:
   - org.mozilla.javascript.IRFactory
 characteristics:
-  - additional call
+  - superfluous call
 pattern:
   - single object
 challenges:
