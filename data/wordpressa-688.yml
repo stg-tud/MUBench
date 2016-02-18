@@ -1,0 +1,29 @@
+source:
+  name: QACrashFix
+  url:  http://sei.pku.edu.cn/~gaoqing11/qacrashfix/home.htm
+project:
+  name: WordPress for Android
+  url:  https://play.google.com/store/apps/details?id=org.wordpress.android
+report: https://github.com/wordpress-mobile/WordPress-Android/issues/688
+description: >
+  Calls SherlockDialogFragment.show() passing a FragmentTransaction, which
+  might crash if the transaction times out.
+crash:    yes
+internal: no
+api:
+  - com.actionbarsherlock.app.SherlockDialogFragment
+  - android.support.v4.app.FragmentTransaction
+characteristics:
+  - wrong call
+pattern:
+  - multiple objects
+fix:
+  description: >
+    Call FragmentTransaction.add() (passing the fragment) and
+    FragmentTransaction.commitAllowingStateLoss() instead.
+  commit: https://github.com/wordpress-mobile/WordPress-Android/commit/895db44a12cc38e1fbc16177efc63f3ac3d51c50
+  files:
+    - name: src/org/wordpress/android/ui/accounts/WelcomeFragmentSignIn.java
+    - name: src/org/wordpress/android/ui/comments/CommentsListFragment.java
+    - name: src/org/wordpress/android/ui/media/MediaBrowserActivity.java
+    - name: src/org/wordpress/android/ui/posts/PostsListFragment.java

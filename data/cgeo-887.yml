@@ -1,0 +1,25 @@
+source:
+  name: QACrashFix
+  url:  http://sei.pku.edu.cn/~gaoqing11/qacrashfix/home.htm
+project:
+  name: cgeo
+  url:  https://github.com/cgeo/cgeo
+report: https://github.com/cgeo/cgeo/issues/887
+description: >
+  Passes invalid mime-type to Intent.setDataAndType().
+  
+  http://stackoverflow.com/questions/6573541/no-intent-to-view-jpg-on-honeycomb
+crash:    yes
+internal: no
+api:
+  - android.content.Intent
+characteristics:
+  - violated parameter constraint
+pattern:
+  - single object
+fix:
+  description: >
+    Use "image/jpeg" instead of "image/jpg".
+  commit: https://github.com/cgeo/cgeo/commit/7bc931e7b5fcab1953b1fd5cb4535fff4e743591
+  files:
+    - name: main/src/cgeo/geocaching/cgeoimages.java

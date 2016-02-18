@@ -1,0 +1,24 @@
+source:
+  name: QACrashFix
+  url:  http://sei.pku.edu.cn/~gaoqing11/qacrashfix/home.htm
+project:
+  name: LNReader Android
+  url:  https://github.com/calvinaquino/LNReader-Android
+report: https://github.com/calvinaquino/LNReader-Android/issues/62
+description: >
+  Overrides SherlockActivity.onDestroy(), but does not call the super
+  method. Leads to exception with unreleased resources.
+crash:    yes
+internal: no
+api:
+  - com.actionbarsherlock.app.SherlockActivity
+characteristics:
+  - missing call
+pattern:
+  - single object
+fix:
+  description: >
+    Call super.onDestroy().
+  commit: https://github.com/calvinaquino/LNReader-Android/commit/2071b3cb8e977ba19fe51ca7cdb32ccc264563fa
+  files:
+    - name: LNReader/src/com/erakk/lnreader/activity/DisplayLightNovelContentActivity.java

@@ -1,0 +1,23 @@
+source:
+  name: QACrashFix
+  url:  http://sei.pku.edu.cn/~gaoqing11/qacrashfix/home.htm
+project:
+  name: WordPress for Android
+  url:  https://play.google.com/store/apps/details?id=org.wordpress.android
+report: https://github.com/wordpress-mobile/WordPress-Android/issues/780
+description: >
+  The result of WPEditText.getText() may be null.
+crash:    yes
+internal: yes
+api:
+  - org.wordpress.android.util.WPEditText
+characteristics:
+  - missing null check
+pattern:
+  - single object
+fix:
+  description: >
+    Check for null before using it.
+  commit: https://github.com/wordpress-mobile/WordPress-Android/commit/c21e5969154d1cafb15fd0becf252e8e81760b98
+  files:
+    - name: src/org/wordpress/android/ui/posts/EditPostContentFragment.java
