@@ -1,0 +1,24 @@
+source:
+  name: Defects4J
+  url:  https://github.com/rjust/defects4j
+project:
+  name: Apache Commons Lang
+  url:  http://commons.apache.org/proper/commons-lang/
+report: https://issues.apache.org/jira/browse/LANG-412
+description: >
+  StrBuilder.getNullText() may return null.
+crash:    yes
+internal: yes
+api:
+  - org.apache.commons.lang.text.StrBuilder
+characteristics:
+  - missing null check
+pattern:
+  - single object
+fix:
+  description: >
+    Check for null before using.
+  commit: http://svn.apache.org/viewvc?view=revision&revision=627248
+  files:
+    - name: commons/proper/lang/trunk/src/java/org/apache/commons/lang/text/StrBuilder.java
+      diff: http://svn.apache.org/viewvc/commons/proper/lang/trunk/src/java/org/apache/commons/lang/text/StrBuilder.java?r1=627248&r2=627247&pathrev=627248

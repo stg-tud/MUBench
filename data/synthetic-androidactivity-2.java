@@ -10,7 +10,7 @@ public class AndroidContentView extends Activity {
 	protected void onCreate(Bundle state) {
 		super.onCreate(state); // <-- required before setContentView()
 
-		setContentView(R.layout.main); // <-- required for findViewById to succeed
+		setContentView(R.layout.main);
 		
 		String someText = ":some saved text:";
 		mEditText = (EditText) findViewById(R.id.editText1);

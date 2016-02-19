@@ -1,0 +1,17 @@
+source:
+  name: Survey
+description: >
+  HashMap.get() throws if the key is null. Since you don't know which
+  implementation of Map you get, you should always guard against this.
+crash:    yes
+internal: no
+api:
+  - java.util.Map
+characteristics:
+  - missing guard
+pattern:
+  - single object
+fix:
+  description: >
+    Check that the key is not null before calling Map.get().
+  commit: https://github.com/stg-tud/MUBench/blob/master/data/synthetic-mapkeynull.java

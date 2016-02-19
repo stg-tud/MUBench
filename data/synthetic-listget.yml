@@ -1,0 +1,18 @@
+source:
+  name: Survey
+description: >
+  Call List.get() without checking if the index is valid.
+crash:    yes
+internal: no
+api:
+  - java.util.List
+characteristics:
+  - missing guard
+pattern:
+  - single object
+challenges:
+  - path dependent
+fix:
+  description: >
+    Check that index is between 0 and List.size() - 1.
+  commit: https://github.com/stg-tud/MUBench/blob/master/data/synthetic-listget.java

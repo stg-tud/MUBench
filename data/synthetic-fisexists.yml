@@ -1,0 +1,19 @@
+source:
+  name: Survey
+description: >
+  Open a FileInputStream on a non-existing file throws.
+crash:    yes
+internal: no
+api:
+  - java.io.FileInputStream
+  - java.io.File
+characteristics:
+  - missing guard
+pattern:
+  - multiple objects
+challenges:
+  - path dependent
+fix:
+  description: >
+    Check File.exists() first.
+  commit: https://github.com/stg-tud/MUBench/blob/master/data/synthetic-fisexists.java

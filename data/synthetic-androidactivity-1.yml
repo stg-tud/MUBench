@@ -12,6 +12,5 @@ pattern:
   - single object
 fix:
   description: >
-    Call super.onCreate() and setContentView() (in this order!) before calling
-    findViewById().
-  commit: https://github.com/stg-tud/MUBench/blob/master/data/synthetic-androidactivity.java
+    Call setContentView() before calling findViewById().
+  commit: https://github.com/stg-tud/MUBench/blob/master/data/synthetic-androidactivity-1.java

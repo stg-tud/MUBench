@@ -1,0 +1,20 @@
+source:
+  name: Survey
+description: >
+  To get one (arbitrary) value from a set you can call Set.iterator().next(),
+  but this throws if the set is empty.
+crash:    yes
+internal: no
+api:
+  - java.util.Set
+  - java.util.Iterator
+characteristics:
+  - missing guard
+pattern:
+  - multiple objects
+challenges:
+  - path dependent
+fix:
+  description: >
+    Check that Set.isEmpty() is false.
+  commit: https://github.com/stg-tud/MUBench/blob/master/data/synthetic-setfirst.java

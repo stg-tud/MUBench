@@ -1,0 +1,16 @@
+source:
+  name: Survey
+description: >
+  Fails to set content view on onCreate().
+crash:    yes
+internal: no
+api:
+  - android.app.Activity
+characteristics:
+  - wrong call order
+pattern:
+  - single object
+fix:
+  description: >
+    Call super.onCreate() before calling setContentView().
+  commit: https://github.com/stg-tud/MUBench/blob/master/data/synthetic-androidactivity-2.java
