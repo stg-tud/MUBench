@@ -1,0 +1,21 @@
+BugClassify:
+  size: 2914
+  reviewed: 294
+Defects4J:
+  size: 357
+  reviewed: 357
+iBugs:
+  size: 390
+  reviewed: 390
+QACrashFix:
+  size: 24
+  reviewed: 24
+SourceForge:
+  size: 130
+  reviewed: 130
+GitHub:
+  size: 2660
+  reviewed: 81
+Survey:
+  size: 17
+  reviewed: 17
