@@ -1,0 +1,25 @@
+source:
+  name: Defects4J
+  url:  https://github.com/rjust/defects4j
+project:
+  name: JFreeChart
+  url:  www.jfree.org/jfreechart/
+description: >
+  Map.get() may return null.
+crash:    yes
+internal: no
+api:
+  - java.util.Map
+characteristics:
+  - missing null check
+pattern:
+  - multiple objects
+challenge:
+  - path dependent
+fix:
+  description: >
+    Check for null.
+  commit: https://sourceforge.net/p/jfreechart/code/811/
+  files:
+    - name: /trunk/source/org/jfree/chart/plot/CategoryPlot.java
+      diff: https://sourceforge.net/p/jfreechart/code/811/tree//trunk/source/org/jfree/chart/plot/CategoryPlot.java?diff=50b53b485fcbc92b6542a639:810

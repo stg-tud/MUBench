@@ -1,0 +1,25 @@
+source:
+  name: Defects4J
+  url:  https://github.com/rjust/defects4j
+project:
+  name: JFreeChart
+  url:  www.jfree.org/jfreechart/
+description: >
+  XYPlot.getRendererForDataset() may return null.
+crash:    yes
+internal: yes
+api:
+  - org.jfree.chart.plot.XYPlot
+characteristics:
+  - missing guard
+pattern:
+  - multiple objects
+challenge:
+  - path dependent
+fix:
+  description: >
+    Check for null.
+  commit: https://sourceforge.net/p/jfreechart/code/2183/
+  files:
+    - name: /trunk/source/org/jfree/chart/plot/XYPlot.java
+      diff: https://sourceforge.net/p/jfreechart/code/2183/tree//trunk/source/org/jfree/chart/plot/XYPlot.java?diff=50b53b485fcbc92b6542a639:2182

@@ -1,0 +1,29 @@
+source:
+  name: Defects4J
+  url:  https://github.com/rjust/defects4j
+project:
+  name: JFreeChart
+  url:  www.jfree.org/jfreechart/
+description: >
+  Iterates over two PathIterators from the same GeneralPath instead of one of
+  the first path and one of the second.
+crash:    no
+internal: no
+api:
+  - java.awt.geom.GeneralPath
+  - java.awt.geom.PathIterator
+characteristics:
+  - superfluous call
+  - missing call
+pattern:
+  - multiple objects
+challenge:
+  - multiple usages
+fix:
+  description: >
+    Get second iterator from the second path object instead of both from the
+    same.
+  commit: https://sourceforge.net/p/jfreechart/code/1025/
+  files:
+    - name: /trunk/source/org/jfree/chart/util/ShapeUtilities.java
+      diff: https://sourceforge.net/p/jfreechart/code/1025/tree//trunk/source/org/jfree/chart/util/ShapeUtilities.java?diff=50b53b485fcbc92b6542a639:1024

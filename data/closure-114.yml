@@ -1,0 +1,24 @@
+source:
+  name: Defects4J
+  url:  https://github.com/rjust/defects4j
+project:
+  name: Closure Compiler
+  url:  https://developers.google.com/closure/compiler/
+description: >
+  UnionTypeBuilder.build() returns a JSType that can never be null. Branching
+  on a null check therefore results in dead code.
+crash:    no
+internal: no
+api:
+  - com.google.javascript.rhino.jstype.UnionTypeBuilder
+  - com.google.javascript.rhino.jstype.JSType
+characteristics:
+  - missing guard
+pattern:
+  - multiple objects
+fix:
+  description: >
+    Check Node.isNoType() instead.
+  commit: https://github.com/google/closure-compiler/commit/67289ae4cbaba3ae70cd2e8fb92f3f2898039dfb
+  files:
+    - name: src/com/google/javascript/rhino/jstype/UnionType.java

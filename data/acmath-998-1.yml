@@ -1,0 +1,24 @@
+source:
+  name: Defects4J
+  url:  https://github.com/rjust/defects4j
+project:
+  name: Apache Commons Math
+  url:  http://commons.apache.org/proper/commons-math/
+report: https://issues.apache.org/jira/browse/MATH-988
+description: >
+  SubLine.intersection() may return null.
+crash:    yes
+internal: yes
+api:
+  - org.apache.commons.math3.geometry.euclidean.threed.Line
+characteristics:
+  - missing null check
+pattern:
+  - single object
+fix:
+  description: >
+    Check result for null before using.
+  commit: http://svn.apache.org/viewvc?view=revision&revision=1488866
+  files:
+    - name: commons/proper/math/trunk/src/main/java/org/apache/commons/math3/geometry/euclidean/threed/SubLine.java
+      diff: http://svn.apache.org/viewvc/commons/proper/math/trunk/src/main/java/org/apache/commons/math3/geometry/euclidean/threed/SubLine.java?r1=1488866&r2=1488865&pathrev=1488866
