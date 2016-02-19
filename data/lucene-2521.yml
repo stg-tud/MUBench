@@ -13,7 +13,7 @@ api:
   - org.apache.lucene.index.MultiFields
   - org.apache.lucene.util.Bits
 characteristics:
-  - missing null check
+  - missing precondition/null
 pattern:
   - multiple objects
 challenges:

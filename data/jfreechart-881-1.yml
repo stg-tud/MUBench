@@ -11,7 +11,7 @@ internal: no
 api:
   - java.util.Map
 characteristics:
-  - missing null check
+  - missing precondition/null
 pattern:
   - multiple objects
 challenge:

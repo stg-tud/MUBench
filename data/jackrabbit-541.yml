@@ -12,7 +12,7 @@ internal: yes
 api:
   - javax.jcr.nodetype.PropertyDefinition
 characteristics:
-  - missing null check
+  - missing precondition/null
 pattern:
   - single object
 fix:

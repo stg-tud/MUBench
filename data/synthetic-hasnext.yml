@@ -8,7 +8,7 @@ api:
   - java.util.Collection (and subclasses)
   - java.util.Iterator
 characteristics:
-  - missing guard
+  - missing precondition/predicate
 pattern:
   - multiple objects
 challenges:

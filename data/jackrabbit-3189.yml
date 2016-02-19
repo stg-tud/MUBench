@@ -14,8 +14,7 @@ api:
   - java.util.Map
   - org.apache.jackrabbit.core.config.RepositoryConfig
 characteristics:
-  - missing guard
-  - missing null check
+  - missing precondition/null
 pattern:
   - multiple objects
 fix:

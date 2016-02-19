@@ -12,7 +12,7 @@ api:
   - org.jfree.data.statistics.StatisticalCategoryDataset
   - java.Number
 characteristics:
-  - missing null check
+  - missing precondition/null
 pattern:
   - multiple objects
 challenge:

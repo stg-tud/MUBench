@@ -12,7 +12,7 @@ api:
   - org.jfree.chart.plot.PlotRenderingInfo
   - org.jfree.chart.ChartRenderingInfo
 characteristics:
-  - missing null check
+  - missing precondition/null
 pattern:
   - multiple objects
 challenge:

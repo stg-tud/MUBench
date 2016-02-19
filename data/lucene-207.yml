@@ -13,7 +13,8 @@ internal: no
 api:
   - java.io.File
 characteristics:
-  - missing guard
+  - missing precondition/predicate
+  - missing call
 pattern:
   - single object
 challenges:

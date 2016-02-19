@@ -14,7 +14,7 @@ internal: no
 api:
   - android.app.ListFragment
 characteristics:
-  - missing guard
+  - missing precondition/predicate
 pattern:
   - single object
 fix:

@@ -12,7 +12,7 @@ internal: no
 api:
   - com.google.gson.JsonElement
 characteristics:
-  - missing guard
+  - missing precondition/predicate
 pattern:
   - single object
 fix:

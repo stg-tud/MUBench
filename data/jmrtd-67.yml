@@ -11,7 +11,7 @@ internal: no
 api:
   - javax.crypto.Cipher
 characteristics:
-  - violated parameter constraint
+  - missing precondition/parameter constraint
 pattern:
   - single object
 fix:

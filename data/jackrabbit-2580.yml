@@ -14,8 +14,7 @@ api:
   - org.apache.jackrabbit.core.state.ItemStateManager
   - org.apache.jackrabbit.core.state.NodeState
 characteristics:
-  - missing guard
-  - missing null check
+  - missing precondition/null
 pattern:
   - multiple objects
 challenges:

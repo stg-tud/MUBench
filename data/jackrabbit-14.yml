@@ -18,7 +18,7 @@ api:
   - org.apache.jackrabbit.core.fs.FileSystem
   - org.apache.jackrabbit.core.fs.FileSystemResource
 characteristics:
-  - missing guard
+  - missing precondition/predicate
 pattern:
   - single object
 challenges:

@@ -13,8 +13,7 @@ api:
   - org.joda.time.contrib.hibernate.PersistentDateTime
   - org.joda.time.Interval
 characteristics:
-  - missing guard
-  - violated parameter constraint
+  - missing precondition/null
 pattern:
   - multiple object
 challenges:

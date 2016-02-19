@@ -13,7 +13,7 @@ api:
   - com.google.javascript.rhino.jstype.UnionTypeBuilder
   - com.google.javascript.rhino.jstype.JSType
 characteristics:
-  - missing guard
+  - missing precondition/predicate
 pattern:
   - multiple objects
 fix:

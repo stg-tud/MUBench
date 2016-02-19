@@ -11,7 +11,7 @@ internal: no
 api:
   - com.google.javascript.rhino.jstype.ObjectType
 characteristics:
-  - missing null check
+  - missing precondition/null
 pattern:
   - single object
 fix:

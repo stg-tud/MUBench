@@ -11,7 +11,7 @@ internal: yes
 api:
   - org.jfree.chart.plot.XYPlot
 characteristics:
-  - missing guard
+  - missing precondition/null
 pattern:
   - multiple objects
 challenge:

@@ -12,7 +12,7 @@ internal: yes
 api:
   - org.apache.jackrabbit.server.io.IOManager
 characteristics:
-  - missing null check
+  - missing precondition/null
 pattern:
   - single object
 fix:

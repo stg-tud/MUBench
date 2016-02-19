@@ -15,7 +15,6 @@ api:
   - org.apache.jackrabbit.jcr2spi.NamespaceStorage
 characteristics:
   - missing call
-  - violated parameter constraint
 pattern:
   - single object
 fix:

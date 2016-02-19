@@ -12,7 +12,7 @@ internal: yes
 api:
   - org.wordpress.android.util.WPEditText
 characteristics:
-  - missing null check
+  - missing precondition/null
 pattern:
   - single object
 fix:

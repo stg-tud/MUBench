@@ -12,7 +12,7 @@ internal: yes
 api:
   - org.apache.commons.math3.geometry.euclidean.threed.Line
 characteristics:
-  - missing null check
+  - missing precondition/null
 pattern:
   - single object
 fix:

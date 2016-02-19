@@ -7,7 +7,7 @@ internal: no
 api:
   - java.nio.Files
 characteristics:
-  - violated parameter constraint
+  - missing precondition/parameter constraint
 pattern:
   - single node
 fix:

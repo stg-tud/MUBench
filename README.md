@@ -35,11 +35,11 @@ characteristics:
   - missing call
   - wrong call
   - wrong call order
-  - missing guard
-  - missing null check
+  - missing precondition/predicate
+  - missing precondition/null
+  - missing precondition/parameter constraint
   - missing catch
   - missing finally
-  - violated parameter constraint
   - ignored result
 pattern:
   - single node

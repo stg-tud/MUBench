@@ -9,7 +9,7 @@ api:
   - java.util.Set
   - java.util.Iterator
 characteristics:
-  - missing guard
+  - missing precondition/predicate
 pattern:
   - multiple objects
 challenges:
