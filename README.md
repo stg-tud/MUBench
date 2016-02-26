@@ -1,3 +1,5 @@
+<img align="right" width="320" height="320" alt="MUBench Logo" src="https://raw.githubusercontent.com/stg-tud/MUBench/master/meta/logo.png" />
+
 # MUBench : A Benchmark for API-Misuse Detectors
 
 The MUBench dataset is currently under review as an [MSR 2016 Data Showcase](http://2016.msrconf.org/#/data). Please feel free to [contact me](http://www.stg.tu-darmstadt.de/staff/sven_amann), if you have any questions.
