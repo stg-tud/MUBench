@@ -6,7 +6,7 @@ The MUBench dataset is currently under review as an [MSR 2016 Data Showcase](htt
 
 ## Run Scripts
 
-1. [Download PyYAML](http://pyyaml.org/wiki/PyYAML) to somewhere on you machine.
+1. [Download PyYAML](http://pyyaml.org/wiki/PyYAML) to somewhere on your machine.
 2. Unzip the package and install with `python setup.py install`.
 3. Run `scripts/verify.py` to check correct setup.
 4. Run the script of your choice (see file header for documentation).
