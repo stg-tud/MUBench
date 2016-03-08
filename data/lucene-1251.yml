@@ -18,7 +18,7 @@ pattern:
 challenges:
   - path dependent
 fix:
-  commit: http://svn.apache.org/viewvc?view=revision&revision=642339
+  commit: https://git-wip-us.apache.org/repos/asf/lucene-solr/commit/09b3a56ae2ecc68b56a0142e48e12247ba160dbb
   files:
     - name: lucene/java/trunk/src/java/org/apache/lucene/store/FSDirectory.java
       diff: http://svn.apache.org/viewvc/lucene/java/trunk/src/java/org/apache/lucene/store/FSDirectory.java?r1=642339&r2=642338&pathrev=642339

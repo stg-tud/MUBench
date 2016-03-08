@@ -18,7 +18,7 @@ pattern:
 fix:
   description: >
     Check result for null before using.
-  commit: http://svn.apache.org/viewvc?view=revision&revision=1488866
+  commit: https://git-wip-us.apache.org/repos/asf/commons-math.git/commit/d270055e874148a2742604be36ab977eec030fba
   files:
     - name: commons/proper/math/trunk/src/main/java/org/apache/commons/math3/geometry/euclidean/threed/SubLine.java
       diff: http://svn.apache.org/viewvc/commons/proper/math/trunk/src/main/java/org/apache/commons/math3/geometry/euclidean/threed/SubLine.java?r1=1488866&r2=1488865&pathrev=1488866

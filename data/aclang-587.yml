@@ -18,7 +18,7 @@ pattern:
 fix:
   description: >
     Check for null before using.
-  commit: http://svn.apache.org/viewvc?view=revision&revision=627248
+  commit: https://git-wip-us.apache.org/repos/asf/commons-lang.git/commit/1fe5439baf32af2114958e3cfc3512bd72c84773
   files:
     - name: commons/proper/lang/trunk/src/java/org/apache/commons/lang/text/StrBuilder.java
       diff: http://svn.apache.org/viewvc/commons/proper/lang/trunk/src/java/org/apache/commons/lang/text/StrBuilder.java?r1=627248&r2=627247&pathrev=627248
