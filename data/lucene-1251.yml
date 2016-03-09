@@ -19,7 +19,7 @@ challenges:
   - path dependent
 fix:
   commit: https://git-wip-us.apache.org/repos/asf/lucene-solr/commit/09b3a56ae2ecc68b56a0142e48e12247ba160dbb
-    repository:
+  repository:
     url: https://git-wip-us.apache.org/repos/asf/lucene-solr
     type: git
   revision: 09b3a56ae2ecc68b56a0142e48e12247ba160dbb
