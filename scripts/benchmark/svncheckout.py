@@ -6,7 +6,7 @@ from os.path import join
 from os.path import dirname
 from os.path import realpath
 
-class gitCheckout:
+class svnCheckout:
     def checkoutMisuse(self, fixing_commit, dirtarget, verbose):
         repository, revision = '' #TODO
         

@@ -7,4 +7,4 @@ dirtarget=$3
 mkdir $dirtarget
 git clone $repository $dirtarget
 cd $dirtarget
-git checkout $commithash^1
+git checkout $commithash

@@ -9,11 +9,12 @@ from os.path import realpath
 class gitCheckout:
     def checkoutMisuse(self, fixing_commit, dirtarget, verbose):
         repository, unused, commit_hash = fixing_commit.rsplit('/', 2)
+        commit_hash += "^1"
         
         if verbose:
             print("Checking out misuse to " + dirtarget)
             print("Repository: " + repository)
-            print("Commit hash: " + commit_hash + "^1")
+            print("Commit hash: " + commit_hash)
             
         gitCheckout().checkout(repository, commit_hash, dirtarget)
         
