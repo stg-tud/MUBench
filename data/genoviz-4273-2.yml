@@ -19,6 +19,10 @@ fix:
   description: >
     Use Apache Common's Base64.decode() instead.
   commit: https://sourceforge.net/p/genoviz/code/4273/
+  repository:
+    url: svn://svn.code.sf.net/p/genoviz/code/trunk
+    type: svn
+  revision: 4273
   files:
     - name: /branches/das2_manager/igb/src/com/affymetrix/igb/util/StringEncrypter.java
       diff: https://sourceforge.net/p/genoviz/code/4273/tree//branches/das2_manager/igb/src/com/affymetrix/igb/util/StringEncrypter.java?diff=505b7b97bfc09e26e1a8d781:4272

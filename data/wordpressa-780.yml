@@ -19,5 +19,9 @@ fix:
   description: >
     Check for null before using it.
   commit: https://github.com/wordpress-mobile/WordPress-Android/commit/c21e5969154d1cafb15fd0becf252e8e81760b98
+  repository:
+    url: https://github.com/wordpress-mobile/WordPress-Android.git
+    type: git
+  revision: c21e5969154d1cafb15fd0becf252e8e81760b98
   files:
     - name: src/org/wordpress/android/ui/posts/EditPostContentFragment.java

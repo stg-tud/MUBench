@@ -20,5 +20,9 @@ fix:
   description: >
     Check Node.isNoType() instead.
   commit: https://github.com/google/closure-compiler/commit/67289ae4cbaba3ae70cd2e8fb92f3f2898039dfb
+  repository:
+    url: https://github.com/google/closure-compiler.git
+    type: git
+  revision: 67289ae4cbaba3ae70cd2e8fb92f3f2898039dfb
   files:
     - name: src/com/google/javascript/rhino/jstype/UnionType.java

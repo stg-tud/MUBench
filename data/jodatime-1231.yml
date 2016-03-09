@@ -20,5 +20,9 @@ challenges:
   - path dependent
 fix:
   commit: https://github.com/JodaOrg/joda-time/commit/4f0fa2ece24061b8e47e793ada1cb1b6804df334
+  repository:
+    url: https://github.com/JodaOrg/joda-time.git
+    type: git
+  revision: 4f0fa2ece24061b8e47e793ada1cb1b6804df334
   files:
     - name: JodaTimeContrib/hibernate/src/java/org/joda/time/contrib/hibernate/PersistentInterval.java

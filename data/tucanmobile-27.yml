@@ -19,5 +19,9 @@ fix:
   description: >
     Check if Dialog.isShowing().
   commit: https://github.com/Tyde/TuCanMobile/commit/02e046e5cc53ad218264dc28a4b96941f2902e38
+  repository:
+    url: https://github.com/Tyde/TuCanMobile.git
+    type: git
+  revision: 02e046e5cc53ad218264dc28a4b96941f2902e38
   files:
     - name: src/com/dalthed/tucan/Connection/SimpleSecureBrowser.java

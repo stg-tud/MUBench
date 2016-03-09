@@ -17,6 +17,10 @@ fix:
   description: >
     Add a call to DataOutputStream.close()
   commit: https://sourceforge.net/p/jmrtd/code/51/
+  repository:
+    url: svn://svn.code.sf.net/p/jmrtd/code/trunk
+    type: svn
+  revision: 51
   files:
     - name: /passporthostapi/src/sos/mrtd/SecureMessagingWrapper.java
       diff: https://sourceforge.net/p/jmrtd/code/51/tree//passporthostapi/src/sos/mrtd/SecureMessagingWrapper.java?diff=5058d727fd48f84fd52d6740:50

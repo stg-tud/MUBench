@@ -21,5 +21,9 @@ fix:
   description: >
     Use "image/jpeg" instead of "image/jpg".
   commit: https://github.com/cgeo/cgeo/commit/7bc931e7b5fcab1953b1fd5cb4535fff4e743591
+  repository:
+    url: https://github.com/cgeo/cgeo.git
+    type: git
+  revision: 7bc931e7b5fcab1953b1fd5cb4535fff4e743591
   files:
     - name: main/src/cgeo/geocaching/cgeoimages.java

@@ -18,6 +18,10 @@ pattern:
   - multiple objects
 fix:
   commit: http://sourceforge.net/p/adempiere/svn/1312/
+  repository:
+    url: svn://svn.code.sf.net/p/adempiere/svn/
+    type: svn
+  revision: 1312
   files:
     - name: trunk/looks/src/org/compiere/util/Secure.java
       diff: http://sourceforge.net/p/adempiere/svn/1312/tree//trunk/looks/src/org/compiere/util/Secure.java?diff=5139a2ef34309d2ec1827857:1311

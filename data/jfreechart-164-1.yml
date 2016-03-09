@@ -21,6 +21,10 @@ fix:
   description: >
     Check for null.
   commit: https://sourceforge.net/p/jfreechart/code/164/
+  repository:
+    url: svn://svn.code.sf.net/p/jfreechart/code/trunk
+    type: svn
+  revision: 164
   files:
     - name: /trunk/source/org/jfree/chart/renderer/category/StatisticalBarRenderer.java
       diff: https://sourceforge.net/p/jfreechart/code/164/tree//trunk/source/org/jfree/chart/renderer/category/StatisticalBarRenderer.java?diff=50b53b485fcbc92b6542a639:163

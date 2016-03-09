@@ -20,5 +20,9 @@ fix:
   description: >
     Call super.onDestroy().
   commit: https://github.com/onepf/OpenIAB/commit/c720c6e03db7f2fecac8a25f42c39a939e489769
+  repository:
+    url: https://github.com/onepf/OpenIAB.git
+    type: git
+  revision: c720c6e03db7f2fecac8a25f42c39a939e489769
   files:
     - name: unity_plugin/src/com/openiab/BillingActivity.java

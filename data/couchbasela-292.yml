@@ -24,5 +24,9 @@ fix:
     Retrieve the application context via Context.getApplicationContext() an
     register intent on it.
   commit: https://github.com/haku/Onosendai/commit/0e2a7570ab4491d0c4680ef52ee1008bef33fc02
+  repository:
+    url: https://github.com/haku/Onosendai.git
+    type: git
+  revision: 0e2a7570ab4491d0c4680ef52ee1008bef33fc02
   files:
     - name: src/main/java/com/couchbase/lite/android/AndroidNetworkReachabilityManager.java

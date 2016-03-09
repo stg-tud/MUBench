@@ -21,6 +21,10 @@ fix:
   description: >
     Flip the condition.
   commit: https://sourceforge.net/p/jfreechart/code/2266/
+  repository:
+    url: svn://svn.code.sf.net/p/jfreechart/code/trunk
+    type: svn
+  revision: 2266
   files:
     - name: /trunk/source/org/jfree/chart/renderer/category/AbstractCategoryItemRenderer.java
       diff: https://sourceforge.net/p/jfreechart/code/2266/tree//trunk/source/org/jfree/chart/renderer/category/AbstractCategoryItemRenderer.java?diff=50b53b485fcbc92b6542a639:2265

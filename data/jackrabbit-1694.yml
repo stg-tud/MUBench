@@ -21,6 +21,10 @@ challenges:
   - multiple usages
 fix:
   commit: http://svn.apache.org/viewvc?view=revision&revision=695766
+  repository:
+    url: http://svn.apache.org/repos/asf/jackrabbit/
+    type: svn
+  revision: 695766
   files:
     - name: trunk/jackrabbit-core/src/main/java/org/apache/jackrabbit/core/config/RepositoryConfigurationParser.java
       diff: http://svn.apache.org/viewvc/jackrabbit/trunk/jackrabbit-core/src/main/java/org/apache/jackrabbit/core/config/RepositoryConfigurationParser.java?r1=695766&r2=695765&pathrev=695766

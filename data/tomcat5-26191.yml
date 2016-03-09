@@ -22,6 +22,10 @@ fix:
   description: >
     Create specific catch clause, avoids cast entirely.
   commit: http://svn.apache.org/viewvc?view=revision&revision=305891
+  repository:
+    url: http://svn.apache.org/repos/asf/tomcat/
+    type: svn
+  revision: 305891
   files:
     - name: tomcat/jasper/trunk/jasper2/src/share/org/apache/jasper/compiler/JspDocumentParser.java
       diff: http://svn.apache.org/viewvc/tomcat/jasper/trunk/jasper2/src/share/org/apache/jasper/compiler/JspDocumentParser.java?r1=305891&r2=305890&pathrev=305891

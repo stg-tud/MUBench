@@ -20,6 +20,10 @@ challenges:
   - multiple usages
 fix:
   commit: https://git-wip-us.apache.org/repos/asf/lucene-solr/commit/f81a5d9bf6fdcdab23bff680dee8075209bae8cf
+  repository:
+    url: https://git-wip-us.apache.org/repos/asf/lucene-solr
+    type: git
+  revision: f81a5d9bf6fdcdab23bff680dee8075209bae8cf
   files:
     - name: lucene/dev/trunk/lucene/contrib/benchmark/src/java/org/apache/lucene/benchmark/byTask/tasks/DeleteByPercentTask.java
       diff: http://svn.apache.org/viewvc/lucene/dev/trunk/lucene/contrib/benchmark/src/java/org/apache/lucene/benchmark/byTask/tasks/DeleteByPercentTask.java?r1=957486&r2=957485&pathrev=957486

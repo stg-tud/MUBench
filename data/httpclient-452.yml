@@ -17,6 +17,10 @@ pattern:
   - single object
 fix:
   commit: http://svn.apache.org/viewvc?view=revision&revision=190480
+  repository:
+    url: https://svn.apache.org/repos/asf/httpcomponents/httpclient/
+    type: svn
+  revision: 190480
   files:
     - name: jakarta/commons/proper/httpclient/trunk/src/java/org/apache/commons/httpclient/util/DateUtil.java
       diff: http://svn.apache.org/viewvc/jakarta/commons/proper/httpclient/trunk/src/java/org/apache/commons/httpclient/util/DateUtil.java?r1=190480&r2=190479&pathrev=190480

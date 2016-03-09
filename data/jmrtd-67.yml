@@ -18,6 +18,10 @@ fix:
   description: >
     Pass Ciphter.DECRYPT_MODE instead.
   commit: https://sourceforge.net/p/jmrtd/code/67/
+  repository:
+    url: svn://svn.code.sf.net/p/jmrtd/code/trunk
+    type: svn
+  revision: 67
   files:
     - name: /passporthostapi/src/sos/mrtd/PassportAuthService.java
       diff: https://sourceforge.net/p/jmrtd/code/67/tree//passporthostapi/src/sos/mrtd/PassportAuthService.java?diff=5058d727fd48f84fd52d6740:66

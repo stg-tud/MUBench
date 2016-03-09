@@ -19,5 +19,9 @@ fix:
   description: >
     Check that JsonElement.isJsonNull() is false.
   commit: https://github.com/Adam8234/the-blue-alliance-android/commit/d373815aeb3f065160f14986b3c952a45207bb15
+  repository:
+    url: https://github.com/Adam8234/the-blue-alliance-android.git
+    type: git
+  revision: d373815aeb3f065160f14986b3c952a45207bb15
   files:
     - name: android/src/main/java/com/thebluealliance/androidclient/datafeed/TBAv2.java

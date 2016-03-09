@@ -18,6 +18,10 @@ fix:
   description: >
     Call String.getBytes() with explicit encoding ("utf-8").
   commit: https://github.com/android-rcs/rcsjta/commit/04d84799daa51ed7cc0ad270f0eea51ffaf7a53a
+  repository:
+    url: https://github.com/android-rcs/rcsjta.git
+    type: git
+  revision: 04d84799daa51ed7cc0ad270f0eea51ffaf7a53a
   files:
     - name: core/src/com/orangelabs/rcs/core/ims/service/im/chat/ContributionIdGenerator.java
       diff: https://github.com/android-rcs/rcsjta/commit/04d84799daa51ed7cc0ad270f0eea51ffaf7a53a#diff-bf160ca00204f2ae4c100aabe57a1dfd

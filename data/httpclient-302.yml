@@ -21,6 +21,10 @@ challenges:
   - path dependent
 fix:
   commit: http://svn.apache.org/viewvc?view=revision&revision=134494
+  repository:
+    url: https://svn.apache.org/repos/asf/httpcomponents/httpclient/
+    type: svn
+  revision: 134494
   files:
     - name: jakarta/commons/proper/httpclient/trunk/src/java/org/apache/commons/httpclient/HttpMethodDirector.java
       diff: http://svn.apache.org/viewvc/jakarta/commons/proper/httpclient/trunk/src/java/org/apache/commons/httpclient/HttpMethodDirector.java?r1=134493&r2=134494&pathrev=134494
