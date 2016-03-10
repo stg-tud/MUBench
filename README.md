@@ -2,7 +2,18 @@
 
 # MUBench : A Benchmark for API-Misuse Detectors
 
-The MUBench dataset is currently under review as an [MSR 2016 Data Showcase](http://2016.msrconf.org/#/data). Please feel free to [contact me](http://www.stg.tu-darmstadt.de/staff/sven_amann), if you have any questions.
+The MUBench dataset is an [MSR 2016 Data Showcase](http://2016.msrconf.org/#/data). Please feel free to [contact Sven Amann](http://www.stg.tu-darmstadt.de/staff/sven_amann), if you have any questions.
+
+## Contributors
+
+* [Sven Amann](http://www.stg.tu-darmstadt.de/staff/sven_amann) (Project Lead)
+* [Sarah Nadi](http://www.sarahnadi.org/)
+* Hoan A. Nguyen
+* [Tien N. Nguyen](http://home.eng.iastate.edu/~tien/)
+
+## Publications
+
+* Preprint '*MUBench: A Benchmark of API-Misuse Detectors*' coming soon...
 
 ## Run Scripts
 
