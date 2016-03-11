@@ -7,6 +7,9 @@ from datetime import datetime
 
 def analyze(file, misuse):
     try:
+        if "synthetic" in file:
+            return ""
+        
         fix = misuse["fix"]
         repository = fix["repository"]
         
