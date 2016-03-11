@@ -5,7 +5,7 @@ from checkout import checkout
 from checkout import checkout_parent
 from datetime import datetime
 
-def analyze(misuse):
+def analyze(file, misuse):
     try:
         fix = misuse["fix"]
         repository = fix["repository"]
@@ -18,8 +18,8 @@ def analyze(misuse):
         #checkout(repository["type"], repository["url"], fix["revision"], fixdir, True)
         
         # TODO: run actual analysis here
-        result = None
-    
+        result = ""
+
         try:
             rmtree(tmpdir)
         except PermissionError as e:
@@ -31,7 +31,7 @@ def analyze(misuse):
         return result
     except Exception as e:
         # using str(e) would fail for unicode exceptions :/ 
-        return "Error: {} in {}".format(repr(e), misuse.get("project"))
+        return "Error: {} in {}".format(repr(e), file)
 
 import datareader
 from pprint import pprint

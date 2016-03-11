@@ -2,41 +2,32 @@ import yaml
 from os import listdir
 from os.path import isfile, join
 
-def readAllFrom(datapath, verbose):
-    datafiles = [join(datapath, file) for file in listdir(datapath) if isfile(join(datapath, file)) and file.endswith(".yml")]
-
-    data = []
-    for file in datafiles:
-        stream = open(file, 'r')
-        try:
-            yamlContent = yaml.load(stream)
-            data.append(yamlContent)
-            if verbose:
-                print("Successfully added " + file)
-        finally:
-            stream.close()
-    return data
-
 def onAllDataDo(function, datapath, verbose):
     datafiles = [join(datapath, file) for file in listdir(datapath) if isfile(join(datapath, file)) and file.endswith(".yml")]
 
     result = []
-    for file in datafiles:
+    for i, file in enumerate(datafiles, start=1):
         stream = open(file, 'r')
+
+        if verbose:
+            print("({}/{}) files: now on {}".format(i, len(datafiles), file))
+        
         try:
             yamlContent = yaml.load(stream)
-            result.append(function(yamlContent))
-            if verbose:
-                print("Successfully added " + file)
+            result.append(function(file, yamlContent))
         finally:
             stream.close()
+            if verbose:
+                print("------------------------------------------------------------")
+            
     return result
-                
-# example usage:
-#datapath = r'<path>\MUBench\data'
-#data = YAMLReader.readAllFrom(datapath, True)
 
 # example usage:
-#datapath = r'<path>\MUBench\data'
-#results = YAMLReader.onAllDataDo(example.f, datapath, True)
-#print(results)
+#from pprint import pprint
+#
+#def f(file, data):
+#    return "({} -> {})".format(file, data)
+#
+#datapath = r'C:\Users\Mattis\Documents\Eko\MUBench\data'
+#results = onAllDataDo(f, datapath, True)
+#pprint(results)
