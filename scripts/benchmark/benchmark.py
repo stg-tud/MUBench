@@ -1,8 +1,7 @@
 from tempfile import mkdtemp
 from os.path import join
 from shutil import rmtree
-from checkout import checkout
-from checkout import checkout_parent
+from checkout import checkout, checkout_parent
 from datetime import datetime
 
 def analyze(file, misuse):
@@ -15,12 +14,10 @@ def analyze(file, misuse):
         
         tmpdir = mkdtemp()
         misusedir = join(tmpdir, "misuse")
-        fixdir = join(tmpdir, "fix")
         
-        #checkout_parent(repository["type"], repository["url"], fix["revision"], misusedir, True)
-        #checkout(repository["type"], repository["url"], fix["revision"], fixdir, True)
+        checkout_parent(repository["type"], repository["url"], fix["revision"], misusedir, True)
         
-        # TODO: run actual analysis here
+        # TODO: run actual analysis here (checked out misuse is in misusedir)
         result = ""
 
         try:
