@@ -28,6 +28,6 @@ def onAllDataDo(function, datapath, verbose):
 #def f(file, data):
 #    return "({} -> {})".format(file, data)
 #
-#datapath = r'C:\Users\Mattis\Documents\Eko\MUBench\data'
+#datapath = r'<path>\MUBench\data'
 #results = onAllDataDo(f, datapath, True)
 #pprint(results)
