@@ -1,13 +1,18 @@
 from tempfile import mkdtemp
-from os.path import join
+from os import mkdir, getenv
+from os.path import join, splitext
+import ntpath
 from shutil import rmtree
 from checkout import checkout, checkout_parent
-from datetime import datetime
+from subprocess import Popen
 
 def analyze(file, misuse):
+    basepath=r"<output_path>"
+    misuse_detector=r"<path_to_jar>"
+    
     try:
         if "synthetic" in file:
-            return ""
+            return "Warning: Ignored synthetic misuse " + file
         
         fix = misuse["fix"]
         repository = fix["repository"]
@@ -18,22 +23,29 @@ def analyze(file, misuse):
         checkout_parent(repository["type"], repository["url"], fix["revision"], misusedir, True)
         
         # TODO: run actual analysis here (checked out misuse is in misusedir)
-        result = ""
+        resultdir = join(basepath, splitext(ntpath.basename(file))[0])
+        print("Running \'{}\'; Results in \'{}\'...".format(misuse_detector, resultdir))
+        p = Popen(["java", "-jar", misuse_detector, misusedir, resultdir], bufsize = 1) 
+        p.wait()
+        
+        result = resultdir
 
         try:
             rmtree(tmpdir)
         except PermissionError as e:
-            print("Cleanup could not be completed for this repository: ")
+            print("Cleanup could not be completed: ")
             print(e)
         else:
             print("Cleanup successful")
 
         return result
+    
     except Exception as e:
         # using str(e) would fail for unicode exceptions :/ 
         return "Error: {} in {}".format(repr(e), file)
 
 import datareader
+from datetime import datetime
 from pprint import pprint
 
 start_time = datetime.now()
