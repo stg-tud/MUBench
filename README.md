@@ -13,7 +13,7 @@ The MUBench dataset is an [MSR 2016 Data Showcase](http://2016.msrconf.org/#/dat
 
 ## Publications
 
-* Preprint '*MUBench: A Benchmark of API-Misuse Detectors*' coming soon...
+* ['*MUBench: A Benchmark of API-Misuse Detectors*'](http://sven-amann.de/publications/#ANNNM16)
 
 ## Run Scripts
 
