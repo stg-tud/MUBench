@@ -1,37 +1,40 @@
-from tempfile import mkdtemp
+import ntpath
 from os import mkdir, getenv
 from os.path import join, splitext
-import ntpath
 from shutil import rmtree
-from checkout import checkout, checkout_parent
 from subprocess import Popen
+from tempfile import mkdtemp
+
+from checkout import checkout, checkout_parent
+
+DATA = r"<...>\MUBench\data"  # path to the data folder
+DIR_BASE = r"<output_path>"  # used for saving intermediate results
+MISUSE_DETECTOR = r"<path_to_jar>"  # path to the misuse detector to benchmark (must be an executable .jar)
+
 
 def analyze(file, misuse):
-    basepath=r"<output_path>"
-    misuse_detector=r"<path_to_jar>"
-    
     try:
         if "synthetic" in file:
             return "Warning: Ignored synthetic misuse " + file
-        
+
         fix = misuse["fix"]
         repository = fix["repository"]
-        
-        tmpdir = mkdtemp()
-        misusedir = join(tmpdir, "misuse")
-        
-        checkout_parent(repository["type"], repository["url"], fix["revision"], misusedir, True)
-        
-        # TODO: run actual analysis here (checked out misuse is in misusedir)
-        resultdir = join(basepath, splitext(ntpath.basename(file))[0])
-        print("Running \'{}\'; Results in \'{}\'...".format(misuse_detector, resultdir))
-        p = Popen(["java", "-jar", misuse_detector, misusedir, resultdir], bufsize = 1) 
+
+        dir_temp = mkdtemp()
+        dir_misuse = join(dir_temp, "misuse")
+
+        checkout_parent(repository["type"], repository["url"], fix["revision"], dir_misuse, True)
+
+        # TODO: run actual analysis here (checked out misuse is in dir_misuse)
+        result_dir = join(DIR_BASE, splitext(ntpath.basename(file))[0])
+        print("Running \'{}\'; Results in \'{}\'...".format(MISUSE_DETECTOR, result_dir))
+        p = Popen(["java", "-jar", MISUSE_DETECTOR, dir_misuse, result_dir], bufsize=1)
         p.wait()
-        
-        result = resultdir
+
+        result = result_dir
 
         try:
-            rmtree(tmpdir)
+            rmtree(dir_temp)
         except PermissionError as e:
             print("Cleanup could not be completed: ")
             print(e)
@@ -39,17 +42,18 @@ def analyze(file, misuse):
             print("Cleanup successful")
 
         return result
-    
+
     except Exception as e:
         # using str(e) would fail for unicode exceptions :/ 
         return "Error: {} in {}".format(repr(e), file)
+
 
 import datareader
 from datetime import datetime
 from pprint import pprint
 
 start_time = datetime.now()
-results = datareader.onAllDataDo(analyze, r'C:\Users\Mattis\Documents\Eko\MUBench\data', True)
+results = datareader.onAllDataDo(analyze, DATA, True)
 end_time = datetime.now()
 
 print("================================================")
