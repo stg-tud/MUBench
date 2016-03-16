@@ -2,17 +2,18 @@ from os import listdir
 from os.path import isfile, join
 
 import yaml
+from settings import *
 
 
-def on_all_data_do(function, data_path, verbose):
-    datafiles = [join(data_path, file) for file in listdir(data_path) if
-                 isfile(join(data_path, file)) and file.endswith(".yml")]
+def on_all_data_do(function):
+    datafiles = [join(DATA_PATH, file) for file in listdir(DATA_PATH) if
+                 isfile(join(DATA_PATH, file)) and file.endswith(".yml")]
 
     result = []
     for i, file in enumerate(datafiles, start=1):
         stream = open(file, 'r')
 
-        if verbose:
+        if VERBOSE:
             print("({}/{}) files: now on {}".format(i, len(datafiles), file))
 
         try:
@@ -20,7 +21,7 @@ def on_all_data_do(function, data_path, verbose):
             result.append(function(file, yaml_content))
         finally:
             stream.close()
-            if verbose:
+            if VERBOSE:
                 print("------------------------------------------------------------")
 
     return result
@@ -31,6 +32,5 @@ def on_all_data_do(function, data_path, verbose):
 # def f(file, data):
 #    return "({} -> {})".format(file, data)
 #
-# data_path = r'<path>\MUBench\data'
-# results = on_all_data_do(f, data_path, True)
+# results = on_all_data_do(f)
 # pprint(results)

@@ -1,17 +1,11 @@
 import ntpath
-from datetime import datetime
 from os.path import join, splitext
-from pprint import pprint
 from shutil import rmtree
 from subprocess import Popen
 from tempfile import mkdtemp
 
-import datareader
 from checkout import checkout_parent
-
-DATA = r"<...>\MUBench\data"  # path to the data folder
-DIR_BASE = r"<output_path>"  # used for saving intermediate results
-MISUSE_DETECTOR = r"<path_to_jar>"  # path to the misuse detector to benchmark (must be an executable .jar)
+from settings import *
 
 
 def analyze(file, misuse):
@@ -23,12 +17,11 @@ def analyze(file, misuse):
         repository = fix["repository"]
 
         dir_temp = mkdtemp()
-        dir_misuse = join(dir_temp, "misuse")
+        dir_misuse = join(dir_temp, TEMP_SUBFOLDER)
 
         checkout_parent(repository["type"], repository["url"], fix["revision"], dir_misuse, True)
 
-        # TODO: run actual analysis here (checked out misuse is in dir_misuse)
-        result_dir = join(DIR_BASE, splitext(ntpath.basename(file))[0])
+        result_dir = join(RESULTS_PATH, splitext(ntpath.basename(file))[0])
         print("Running \'{}\'; Results in \'{}\'...".format(MISUSE_DETECTOR, result_dir))
         p = Popen(["java", "-jar", MISUSE_DETECTOR, dir_misuse, result_dir], bufsize=1)
         p.wait()
@@ -48,14 +41,3 @@ def analyze(file, misuse):
     except Exception as e:
         # using str(e) would fail for unicode exceptions :/ 
         return "Error: {} in {}".format(repr(e), file)
-
-
-start_time = datetime.now()
-results = datareader.on_all_data_do(analyze, DATA, True)
-end_time = datetime.now()
-
-print("================================================")
-print("Analysis finished! Total time: {}".format(str(end_time - start_time)))
-print("Analysis results: ")
-pprint(results)
-print("================================================")
