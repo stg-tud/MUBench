@@ -1,9 +1,12 @@
-import yaml
 from os import listdir
 from os.path import isfile, join
 
-def onAllDataDo(function, datapath, verbose):
-    datafiles = [join(datapath, file) for file in listdir(datapath) if isfile(join(datapath, file)) and file.endswith(".yml")]
+import yaml
+
+
+def on_all_data_do(function, data_path, verbose):
+    datafiles = [join(data_path, file) for file in listdir(data_path) if
+                 isfile(join(data_path, file)) and file.endswith(".yml")]
 
     result = []
     for i, file in enumerate(datafiles, start=1):
@@ -11,23 +14,23 @@ def onAllDataDo(function, datapath, verbose):
 
         if verbose:
             print("({}/{}) files: now on {}".format(i, len(datafiles), file))
-        
+
         try:
-            yamlContent = yaml.load(stream)
-            result.append(function(file, yamlContent))
+            yaml_content = yaml.load(stream)
+            result.append(function(file, yaml_content))
         finally:
             stream.close()
             if verbose:
                 print("------------------------------------------------------------")
-            
+
     return result
 
 # example usage:
-#from pprint import pprint
+# from pprint import pprint
 #
-#def f(file, data):
+# def f(file, data):
 #    return "({} -> {})".format(file, data)
 #
-#datapath = r'<path>\MUBench\data'
-#results = onAllDataDo(f, datapath, True)
-#pprint(results)
+# data_path = r'<path>\MUBench\data'
+# results = on_all_data_do(f, data_path, True)
+# pprint(results)

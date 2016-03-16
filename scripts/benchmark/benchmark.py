@@ -1,11 +1,13 @@
 import ntpath
-from os import mkdir, getenv
+from datetime import datetime
 from os.path import join, splitext
+from pprint import pprint
 from shutil import rmtree
 from subprocess import Popen
 from tempfile import mkdtemp
 
-from checkout import checkout, checkout_parent
+import datareader
+from checkout import checkout_parent
 
 DATA = r"<...>\MUBench\data"  # path to the data folder
 DIR_BASE = r"<output_path>"  # used for saving intermediate results
@@ -48,12 +50,8 @@ def analyze(file, misuse):
         return "Error: {} in {}".format(repr(e), file)
 
 
-import datareader
-from datetime import datetime
-from pprint import pprint
-
 start_time = datetime.now()
-results = datareader.onAllDataDo(analyze, DATA, True)
+results = datareader.on_all_data_do(analyze, DATA, True)
 end_time = datetime.now()
 
 print("================================================")
