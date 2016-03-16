@@ -1,12 +1,11 @@
-import datetime
+from datetime import datetime
 
 from benchmark import analyze
 from datareader import on_all_data_do
 from results import evaluate_results
-from settings import DATA_PATH
 
 start_time = datetime.now()
-results = on_all_data_do(analyze, DATA_PATH, True)
+results = on_all_data_do(analyze)
 end_time = datetime.now()
 
 print("================================================")

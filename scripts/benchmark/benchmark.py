@@ -1,10 +1,10 @@
-import ntpath
-from os.path import join, splitext
+from os.path import join, splitext, basename
 from shutil import rmtree
 from subprocess import Popen
 from tempfile import mkdtemp
 
 from checkout import checkout_parent
+from results import evaluate_single_result
 from settings import *
 
 
@@ -21,12 +21,12 @@ def analyze(file, misuse):
 
         checkout_parent(repository["type"], repository["url"], fix["revision"], dir_misuse, True)
 
-        result_dir = join(RESULTS_PATH, splitext(ntpath.basename(file))[0])
+        result_dir = join(RESULTS_PATH, splitext(basename(file))[0])
         print("Running \'{}\'; Results in \'{}\'...".format(MISUSE_DETECTOR, result_dir))
         p = Popen(["java", "-jar", MISUSE_DETECTOR, dir_misuse, result_dir], bufsize=1)
         p.wait()
 
-        result = result_dir
+        result = evaluate_single_result(result_dir, misuse)
 
         try:
             rmtree(dir_temp)
