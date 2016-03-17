@@ -1,6 +1,6 @@
 from os import listdir, mkdir
-from os.path import join, exists, isdir
-from subprocess import Popen
+from os.path import join, exists, isdir, normpath
+from subprocess import Popen, STDOUT, PIPE
 
 from shutil import copy
 
@@ -51,22 +51,24 @@ def checkout(vcs: str, repository: str, revision: str, dir_target: str, verbose:
         # For more detail go to https://docs.python.org/3/library/subprocess.html#security-considerations
         if vcs == 'git':
             # fetching is probably faster here than cloning
-            cd = ['cd', dir_target]
-            git_init = ['git', 'init']
-            git_set_remote = ['git', 'remote', 'add', 'origin', repository]
-            git_fetch = ['git', 'fetch']
-            git_checkout = ['git', 'checkout', revision]
-            sep = [';']
+            git_init = 'git init'
+            git_set_remote = 'git remote add origin ' + repository
+            git_fetch = 'git fetch'
+            git_checkout = 'git checkout ' + revision
 
-            command = cd + sep + git_init + sep + git_set_remote + sep + git_fetch + sep + git_checkout
-            process = Popen(command, bufsize=1)
-            process.wait()
+            Popen(git_init, cwd=dir_target, bufsize=1, shell=True, stdout=PIPE).wait()
+            Popen(git_set_remote, cwd=dir_target, bufsize=1, shell=True, stdout=PIPE).wait()
+            Popen(git_fetch, cwd=dir_target, bufsize=1, shell=True, stdout=PIPE).wait()
+            Popen(git_checkout, cwd=dir_target, bufsize=1, shell=True, stdout=PIPE).wait()
+
         elif vcs == 'svn':
             command_checkout = ['svn', 'checkout', '--revision', str(revision), repository, dir_target]
             process_checkout = Popen(command_checkout, bufsize=1)
             process_checkout.wait()
+
         elif vcs == 'synthetic':
             copy(join(DATA_PATH, repository), dir_target)
+
         else:
             raise ValueError("Unknown version control type: {}".format(vcs))
     else:
