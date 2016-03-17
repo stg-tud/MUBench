@@ -31,6 +31,15 @@ class CheckoutTest(unittest.TestCase):
     def test_copies_synthetic_repository(self):
         pass  # TODO
 
+    def test_checkout_fails_for_non_empty_target_dir(self):
+        pass  # TODO
+
+    def test_checkout_fails_for_file_as_target_dir(self):
+        pass  # TODO
+
+    def test_checkout_fails_for_unknown_vcs(self):
+        pass  # TODO
+
     def tearDown(self):
         rmtree(TEMP_DIR, ignore_errors=True)
 
