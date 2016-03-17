@@ -7,7 +7,16 @@ from shutil import copy
 from settings import DATA_PATH
 
 
-def checkout_parent(vcs, repository, revision, dir_target, verbose):
+def checkout_parent(vcs: str, repository: str, revision, dir_target: str, verbose: bool) -> None:
+    """
+    Check out a repository on the parent of the given revision
+    :param vcs: the type of version control used by the repository
+    :param repository: the repository url
+    :param revision: the revision of which the parent will be checked out
+    :param dir_target: the directory where the repository will be checked out in
+    :param verbose: gives detailed console output
+    :return None
+    """
     if vcs == 'git':
         revision += '~1'
     elif vcs == 'svn':
@@ -15,12 +24,19 @@ def checkout_parent(vcs, repository, revision, dir_target, verbose):
     elif vcs == 'synthetic':
         pass  # nothing to do
 
-    checkout(vcs, repository, revision, dir_target, verbose)
+    checkout(vcs, repository, str(revision), dir_target, verbose)  # TODO test is str() is really needed here
 
 
-def checkout(vcs, repository, revision, dir_target, verbose):
-    revision = str(revision)
-
+def checkout(vcs: str, repository: str, revision: str, dir_target: str, verbose: str) -> None:
+    """
+    Check out a repository on a certain revision
+    :param vcs: the type of version control used by the repository
+    :param repository: the repository url
+    :param revision: the revision to be checked out
+    :param dir_target: the directory where the repository will be checked out in
+    :param verbose: gives detailed console output
+    :return None
+    """
     if verbose:
         print("Checkout ({0}): ".format(vcs))
         print("Repository: " + repository)
@@ -55,17 +71,3 @@ def checkout(vcs, repository, revision, dir_target, verbose):
             raise ValueError("Unknown version control type: {}".format(vcs))
     else:
         raise ValueError("{0} is not an empty directory!".format(dir_target))
-
-# example usage (svn)
-# from tempfile import mkdtemp
-# svn_repository = 'svn://svn.code.sf.net/p/genoviz/code/trunk'
-# revision = 4273
-# checkout_parent("svn", svn_repository, revision, mkdtemp(suffix='_misuse'), True)
-# checkout("svn", svn_repository, revision, mkdtemp(suffix='_fix'), True)
-
-# example usage (git)
-# from tempfile import mkdtemp
-# git_repository = r'https://github.com/haku/Onosendai.git'
-# commit = '0e2a7570ab4491d0c4680ef52ee1008bef33fc02'
-# checkout_parent("git", git_repository, commit, mkdtemp(suffix='_misuse'), True)
-# checkout("git", git_repository, commit, mkdtemp(suffix='_fix'), True)
