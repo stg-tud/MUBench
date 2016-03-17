@@ -24,7 +24,7 @@ def checkout_parent(vcs: str, repository: str, revision, dir_target: str, verbos
     elif vcs == 'synthetic':
         pass  # nothing to do
 
-    checkout(vcs, repository, str(revision), dir_target, verbose)  # TODO test is str() is really needed here
+    checkout(vcs, repository, revision, dir_target, verbose)
 
 
 def checkout(vcs: str, repository: str, revision: str, dir_target: str, verbose: str) -> None:
