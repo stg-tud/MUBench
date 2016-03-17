@@ -2,7 +2,7 @@ import unittest
 from genericpath import exists
 from os.path import join
 from shutil import rmtree
-from tempfile import gettempdir
+from tempfile import gettempdir, mkdtemp
 
 import checkout
 
@@ -17,13 +17,14 @@ GIT_PARENT_REVISION = 'b4db2acace11e41abdb80f3a902bf09148c8c831'
 SVN_REPOSITORY = ''
 SYNTHETIC_REPOSITORY = ''
 
-TEMP_DIR = join(str(gettempdir()), 'mubench_test_temp')
-
 
 class CheckoutTest(unittest.TestCase):
+    def setUp(self):
+        self.temp_dir = mkdtemp()
+
     def test_creates_git_repository(self):
-        checkout.checkout_parent(GIT, GIT_REPOSITORY, GIT_REVISION, TEMP_DIR, False)
-        self.assertTrue(exists(join(TEMP_DIR, '.git')))
+        checkout.checkout_parent(GIT, GIT_REPOSITORY, GIT_REVISION, self.temp_dir, False)
+        self.assertTrue(exists(join(self.temp_dir, '.git')))
 
     def test_creates_svn_repository(self):
         pass  # TODO
@@ -41,7 +42,7 @@ class CheckoutTest(unittest.TestCase):
         pass  # TODO
 
     def tearDown(self):
-        rmtree(TEMP_DIR, ignore_errors=True)
+        rmtree(self.temp_dir, ignore_errors=True)
 
 
 if __name__ == '__main__':
