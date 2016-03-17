@@ -10,9 +10,6 @@ from settings import *
 
 def analyze(file, misuse):
     try:
-        if "synthetic" in file:
-            return "Warning: Ignored synthetic misuse " + file
-
         fix = misuse["fix"]
         repository = fix["repository"]
 
