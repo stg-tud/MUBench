@@ -40,7 +40,7 @@ def checkout(vcs, repository, revision, dir_target, verbose):
             git_set_remote = ['git', 'remote', 'add', 'origin', repository]
             git_fetch = ['git', 'fetch']
             git_checkout = ['git', 'checkout', revision]
-            sep = ';'
+            sep = [';']
 
             command = cd + sep + git_init + sep + git_set_remote + sep + git_fetch + sep + git_checkout
             process = Popen(command, bufsize=1)
