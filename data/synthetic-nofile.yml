@@ -11,6 +11,11 @@ characteristics:
 pattern:
   - single node
 fix:
+  repository:
+    url: synthetic-nofile.java
+    type: synthetic
+  files:
+    - name: synthetic-nofile.java
   description: >
     Pass OpenOption.CREATE to the write call.
   commit: https://github.com/stg-tud/MUBench/blob/master/data/synthetic-nofile.java

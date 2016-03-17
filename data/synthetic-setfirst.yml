@@ -15,6 +15,11 @@ pattern:
 challenges:
   - path dependent
 fix:
+  repository:
+    url: synthetic-setfirst.java
+    type: synthetic
+  files:
+    - name: synthetic-setfirst.java
   description: >
     Check that Set.isEmpty() is false.
   commit: https://github.com/stg-tud/MUBench/blob/master/data/synthetic-setfirst.java

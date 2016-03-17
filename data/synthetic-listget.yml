@@ -13,6 +13,11 @@ pattern:
 challenges:
   - path dependent
 fix:
+  repository:
+    url: synthetic-listget.java
+    type: synthetic
+  files:
+    - name: synthetic-listget.java
   description: >
     Check that index is between 0 and List.size() - 1.
   commit: https://github.com/stg-tud/MUBench/blob/master/data/synthetic-listget.java

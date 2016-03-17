@@ -12,6 +12,11 @@ characteristics:
 pattern:
   - single object
 fix:
+  repository:
+    url: synthetic-bigint.java
+    type: synthetic
+  files:
+    - name: synthetic-bigint.java
   description: >
     Continue to work on the new instance.
   commit: https://github.com/stg-tud/MUBench/blob/master/data/synthetic-bigint.java

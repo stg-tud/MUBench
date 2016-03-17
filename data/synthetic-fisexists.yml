@@ -14,6 +14,11 @@ pattern:
 challenges:
   - path dependent
 fix:
+  repository:
+    url: synthetic-fisexists.java
+    type: synthetic
+  files:
+    - name: synthetic-fisexists.java
   description: >
     Check File.exists() first.
   commit: https://github.com/stg-tud/MUBench/blob/master/data/synthetic-fisexists.java
