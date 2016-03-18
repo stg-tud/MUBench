@@ -6,6 +6,22 @@ from subprocess import Popen, PIPE
 import settings
 
 
+def get_parent(vcs: str, revision):
+    """
+    Returns the parent of the given revision as a string
+    :type vcs: str
+    :param vcs: the type of version control the revision is from
+    :param revision: the revision of which the parent will be returned
+    :rtype: str
+    """
+    if vcs == 'git':
+        return str(revision + '~1')
+    elif vcs == 'svn':
+        return str(revision - 1)
+    elif vcs == 'synthetic':
+        return str(revision)  # nothing to do
+
+
 def checkout_parent(vcs: str, repository: str, revision, dir_target: str, verbose: bool) -> None:
     """
     Check out a repository on the parent of the given revision
@@ -23,14 +39,7 @@ def checkout_parent(vcs: str, repository: str, revision, dir_target: str, verbos
     :return Returns nothing
     """
 
-    if vcs == 'git':
-        revision += '~1'
-    elif vcs == 'svn':
-        revision -= 1
-    elif vcs == 'synthetic':
-        pass  # nothing to do
-
-    checkout(vcs, repository, str(revision), dir_target, verbose)
+    checkout(vcs, repository, get_parent(vcs, revision), dir_target, verbose)
 
 
 def checkout(vcs: str, repository: str, revision: str, dir_target: str, verbose: str) -> None:
