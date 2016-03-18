@@ -9,7 +9,8 @@ start_time = datetime.now()
 
 results = on_all_data_do(analyze)
 for result in results:
-    log(result)
+    if result is not None:
+        log(result)
 
 end_time = datetime.now()
 

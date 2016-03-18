@@ -20,8 +20,10 @@ def analyze(file, misuse):
 
         result_dir = join(settings.RESULTS_PATH, splitext(basename(file))[0])
         print("Running \'{}\'; Results in \'{}\'...".format(settings.MISUSE_DETECTOR, result_dir))
-        p = Popen(["java", "-jar", settings.MISUSE_DETECTOR, dir_misuse, result_dir], bufsize=1)
-        p.wait()
+        with open(join(result_dir, 'out.log')) as log:
+            p = Popen(["java", "-jar", settings.MISUSE_DETECTOR, dir_misuse, result_dir], bufsize=1,
+                      stdout=log, stderr=log)
+            p.wait()
 
         result = evaluate_single_result(result_dir, misuse)
 
