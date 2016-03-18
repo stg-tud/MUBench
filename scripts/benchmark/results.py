@@ -1,4 +1,4 @@
-from genericpath import isdir
+from genericpath import isdir, exists
 from os import listdir
 from os.path import join, splitext
 from os.path import normpath, basename
@@ -13,7 +13,8 @@ def evaluate_single_result(file_data, data_content):
         file_result = join(dir_result, settings.FILE_DETECTOR_RESULT)
         print("Evaluating result {} against data {}".format(file_result, file_data))
 
-        lines = [line.rstrip('\n') for line in open(file_result)]
+        if exists(file_result):
+            lines = [line.rstrip('\n') for line in open(file_result)]
 
         for line in lines:
             if line.startswith("File: "):
