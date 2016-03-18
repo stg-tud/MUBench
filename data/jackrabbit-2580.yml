@@ -22,7 +22,7 @@ challenges:
 fix:
   commit: http://svn.apache.org/viewvc?view=revision&revision=926354
   repository:
-    url: http://svn.apache.org/repos/asf/jackrabbit/
+    url: http://svn.apache.org/repos/asf/jackrabbit/trunk
     type: svn
   revision: 926354
   files:

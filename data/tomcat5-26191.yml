@@ -23,7 +23,7 @@ fix:
     Create specific catch clause, avoids cast entirely.
   commit: http://svn.apache.org/viewvc?view=revision&revision=305891
   repository:
-    url: http://svn.apache.org/repos/asf/tomcat/
+    url: http://svn.apache.org/repos/asf/tomcat/trunk
     type: svn
   revision: 305891
   files:

@@ -27,7 +27,7 @@ fix:
     Call ServletWriter.close() before attempting to delete the file.
   commit: http://svn.apache.org/viewvc?view=revision&revision=305982
   repository:
-    url: http://svn.apache.org/repos/asf/tomcat/
+    url: http://svn.apache.org/repos/asf/tomcat/trunk
     type: svn
   revision: 305982
   files:
