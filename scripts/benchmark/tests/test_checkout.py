@@ -58,5 +58,19 @@ class CheckoutTest(unittest.TestCase):
         rmtree(self.temp_dir, ignore_errors=True)
 
 
+class GetParentTest(unittest.TestCase):
+    def test_get_parent_git(self):
+        self.assertEquals(checkout.get_parent(GIT, "bla"), "bla~1")
+
+    def test_get_parent_svn(self):
+        self.assertEquals(checkout.get_parent(SVN, 42), "41")
+
+    def test_get_parent_synthetic(self):
+        self.assertEquals(checkout.get_parent(SYNTHETIC, 100), "100")
+
+    def test_value_error_on_unknown_vcs(self):
+        with self.assertRaises(ValueError):
+            checkout.get_parent('unknown vcs', 1)
+
 if __name__ == '__main__':
     unittest.main()

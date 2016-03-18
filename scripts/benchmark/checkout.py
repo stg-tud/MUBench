@@ -11,7 +11,7 @@ def get_parent(vcs: str, revision):
     Returns the parent of the given revision as a string
     :type vcs: str
     :param vcs: the type of version control the revision is from
-    :param revision: the revision of which the parent will be returned
+    :param revision: the revision of which the parent will be returned (str for git ; int for svn)
     :rtype: str
     """
     if vcs == 'git':
@@ -20,6 +20,8 @@ def get_parent(vcs: str, revision):
         return str(revision - 1)
     elif vcs == 'synthetic':
         return str(revision)  # nothing to do
+    else:
+        raise ValueError("Unknown version control type: {}".format(vcs))
 
 
 def checkout_parent(vcs: str, repository: str, revision, dir_target: str, verbose: bool) -> None:
