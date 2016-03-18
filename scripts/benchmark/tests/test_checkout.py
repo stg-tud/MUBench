@@ -1,10 +1,9 @@
 import unittest
 from genericpath import exists
+from os import mkdir
 from os.path import join
 from shutil import rmtree
-from tempfile import gettempdir, mkdtemp
-
-from os import mkdir
+from tempfile import mkdtemp
 
 import checkout
 
