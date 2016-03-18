@@ -39,7 +39,7 @@ def evaluate_single_result(file_data, data_content):
         is_result_for_file = splitext(basename(normpath(file_data)))[0] == basename(normpath(dir_result))
         if is_result_for_file:
             return evaluate()
-    return None # to indicate that no result was found for this data
+    return None  # to indicate that no result was found for this data
 
 
 def evaluate_results():

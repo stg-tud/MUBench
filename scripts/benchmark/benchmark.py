@@ -1,3 +1,5 @@
+from genericpath import exists
+from os import makedirs
 from os.path import join, splitext, basename
 from shutil import rmtree
 from subprocess import Popen
@@ -20,7 +22,11 @@ def analyze(file, misuse):
 
         result_dir = join(settings.RESULTS_PATH, splitext(basename(file))[0])
         print("Running \'{}\'; Results in \'{}\'...".format(settings.MISUSE_DETECTOR, result_dir))
-        with open(join(result_dir, 'out.log')) as log:
+
+        if not exists(result_dir):
+            makedirs(result_dir)
+
+        with open(join(result_dir, 'out.log'), 'w+') as log:
             p = Popen(["java", "-jar", settings.MISUSE_DETECTOR, dir_misuse, result_dir], bufsize=1,
                       stdout=log, stderr=log)
             p.wait()
