@@ -4,13 +4,13 @@ from os.path import join, splitext
 from os.path import normpath, basename
 
 import datareader
-from settings import *
+import settings
 
 
 def evaluate_single_result(file_data, data_content):
     # TODO: Re-implement this for other outputs
     def evaluate():
-        file_result = join(dir_result, FILE_DETECTOR_RESULT)
+        file_result = join(dir_result, settings.FILE_DETECTOR_RESULT)
         print("Evaluating result {} against data {}".format(file_result, file_data))
 
         lines = [line.rstrip('\n') for line in open(file_result)]
@@ -19,8 +19,8 @@ def evaluate_single_result(file_data, data_content):
             if line.startswith("File: "):
                 found_misuse = line.split(' ', 1)[1]
 
-                if TEMP_SUBFOLDER + '\\' in found_misuse:
-                    found_misuse = found_misuse.split(TEMP_SUBFOLDER + '\\', 1)[1]
+                if settings.TEMP_SUBFOLDER + '\\' in found_misuse:
+                    found_misuse = found_misuse.split(settings.TEMP_SUBFOLDER + '\\', 1)[1]
 
                 fix_filename = data_content["fix"]["files"][0]["name"]
                 print(fix_filename)
@@ -33,8 +33,8 @@ def evaluate_single_result(file_data, data_content):
 
         return 0
 
-    dirs_results = [join(RESULTS_PATH, result_dir) for result_dir in listdir(RESULTS_PATH) if
-                    isdir(join(RESULTS_PATH, result_dir))]
+    dirs_results = [join(settings.RESULTS_PATH, result_dir) for result_dir in listdir(settings.RESULTS_PATH) if
+                    isdir(join(settings.RESULTS_PATH, result_dir))]
     for dir_result in dirs_results:
         is_result_for_file = splitext(basename(normpath(file_data)))[0] == basename(normpath(dir_result))
         if is_result_for_file:
@@ -54,5 +54,5 @@ def write_results(results):
 
     benchmark_result = "Found {} of {} misuses!".format(count_success, count_data)
     print(benchmark_result)
-    print(benchmark_result, file=open(FILE_BENCHMARK_RESULT, 'w+'))
+    print(benchmark_result, file=open(settings.FILE_BENCHMARK_RESULT, 'w+'))
     return benchmark_result

@@ -1,10 +1,9 @@
 from os import listdir, mkdir
-from os.path import join, exists, isdir, normpath
-from subprocess import Popen, STDOUT, PIPE
-
+from os.path import join, exists, isdir
 from shutil import copy
+from subprocess import Popen, PIPE
 
-from settings import DATA_PATH
+import settings
 
 
 def checkout_parent(vcs: str, repository: str, revision, dir_target: str, verbose: bool) -> None:
@@ -81,7 +80,7 @@ def checkout(vcs: str, repository: str, revision: str, dir_target: str, verbose:
             process_checkout.wait()
 
         elif vcs == 'synthetic':
-            copy(join(DATA_PATH, repository), dir_target)
+            copy(join(settings.DATA_PATH, repository), dir_target)
 
         else:
             raise ValueError("Unknown version control type: {}".format(vcs))

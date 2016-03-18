@@ -3,9 +3,9 @@ from shutil import rmtree
 from subprocess import Popen
 from tempfile import mkdtemp
 
+import settings
 from checkout import checkout_parent
 from results import evaluate_single_result
-from settings import *
 
 
 def analyze(file, misuse):
@@ -14,13 +14,13 @@ def analyze(file, misuse):
         repository = fix["repository"]
 
         dir_temp = mkdtemp()
-        dir_misuse = join(dir_temp, TEMP_SUBFOLDER)
+        dir_misuse = join(dir_temp, settings.TEMP_SUBFOLDER)
 
         checkout_parent(repository["type"], repository["url"], fix["revision"], dir_misuse, True)
 
-        result_dir = join(RESULTS_PATH, splitext(basename(file))[0])
-        print("Running \'{}\'; Results in \'{}\'...".format(MISUSE_DETECTOR, result_dir))
-        p = Popen(["java", "-jar", MISUSE_DETECTOR, dir_misuse, result_dir], bufsize=1)
+        result_dir = join(settings.RESULTS_PATH, splitext(basename(file))[0])
+        print("Running \'{}\'; Results in \'{}\'...".format(settings.MISUSE_DETECTOR, result_dir))
+        p = Popen(["java", "-jar", settings.MISUSE_DETECTOR, dir_misuse, result_dir], bufsize=1)
         p.wait()
 
         result = evaluate_single_result(result_dir, misuse)
