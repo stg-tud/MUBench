@@ -2,10 +2,15 @@ from datetime import datetime
 
 from benchmark import analyze
 from datareader import on_all_data_do
+from logger import log
 from results import evaluate_results
 
 start_time = datetime.now()
+
 results = on_all_data_do(analyze)
+for result in results:
+    log(result)
+
 end_time = datetime.now()
 
 print("================================================")
