@@ -8,7 +8,7 @@ import settings
 
 def on_all_data_do(function):
     """
-    :param function: The function to execute on each data point
+    :param function: The function to execute on each data point; the expected signature is function(file, data)
     :rtype: list
     :return: A list of the results of each function execution
     """
