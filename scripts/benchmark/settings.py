@@ -1,8 +1,10 @@
 from os.path import join
 
 # These settings are shared between all modules
-# IMPORTANT: always import settings and use settings like settings.DATA_PATH!
-# Doing it this way allows tests to alter these values
+# IMPORTANT:    always import settings and use settings like settings.DATA_PATH!
+#               (don't use from settings import <setting>)
+#               Doing it this way allows tests to alter these values
+#               See http://effbot.org/zone/import-confusion.htm for more detail
 
 # INPUTS
 DATA_PATH = r"...\MUBench\data"  # path to the data folder
