@@ -1,10 +1,9 @@
 from os import listdir, mkdir
 from os.path import join, exists, isdir
 from shutil import copy
-from subprocess import Popen, PIPE
+from subprocess import Popen
 
 import settings
-from logger import checkout_log
 
 
 def get_parent(vcs: str, revision):
