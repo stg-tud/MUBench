@@ -74,7 +74,7 @@ def checkout(vcs: str, repository: str, revision: str, dir_target: str, verbose:
         # Make sure no shell injection happens here!
         # For more detail go to https://docs.python.org/3/library/subprocess.html#security-considerations
 
-        log = open(settings.LOG_FILE_CHECKOUT, 'w+')
+        log = open(settings.LOG_FILE_CHECKOUT, 'ab')
 
         if vcs == 'git':
             # fetching is probably faster here than cloning

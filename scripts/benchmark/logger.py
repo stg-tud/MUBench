@@ -7,7 +7,7 @@ import settings
 
 def log_error(content: str):
     create_log_path()
-    with open(join(settings.LOG_PATH, settings.LOG_FILE_ERROR), 'w+') as log_file:
+    with open(join(settings.LOG_PATH, settings.LOG_FILE_ERROR), 'ab') as log_file:
         print(content, file=log_file)
 
 

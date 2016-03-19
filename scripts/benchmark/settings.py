@@ -6,7 +6,7 @@ from os.path import join
 
 # INPUTS
 DATA_PATH = r"...\MUBench\data"  # path to the data folder
-MISUSE_DETECTOR = r"E:\Eko\GROUMiner.jar"  # path to the misuse detector to benchmark (must be an executable .jar)
+MISUSE_DETECTOR = r"...\GROUMiner.jar"  # path to the misuse detector to benchmark (must be an executable .jar)
 FILE_DETECTOR_RESULT = "finalAnomalies.txt"  # result written by the misuse detector
 
 # OUTPUTS
