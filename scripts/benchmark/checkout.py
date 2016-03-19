@@ -1,4 +1,4 @@
-from os import listdir, mkdir
+from os import listdir, mkdir, makedirs
 from os.path import join, exists, isdir
 from shutil import copy
 from subprocess import Popen
@@ -66,6 +66,8 @@ def checkout(vcs: str, repository: str, revision: str, dir_target: str, verbose:
         print("Repository: " + repository)
         print("Revision: " + revision)
         print("Checking out into directory: " + dir_target)
+
+    makedirs(dir_target, exist_ok=True)
 
     if isdir(dir_target) and (listdir(dir_target) == []):
         # Make sure no shell injection happens here!
