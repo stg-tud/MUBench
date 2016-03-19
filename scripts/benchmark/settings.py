@@ -18,7 +18,7 @@ BENCHMARK_RESULT_FILE = join(RESULTS_PATH, 'benchmark-result.txt')  # where the 
 
 # LOGS
 LOG_PATH = join(RESULTS_PATH, "_LOGS")
-LOG_FILE_ERROR = join(RESULTS_PATH, "LOGS", "error.log")  # errors will be logged into this file
+LOG_FILE_ERROR = join(LOG_PATH, "error.log")  # errors will be logged into this file
 LOG_FILE_CHECKOUT = join(LOG_PATH, "checkout.log")
 LOG_FILE_RESULTS_EVALUATION = join(LOG_PATH, "results-evaluation.log")
 
