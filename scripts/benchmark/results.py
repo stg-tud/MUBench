@@ -8,7 +8,6 @@ import settings
 
 
 def evaluate_single_result(file_data, data_content):
-    # TODO: Re-implement this for other outputs
     def evaluate():
         file_result = join(dir_result, settings.FILE_DETECTOR_RESULT)
         print("Evaluating result {} against data {}".format(file_result, file_data))
@@ -55,5 +54,7 @@ def write_results(results):
 
     benchmark_result = "Found {} of {} misuses!".format(count_success, count_data)
     print(benchmark_result)
-    print(benchmark_result, file=open(settings.FILE_BENCHMARK_RESULT, 'w+'))
+    with open(settings.BENCHMARK_RESULT_FILE, 'w+') as result_file:
+        print(benchmark_result, file=result_file)
+
     return benchmark_result

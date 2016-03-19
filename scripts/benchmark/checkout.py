@@ -4,6 +4,7 @@ from shutil import copy
 from subprocess import Popen, PIPE
 
 import settings
+from logger import checkout_log
 
 
 def get_parent(vcs: str, revision):
@@ -73,6 +74,9 @@ def checkout(vcs: str, repository: str, revision: str, dir_target: str, verbose:
     if isdir(dir_target) and (listdir(dir_target) == []):
         # Make sure no shell injection happens here!
         # For more detail go to https://docs.python.org/3/library/subprocess.html#security-considerations
+
+        log = open(settings.LOG_FILE_CHECKOUT, 'w+')
+
         if vcs == 'git':
             # fetching is probably faster here than cloning
             git_init = 'git init'
@@ -80,14 +84,14 @@ def checkout(vcs: str, repository: str, revision: str, dir_target: str, verbose:
             git_fetch = 'git fetch'
             git_checkout = 'git checkout ' + revision
 
-            Popen(git_init, cwd=dir_target, bufsize=1, shell=True, stdout=PIPE).wait()
-            Popen(git_set_remote, cwd=dir_target, bufsize=1, shell=True, stdout=PIPE).wait()
-            Popen(git_fetch, cwd=dir_target, bufsize=1, shell=True, stdout=PIPE).wait()
-            Popen(git_checkout, cwd=dir_target, bufsize=1, shell=True, stdout=PIPE).wait()
+            Popen(git_init, cwd=dir_target, bufsize=1, shell=True, stdout=log).wait()
+            Popen(git_set_remote, cwd=dir_target, bufsize=1, shell=True, stdout=log).wait()
+            Popen(git_fetch, cwd=dir_target, bufsize=1, shell=True, stdout=log).wait()
+            Popen(git_checkout, cwd=dir_target, bufsize=1, shell=True, stdout=log).wait()
 
         elif vcs == 'svn':
             command_checkout = ['svn', 'checkout', '--revision', str(revision), repository, dir_target]
-            process_checkout = Popen(command_checkout, bufsize=1)
+            process_checkout = Popen(command_checkout, bufsize=1, stdout=log)
             process_checkout.wait()
 
         elif vcs == 'synthetic':

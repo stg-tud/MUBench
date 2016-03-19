@@ -2,7 +2,7 @@ from datetime import datetime
 
 from benchmark import analyze
 from datareader import on_all_data_do
-from logger import log
+from logger import log_error
 from results import evaluate_results
 
 errors = []
@@ -20,11 +20,9 @@ else:
     print("Analysis finished! Total time: {}".format(str(end_time - start_time)))
     print("================================================")
 finally:
-    log("==================================================")
-    log("Errors: ")
     for error in errors:
         if error is not None:
-            log(error)
+            log_error(error)
 
     print("Evaluating results...")
     evaluation_start_time = datetime.now()

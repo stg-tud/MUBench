@@ -54,6 +54,10 @@ class CheckoutTest(unittest.TestCase):
         with self.assertRaises(ValueError):
             checkout.checkout_parent('invalid vcs', GIT_REPOSITORY, GIT_REVISION, self.temp_dir, False)
 
+    def test_log_into_target_folder(self):
+        checkout.checkout_parent(GIT, GIT_REPOSITORY, GIT_REVISION, self.temp_dir, False)
+        self.assertTrue(exists(join()))
+
     def tearDown(self):
         rmtree(self.temp_dir, ignore_errors=True)
 

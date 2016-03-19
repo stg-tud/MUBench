@@ -11,19 +11,27 @@ import settings
 
 class LogTest(unittest.TestCase):
     def setUp(self):
-        self.test_line = 'testing the logger'
+        self.test_line = "testing the logger"
         self.temp_dir = mkdtemp()
-        settings.RESULTS_PATH = self.temp_dir
-        settings.LOG_FILE = 'log.txt'
+        settings.LOG_PATH = self.temp_dir
+        settings.LOG_FILE_ERROR = 'error.log'
 
-    def test_creates_log_file(self):
-        logger.log(self.test_line)
-        self.assertTrue(exists(join(settings.RESULTS_PATH, settings.LOG_FILE)))
+        self.test_suffix = 'test-suffix'
+        settings.LOG_FILE_CHECKOUT = 'checkout-{}.log'.format(self.test_suffix)
 
-    def test_writes_log_file(self):
-        logger.log(self.test_line)
-        with open(join(settings.RESULTS_PATH, settings.LOG_FILE)) as actual_file:
-            self.assertEquals(actual_file.read(), self.test_line + '\n')
+    def test_creates_error_log_file(self):
+        logger.log_error(self.test_line)
+        self.assertTrue(exists(join(settings.LOG_PATH, settings.LOG_FILE_ERROR)))
+
+    def test_writes_error_log_file(self):
+        logger.log_error(self.test_line)
+        with open(join(settings.LOG_PATH, settings.LOG_FILE_ERROR)) as actual_file:
+            self.assertEquals(self.test_line + '\n', actual_file.read())
+
+    def test_creates_log_path(self):
+        settings.LOG_PATH = join(self.temp_dir, 'does-not-exist-yet')
+        logger.create_log_path()
+        self.assertTrue(exists(settings.LOG_PATH))
 
     def tearDown(self):
         rmtree(self.temp_dir, ignore_errors=True)
