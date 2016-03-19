@@ -21,7 +21,7 @@ def analyze(file, misuse):
         dir_temp = mkdtemp()
         dir_misuse = join(dir_temp, settings.TEMP_SUBFOLDER)
 
-        checkout_parent(repository["type"], repository["url"], fix["revision"], dir_misuse, True)
+        checkout_parent(repository["type"], repository["url"], fix.get('revision', ""), dir_misuse, True)
 
         result_dir = join(settings.RESULTS_PATH, splitext(basename(file))[0])
         print("Running \'{}\'; Results in \'{}\'...".format(settings.MISUSE_DETECTOR, result_dir))
