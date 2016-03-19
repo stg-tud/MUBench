@@ -23,3 +23,4 @@ LOG_FILE_CHECKOUT = join(LOG_PATH, "checkout.log")
 # BENCHMARK SETTINGS
 TEMP_SUBFOLDER = "misuse-checkout"  # used as subfolder in the temp path (will show up in misuse detection results)
 VERBOSE = True  # prints more information to console if True
+IGNORES = []  # all data files which contain this substring will be ignored by the benchmark

@@ -12,6 +12,9 @@ from results import evaluate_single_result
 
 def analyze(file, misuse):
     try:
+        if any(settings.IGNORES) in file:
+            return "Warning: ignored {}".format(file)
+
         fix = misuse["fix"]
         repository = fix["repository"]
 
