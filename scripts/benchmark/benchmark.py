@@ -34,8 +34,6 @@ def analyze(file, misuse):
                       stdout=log, stderr=log)
             p.wait()
 
-        result = evaluate_single_result(result_dir, misuse)
-
         try:
             rmtree(dir_temp)
         except PermissionError as e:
@@ -44,7 +42,7 @@ def analyze(file, misuse):
         else:
             print("Cleanup successful")
 
-        return result
+        return None
 
     except Exception as e:
         # using str(e) would fail for unicode exceptions :/ 
