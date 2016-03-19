@@ -1,3 +1,4 @@
+from os import makedirs
 from os.path import join
 
 # These settings are shared between all modules
@@ -25,3 +26,7 @@ LOG_FILE_RESULTS_EVALUATION = join(LOG_PATH, "results-evaluation.log")
 TEMP_SUBFOLDER = "misuse-checkout"  # used as subfolder in the temp path (will show up in misuse detection results)
 VERBOSE = True  # prints more information to console if True
 IGNORES = []  # all data files which contain this substring will be ignored by the benchmark
+
+# INITIALIZE DIRECTORIES
+makedirs(RESULTS_PATH, exist_ok=True)
+makedirs(LOG_PATH, exist_ok=True)

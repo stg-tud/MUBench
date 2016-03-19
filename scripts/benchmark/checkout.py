@@ -67,15 +67,9 @@ def checkout(vcs: str, repository: str, revision: str, dir_target: str, verbose:
         print("Revision: " + revision)
         print("Checking out into directory: " + dir_target)
 
-    if not exists(dir_target):
-        mkdir(dir_target)
-
     if isdir(dir_target) and (listdir(dir_target) == []):
         # Make sure no shell injection happens here!
         # For more detail go to https://docs.python.org/3/library/subprocess.html#security-considerations
-
-        if not exists(settings.LOG_PATH):
-            mkdir(settings.LOG_PATH)
 
         with open(settings.LOG_FILE_CHECKOUT, 'a+') as log:
             print("================================================", file=log)

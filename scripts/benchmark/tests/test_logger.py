@@ -28,11 +28,6 @@ class LogTest(unittest.TestCase):
         with open(join(settings.LOG_PATH, settings.LOG_FILE_ERROR)) as actual_file:
             self.assertEquals(self.test_line + '\n', actual_file.read())
 
-    def test_creates_log_path(self):
-        settings.LOG_PATH = join(self.temp_dir, 'does-not-exist-yet')
-        logger.create_log_path()
-        self.assertTrue(exists(settings.LOG_PATH))
-
     def tearDown(self):
         rmtree(self.temp_dir, ignore_errors=True)
 
