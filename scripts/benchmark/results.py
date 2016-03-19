@@ -15,21 +15,21 @@ def evaluate_single_result(file_data, data_content):
         if exists(file_result):
             lines = [line.rstrip('\n') for line in open(file_result)]
 
-        for line in lines:
-            if line.startswith("File: "):
-                found_misuse = line.split(' ', 1)[1]
+            for line in lines:
+                if line.startswith("File: "):
+                    found_misuse = line.split(' ', 1)[1]
 
-                if settings.TEMP_SUBFOLDER + '\\' in found_misuse:
-                    found_misuse = found_misuse.split(settings.TEMP_SUBFOLDER + '\\', 1)[1]
+                    if settings.TEMP_SUBFOLDER + '\\' in found_misuse:
+                        found_misuse = found_misuse.split(settings.TEMP_SUBFOLDER + '\\', 1)[1]
 
-                fix_filename = data_content["fix"]["files"][0]["name"]
-                print(fix_filename)
-                if 'trunk/' in fix_filename:
-                    fix_filename = fix_filename.split('trunk/', 1)[1]
+                    fix_filename = data_content["fix"]["files"][0]["name"]
+                    print(fix_filename)
+                    if 'trunk/' in fix_filename:
+                        fix_filename = fix_filename.split('trunk/', 1)[1]
 
-                print("Comparing fixed file {} against file with misuse found {}".format(fix_filename, found_misuse))
-                if normpath(found_misuse) == normpath(fix_filename):
-                    return 1
+                    print("Comparing fixed file {} against file with misuse found {}".format(fix_filename, found_misuse))
+                    if normpath(found_misuse) == normpath(fix_filename):
+                        return 1
 
         return 0
 
