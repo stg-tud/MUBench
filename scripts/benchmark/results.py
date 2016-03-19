@@ -71,5 +71,3 @@ def write_results(results):
         print(benchmark_result, file=result_file)
 
     return benchmark_result
-
-evaluate_results()
