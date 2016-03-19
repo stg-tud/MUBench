@@ -12,7 +12,7 @@ from results import evaluate_single_result
 
 def analyze(file, misuse):
     try:
-        if any(settings.IGNORES) in file:
+        if any([ignore in file for ignore in settings.IGNORES]):
             return "Warning: ignored {}".format(file)
 
         fix = misuse["fix"]
