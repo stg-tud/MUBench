@@ -74,7 +74,7 @@ def checkout(vcs: str, repository: str, revision: str, dir_target: str, verbose:
         # Make sure no shell injection happens here!
         # For more detail go to https://docs.python.org/3/library/subprocess.html#security-considerations
 
-        with open(settings.LOG_FILE_CHECKOUT, 'ab') as log:
+        with open(settings.LOG_FILE_CHECKOUT, 'a+') as log:
             print("================================================", file=log)
             print("Checkout({}): {}".format(vcs, repository), file=log)
             print("================================================", file=log)
