@@ -45,5 +45,4 @@ def analyze(file, misuse):
         return None
 
     except Exception as e:
-        # using str(e) would fail for unicode exceptions :/ 
-        return "Error: {} in {}".format(repr(e), file)
+        return "Error: {} in {}".format(str(e), file)
