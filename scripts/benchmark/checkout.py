@@ -74,29 +74,31 @@ def checkout(vcs: str, repository: str, revision: str, dir_target: str, verbose:
         # Make sure no shell injection happens here!
         # For more detail go to https://docs.python.org/3/library/subprocess.html#security-considerations
 
-        log = open(settings.LOG_FILE_CHECKOUT, 'ab')
+        with open(settings.LOG_FILE_CHECKOUT, 'ab') as log:
+            print("================================================", file=log)
+            print("Checkout({}): {}".format(vcs, repository), file=log)
+            print("================================================", file=log)
 
-        if vcs == 'git':
-            # fetching is probably faster here than cloning
-            git_init = 'git init'
-            git_set_remote = 'git remote add origin ' + repository
-            git_fetch = 'git fetch'
-            git_checkout = 'git checkout ' + revision
+            if vcs == 'git':
+                # fetching is probably faster here than cloning
+                git_init = 'git init'
+                git_set_remote = 'git remote add origin ' + repository
+                git_fetch = 'git fetch'
+                git_checkout = 'git checkout ' + revision
 
-            Popen(git_init, cwd=dir_target, bufsize=1, shell=True, stdout=log).wait()
-            Popen(git_set_remote, cwd=dir_target, bufsize=1, shell=True, stdout=log).wait()
-            Popen(git_fetch, cwd=dir_target, bufsize=1, shell=True, stdout=log).wait()
-            Popen(git_checkout, cwd=dir_target, bufsize=1, shell=True, stdout=log).wait()
+                Popen(git_init, cwd=dir_target, bufsize=1, shell=True, stdout=log, stderr=log).wait()
+                Popen(git_set_remote, cwd=dir_target, bufsize=1, shell=True, stdout=log, stderr=log).wait()
+                Popen(git_fetch, cwd=dir_target, bufsize=1, shell=True, stdout=log, stderr=log).wait()
+                Popen(git_checkout, cwd=dir_target, bufsize=1, shell=True, stdout=log, stderr=log).wait()
 
-        elif vcs == 'svn':
-            command_checkout = ['svn', 'checkout', '--revision', str(revision), repository, dir_target]
-            process_checkout = Popen(command_checkout, bufsize=1, stdout=log)
-            process_checkout.wait()
+            elif vcs == 'svn':
+                svn_checkout = ['svn', 'checkout', '--revision', revision, repository]
+                Popen(svn_checkout, cwd=dir_target, bufsize=1, stdout=log, stderr=log).wait()
 
-        elif vcs == 'synthetic':
-            copy(join(settings.DATA_PATH, repository), dir_target)
+            elif vcs == 'synthetic':
+                copy(join(settings.DATA_PATH, repository), dir_target)
 
-        else:
-            raise ValueError("Unknown version control type: {}".format(vcs))
+            else:
+                raise ValueError("Unknown version control type: {}".format(vcs))
     else:
         raise ValueError("{0} is not an empty directory!".format(dir_target))
