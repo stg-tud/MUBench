@@ -75,5 +75,10 @@ target/
 # dotenv
 .env
 
-#PyCharm
+# PyCharm
 .idea/
+
+# DummyMiner project files
+scripts/benchmark/DummyMiner/.classpath
+scripts/benchmark/DummyMiner/.gitignore
+scripts/benchmark/DummyMiner/.project
