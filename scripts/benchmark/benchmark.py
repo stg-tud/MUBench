@@ -8,6 +8,7 @@ from tempfile import mkdtemp
 import settings
 from checkout import checkout_parent
 from results import evaluate_single_result
+from utils.io import safe_open
 
 
 def analyze(file, misuse):
@@ -29,7 +30,7 @@ def analyze(file, misuse):
         if not exists(result_dir):
             makedirs(result_dir)
 
-        with open(join(result_dir, 'out.log'), 'w+') as log:
+        with safe_open(join(result_dir, 'out.log'), 'w+') as log:
             p = Popen(["java", "-jar", settings.MISUSE_DETECTOR, dir_misuse, result_dir], bufsize=1,
                       stdout=log, stderr=log)
             p.wait()

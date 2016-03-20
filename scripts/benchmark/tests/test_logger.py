@@ -6,6 +6,7 @@ from tempfile import mkdtemp
 
 import settings
 from utils import logger
+from utils.io import safe_open
 
 
 class LogTest(unittest.TestCase):
@@ -21,7 +22,7 @@ class LogTest(unittest.TestCase):
 
     def test_writes_error_log_file(self):
         logger.log_error(self.test_line)
-        with open(settings.LOG_FILE_ERROR) as actual_file:
+        with safe_open(settings.LOG_FILE_ERROR) as actual_file:
             self.assertEquals(self.test_line + '\n', actual_file.read())
 
     def tearDown(self):
