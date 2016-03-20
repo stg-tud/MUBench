@@ -1,9 +1,10 @@
-from os import listdir, mkdir, makedirs
-from os.path import join, exists, isdir
+from os import listdir, makedirs
+from os.path import join, isdir
 from shutil import copy
 from subprocess import Popen
 
 import settings
+from utils.io import safe_open
 
 
 def get_parent(vcs: str, revision):
@@ -67,13 +68,16 @@ def checkout(vcs: str, repository: str, revision: str, dir_target: str, verbose:
         print("Revision: " + revision)
         print("Checking out into directory: " + dir_target)
 
-    makedirs(dir_target, exist_ok=True)
+    try:
+        makedirs(dir_target, exist_ok=True)
+    except FileExistsError as e:
+        raise ValueError("{} is probably a file!".format(dir_target)) from e
 
     if isdir(dir_target) and (listdir(dir_target) == []):
         # Make sure no shell injection happens here!
         # For more detail go to https://docs.python.org/3/library/subprocess.html#security-considerations
 
-        with open(settings.LOG_FILE_CHECKOUT, 'a+') as log:
+        with safe_open(settings.LOG_FILE_CHECKOUT, 'a+') as log:
             print("================================================", file=log)
             print("Checkout({}): {}".format(vcs, repository), file=log)
             print("================================================", file=log)

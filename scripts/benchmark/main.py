@@ -2,8 +2,8 @@ from datetime import datetime
 
 from benchmark import analyze
 from datareader import on_all_data_do
-from logger import log_error
 from results import evaluate_results
+from utils.logger import log_error
 
 errors = []
 try:
