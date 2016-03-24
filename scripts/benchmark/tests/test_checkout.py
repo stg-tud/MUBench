@@ -26,7 +26,7 @@ SVN_PARENT_REVISION = SVN_REVISION - 1
 class CheckoutTest(unittest.TestCase):
     def setUp(self):
         self.test_env = TestEnvironment()
-        self.test_env.setup()
+        self.test_env.setUp()
         self.temp_dir = mkdtemp()
 
     def test_creates_git_repository(self):
@@ -66,7 +66,7 @@ class CheckoutTest(unittest.TestCase):
         self.assertTrue(exists(settings.LOG_FILE_CHECKOUT))
 
     def tearDown(self):
-        self.test_env.teardown()
+        self.test_env.tearDown()
         rmtree(self.temp_dir, ignore_errors=True)
 
 
