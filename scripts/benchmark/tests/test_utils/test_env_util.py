@@ -40,13 +40,13 @@ class TestEnvironment:
 
     def setUp(self):
         makedirs(self.TEST_ENV_PATH)
-        self.setup_settings()
-        self.create_yaml_data()
+        self.__setup_settings()
+        self.__create_yaml_data()
 
     def tearDown(self):
         rmtree(self.TEST_ENV_PATH)
 
-    def setup_settings(self):
+    def __setup_settings(self):
         settings.DATA_PATH = self.DATA_PATH
         settings.MISUSE_DETECTOR = self.MISUSE_DETECTOR
         settings.FILE_DETECTOR_RESULT = self.FILE_DETECTOR_RESULT
@@ -63,26 +63,26 @@ class TestEnvironment:
         settings.VERBOSE = self.VERBOSE
         settings.IGNORES = self.IGNORES
 
-    def create_yaml_data(self):
-        git_yaml = self.get_git_yaml()
-        svn_yaml = self.get_svn_yaml()
-        synthetic_yaml = self.get_synthetic_yaml()
+    def __create_yaml_data(self):
+        git_yaml = self.__get_git_yaml()
+        svn_yaml = self.__get_svn_yaml()
+        synthetic_yaml = self.__get_synthetic_yaml()
         self.create_data_file('git.yml', git_yaml)
         self.create_data_file('svn.yml', svn_yaml)
         self.create_data_file('synthetic.yml', synthetic_yaml)
         create_file(join(settings.DATA_PATH, 'synthetic.java'), truncate=True)
 
-    def get_git_yaml(self):
+    def __get_git_yaml(self):
         content = {
             'fix': {'repository': {'url': self.REPOSITORY_GIT, 'type': 'git'}, 'files': [{'name': 'some-class.java'}]}}
         return content
 
-    def get_svn_yaml(self):
+    def __get_svn_yaml(self):
         content = {
             'fix': {'repository': {'url': self.REPOSITORY_SVN, 'type': 'svn'}, 'files': [{'name': 'some-class.java'}]}}
         return content
 
-    def get_synthetic_yaml(self):
+    def __get_synthetic_yaml(self):
         content = {'fix': {'repository': {'url': self.REPOSITORY_SYNTHETIC, 'type': 'synthetic'},
                            'files': [{'name': 'synthetic.java'}]}}
         return content

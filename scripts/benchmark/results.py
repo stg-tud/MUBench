@@ -5,7 +5,7 @@ from os.path import normpath, basename
 
 import datareader
 import settings
-from utils.io import safe_open
+from utils.io import safe_open, safe_write
 
 
 def evaluate_single_result(file_data, data_content):
@@ -24,14 +24,16 @@ def evaluate_single_result(file_data, data_content):
             print("Looking for file {}".format(fix_filename), file=log)
 
             if exists(file_result):
-                lines = [line.rstrip('\n') for line in safe_open(file_result)]
+                lines = [line.rstrip('\n') for line in safe_open(file_result, 'r')]
 
                 for line in lines:
                     if line.startswith("File: "):
                         found_misuse = line[len("File: "):]
                         found_misuse = normpath(found_misuse)
                         # cut everything including the temp folder, then use [1:] to cut the leading slash
-                        found_misuse = found_misuse.split(settings.TEMP_SUBFOLDER, 1)[1][1:]
+                        split = found_misuse.split(settings.TEMP_SUBFOLDER, 1)
+                        if len(split) > 1:
+                            found_misuse = split[1][1:]
 
                         print("Comparing found misuse {}".format(found_misuse), file=log)
 
@@ -51,24 +53,16 @@ def evaluate_single_result(file_data, data_content):
 
 
 def evaluate_results():
-    results = [result for result in datareader.on_all_data_do(evaluate_single_result) if
-               result is not None]
+    results = datareader.on_all_data_do(evaluate_single_result)
+    applied_results = [result for result in results if result is not None]
 
-    with safe_open(settings.LOG_FILE_RESULTS_EVALUATION, 'a+') as log:
-        print("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++", file=log)
-        print("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++", file=log)
-        print("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++", file=log)
+    total = len(results)
+    applied = len(applied_results)
+    found = sum(applied_results)
 
-    write_results(results)
+    with safe_open(settings.BENCHMARK_RESULT_FILE, 'a+') as file_result:
+        print('Total number of misuses in the benchmark: ' + str(total), file=file_result)
+        print('Number of analyzed misuses (might be less due to ignore or errors): ' + str(applied), file=file_result)
+        print('Number of misuses found: ' + str(found), file=file_result)
 
-
-def write_results(results):
-    count_success = sum(results)
-    count_data = len(results)
-
-    benchmark_result = "Found {} of {} misuses!".format(count_success, count_data)
-    print(benchmark_result)
-    with safe_open(settings.BENCHMARK_RESULT_FILE, 'a+') as result_file:
-        print(benchmark_result, file=result_file)
-
-    return benchmark_result
+    return total, applied, found

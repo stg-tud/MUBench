@@ -30,3 +30,7 @@ finally:
     end_time = datetime.now()
     print("Evaluation time: {} ; Complete benchmark time: {}".format(str(end_time - evaluation_start_time),
                                                                      str(end_time - start_time)))
+
+    print("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
+    print("++++++++++++++++++++++++ FINISHED +++++++++++++++++++++++++")
+    print("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
