@@ -7,7 +7,6 @@ from tests.test_utils.test_env_util import TestEnvironment
 class DatareaderTest(unittest.TestCase):
     def setUp(self):
         self.test_env = TestEnvironment()
-        self.test_env.setUp()
 
     def test_finds_all_files(self):
         def save_values(file, data): values_used.append((file, data))

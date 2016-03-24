@@ -1,9 +1,11 @@
+from distutils.dir_util import copy_tree
 from os import makedirs
 from os.path import join, abspath, dirname
-from shutil import rmtree
+from shutil import rmtree, copy, copyfile
 from tempfile import mkdtemp
 
 import yaml
+from subprocess import Popen
 
 import settings
 from utils.io import safe_write, create_file
@@ -32,19 +34,19 @@ class TestEnvironment:
         self.VERBOSE = False
         self.IGNORES = []
 
-        self.REPOSITORY_GIT = join(self.TEST_ENV_SOURCE_DIR, 'repository-git')
-        self.REPOSITORY_SVN = join(self.TEST_ENV_SOURCE_DIR, 'repository-svn')
+        self.REPOSITORY_GIT = join(self.TEST_ENV_PATH, 'repository-git')
+        self.REPOSITORY_SVN = join(self.TEST_ENV_PATH, 'repository-svn')
         self.REPOSITORY_SYNTHETIC = 'synthetic.java'
 
         self.DATA = []
 
-    def setUp(self):
         makedirs(self.TEST_ENV_PATH)
         self.__setup_settings()
         self.__create_yaml_data()
+        self.__initialize_repositories()
 
     def tearDown(self):
-        rmtree(self.TEST_ENV_PATH)
+        rmtree(self.TEST_ENV_PATH, ignore_errors=True)
 
     def __setup_settings(self):
         settings.DATA_PATH = self.DATA_PATH
@@ -63,6 +65,28 @@ class TestEnvironment:
         settings.VERBOSE = self.VERBOSE
         settings.IGNORES = self.IGNORES
 
+    def __initialize_repositories(self):
+        # initialize git repository
+        git_repository_path = join(self.TEST_ENV_PATH, 'repository-git')
+        makedirs(git_repository_path)
+        Popen('git init', cwd=git_repository_path, bufsize=1, shell=True).wait()
+        copy_tree(join(self.TEST_ENV_SOURCE_DIR, 'repository-git'), git_repository_path)
+        Popen('git add -A', cwd=git_repository_path, bufsize=1, shell=True).wait()
+        Popen('git commit -m "commit message"', cwd=git_repository_path, bufsize=1, shell=True).wait()
+
+        # initialize svn repository
+        svn_repository_path = join(self.TEST_ENV_PATH, 'repository-svn')
+        makedirs(svn_repository_path)
+        # TODO create repository in svn_repository_path
+        copy_tree(join(self.TEST_ENV_SOURCE_DIR, 'repository-svn'), svn_repository_path)
+
+        # initialize synthetic repository
+        synthetic_repository_path = join(settings.DATA_PATH, 'repository-synthetic')
+        makedirs(synthetic_repository_path)
+        copy_tree(join(self.TEST_ENV_SOURCE_DIR, 'repository-synthetic'), synthetic_repository_path)
+        copyfile(join(self.TEST_ENV_SOURCE_DIR, 'repository-synthetic', 'synthetic.java'),
+                 join(self.DATA_PATH, 'synthetic.java'))
+
     def __create_yaml_data(self):
         git_yaml = self.__get_git_yaml()
         svn_yaml = self.__get_svn_yaml()
@@ -70,7 +94,6 @@ class TestEnvironment:
         self.create_data_file('git.yml', git_yaml)
         self.create_data_file('svn.yml', svn_yaml)
         self.create_data_file('synthetic.yml', synthetic_yaml)
-        create_file(join(settings.DATA_PATH, 'synthetic.java'), truncate=True)
 
     def __get_git_yaml(self):
         content = {

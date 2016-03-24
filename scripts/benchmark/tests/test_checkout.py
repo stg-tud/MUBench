@@ -26,7 +26,6 @@ SVN_PARENT_REVISION = SVN_REVISION - 1
 class CheckoutTest(unittest.TestCase):
     def setUp(self):
         self.test_env = TestEnvironment()
-        self.test_env.setUp()
         self.temp_dir = mkdtemp()
 
     def test_creates_git_repository(self):

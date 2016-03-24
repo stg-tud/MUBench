@@ -11,7 +11,6 @@ from utils.io import safe_write
 class ResultsTest(unittest.TestCase):
     def setUp(self):
         self.test_env = TestEnvironment()
-        self.test_env.setUp()
 
         file_result_git = join(self.test_env.RESULTS_PATH, 'git', settings.FILE_DETECTOR_RESULT)
         file_result_svn = join(self.test_env.RESULTS_PATH, 'svn', settings.FILE_DETECTOR_RESULT)

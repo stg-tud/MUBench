@@ -1,3 +1,0 @@
-[submodule "test-env/repository-git"]
-    path = scripts/benchmark/tests/test_utils/test-env/repository-git
-    ignore = dirty
