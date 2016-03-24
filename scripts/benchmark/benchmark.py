@@ -46,4 +46,5 @@ def analyze(file, misuse):
         return None
 
     except Exception as e:
+        print(str(e))
         return "Error: {} in {}".format(str(e), file)
