@@ -105,3 +105,22 @@ def checkout(vcs: str, repository: str, revision: str, dir_target: str, verbose:
                 raise ValueError("Unknown version control type: {}".format(vcs))
     else:
         raise ValueError("{0} is not an empty directory!".format(dir_target))
+
+
+def reset_to_revision(vcs: str, local_repository: str, revision, verbose: bool):
+    revision = str(revision)
+
+    if verbose:
+        print("Reset ({0}): ".format(vcs))
+        print("Repository: " + local_repository)
+        print("Revision: " + revision)
+
+    with safe_open(settings.LOG_FILE_CHECKOUT, 'a+') as log:
+        if vcs == 'git':
+            Popen('git checkout ' + revision, cwd=local_repository, bufsize=1, shell=True, stdout=log, stderr=log).wait()
+        elif vcs == 'svn':
+            Popen('svn checkout --revision {}'.format(revision), cwd=local_repository, bufsize=1, stdout=log, stderr=log).wait()
+        elif vcs == 'synthetic':
+            pass  # nothing to do here
+        else:
+            raise ValueError("Unknown version control type: {}".format(vcs))

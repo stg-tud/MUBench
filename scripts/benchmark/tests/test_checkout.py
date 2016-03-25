@@ -48,6 +48,7 @@ class CheckoutTest(unittest.TestCase):
     def test_checkout_fails_for_file_as_target_dir(self):
         file = join(self.temp_dir, 'file')
         utils.io.create_file_path(file)
+        utils.io.create_file(file)
         with self.assertRaises(ValueError):
             checkout.checkout_parent(GIT, self.test_env.REPOSITORY_GIT, GIT_REVISION, file, False)
 
@@ -60,6 +61,18 @@ class CheckoutTest(unittest.TestCase):
         settings.LOG_FILE_CHECKOUT = join(settings.LOG_PATH, 'checkout.log')
         checkout.checkout_parent(GIT, self.test_env.REPOSITORY_GIT, GIT_REVISION, self.temp_dir, False)
         self.assertTrue(exists(settings.LOG_FILE_CHECKOUT))
+
+    def test_reset_to_revision_git(self):
+        checkout.checkout_parent(GIT, self.test_env.REPOSITORY_GIT, GIT_REVISION, self.temp_dir, False)
+        checkout.reset_to_revision(GIT, self.temp_dir, GIT_REVISION, False)
+
+    def test_reset_to_revision_svn(self):
+        checkout.checkout_parent(SVN, self.test_env.REPOSITORY_SVN, SVN_REVISION, self.temp_dir, False)
+        checkout.reset_to_revision(GIT, self.temp_dir, SVN_REVISION, False)
+
+    def test_reset_to_revision_synthetic(self):
+        checkout.checkout_parent(SYNTHETIC, self.test_env.REPOSITORY_SYNTHETIC, '', self.temp_dir, False)
+        checkout.reset_to_revision(SYNTHETIC, self.temp_dir, '', False)
 
     def tearDown(self):
         self.test_env.tearDown()
