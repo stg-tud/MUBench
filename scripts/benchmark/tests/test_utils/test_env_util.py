@@ -1,14 +1,14 @@
 from distutils.dir_util import copy_tree
 from os import makedirs
 from os.path import join, abspath, dirname
-from shutil import rmtree, copy, copyfile
+from shutil import rmtree, copyfile
+from subprocess import Popen
 from tempfile import mkdtemp
 
 import yaml
-from subprocess import Popen
 
 import settings
-from utils.io import safe_write, create_file
+from utils.io import safe_write
 
 
 class TestEnvironment:
@@ -45,6 +45,7 @@ class TestEnvironment:
         self.__create_yaml_data()
         self.__initialize_repositories()
 
+    # noinspection PyPep8Naming
     def tearDown(self):
         rmtree(self.TEST_ENV_PATH, ignore_errors=True)
 
@@ -110,7 +111,7 @@ class TestEnvironment:
                            'files': [{'name': 'synthetic.java'}]}}
         return content
 
-    def create_data_file(self, file_name, content):
+    def create_data_file(self, file_name: str, content: dict):
         file = join(settings.DATA_PATH, file_name)
         safe_write(yaml.dump(content), file, append=False)
         self.DATA.append((file, content))
