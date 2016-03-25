@@ -9,6 +9,7 @@ import settings
 from checkout import checkout_parent
 from results import evaluate_single_result
 from utils.io import safe_open
+from utils.logger import log_error
 
 
 def analyze(file, misuse):
@@ -47,4 +48,4 @@ def analyze(file, misuse):
 
     except Exception as e:
         print(str(e))
-        return "Error: {} in {}".format(str(e), file)
+        log_error("Error: {} in {}".format(str(e), file))

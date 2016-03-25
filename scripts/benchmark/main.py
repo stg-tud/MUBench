@@ -5,10 +5,10 @@ from datareader import on_all_data_do
 from results import evaluate_results
 from utils.logger import log_error
 
-errors = []
 try:
     start_time = datetime.now()
-    errors = on_all_data_do(analyze)
+    on_all_data_do(analyze)
+
 except (KeyboardInterrupt, SystemExit):
     end_time = datetime.now()
     print("================================================")
@@ -19,11 +19,8 @@ else:
     print("================================================")
     print("Analysis finished! Total time: {}".format(str(end_time - start_time)))
     print("================================================")
-finally:
-    for error in errors:
-        if error is not None:
-            log_error(error)
 
+finally:
     print("Evaluating results...")
     evaluation_start_time = datetime.now()
     evaluate_results()
