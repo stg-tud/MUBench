@@ -30,10 +30,10 @@ def analyze(file, misuse):
         if not exists(result_dir):
             makedirs(result_dir)
 
-        with safe_open(join(result_dir, 'out.log'), 'w+') as log:
-            p = Popen(["java", "-jar", settings.MISUSE_DETECTOR, dir_misuse, result_dir], bufsize=1,
-                      stdout=log, stderr=log)
-            p.wait()
+        with safe_open(join(result_dir, 'out.log'), 'w+') as out_log:
+            with safe_open(join(result_dir, 'error.log'), 'w+') as error_log:
+                Popen(["java", "-jar", settings.MISUSE_DETECTOR, dir_misuse, result_dir],
+                      bufsize=1, stdout=out_log, stderr=error_log).wait()
 
         try:
             rmtree(dir_temp)
