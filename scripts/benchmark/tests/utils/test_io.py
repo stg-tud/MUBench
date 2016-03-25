@@ -20,10 +20,10 @@ class IoTest(unittest.TestCase):
 
     def test_creates_path(self):
         utils.io.create_file_path(self.test_file)
-        self.assertTrue(exists(self.test_file))
+        self.assertTrue(exists(dirname(self.test_file)))
 
     def test_open_file_creates_directories_implicitly(self):
-        utils.io.safe_open(self.test_file, 'r+').close()
+        utils.io.safe_open(self.test_file, 'w+').close()
         self.assertTrue(isfile(self.test_file))
 
     def test_writes_file_safely(self):

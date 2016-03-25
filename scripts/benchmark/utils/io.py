@@ -32,7 +32,6 @@ def create_file_path(file_path: str):
     :param file_path: The path to the file to be created
     """
     makedirs(dirname(file_path), exist_ok=True)
-    create_file(file_path)
 
 
 def create_file(file_path: str, truncate: bool = False):
