@@ -21,9 +21,9 @@ def analyze(file: str, misuse: dict):
         fix = misuse["fix"]
         repository = fix["repository"]
 
-        project_name = basename(file)
-        if 'synthetic' not in project_name and '-' in project_name:
-            project_name = project_name.split('-', 1)[0]
+        project_name = splitext(basename(file))[0]
+        if 'synthetic' not in project_name and '.' in project_name:
+            project_name = project_name.split('.', 1)[0]
 
         base_dir = join(gettempdir(), settings.TEMP_SUBFOLDER)
         checkout_dir = join(base_dir, project_name)
