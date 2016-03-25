@@ -1,6 +1,7 @@
 from distutils.dir_util import copy_tree
 from os import makedirs
 from os.path import join, abspath, dirname
+from pathlib import Path
 from shutil import rmtree, copyfile
 from subprocess import Popen
 from tempfile import mkdtemp
@@ -35,7 +36,7 @@ class TestEnvironment:
         self.IGNORES = []
 
         self.REPOSITORY_GIT = join(self.TEST_ENV_PATH, 'repository-git')
-        self.REPOSITORY_SVN = join(self.TEST_ENV_PATH, 'repository-svn')
+        self.REPOSITORY_SVN = Path(join(self.TEST_ENV_PATH, 'repository-svn')).as_uri()
         self.REPOSITORY_SYNTHETIC = 'synthetic.java'
 
         self.DATA = []
@@ -76,10 +77,11 @@ class TestEnvironment:
         Popen('git commit -m "commit message"', cwd=git_repository_path, bufsize=1, shell=True).wait()
 
         # initialize svn repository
-        svn_repository_path = join(self.TEST_ENV_PATH, 'repository-svn')
-        makedirs(svn_repository_path)
-        # TODO create repository in svn_repository_path
-        copy_tree(join(self.TEST_ENV_SOURCE_DIR, 'repository-svn'), svn_repository_path)
+        # svnadmin create creates the subdirectory 'repository-svn'
+        svn_subfolder = 'repository-svn'
+        Popen('svnadmin create ' + svn_subfolder, cwd=self.TEST_ENV_PATH, bufsize=1, shell=True).wait()
+        svn_source_dir = join(self.TEST_ENV_SOURCE_DIR, svn_subfolder)
+        Popen('svn import {} {} -m "Initial import"'.format(svn_source_dir, self.REPOSITORY_SVN)).wait()
 
         # initialize synthetic repository
         synthetic_repository_path = join(settings.DATA_PATH, 'repository-synthetic')

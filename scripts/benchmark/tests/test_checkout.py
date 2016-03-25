@@ -16,11 +16,8 @@ SVN = 'svn'
 SYNTHETIC = 'synthetic'
 
 GIT_REVISION = '2c4e93c712461ae20051409f472e4857e2189393'
-GIT_PARENT_REVISION = '451c2fd61437c1a4616f08cc1849feacc0be4839'
 
-SVN_REPOSITORY = 'svn://svn.code.sf.net/p/itext/code/trunk'  # TODO setup local svn repository in test env instead
-SVN_REVISION = 5091
-SVN_PARENT_REVISION = SVN_REVISION - 1
+SVN_REVISION = 1
 
 
 class CheckoutTest(unittest.TestCase):
@@ -34,8 +31,8 @@ class CheckoutTest(unittest.TestCase):
         self.assertTrue(exists(repository))
 
     def test_creates_svn_repository(self):
-        checkout.checkout_parent(SVN, SVN_REPOSITORY, SVN_REVISION, self.temp_dir, False)
-        repository = join(self.temp_dir, 'trunk')
+        checkout.checkout_parent(SVN, self.test_env.REPOSITORY_SVN, SVN_REVISION, self.temp_dir, False)
+        repository = join(self.temp_dir, 'repository-svn')
         self.assertTrue(exists(repository))
 
     def test_copies_synthetic_repository(self):
