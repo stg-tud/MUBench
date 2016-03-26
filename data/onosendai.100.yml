@@ -29,4 +29,4 @@ fix:
     type: git
   revision: 0e2a7570ab4491d0c4680ef52ee1008bef33fc02
   files:
-    - name: src/main/java/com/couchbase/lite/android/AndroidNetworkReachabilityManager.java
+    - name: src/main/java/com/vaguehope/onosendai/update/AlarmReceiver.java

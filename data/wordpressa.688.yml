@@ -27,7 +27,7 @@ fix:
     type: git
   revision: 895db44a12cc38e1fbc16177efc63f3ac3d51c50
   files:
-    - name: src/org/wordpress/android/ui/accounts/WelcomeFragmentSignIn.java
-    - name: src/org/wordpress/android/ui/comments/CommentsListFragment.java
-    - name: src/org/wordpress/android/ui/media/MediaBrowserActivity.java
-    - name: src/org/wordpress/android/ui/posts/PostsListFragment.java
+    - name: WordPress/src/main/java/org/wordpress/android/ui/accounts/WelcomeFragmentSignIn.java
+    - name: WordPress/src/main/java/org/wordpress/android/ui/comments/CommentsListFragment.java
+    - name: WordPress/src/main/java/org/wordpress/android/ui/media/MediaBrowserActivity.java
+    - name: WordPress/src/main/java/org/wordpress/android/ui/posts/PostsListFragment.java
