@@ -28,7 +28,7 @@ def safe_open(file_path: str, mode: str):
 
 def create_file_path(file_path: str):
     """
-    Creates all directories in the path and the files itself.
+    Creates all directories in the path (does not create the file itself).
     :param file_path: The path to the file to be created
     """
     makedirs(dirname(file_path), exist_ok=True)
@@ -36,9 +36,10 @@ def create_file_path(file_path: str):
 
 def create_file(file_path: str, truncate: bool = False):
     """
-    Creates the file
+    Creates the file and the path to it.
     :param file_path: The path to the file to be created
     :param truncate: If the file should be truncated if it existed before
     """
+    create_file_path(file_path)
     mode = 'w+' if truncate else 'a+'
     open(file_path, mode).close()

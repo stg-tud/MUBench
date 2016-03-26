@@ -11,11 +11,18 @@ from utils.logger import log_error
 
 
 def analyze(file: str, misuse: dict):
+    """
+    Runs the misuse detector on the given misuse
+    :param file: The file containing the misuse information
+    :param misuse: The dictionary containing the misuse information
+    :rtype: None
+    :return: Nothing
+    """
     try:
         result_dir = join(settings.RESULTS_PATH, splitext(basename(file))[0])
         if any([ignore in file for ignore in settings.IGNORES]):
             print("Warning: ignored {}".format(file))
-            create_file(join(result_dir, 'IGNORED'), truncate=True)
+            create_file(join(result_dir, settings.FILE_IGNORED), truncate=True)
             return
 
         fix = misuse["fix"]
@@ -40,8 +47,6 @@ def analyze(file: str, misuse: dict):
             with safe_open(join(result_dir, 'error.log'), 'w+') as error_log:
                 Popen(["java", "-jar", settings.MISUSE_DETECTOR, checkout_dir, result_dir],
                       bufsize=1, stdout=out_log, stderr=error_log).wait()
-
-        return checkout_dir
 
     except (KeyboardInterrupt, SystemExit):
         raise

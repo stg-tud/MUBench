@@ -11,6 +11,7 @@ from os.path import join
 DATA_PATH = r"...\MUBench\data"  # path to the data folder
 MISUSE_DETECTOR = r"...\GROUMiner.jar"  # path to the misuse detector to benchmark (must be an executable .jar)
 FILE_DETECTOR_RESULT = "finalAnomalies.txt"  # result written by the misuse detector
+FILE_IGNORED = "IGNORED"  # if this is file is in a result folder, signifies that the corresponding data was ignored
 
 # OUTPUTS
 RESULTS_PATH = r"...\result"  # used for saving intermediate results

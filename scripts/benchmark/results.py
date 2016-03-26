@@ -8,11 +8,27 @@ import settings
 from utils.io import safe_open
 
 
-def evaluate_single_result(file_data, data_content):
+def evaluate_single_result(file_data: str, data_content: dict):
+    """
+    Evaluates the result for the given misuse data
+    :param file_data: The file containing the misuse data
+    :param data_content: The dictionary containing the misuse data
+    :return: 1 iff the detector found the misuse; 0 iff it did not find the misuse; None if an error was logged
+    """
+
     def evaluate():
+        """
+        Returns 1 iff the detector found the misuse; else returns 0
+        :rtype: int
+        """
         with safe_open(settings.LOG_FILE_RESULTS_EVALUATION, 'a+') as log:
-            file_result = join(dir_result, settings.FILE_DETECTOR_RESULT)
             print("===========================================================", file=log)
+
+            if exists(join(dir_result, settings.FILE_IGNORED)):
+                print("{} was ignored by the benchmark".format(file_data), file=log)
+                return
+
+            file_result = join(dir_result, settings.FILE_DETECTOR_RESULT)
             print("Evaluating result {} against data {}".format(file_result, file_data), file=log)
 
             for fix_file in data_content["fix"]["files"]:
@@ -52,10 +68,15 @@ def evaluate_single_result(file_data, data_content):
         is_result_for_file = splitext(basename(normpath(file_data)))[0] == basename(normpath(dir_result))
         if is_result_for_file:
             return evaluate()
-    return None  # to indicate that no result was found for this data
+    return None
 
 
 def evaluate_results():
+    """
+    For every data files checks if the result of the misuse detection found the misuse
+    :rtype: list
+    :return: A triple of the form (number of data files, number of finished misuse detections, number of found misuses)
+    """
     results = datareader.on_all_data_do(evaluate_single_result)
     applied_results = [result for result in results if result is not None]
 
