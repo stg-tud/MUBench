@@ -5,7 +5,7 @@ from os.path import normpath, basename
 
 import datareader
 import settings
-from utils.io import safe_open, safe_write
+from utils.io import safe_open
 
 
 def evaluate_single_result(file_data, data_content):
@@ -15,32 +15,35 @@ def evaluate_single_result(file_data, data_content):
             print("===========================================================", file=log)
             print("Evaluating result {} against data {}".format(file_result, file_data), file=log)
 
-            fix_filename = data_content["fix"]["files"][0]["name"]
-            fix_filename = normpath(fix_filename)
-            if "trunk" in fix_filename:
-                # cut everything including trunk folder, then use [1:] to cut the leading slash
-                fix_filename = fix_filename.split("trunk", 1)[1][1:]
+            for fix_file in data_content["fix"]["files"]:
+                fix_filename = fix_file["name"]
+                fix_filename = normpath(fix_filename)
+                if "trunk" in fix_filename:
+                    # cut everything including trunk folder, then use [1:] to cut the leading slash
+                    fix_filename = fix_filename.split("trunk", 1)[1][1:]
 
-            print("Looking for file {}".format(fix_filename), file=log)
+                print("Looking for file {}".format(fix_filename), file=log)
 
-            if exists(file_result):
-                lines = [line.rstrip('\n') for line in safe_open(file_result, 'r')]
+                if exists(file_result):
+                    lines = [line.rstrip('\n') for line in safe_open(file_result, 'r')]
 
-                for line in lines:
-                    if line.startswith("File: "):
-                        found_misuse = line[len("File: "):]
-                        found_misuse = normpath(found_misuse)
-                        # cut everything including the temp folder, then use [1:] to cut the leading slash
-                        split = found_misuse.split(settings.TEMP_SUBFOLDER, 1)
-                        if len(split) > 1:
-                            found_misuse = split[1][1:]
+                    for line in lines:
+                        if line.startswith("File: "):
+                            found_misuse = line[len("File: "):]
+                            found_misuse = normpath(found_misuse)
 
-                        print("Comparing found misuse {}".format(found_misuse), file=log)
+                            # cut everything including the temp folder, then use [1:] to cut the leading slash
+                            split = found_misuse.split(settings.TEMP_SUBFOLDER, 1)
+                            if len(split) > 1:
+                                found_misuse = split[1][1:]
 
-                        if found_misuse == fix_filename:
-                            print("Match found!", file=log)
-                            return 1
-            print("No match", file=log)
+                            print("Comparing found misuse {}".format(found_misuse), file=log)
+
+                            if found_misuse == fix_filename:
+                                print("Match found!", file=log)
+                                return 1
+                            else:
+                                print("No match", file=log)
             return 0
 
     dirs_results = [join(settings.RESULTS_PATH, result_dir) for result_dir in listdir(settings.RESULTS_PATH) if
