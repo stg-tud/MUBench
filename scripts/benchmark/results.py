@@ -11,12 +11,12 @@ from utils.io import safe_open
 from utils.logger import log_error
 
 
-def evaluate_single_result(file_data: str, data_content: dict):
+def evaluate_single_result(data_file: str, data_content: dict):
     """
     Evaluates the result for the given misuse data
-    :param file_data: The file containing the misuse data
+    :param data_file: The file containing the misuse data
     :param data_content: The dictionary containing the misuse data
-    :return: 1 iff the detector found the misuse; 0 iff it did not find the misuse; None if an error was logged
+    :return: a tuple in the form of (data_file, success) where success is 1, 0, or None (if an error occurred)
     """
 
     def evaluate():
@@ -28,11 +28,11 @@ def evaluate_single_result(file_data: str, data_content: dict):
             print("===========================================================", file=log)
 
             if exists(join(dir_result, settings.FILE_IGNORED)):
-                print("{} was ignored by the benchmark".format(file_data), file=log)
+                print("{} was ignored by the benchmark".format(data_file), file=log)
                 return
 
             file_result = join(dir_result, settings.FILE_DETECTOR_RESULT)
-            print("Evaluating result {} against data {}".format(file_result, file_data), file=log)
+            print("Evaluating result {} against data {}".format(file_result, data_file), file=log)
 
             for fix_file in data_content["fix"]["files"]:
                 normed_misuse_file = normalize_data_misuse_path(fix_file["name"])
@@ -60,31 +60,54 @@ def evaluate_single_result(file_data: str, data_content: dict):
     dirs_results = [join(settings.RESULTS_PATH, result_dir) for result_dir in listdir(settings.RESULTS_PATH) if
                     isdir(join(settings.RESULTS_PATH, result_dir))]
     for dir_result in dirs_results:
-        is_result_for_file = splitext(basename(normpath(file_data)))[0] == basename(normpath(dir_result))
+        is_result_for_file = splitext(basename(normpath(data_file)))[0] == basename(normpath(dir_result))
         if is_result_for_file:
-            return evaluate()
-    return None
+            return data_file, evaluate()
+    return data_file, None
 
 
 def evaluate_results():
     """
-    For every data files checks if the result of the misuse detection found the misuse
+    For every data files checks if the result of the misuse detection found the misuse and writes the results to a file
     :rtype: list
-    :return: A triple of the form (number of data files, number of finished misuse detections, number of found misuses)
+    :return: A tuple of the form: (number of data files, number of finished misuse detections, number of found misuses)
     """
     try:
         results = datareader.on_all_data_do(evaluate_single_result)
-        applied_results = [result for result in results if result is not None]
+
+        def to_data_name(result): return result[0]
+        def to_success(result): return result[1]
+
+        applied_results = [result for result in results if result[1] is not None]
 
         total = len(results)
         applied = len(applied_results)
-        found = sum(applied_results)
+        found = sum(map(to_success, applied_results))
+
+        def was_successful(result): return result[1] is 1
+        def was_not_successful(result): return result[1] is 0
+        def finished_with_error(result): return result[1] is None
+
+        found_misuses = map(to_data_name, filter(was_successful, results))
+        not_found_misuses = map(to_data_name, filter(was_not_successful, results))
+        misuses_with_errors = map(to_data_name, filter(finished_with_error, results))
 
         with safe_open(settings.BENCHMARK_RESULT_FILE, 'a+') as file_result:
+            print('----------------------------------------------', file=file_result)
             print('Total number of misuses in the benchmark: ' + str(total), file=file_result)
             print('Number of analyzed misuses (might be less due to ignore or errors): ' + str(applied),
                   file=file_result)
             print('Number of misuses found: ' + str(found), file=file_result)
+            print('----------------------------------------------', file=file_result)
+            print('These misuses were found:', file=file_result)
+            print('\n'.join(found_misuses), file=file_result)
+            print('----------------------------------------------', file=file_result)
+            print('These misuses were not found:', file=file_result)
+            print('\n'.join(not_found_misuses), file=file_result)
+            print('----------------------------------------------', file=file_result)
+            print('These cases encountered an error (see logs for more information):', file=file_result)
+            print('\n'.join(misuses_with_errors), file=file_result)
+            print('----------------------------------------------', file=file_result)
 
         return total, applied, found
     except (KeyboardInterrupt, SystemExit):
