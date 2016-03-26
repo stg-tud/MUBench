@@ -1,3 +1,5 @@
+import os
+import traceback
 from genericpath import isdir, exists
 from os import listdir
 from os.path import join, splitext
@@ -6,6 +8,7 @@ from os.path import normpath, basename
 import datareader
 import settings
 from utils.io import safe_open
+from utils.logger import log_error
 
 
 def evaluate_single_result(file_data: str, data_content: dict):
@@ -32,30 +35,22 @@ def evaluate_single_result(file_data: str, data_content: dict):
             print("Evaluating result {} against data {}".format(file_result, file_data), file=log)
 
             for fix_file in data_content["fix"]["files"]:
-                fix_filename = fix_file["name"]
-                fix_filename = normpath(fix_filename)
-                if "trunk" in fix_filename:
-                    # cut everything including trunk folder, then use [1:] to cut the leading slash
-                    fix_filename = fix_filename.split("trunk", 1)[1][1:]
+                normed_misuse_file = normalize_data_misuse_path(fix_file["name"])
 
-                print("Looking for file {}".format(fix_filename), file=log)
+                print("Looking for file {}".format(normed_misuse_file), file=log)
 
                 if exists(file_result):
                     lines = [line.rstrip('\n') for line in safe_open(file_result, 'r')]
 
                     for line in lines:
                         if line.startswith("File: "):
+                            # cut File: from the line to get the path
                             found_misuse = line[len("File: "):]
-                            found_misuse = normpath(found_misuse)
-
-                            # cut everything including the temp folder, then use [1:] to cut the leading slash
-                            split = found_misuse.split(settings.TEMP_SUBFOLDER, 1)
-                            if len(split) > 1:
-                                found_misuse = split[1][1:]
+                            found_misuse = normalize_result_misuse_path(found_misuse)
 
                             print("Comparing found misuse {}".format(found_misuse), file=log)
 
-                            if found_misuse == fix_filename:
+                            if found_misuse == normed_misuse_file:
                                 print("Match found!", file=log)
                                 return 1
                             else:
@@ -77,16 +72,64 @@ def evaluate_results():
     :rtype: list
     :return: A triple of the form (number of data files, number of finished misuse detections, number of found misuses)
     """
-    results = datareader.on_all_data_do(evaluate_single_result)
-    applied_results = [result for result in results if result is not None]
+    try:
+        results = datareader.on_all_data_do(evaluate_single_result)
+        applied_results = [result for result in results if result is not None]
 
-    total = len(results)
-    applied = len(applied_results)
-    found = sum(applied_results)
+        total = len(results)
+        applied = len(applied_results)
+        found = sum(applied_results)
 
-    with safe_open(settings.BENCHMARK_RESULT_FILE, 'a+') as file_result:
-        print('Total number of misuses in the benchmark: ' + str(total), file=file_result)
-        print('Number of analyzed misuses (might be less due to ignore or errors): ' + str(applied), file=file_result)
-        print('Number of misuses found: ' + str(found), file=file_result)
+        with safe_open(settings.BENCHMARK_RESULT_FILE, 'a+') as file_result:
+            print('Total number of misuses in the benchmark: ' + str(total), file=file_result)
+            print('Number of analyzed misuses (might be less due to ignore or errors): ' + str(applied),
+                  file=file_result)
+            print('Number of misuses found: ' + str(found), file=file_result)
 
-    return total, applied, found
+        return total, applied, found
+    except (KeyboardInterrupt, SystemExit):
+        raise
+    except:
+        exception_string = traceback.format_exc()
+        print(exception_string)
+        log_error(exception_string)
+
+
+def normalize_data_misuse_path(misuse_file: str):
+    """
+    Normalizes the misuse file path (from a data file)
+    :param misuse_file: The path that is given in the data file
+    :rtype: str
+    :return: The normalized path (can be compared to normalized result paths)
+    """
+    normed_misuse_file = normpath(misuse_file)
+
+    # cut trunk folder (only for svn repositories)
+    if 'trunk' + os.sep in normed_misuse_file:
+        normed_misuse_file = normed_misuse_file.split('trunk' + os.sep, 1)[1]
+
+    return normed_misuse_file
+
+
+def normalize_result_misuse_path(misuse_file: str):
+    """
+    Normalizes the misuse file path (from a result file)
+    :param misuse_file: The path that is given in the result file
+    :rtype: str
+    :return: The normalized path (can be compared to normalized data paths)
+    """
+    normed_misuse_file = normpath(misuse_file)
+
+    # cut everything before project subfolder
+    if settings.TEMP_SUBFOLDER + os.sep in normed_misuse_file:
+        normed_misuse_file = normed_misuse_file.split(settings.TEMP_SUBFOLDER + os.sep, 1)[1]
+
+    # cut project subfolder
+    if os.sep in normed_misuse_file:
+        normed_misuse_file = normed_misuse_file.split(os.sep, 1)[1]
+
+    # cut trunk folder (only for svn repositories)
+    if 'trunk' + os.sep in normed_misuse_file:
+        normed_misuse_file = normed_misuse_file.split('trunk' + os.sep, 1)[1]
+
+    return normed_misuse_file
