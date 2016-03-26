@@ -1,7 +1,7 @@
 package main;
 
 import java.io.File;
-import java.io.FileWriter;
+import java.io.PrintStream;
 import java.nio.file.Paths;
 import java.util.LinkedList;
 
@@ -18,9 +18,9 @@ public class Main {
 		LinkedList<File> files = listFiles(dirPath);
 
 		File resultFile = Paths.get(resultPath, "result.txt").toFile();
-		try (FileWriter writer = new FileWriter(resultFile)) {
+		try (PrintStream writer = new PrintStream(resultFile)) {
 			for (File file : files) {
-				writer.write("File: " + file.getAbsolutePath());
+				writer.println("File: " + file.getAbsolutePath());
 			}
 		}
 	}
