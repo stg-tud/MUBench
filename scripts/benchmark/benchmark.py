@@ -9,6 +9,8 @@ from checkout import checkout_parent, reset_to_revision
 from utils.io import safe_open, create_file
 from utils.logger import log_error
 
+CATCH_ERRORS = True  # only used for testing
+
 
 def analyze(file: str, misuse: dict):
     """
@@ -51,6 +53,9 @@ def analyze(file: str, misuse: dict):
     except (KeyboardInterrupt, SystemExit):
         raise
     except:
+        if not CATCH_ERRORS:
+            raise
+
         exception_string = traceback.format_exc()
         print(exception_string)
         log_error("Error: {} in {}".format(exception_string, file))

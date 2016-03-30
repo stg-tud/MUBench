@@ -100,17 +100,20 @@ class TestEnvironment:
 
     def __get_git_yaml(self):
         content = {
-            'fix': {'repository': {'url': self.REPOSITORY_GIT, 'type': 'git'}, 'files': [{'name': 'some-class.java'}]}}
+            'fix': {'repository': {'url': self.REPOSITORY_GIT, 'type': 'git'}, 'revision': '',
+                    'files': [{'name': 'some-class.java'}]}}
         return content
 
     def __get_svn_yaml(self):
         content = {
-            'fix': {'repository': {'url': self.REPOSITORY_SVN, 'type': 'svn'}, 'files': [{'name': 'some-class.java'}]}}
+            'fix': {'repository': {'url': self.REPOSITORY_SVN, 'type': 'svn'}, 'revision': '1',
+                    'files': [{'name': 'some-class.java'}]}}
         return content
 
     def __get_synthetic_yaml(self):
-        content = {'fix': {'repository': {'url': self.REPOSITORY_SYNTHETIC, 'type': 'synthetic'},
-                           'files': [{'name': 'synthetic.java'}]}}
+        content = {
+            'fix': {'repository': {'url': self.REPOSITORY_SYNTHETIC, 'revision': '', 'type': 'synthetic'},
+                    'files': [{'name': 'synthetic.java'}]}}
         return content
 
     def create_data_file(self, file_name: str, content: dict):

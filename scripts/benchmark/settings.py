@@ -24,6 +24,6 @@ LOG_FILE_CHECKOUT = join(LOG_PATH, "checkout.log")
 LOG_FILE_RESULTS_EVALUATION = join(LOG_PATH, "results-evaluation.log")
 
 # BENCHMARK SETTINGS
-TEMP_SUBFOLDER = "misuse-checkout"  # used as subfolder in the temp path (will show up in misuse detection results)
+TEMP_SUBFOLDER = "MUBenchmark"  # used as base subfolder for checkouts (will show up in misuse detection results)
 VERBOSE = True  # prints more information to console if True
 IGNORES = []  # all data files which contain this substring will be ignored by the benchmark
