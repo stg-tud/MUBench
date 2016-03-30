@@ -23,6 +23,10 @@ LOG_FILE_ERROR = join(LOG_PATH, "error.log")  # errors will be logged into this 
 LOG_FILE_CHECKOUT = join(LOG_PATH, "checkout.log")
 LOG_FILE_RESULTS_EVALUATION = join(LOG_PATH, "results-evaluation.log")
 
+# LOGS in result folders
+LOG_DETECTOR_ERROR = "error.log"  # contains errors thrown by the detector
+LOG_DETECTOR_OUT = "out.log"  # contains console output of the detector
+
 # BENCHMARK SETTINGS
 TEMP_SUBFOLDER = "MUBenchmark"  # used as base subfolder for checkouts (will show up in misuse detection results)
 VERBOSE = True  # prints more information to console if True

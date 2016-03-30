@@ -45,8 +45,8 @@ def analyze(file: str, misuse: dict):
 
         print("Running \'{}\'; Results in \'{}\'...".format(settings.MISUSE_DETECTOR, result_dir))
 
-        with safe_open(join(result_dir, 'out.log'), 'w+') as out_log:
-            with safe_open(join(result_dir, 'error.log'), 'w+') as error_log:
+        with safe_open(join(result_dir, settings.LOG_DETECTOR_OUT), 'w+') as out_log:
+            with safe_open(join(result_dir, settings.LOG_DETECTOR_ERROR), 'w+') as error_log:
                 Popen(["java", "-jar", settings.MISUSE_DETECTOR, checkout_dir, result_dir],
                       bufsize=1, stdout=out_log, stderr=error_log).wait()
 

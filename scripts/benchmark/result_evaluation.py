@@ -1,6 +1,6 @@
 import os
 import traceback
-from genericpath import isdir, exists
+from genericpath import isdir, exists, isfile, getsize
 from os import listdir
 from os.path import join, splitext
 from os.path import normpath, basename
@@ -61,8 +61,13 @@ def evaluate_single_result(data_file: str, data_content: dict):
                     isdir(join(settings.RESULTS_PATH, result_dir))]
     for dir_result in dirs_results:
         is_result_for_file = splitext(basename(normpath(data_file)))[0] == basename(normpath(dir_result))
-        if is_result_for_file:
+
+        error_log = join(dir_result, settings.LOG_DETECTOR_ERROR)
+        errors_occurred = exists(error_log) and isfile(error_log) and getsize(error_log) > 0
+
+        if is_result_for_file and not errors_occurred:
             return data_file, evaluate()
+
     return data_file, None
 
 
