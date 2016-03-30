@@ -86,6 +86,9 @@ class GetParentTest(unittest.TestCase):
     def test_get_parent_svn(self):
         self.assertEquals(checkout.get_parent(SVN, 42), "41")
 
+    def test_get_parent_svn_with_string_input(self):
+        self.assertEquals(checkout.get_parent(SVN, "42"), "41")
+
     def test_get_parent_synthetic(self):
         self.assertEquals(checkout.get_parent(SYNTHETIC, 100), "100")
 

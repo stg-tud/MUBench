@@ -18,7 +18,7 @@ def get_parent(vcs: str, revision):
     if vcs == 'git':
         return str(revision + '~1')
     elif vcs == 'svn':
-        return str(revision - 1)
+        return str(int(revision) - 1)
     elif vcs == 'synthetic':
         return str(revision)  # nothing to do
     else:
