@@ -30,11 +30,8 @@ def analyze(file: str, misuse: dict):
         fix = misuse["fix"]
         repository = fix["repository"]
 
-        project_name = splitext(basename(file))[0]
-        if 'synthetic' not in project_name and '.' in project_name:
-            project_name = project_name.split('.', 1)[0]
-
         base_dir = join(gettempdir(), settings.TEMP_SUBFOLDER)
+        project_name = extract_project_name_from_file_path(file)
         checkout_dir = join(base_dir, project_name)
 
         if not exists(checkout_dir):
@@ -59,3 +56,16 @@ def analyze(file: str, misuse: dict):
         exception_string = traceback.format_exc()
         print(exception_string)
         log_error("Error: {} in {}".format(exception_string, file))
+
+
+def extract_project_name_from_file_path(file: str):
+    """
+    Extracts the project name from a given file path, using '.' as a separator (<path>/<project>.<rest>)
+    :param file: The file path (should be in the form "<path>/<project>.<rest>" or "<path>/synthetic-<rest>")
+    :rtype: str
+    :return: The project name
+    """
+    project_name = splitext(basename(file))[0]
+    if 'synthetic' not in project_name and '.' in project_name:
+        project_name = project_name.split('.', 1)[0]
+    return project_name
