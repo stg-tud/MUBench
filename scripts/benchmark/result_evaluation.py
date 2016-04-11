@@ -66,9 +66,9 @@ def evaluate_single_result(data_file: str, data_content: dict):
         errors_occurred = exists(error_log) and isfile(error_log) and getsize(error_log) > 0
 
         if is_result_for_file and not errors_occurred:
-            return data_file, evaluate()
+            return basename(data_file), evaluate()
 
-    return data_file, None
+    return basename(data_file), None
 
 
 def evaluate_results():
