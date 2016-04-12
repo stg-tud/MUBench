@@ -21,7 +21,7 @@ challenges:
 fix:
   commit: http://svn.apache.org/viewvc?view=revision&revision=160490
   repository:
-    url: https://svn.apache.org/repos/asf/httpcomponents/httpclient/
+    url: http://svn.apache.org/repos/asf/httpcomponents/httpclient/trunk/
     type: svn
   revision: 160490
   files:

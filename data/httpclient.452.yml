@@ -18,7 +18,7 @@ pattern:
 fix:
   commit: http://svn.apache.org/viewvc?view=revision&revision=190480
   repository:
-    url: https://svn.apache.org/repos/asf/httpcomponents/httpclient/
+    url: http://svn.apache.org/repos/asf/httpcomponents/httpclient/trunk/
     type: svn
   revision: 190480
   files:

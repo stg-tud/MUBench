@@ -19,7 +19,7 @@ fix:
     Pass Ciphter.DECRYPT_MODE instead.
   commit: https://sourceforge.net/p/jmrtd/code/67/
   repository:
-    url: svn://svn.code.sf.net/p/jmrtd/code/trunk
+    url: http://svn.code.sf.net/p/jmrtd/code/trunk
     type: svn
   revision: 67
   files:

@@ -20,7 +20,7 @@ pattern:
 fix:
   commit: http://svn.apache.org/viewvc?view=revision&revision=1133332
   repository:
-    url: http://svn.apache.org/repos/asf/jackrabbit/trunk
+    url: http://svn.apache.org/repos/asf/jackrabbit/trunk/jackrabbit-jcr2spi/
     type: svn
   revision: 1133332
   files:

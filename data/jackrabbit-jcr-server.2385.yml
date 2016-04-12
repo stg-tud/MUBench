@@ -18,7 +18,7 @@ pattern:
 fix:
   commit: http://svn.apache.org/viewvc?view=revision&revision=880743
   repository:
-    url: http://svn.apache.org/repos/asf/jackrabbit/trunk
+    url: http://svn.apache.org/repos/asf/jackrabbit/trunk/jackrabbit-jcr-server/
     type: svn
   revision: 880743
   files:

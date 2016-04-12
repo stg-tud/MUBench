@@ -95,7 +95,7 @@ def checkout(vcs: str, repository: str, revision: str, dir_target: str, verbose:
                 Popen(git_checkout, cwd=dir_target, bufsize=1, shell=True, stdout=log, stderr=log).wait()
 
             elif vcs == 'svn':
-                svn_checkout = ['svn', 'checkout', '--revision', revision, repository]
+                svn_checkout = ['svn', 'checkout', "{}@{}".format(repository, revision)]
                 Popen(svn_checkout, cwd=dir_target, bufsize=1, stdout=log, stderr=log).wait()
 
             elif vcs == 'synthetic':
@@ -119,7 +119,7 @@ def reset_to_revision(vcs: str, local_repository: str, revision, verbose: bool):
         if vcs == 'git':
             Popen('git checkout ' + revision, cwd=local_repository, bufsize=1, shell=True, stdout=log, stderr=log).wait()
         elif vcs == 'svn':
-            Popen('svn checkout --revision {}'.format(revision), cwd=local_repository, bufsize=1, stdout=log, stderr=log).wait()
+            Popen('svn update -r {}'.format(revision), cwd=local_repository, bufsize=1, stdout=log, stderr=log).wait()
         elif vcs == 'synthetic':
             pass  # nothing to do here
         else:
