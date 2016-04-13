@@ -18,7 +18,7 @@ fix:
     Add a call to DataOutputStream.close()
   commit: https://sourceforge.net/p/jmrtd/code/51/
   repository:
-    url: http://svn.code.sf.net/p/jmrtd/code/trunk
+    url: http://svn.code.sf.net/p/jmrtd/code/
     type: svn
   revision: 51
   files:
