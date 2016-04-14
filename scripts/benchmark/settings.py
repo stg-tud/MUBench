@@ -1,4 +1,4 @@
-from os import makedirs
+import sys
 from os.path import join
 
 # These settings are shared between all modules
@@ -29,5 +29,6 @@ LOG_DETECTOR_OUT = "out.log"  # contains console output of the detector
 # BENCHMARK SETTINGS
 TEMP_SUBFOLDER = "MUBenchmark"  # used as base subfolder for checkouts (will show up in misuse detection results)
 VERBOSE = True  # prints more information to console if True
+TIMEOUT = sys.maxsize  # sets a timeout for the misuse detector (in seconds); use sys.maxsize to effectively disable timeout
 FILE_IGNORED = "IGNORED"  # if this is file is in a result folder, signifies that the corresponding data was ignored
 IGNORES = []  # all data files which contain this substring will be ignored by the benchmark

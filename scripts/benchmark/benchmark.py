@@ -1,3 +1,4 @@
+import subprocess
 import traceback
 from genericpath import exists
 from os.path import join, splitext, basename
@@ -44,8 +45,8 @@ def analyze(file: str, misuse: dict):
 
         with safe_open(join(result_dir, settings.LOG_DETECTOR_OUT), 'w+') as out_log:
             with safe_open(join(result_dir, settings.LOG_DETECTOR_ERROR), 'w+') as error_log:
-                Popen(["java", "-jar", settings.MISUSE_DETECTOR, checkout_dir, result_dir],
-                      bufsize=1, stdout=out_log, stderr=error_log).wait()
+                subprocess.call(["java", "-jar", settings.MISUSE_DETECTOR, checkout_dir, result_dir],
+                                bufsize=1, stdout=out_log, stderr=error_log, timeout=settings.TIMEOUT)
 
     except (KeyboardInterrupt, SystemExit):
         raise
