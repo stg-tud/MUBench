@@ -45,8 +45,13 @@ def analyze(file: str, misuse: dict):
 
         with safe_open(join(result_dir, settings.LOG_DETECTOR_OUT), 'w+') as out_log:
             with safe_open(join(result_dir, settings.LOG_DETECTOR_ERROR), 'w+') as error_log:
-                subprocess.call(["java", "-jar", settings.MISUSE_DETECTOR, checkout_dir, result_dir],
-                                bufsize=1, stdout=out_log, stderr=error_log, timeout=settings.TIMEOUT)
+                try:
+                    subprocess.call(["java", "-jar", settings.MISUSE_DETECTOR, checkout_dir, result_dir],
+                                    bufsize=1, stdout=out_log, stderr=error_log, timeout=settings.TIMEOUT)
+                except subprocess.TimeoutExpired:
+                    print("Timeout: {}".format(file))
+                    create_file(join(result_dir, settings.FILE_IGNORED), truncate=True)
+                    return
 
     except (KeyboardInterrupt, SystemExit):
         raise

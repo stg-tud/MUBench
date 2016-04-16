@@ -110,7 +110,7 @@ def evaluate_results():
             print('These misuses were not found:', file=file_result)
             print('\n'.join(not_found_misuses), file=file_result)
             print('----------------------------------------------', file=file_result)
-            print('These cases encountered an error (see logs for more information):', file=file_result)
+            print('These cases encountered an error (see logs for more information) or were ignored:', file=file_result)
             print('\n'.join(misuses_with_errors), file=file_result)
             print('----------------------------------------------', file=file_result)
 
