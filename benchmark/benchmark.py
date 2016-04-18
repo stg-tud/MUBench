@@ -2,7 +2,6 @@ import subprocess
 import traceback
 from genericpath import exists
 from os.path import join, splitext, basename
-from subprocess import Popen
 from tempfile import gettempdir
 
 import settings
