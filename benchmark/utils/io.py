@@ -2,7 +2,7 @@ from os import makedirs
 from os.path import dirname
 
 
-def safe_write(content: str, file_path: str, append: bool):
+def safe_write(content: str, file_path: str, append: bool) -> None:
     """
     Writes the given string to a file. Creates the path and file, if they don't exist.
     :param content: The content to be written into the file
@@ -26,7 +26,7 @@ def safe_open(file_path: str, mode: str):
     return open(file_path, mode)
 
 
-def create_file_path(file_path: str):
+def create_file_path(file_path: str) -> None:
     """
     Creates all directories in the path (does not create the file itself).
     :param file_path: The path to the file to be created
@@ -34,7 +34,7 @@ def create_file_path(file_path: str):
     makedirs(dirname(file_path), exist_ok=True)
 
 
-def create_file(file_path: str, truncate: bool = False):
+def create_file(file_path: str, truncate: bool = False) -> None:
     """
     Creates the file and the path to it.
     :param file_path: The path to the file to be created

@@ -3,7 +3,6 @@ from datetime import datetime
 from benchmark import analyze
 from datareader import on_all_data_do
 from result_evaluation import evaluate_results
-from utils.logger import log_error
 
 try:
     start_time = datetime.now()

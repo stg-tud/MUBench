@@ -4,6 +4,7 @@ from genericpath import isdir, exists, isfile, getsize
 from os import listdir
 from os.path import join, splitext
 from os.path import normpath, basename
+from typing import Dict, Tuple, Optional
 
 import datareader
 import settings
@@ -12,7 +13,7 @@ from utils.io import safe_open
 from utils.logger import log_error
 
 
-def evaluate_single_result(data_file: str, data_content: dict):
+def evaluate_single_result(data_file: str, data_content: Dict[str, str]) -> Tuple[str, Optional[int]]:
     """
     Evaluates the result for the given misuse data
     :param data_file: The file containing the misuse data
@@ -20,7 +21,7 @@ def evaluate_single_result(data_file: str, data_content: dict):
     :return: a tuple in the form of (data_file, success) where success is 1, 0, or None (if an error occurred)
     """
 
-    def evaluate():
+    def evaluate() -> int:
         """
         Returns 1 iff the detector found the misuse; else returns 0
         :rtype: int
@@ -93,7 +94,7 @@ def evaluate_single_result(data_file: str, data_content: dict):
     return basename(data_file), None
 
 
-def evaluate_results():
+def evaluate_results() -> Tuple[int, int, int]:
     """
     For every data files checks if the result of the misuse detection found the misuse and writes the results to a file
     :rtype: list
@@ -153,7 +154,7 @@ def evaluate_results():
         log_error(exception_string)
 
 
-def normalize_data_misuse_path(misuse_file: str):
+def normalize_data_misuse_path(misuse_file: str) -> str:
     """
     Normalizes the misuse file path (from a data file)
     :param misuse_file: The path that is given in the data file
@@ -169,7 +170,7 @@ def normalize_data_misuse_path(misuse_file: str):
     return normed_misuse_file
 
 
-def normalize_result_misuse_path(misuse_file: str):
+def normalize_result_misuse_path(misuse_file: str) -> str:
     """
     Normalizes the misuse file path (from a result file)
     :param misuse_file: The path that is given in the result file

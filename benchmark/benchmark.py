@@ -12,7 +12,7 @@ from utils.logger import log_error
 CATCH_ERRORS = True  # only used for testing
 
 
-def analyze(file: str, misuse: dict):
+def analyze(file: str, misuse: dict) -> None:
     """
     Runs the misuse detector on the given misuse
     :param file: The file containing the misuse information
@@ -63,7 +63,7 @@ def analyze(file: str, misuse: dict):
         log_error("Error: {} in {}".format(exception_string, file))
 
 
-def extract_project_name_from_file_path(file: str):
+def extract_project_name_from_file_path(file: str) -> str:
     """
     Extracts the project name from a given file path, using '.' as a separator (<path>/<project>.<rest>)
     :param file: The file path (should be in the form "<path>/<project>.<rest>" or "<path>/synthetic-<rest>")

@@ -1,12 +1,15 @@
 from os import listdir
 from os.path import isfile, join
+from typing import Any, List, Callable, Dict, TypeVar
 
 import yaml
 
 import settings
 
+T = TypeVar('T')
 
-def on_all_data_do(function):
+
+def on_all_data_do(function: Callable[[str, Dict[str, str]], T]) -> List[T]:
     """
     :param function: The function to execute on each data point; the expected signature is function(file, data)
     :rtype: list

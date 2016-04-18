@@ -2,12 +2,13 @@ from os import listdir, makedirs
 from os.path import join, isdir
 from shutil import copy
 from subprocess import Popen
+from typing import Union
 
 import settings
 from utils.io import safe_open
 
 
-def get_parent(vcs: str, revision):
+def get_parent(vcs: str, revision: Union[int, str]) -> str:
     """
     Returns the parent of the given revision as a string
     :type vcs: str
