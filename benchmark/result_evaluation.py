@@ -7,6 +7,7 @@ from os.path import normpath, basename
 
 import datareader
 import settings
+from utils.dotgraph_util import get_labels_from_file
 from utils.io import safe_open
 from utils.logger import log_error
 
@@ -34,6 +35,10 @@ def evaluate_single_result(data_file: str, data_content: dict):
             file_result = join(dir_result, settings.FILE_DETECTOR_RESULT)
             print("Evaluating result {} against data {}".format(file_result, data_file), file=log)
 
+            file_found = False
+            consider_labels = False
+            label_found = False
+
             for fix_file in data_content["fix"]["files"]:
                 normed_misuse_file = normalize_data_misuse_path(fix_file["name"])
 
@@ -42,6 +47,7 @@ def evaluate_single_result(data_file: str, data_content: dict):
                 if exists(file_result):
                     lines = [line.rstrip('\n') for line in safe_open(file_result, 'r')]
 
+                    # looking for correct filename
                     for line in lines:
                         if line.startswith("File: "):
                             # cut File: from the line to get the path
@@ -52,10 +58,26 @@ def evaluate_single_result(data_file: str, data_content: dict):
 
                             if found_misuse == normed_misuse_file:
                                 print("Match found!", file=log)
-                                return 1
+                                file_found = True
+                                break
                             else:
                                 print("No match", file=log)
-            return 0
+
+                    # looking for correct label
+                    misuse_labels = []
+                    result_labels = get_labels_from_file(file_result)
+
+                    for result_label in result_labels:
+                        consider_labels = True
+                        is_misuse_label = result_label in misuse_labels
+                        if is_misuse_label:
+                            label_found = True
+                            break
+
+            if file_found and consider_labels and label_found:
+                return 1
+            else:
+                return 0
 
     dirs_results = [join(settings.RESULTS_PATH, result_dir) for result_dir in listdir(settings.RESULTS_PATH) if
                     isdir(join(settings.RESULTS_PATH, result_dir))]
@@ -80,8 +102,11 @@ def evaluate_results():
     try:
         results = datareader.on_all_data_do(evaluate_single_result)
 
-        def to_data_name(result): return result[0]
-        def to_success(result): return result[1]
+        def to_data_name(result):
+            return result[0]
+
+        def to_success(result):
+            return result[1]
 
         applied_results = [result for result in results if result[1] is not None]
 
@@ -89,9 +114,14 @@ def evaluate_results():
         applied = len(applied_results)
         found = sum(map(to_success, applied_results))
 
-        def was_successful(result): return result[1] is 1
-        def was_not_successful(result): return result[1] is 0
-        def finished_with_error(result): return result[1] is None
+        def was_successful(result):
+            return result[1] is 1
+
+        def was_not_successful(result):
+            return result[1] is 0
+
+        def finished_with_error(result):
+            return result[1] is None
 
         found_misuses = map(to_data_name, filter(was_successful, results))
         not_found_misuses = map(to_data_name, filter(was_not_successful, results))

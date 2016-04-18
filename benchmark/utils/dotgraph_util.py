@@ -42,4 +42,10 @@ def get_labels(graph: List[str]) -> List[str]:
 def get_labels_from_file(file: str) -> List[str]:
     with open(file, 'r') as source:
         lines = source.readlines()
-    return get_labels(get_graphs(lines))
+
+    graphs = get_graphs(lines)
+    labels = []
+    for graph in graphs:
+        labels = labels + get_labels(graph)
+
+    return labels
