@@ -29,9 +29,9 @@ def get_labels(graph: List[str]) -> List[str]:
     result = []
 
     for line in graph:
-        if "label=" in line:
-            label_substring = line.split("label=", 2)[1]
-            label_substring = label_substring.split("\"", 3)[1]
+        while "label=" in line:
+            line = line.split("label=", 2)[1]
+            label_substring = line.split("\"", 3)[1]
 
             if not label_substring == "":
                 result.append(label_substring)
