@@ -26,53 +26,53 @@ class CheckoutTest(unittest.TestCase):
         self.temp_dir = mkdtemp()
 
     def test_creates_git_repository(self):
-        checkout.checkout_parent(GIT, self.test_env.REPOSITORY_GIT, GIT_REVISION, self.temp_dir, False)
+        checkout.checkout_parent(GIT, self.test_env.REPOSITORY_GIT, GIT_REVISION, self.temp_dir)
         repository = join(self.temp_dir, '.git')
         self.assertTrue(exists(repository))
 
     def test_creates_svn_repository(self):
-        checkout.checkout_parent(SVN, self.test_env.REPOSITORY_SVN, SVN_REVISION, self.temp_dir, False)
+        checkout.checkout_parent(SVN, self.test_env.REPOSITORY_SVN, SVN_REVISION, self.temp_dir)
         repository = join(self.temp_dir, 'repository-svn')
         self.assertTrue(exists(repository))
 
     def test_copies_synthetic_repository(self):
-        checkout.checkout_parent(SYNTHETIC, self.test_env.REPOSITORY_SYNTHETIC, '', self.temp_dir, False)
+        checkout.checkout_parent(SYNTHETIC, self.test_env.REPOSITORY_SYNTHETIC, '', self.temp_dir)
         repository = join(self.temp_dir, basename(self.test_env.REPOSITORY_SYNTHETIC))
         self.assertTrue(exists(repository))
 
     def test_checkout_fails_for_non_empty_target_dir(self):
         mkdir(join(self.temp_dir, 'something'))
         with self.assertRaises(ValueError):
-            checkout.checkout_parent(GIT, self.test_env.REPOSITORY_GIT, GIT_REVISION, self.temp_dir, False)
+            checkout.checkout_parent(GIT, self.test_env.REPOSITORY_GIT, GIT_REVISION, self.temp_dir)
 
     def test_checkout_fails_for_file_as_target_dir(self):
         file = join(self.temp_dir, 'file')
         utils.io.create_file_path(file)
         utils.io.create_file(file)
         with self.assertRaises(ValueError):
-            checkout.checkout_parent(GIT, self.test_env.REPOSITORY_GIT, GIT_REVISION, file, False)
+            checkout.checkout_parent(GIT, self.test_env.REPOSITORY_GIT, GIT_REVISION, file)
 
     def test_checkout_fails_for_unknown_vcs(self):
         with self.assertRaises(ValueError):
-            checkout.checkout_parent('invalid vcs', self.test_env.REPOSITORY_GIT, GIT_REVISION, self.temp_dir, False)
+            checkout.checkout_parent('invalid vcs', self.test_env.REPOSITORY_GIT, GIT_REVISION, self.temp_dir)
 
     def test_logs_into_log_folder(self):
         settings.LOG_PATH = join(self.temp_dir, 'logs')
         settings.LOG_FILE_CHECKOUT = join(settings.LOG_PATH, 'checkout.log')
-        checkout.checkout_parent(GIT, self.test_env.REPOSITORY_GIT, GIT_REVISION, self.temp_dir, False)
+        checkout.checkout_parent(GIT, self.test_env.REPOSITORY_GIT, GIT_REVISION, self.temp_dir)
         self.assertTrue(exists(settings.LOG_FILE_CHECKOUT))
 
     def test_reset_to_revision_git(self):
-        checkout.checkout_parent(GIT, self.test_env.REPOSITORY_GIT, GIT_REVISION, self.temp_dir, False)
-        checkout.reset_to_revision(GIT, self.temp_dir, GIT_REVISION, False)
+        checkout.checkout_parent(GIT, self.test_env.REPOSITORY_GIT, GIT_REVISION, self.temp_dir)
+        checkout.reset_to_revision(GIT, self.temp_dir, GIT_REVISION)
 
     def test_reset_to_revision_svn(self):
-        checkout.checkout_parent(SVN, self.test_env.REPOSITORY_SVN, SVN_REVISION, self.temp_dir, False)
-        checkout.reset_to_revision(GIT, self.temp_dir, SVN_REVISION, False)
+        checkout.checkout_parent(SVN, self.test_env.REPOSITORY_SVN, SVN_REVISION, self.temp_dir)
+        checkout.reset_to_revision(GIT, self.temp_dir, SVN_REVISION)
 
     def test_reset_to_revision_synthetic(self):
-        checkout.checkout_parent(SYNTHETIC, self.test_env.REPOSITORY_SYNTHETIC, '', self.temp_dir, False)
-        checkout.reset_to_revision(SYNTHETIC, self.temp_dir, '', False)
+        checkout.checkout_parent(SYNTHETIC, self.test_env.REPOSITORY_SYNTHETIC, '', self.temp_dir)
+        checkout.reset_to_revision(SYNTHETIC, self.temp_dir, '')
 
     def tearDown(self):
         self.test_env.tearDown()

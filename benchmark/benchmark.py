@@ -35,10 +35,9 @@ def analyze(file: str, misuse: dict) -> None:
         checkout_dir = join(base_dir, project_name)
 
         if not exists(checkout_dir):
-            checkout_parent(repository["type"], repository["url"], fix.get('revision', ""), checkout_dir,
-                            settings.VERBOSE)
+            checkout_parent(repository["type"], repository["url"], fix.get('revision', ""), checkout_dir)
         else:
-            reset_to_revision(repository["type"], checkout_dir, fix.get('revision', ""), settings.VERBOSE)
+            reset_to_revision(repository["type"], checkout_dir, fix.get('revision', ""))
 
         print("Running \'{}\'; Results in \'{}\'...".format(settings.MISUSE_DETECTOR, result_dir))
 

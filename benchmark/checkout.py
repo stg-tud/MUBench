@@ -26,7 +26,7 @@ def get_parent(vcs: str, revision: Union[int, str]) -> str:
         raise ValueError("Unknown version control type: {}".format(vcs))
 
 
-def checkout_parent(vcs: str, repository: str, revision, dir_target: str, verbose: bool) -> None:
+def checkout_parent(vcs: str, repository: str, revision, dir_target: str) -> None:
     """
     Check out a repository on the parent of the given revision
     :type vcs: str
@@ -37,16 +37,14 @@ def checkout_parent(vcs: str, repository: str, revision, dir_target: str, verbos
     :param revision: the revision of which the parent will be checked out
     :type dir_target: str
     :param dir_target: the directory where the repository will be checked out in
-    :type verbose: bool
-    :param verbose: gives detailed console output
     :rtype None
     :return Returns nothing
     """
 
-    checkout(vcs, repository, get_parent(vcs, revision), dir_target, verbose)
+    checkout(vcs, repository, get_parent(vcs, revision), dir_target)
 
 
-def checkout(vcs: str, repository: str, revision: str, dir_target: str, verbose: str) -> None:
+def checkout(vcs: str, repository: str, revision: str, dir_target: str) -> None:
     """
     Check out a repository on a certain revision
     :type vcs: str
@@ -57,17 +55,14 @@ def checkout(vcs: str, repository: str, revision: str, dir_target: str, verbose:
     :param revision: the revision to be checked out
     :type dir_target: str
     :param dir_target: the directory where the repository will be checked out in
-    :type verbose: bool
-    :param verbose: gives detailed console output
     :rtype None
     :return Returns nothing
     """
 
-    if verbose:
-        print("Checkout ({0}): ".format(vcs))
-        print("Repository: " + repository)
-        print("Revision: " + revision)
-        print("Checking out into directory: " + dir_target)
+    print("Checkout ({0}): ".format(vcs))
+    print("Repository: " + repository)
+    print("Revision: " + revision)
+    print("Checking out into directory: " + dir_target)
 
     try:
         makedirs(dir_target, exist_ok=True)
@@ -108,13 +103,12 @@ def checkout(vcs: str, repository: str, revision: str, dir_target: str, verbose:
         raise ValueError("{0} is not an empty directory!".format(dir_target))
 
 
-def reset_to_revision(vcs: str, local_repository: str, revision, verbose: bool):
+def reset_to_revision(vcs: str, local_repository: str, revision):
     revision = str(revision)
 
-    if verbose:
-        print("Reset ({0}): ".format(vcs))
-        print("Repository: " + local_repository)
-        print("Revision: " + revision)
+    print("Reset ({0}): ".format(vcs))
+    print("Repository: " + local_repository)
+    print("Revision: " + revision)
 
     with safe_open(settings.LOG_FILE_CHECKOUT, 'a+') as log:
         if vcs == 'git':

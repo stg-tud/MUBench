@@ -32,7 +32,6 @@ class TestEnvironment:
         self.LOG_FILE_RESULTS_EVALUATION = join(self.LOG_PATH, 'test-results-evaluation.log')
 
         self.TEMP_SUBFOLDER = 'test-checkout'
-        self.VERBOSE = False
         self.IGNORES = []
 
         self.REPOSITORY_GIT = join(self.TEST_ENV_PATH, 'repository-git')
@@ -64,7 +63,6 @@ class TestEnvironment:
         settings.LOG_FILE_RESULTS_EVALUATION = self.LOG_FILE_RESULTS_EVALUATION
 
         settings.TEMP_SUBFOLDER = self.TEMP_SUBFOLDER
-        settings.VERBOSE = self.VERBOSE
         settings.IGNORES = self.IGNORES
 
     def __initialize_repositories(self):

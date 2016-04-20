@@ -23,15 +23,13 @@ def on_all_data_do(function: Callable[[str, Dict[str, str]], T]) -> List[T]:
     for i, file in enumerate(datafiles, start=1):
         stream = open(file, 'r')
 
-        if settings.VERBOSE:
-            print("({}/{}) files: now on {}".format(i, len(datafiles), file))
+        print("({}/{}) files: now on {}".format(i, len(datafiles), file))
 
         try:
             yaml_content = yaml.load(stream)
             result.append(function(file, yaml_content))
         finally:
             stream.close()
-            if settings.VERBOSE:
-                print("------------------------------------------------------------")
+            print("------------------------------------------------------------")
 
     return result
