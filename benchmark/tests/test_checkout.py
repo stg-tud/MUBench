@@ -25,6 +25,10 @@ class CheckoutTest(unittest.TestCase):
         self.test_env = TestEnvironment()
         self.temp_dir = mkdtemp()
 
+    def tearDown(self):
+        self.test_env.tearDown()
+        rmtree(self.temp_dir, ignore_errors=True)
+
     def test_creates_git_repository(self):
         checkout.checkout_parent(GIT, self.test_env.REPOSITORY_GIT, GIT_REVISION, self.temp_dir)
         repository = join(self.temp_dir, '.git')
@@ -73,10 +77,6 @@ class CheckoutTest(unittest.TestCase):
     def test_reset_to_revision_synthetic(self):
         checkout.checkout_parent(SYNTHETIC, self.test_env.REPOSITORY_SYNTHETIC, '', self.temp_dir)
         checkout.reset_to_revision(SYNTHETIC, self.temp_dir, '')
-
-    def tearDown(self):
-        self.test_env.tearDown()
-        rmtree(self.temp_dir, ignore_errors=True)
 
 
 class GetParentTest(unittest.TestCase):

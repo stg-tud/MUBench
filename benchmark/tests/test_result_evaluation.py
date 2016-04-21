@@ -16,6 +16,9 @@ class ResultsTest(unittest.TestCase):
         self.file_result_git = join(self.test_env.RESULTS_PATH, 'git', settings.FILE_DETECTOR_RESULT)
         self.file_result_svn = join(self.test_env.RESULTS_PATH, 'svn', settings.FILE_DETECTOR_RESULT)
 
+    def tearDown(self):
+        self.test_env.tearDown()
+
     def test_correct_total(self):
         create_result(self.file_result_git, '')
         create_result(self.file_result_svn, 'File: some-class.java')
@@ -40,9 +43,6 @@ class ResultsTest(unittest.TestCase):
                       'digraph name {' + os.linesep + '1 [label="some_label"]' + os.linesep + '}')
         actual_results = result_evaluation.evaluate_results()
         self.assertEquals(0, actual_results[2])
-
-    def tearDown(self):
-        self.test_env.tearDown()
 
 
 class PathNormalizationTest(unittest.TestCase):

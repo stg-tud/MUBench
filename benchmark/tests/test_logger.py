@@ -16,6 +16,9 @@ class LogTest(unittest.TestCase):
         settings.LOG_PATH = self.temp_dir
         settings.LOG_FILE_ERROR = join(settings.LOG_PATH, 'error.log')
 
+    def tearDown(self):
+        rmtree(self.temp_dir, ignore_errors=True)
+
     def test_creates_error_log_file(self):
         logger.log_error(self.test_line)
         self.assertTrue(exists(join(settings.LOG_PATH, settings.LOG_FILE_ERROR)))
@@ -24,9 +27,6 @@ class LogTest(unittest.TestCase):
         logger.log_error(self.test_line)
         with safe_open(settings.LOG_FILE_ERROR, 'r') as actual_file:
             self.assertEquals(self.test_line + '\n', actual_file.read())
-
-    def tearDown(self):
-        rmtree(self.temp_dir, ignore_errors=True)
 
 
 if __name__ == '__main__':
