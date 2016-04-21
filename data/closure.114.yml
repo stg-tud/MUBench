@@ -16,6 +16,16 @@ characteristics:
   - missing precondition/predicate
 pattern:
   - multiple objects
+misuse:
+  file: src/com/google/javascript/rhino/jstype/UnionType.java
+  type: com.google.javascript.rhino.jstype.UnionTypeBuilder
+  method: meet(JSType)
+  usage: > 
+    digraph {
+      0 [label="UnionTypeBuilder#builder#build"]
+      1 [label="IF#IF#CONTROL"]
+      0 -> 1
+    }
 fix:
   description: >
     Check Node.isNoType() instead.

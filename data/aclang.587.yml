@@ -15,6 +15,16 @@ characteristics:
   - missing precondition/null
 pattern:
   - single object
+misuse:
+  file: commons/proper/lang/trunk/src/java/org/apache/commons/lang/text/StrBuilder.java
+  type: org.apache.commons.lang.text.StrBuilder
+  method: appendFixedWidthPadLeft(Object, int, char)
+  usage: > 
+    digraph {
+      0 [label="StrBuilder#this#getNullText"]
+      1 [label="String#str#length"]
+      0 -> 1
+    }
 fix:
   description: >
     Check for null before using.
