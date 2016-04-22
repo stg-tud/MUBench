@@ -4,7 +4,7 @@ from os.path import join, abspath, dirname
 from pathlib import Path
 from shutil import rmtree, copyfile
 from subprocess import Popen
-from tempfile import mkdtemp
+from tempfile import mkdtemp, gettempdir
 
 import yaml
 
@@ -31,7 +31,7 @@ class TestEnvironment:
         self.LOG_FILE_CHECKOUT = join(self.LOG_PATH, 'test-checkout.log')
         self.LOG_FILE_RESULTS_EVALUATION = join(self.LOG_PATH, 'test-results-evaluation.log')
 
-        self.TEMP_SUBFOLDER = 'test-checkout'
+        self.CHECKOUT_DIR = join(gettempdir(), 'test-checkout')
         self.IGNORES = []
 
         self.REPOSITORY_GIT = join(self.TEST_ENV_PATH, 'repository-git')
@@ -62,7 +62,7 @@ class TestEnvironment:
         settings.LOG_FILE_CHECKOUT = self.LOG_FILE_CHECKOUT
         settings.LOG_FILE_RESULTS_EVALUATION = self.LOG_FILE_RESULTS_EVALUATION
 
-        settings.TEMP_SUBFOLDER = self.TEMP_SUBFOLDER
+        settings.CHECKOUT_DIR = self.CHECKOUT_DIR
         settings.IGNORES = self.IGNORES
 
     def __initialize_repositories(self):

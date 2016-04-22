@@ -2,6 +2,7 @@ import os
 import unittest
 
 from os.path import join
+from tempfile import gettempdir
 
 import result_evaluation
 import settings
@@ -47,7 +48,7 @@ class ResultsTest(unittest.TestCase):
 
 class PathNormalizationTest(unittest.TestCase):
     def setUp(self):
-        settings.TEMP_SUBFOLDER = 'MUBenchmark'
+        settings.CHECKOUT_DIR = join(gettempdir(), 'MUBenchmark')
 
     def test_normalize_git_path_from_data(self):
         non_normalized_path = r'src/main/java/com/alibaba/druid/filter/config/ConfigTools.java'

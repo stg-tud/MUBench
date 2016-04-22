@@ -16,7 +16,7 @@ class BenchmarkTest(unittest.TestCase):
 
     def tearDown(self):
         benchmark.CATCH_ERRORS = True
-        benchmark_creates_this = join(gettempdir(), self.test_env.TEMP_SUBFOLDER)
+        benchmark_creates_this = join(gettempdir(), self.test_env.CHECKOUT_DIR)
         rmtree(benchmark_creates_this, ignore_errors=True)
 
     def test_run(self):

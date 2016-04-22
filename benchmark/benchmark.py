@@ -30,7 +30,7 @@ def analyze(file: str, misuse: dict) -> None:
         fix = misuse["fix"]
         repository = fix["repository"]
 
-        base_dir = join(gettempdir(), settings.TEMP_SUBFOLDER)
+        base_dir = settings.CHECKOUT_DIR
         project_name = extract_project_name_from_file_path(file)
         checkout_dir = join(base_dir, project_name)
 

@@ -180,8 +180,9 @@ def normalize_result_misuse_path(misuse_file: str) -> str:
     normed_misuse_file = normpath(misuse_file)
 
     # cut everything before project subfolder
-    if settings.TEMP_SUBFOLDER + os.sep in normed_misuse_file:
-        normed_misuse_file = normed_misuse_file.split(settings.TEMP_SUBFOLDER + os.sep, 1)[1]
+    checkout_dir_prefix = settings.CHECKOUT_DIR + os.sep
+    if checkout_dir_prefix in normed_misuse_file:
+        normed_misuse_file = normed_misuse_file.split(checkout_dir_prefix, 1)[1]
 
     # cut project subfolder
     if os.sep in normed_misuse_file:
