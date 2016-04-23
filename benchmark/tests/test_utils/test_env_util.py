@@ -4,7 +4,7 @@ from os.path import join, abspath, dirname
 from pathlib import Path
 from shutil import rmtree, copyfile
 from subprocess import Popen
-from tempfile import mkdtemp, gettempdir
+from tempfile import mkdtemp
 
 import yaml
 
@@ -16,7 +16,7 @@ class TestEnvironment:
     def __init__(self):
         self.TEST_ENV_SOURCE_DIR = join(dirname(abspath(__file__)), 'test-env')
 
-        self.TEST_ENV_PATH = join(mkdtemp(), 'test_env')
+        self.TEST_ENV_PATH = mkdtemp(prefix='mubench-test-env_')
 
         self.DATA_PATH = join(self.TEST_ENV_PATH, 'data')
         self.MINER = 'test-markall-miner.jar'
@@ -31,7 +31,7 @@ class TestEnvironment:
         self.LOG_FILE_CHECKOUT = join(self.LOG_PATH, 'test-checkout.log')
         self.LOG_FILE_RESULTS_EVALUATION = join(self.LOG_PATH, 'test-results-evaluation.log')
 
-        self.CHECKOUT_DIR = join(gettempdir(), 'test-checkout')
+        self.CHECKOUT_DIR = join(self.TEST_ENV_PATH, 'test-checkout')
         self.IGNORES = []
 
         self.REPOSITORY_GIT = join(self.TEST_ENV_PATH, 'repository-git')
@@ -97,9 +97,12 @@ class TestEnvironment:
         self.create_data_file('synthetic.yml', synthetic_yaml)
 
     def __get_git_yaml(self):
-        content = {
-            'fix': {'repository': {'url': self.REPOSITORY_GIT, 'type': 'git'}, 'revision': '',
-                    'files': [{'name': 'some-class.java'}]}}
+        repository = {'url': self.REPOSITORY_GIT, 'type': 'git'}
+        files = [{'name': 'some-class.java'}]
+        fix = {'repository': repository, 'revision': '', 'files': files}
+        misuse = {'file': files[0], 'type': 'some-type', 'method': 'doSomething(Object, int)',
+                  'usage': 'digraph { 0 [label="someClass#this#doSomething"] }'}
+        content = {'misuse': misuse, 'fix': fix}
         return content
 
     def __get_svn_yaml(self):

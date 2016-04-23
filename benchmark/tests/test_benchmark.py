@@ -18,6 +18,7 @@ class BenchmarkTest(unittest.TestCase):
         benchmark.CATCH_ERRORS = True
         benchmark_creates_this = join(gettempdir(), self.test_env.CHECKOUT_DIR)
         rmtree(benchmark_creates_this, ignore_errors=True)
+        self.test_env.tearDown()
 
     def test_run(self):
         self.assertGreater(len(self.test_env.DATA), 0, "Test data is empty")
