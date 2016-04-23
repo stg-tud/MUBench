@@ -8,29 +8,44 @@ from tempfile import gettempdir
 #               Doing it this way allows tests to alter these values
 #               See http://effbot.org/zone/import-confusion.htm for more detail
 
-# INPUTS
+# --- set these values ---
+# path to the MUBench data folder
+DATA_PATH = r"...\MUBench\data"
+# path to the misuse detector to benchmark (must be an executable .jar)
+MISUSE_DETECTOR = r"...\MUDetector.jar"
+# name of the result files written by the given misuse detector
+FILE_DETECTOR_RESULT = "result.txt"
+# the path given to the misuse detector as its result output folder
+RESULTS_PATH = r"...\result"
+# ------------------------
 
 
-DATA_PATH = r"...\MUBench\data"  # path to the data folder
-MISUSE_DETECTOR = r"...\GROUMiner.jar"  # path to the misuse detector to benchmark (must be an executable .jar)
-FILE_DETECTOR_RESULT = "finalAnomalies.txt"  # result written by the misuse detector
-
-# OUTPUTS
-RESULTS_PATH = r"...\result"  # used for saving intermediate results
-BENCHMARK_RESULT_FILE = join(RESULTS_PATH, 'benchmark-result.txt')  # where the final result will be written
-
-# LOGS
+# --- you might want to set these values ---
+# where the final result will be written
+BENCHMARK_RESULT_FILE = join(RESULTS_PATH, 'benchmark-result.txt')
+# where the log files will be written
 LOG_PATH = join(RESULTS_PATH, "_LOGS")
-LOG_FILE_ERROR = join(LOG_PATH, "error.log")  # errors will be logged into this file
+# where the projects will be checked out
+CHECKOUT_DIR = join(gettempdir(), "MUBenchmark")
+# sets a timeout for the misuse detector (in seconds); will ignore timed out cases in the results
+# use sys.maxsize to effectively disable timeout
+TIMEOUT = sys.maxsize
+# all data files which contain this substring will be ignored by the benchmark
+IGNORES = []
+# ------------------------------------------
+
+
+# --- you probably don't need to change these values ---
+# errors are logged in this file
+LOG_FILE_ERROR = join(LOG_PATH, "error.log")
+# checkout output is logged in this file
 LOG_FILE_CHECKOUT = join(LOG_PATH, "checkout.log")
+# result evaluation output is logged in this file
 LOG_FILE_RESULTS_EVALUATION = join(LOG_PATH, "results-evaluation.log")
-
-# LOGS in result folders
-LOG_DETECTOR_ERROR = "error.log"  # contains errors thrown by the detector
-LOG_DETECTOR_OUT = "out.log"  # contains console output of the detector
-
-# BENCHMARK SETTINGS
-CHECKOUT_DIR = join(gettempdir(), "MUBenchmark")  # used as base subfolder for checkouts (will show up in misuse detection results)
-TIMEOUT = sys.maxsize  # sets a timeout for the misuse detector (in seconds); use sys.maxsize to effectively disable timeout
-FILE_IGNORED = "IGNORED"  # if this is file is in a result folder, signifies that the corresponding data was ignored
-IGNORES = []  # all data files which contain this substring will be ignored by the benchmark
+# contains errors thrown by the detector (will be in the result folder for the given case)
+LOG_DETECTOR_ERROR = "error.log"
+# contains console output of the detector (will be in the result folder for the given case)
+LOG_DETECTOR_OUT = "out.log"
+# signifies that the case was ignored due to timeout or manual ignores (will be in the result folder for the given case)
+FILE_IGNORED = "IGNORED"
+# ------------------------------------------------------
