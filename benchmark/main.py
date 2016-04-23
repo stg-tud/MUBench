@@ -1,8 +1,14 @@
+import sys
 from datetime import datetime
 
 from benchmark import analyze
 from datareader import on_all_data_do
 from result_evaluation import evaluate_results
+from utils.prerequisites_checker import check_prerequisites
+
+prerequisites_okay, error_message = check_prerequisites()
+if not prerequisites_okay:
+    sys.exit(error_message)
 
 try:
     start_time = datetime.now()
