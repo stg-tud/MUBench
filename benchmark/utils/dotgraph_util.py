@@ -1,4 +1,6 @@
-from typing import List
+from typing import List, Dict, Union
+
+import yaml
 
 
 def get_graphs(file_content: List[str]) -> List[List[str]]:
@@ -39,7 +41,7 @@ def get_labels(graph: List[str]) -> List[str]:
     return result
 
 
-def get_labels_from_file(file: str) -> List[str]:
+def get_labels_from_result_file(file: str) -> List[str]:
     with open(file, 'r') as source:
         lines = source.readlines()
 
@@ -49,3 +51,14 @@ def get_labels_from_file(file: str) -> List[str]:
         labels = labels + get_labels(graph)
 
     return labels
+
+
+def get_labels_from_data_content(data_content: Dict[str, Union[str, Dict]]) -> List[str]:
+    misuse = data_content.get('misuse', '')
+
+    if not misuse:
+        return []
+
+    graph = misuse['usage']
+
+    return get_labels([graph])

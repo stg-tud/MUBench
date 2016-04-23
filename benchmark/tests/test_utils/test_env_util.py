@@ -40,7 +40,6 @@ class TestEnvironment:
 
         self.DATA = []
 
-        makedirs(self.TEST_ENV_PATH)
         self.__setup_settings()
         self.__create_yaml_data()
         self.__initialize_repositories()
@@ -100,8 +99,9 @@ class TestEnvironment:
         repository = {'url': self.REPOSITORY_GIT, 'type': 'git'}
         files = [{'name': 'some-class.java'}]
         fix = {'repository': repository, 'revision': '', 'files': files}
+        self.git_misuse_label = "someClass#this#doSomething"
         misuse = {'file': files[0], 'type': 'some-type', 'method': 'doSomething(Object, int)',
-                  'usage': 'digraph { 0 [label="someClass#this#doSomething"] }'}
+                  'usage': 'digraph { 0 [label="' + self.git_misuse_label + '"] }'}
         content = {'misuse': misuse, 'fix': fix}
         return content
 

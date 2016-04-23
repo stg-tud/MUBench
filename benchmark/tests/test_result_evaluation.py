@@ -39,11 +39,12 @@ class ResultsTest(unittest.TestCase):
         self.assertEquals(1, actual_results[2])
 
     def test_uses_digraph(self):
-        create_result(self.file_result_svn,
-                      'File: some-class.java' + os.linesep + '---' + os.linesep +
-                      'digraph name {' + os.linesep + '1 [label="some_label"]' + os.linesep + '}')
+        create_result(self.file_result_git,
+                      'File: some-class.java' + os.linesep + '---' + os.linesep + 'digraph name {' + os.linesep +
+                      '1 [label="{}"]'.format(self.test_env.git_misuse_label) +
+                      os.linesep + '}')
         actual_results = result_evaluation.evaluate_results()
-        self.assertEquals(0, actual_results[2])
+        self.assertEquals(1, actual_results[2])
 
 
 class PathNormalizationTest(unittest.TestCase):

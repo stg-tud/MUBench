@@ -4,11 +4,11 @@ from genericpath import isdir, exists, isfile, getsize
 from os import listdir
 from os.path import join, splitext
 from os.path import normpath, basename
-from typing import Dict, Tuple, Optional
+from typing import Dict, Tuple, Optional, List, Union
 
 import datareader
 import settings
-from utils.dotgraph_util import get_labels_from_file
+from utils.dotgraph_util import get_labels_from_result_file, get_labels_from_data_content
 from utils.io import safe_open
 from utils.logger import log_error
 
@@ -33,49 +33,17 @@ def evaluate_single_result(data_file: str, data_content: Dict[str, str]) -> Tupl
                 print("{} was ignored by the benchmark".format(data_file), file=log)
                 return
 
-            file_result = join(dir_result, settings.FILE_DETECTOR_RESULT)
-            print("Evaluating result {} against data {}".format(file_result, data_file), file=log)
+            result_file = join(dir_result, settings.FILE_DETECTOR_RESULT)
+            print("Evaluating result {} against data {}".format(result_file, data_file), file=log)
 
             file_found = False
-            consider_labels = False
             label_found = False
 
-            for fix_file in data_content["fix"]["files"]:
-                normed_misuse_file = normalize_data_misuse_path(fix_file["name"])
+            if exists(result_file):
+                file_found = __is_file_found(result_file, data_content, log)
+                label_found = __is_label_found(result_file, data_content, log)
 
-                print("Looking for file {}".format(normed_misuse_file), file=log)
-
-                if exists(file_result):
-                    lines = [line.rstrip('\n') for line in safe_open(file_result, 'r')]
-
-                    # looking for correct filename
-                    for line in lines:
-                        if line.startswith("File: "):
-                            # cut File: from the line to get the path
-                            found_misuse = line[len("File: "):]
-                            found_misuse = normalize_result_misuse_path(found_misuse)
-
-                            print("Comparing found misuse {}".format(found_misuse), file=log)
-
-                            if found_misuse == normed_misuse_file:
-                                print("Match found!", file=log)
-                                file_found = True
-                                break
-                            else:
-                                print("No match", file=log)
-
-                    # looking for correct label
-                    misuse_labels = []
-                    result_labels = get_labels_from_file(file_result)
-
-                    for result_label in result_labels:
-                        consider_labels = True
-                        is_misuse_label = result_label in misuse_labels
-                        if is_misuse_label:
-                            label_found = True
-                            break
-
-            if file_found and consider_labels and label_found:
+            if file_found and label_found:
                 return 1
             else:
                 return 0
@@ -96,7 +64,8 @@ def evaluate_single_result(data_file: str, data_content: Dict[str, str]) -> Tupl
 
 def evaluate_results() -> Tuple[int, int, int]:
     """
-    For every data files checks if the result of the misuse detection found the misuse and writes the results to a file
+    For every data files checks if the result of the misuse detection found the misuse and writes the results to a file.
+    Returns -1, -1, -1 on error.
     :rtype: list
     :return: A tuple of the form: (number of data files, number of finished misuse detections, number of found misuses)
     """
@@ -152,6 +121,7 @@ def evaluate_results() -> Tuple[int, int, int]:
         exception_string = traceback.format_exc()
         print(exception_string)
         log_error(exception_string)
+        return -1, -1, -1
 
 
 def normalize_data_misuse_path(misuse_file: str) -> str:
@@ -193,3 +163,44 @@ def normalize_result_misuse_path(misuse_file: str) -> str:
         normed_misuse_file = normed_misuse_file.split('trunk' + os.sep, 1)[1]
 
     return normed_misuse_file
+
+
+def __is_file_found(result_file: str, data_content: Dict[str, Union[str, Dict]], log_stream) -> bool:
+    lines = [line.rstrip('\n') for line in safe_open(result_file, 'r')]
+
+    for line in lines:
+        if line.startswith("File: "):
+            # cut File: from the line to get the path
+            found_misuse = line[len("File: "):]
+            normed_found_misuse = normalize_result_misuse_path(found_misuse)
+
+            for misuse_file in data_content["fix"]["files"]:
+                normed_misuse_file = normalize_data_misuse_path(misuse_file["name"])
+
+                print("{}: Comparing found misuse {}".format(normed_misuse_file, normed_found_misuse), file=log_stream)
+
+                if normed_found_misuse == normed_misuse_file:
+                    print("Match found!", file=log_stream)
+                    return True
+                else:
+                    print("No match", file=log_stream)
+
+    return False
+
+
+def __is_label_found(result_file: str, data_content: Dict[str, Union[str, Dict]], log_stream) -> bool:
+    misuse_labels = get_labels_from_data_content(data_content)
+    result_labels = get_labels_from_result_file(result_file)
+
+    # don't check if no labels are given on any end
+    if not misuse_labels or not result_labels:
+        return True
+
+    for result_label in result_labels:
+        is_misuse_label = result_label in misuse_labels
+        if is_misuse_label:
+            print("Found correct label!", file=log_stream)
+            return True
+
+    print("Correct label was not found!", file=log_stream)
+    return False
