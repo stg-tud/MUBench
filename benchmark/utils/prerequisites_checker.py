@@ -1,5 +1,5 @@
 import subprocess
-from os import linesep
+
 from typing import Tuple
 
 import settings
@@ -12,39 +12,47 @@ def check_prerequisites() -> Tuple[bool, str]:
     java_installed, java_error = check_java_installed()
 
     prerequisites_okay = git_installed and svn_installed and java_installed
+    error_message = "Prerequisites okay!"
 
-    error_message = "Missing prerequisites:" + linesep
-    error_message = error_message + git_error + svn_error + java_error
+    if not prerequisites_okay:
+        error_message = "ERROR! Missing Prerequisites: "
+
+        if not git_installed:
+            error_message += "Git, "
+        if not svn_installed:
+            error_message += "SVN, "
+        if not java_installed:
+            error_message += "Java"
 
     return prerequisites_okay, error_message
 
 
-def check_git_installed() -> Tuple[bool, str]:
+def check_git_installed() -> bool:
 
     try:
         with safe_open(settings.LOG_FILE_ERROR, 'w+') as error_log:
-            subprocess.check_output(['git', '--version'], stderr=error_log)
-    except subprocess.CalledProcessError as error:
-        return False, "Git:" + linesep + error.output + linesep
+            subprocess.check_output(['git', '--version'], shell=True, stderr=error_log)
+    except subprocess.CalledProcessError:
+        return False
 
-    return True, ""
+    return True
 
 
-def check_svn_installed() -> Tuple[bool, str]:
+def check_svn_installed() -> bool:
     try:
         with safe_open(settings.LOG_FILE_ERROR, 'w+') as error_log:
-            subprocess.check_output(['svn', '--version', '--quiet'], stderr=error_log)
-    except subprocess.CalledProcessError as error:
-        return False, "SVN:" + linesep + error.output + linesep
+            subprocess.check_output(['svn', '--version', '--quiet'], shell=True, stderr=error_log)
+    except subprocess.CalledProcessError:
+        return False
 
-    return True, ""
+    return True
 
 
-def check_java_installed() -> Tuple[bool, str]:
+def check_java_installed() -> bool:
     try:
         with safe_open(settings.LOG_FILE_ERROR, 'w+') as error_log:
-            subprocess.check_output(['java', '-version'], stderr=error_log)
-    except subprocess.CalledProcessError as error:
-        return False, "Java:" + linesep + error.output + linesep
+            subprocess.check_output(['java', '-version'], shell=True, stderr=error_log)
+    except subprocess.CalledProcessError:
+        return False
 
-    return True, ""
+    return True
