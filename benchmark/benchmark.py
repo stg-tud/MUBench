@@ -22,10 +22,6 @@ def analyze(file: str, misuse: dict) -> None:
     """
     try:
         result_dir = join(settings.RESULTS_PATH, splitext(basename(file))[0])
-        if any([ignore in file for ignore in settings.IGNORES]):
-            print("Warning: ignored {}".format(file))
-            create_file(join(result_dir, settings.FILE_IGNORED), truncate=True)
-            return
 
         fix = misuse["fix"]
         repository = fix["repository"]
@@ -48,7 +44,7 @@ def analyze(file: str, misuse: dict) -> None:
                                     bufsize=1, stdout=out_log, stderr=error_log, timeout=settings.TIMEOUT)
                 except subprocess.TimeoutExpired:
                     print("Timeout: {}".format(file))
-                    create_file(join(result_dir, settings.FILE_IGNORED), truncate=True)
+                    settings.BLACK_LIST.append(file)
                     return
 
     except (KeyboardInterrupt, SystemExit):

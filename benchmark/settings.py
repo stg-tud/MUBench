@@ -31,7 +31,9 @@ CHECKOUT_DIR = join(gettempdir(), "MUBenchmark")
 # use sys.maxsize to effectively disable timeout
 TIMEOUT = sys.maxsize
 # all data files which contain this substring will be ignored by the benchmark
-IGNORES = []
+BLACK_LIST = []
+# only datafiles which contain one of these strings will be use by the benchmark
+WHITE_LIST = [""]  # default [""] enables all data (since "" is a substring of every string)
 # ------------------------------------------
 
 
@@ -46,6 +48,4 @@ LOG_FILE_RESULTS_EVALUATION = join(LOG_PATH, "results-evaluation.log")
 LOG_DETECTOR_ERROR = "error.log"
 # contains console output of the detector (will be in the result folder for the given case)
 LOG_DETECTOR_OUT = "out.log"
-# signifies that the case was ignored due to timeout or manual ignores (will be in the result folder for the given case)
-FILE_IGNORED = "IGNORED"
 # ------------------------------------------------------

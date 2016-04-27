@@ -29,10 +29,6 @@ def evaluate_single_result(data_file: str, data_content: Dict[str, str]) -> Tupl
         with safe_open(settings.LOG_FILE_RESULTS_EVALUATION, 'a+') as log:
             print("===========================================================", file=log)
 
-            if exists(join(dir_result, settings.FILE_IGNORED)):
-                print("{} was ignored by the benchmark".format(data_file), file=log)
-                return
-
             result_file = join(dir_result, settings.FILE_DETECTOR_RESULT)
             print("Evaluating result {} against data {}".format(result_file, data_file), file=log)
 

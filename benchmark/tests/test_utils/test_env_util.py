@@ -32,7 +32,8 @@ class TestEnvironment:
         self.LOG_FILE_RESULTS_EVALUATION = join(self.LOG_PATH, 'test-results-evaluation.log')
 
         self.CHECKOUT_DIR = join(self.TEST_ENV_PATH, 'test-checkout')
-        self.IGNORES = []
+        self.BLACK_LIST = []
+        self.WHITE_LIST = [""]
 
         self.REPOSITORY_GIT = join(self.TEST_ENV_PATH, 'repository-git')
         self.REPOSITORY_SVN = Path(join(self.TEST_ENV_PATH, 'repository-svn')).as_uri()
@@ -62,7 +63,8 @@ class TestEnvironment:
         settings.LOG_FILE_RESULTS_EVALUATION = self.LOG_FILE_RESULTS_EVALUATION
 
         settings.CHECKOUT_DIR = self.CHECKOUT_DIR
-        settings.IGNORES = self.IGNORES
+        settings.BLACK_LIST = self.BLACK_LIST
+        settings.WHITE_LIST = self.WHITE_LIST
 
     def __initialize_repositories(self):
         # initialize git repository
