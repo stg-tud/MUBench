@@ -1,7 +1,5 @@
 from typing import List, Dict, Union
 
-import yaml
-
 
 def get_graphs(file_content: List[str]) -> List[List[str]]:
     in_graph = False

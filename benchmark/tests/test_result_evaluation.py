@@ -5,7 +5,7 @@ from os.path import join
 from tempfile import gettempdir
 
 import result_evaluation
-import settings
+from config import Config
 from tests.test_utils.test_env_util import TestEnvironment
 from utils.io import safe_write
 
@@ -14,8 +14,8 @@ class ResultsTest(unittest.TestCase):
     def setUp(self):
         self.test_env = TestEnvironment()
 
-        self.file_result_git = join(self.test_env.RESULTS_PATH, 'git', settings.FILE_DETECTOR_RESULT)
-        self.file_result_svn = join(self.test_env.RESULTS_PATH, 'svn', settings.FILE_DETECTOR_RESULT)
+        self.file_result_git = join(Config.RESULTS_PATH, 'git', Config.FILE_DETECTOR_RESULT)
+        self.file_result_svn = join(Config.RESULTS_PATH, 'svn', Config.FILE_DETECTOR_RESULT)
 
     def tearDown(self):
         self.test_env.tearDown()
@@ -49,7 +49,7 @@ class ResultsTest(unittest.TestCase):
 
 class PathNormalizationTest(unittest.TestCase):
     def setUp(self):
-        settings.CHECKOUT_DIR = join(gettempdir(), 'MUBenchmark')
+        Config.CHECKOUT_DIR = join(gettempdir(), 'MUBenchmark')
 
     def test_normalize_git_path_from_data(self):
         non_normalized_path = r'src/main/java/com/alibaba/druid/filter/config/ConfigTools.java'

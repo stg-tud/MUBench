@@ -6,6 +6,7 @@ from tempfile import gettempdir
 from shutil import rmtree
 
 import benchmark
+from config import Config
 from tests.test_utils.test_env_util import TestEnvironment
 
 
@@ -16,7 +17,7 @@ class BenchmarkTest(unittest.TestCase):
 
     def tearDown(self):
         benchmark.CATCH_ERRORS = True
-        benchmark_creates_this = join(gettempdir(), self.test_env.CHECKOUT_DIR)
+        benchmark_creates_this = join(gettempdir(), Config.CHECKOUT_DIR)
         rmtree(benchmark_creates_this, ignore_errors=True)
         self.test_env.tearDown()
 
@@ -24,7 +25,7 @@ class BenchmarkTest(unittest.TestCase):
         self.assertGreater(len(self.test_env.DATA), 0, "Test data is empty")
         for data in self.test_env.DATA:
             benchmark.analyze(data[0], data[1])
-        self.assertFalse(listdir(self.test_env.RESULTS_PATH) == [])
+        self.assertFalse(listdir(Config.RESULTS_PATH) == [])
 
 
 class ExtractProjectNameTest(unittest.TestCase):

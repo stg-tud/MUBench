@@ -8,7 +8,7 @@ from tempfile import mkdtemp
 import utils.io
 
 import checkout
-import settings
+from config import Config
 from tests.test_utils.test_env_util import TestEnvironment
 
 GIT = 'git'
@@ -61,10 +61,10 @@ class CheckoutTest(unittest.TestCase):
             checkout.checkout_parent('invalid vcs', self.test_env.REPOSITORY_GIT, GIT_REVISION, self.temp_dir)
 
     def test_logs_into_log_folder(self):
-        settings.LOG_PATH = join(self.temp_dir, 'logs')
-        settings.LOG_FILE_CHECKOUT = join(settings.LOG_PATH, 'checkout.log')
+        Config.LOG_PATH = join(self.temp_dir, 'logs')
+        Config.LOG_FILE_CHECKOUT = join(Config.LOG_PATH, 'checkout.log')
         checkout.checkout_parent(GIT, self.test_env.REPOSITORY_GIT, GIT_REVISION, self.temp_dir)
-        self.assertTrue(exists(settings.LOG_FILE_CHECKOUT))
+        self.assertTrue(exists(Config.LOG_FILE_CHECKOUT))
 
     def test_reset_to_revision_git(self):
         checkout.checkout_parent(GIT, self.test_env.REPOSITORY_GIT, GIT_REVISION, self.temp_dir)

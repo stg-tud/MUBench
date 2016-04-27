@@ -4,10 +4,10 @@ from genericpath import isdir, exists, isfile, getsize
 from os import listdir
 from os.path import join, splitext
 from os.path import normpath, basename
-from typing import Dict, Tuple, Optional, List, Union
+from typing import Dict, Tuple, Optional, Union
 
 import datareader
-import settings
+from config import Config
 from utils.dotgraph_util import get_labels_from_result_file, get_labels_from_data_content
 from utils.io import safe_open
 from utils.logger import log_error
@@ -26,10 +26,10 @@ def evaluate_single_result(data_file: str, data_content: Dict[str, str]) -> Tupl
         Returns 1 iff the detector found the misuse; else returns 0
         :rtype: int
         """
-        with safe_open(settings.LOG_FILE_RESULTS_EVALUATION, 'a+') as log:
+        with safe_open(Config.LOG_FILE_RESULTS_EVALUATION, 'a+') as log:
             print("===========================================================", file=log)
 
-            result_file = join(dir_result, settings.FILE_DETECTOR_RESULT)
+            result_file = join(dir_result, Config.FILE_DETECTOR_RESULT)
             print("Evaluating result {} against data {}".format(result_file, data_file), file=log)
 
             file_found = False
@@ -44,12 +44,12 @@ def evaluate_single_result(data_file: str, data_content: Dict[str, str]) -> Tupl
             else:
                 return 0
 
-    dirs_results = [join(settings.RESULTS_PATH, result_dir) for result_dir in listdir(settings.RESULTS_PATH) if
-                    isdir(join(settings.RESULTS_PATH, result_dir))]
+    dirs_results = [join(Config.RESULTS_PATH, result_dir) for result_dir in listdir(Config.RESULTS_PATH) if
+                    isdir(join(Config.RESULTS_PATH, result_dir))]
     for dir_result in dirs_results:
         is_result_for_file = splitext(basename(normpath(data_file)))[0] == basename(normpath(dir_result))
 
-        error_log = join(dir_result, settings.LOG_DETECTOR_ERROR)
+        error_log = join(dir_result, Config.LOG_DETECTOR_ERROR)
         errors_occurred = exists(error_log) and isfile(error_log) and getsize(error_log) > 0
 
         if is_result_for_file and not errors_occurred:
@@ -93,7 +93,7 @@ def evaluate_results() -> Tuple[int, int, int]:
         not_found_misuses = map(to_data_name, filter(was_not_successful, results))
         misuses_with_errors = map(to_data_name, filter(finished_with_error, results))
 
-        with safe_open(settings.BENCHMARK_RESULT_FILE, 'a+') as file_result:
+        with safe_open(Config.BENCHMARK_RESULT_FILE, 'a+') as file_result:
             print('----------------------------------------------', file=file_result)
             print('Total number of misuses in the benchmark: ' + str(total), file=file_result)
             print('Number of analyzed misuses (might be less due to ignore or errors): ' + str(applied),
@@ -146,7 +146,7 @@ def normalize_result_misuse_path(misuse_file: str) -> str:
     normed_misuse_file = normpath(misuse_file)
 
     # cut everything before project subfolder
-    checkout_dir_prefix = settings.CHECKOUT_DIR + os.sep
+    checkout_dir_prefix = Config.CHECKOUT_DIR + os.sep
     if checkout_dir_prefix in normed_misuse_file:
         normed_misuse_file = normed_misuse_file.split(checkout_dir_prefix, 1)[1]
 

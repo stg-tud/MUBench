@@ -4,7 +4,7 @@ from shutil import copy
 from subprocess import Popen
 from typing import Union
 
-import settings
+from config import Config
 from utils.io import safe_open
 
 
@@ -73,7 +73,7 @@ def checkout(vcs: str, repository: str, revision: str, dir_target: str) -> None:
         # Make sure no shell injection happens here!
         # For more detail go to https://docs.python.org/3/library/subprocess.html#security-considerations
 
-        with safe_open(settings.LOG_FILE_CHECKOUT, 'a+') as log:
+        with safe_open(Config.LOG_FILE_CHECKOUT, 'a+') as log:
             print("================================================", file=log)
             print("Checkout({}): {}".format(vcs, repository), file=log)
             print("================================================", file=log)
@@ -95,7 +95,7 @@ def checkout(vcs: str, repository: str, revision: str, dir_target: str) -> None:
                 Popen(svn_checkout, cwd=dir_target, bufsize=1, stdout=log, stderr=log).wait()
 
             elif vcs == 'synthetic':
-                copy(join(settings.DATA_PATH, repository), dir_target)
+                copy(join(Config.DATA_PATH, repository), dir_target)
 
             else:
                 raise ValueError("Unknown version control type: {}".format(vcs))
@@ -110,7 +110,7 @@ def reset_to_revision(vcs: str, local_repository: str, revision):
     print("Repository: " + local_repository)
     print("Revision: " + revision)
 
-    with safe_open(settings.LOG_FILE_CHECKOUT, 'a+') as log:
+    with safe_open(Config.LOG_FILE_CHECKOUT, 'a+') as log:
         if vcs == 'git':
             Popen('git checkout ' + revision, cwd=local_repository, bufsize=1, shell=True, stdout=log, stderr=log).wait()
         elif vcs == 'svn':

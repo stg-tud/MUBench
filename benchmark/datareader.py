@@ -4,7 +4,7 @@ from typing import List, Callable, Dict, TypeVar, Union
 
 import yaml
 
-import settings
+from config import Config
 
 T = TypeVar('ResultType')
 
@@ -16,13 +16,13 @@ def on_all_data_do(function: Callable[[str, Dict[str, Union[str, Dict]]], T]) ->
     :return: A list of the results of each function execution
     """
 
-    datafiles = [join(settings.DATA_PATH, file) for file in listdir(settings.DATA_PATH) if
-                 isfile(join(settings.DATA_PATH, file)) and file.endswith(".yml")]
+    datafiles = [join(Config.DATA_PATH, file) for file in listdir(Config.DATA_PATH) if
+                 isfile(join(Config.DATA_PATH, file)) and file.endswith(".yml")]
 
     result = []
     for i, file in enumerate(datafiles, start=1):
-        blacklisted = any([black_listed in file for black_listed in settings.BLACK_LIST])
-        whitelisted = any([white_listed in file for white_listed in settings.WHITE_LIST])
+        blacklisted = any([black_listed in file for black_listed in Config.BLACK_LIST])
+        whitelisted = any([white_listed in file for white_listed in Config.WHITE_LIST])
         if not whitelisted or blacklisted:
             print("Warning: ignored {}".format(file))
             break

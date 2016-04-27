@@ -2,11 +2,10 @@ import subprocess
 import traceback
 from genericpath import exists
 from os.path import join, splitext, basename
-from tempfile import gettempdir
 
-import settings
+from config import Config
 from checkout import checkout_parent, reset_to_revision
-from utils.io import safe_open, create_file
+from utils.io import safe_open
 from utils.logger import log_error
 
 CATCH_ERRORS = True  # only used for testing
@@ -21,12 +20,12 @@ def analyze(file: str, misuse: dict) -> None:
     :return: Nothing
     """
     try:
-        result_dir = join(settings.RESULTS_PATH, splitext(basename(file))[0])
+        result_dir = join(Config.RESULTS_PATH, Config.MISUSE_DETECTOR, splitext(basename(file))[0])
 
         fix = misuse["fix"]
         repository = fix["repository"]
 
-        base_dir = settings.CHECKOUT_DIR
+        base_dir = Config.CHECKOUT_DIR
         project_name = extract_project_name_from_file_path(file)
         checkout_dir = join(base_dir, project_name)
 
@@ -35,16 +34,19 @@ def analyze(file: str, misuse: dict) -> None:
         else:
             reset_to_revision(repository["type"], checkout_dir, fix.get('revision', ""))
 
-        print("Running \'{}\'; Results in \'{}\'...".format(settings.MISUSE_DETECTOR, result_dir))
+        print("Running \'{}\'; Results in \'{}\'...".format(Config.MISUSE_DETECTOR, result_dir))
 
-        with safe_open(join(result_dir, settings.LOG_DETECTOR_OUT), 'w+') as out_log:
-            with safe_open(join(result_dir, settings.LOG_DETECTOR_ERROR), 'w+') as error_log:
+        with safe_open(join(result_dir, Config.LOG_DETECTOR_OUT), 'w+') as out_log:
+            with safe_open(join(result_dir, Config.LOG_DETECTOR_ERROR), 'w+') as error_log:
                 try:
-                    subprocess.call(["java", "-jar", settings.MISUSE_DETECTOR, checkout_dir, result_dir],
-                                    bufsize=1, stdout=out_log, stderr=error_log, timeout=settings.TIMEOUT)
+                    absolute_misuse_detector_path = join(Config.MISUSE_DETECTOR_PATH, Config.MISUSE_DETECTOR,
+                                                         Config.MISUSE_DETECTOR + '.jar')
+
+                    subprocess.call(["java", "-jar", absolute_misuse_detector_path, checkout_dir, result_dir],
+                                    bufsize=1, stdout=out_log, stderr=error_log, timeout=Config.TIMEOUT)
                 except subprocess.TimeoutExpired:
                     print("Timeout: {}".format(file))
-                    settings.BLACK_LIST.append(file)
+                    Config.BLACK_LIST.append(file)
                     return
 
     except (KeyboardInterrupt, SystemExit):
