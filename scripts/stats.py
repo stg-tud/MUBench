@@ -4,17 +4,16 @@
 from __future__ import division
 import os
 import yaml
-from sets import Set
 
 rootpath = ".."
 datapath = os.path.join(rootpath, "data")
 
-print "Scanning misuses..."
+print("Scanning misuses...")
 
 number_of_misuses = 0
 number_of_crashes = 0
-projects = Set()
-sources = Set()
+projects = set()
+sources = set()
 
 for filename in os.listdir(datapath):
     if filename.endswith(".yml"):
@@ -34,13 +33,13 @@ for filename in os.listdir(datapath):
                 projects.add("survey")
         
         except KeyError as e:
-            print "Did not find '%s' in '%s'" % (e.args[0], filename)
+            print("Did not find '%s' in '%s'" % (e.args[0], filename))
         finally:
             file.close()
 
 print
-print "MUBench contains:"
-print "- %d misuses" % number_of_misuses
-print "- %d crashes (%.1f%%)" % (number_of_crashes, (number_of_crashes / number_of_misuses * 100))
-print "- %d sources" % len(sources)
-print "- %d projects" % len(projects)
+print("MUBench contains:")
+print("- %d misuses" % number_of_misuses)
+print("- %d crashes (%.1f%%)" % (number_of_crashes, (number_of_crashes / number_of_misuses * 100)))
+print("- %d sources" % len(sources))
+print("- %d projects" % len(projects))

@@ -4,12 +4,11 @@
 from __future__ import division
 import os
 import yaml
-from sets import Set
 
 rootpath = ".."
 datapath = os.path.join(rootpath, "data")
 
-print "Scanning misuses in '%s'" % datapath
+print("Scanning misuses in '%s'" % datapath)
 
 statistics = {}
 
@@ -31,7 +30,7 @@ for filename in os.listdir(datapath):
             file.close()
 
 print
-print "%25s %7s" % ("Challenge", "Misuses")
+print("%25s %7s" % ("Challenge", "Misuses"))
 for statname in statistics:
-    print "%25s %7d" % (statname, statistics[statname])
+    print("%25s %7d" % (statname, statistics[statname]))
 

@@ -8,7 +8,7 @@ import yaml
 rootpath = ".."
 datapath = os.path.join(rootpath, "data")
 
-print "Scanning misuses..."
+print("Scanning misuses...")
 
 projects = {}
 
@@ -28,12 +28,12 @@ for filename in os.listdir(datapath):
                 project["crashes"] += 1
             projects[projectname] = project
         except KeyError as e:
-            print "Did not find '%s' in '%s'" % (e.args[0], filename)
+            print("Did not find '%s' in '%s'" % (e.args[0], filename))
         finally:
             file.close()
 
 print
-print "  %40s %10s %15s" % ("Project", "Misuses", "Crashes")
+print("  %40s %10s %15s" % ("Project", "Misuses", "Crashes"))
 for projectname in projects:
     project = projects[projectname]
-    print "  %40s %10d %5d - % 6.1f%%" % (projectname, project["misuses"], project["crashes"], (project["crashes"] / project["misuses"] * 100))
+    print("  %40s %10d %5d - % 6.1f%%" % (projectname, project["misuses"], project["crashes"], (project["crashes"] / project["misuses"] * 100)))

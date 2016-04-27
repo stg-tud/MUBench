@@ -2,8 +2,8 @@
 # Checks PyYAML setup
 
 try:
-    print "Checking PyYAML...",
+    print("Checking PyYAML...")
     import yaml
-    print " ok."
+    print(" ok.")
 except ImportError:
-    print " failed! Please check your setup."
+    print(" failed! Please check your setup.")
