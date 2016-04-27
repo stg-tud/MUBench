@@ -7,9 +7,9 @@ from utils.io import safe_open
 
 
 def check_prerequisites() -> Tuple[bool, str]:
-    git_installed, git_error = check_git_installed()
-    svn_installed, svn_error = check_svn_installed()
-    java_installed, java_error = check_java_installed()
+    git_installed = check_git_installed()
+    svn_installed = check_svn_installed()
+    java_installed = check_java_installed()
 
     prerequisites_okay = git_installed and svn_installed and java_installed
     error_message = "Prerequisites okay!"
