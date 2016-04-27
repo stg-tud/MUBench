@@ -10,13 +10,13 @@ from tempfile import gettempdir
 
 # --- set these values ---
 # path to the MUBench data folder
-DATA_PATH = r"...\MUBench\data"
+DATA_PATH = r"./data"
 # path to the misuse detector to benchmark (must be an executable .jar)
-MISUSE_DETECTOR = r"...\MUDetector.jar"
+MISUSE_DETECTOR = r"./detectors"
 # name of the result files written by the given misuse detector
 FILE_DETECTOR_RESULT = "result.txt"
 # the path given to the misuse detector as its result output folder
-RESULTS_PATH = r"...\result"
+RESULTS_PATH = "../MUBenchmark-results"
 # ------------------------
 
 
@@ -26,10 +26,10 @@ BENCHMARK_RESULT_FILE = join(RESULTS_PATH, 'benchmark-result.txt')
 # where the log files will be written
 LOG_PATH = join(RESULTS_PATH, "_LOGS")
 # where the projects will be checked out
-CHECKOUT_DIR = join(gettempdir(), "MUBenchmark")
+CHECKOUT_DIR = "../MUBenchmark-checkouts"
 # sets a timeout for the misuse detector (in seconds); will ignore timed out cases in the results
-# use sys.maxsize to effectively disable timeout
-TIMEOUT = sys.maxsize
+# None disables the timeout
+TIMEOUT = None
 # all data files which contain this substring will be ignored by the benchmark
 BLACK_LIST = []
 # only datafiles which contain one of these strings will be use by the benchmark
