@@ -114,7 +114,7 @@ def reset_to_revision(vcs: str, local_repository: str, revision):
         if vcs == 'git':
             Popen('git checkout ' + revision, cwd=local_repository, bufsize=1, shell=True, stdout=log, stderr=log).wait()
         elif vcs == 'svn':
-            Popen('svn update -r {}'.format(revision), cwd=local_repository, bufsize=1, stdout=log, stderr=log).wait()
+            Popen('svn update -r {}'.format(revision), cwd=local_repository, bufsize=1, shell=True, stdout=log, stderr=log).wait()
         elif vcs == 'synthetic':
             pass  # nothing to do here
         else:
