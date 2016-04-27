@@ -31,7 +31,7 @@ def check_git_installed() -> bool:
 
     try:
         with safe_open(settings.LOG_FILE_ERROR, 'w+') as error_log:
-            subprocess.check_output(['git', '--version'], shell=True, stderr=error_log)
+            subprocess.check_output(['git --version'], shell=True, stderr=error_log)
     except subprocess.CalledProcessError:
         return False
 
@@ -41,7 +41,7 @@ def check_git_installed() -> bool:
 def check_svn_installed() -> bool:
     try:
         with safe_open(settings.LOG_FILE_ERROR, 'w+') as error_log:
-            subprocess.check_output(['svn', '--version', '--quiet'], shell=True, stderr=error_log)
+            subprocess.check_output(['svn --version --quiet'], shell=True, stderr=error_log)
     except subprocess.CalledProcessError:
         return False
 
@@ -51,7 +51,7 @@ def check_svn_installed() -> bool:
 def check_java_installed() -> bool:
     try:
         with safe_open(settings.LOG_FILE_ERROR, 'w+') as error_log:
-            subprocess.check_output(['java', '-version'], shell=True, stderr=error_log)
+            subprocess.check_output(['java -version'], shell=True, stderr=error_log)
     except subprocess.CalledProcessError:
         return False
 
