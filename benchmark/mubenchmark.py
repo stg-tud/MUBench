@@ -9,6 +9,7 @@ from checkout import Checkout
 from detector_runner import DetectorRunner
 from result_evaluation import ResultEvaluation
 from utils.prerequisites_checker import check_prerequisites
+from utils import command_line_util
 
 
 class MUBenchmark:
@@ -31,12 +32,17 @@ class MUBenchmark:
         self.results_path = realpath(join(pardir, "MUBenchmark-results", self.detector))
         self.checkout_dir = realpath(join(pardir, "MUBenchmark-checkouts"))
 
+        self.check()
+
     @staticmethod
     def check():
+        print("Checking prerequisites... ", end='')
         prerequisites_okay, error_message = check_prerequisites()
         if not prerequisites_okay:
             print('')  # add the before omitted newline
             sys.exit(error_message)
+        else:
+            print("okay")
 
     def checkout(self):
         checkout = Checkout(self.data_path, self.checkout_dir)
@@ -78,11 +84,19 @@ class MUBenchmark:
             end_time = datetime.now()
             print("Total evaluation time: {}".format(str(end_time - start_time)))
 
-benchmark = MUBenchmark(detector='dummy-miner')
-benchmark.check()
-benchmark.checkout()
-benchmark.mine()
-benchmark.evaluate()
+config = command_line_util.parse_args(sys.argv)
+
+benchmark = MUBenchmark(detector=config.detector)
+
+if config.mode == 'check':
+    # prerequisites are always checked implicitly
+    sys.exit()
+if config.mode == 'checkout':
+    benchmark.checkout()
+if config.mode == 'mine':
+    benchmark.mine()
+if config.mode == 'eval':
+    benchmark.evaluate()
 
 print("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
 print("++++++++++++++++++++++++ FINISHED +++++++++++++++++++++++++")
