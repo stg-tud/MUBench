@@ -79,6 +79,10 @@ class MUBenchmark:
             print("Total evaluation time: {}".format(str(end_time - start_time)))
 
 benchmark = MUBenchmark(detector='dummy-miner')
+benchmark.check()
+benchmark.checkout()
+benchmark.mine()
+benchmark.evaluate()
 
 print("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
 print("++++++++++++++++++++++++ FINISHED +++++++++++++++++++++++++")
