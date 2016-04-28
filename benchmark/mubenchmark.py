@@ -86,7 +86,8 @@ class MUBenchmark:
 
 config = command_line_util.parse_args(sys.argv)
 
-benchmark = MUBenchmark(detector=config.detector)
+benchmark = MUBenchmark(detector=config.detector,
+                        white_list=config.white_list)
 
 if config.mode == 'check':
     # prerequisites are always checked implicitly
