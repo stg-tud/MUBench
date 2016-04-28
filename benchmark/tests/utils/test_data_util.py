@@ -45,19 +45,22 @@ class PathNormalizationTest(unittest.TestCase):
     def test_normalize_git_path_from_result(self):
         non_normalized_path = r'C:\Users\m8is\AppData\Local\Temp\MUBenchmark\alibaba-druid\src\main\java\com\alibaba\druid\filter\config\ConfigTools.java'
         expected_normalized_path = r'src\main\java\com\alibaba\druid\filter\config\ConfigTools.java'
-        actual_normalized_path = normalize_result_misuse_path(non_normalized_path)
+        actual_normalized_path = normalize_result_misuse_path(non_normalized_path,
+                                                              r'C:\Users\m8is\AppData\Local\Temp\MUBenchmark')
         self.assertEquals(expected_normalized_path, actual_normalized_path)
 
     def test_normalize_svn_path_from_result(self):
         non_normalized_path = r'C:\Users\m8is\AppData\Local\Temp\MUBenchmark\jackrabbit\trunk\src\java\org\apache\jackrabbit\core\state\obj\ObjectPersistenceManager.java'
         expected_normalized_path = r'src\java\org\apache\jackrabbit\core\state\obj\ObjectPersistenceManager.java'
-        actual_normalized_path = normalize_result_misuse_path(non_normalized_path)
+        actual_normalized_path = normalize_result_misuse_path(non_normalized_path,
+                                                              r'C:\Users\m8is\AppData\Local\Temp\MUBenchmark')
         self.assertEquals(expected_normalized_path, actual_normalized_path)
 
     def test_normalize_synthetic_path_from_result(self):
         non_normalized_path = r'C:\Users\m8is\AppData\Local\Temp\MUBenchmark\synthetic-androidactivity-1\synthetic-androidactivity-1.java'
         expected_normalized_path = r'synthetic-androidactivity-1.java'
-        actual_normalized_path = normalize_result_misuse_path(non_normalized_path)
+        actual_normalized_path = normalize_result_misuse_path(non_normalized_path,
+                                                              r'C:\Users\m8is\AppData\Local\Temp\MUBenchmark')
         self.assertEquals(expected_normalized_path, actual_normalized_path)
 
 

@@ -1,14 +1,9 @@
 import unittest
 from genericpath import exists
-from os import mkdir
-from os.path import join, basename
-from shutil import rmtree
-from tempfile import mkdtemp
+from os.path import join
 
+from checkout import Checkout
 import utils.io
-
-import checkout
-from config import Config
 from tests.test_utils.test_env_util import TestEnvironment
 
 GIT = 'git'
@@ -23,78 +18,83 @@ SVN_REVISION = 1
 class CheckoutTest(unittest.TestCase):
     def setUp(self):
         self.test_env = TestEnvironment()
-        self.temp_dir = mkdtemp()
+        self.uut = Checkout(self.test_env.CONFIG.DATA_PATH, self.test_env.CONFIG.CHECKOUT_DIR)
 
     def tearDown(self):
         self.test_env.tearDown()
-        rmtree(self.temp_dir, ignore_errors=True)
 
     def test_creates_git_repository(self):
-        checkout.checkout_parent(GIT, self.test_env.REPOSITORY_GIT, GIT_REVISION, self.temp_dir)
-        repository = join(self.temp_dir, '.git')
+        target_dir = join(self.test_env.CONFIG.CHECKOUT_DIR, 'git')
+        self.uut.checkout_parent(GIT, self.test_env.REPOSITORY_GIT, GIT_REVISION, target_dir)
+        repository = join(target_dir, '.git')
         self.assertTrue(exists(repository))
 
     def test_creates_svn_repository(self):
-        checkout.checkout_parent(SVN, self.test_env.REPOSITORY_SVN, SVN_REVISION, self.temp_dir)
-        repository = join(self.temp_dir, 'repository-svn')
+        target_dir = join(self.test_env.CONFIG.CHECKOUT_DIR, 'svn')
+        self.uut.checkout_parent(SVN, self.test_env.REPOSITORY_SVN, SVN_REVISION, target_dir)
+        repository = join(target_dir, 'repository-svn')
         self.assertTrue(exists(repository))
 
     def test_copies_synthetic_repository(self):
-        checkout.checkout_parent(SYNTHETIC, self.test_env.REPOSITORY_SYNTHETIC, '', self.temp_dir)
-        repository = join(self.temp_dir, basename(self.test_env.REPOSITORY_SYNTHETIC))
+        target_dir = join(self.test_env.CONFIG.CHECKOUT_DIR, 'synthetic')
+        self.uut.checkout_parent(SYNTHETIC, 'synthetic-close-1.java', '', target_dir)
+        repository = join(target_dir, 'synthetic-close-1.java')
         self.assertTrue(exists(repository))
 
     def test_checkout_fails_for_non_empty_target_dir(self):
-        mkdir(join(self.temp_dir, 'something'))
         with self.assertRaises(ValueError):
-            checkout.checkout_parent(GIT, self.test_env.REPOSITORY_GIT, GIT_REVISION, self.temp_dir)
+            non_empty_dir = join(self.test_env.CONFIG.CHECKOUT_DIR, 'non-empty-target-dir')
+            utils.io.create_file_path(join(non_empty_dir, 'something'))
+            utils.io.create_file(join(non_empty_dir, 'something'))
+            self.uut.checkout_parent(GIT, self.test_env.REPOSITORY_GIT, GIT_REVISION, non_empty_dir)
 
     def test_checkout_fails_for_file_as_target_dir(self):
-        file = join(self.temp_dir, 'file')
+        file = join(self.test_env.CONFIG.CHECKOUT_DIR, 'file')
         utils.io.create_file_path(file)
         utils.io.create_file(file)
         with self.assertRaises(ValueError):
-            checkout.checkout_parent(GIT, self.test_env.REPOSITORY_GIT, GIT_REVISION, file)
+            self.uut.checkout_parent(GIT, self.test_env.REPOSITORY_GIT, GIT_REVISION, file)
 
     def test_checkout_fails_for_unknown_vcs(self):
         with self.assertRaises(ValueError):
-            checkout.checkout_parent('invalid vcs', self.test_env.REPOSITORY_GIT, GIT_REVISION, self.temp_dir)
+            target_dir = join(self.test_env.CONFIG.CHECKOUT_DIR, 'unknown-vcs')
+            self.uut.checkout_parent('invalid vcs', self.test_env.REPOSITORY_GIT, GIT_REVISION, target_dir)
 
     def test_logs_into_log_folder(self):
-        Config.LOG_PATH = join(self.temp_dir, 'logs')
-        Config.LOG_FILE_CHECKOUT = join(Config.LOG_PATH, 'checkout.log')
-        checkout.checkout_parent(GIT, self.test_env.REPOSITORY_GIT, GIT_REVISION, self.temp_dir)
-        self.assertTrue(exists(Config.LOG_FILE_CHECKOUT))
+        target_dir = join(self.test_env.CONFIG.CHECKOUT_DIR, 'log-test-checkout')
+        self.uut.checkout_parent(GIT, self.test_env.REPOSITORY_GIT, GIT_REVISION, target_dir)
+        self.assertTrue(exists(join(target_dir, 'checkout.log')))
 
     def test_reset_to_revision_git(self):
-        checkout.checkout_parent(GIT, self.test_env.REPOSITORY_GIT, GIT_REVISION, self.temp_dir)
-        checkout.reset_to_revision(GIT, self.temp_dir, GIT_REVISION)
+        target_dir = join(self.test_env.CONFIG.CHECKOUT_DIR, 'git-reset')
+        self.uut.checkout_parent(GIT, self.test_env.REPOSITORY_GIT, GIT_REVISION, target_dir)
+        self.uut.reset_to_revision(GIT, target_dir, GIT_REVISION)
 
     def test_reset_to_revision_svn(self):
-        checkout.checkout_parent(SVN, self.test_env.REPOSITORY_SVN, SVN_REVISION, self.temp_dir)
-        checkout.reset_to_revision(GIT, self.temp_dir, SVN_REVISION)
+        target_dir = join(self.test_env.CONFIG.CHECKOUT_DIR, 'svn-reset')
+        self.uut.checkout_parent(SVN, self.test_env.REPOSITORY_SVN, SVN_REVISION, target_dir)
+        self.uut.reset_to_revision(SVN, target_dir, SVN_REVISION)
 
     def test_reset_to_revision_synthetic(self):
-        checkout.checkout_parent(SYNTHETIC, self.test_env.REPOSITORY_SYNTHETIC, '', self.temp_dir)
-        checkout.reset_to_revision(SYNTHETIC, self.temp_dir, '')
+        self.uut.reset_to_revision(SYNTHETIC, '', '')
 
 
 class GetParentTest(unittest.TestCase):
     def test_get_parent_git(self):
-        self.assertEquals(checkout.get_parent(GIT, "bla"), "bla~1")
+        self.assertEquals(Checkout.get_parent(GIT, "bla"), "bla~1")
 
     def test_get_parent_svn(self):
-        self.assertEquals(checkout.get_parent(SVN, 42), "41")
+        self.assertEquals(Checkout.get_parent(SVN, 42), "41")
 
     def test_get_parent_svn_with_string_input(self):
-        self.assertEquals(checkout.get_parent(SVN, "42"), "41")
+        self.assertEquals(Checkout.get_parent(SVN, "42"), "41")
 
     def test_get_parent_synthetic(self):
-        self.assertEquals(checkout.get_parent(SYNTHETIC, 100), "100")
+        self.assertEquals(Checkout.get_parent(SYNTHETIC, 100), "100")
 
     def test_value_error_on_unknown_vcs(self):
         with self.assertRaises(ValueError):
-            checkout.get_parent('unknown vcs', 1)
+            Checkout.get_parent('unknown vcs', 1)
 
 
 if __name__ == '__main__':
