@@ -1,9 +1,6 @@
 import unittest
-
 from os.path import join
-from tempfile import gettempdir
 
-from config import Config
 from utils.data_util import extract_project_name_from_file_path, normalize_data_misuse_path, \
     normalize_result_misuse_path
 
@@ -21,9 +18,6 @@ class ExtractProjectNameTest(unittest.TestCase):
 
 
 class PathNormalizationTest(unittest.TestCase):
-    def setUp(self):
-        Config.CHECKOUT_DIR = join(gettempdir(), 'MUBenchmark')
-
     def test_normalize_git_path_from_data(self):
         non_normalized_path = r'src/main/java/com/alibaba/druid/filter/config/ConfigTools.java'
         expected_normalized_path = r'src\main\java\com\alibaba\druid\filter\config\ConfigTools.java'

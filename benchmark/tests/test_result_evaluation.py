@@ -11,20 +11,20 @@ class ResultsTest(unittest.TestCase):
     def setUp(self):
         self.test_env = TestEnvironment()
 
-        self.file_result_git = join(self.test_env.CONFIG.RESULTS_PATH,
+        self.file_result_git = join(self.test_env.RESULTS_PATH,
                                     'git',
-                                    self.test_env.CONFIG.DETECTOR,
-                                    self.test_env.CONFIG.FILE_DETECTOR_RESULT)
-        self.file_result_svn = join(self.test_env.CONFIG.RESULTS_PATH,
+                                    self.test_env.DETECTOR,
+                                    self.test_env.FILE_DETECTOR_RESULT)
+        self.file_result_svn = join(self.test_env.RESULTS_PATH,
                                     'svn',
-                                    self.test_env.CONFIG.DETECTOR,
-                                    self.test_env.CONFIG.FILE_DETECTOR_RESULT)
+                                    self.test_env.DETECTOR,
+                                    self.test_env.FILE_DETECTOR_RESULT)
 
-        self.uut = result_evaluation.ResultEvaluation(self.test_env.CONFIG.DATA_PATH,
-                                                      self.test_env.CONFIG.RESULTS_PATH,
-                                                      self.test_env.CONFIG.DETECTOR,
-                                                      self.test_env.CONFIG.FILE_DETECTOR_RESULT,
-                                                      self.test_env.CONFIG.CHECKOUT_DIR,
+        self.uut = result_evaluation.ResultEvaluation(self.test_env.DATA_PATH,
+                                                      self.test_env.RESULTS_PATH,
+                                                      self.test_env.DETECTOR,
+                                                      self.test_env.FILE_DETECTOR_RESULT,
+                                                      self.test_env.CHECKOUT_DIR,
                                                       catch_errors=False)
 
     def tearDown(self):

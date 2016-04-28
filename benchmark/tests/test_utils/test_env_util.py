@@ -1,6 +1,6 @@
 from distutils.dir_util import copy_tree
-from os import makedirs
-from os.path import join, abspath, dirname
+from os import makedirs, chdir
+from os.path import join, abspath, dirname, pardir
 from pathlib import Path
 from shutil import rmtree, copyfile
 from subprocess import Popen
@@ -8,7 +8,6 @@ from tempfile import mkdtemp
 
 import yaml
 
-from config import Config
 from utils.io import safe_write
 
 
@@ -17,16 +16,23 @@ class TestEnvironment:
         self.TEST_ENV_SOURCE_DIR = join(dirname(abspath(__file__)), 'test-env')
         self.TEST_ENV_INSTANCE_PATH = mkdtemp(prefix='mubench-test-env_')
 
+        mubench = join(dirname(abspath(__file__)), pardir, pardir, pardir)
+        chdir(mubench)  # set the cwd to the MUBench folder
+
         self.DATA = []
 
-        self.CONFIG = Config()
+        self.DETECTOR = 'dummy-miner'
 
-        self.CONFIG.DATA_PATH = join(self.TEST_ENV_INSTANCE_PATH, 'data')
-        self.CONFIG.RESULTS_PATH = join(self.TEST_ENV_INSTANCE_PATH, 'results', self.CONFIG.DETECTOR)
-        self.CONFIG.CHECKOUT_DIR = join(self.TEST_ENV_INSTANCE_PATH, 'checkout')
+        self.FILE_DETECTOR_RESULT = 'result.txt'
+
+        self.DATA_PATH = join(self.TEST_ENV_INSTANCE_PATH, 'data')
+        self.RESULTS_PATH = join(self.TEST_ENV_INSTANCE_PATH, 'results', self.DETECTOR)
+        self.CHECKOUT_DIR = join(self.TEST_ENV_INSTANCE_PATH, 'checkout')
 
         self.REPOSITORY_GIT = join(self.TEST_ENV_INSTANCE_PATH, 'repository-git')
         self.REPOSITORY_SVN = Path(join(self.TEST_ENV_INSTANCE_PATH, 'repository-svn')).as_uri()
+
+        self.TIMEOUT = None
 
         self.__create_yaml_data()
         self.__initialize_repositories()
@@ -52,11 +58,11 @@ class TestEnvironment:
         Popen('svn import {} {} -m "Initial import"'.format(svn_source_dir, self.REPOSITORY_SVN)).wait()
 
         # initialize synthetic repository
-        synthetic_repository_path = join(self.CONFIG.DATA_PATH, 'repository-synthetic')
+        synthetic_repository_path = join(self.DATA_PATH, 'repository-synthetic')
         makedirs(synthetic_repository_path)
         copy_tree(join(self.TEST_ENV_SOURCE_DIR, 'repository-synthetic'), synthetic_repository_path)
         copyfile(join(self.TEST_ENV_SOURCE_DIR, 'repository-synthetic', 'synthetic.java'),
-                 join(self.CONFIG.DATA_PATH, 'synthetic.java'))
+                 join(self.DATA_PATH, 'synthetic.java'))
 
     def __create_yaml_data(self):
         git_yaml = self.__get_git_yaml()
@@ -89,6 +95,6 @@ class TestEnvironment:
         return content
 
     def create_data_file(self, file_name: str, content: dict):
-        file = join(self.CONFIG.DATA_PATH, file_name)
+        file = join(self.DATA_PATH, file_name)
         safe_write(yaml.dump(content), file, append=False)
         self.DATA.append((file, content))

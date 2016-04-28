@@ -9,11 +9,11 @@ class DetectorRunnerTest(unittest.TestCase):
     def setUp(self):
         self.test_env = TestEnvironment()
 
-        self.uut = detector_runner.DetectorRunner(self.test_env.CONFIG.DATA_PATH,
-                                                  self.test_env.CONFIG.DETECTOR,
-                                                  self.test_env.CONFIG.CHECKOUT_DIR,
-                                                  self.test_env.CONFIG.RESULTS_PATH,
-                                                  self.test_env.CONFIG.TIMEOUT,
+        self.uut = detector_runner.DetectorRunner(self.test_env.DATA_PATH,
+                                                  self.test_env.DETECTOR,
+                                                  self.test_env.CHECKOUT_DIR,
+                                                  self.test_env.RESULTS_PATH,
+                                                  self.test_env.TIMEOUT,
                                                   catch_errors=False)
 
     def tearDown(self):
@@ -22,7 +22,7 @@ class DetectorRunnerTest(unittest.TestCase):
     def test_run(self):
         self.assertGreater(len(self.test_env.DATA), 0, "Test data is empty")
         self.uut.run_detector_on_all_data()
-        self.assertFalse(listdir(self.test_env.CONFIG.RESULTS_PATH) == [])
+        self.assertFalse(listdir(self.test_env.RESULTS_PATH) == [])
 
 
 if __name__ == '__main__':

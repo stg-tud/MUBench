@@ -1,10 +1,8 @@
 from os import listdir
 from os.path import isfile, join, basename
-from typing import List, Callable, Dict, TypeVar, Union
 
 import yaml
-
-from config import Config
+from typing import List, Callable, Dict, TypeVar, Union
 
 T = TypeVar('ResultType')
 
