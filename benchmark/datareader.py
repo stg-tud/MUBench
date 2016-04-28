@@ -9,19 +9,20 @@ T = TypeVar('ResultType')
 
 def on_all_data_do(data_path: str,
                    function: Callable[[str, Dict[str, Union[str, Dict]]], T],
-                   black_list: List[str] = [],
-                   white_list: List[str] = [""]) -> List[T]:
+                   white_list: List[str],
+                   black_list: List[str]) -> List[T]:
 
     datafiles = [join(data_path, file) for file in listdir(data_path) if
                  isfile(join(data_path, file)) and file.endswith(".yml")]
 
     result = []
     for i, file in enumerate(datafiles, start=1):
-        blacklisted = any([black_listed in file for black_listed in black_list])
         whitelisted = any([white_listed in file for white_listed in white_list])
+        blacklisted = any([black_listed in file for black_listed in black_list])
         if not whitelisted or blacklisted:
-            print("Warning: ignored {}".format(file))
-            break
+            print("Warning: ignored {}".format(basename(file)))
+            print("------------------------------------------------------------")
+            continue
 
         stream = open(file, 'r')
 

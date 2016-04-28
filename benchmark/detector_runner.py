@@ -19,7 +19,9 @@ class DetectorRunner:
                  detector: str,
                  checkout_base_dir: str,
                  results_path: str,
-                 timeout: Optional[int] = None,
+                 timeout: Optional[int],
+                 white_list: List[str],
+                 black_list: List[str],
                  catch_errors: bool = True):
         self.data_path = data_path
         self.detector = detector
@@ -27,6 +29,8 @@ class DetectorRunner:
         self.results_path = results_path
         self.timeout = timeout
         self.catch_errors = catch_errors
+        self.white_list = white_list
+        self.black_list = black_list
 
     def run_detector(self, file: str, misuse: Dict[str, Union[str, Dict]]) -> None:
         try:
@@ -70,7 +74,7 @@ class DetectorRunner:
                        append=True)
 
     def run_detector_on_all_data(self) -> List[None]:
-        on_all_data_do(self.data_path, self.run_detector)
+        on_all_data_do(self.data_path, self.run_detector, self.white_list, self.black_list)
 
     @staticmethod
     def __get_misuse_detector_path(detector: str):

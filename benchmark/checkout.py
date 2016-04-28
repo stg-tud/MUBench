@@ -115,4 +115,4 @@ class Checkout:
             else:
                 print("{} is already checked out.".format(project_name))
 
-        on_all_data_do(self.data_path, single_checkout)
+        on_all_data_do(self.data_path, single_checkout, white_list=[""], black_list=[])

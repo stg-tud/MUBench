@@ -58,7 +58,9 @@ class MUBenchmark:
                                              self.detector,
                                              self.checkout_dir,
                                              self.results_path,
-                                             self.timeout)
+                                             self.timeout,
+                                             self.white_list,
+                                             self.black_list)
 
             detector_runner.run_detector_on_all_data()
 
@@ -79,7 +81,9 @@ class MUBenchmark:
                                                  self.results_path,
                                                  self.detector,
                                                  self.detector_result_file,
-                                                 self.checkout_dir)
+                                                 self.checkout_dir,
+                                                 self.white_list,
+                                                 self.black_list)
             result_evaluation.evaluate_results()
             end_time = datetime.now()
             print("Total evaluation time: {}".format(str(end_time - start_time)))

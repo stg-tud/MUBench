@@ -3,7 +3,7 @@ from genericpath import isdir, exists, isfile, getsize
 from os import listdir
 from os.path import join, splitext
 from os.path import normpath, basename
-from typing import Dict, Tuple, Optional, Union
+from typing import Dict, Tuple, Optional, Union, List
 
 import datareader
 from utils.data_util import normalize_result_misuse_path, normalize_data_misuse_path
@@ -18,12 +18,16 @@ class ResultEvaluation:
                  detector: str,
                  detector_result_file: str,
                  checkout_base_dir: str,
+                 white_list: List[str],
+                 black_list: List[str],
                  catch_errors: bool = True):
         self.data_path = data_path
         self.results_path = results_path
         self.detector = detector
         self.detector_result_file = detector_result_file
         self.checkout_base_dir = checkout_base_dir
+        self.white_list = white_list
+        self.black_list = black_list
         self.catch_errors = catch_errors
 
     def evaluate_single_result(self,
@@ -62,7 +66,8 @@ class ResultEvaluation:
 
     def evaluate_results(self) -> Tuple[int, int, int]:
         try:
-            results = datareader.on_all_data_do(self.data_path, self.evaluate_single_result)
+            results = datareader.on_all_data_do(self.data_path, self.evaluate_single_result,
+                                                [""], [])  # this modules handles white and blacklisting separately
 
             def to_data_name(result):
                 return result[0]
