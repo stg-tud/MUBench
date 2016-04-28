@@ -14,12 +14,16 @@ def check_prerequisites() -> Tuple[bool, str]:
     if not prerequisites_okay:
         error_message = "ERROR! Missing Prerequisites: "
 
+        missing_prerequisites = []
+
         if not git_installed:
-            error_message += "Git, "
+            missing_prerequisites.append("Git")
         if not svn_installed:
-            error_message += "SVN, "
+            missing_prerequisites.append("SVN")
         if not java_installed:
-            error_message += "Java"
+            missing_prerequisites.append("Java")
+
+        error_message += ", ".join(missing_prerequisites)
 
     return prerequisites_okay, error_message
 
