@@ -92,7 +92,8 @@ config = command_line_util.parse_args(sys.argv)
 
 benchmark = MUBenchmark(detector=config.detector,
                         white_list=config.white_list,
-                        black_list=config.black_list)
+                        black_list=config.black_list,
+                        timeout=config.timeout)
 
 if config.mode == 'check':
     # prerequisites are always checked implicitly

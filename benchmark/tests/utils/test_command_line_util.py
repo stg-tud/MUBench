@@ -83,5 +83,19 @@ class EvalModeTest(unittest.TestCase):
         result = self.parser.parse_args(['eval', 'detector'])
         self.assertEqual([], result.black_list)
 
+    def test_timeout(self):
+        value = '100'
+        result = self.parser.parse_args(['eval', 'detector', '--timeout', value])
+        self.assertEqual(int(value), result.timeout)
+
+    def test_timeout_default_none(self):
+        result = self.parser.parse_args(['eval', 'detector'])
+        self.assertIsNone(result.timeout)
+
+    def test_timeout_non_int_fails(self):
+        with self.assertRaises(SystemExit):
+            self.parser.parse_args(['eval', 'detector', '--timeout', 'string'])
+
+
 if __name__ == '__main__':
     unittest.main()

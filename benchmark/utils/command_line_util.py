@@ -21,9 +21,11 @@ def get_command_line_parser() -> ArgumentParser:
         'eval', help="runs the misuse detector and evaluates its output")  # type: ArgumentParser
     evaluate_parser.add_argument('detector', help="see the MUBench/detectors folder for a list of usable detectors")
     evaluate_parser.add_argument('--only', help="run only using data files which contain any of these strings",
-                                 nargs='+', dest='white_list', default=[""])
+                                 metavar='X', nargs='+', dest='white_list', default=[""])
     evaluate_parser.add_argument('--ignore', help="don't run with data files which contain any of these strings",
-                                 nargs='+', dest='black_list', default=[])
+                                 metavar='Y', nargs='+', dest='black_list', default=[])
+    evaluate_parser.add_argument('--timeout', type=int, default=None, metavar='s', 
+                                 help="ignores the current case if the detector did not finish after this many seconds")
 
     return parser
 
