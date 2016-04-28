@@ -82,3 +82,6 @@ target/
 scripts/benchmark/DummyMiner/.classpath
 scripts/benchmark/DummyMiner/.gitignore
 scripts/benchmark/DummyMiner/.project
+
+# MUBenchmark created folders
+MUBenchmark-*/

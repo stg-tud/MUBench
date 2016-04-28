@@ -29,8 +29,8 @@ class MUBenchmark:
 
         self.data_path = join(getcwd(), "data")
         self.detector_result_file = "result.txt"
-        self.results_path = realpath(join(pardir, "MUBenchmark-results", self.detector))
-        self.checkout_dir = realpath(join(pardir, "MUBenchmark-checkouts"))
+        self.results_path = realpath(join("MUBenchmark-results", self.detector))
+        self.checkout_dir = realpath("MUBenchmark-checkouts")
 
         self.check()
 
