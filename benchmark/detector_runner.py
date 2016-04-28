@@ -2,16 +2,22 @@ import subprocess
 import traceback
 from genericpath import exists
 from os.path import join, splitext, basename
+from typing import List
 
 from config import Config
 from checkout import checkout_parent, reset_to_revision
+from datareader import on_all_data_do
 from utils.io import safe_open
 from utils.logger import log_error
 
 CATCH_ERRORS = True  # only used for testing
 
 
-def analyze(file: str, misuse: dict) -> None:
+def run_detector_on_all_data() -> List[None]:
+    on_all_data_do(run_detector)
+
+
+def run_detector(file: str, misuse: dict) -> None:
     """
     Runs the misuse detector on the given misuse
     :param file: The file containing the misuse information

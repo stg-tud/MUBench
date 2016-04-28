@@ -1,8 +1,7 @@
 import sys
 from datetime import datetime
 
-from benchmark import analyze
-from datareader import on_all_data_do
+from detector_runner import run_detector_on_all_data
 from result_evaluation import evaluate_results
 from utils.prerequisites_checker import check_prerequisites
 
@@ -12,7 +11,7 @@ if not prerequisites_okay:
 
 try:
     start_time = datetime.now()
-    on_all_data_do(analyze)
+    run_detector_on_all_data()
 
 except (KeyboardInterrupt, SystemExit):
     end_time = datetime.now()
