@@ -1,4 +1,3 @@
-import os
 import traceback
 from genericpath import isdir, exists, isfile, getsize
 from os import listdir
@@ -8,6 +7,7 @@ from typing import Dict, Tuple, Optional, Union
 
 import datareader
 from config import Config
+from utils.data_util import normalize_result_misuse_path, normalize_data_misuse_path
 from utils.dotgraph_util import get_labels_from_result_file, get_labels_from_data_content
 from utils.io import safe_open
 from utils.logger import log_error
@@ -118,47 +118,6 @@ def evaluate_results() -> Tuple[int, int, int]:
         print(exception_string)
         log_error(exception_string)
         return -1, -1, -1
-
-
-def normalize_data_misuse_path(misuse_file: str) -> str:
-    """
-    Normalizes the misuse file path (from a data file)
-    :param misuse_file: The path that is given in the data file
-    :rtype: str
-    :return: The normalized path (can be compared to normalized result paths)
-    """
-    normed_misuse_file = normpath(misuse_file)
-
-    # cut trunk folder (only for svn repositories)
-    if 'trunk' + os.sep in normed_misuse_file:
-        normed_misuse_file = normed_misuse_file.split('trunk' + os.sep, 1)[1]
-
-    return normed_misuse_file
-
-
-def normalize_result_misuse_path(misuse_file: str) -> str:
-    """
-    Normalizes the misuse file path (from a result file)
-    :param misuse_file: The path that is given in the result file
-    :rtype: str
-    :return: The normalized path (can be compared to normalized data paths)
-    """
-    normed_misuse_file = normpath(misuse_file)
-
-    # cut everything before project subfolder
-    checkout_dir_prefix = Config.CHECKOUT_DIR + os.sep
-    if checkout_dir_prefix in normed_misuse_file:
-        normed_misuse_file = normed_misuse_file.split(checkout_dir_prefix, 1)[1]
-
-    # cut project subfolder
-    if os.sep in normed_misuse_file:
-        normed_misuse_file = normed_misuse_file.split(os.sep, 1)[1]
-
-    # cut trunk folder (only for svn repositories)
-    if 'trunk' + os.sep in normed_misuse_file:
-        normed_misuse_file = normed_misuse_file.split('trunk' + os.sep, 1)[1]
-
-    return normed_misuse_file
 
 
 def __is_file_found(result_file: str, data_content: Dict[str, Union[str, Dict]], log_stream) -> bool:

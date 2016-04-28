@@ -27,17 +27,5 @@ class DetectorRunnerTest(unittest.TestCase):
         self.assertFalse(listdir(Config.RESULTS_PATH) == [])
 
 
-class ExtractProjectNameTest(unittest.TestCase):
-    def test_extract_normal_name(self):
-        expected = "some-project"
-        actual = detector_runner.extract_project_name_from_file_path(join("C:", "my-path", "{}.42-2.yml".format(expected)))
-        self.assertEqual(expected, actual)
-
-    def test_extract_synthetic_name(self):
-        expected = "synthetic-case"
-        actual = detector_runner.extract_project_name_from_file_path((join("C:", "my-path", "{}.yml".format(expected))))
-        self.assertEqual(expected, actual)
-
-
 if __name__ == '__main__':
     unittest.main()

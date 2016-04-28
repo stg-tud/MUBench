@@ -1,10 +1,12 @@
 from os import listdir, makedirs
-from os.path import join, isdir
+from os.path import join, isdir, exists
 from shutil import copy
 from subprocess import Popen
-from typing import Union
+from typing import Union, Dict
 
 from config import Config
+from datareader import on_all_data_do
+from utils.data_util import extract_project_name_from_file_path
 from utils.io import safe_open
 
 
@@ -112,10 +114,29 @@ def reset_to_revision(vcs: str, local_repository: str, revision):
 
     with safe_open(Config.LOG_FILE_CHECKOUT, 'a+') as log:
         if vcs == 'git':
-            Popen('git checkout ' + revision, cwd=local_repository, bufsize=1, shell=True, stdout=log, stderr=log).wait()
+            Popen('git checkout ' + revision, cwd=local_repository, bufsize=1, shell=True, stdout=log,
+                  stderr=log).wait()
         elif vcs == 'svn':
-            Popen('svn update -r {}'.format(revision), cwd=local_repository, bufsize=1, shell=True, stdout=log, stderr=log).wait()
+            Popen('svn update -r {}'.format(revision), cwd=local_repository, bufsize=1, shell=True, stdout=log,
+                  stderr=log).wait()
         elif vcs == 'synthetic':
             pass  # nothing to do here
         else:
             raise ValueError("Unknown version control type: {}".format(vcs))
+
+
+def do_all_checkouts() -> None:
+    def single_checkout(file: str, misuse: Dict[str, Union[str, Dict]]) -> None:
+        fix = misuse["fix"]
+        repository = fix["repository"]
+
+        base_dir = Config.CHECKOUT_DIR
+        project_name = extract_project_name_from_file_path(file)
+        checkout_dir = join(base_dir, project_name)
+
+        if not exists(checkout_dir):
+            checkout_parent(repository["type"], repository["url"], fix.get('revision', ""), checkout_dir)
+        else:
+            print("{} is already checked out.".format(project_name))
+
+    on_all_data_do(single_checkout)

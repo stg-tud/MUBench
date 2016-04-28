@@ -7,6 +7,7 @@ from typing import List
 from config import Config
 from checkout import checkout_parent, reset_to_revision
 from datareader import on_all_data_do
+from utils.data_util import extract_project_name_from_file_path
 from utils.io import safe_open
 from utils.logger import log_error
 
@@ -66,14 +67,4 @@ def run_detector(file: str, misuse: dict) -> None:
         log_error("Error: {} in {}".format(exception_string, file))
 
 
-def extract_project_name_from_file_path(file: str) -> str:
-    """
-    Extracts the project name from a given file path, using '.' as a separator (<path>/<project>.<rest>)
-    :param file: The file path (should be in the form "<path>/<project>.<rest>" or "<path>/synthetic-<rest>")
-    :rtype: str
-    :return: The project name
-    """
-    project_name = splitext(basename(file))[0]
-    if 'synthetic' not in project_name and '.' in project_name:
-        project_name = project_name.split('.', 1)[0]
-    return project_name
+
