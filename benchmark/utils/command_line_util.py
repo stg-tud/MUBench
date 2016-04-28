@@ -22,6 +22,8 @@ def get_command_line_parser() -> ArgumentParser:
     evaluate_parser.add_argument('detector', help="see the MUBench/detectors folder for a list of usable detectors")
     evaluate_parser.add_argument('--only', help="run only using data files which contain any of these strings",
                                  nargs='+', dest='white_list', default=[""])
+    evaluate_parser.add_argument('--ignore', help="don't run with data files which contain any of these strings",
+                                 nargs='+', dest='black_list', default=[])
 
     return parser
 

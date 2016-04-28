@@ -70,5 +70,18 @@ class EvalModeTest(unittest.TestCase):
         result = self.parser.parse_args(['eval', 'detector'])
         self.assertEqual([""], result.white_list)
 
+    def test_only_empty_list_fails(self):
+        with self.assertRaises(SystemExit):
+            self.parser.parse_args(['eval', 'detector', '--ignore'])
+
+    def test_only(self):
+        black_list = ['a', 'b', 'c']
+        result = self.parser.parse_args(['eval', 'detector', '--ignore'] + black_list)
+        self.assertEqual(black_list, result.black_list)
+
+    def test_only_default(self):
+        result = self.parser.parse_args(['eval', 'detector'])
+        self.assertEqual([], result.black_list)
+
 if __name__ == '__main__':
     unittest.main()
