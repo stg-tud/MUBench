@@ -1,4 +1,5 @@
 import sys
+from configparser import ConfigParser
 from datetime import datetime
 from os import getcwd, chdir
 from os.path import join, realpath, dirname, pardir
@@ -15,9 +16,9 @@ from utils import command_line_util
 class MUBenchmark:
     def __init__(self,
                  detector: str,
-                 timeout: Optional[int] = None,
-                 black_list: List[str] = [],
-                 white_list: List[str] = [""]
+                 timeout: Optional[int],
+                 black_list: List[str],
+                 white_list: List[str]
                  ):
         mubench = join(dirname(__file__), pardir)
         chdir(mubench)  # set the cwd to the MUBench folder
@@ -26,9 +27,7 @@ class MUBenchmark:
         self.timeout = timeout
         self.black_list = black_list
         self.white_list = white_list
-
         self.data_path = join(getcwd(), "data")
-        self.detector_result_file = "result.txt"
         self.results_path = realpath(join("MUBenchmark-results", self.detector))
         self.checkout_dir = realpath("MUBenchmark-checkouts")
 
@@ -53,6 +52,7 @@ class MUBenchmark:
 
     def evaluate(self):
         start_time = datetime.now()
+
         try:
             detector_runner = DetectorRunner(self.data_path,
                                              self.detector,
@@ -75,18 +75,22 @@ class MUBenchmark:
             print("Analysis finished! Total time: {}".format(str(end_time - start_time)))
             print("================================================")
 
-        finally:
-            print("Evaluating results...")
-            result_evaluation = ResultEvaluation(self.data_path,
-                                                 self.results_path,
-                                                 self.detector,
-                                                 self.detector_result_file,
-                                                 self.checkout_dir,
-                                                 self.white_list,
-                                                 self.black_list)
-            result_evaluation.evaluate_results()
-            end_time = datetime.now()
-            print("Total evaluation time: {}".format(str(end_time - start_time)))
+        cfg = ConfigParser()
+        cfg.read(realpath(join('detectors', self.detector, self.detector + '.cfg')))
+        detector_result_file = cfg['DEFAULT']['Result File']
+
+        print("Evaluating results...")
+        result_evaluation = ResultEvaluation(self.data_path,
+                                             self.results_path,
+                                             self.detector,
+                                             detector_result_file,
+                                             self.checkout_dir,
+                                             self.white_list,
+                                             self.black_list)
+        result_evaluation.evaluate_results()
+        end_time = datetime.now()
+        print("Total evaluation time: {}".format(str(end_time - start_time)))
+
 
 config = command_line_util.parse_args(sys.argv)
 
