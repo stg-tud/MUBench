@@ -57,16 +57,16 @@ example: `py benchmark/mubenchmark.py mine`
 This subprocess is not yet implemented.  
 
 * `eval`  
-usage: MUBenchmark eval [-h] [--only X [X ...]] [--ignore Y [Y ...]] [--timeout s] detector  
+usage: `MUBenchmark eval [-h] [--only X [X ...]] [--ignore Y [Y ...]] [--timeout s] detector`  
 example: `py benchmark/mubenchmark.py eval dummy-miner --only aclang acmath adempiere --ignore acmath.998-2 --timeout 600`  
 This subprocess expects an identifier for the detector to run. Consider [`detectors`](https://github.com/stg-tud/MUBench/tree/master/detectors) for available detectors. Each subfolder of `/detectors` is a valid identifier.  
 Note that this also expects the detector to run on complete projects, hence it needs to generate its own usage models. This will probably be changed in the future to have a clean split between mine and eval.  
 This subprocess will implicitly load all projects into the `MUBenchmark-checkouts` folder.  
 
 Optional arguments:  
---only X [X ...]	allows you to run the detector only on all MUBench data files (see [`data`](https://github.com/stg-tud/MUBench/tree/master/data)) which contain any one of the given strings  
---ignore Y [Y ...]	will let the benchmark ignore all MUBench data files (see [`data`](https://github.com/stg-tud/MUBench/tree/master/data)) which contain any one of the given strings  
---timeout s			will set a timeout (in seconds) for the misuse detector; cases where a timeout occurred will be ignored in the evaluation  
+`--only X [X ...]`	allows you to run the detector only on all MUBench data files (see [`data`](https://github.com/stg-tud/MUBench/tree/master/data)) which contain any one of the given strings  
+`--ignore Y [Y ...]`	will let the benchmark ignore all MUBench data files (see [`data`](https://github.com/stg-tud/MUBench/tree/master/data)) which contain any one of the given strings  
+`--timeout s`			will set a timeout (in seconds) for the misuse detector; cases where a timeout occurred will be ignored in the evaluation  
 
 
 ## Contribute
