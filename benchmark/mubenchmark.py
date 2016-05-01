@@ -48,7 +48,7 @@ class MUBenchmark:
         checkout.do_all_checkouts()
 
     def mine(self):
-        pass  # TODO implement a miner_runner
+        print("'mine' subprocess is not yet implemented.")  # TODO implement a miner_runner
 
     def evaluate(self):
         start_time = datetime.now()
