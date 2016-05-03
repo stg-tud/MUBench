@@ -94,19 +94,20 @@ class MUBenchmark:
 
 config = command_line_util.parse_args(sys.argv)
 
-benchmark = MUBenchmark(detector=config.detector,
-                        white_list=config.white_list,
-                        black_list=config.black_list,
-                        timeout=config.timeout)
-
 if config.mode == 'check':
+    benchmark = MUBenchmark(detector="", white_list=[], black_list=[], timeout=None)
     # prerequisites are always checked implicitly
     sys.exit()
 if config.mode == 'checkout':
+    benchmark = MUBenchmark(detector="", white_list=[""], black_list=[], timeout=None)
     benchmark.checkout()
 if config.mode == 'mine':
+    benchmark = MUBenchmark(detector="", white_list=config.white_list, black_list=config.black_list,
+                            timeout=config.timeout)
     benchmark.mine()
 if config.mode == 'eval':
+    benchmark = MUBenchmark(detector=config.detector, white_list=config.white_list, black_list=config.black_list,
+                            timeout=config.timeout)
     benchmark.evaluate()
 
 print("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
