@@ -109,7 +109,3 @@ if config.mode == 'eval':
     benchmark = MUBenchmark(detector=config.detector, white_list=config.white_list, black_list=config.black_list,
                             timeout=config.timeout)
     benchmark.evaluate()
-
-print("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
-print("++++++++++++++++++++++++ FINISHED +++++++++++++++++++++++++")
-print("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
