@@ -6,7 +6,7 @@ from typing import List, Any
 def get_command_line_parser() -> ArgumentParser:
     parser = ArgumentParser(prog="MUBenchmark",
                             description="A benchmark for usage model miners and misuse detectors",
-                            epilog="See the README for further information")
+                            epilog="See the README.md for further information")
 
     subparsers = parser.add_subparsers(help="MUBenchmark Modes", dest='mode')
 
@@ -24,7 +24,7 @@ def get_command_line_parser() -> ArgumentParser:
                                  metavar='X', nargs='+', dest='white_list', default=[""])
     evaluate_parser.add_argument('--ignore', help="don't run with data files which contain any of these strings",
                                  metavar='Y', nargs='+', dest='black_list', default=[])
-    evaluate_parser.add_argument('--timeout', type=int, default=None, metavar='s', 
+    evaluate_parser.add_argument('--timeout', type=int, default=None, metavar='s',
                                  help="ignores the current case if the detector did not finish after this many seconds")
 
     return parser
