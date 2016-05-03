@@ -16,6 +16,12 @@ def get_command_line_parser() -> ArgumentParser:
 
     mine_parser = subparsers.add_parser('mine', help="this mode is not yet implemented")  # type: ArgumentParser
     mine_parser.add_argument('miner', help="this option is not used yet")
+    mine_parser.add_argument('--only', help="run only using data files which contain any of these strings",
+                             metavar='X', nargs='+', dest='white_list', default=[""])
+    mine_parser.add_argument('--ignore', help="don't run with data files which contain any of these strings",
+                             metavar='Y', nargs='+', dest='black_list', default=[])
+    mine_parser.add_argument('--timeout', type=int, default=None, metavar='s',
+                             help="ignores the current case if the detector did not finish after this many seconds")
 
     evaluate_parser = subparsers.add_parser(
         'eval', help="runs the misuse detector and evaluates its output")  # type: ArgumentParser
