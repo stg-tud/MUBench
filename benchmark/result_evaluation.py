@@ -33,8 +33,11 @@ class ResultEvaluation:
     def evaluate_single_result(self,
                                data_file: str,
                                data_content: Dict[str, Union[Dict, str]]) -> Tuple[str, Optional[int]]:
-        dirs_results = [join(self.results_path, result_dir) for result_dir in listdir(self.results_path) if
-                        isdir(join(self.results_path, result_dir)) and not result_dir == '_LOGS']
+        dirs_results = []
+        if exists(self.results_path):
+            dirs_results = [join(self.results_path, result_dir) for result_dir in listdir(self.results_path) if
+                            isdir(join(self.results_path, result_dir)) and not result_dir == '_LOGS']
+        
         for dir_result in dirs_results:
             is_result_for_file = splitext(basename(normpath(data_file)))[0] == basename(normpath(dir_result))
 
