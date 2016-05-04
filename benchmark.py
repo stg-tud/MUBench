@@ -1,7 +1,8 @@
+#! /usr/bin/python
 import sys
 from configparser import ConfigParser
 from os import getcwd, chdir, listdir
-from os.path import join, realpath, dirname, pardir
+from os.path import join, realpath, dirname
 
 from typing import Optional, List
 
