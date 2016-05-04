@@ -1,7 +1,7 @@
 import sys
 from configparser import ConfigParser
 from datetime import datetime
-from os import getcwd, chdir
+from os import getcwd, chdir, listdir
 from os.path import join, realpath, dirname, pardir
 
 from typing import Optional, List
@@ -20,8 +20,6 @@ class MUBenchmark:
                  black_list: List[str],
                  white_list: List[str]
                  ):
-        mubench = join(dirname(__file__), pardir)
-        chdir(mubench)  # set the cwd to the MUBench folder
 
         self.detector = detector
         self.timeout = timeout
@@ -91,8 +89,10 @@ class MUBenchmark:
         end_time = datetime.now()
         print("Total evaluation time: {}".format(str(end_time - start_time)))
 
-
-config = command_line_util.parse_args(sys.argv)
+mubench = join(dirname(__file__), pardir)
+chdir(mubench)  # set the cwd to the MUBench folder
+available_detectors = listdir(realpath('detectors'))
+config = command_line_util.parse_args(sys.argv, available_detectors)
 
 if config.mode == 'check':
     benchmark = MUBenchmark(detector="", white_list=[], black_list=[], timeout=None)

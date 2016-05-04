@@ -3,7 +3,7 @@ from argparse import ArgumentParser
 from typing import List, Any
 
 
-def get_command_line_parser() -> ArgumentParser:
+def get_command_line_parser(available_detectors: List[str]) -> ArgumentParser:
     parser = ArgumentParser(prog="MUBenchmark",
                             description="A benchmark for usage model miners and misuse detectors",
                             epilog="See the README.md for further information")
@@ -25,7 +25,7 @@ def get_command_line_parser() -> ArgumentParser:
 
     evaluate_parser = subparsers.add_parser(
         'eval', help="runs the misuse detector and evaluates its output")  # type: ArgumentParser
-    evaluate_parser.add_argument('detector', help="see the MUBench/detectors folder for a list of usable detectors")
+    evaluate_parser.add_argument('detector', help="the detector to evaluate", choices=available_detectors)
     evaluate_parser.add_argument('--only', help="run only using data files which contain any of these strings",
                                  metavar='X', nargs='+', dest='white_list', default=[""])
     evaluate_parser.add_argument('--ignore', help="don't run with data files which contain any of these strings",
@@ -36,8 +36,8 @@ def get_command_line_parser() -> ArgumentParser:
     return parser
 
 
-def parse_args(args: List[str]) -> Any:
-    parser = get_command_line_parser()
+def parse_args(args: List[str], available_detectors) -> Any:
+    parser = get_command_line_parser(available_detectors)
 
     # remove first arg which always contains the script name
     args = args[1:]
