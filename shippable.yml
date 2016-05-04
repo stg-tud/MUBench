@@ -1,0 +1,22 @@
+build_environment: ubuntu1204
+
+language: python
+
+python:
+  - "3.5"
+
+before_script:
+  - mkdir -p shippable/codecoverage shippable/testresults
+
+install:
+  - "pip install pyyaml --use-mirrors"
+
+#script:
+#  - nosetests python/sample.py --with-xunit --xunit-file=shippable/testresults/nosetests.xml
+#  - coverage run --branch python/sample.py
+#  - coverage xml -o shippable/codecoverage/coverage.xml python/sample.py
+
+notifications:
+  email:
+    - mattis.kaemmerer@gmx.de
+    - amann@cs.tu-darmstadt.de
