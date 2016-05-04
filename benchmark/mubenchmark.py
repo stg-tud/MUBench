@@ -26,8 +26,8 @@ class MUBenchmark:
         self.black_list = black_list
         self.white_list = white_list
         self.data_path = join(getcwd(), "data")
-        self.results_path = realpath(join("MUBenchmark-results", self.detector))
-        self.checkout_dir = realpath("MUBenchmark-checkouts")
+        self.results_path = realpath(join("results", self.detector))
+        self.checkout_dir = realpath("checkouts")
 
         self.check()
 

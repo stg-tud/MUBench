@@ -7,7 +7,7 @@ def get_command_line_parser(available_detectors: List[str]) -> ArgumentParser:
     parser = ArgumentParser(prog="MUBench benchmark",
                             description="A benchmark for usage model miners and misuse detectors. The benchmark consists of several subprocesses.")
 
-    subparsers = parser.add_subparsers(help="MUBenchmark Subprocesses", dest='subprocess')
+    subparsers = parser.add_subparsers(help="MUBench Subprocesses", dest='subprocess')
 
     __add_check_subprocess(subparsers)
     __add_checkout_subprocess(subparsers)
@@ -38,15 +38,15 @@ def __add_check_subprocess(subparsers):
 def __add_checkout_subprocess(subparsers):
     subparsers.add_parser('checkout',
                           help="This subprocess can be used to pre-load all projects used by the benchmark.\n" +
-                               "The projects will be loaded into the `MUBenchmark-checkouts` folder. This is not configurable to keep MUBenchmark self-contained.")  # type: ArgumentParser
+                               "The projects will be loaded into the `checkouts` folder. This is not configurable to keep MUBench self-contained.")  # type: ArgumentParser
 
 
 def __add_mine_subprocess(available_detectors, subparsers):
     mine_parser = subparsers.add_parser(
         'detect',
-        help="This subprocess expects an identifier for the detector to run. Use `py benchmark/mubenchmark.py eval -h` to see all runnable detectors.\n" +
+        help="This subprocess expects an identifier for the detector to run. Use `py benchmark/benchmark.py eval -h` to see all runnable detectors.\n" +
              "Note that this also expects the detector to run on complete projects, hence it needs to generate its own usage models. This will probably be changed in the future to have a clean split between mine and eval.\n" +
-             "This subprocess will implicitly load all projects into the `MUBenchmark-checkouts` folder.",
+             "This subprocess will implicitly load all projects into the `checkouts` folder.",
         epilog="You can find all MUBench data files in the `data` subfolder")  # type: ArgumentParser
     mine_parser.add_argument('detector', help="the detector to evaluate", choices=available_detectors)
     mine_parser.add_argument('--only', metavar='X', nargs='+', dest='white_list', default=[""],
