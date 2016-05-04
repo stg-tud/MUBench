@@ -58,7 +58,7 @@ This subprocess is not yet implemented.
 
 * `eval`  
 usage: `MUBenchmark eval [-h] [--only X [X ...]] [--ignore Y [Y ...]] [--timeout s] detector`  
-example: `py benchmark/mubenchmark.py eval dummy-miner --only aclang acmath adempiere --ignore acmath.998-2 --timeout 600`  
+example: `py benchmark/mubenchmark.py eval dummy-detector --only aclang acmath adempiere --ignore acmath.998-2 --timeout 600`  
 This subprocess expects an identifier for the detector to run. Use `py benchmark/mubenchmark.py eval -h` to see all runnable detectors.
 Note that this also expects the detector to run on complete projects, hence it needs to generate its own usage models. This will probably be changed in the future to have a clean split between mine and eval.  
 This subprocess will implicitly load all projects into the `MUBenchmark-checkouts` folder.  
