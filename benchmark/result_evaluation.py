@@ -3,6 +3,8 @@ from genericpath import isdir, exists, isfile, getsize
 from os import listdir
 from os.path import join, splitext
 from os.path import normpath, basename
+
+import sys
 from typing import Dict, Tuple, Optional, Union, List
 
 import datareader
@@ -18,26 +20,25 @@ class ResultEvaluation:
                  detector: str,
                  detector_result_file: str,
                  checkout_base_dir: str,
-                 white_list: List[str],
-                 black_list: List[str],
                  catch_errors: bool = True):
         self.data_path = data_path
         self.results_path = results_path
         self.detector = detector
         self.detector_result_file = detector_result_file
         self.checkout_base_dir = checkout_base_dir
-        self.white_list = white_list
-        self.black_list = black_list
         self.catch_errors = catch_errors
+
+        if not exists(self.results_path):
+            sys.exit(
+                "No results found for this detector! Please run `py benchmark.py detect {}` to generate results.".format(
+                    self.detector))
 
     def evaluate_single_result(self,
                                data_file: str,
                                data_content: Dict[str, Union[Dict, str]]) -> Tuple[str, Optional[int]]:
-        dirs_results = []
-        if exists(self.results_path):
-            dirs_results = [join(self.results_path, result_dir) for result_dir in listdir(self.results_path) if
-                            isdir(join(self.results_path, result_dir)) and not result_dir == '_LOGS']
-        
+        dirs_results = [join(self.results_path, result_dir) for result_dir in listdir(self.results_path) if
+                        isdir(join(self.results_path, result_dir)) and not result_dir == '_LOGS']
+
         for dir_result in dirs_results:
             is_result_for_file = splitext(basename(normpath(data_file)))[0] == basename(normpath(dir_result))
 
@@ -97,7 +98,7 @@ class ResultEvaluation:
             not_found_misuses = map(to_data_name, filter(was_not_successful, results))
             misuses_with_errors = map(to_data_name, filter(finished_with_error, results))
 
-            with safe_open(join(self.results_path, "MUBenchmark-Result.txt"), 'w+') as file_result:
+            with safe_open(join(self.results_path, "Result.txt"), 'w+') as file_result:
                 print('----------------------------------------------', file=file_result)
                 print('Total number of misuses in the benchmark: ' + str(total), file=file_result)
                 print('Number of analyzed misuses (might be less due to ignore or errors): ' + str(applied),

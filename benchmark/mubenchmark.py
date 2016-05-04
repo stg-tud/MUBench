@@ -45,67 +45,44 @@ class MUBenchmark:
         checkout = Checkout(self.data_path, self.checkout_dir)
         checkout.do_all_checkouts()
 
-    def mine(self):
-        print("'mine' subprocess is not yet implemented.")  # TODO implement a miner_runner
+    def detect(self):
+        detector_runner = DetectorRunner(self.data_path,
+                                         self.detector,
+                                         self.checkout_dir,
+                                         self.results_path,
+                                         self.timeout,
+                                         self.white_list,
+                                         self.black_list)
+
+        detector_runner.run_detector_on_all_data()
 
     def evaluate(self):
-        start_time = datetime.now()
-
-        try:
-            detector_runner = DetectorRunner(self.data_path,
-                                             self.detector,
-                                             self.checkout_dir,
-                                             self.results_path,
-                                             self.timeout,
-                                             self.white_list,
-                                             self.black_list)
-
-            detector_runner.run_detector_on_all_data()
-
-        except (KeyboardInterrupt, SystemExit):
-            end_time = datetime.now()
-            print("================================================")
-            print("Analysis cancelled! Total time: {}".format(str(end_time - start_time)))
-            print("================================================")
-        else:
-            end_time = datetime.now()
-            print("================================================")
-            print("Analysis finished! Total time: {}".format(str(end_time - start_time)))
-            print("================================================")
-
         cfg = ConfigParser()
         cfg.read(realpath(join('detectors', self.detector, self.detector + '.cfg')))
         detector_result_file = cfg['DEFAULT']['Result File']
-
-        print("Evaluating results...")
         result_evaluation = ResultEvaluation(self.data_path,
                                              self.results_path,
                                              self.detector,
                                              detector_result_file,
-                                             self.checkout_dir,
-                                             self.white_list,
-                                             self.black_list)
+                                             self.checkout_dir)
         result_evaluation.evaluate_results()
-        end_time = datetime.now()
-        print("Total evaluation time: {}".format(str(end_time - start_time)))
+
 
 mubench = join(dirname(__file__), pardir)
 chdir(mubench)  # set the cwd to the MUBench folder
 available_detectors = listdir(realpath('detectors'))
 config = command_line_util.parse_args(sys.argv, available_detectors)
 
-if config.mode == 'check':
+if config.subprocess == 'check':
     benchmark = MUBenchmark(detector="", white_list=[], black_list=[], timeout=None)
     # prerequisites are always checked implicitly
-    sys.exit()
-if config.mode == 'checkout':
-    benchmark = MUBenchmark(detector="", white_list=[""], black_list=[], timeout=None)
+if config.subprocess == 'checkout':
+    benchmark = MUBenchmark(detector="", white_list=[], black_list=[], timeout=None)
     benchmark.checkout()
-if config.mode == 'mine':
+if config.subprocess == 'detect':
     benchmark = MUBenchmark(detector="", white_list=config.white_list, black_list=config.black_list,
                             timeout=config.timeout)
-    benchmark.mine()
-if config.mode == 'eval':
-    benchmark = MUBenchmark(detector=config.detector, white_list=config.white_list, black_list=config.black_list,
-                            timeout=config.timeout)
+    benchmark.detect()
+if config.subprocess == 'eval':
+    benchmark = MUBenchmark(detector=config.detector, white_list=[], black_list=[], timeout=None)
     benchmark.evaluate()
