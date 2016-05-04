@@ -1,7 +1,7 @@
 import unittest
 from os.path import join
 
-from utils.data_util import extract_project_name_from_file_path, normalize_data_misuse_path, \
+from benchmark.utils.data_util import extract_project_name_from_file_path, normalize_data_misuse_path, \
     normalize_result_misuse_path
 
 

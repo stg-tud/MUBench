@@ -1,16 +1,15 @@
 import sys
 from configparser import ConfigParser
-from datetime import datetime
 from os import getcwd, chdir, listdir
 from os.path import join, realpath, dirname, pardir
 
 from typing import Optional, List
 
-from checkout import Checkout
-from detector_runner import DetectorRunner
-from result_evaluation import ResultEvaluation
-from utils.prerequisites_checker import check_prerequisites
-from utils import command_line_util
+from benchmark.checkout import Checkout
+from benchmark.detector_runner import DetectorRunner
+from benchmark.result_evaluation import ResultEvaluation
+from benchmark.utils import command_line_util
+from benchmark.utils.prerequisites_checker import check_prerequisites
 
 
 class MUBenchmark:
@@ -68,7 +67,7 @@ class MUBenchmark:
         result_evaluation.evaluate_results()
 
 
-mubench = join(dirname(__file__), pardir)
+mubench = dirname(__file__)
 chdir(mubench)  # set the cwd to the MUBench folder
 available_detectors = listdir(realpath('detectors'))
 config = command_line_util.parse_args(sys.argv, available_detectors)

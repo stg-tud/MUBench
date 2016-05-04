@@ -1,5 +1,5 @@
 import unittest
-from utils import dotgraph_util
+from benchmark.utils import dotgraph_util
 
 TEST_LABEL = "SomePackage#SomeClass#someMethod"
 TEST_LABEL_2 = "SomePackage2#SomeClass2#someMethod2"

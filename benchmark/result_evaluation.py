@@ -1,16 +1,16 @@
+import sys
 import traceback
 from genericpath import isdir, exists, isfile, getsize
 from os import listdir
 from os.path import join, splitext
 from os.path import normpath, basename
 
-import sys
-from typing import Dict, Tuple, Optional, Union, List
+from typing import Dict, Tuple, Optional, Union
 
-import datareader
-from utils.data_util import normalize_result_misuse_path, normalize_data_misuse_path
-from utils.dotgraph_util import get_labels_from_result_file, get_labels_from_data_content
-from utils.io import safe_open, safe_write
+from benchmark import datareader
+from benchmark.utils.data_util import normalize_result_misuse_path, normalize_data_misuse_path
+from benchmark.utils.dotgraph_util import get_labels_from_result_file, get_labels_from_data_content
+from benchmark.utils.io import safe_open, safe_write
 
 
 class ResultEvaluation:

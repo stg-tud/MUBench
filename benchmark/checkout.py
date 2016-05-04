@@ -5,9 +5,9 @@ from shutil import copy
 from subprocess import Popen
 from typing import Union, Dict
 
-from datareader import on_all_data_do
-from utils.data_util import extract_project_name_from_file_path
-from utils.io import safe_open
+from benchmark.datareader import on_all_data_do
+from benchmark.utils.data_util import extract_project_name_from_file_path
+from benchmark.utils.io import safe_open
 
 
 class Checkout:

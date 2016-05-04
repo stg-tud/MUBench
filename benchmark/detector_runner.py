@@ -5,10 +5,10 @@ from os import getcwd
 from os.path import join, splitext, basename
 from typing import List, Optional, Dict, Union
 
-from checkout import Checkout
-from datareader import on_all_data_do
-from utils.data_util import extract_project_name_from_file_path
-from utils.io import safe_open, safe_write
+from benchmark.checkout import Checkout
+from benchmark.datareader import on_all_data_do
+from benchmark.utils.data_util import extract_project_name_from_file_path
+from benchmark.utils.io import safe_open, safe_write
 
 CATCH_ERRORS = True  # only used for testing
 

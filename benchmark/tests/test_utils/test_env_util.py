@@ -8,7 +8,7 @@ from tempfile import mkdtemp
 
 import yaml
 
-from utils.io import safe_write
+from benchmark.utils.io import safe_write
 
 
 class TestEnvironment:

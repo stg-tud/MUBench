@@ -32,13 +32,12 @@ Note: MUBenchmark relies on relative paths. You may move the complete MUBench fo
 1. Follow the instructions in the section Run Scripts to install PyYAML    
 2. Install git , svn, and java  
    (Note: MUBenchmark was only tested with the following versions: java version 1.8.0_66, git version 2.6.0, svn version 1.9.3)  
-3. Run `benchmark/mubenchmark.py check` to check correct setup  
+3. Run `mubenchmark.py check` to check correct setup  
 
 ###### Run the Benchmark
 The benchmark consists of several subprocesses.  
-To see a list of available subprocesses, you may use `benchmark/mubenchmark.py -h`.  
-For more detail about how to use a specific subprocess, you may use `benchmark/mubenchmark.py <subprocess> -h`.
-
+To see a list of available subprocesses, you may use `py benchmark.py -h`.  
+For more detail about how to use a specific subprocess, you may use `py benchmark.py <subprocess> -h`.
 
 ## Contribute
 

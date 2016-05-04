@@ -1,7 +1,7 @@
 import unittest
 
-import datareader
-from tests.test_utils.test_env_util import TestEnvironment
+from benchmark import datareader
+from benchmark.tests.test_utils.test_env_util import TestEnvironment
 
 
 class DatareaderTest(unittest.TestCase):

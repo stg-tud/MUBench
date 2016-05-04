@@ -2,9 +2,9 @@ import unittest
 from genericpath import exists
 from os.path import join
 
-from checkout import Checkout
-import utils.io
-from tests.test_utils.test_env_util import TestEnvironment
+from benchmark.checkout import Checkout
+from benchmark.utils import io
+from benchmark.tests.test_utils.test_env_util import TestEnvironment
 
 GIT = 'git'
 SVN = 'svn'
@@ -44,14 +44,14 @@ class CheckoutTest(unittest.TestCase):
     def test_checkout_fails_for_non_empty_target_dir(self):
         with self.assertRaises(ValueError):
             non_empty_dir = join(self.test_env.CHECKOUT_DIR, 'non-empty-target-dir')
-            utils.io.create_file_path(join(non_empty_dir, 'something'))
-            utils.io.create_file(join(non_empty_dir, 'something'))
+            io.create_file_path(join(non_empty_dir, 'something'))
+            io.create_file(join(non_empty_dir, 'something'))
             self.uut.checkout_parent(GIT, self.test_env.REPOSITORY_GIT, GIT_REVISION, non_empty_dir)
 
     def test_checkout_fails_for_file_as_target_dir(self):
         file = join(self.test_env.CHECKOUT_DIR, 'file')
-        utils.io.create_file_path(file)
-        utils.io.create_file(file)
+        io.create_file_path(file)
+        io.create_file(file)
         with self.assertRaises(ValueError):
             self.uut.checkout_parent(GIT, self.test_env.REPOSITORY_GIT, GIT_REVISION, file)
 

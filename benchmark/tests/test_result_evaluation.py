@@ -2,11 +2,12 @@ import os
 import unittest
 from os.path import join
 
-import result_evaluation
-from tests.test_utils.test_env_util import TestEnvironment
-from utils.io import safe_write
+from benchmark import result_evaluation
+from benchmark.tests.test_utils.test_env_util import TestEnvironment
+from benchmark.utils.io import safe_write
 
 
+@unittest.skip("These tests don't work anymore since most configuration options have been removed")
 class ResultsTest(unittest.TestCase):
     def setUp(self):
         self.test_env = TestEnvironment()

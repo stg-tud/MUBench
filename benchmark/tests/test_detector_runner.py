@@ -1,8 +1,8 @@
 import unittest
 from os import listdir
 
-import detector_runner
-from tests.test_utils.test_env_util import TestEnvironment
+from benchmark import detector_runner
+from benchmark.tests.test_utils.test_env_util import TestEnvironment
 
 
 class DetectorRunnerTest(unittest.TestCase):
@@ -14,6 +14,8 @@ class DetectorRunnerTest(unittest.TestCase):
                                                   self.test_env.CHECKOUT_DIR,
                                                   self.test_env.RESULTS_PATH,
                                                   self.test_env.TIMEOUT,
+                                                  white_list=[""],
+                                                  black_list=[],
                                                   catch_errors=False)
 
     def tearDown(self):
