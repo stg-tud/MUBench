@@ -79,7 +79,7 @@ if config.subprocess == 'checkout':
     benchmark = MUBenchmark(detector="", white_list=[], black_list=[], timeout=None)
     benchmark.checkout()
 if config.subprocess == 'detect':
-    benchmark = MUBenchmark(detector="", white_list=config.white_list, black_list=config.black_list,
+    benchmark = MUBenchmark(detector=config.detector, white_list=config.white_list, black_list=config.black_list,
                             timeout=config.timeout)
     benchmark.detect()
 if config.subprocess == 'eval':
