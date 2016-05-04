@@ -41,7 +41,7 @@ class Checkout:
     def checkout(vcs: str, repository: str, revision: str, dir_target: str) -> None:
         print("Checkout ({0}): ".format(vcs))
         print("Repository: " + repository)
-        print("Revision: " + revision)
+        print("Revision: " + str(revision))
         print("Checking out into directory: " + dir_target)
 
         try:
