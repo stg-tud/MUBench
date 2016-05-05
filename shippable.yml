@@ -9,7 +9,7 @@ before_script:
   - mkdir -p shippable/codecoverage shippable/testresults
 
 install:
-  - "pip install pyyaml"
+  - pip install pyyaml
 
 script:
   - python -m unittest discover
