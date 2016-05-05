@@ -1,6 +1,6 @@
 import os
 from os import listdir, makedirs
-from os.path import join, isdir, exists, relpath
+from os.path import join, isdir, exists, relpath, realpath, pardir
 from shutil import copy
 from subprocess import Popen
 from typing import Union, Dict
@@ -90,7 +90,7 @@ class Checkout:
         print("Repository: " + local_repository)
         print("Revision: " + revision)
 
-        with safe_open(join(relpath("../" + local_repository), "checkout.log"), 'a+') as log:
+        with safe_open(join(realpath(join(local_repository, pardir)), "checkout.log"), 'a+') as log:
             if vcs == 'git':
                 Popen('git checkout ' + revision, cwd=local_repository, bufsize=1, shell=True, stdout=log,
                       stderr=log).wait()
