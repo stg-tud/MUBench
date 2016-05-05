@@ -51,7 +51,7 @@ To benchmark your own detector the following steps are necessary:
 __Which inputs will you get?__   
 All inputs are passed through the args array:   
 - args[0]:	The path to the project root. This may be used by your miner to find patterns.
-- args[1]:	The path to a `.pattern` file. These files contain a java code snippet of the misuse. You may use this file if you want to benchmark your misuse detection without relying on pattern mining.
+- args[1]:	The path to a `.pattern` file. These files contain a java code snippet of the misuse. You may use this file if you want to benchmark your misuse detection without relying on pattern mining. Please note that this may be null, since we might not have a pattern file available for some misuses.
 - args[2]:	Your output folder. For the benchmark to evaluate your results correctly you must write the result file given in your config into this folder. If you want to manually check your results you will find them in the `results/<your-detector>` subfolder.
 
 __What should your result file look like?__
