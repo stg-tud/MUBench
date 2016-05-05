@@ -55,7 +55,7 @@ class TestEnvironment:
         svn_subfolder = 'repository-svn'
         Popen('svnadmin create ' + svn_subfolder, cwd=self.TEST_ENV_INSTANCE_PATH, bufsize=1, shell=True).wait()
         svn_source_dir = join(self.TEST_ENV_SOURCE_DIR, svn_subfolder)
-        Popen('svn import {} {} -m "Initial import"'.format(svn_source_dir, self.REPOSITORY_SVN)).wait()
+        Popen('svn import {} {} -m "Initial import"'.format(svn_source_dir, self.REPOSITORY_SVN), shell=True).wait()
 
         # initialize synthetic repository
         synthetic_repository_path = join(self.DATA_PATH, 'repository-synthetic')
