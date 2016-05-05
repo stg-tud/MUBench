@@ -39,6 +39,35 @@ The benchmark consists of several subprocesses.
 To see a list of available subprocesses, you may use `py benchmark.py -h`.  
 For more detail about how to use a specific subprocess, you may use `py benchmark.py <subprocess> -h`.
 
+###### Contribute to the Benchmark
+To benchmark your own detector the following steps are necessary:   
+1. Create a new subfolder in the [detectors](https://github.com/stg-tud/MUBench/tree/master/detectors) folder.   
+   The name of this subfolder will be the ID of your detector in the benchmark. From now on, we refer to it as `<your-detector>`.   
+2. In your new subfolder, create a `<your-detector>.cfg` file. This file will contain everything which is specific to your detector.   
+   You may refer to the [dummy-detector.cfg](https://github.com/stg-tud/MUBench/blob/master/detectors/dummy-detector/dummy-detector.cfg) for formatting.   
+   We expect a `DEFAULT` section, containg the key `Result File`, which is the name of the file you will write your results into.   
+3. Add your detector as `<your-detector>.jar` to your subfolder.
+
+__Which inputs will you get?__   
+All inputs are passed through the args array:   
+- args[0]:	The path to the project root. This may be used by your miner to find patterns.
+- args[1]:	The path to a `.pattern` file. These files contain a java code snippet of the misuse. You may use this file if you want to benchmark your misuse detection without relying on pattern mining.
+- args[2]:	Your output folder. For the benchmark to evaluate your results correctly you must write the result file given in your config into this folder. If you want to manually check your results you will find them in the `results/<your-detector>` subfolder.
+
+__What should your result file look like?__
+If you want to evaluate your results using `py benchmark.py eval <your-detector>` after running the `detect` subprocess we expect the following format in your result file:   
+- `File: <file-with-misuse>` lines:	this option only makes sense if you can't output more specific information and is only considered if no other information is given. You will probably have to manually check the positive results after the evaluation.
+- DOT graphs:	you may add graphs in the DOT format to your result file. The benchmark will compare all labels mentioned in your graphs to the misuse graph in our data. This will lead to more precise results but we still recommend manually checking the positive results.
+
+Example DOT graph:
+```
+digraph {
+  0 [label="StrBuilder#this#getNullText"]
+  1 [label="String#str#length"]
+  0 -> 1
+}
+```
+
 ## Contribute
 
 To contribute to MUBench, simply use our meta-data template below to describe the API misuse you discovered and [create a new file in the `data` folder](https://github.com/stg-tud/MUBench/new/master/data) named `<project>.<issue>.yml`, where <project> must be unique for the repository. You can also create a file locally and submit it via GitHub's drag&drop feature or fork this repository and send a pull request after you committed new misuses.
