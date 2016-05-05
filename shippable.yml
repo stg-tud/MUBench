@@ -9,6 +9,9 @@ before_script:
   - mkdir -p shippable/codecoverage shippable/testresults
 
 install:
+  - sudo apt-get install git-all
+  - sudo apt-get install subversion
+  - sudo apt-get install default-jre
   - pip install pyyaml
 
 script:
