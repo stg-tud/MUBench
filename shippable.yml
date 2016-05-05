@@ -1,4 +1,6 @@
-build_environment: ubuntu1204
+build_environment: 
+  - ubuntu1204
+  - windows
 
 language: python
 
