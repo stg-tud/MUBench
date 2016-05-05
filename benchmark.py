@@ -1,9 +1,9 @@
 #! /usr/bin/python
+import inspect
 import sys
 from configparser import ConfigParser
 from os import getcwd, chdir, listdir
 from os.path import join, realpath, dirname
-
 from typing import Optional, List
 
 from benchmark.checkout import Checkout
@@ -68,7 +68,7 @@ class MUBenchmark:
         result_evaluation.evaluate_results()
 
 
-mubench = dirname(__file__)
+mubench = dirname(realpath(inspect.stack()[0][1]))  # most reliable way to get the scripts absolute location
 chdir(mubench)  # set the cwd to the MUBench folder
 available_detectors = listdir(realpath('detectors'))
 config = command_line_util.parse_args(sys.argv, available_detectors)
