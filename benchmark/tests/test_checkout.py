@@ -81,16 +81,16 @@ class CheckoutTest(unittest.TestCase):
 
 class GetParentTest(unittest.TestCase):
     def test_get_parent_git(self):
-        self.assertEquals(Checkout.get_parent(GIT, "bla"), "bla~1")
+        self.assertEqual(Checkout.get_parent(GIT, "bla"), "bla~1")
 
     def test_get_parent_svn(self):
-        self.assertEquals(Checkout.get_parent(SVN, 42), "41")
+        self.assertEqual(Checkout.get_parent(SVN, 42), "41")
 
     def test_get_parent_svn_with_string_input(self):
-        self.assertEquals(Checkout.get_parent(SVN, "42"), "41")
+        self.assertEqual(Checkout.get_parent(SVN, "42"), "41")
 
     def test_get_parent_synthetic(self):
-        self.assertEquals(Checkout.get_parent(SYNTHETIC, 100), "100")
+        self.assertEqual(Checkout.get_parent(SYNTHETIC, 100), "100")
 
     def test_value_error_on_unknown_vcs(self):
         with self.assertRaises(ValueError):
