@@ -28,42 +28,53 @@ The MUBench dataset is an [MSR 2016 Data Showcase](http://2016.msrconf.org/#/dat
 The MUBench benchmark is a benchmark for usage model miners and misuse detectors  
 Note: MUBenchmark relies on relative paths. You may move the complete MUBench folder anywhere, but removing parts of its content might make the benchmark unusable.  
 
-###### Setup
-1. Follow the instructions in the section Run Scripts to install PyYAML    
-2. Install git , svn, and java  
-   (Note: MUBenchmark was only tested with the following versions: java version 1.8.0_66, git version 2.6.0, svn version 1.9.3)  
-3. Run `mubenchmark.py check` to check correct setup  
+__Setup__   
 
-###### Run the Benchmark
+1. Follow the instructions in the section Run Scripts to install PyYAML
+2. Install git , svn, and java
+   (Note: MUBenchmark was only tested with the following versions: java version 1.8.0_66, git version 2.6.0, svn version 1.9.3)
+3. Run `py benchmark.py check` to check correct setup
+
+__Run the Benchmark__   
+
 The benchmark consists of several subprocesses.  
 To see a list of available subprocesses, you may use `py benchmark.py -h`.  
-For more detail about how to use a specific subprocess, you may use `py benchmark.py <subprocess> -h`.
+For more detail about how to use a specific subprocess, you may use `py benchmark.py <subprocess> -h`.   
 
-###### Contribute to the Benchmark
+__Contribute to the Benchmark__   
+
 To benchmark your own detector the following steps are necessary:   
-1. Create a new subfolder in the [detectors](https://github.com/stg-tud/MUBench/tree/master/detectors) folder.   
-   The name of this subfolder will be the ID of your detector in the benchmark. From now on, we refer to it as `<your-detector>`.   
-2. In your new subfolder, create a `<your-detector>.cfg` file. This file will contain everything which is specific to your detector.   
-   You may refer to the [dummy-detector.cfg](https://github.com/stg-tud/MUBench/blob/master/detectors/dummy-detector/dummy-detector.cfg) for formatting.   
-   We expect a `DEFAULT` section, containg the key `Result File`, which is the name of the file you will write your results into.   
-3. Add your detector as `<your-detector>.jar` to your subfolder.
 
-__Which inputs will you get?__   
-All inputs are passed through the args array:   
+1. Create a new subfolder in the [detectors](https://github.com/stg-tud/MUBench/tree/master/detectors) folder. The name of this subfolder will be the ID of your detector in the benchmark. From now on, we refer to it as `<your-detector>`.
+2. In your new subfolder, create a `<your-detector>.cfg` file. This file will contain everything which is specific to your detector. We expect a `DEFAULT` section, containg the key `Result File`, which is the name of the file you will write your results into. You may refer to the [dummy-detector.cfg](https://github.com/stg-tud/MUBench/blob/master/detectors/dummy-detector/dummy-detector.cfg) for formatting.
+3. Add your detector as `<your-detector>.jar` to your subfolder. The following will describe the inputs and outputs your detector must handle to work in the benchmark:
+
+*Which inputs will I get?* All inputs are passed through the args array:   
 - args[0]:	The path to the project root. This may be used by your miner to find patterns.
 - args[1]:	Your output folder. For the benchmark to evaluate your results correctly you must write the result file given in your config into this folder. If you want to manually check your results you will find them in the `results/<your-detector>` subfolder.
 - args[2]:	The path to a `.pattern` file. These files contain a java code snippet of the misuse. You may use this file if you want to benchmark your misuse detection without relying on pattern mining. Please note that this argument is optional since we might not have a pattern file available for some misuses. Check the array length before accessing it.
 
-__What should your result file look like?__
-If you want to evaluate your results using `py benchmark.py eval <your-detector>` after running the `detect` subprocess we expect the following format in your result file:   
+*What should my result file look like?* If you want to evaluate your results using `py benchmark.py eval <your-detector>` after running the `detect` subprocess we expect the following format in your result file:   
 - `File: <file-with-misuse>` lines:	this option only makes sense if you can't output more specific information and is only considered if no other information is given. You will probably have to manually check the positive results after the evaluation.
-- DOT graphs:	you may add graphs in the DOT format to your result file. The benchmark will compare all labels mentioned in your graphs to the misuse graph in our data. This will lead to more precise results but we still recommend manually checking the positive results.
+- DOT graphs:	you may add graphs in the DOT format to your result file. Separate the graphs by a `---` line. The benchmark will compare all labels mentioned in your graphs to the misuse graph in our data. This will lead to more precise results but we still recommend manually checking the positive results.
 
-Example DOT graph:
+Example file line output:
+```
+File: commons/proper/lang/trunk/src/java/org/apache/commons/lang/text/StrBuilder.java
+File: src/com/google/javascript/rhino/jstype/UnionType.java
+```
+
+Example DOT graph output:
 ```
 digraph {
   0 [label="StrBuilder#this#getNullText"]
   1 [label="String#str#length"]
+  0 -> 1
+}
+---
+digraph {
+  0 [label="UnionTypeBuilder#builder#build"]
+  1 [label="IF#IF#CONTROL"]
   0 -> 1
 }
 ```
