@@ -1,4 +1,4 @@
-from os.path import join, normpath
+from os.path import join
 
 from nose.tools import assert_equals
 
@@ -20,14 +20,14 @@ def test_extract_synthetic_name():
 
 def test_normalize_git_path_from_data():
     non_normalized_path = r'src/main/java/com/alibaba/druid/filter/config/ConfigTools.java'
-    expected_normalized_path = normpath(r'src/main/java/com/alibaba/druid/filter/config/ConfigTools.java')
+    expected_normalized_path = r'src/main/java/com/alibaba/druid/filter/config/ConfigTools.java'
     actual_normalized_path = normalize_data_misuse_path(non_normalized_path)
     assert_equals(expected_normalized_path, actual_normalized_path)
 
 
 def test_normalize_svn_path_from_data():
     non_normalized_path = r'incubator/jackrabbit/trunk/src/java/org/apache/jackrabbit/core/state/obj/ObjectPersistenceManager.java'
-    expected_normalized_path = normpath(r'src/java/org/apache/jackrabbit/core/state/obj/ObjectPersistenceManager.java')
+    expected_normalized_path = r'src/java/org/apache/jackrabbit/core/state/obj/ObjectPersistenceManager.java'
     actual_normalized_path = normalize_data_misuse_path(non_normalized_path)
     assert_equals(expected_normalized_path, actual_normalized_path)
 
@@ -41,7 +41,7 @@ def test_normalize_synthetic_path_from_data():
 
 def test_normalize_git_path_from_result():
     non_normalized_path = r'C:\Users\m8is\AppData\Local\Temp\MUBenchmark\alibaba-druid\src\main\java\com\alibaba\druid\filter\config\ConfigTools.java'
-    expected_normalized_path = normpath(r'src/main/java/com/alibaba/druid/filter/config/ConfigTools.java')
+    expected_normalized_path = r'src/main/java/com/alibaba/druid/filter/config/ConfigTools.java'
     actual_normalized_path = normalize_result_misuse_path(non_normalized_path,
                                                           r'C:\Users\m8is\AppData\Local\Temp\MUBenchmark')
     assert_equals(expected_normalized_path, actual_normalized_path)
@@ -49,7 +49,7 @@ def test_normalize_git_path_from_result():
 
 def test_normalize_svn_path_from_result():
     non_normalized_path = r'C:\Users\m8is\AppData\Local\Temp\MUBenchmark\jackrabbit\trunk\src\java\org\apache\jackrabbit\core\state\obj\ObjectPersistenceManager.java'
-    expected_normalized_path = normpath(r'src\java\org\apache\jackrabbit\core\state\obj\ObjectPersistenceManager.java')
+    expected_normalized_path = r'src/java/org/apache/jackrabbit/core/state/obj/ObjectPersistenceManager.java'
     actual_normalized_path = normalize_result_misuse_path(non_normalized_path,
                                                           r'C:\Users\m8is\AppData\Local\Temp\MUBenchmark')
     assert_equals(expected_normalized_path, actual_normalized_path)
