@@ -8,6 +8,7 @@ python:
 
 before_script:
   - mkdir -p shippable/codecoverage shippable/testresults
+  - sudo chmod +x benchmark.py
 
 install:
   - sudo apt-get install git
