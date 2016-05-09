@@ -1,6 +1,5 @@
 build_environment: 
-  - ubuntu1204
-  - windows
+  ubuntu1204
 
 language: python
 
@@ -14,11 +13,16 @@ install:
   - sudo apt-get install git
   - sudo apt-get install subversion
   - sudo apt-get install default-jre
+  - sudo pip install nose
   - pip install pyyaml
 
-script:
-  - python -m unittest discover
-
+script: 
+  - nosetests
+  - "./benchmark.py check"
+  - "./benchmark.py checkout"
+  - "./benchmark.py detect dummy-miner"
+  - "./benchmark.py eval dummy-miner"
+  
 notifications:
   email:
     - mattis.kaemmerer@gmx.de
