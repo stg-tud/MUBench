@@ -1,4 +1,4 @@
-#! /usr/bin/python
+#!/usr/bin/env python3
 import inspect
 import sys
 from configparser import ConfigParser
