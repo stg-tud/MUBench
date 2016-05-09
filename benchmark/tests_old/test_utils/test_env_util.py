@@ -11,7 +11,7 @@ import yaml
 from benchmark.utils.io import safe_write
 
 
-class TestEnvironment:
+class test_env:
     def __init__(self):
         self.TEST_ENV_SOURCE_DIR = join(dirname(abspath(__file__)), 'test-env')
         self.TEST_ENV_INSTANCE_PATH = mkdtemp(prefix='mubench-test-env_')
@@ -36,6 +36,12 @@ class TestEnvironment:
 
         self.__create_yaml_data()
         self.__initialize_repositories()
+
+    def __enter__(self):
+        self.__init__()
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.tearDown()
 
     # noinspection PyPep8Naming
     def tearDown(self):
@@ -88,7 +94,8 @@ class TestEnvironment:
                     'files': [{'name': 'some-class.java'}]}}
         return content
 
-    def __get_synthetic_yaml(self):
+    @staticmethod
+    def __get_synthetic_yaml():
         content = {
             'fix': {'repository': {'url': 'synthetic-close-1.java', 'revision': '', 'type': 'synthetic'},
                     'files': [{'name': 'synthetic.java'}]}}

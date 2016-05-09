@@ -1,12 +1,12 @@
 import unittest
 
 from benchmark import datareader
-from benchmark.tests.test_utils.test_env_util import TestEnvironment
+from benchmark.tests_old.test_utils.test_env_util import test_env
 
 
 class DatareaderTest(unittest.TestCase):
     def setUp(self):
-        self.test_env = TestEnvironment()
+        self.test_env = test_env()
 
     def tearDown(self):
         self.test_env.tearDown()

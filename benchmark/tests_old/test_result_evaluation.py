@@ -3,14 +3,14 @@ import unittest
 from os.path import join
 
 from benchmark import result_evaluation
-from benchmark.tests.test_utils.test_env_util import TestEnvironment
+from benchmark.tests_old.test_utils.test_env_util import test_env
 from benchmark.utils.io import safe_write
 
 
 @unittest.skip("These tests don't work anymore since most configuration options have been removed")
 class ResultsTest(unittest.TestCase):
     def setUp(self):
-        self.test_env = TestEnvironment()
+        self.test_env = test_env()
 
         self.file_result_git = join(self.test_env.RESULTS_PATH,
                                     'git',

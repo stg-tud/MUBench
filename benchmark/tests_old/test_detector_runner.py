@@ -2,12 +2,12 @@ import unittest
 from os import listdir
 
 from benchmark import detector_runner
-from benchmark.tests.test_utils.test_env_util import TestEnvironment
+from benchmark.tests_old.test_utils.test_env_util import test_env
 
 
 class DetectorRunnerTest(unittest.TestCase):
     def setUp(self):
-        self.test_env = TestEnvironment()
+        self.test_env = test_env()
 
         self.uut = detector_runner.DetectorRunner(self.test_env.DATA_PATH,
                                                   self.test_env.DETECTOR,
