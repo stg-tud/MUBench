@@ -23,7 +23,7 @@ def normalize_result_misuse_path(misuse_file: str, checkout_base_dir: str) -> st
     normed_misuse_file = normpath(misuse_file)
 
     # cut everything before project subfolder
-    checkout_dir_prefix = checkout_base_dir + os.sep
+    checkout_dir_prefix = normpath(checkout_base_dir) + os.sep
     if checkout_dir_prefix in normed_misuse_file:
         normed_misuse_file = normed_misuse_file.split(checkout_dir_prefix, 1)[1]
 
