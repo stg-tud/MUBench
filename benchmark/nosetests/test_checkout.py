@@ -1,4 +1,5 @@
 from os.path import join, exists
+from pprint import PrettyPrinter
 
 from nose.tools import assert_raises
 
@@ -13,13 +14,13 @@ SYNTHETIC = 'synthetic'
 
 GIT_REVISION = '2c4e93c712461ae20051409f472e4857e2189393'
 
-SVN_REVISION = 1
+SVN_REVISION = "1"
 
 
 class TestCheckout:
     def setup(self):
         self.test_env = TestEnv()
-        self.uut = Checkout(self.test_env.DATA_PATH, self.test_env.CHECKOUT_DIR)
+        self.uut = Checkout()
 
     def teardown(self):
         self.test_env.tearDown()
@@ -42,29 +43,16 @@ class TestCheckout:
         repository = join(target_dir, 'synthetic-close-1.java')
         assert exists(repository)
 
-    def test_checkout_fails_for_non_empty_target_dir(self):
-        non_empty_dir = join(self.test_env.CHECKOUT_DIR, 'non-empty-target-dir')
-        create_file_path(join(non_empty_dir, 'something'))
-        create_file(join(non_empty_dir, 'something'))
-
-        assert_raises(ValueError, self.uut.checkout_parent, GIT, self.test_env.REPOSITORY_GIT, GIT_REVISION,
-                      non_empty_dir)
-
     def test_checkout_fails_for_file_as_target_dir(self):
         file = join(self.test_env.CHECKOUT_DIR, 'file')
         create_file_path(file)
         create_file(file)
-        assert_raises(ValueError, self.uut.checkout_parent, GIT, self.test_env.REPOSITORY_GIT, GIT_REVISION, file)
+        assert_raises(FileExistsError, self.uut.checkout_parent, GIT, self.test_env.REPOSITORY_GIT, GIT_REVISION, file)
 
     def test_checkout_fails_for_unknown_vcs(self):
         target_dir = join(self.test_env.CHECKOUT_DIR, 'unknown-vcs')
         assert_raises(ValueError, self.uut.checkout_parent, 'invalid vcs', self.test_env.REPOSITORY_GIT, GIT_REVISION,
                       target_dir)
-
-    def test_logs_into_log_folder(self):
-        target_dir = join(self.test_env.CHECKOUT_DIR, 'log-test-checkout')
-        self.uut.checkout_parent(GIT, self.test_env.REPOSITORY_GIT, GIT_REVISION, target_dir)
-        assert exists(join(target_dir, 'checkout.log'))
 
     def test_reset_to_revision_git(self):
         target_dir = join(self.test_env.CHECKOUT_DIR, 'git-reset')
@@ -85,13 +73,13 @@ class TestGetParent:
         assert "bla~1" == Checkout.get_parent(GIT, "bla")
 
     def test_get_parent_svn(self):
-        assert "41" == Checkout.get_parent(SVN, 42)
+        assert 41 == Checkout.get_parent(SVN, 42)
 
     def test_get_parent_svn_with_string_input(self):
-        assert "41" == Checkout.get_parent(SVN, "42")
+        assert 41 == Checkout.get_parent(SVN, "42")
 
     def test_get_parent_synthetic(self):
-        assert "100" == Checkout.get_parent(SYNTHETIC, 100)
+        assert 100 == Checkout.get_parent(SYNTHETIC, 100)
 
     def test_value_error_on_unknown_vcs(self):
         assert_raises(ValueError, Checkout.get_parent, 'unknown vcs', 1)

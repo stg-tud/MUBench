@@ -11,6 +11,7 @@ from benchmark import datareader
 from benchmark.utils.data_util import normalize_result_misuse_path, normalize_data_misuse_path
 from benchmark.utils.dotgraph_util import get_labels_from_result_file, get_labels_from_data_content
 from benchmark.utils.io import safe_open, safe_write
+from benchmark.utils.printing import subprocess_print, subprocess_print_append
 
 
 class ResultEvaluation:
@@ -39,6 +40,8 @@ class ResultEvaluation:
         dirs_results = [join(self.results_path, result_dir) for result_dir in listdir(self.results_path) if
                         isdir(join(self.results_path, result_dir)) and not result_dir == '_LOGS']
 
+        subprocess_print("Eval - evaluating findings... ", end='')
+
         for dir_result in dirs_results:
             is_result_for_file = splitext(basename(normpath(data_file)))[0] == basename(normpath(dir_result))
 
@@ -62,10 +65,12 @@ class ResultEvaluation:
                         label_found = ResultEvaluation.__is_label_found(result_file, data_content, log)
 
                     if file_found and label_found:
+                        subprocess_print_append("potential hit")
                         return basename(data_file), 1
                     else:
+                        subprocess_print_append("no hits")
                         return basename(data_file), 0
-
+        subprocess_print_append("ignored (no available findings)")
         return basename(data_file), None
 
     def evaluate_results(self) -> Tuple[int, int, int]:

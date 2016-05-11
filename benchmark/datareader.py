@@ -20,19 +20,17 @@ def on_all_data_do(data_path: str,
         whitelisted = any([white_listed in file for white_listed in white_list])
         blacklisted = any([black_listed in file for black_listed in black_list])
         if not whitelisted or blacklisted:
-            print("Warning: ignored {}".format(basename(file)))
-            print("------------------------------------------------------------")
+            print("({}/{}) {} : ignored".format(i, len(datafiles), basename(file)))
             continue
 
         stream = open(file, 'r')
 
-        print("({}/{}) files: now on {}".format(i, len(datafiles), basename(file)))
+        print("({}/{}) {} : ".format(i, len(datafiles), basename(file)))
 
         try:
             yaml_content = yaml.load(stream)
             result.append(function(file, yaml_content))
         finally:
             stream.close()
-            print("------------------------------------------------------------")
 
     return result

@@ -4,6 +4,8 @@ import sys
 from configparser import ConfigParser
 from os import getcwd, chdir, listdir
 from os.path import join, realpath, dirname
+from pprint import PrettyPrinter
+
 from typing import Optional, List
 
 from benchmark.checkout import Checkout
@@ -42,7 +44,7 @@ class MUBenchmark:
             print("okay")
 
     def checkout(self):
-        checkout = Checkout(self.data_path, self.checkout_dir)
+        checkout = Checkout()
         checkout.do_all_checkouts()
 
     def detect(self):
