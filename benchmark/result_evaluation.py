@@ -7,7 +7,7 @@ from typing import Dict, Tuple, Optional, Any
 from benchmark.utils.data_util import normalize_result_misuse_path, normalize_data_misuse_path
 from benchmark.utils.dotgraph_util import get_labels_from_result_file, get_labels_from_data_content
 from benchmark.utils.io import safe_open
-from benchmark.utils.printing import subprocess_print, subprocess_print_append
+from benchmark.utils.printing import subprocess_print
 
 
 class ResultEvaluation:
@@ -53,13 +53,15 @@ class ResultEvaluation:
                         label_found = ResultEvaluation.__is_label_found(result_file, data_content, log)
 
                     if file_found and label_found:
-                        subprocess_print_append("potential hit")
+                        print("potential hit", flush=True)
                         self.results.append((basename(data_file), 1))
+                        return
                     else:
-                        subprocess_print_append("no hit")
+                        print("no hit", flush=True)
                         self.results.append((basename(data_file), 0))
+                        return
 
-        subprocess_print_append("ignored (no available findings)")
+        print("ignored (no available findings)", flush=True)
         self.results.append((basename(data_file), None))
 
     def output_results(self) -> None:
