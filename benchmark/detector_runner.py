@@ -51,7 +51,7 @@ class DetectorRunner:
                     try:
                         absolute_misuse_detector_path = DetectorRunner.__get_misuse_detector_path(self.detector)
 
-                        subprocess_print("Detect - running detector... ", end='')
+                        subprocess_print("Detect : running... ", end='')
 
                         subprocess.call(["java", "-jar", absolute_misuse_detector_path, checkout_dir, result_dir],
                                         bufsize=1, stdout=out_log, stderr=error_log, timeout=self.timeout)

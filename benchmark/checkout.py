@@ -27,6 +27,8 @@ class Checkout:
         vcs = repository["type"]
         revision = fix.get("revision", "")
 
+        subprocess_print("Checkout ({}) - {} # {} : ", end='')
+
         if self.checkout_parent:
             revision = self.get_parent(vcs, revision)
 
@@ -35,15 +37,14 @@ class Checkout:
 
         if exists(checkout_dir):
             if not self.setup_revisions:
-                subprocess_print("Checkout - {} already checked out.".format(project_name))
+                print("already checked out.".format(project_name))
                 return False
-
-            subprocess_print("Checkout - setting up correct revision... ", end='')
             reset_only = True
         else:
-            subprocess_print("Checkout - downloading project... ".format(vcs, repository, revision), end='')
             reset_only = False
             makedirs(checkout_dir, exist_ok=True)
+
+        print("running... ", end='')
 
         with safe_open(join(self.checkout_base_dir, "stdout.log"), 'a+') as outlog, \
                 safe_open(join(self.checkout_base_dir, "stderr.log"), 'a+') as errlog:

@@ -1,5 +1,5 @@
 def subprocess_print(message: str, end='\n') -> None:
-    print("\t\t" + message, end=end, flush=True)
+    print("\t" + message, end=end, flush=True)
 
 
 def subprocess_print_append(message: str, end='\n') -> None:

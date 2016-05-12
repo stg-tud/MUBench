@@ -40,7 +40,7 @@ class ResultEvaluation:
         dirs_results = [join(self.results_path, result_dir) for result_dir in listdir(self.results_path) if
                         isdir(join(self.results_path, result_dir)) and not result_dir == '_LOGS']
 
-        subprocess_print("Eval - evaluating findings... ", end='')
+        subprocess_print("Evaluation : running... ", end='')
 
         for dir_result in dirs_results:
             is_result_for_file = splitext(basename(normpath(data_file)))[0] == basename(normpath(dir_result))
@@ -68,7 +68,7 @@ class ResultEvaluation:
                         subprocess_print_append("potential hit")
                         return basename(data_file), 1
                     else:
-                        subprocess_print_append("no hits")
+                        subprocess_print_append("no hit")
                         return basename(data_file), 0
         subprocess_print_append("ignored (no available findings)")
         return basename(data_file), None

@@ -25,7 +25,7 @@ def on_all_data_do(data_path: str,
 
         stream = open(file, 'r')
 
-        print("({}/{}) {} : ".format(i, len(datafiles), basename(file)))
+        print("Misuse '{}' ({}/{}) > ".format(basename(file), i, len(datafiles)))
 
         try:
             yaml_content = yaml.load(stream)
