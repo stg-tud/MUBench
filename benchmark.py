@@ -28,6 +28,7 @@ class MUBenchmark:
         self.data_path = join(getcwd(), "data")
         self.results_path = realpath(join("results", self.detector))
         self.checkout_dir = realpath("checkouts")
+        self.detector_result_file = 'findings.yml'
 
         self.datareader = DataReader(self.data_path, self.white_list, self.black_list)
 
@@ -37,7 +38,8 @@ class MUBenchmark:
         self.datareader.run()
 
     def detect(self) -> None:
-        detector_runner = DetectorRunner(self.detector, self.checkout_dir, self.results_path, self.timeout)
+        detector_runner = DetectorRunner(self.detector, self.detector_result_file, self.checkout_dir, self.results_path,
+                                         self.timeout)
         checkout_handler = Checkout(setup_revisions=True, checkout_parent=True)
 
         self.datareader.add(checkout_handler.checkout)
@@ -47,12 +49,12 @@ class MUBenchmark:
     def evaluate(self) -> None:
         cfg = ConfigParser()
         cfg.read(realpath(join('detectors', self.detector, self.detector + '.cfg')))
-        detector_result_file = cfg['DEFAULT']['Result File']
-        evaluation_handler = ResultEvaluation(self.results_path, self.detector, detector_result_file,
+        evaluation_handler = ResultEvaluation(self.results_path, self.detector, self.detector_result_file,
                                               self.checkout_dir)
 
         if not exists(self.results_path):
-            detector_runner = DetectorRunner(self.detector, self.checkout_dir, self.results_path, self.timeout)
+            detector_runner = DetectorRunner(self.detector, self.detector_result_file, self.checkout_dir,
+                                             self.results_path, self.timeout)
             checkout_handler = Checkout(setup_revisions=True, checkout_parent=True)
             self.datareader.add(checkout_handler.checkout)
             self.datareader.add(detector_runner.run_detector)

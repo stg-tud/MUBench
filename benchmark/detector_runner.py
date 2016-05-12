@@ -11,10 +11,12 @@ from benchmark.utils.printing import subprocess_print, print_ok
 class DetectorRunner:
     def __init__(self,
                  detector: str,
+                 detector_result_file: str,
                  checkout_base_dir: str,
                  results_path: str,
                  timeout: Optional[int]):
         self.detector = detector
+        self.detector_result_file = detector_result_file
         self.checkout_base_dir = checkout_base_dir
         self.results_path = results_path
         self.timeout = timeout
@@ -30,7 +32,7 @@ class DetectorRunner:
                 try:
                     absolute_misuse_detector_path = DetectorRunner.__get_misuse_detector_path(self.detector)
 
-                    detector_args = [checkout_dir, join(result_dir, "findings.yml")]
+                    detector_args = [checkout_dir, join(result_dir, self.detector_result_file)]
 
                     pattern_file = join(splitext(file)[0], '.pattern')
                     if exists(pattern_file):
