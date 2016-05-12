@@ -1,10 +1,9 @@
 import os
+import subprocess
 from os import makedirs
-from os.path import join, exists, realpath, pardir, basename
+from os.path import join, exists, realpath
 from shutil import copy
-from subprocess import Popen
-
-from typing import Union, Dict
+from typing import Union, Dict, Any
 
 from benchmark.datareader import on_all_data_do
 from benchmark.utils.data_util import extract_project_name_from_file_path
@@ -13,9 +12,83 @@ from benchmark.utils.printing import subprocess_print, print_ok
 
 
 class Checkout:
-    def __init__(self):
+    def __init__(self, checkout_parent: bool, setup_revisions: bool):
         self.data_path = realpath('data')
         self.checkout_base_dir = realpath('checkouts')
+        self.checkout_parent = checkout_parent
+        self.setup_revisions = setup_revisions
+
+    def do_all_checkouts(self) -> None:
+        on_all_data_do(self.data_path, self.checkout, white_list=[""], black_list=[])
+
+    def checkout(self, file: str, misuse: Dict[str, Any]) -> bool:
+        fix = misuse["fix"]
+        repository = fix["repository"]
+        vcs = repository["type"]
+        revision = fix.get("revision", "")
+
+        if self.checkout_parent:
+            revision = self.get_parent(vcs, revision)
+
+        project_name = extract_project_name_from_file_path(file)
+        checkout_dir = join(self.checkout_base_dir, project_name)
+
+        if exists(checkout_dir):
+            if not self.setup_revisions:
+                subprocess_print("Checkout - {} already checked out.".format(project_name))
+                return False
+
+            subprocess_print("Checkout - setting up correct revision... ", end='')
+            reset_only = True
+        else:
+            subprocess_print("Checkout - downloading project... ".format(vcs, repository, revision), end='')
+            reset_only = False
+            makedirs(checkout_dir, exist_ok=True)
+
+        with safe_open(join(self.checkout_base_dir, "stdout.log"), 'a+') as outlog, \
+                safe_open(join(self.checkout_base_dir, "stderr.log"), 'a+') as errlog:
+            returncode = 0
+
+            if vcs == 'git':
+                if reset_only:
+                    returncode += subprocess.call('git checkout ' + revision, cwd=checkout_dir, bufsize=1,
+                                                  shell=True, stdout=outlog, stderr=errlog)
+                else:
+                    git_init = 'git init'
+                    git_set_remote = 'git remote add origin ' + repository
+                    git_fetch = 'git fetch'
+                    git_checkout = 'git checkout ' + revision
+
+                    returncode += subprocess.call(git_init, cwd=checkout_dir, bufsize=1, shell=True,
+                                                  stdout=outlog, stderr=errlog)
+                    returncode += subprocess.call(git_set_remote, cwd=checkout_dir, bufsize=1, shell=True,
+                                                  stdout=outlog, stderr=errlog)
+                    returncode += subprocess.call(git_fetch, cwd=checkout_dir, bufsize=1, shell=True,
+                                                  stdout=outlog, stderr=errlog)
+                    returncode += subprocess.call(git_checkout, cwd=checkout_dir, bufsize=1, shell=True,
+                                                  stdout=outlog, stderr=errlog)
+            elif vcs == 'svn':
+                if reset_only:
+                    svn_update = 'svn update -r {}'.format(revision)
+                    returncode += subprocess.call(svn_update, cwd=checkout_dir, bufsize=1,
+                                                  shell=True, stdout=outlog, stderr=errlog)
+                else:
+                    svn_checkout = 'svn checkout {}@{}'.format(repository, revision)
+                    returncode += subprocess.call(svn_checkout, cwd=checkout_dir, bufsize=1, shell=True,
+                                                  stdout=outlog, stderr=errlog)
+            elif vcs == 'synthetic':
+                if not reset_only:
+                    copy(join(os.getcwd(), 'data', repository), checkout_dir)
+            else:
+                print("unknown vcs {}!".format(vcs))
+                raise ValueError("Unknown version control type: {}".format(vcs))
+
+        if returncode == 0:
+            print_ok()
+            return True
+        else:
+            print("error! (consider .log files in checkout subfolder for more detail)")
+            return False
 
     @staticmethod
     def get_parent(vcs: str, revision: Union[int, str]) -> Union[str, int]:
@@ -27,74 +100,3 @@ class Checkout:
             return revision
         else:
             raise ValueError("Unknown version control type: {}".format(vcs))
-
-    def checkout_parent(self, vcs: str, repository: str, revision: str, dir_target: str) -> None:
-        self.checkout(vcs, repository, self.get_parent(vcs, revision), dir_target)
-
-    def checkout(self, vcs: str, repository: str, revision: str, dir_target: str) -> None:
-        subprocess_print("Checkout - downloading project... ".format(vcs, repository, revision), end='')
-
-        makedirs(dir_target, exist_ok=True)
-
-        with safe_open(join(self.checkout_base_dir, "checkout.log"), 'a+') as log:
-            if vcs == 'git':
-                git_init = 'git init'
-                git_set_remote = 'git remote add origin ' + repository
-                git_fetch = 'git fetch'
-                git_checkout = 'git checkout ' + revision
-
-                Popen(git_init, cwd=dir_target, bufsize=1, shell=True, stdout=log, stderr=log).wait()
-                Popen(git_set_remote, cwd=dir_target, bufsize=1, shell=True, stdout=log, stderr=log).wait()
-                Popen(git_fetch, cwd=dir_target, bufsize=1, shell=True, stdout=log, stderr=log).wait()
-                Popen(git_checkout, cwd=dir_target, bufsize=1, shell=True, stdout=log, stderr=log).wait()
-
-            elif vcs == 'svn':
-                svn_checkout = ['svn', 'checkout', "{}@{}".format(repository, revision)]
-                Popen(svn_checkout, cwd=dir_target, bufsize=1, stdout=log, stderr=log).wait()
-
-            elif vcs == 'synthetic':
-                copy(join(os.getcwd(), 'data', repository), dir_target)
-
-            else:
-                print("unknown vcs {}!".format(vcs))
-                raise ValueError("Unknown version control type: {}".format(vcs))
-
-        print_ok()
-
-    def reset_to_revision(self, vcs: str, local_repository: str, revision: str):
-        revision = str(revision)
-
-        subprocess_print("Checkout - setting up correct revision... ", end='')
-
-        with safe_open(join(realpath(join(local_repository, pardir)), "checkout.log"), 'a+') as log:
-            if vcs == 'git':
-                Popen('git checkout ' + revision, cwd=local_repository, bufsize=1, shell=True, stdout=log,
-                      stderr=log).wait()
-
-            elif vcs == 'svn':
-                Popen('svn update -r {}'.format(revision), cwd=local_repository, bufsize=1, shell=True, stdout=log,
-                      stderr=log).wait()
-
-            elif vcs == 'synthetic':
-                pass  # nothing to do here
-
-            else:
-                print("unknown vcs {}!".format(vcs))
-                raise ValueError("Unknown version control type: {}".format(vcs))
-
-        print_ok()
-
-    def single_checkout(self, file: str, misuse: Dict[str, str]) -> None:
-        fix = misuse["fix"]
-        repository = fix["repository"]
-
-        project_name = extract_project_name_from_file_path(file)
-        checkout_dir = join(self.checkout_base_dir, project_name)
-
-        if not exists(checkout_dir):
-            self.checkout(repository["type"], repository["url"], fix.get('revision', ""), checkout_dir)
-        else:
-            subprocess_print("Checkout - {} already checked out.".format(project_name))
-
-    def do_all_checkouts(self) -> None:
-        on_all_data_do(self.data_path, self.single_checkout, white_list=[""], black_list=[])

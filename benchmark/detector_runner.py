@@ -39,16 +39,12 @@ class DetectorRunner:
         try:
             result_dir = join(self.results_path, splitext(basename(file))[0])
 
-            fix = misuse["fix"]
-            repository = fix["repository"]
-
             project_name = extract_project_name_from_file_path(file)
             checkout_dir = join(self.checkout_base_dir, project_name)
 
-            if not exists(checkout_dir):
-                Checkout().checkout_parent(repository["type"], repository["url"], fix.get('revision', ""), checkout_dir)
-            else:
-                Checkout().reset_to_revision(repository["type"], checkout_dir, fix.get('revision', ""))
+            checkout_successful = Checkout(True, True).checkout(file, misuse)
+            if not checkout_successful:
+                return
 
             with safe_open(join(result_dir, "out.log"), 'w+') as out_log:
                 with safe_open(join(result_dir, "error.log"), 'w+') as error_log:
