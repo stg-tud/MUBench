@@ -23,9 +23,10 @@ class Checkout:
 
     def checkout(self, file: str, misuse: Dict[str, Any]) -> bool:
         fix = misuse["fix"]
-        repository = fix["repository"]
-        vcs = repository["type"]
+        vcs = fix["repository"]["type"]
         revision = fix.get("revision", "")
+
+        repository_url = fix["repository"]["url"]
 
         subprocess_print("Checkout ({}) - {} # {} : ", end='')
 
@@ -56,7 +57,7 @@ class Checkout:
                                                   shell=True, stdout=outlog, stderr=errlog)
                 else:
                     git_init = 'git init'
-                    git_set_remote = 'git remote add origin ' + repository
+                    git_set_remote = 'git remote add origin ' + repository_url
                     git_fetch = 'git fetch'
                     git_checkout = 'git checkout ' + revision
 
@@ -74,12 +75,12 @@ class Checkout:
                     returncode += subprocess.call(svn_update, cwd=checkout_dir, bufsize=1,
                                                   shell=True, stdout=outlog, stderr=errlog)
                 else:
-                    svn_checkout = 'svn checkout {}@{}'.format(repository, revision)
+                    svn_checkout = 'svn checkout {}@{}'.format(repository_url, revision)
                     returncode += subprocess.call(svn_checkout, cwd=checkout_dir, bufsize=1, shell=True,
                                                   stdout=outlog, stderr=errlog)
             elif vcs == 'synthetic':
                 if not reset_only:
-                    copy(join(os.getcwd(), 'data', repository), checkout_dir)
+                    copy(join('data', repository_url), checkout_dir)
             else:
                 print("unknown vcs {}!".format(vcs), flush=True)
                 raise ValueError("Unknown version control type: {}".format(vcs))

@@ -44,7 +44,7 @@ class MUBenchmark:
             print("okay")
 
     def checkout(self):
-        checkout = Checkout()
+        checkout = Checkout(setup_revisions=False, checkout_parent=False)
         checkout.do_all_checkouts()
 
     def detect(self):
