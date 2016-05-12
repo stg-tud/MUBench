@@ -1,7 +1,12 @@
+import os
+import subprocess
+from distutils.dir_util import copy_tree
+from os import makedirs
 from os.path import join, exists
 from pprint import PrettyPrinter
 
 from nose.tools import assert_raises
+from shutil import copyfile
 
 from benchmark.checkout import Checkout
 from benchmark.nosetests.test_utils.test_env_util import TestEnv
@@ -17,9 +22,42 @@ GIT_REVISION = '2c4e93c712461ae20051409f472e4857e2189393'
 SVN_REVISION = "1"
 
 
+# noinspection PyAttributeOutsideInit
 class TestCheckout:
     def setup(self):
         self.test_env = TestEnv()
+
+        test_env_instance_path = self.test_env.TEST_ENV_INSTANCE_PATH
+        test_env_source_dir = self.test_env.TEST_ENV_SOURCE_DIR
+
+        # initialize git repository
+        git_repository_path = join(test_env_instance_path, 'repository-git')
+        makedirs(git_repository_path)
+
+        with open(os.devnull, 'w') as FNULL:
+            subprocess.call('git init', cwd=git_repository_path, bufsize=1, shell=True, stdout=FNULL)
+            copy_tree(join(test_env_source_dir, 'repository-git'), git_repository_path)
+            subprocess.call('git add -A', cwd=git_repository_path, bufsize=1, shell=True, stdout=FNULL)
+            subprocess.call('git commit -m "commit message"', cwd=git_repository_path, bufsize=1, shell=True,
+                            stdout=FNULL)
+
+            # initialize svn repository
+            # svnadmin create creates the subdirectory 'repository-svn'
+            svn_subfolder = 'repository-svn'
+            subprocess.call('svnadmin create ' + svn_subfolder, cwd=test_env_instance_path, bufsize=1, shell=True,
+                            stdout=FNULL)
+            svn_source_dir = join(test_env_source_dir, svn_subfolder)
+            subprocess.call('svn import {} {} -m "Initial import"'.format(svn_source_dir, self.test_env.REPOSITORY_SVN),
+                            shell=True, stdout=FNULL)
+
+        # initialize synthetic repository
+        test_env_data_path = self.test_env.DATA_PATH
+        synthetic_repository_path = join(test_env_data_path, 'repository-synthetic')
+        makedirs(synthetic_repository_path)
+        copy_tree(join(test_env_source_dir, 'repository-synthetic'), synthetic_repository_path)
+        copyfile(join(test_env_source_dir, 'repository-synthetic', 'synthetic.java'),
+                 join(test_env_data_path, 'synthetic.java'))
+
         self.uut = Checkout()
 
     def teardown(self):

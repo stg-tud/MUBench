@@ -1,10 +1,8 @@
 import yaml
-from distutils.dir_util import copy_tree
 from os import makedirs, chdir
 from os.path import join, abspath, dirname, pardir
 from pathlib import Path
-from shutil import rmtree, copyfile
-from subprocess import Popen
+from shutil import rmtree
 from tempfile import mkdtemp
 
 from benchmark.utils.io import safe_write
@@ -36,34 +34,10 @@ class TestEnv:
         self.TIMEOUT = None
 
         self.__create_yaml_data()
-        self.__initialize_repositories()
 
     # noinspection PyPep8Naming
     def tearDown(self):
         rmtree(self.TEST_ENV_INSTANCE_PATH, ignore_errors=True)
-
-    def __initialize_repositories(self):
-        # initialize git repository
-        git_repository_path = join(self.TEST_ENV_INSTANCE_PATH, 'repository-git')
-        makedirs(git_repository_path)
-        Popen('git init', cwd=git_repository_path, bufsize=1, shell=True).wait()
-        copy_tree(join(self.TEST_ENV_SOURCE_DIR, 'repository-git'), git_repository_path)
-        Popen('git add -A', cwd=git_repository_path, bufsize=1, shell=True).wait()
-        Popen('git commit -m "commit message"', cwd=git_repository_path, bufsize=1, shell=True).wait()
-
-        # initialize svn repository
-        # svnadmin create creates the subdirectory 'repository-svn'
-        svn_subfolder = 'repository-svn'
-        Popen('svnadmin create ' + svn_subfolder, cwd=self.TEST_ENV_INSTANCE_PATH, bufsize=1, shell=True).wait()
-        svn_source_dir = join(self.TEST_ENV_SOURCE_DIR, svn_subfolder)
-        Popen('svn import {} {} -m "Initial import"'.format(svn_source_dir, self.REPOSITORY_SVN), shell=True).wait()
-
-        # initialize synthetic repository
-        synthetic_repository_path = join(self.DATA_PATH, 'repository-synthetic')
-        makedirs(synthetic_repository_path)
-        copy_tree(join(self.TEST_ENV_SOURCE_DIR, 'repository-synthetic'), synthetic_repository_path)
-        copyfile(join(self.TEST_ENV_SOURCE_DIR, 'repository-synthetic', 'synthetic.java'),
-                 join(self.DATA_PATH, 'synthetic.java'))
 
     def __create_yaml_data(self):
         git_yaml = self.__get_git_yaml()
