@@ -23,8 +23,7 @@ class TestResultEvaluation:
                                     'svn',
                                     self.test_env.FILE_DETECTOR_RESULT)
 
-        self.uut = ResultEvaluation(self.test_env.DATA_PATH,
-                                    self.test_env.RESULTS_PATH,
+        self.uut = ResultEvaluation(self.test_env.RESULTS_PATH,
                                     self.test_env.DETECTOR,
                                     self.test_env.FILE_DETECTOR_RESULT,
                                     self.test_env.CHECKOUT_DIR,

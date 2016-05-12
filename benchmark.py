@@ -3,12 +3,11 @@ import inspect
 import sys
 from configparser import ConfigParser
 from os import getcwd, chdir, listdir
-from os.path import join, realpath, dirname
-from pprint import PrettyPrinter
-
+from os.path import join, realpath, dirname, exists
 from typing import Optional, List
 
 from benchmark.checkout import Checkout
+from benchmark.datareader import DataReader
 from benchmark.detector_runner import DetectorRunner
 from benchmark.result_evaluation import ResultEvaluation
 from benchmark.utils import command_line_util
@@ -22,7 +21,6 @@ class MUBenchmark:
                  black_list: List[str],
                  white_list: List[str]
                  ):
-
         self.detector = detector
         self.timeout = timeout
         self.black_list = black_list
@@ -31,43 +29,49 @@ class MUBenchmark:
         self.results_path = realpath(join("results", self.detector))
         self.checkout_dir = realpath("checkouts")
 
-        self.check()
+        self.datareader = DataReader(self.data_path, self.white_list, self.black_list)
 
-    @staticmethod
-    def check():
-        print("Checking prerequisites... ", end='')
-        prerequisites_okay, error_message = check_prerequisites()
-        if not prerequisites_okay:
-            print('')  # add the before omitted newline
-            sys.exit(error_message)
-        else:
-            print("okay")
+    def checkout(self) -> None:
+        checkout_handler = Checkout(setup_revisions=False, checkout_parent=False)
+        self.datareader.add(checkout_handler.checkout)
+        self.datareader.run()
 
-    def checkout(self):
-        checkout = Checkout(setup_revisions=False, checkout_parent=False)
-        checkout.do_all_checkouts()
+    def detect(self) -> None:
+        detector_runner = DetectorRunner(self.detector, self.checkout_dir, self.results_path, self.timeout)
+        checkout_handler = Checkout(setup_revisions=True, checkout_parent=True)
 
-    def detect(self):
-        detector_runner = DetectorRunner(self.data_path,
-                                         self.detector,
-                                         self.checkout_dir,
-                                         self.results_path,
-                                         self.timeout,
-                                         self.white_list,
-                                         self.black_list)
+        self.datareader.add(checkout_handler.checkout)
+        self.datareader.add(detector_runner.run_detector)
+        self.datareader.run()
 
-        detector_runner.run_detector_on_all_data()
-
-    def evaluate(self):
+    def evaluate(self) -> None:
         cfg = ConfigParser()
         cfg.read(realpath(join('detectors', self.detector, self.detector + '.cfg')))
         detector_result_file = cfg['DEFAULT']['Result File']
-        result_evaluation = ResultEvaluation(self.data_path,
-                                             self.results_path,
-                                             self.detector,
-                                             detector_result_file,
-                                             self.checkout_dir)
-        result_evaluation.evaluate_results()
+        evaluation_handler = ResultEvaluation(self.results_path, self.detector, detector_result_file,
+                                              self.checkout_dir)
+
+        if not exists(self.results_path):
+            detector_runner = DetectorRunner(self.detector, self.checkout_dir, self.results_path, self.timeout)
+            checkout_handler = Checkout(setup_revisions=True, checkout_parent=True)
+            self.datareader.add(checkout_handler.checkout)
+            self.datareader.add(detector_runner.run_detector)
+
+        self.datareader.add(evaluation_handler.evaluate_findings)
+
+        self.datareader.run()
+
+        evaluation_handler.output_results()
+
+
+def check() -> None:
+    print("Checking prerequisites... ", end='')
+    prerequisites_okay, error_message = check_prerequisites()
+    if not prerequisites_okay:
+        print('')  # add the before omitted newline
+        sys.exit(error_message)
+    else:
+        print("okay")
 
 
 mubench = dirname(realpath(inspect.stack()[0][1]))  # most reliable way to get the scripts absolute location
@@ -75,9 +79,10 @@ chdir(mubench)  # set the cwd to the MUBench folder
 available_detectors = listdir(realpath('detectors'))
 config = command_line_util.parse_args(sys.argv, available_detectors)
 
+check()
+
 if config.subprocess == 'check':
-    benchmark = MUBenchmark(detector="", white_list=[], black_list=[], timeout=None)
-    # prerequisites are always checked implicitly
+    pass  # prerequisites are always checked before
 if config.subprocess == 'checkout':
     benchmark = MUBenchmark(detector="", white_list=[], black_list=[], timeout=None)
     benchmark.checkout()
@@ -86,5 +91,5 @@ if config.subprocess == 'detect':
                             timeout=config.timeout)
     benchmark.detect()
 if config.subprocess == 'eval':
-    benchmark = MUBenchmark(detector=config.detector, white_list=[], black_list=[], timeout=None)
+    benchmark = MUBenchmark(detector=config.detector, white_list=[""], black_list=[], timeout=None)
     benchmark.evaluate()

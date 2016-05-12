@@ -2,10 +2,8 @@ from genericpath import isdir, exists, isfile, getsize
 from os import listdir
 from os.path import join, splitext
 from os.path import normpath, basename
-from typing import Dict, Tuple, Optional, Union, List, Any
+from typing import Dict, Tuple, Optional, Any
 
-from benchmark import datareader
-from benchmark.detector_runner import DetectorRunner
 from benchmark.utils.data_util import normalize_result_misuse_path, normalize_data_misuse_path
 from benchmark.utils.dotgraph_util import get_labels_from_result_file, get_labels_from_data_content
 from benchmark.utils.io import safe_open
@@ -14,24 +12,18 @@ from benchmark.utils.printing import subprocess_print, subprocess_print_append
 
 class ResultEvaluation:
     def __init__(self,
-                 data_path: str,
                  results_path: str,
                  detector: str,
                  detector_result_file: str,
-                 checkout_base_dir: str,
-                 catch_errors: bool = True):
-        self.data_path = data_path
+                 checkout_base_dir: str):
         self.results_path = results_path
         self.detector = detector
         self.detector_result_file = detector_result_file
         self.checkout_base_dir = checkout_base_dir
-        self.catch_errors = catch_errors
 
-        if not exists(self.results_path):
-            detector_runner = DetectorRunner(data_path, detector, checkout_base_dir, results_path, None, [""], [])
-            detector_runner.run_detector_on_all_data()
+        self.results = []
 
-    def evaluate_single_result(self, data_file: str, data_content: Dict[str, Any]) -> Tuple[str, Optional[int]]:
+    def evaluate_findings(self, data_file: str, data_content: Dict[str, Any]) -> Tuple[str, Optional[int]]:
 
         dirs_results = [join(self.results_path, result_dir) for result_dir in listdir(self.results_path) if
                         isdir(join(self.results_path, result_dir)) and not result_dir == '_LOGS']
@@ -62,27 +54,26 @@ class ResultEvaluation:
 
                     if file_found and label_found:
                         subprocess_print_append("potential hit")
-                        return basename(data_file), 1
+                        self.results.append((basename(data_file), 1))
                     else:
                         subprocess_print_append("no hit")
-                        return basename(data_file), 0
+                        self.results.append((basename(data_file), 0))
 
         subprocess_print_append("ignored (no available findings)")
-        return basename(data_file), None
+        self.results.append((basename(data_file), None))
 
-    def evaluate_results(self) -> None:
-        results = datareader.on_all_data_do(self.data_path, self.evaluate_single_result, [""], [])
-        self.output_results(results)
+    def output_results(self) -> None:
+        if not self.results:
+            return
 
-    def output_results(self, results: List[Tuple[str, int]]) -> None:
         def to_data_name(result: Tuple[str, int]) -> str:
             return result[0]
 
         def to_success(result: Tuple[str, int]) -> int:
             return result[1]
 
-        applied_results = [result for result in results if result[1] is not None]
-        total = len(results)
+        applied_results = [result for result in self.results if result[1] is not None]
+        total = len(self.results)
         applied = len(applied_results)
         found = sum(map(to_success, applied_results))
 
@@ -95,9 +86,9 @@ class ResultEvaluation:
         def finished_with_error(result: Tuple[str, int]) -> bool:
             return result[1] is None
 
-        found_misuses = map(to_data_name, filter(was_successful, results))
-        not_found_misuses = map(to_data_name, filter(was_not_successful, results))
-        misuses_with_errors = map(to_data_name, filter(finished_with_error, results))
+        found_misuses = map(to_data_name, filter(was_successful, self.results))
+        not_found_misuses = map(to_data_name, filter(was_not_successful, self.results))
+        misuses_with_errors = map(to_data_name, filter(finished_with_error, self.results))
         with safe_open(join(self.results_path, "Result.txt"), 'w+') as file_result:
             print('----------------------------------------------', file=file_result)
             print('Total number of misuses in the benchmark: ' + str(total), file=file_result)

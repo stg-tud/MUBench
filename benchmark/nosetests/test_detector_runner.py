@@ -14,7 +14,7 @@ def teardown_module(module):
 
 
 def test_run():
-    uut = DetectorRunner(test_env.DATA_PATH, test_env.DETECTOR, test_env.CHECKOUT_DIR, test_env.RESULTS_PATH,
-                         test_env.TIMEOUT, white_list=[""], black_list=[], catch_errors=False)
+    uut = DetectorRunner(test_env.DETECTOR, test_env.CHECKOUT_DIR, test_env.RESULTS_PATH,
+                         test_env.TIMEOUT, catch_errors=False)
     uut.run_detector_on_all_data()
     assert not test_env.RESULTS_PATH == []

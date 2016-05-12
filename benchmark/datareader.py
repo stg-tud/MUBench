@@ -1,36 +1,52 @@
+import yaml
 from os import listdir
 from os.path import isfile, join, basename
-
-import yaml
-from typing import List, Callable, Dict, TypeVar, Union
-
-T = TypeVar('ResultType')
+from typing import List, Any, Callable
 
 
-def on_all_data_do(data_path: str,
-                   function: Callable[[str, Dict[str, Union[str, Dict]]], T],
-                   white_list: List[str],
-                   black_list: List[str]) -> List[T]:
+class DataReader:
+    def __init__(self, data_path: str, white_list: List[str], black_list: List[str]):
+        self.functions = []
 
-    datafiles = [join(data_path, file) for file in listdir(data_path) if
-                 isfile(join(data_path, file)) and file.endswith(".yml")]
+        self.data_path = data_path
+        self.white_list = white_list
+        self.black_list = black_list
 
-    result = []
-    for i, file in enumerate(datafiles, start=1):
-        whitelisted = any([white_listed in file for white_listed in white_list])
-        blacklisted = any([black_listed in file for black_listed in black_list])
-        if not whitelisted or blacklisted:
-            print("Misuse '{}' ({}/{}) > ignored".format(basename(file), i, len(datafiles)), flush=True)
-            continue
+    def add(self, function: Callable):
+        self.functions.append(function)
 
-        stream = open(file, 'r')
+    def run(self) -> List[Any]:
 
-        print("Misuse '{}' ({}/{}) > ".format(basename(file), i, len(datafiles)), flush=True)
+        datafiles = [join(self.data_path, file) for file in listdir(self.data_path) if
+                     isfile(join(self.data_path, file)) and file.endswith(".yml")]
 
-        try:
-            yaml_content = yaml.load(stream)
-            result.append(function(file, yaml_content))
-        finally:
-            stream.close()
+        result = []
+        for i, file in enumerate(datafiles, start=1):
+            whitelisted = any([white_listed in file for white_listed in self.white_list])
+            blacklisted = any([black_listed in file for black_listed in self.black_list])
+            if not whitelisted or blacklisted:
+                print("Misuse '{}' ({}/{}) > ignored".format(basename(file), i, len(datafiles)), flush=True)
+                continue
 
-    return result
+            stream = open(file, 'r')
+
+            print("Misuse '{}' ({}/{}) > ".format(basename(file), i, len(datafiles)), flush=True)
+
+            try:
+                yaml_content = yaml.load(stream)
+                for function in self.functions:
+                    try:
+                        function_out = function(file, yaml_content)
+                        if function_out is not None:
+                            result.append(function_out)
+                    except Continue:
+                        continue
+            finally:
+                stream.close()
+
+        return result
+
+
+class Continue(Exception):
+    def __init__(self):
+        super(Continue, self).__init__()

@@ -1,11 +1,10 @@
-import os
 import subprocess
 from os import makedirs
 from os.path import join, exists, realpath
 from shutil import copy
 from typing import Union, Dict, Any
 
-from benchmark.datareader import on_all_data_do
+from benchmark import datareader
 from benchmark.utils.data_util import extract_project_name_from_file_path
 from benchmark.utils.io import safe_open
 from benchmark.utils.printing import subprocess_print, print_ok
@@ -17,9 +16,6 @@ class Checkout:
         self.checkout_base_dir = realpath('checkouts')
         self.checkout_parent = checkout_parent
         self.setup_revisions = setup_revisions
-
-    def do_all_checkouts(self) -> None:
-        on_all_data_do(self.data_path, self.checkout, white_list=[""], black_list=[])
 
     def checkout(self, file: str, misuse: Dict[str, Any]) -> bool:
         fix = misuse["fix"]
@@ -87,10 +83,9 @@ class Checkout:
 
         if returncode == 0:
             print_ok()
-            return True
         else:
             print("error! (consider .log files in checkout subfolder for more detail)", flush=True)
-            return False
+            raise datareader.Continue
 
     @staticmethod
     def get_parent(vcs: str, revision: Union[int, str]) -> Union[str, int]:
