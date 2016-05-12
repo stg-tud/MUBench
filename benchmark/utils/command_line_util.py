@@ -4,10 +4,11 @@ from typing import List, Any
 
 
 def get_command_line_parser(available_detectors: List[str]) -> ArgumentParser:
-    parser = ArgumentParser(prog="MUBench benchmark",
-                            description="A benchmark for usage model miners and misuse detectors. The benchmark consists of several subprocesses.")
+    parser = ArgumentParser(
+        description="Run MUBench, the benchmark for API-misuse detectors.",
+        epilog="For details, check out https://github.com/stg-tud/MUBench.")
 
-    subparsers = parser.add_subparsers(help="MUBench Subprocesses", dest='subprocess')
+    subparsers = parser.add_subparsers(help="MUBench provides several subprocesses. Run `benchmark.py <subprocess> -h` for details.", dest='subprocess')
 
     __add_check_subprocess(subparsers)
     __add_checkout_subprocess(subparsers)
@@ -31,54 +32,49 @@ def parse_args(args: List[str], available_detectors) -> Any:
 
 
 def __add_check_subprocess(subparsers):
-    subparsers.add_parser('check', prog="MUBench benchmark prerequisites check",
-                          help="This subprocess can be used to validate if all prerequisites to run the benchmark are met.")  # type: ArgumentParser
+    subparsers.add_parser('check',
+                          help="Validate whether the environment meets the prerequisites to run MUBench.")  # type: ArgumentParser
 
 
 def __add_checkout_subprocess(subparsers):
     checkout_parser = subparsers.add_parser('checkout',
-                                            help="This subprocess can be used to pre-load all projects used by the benchmark.\n" +
-                                                 "The projects will be loaded into the `checkouts` folder. This is not configurable to keep MUBench self-contained.")  # type: ArgumentParser
+        description="Clone the repositories containing the misuses from the MUBench dataset. The clones will be created below the `checkouts` folder.",
+        help="Clone the repositories containing the misuses from the MUBench dataset. The clones will be created below the `checkouts` folder.")  # type: ArgumentParser
     checkout_parser.add_argument('--only', metavar='X', nargs='+', dest='white_list', default=[""],
-                                 help="runs only on MUBench data files which contain any one of the given strings")
+                                 help="clone only the repositories for the misuses whose names contain any of the given strings")
 
-    checkout_parser.add_argument('--ignore', metavar='Y', nargs='+', dest='black_list', default=[],
-                                 help="ignores MUBench data files which contain any one of the given strings")
-
-    checkout_parser.add_argument('--timeout', type=int, default=None, metavar='s',
-                                 help="will set a timeout (in seconds) for the misuse detector; cases where a timeout occurred will be ignored in the evaluation  ")
-
+    checkout_parser.add_argument('--skip', metavar='Y', nargs='+', dest='black_list', default=[],
+                                 help="skip the repositories for the misuses whose names contain any of the given strings")
 
 def __add_detect_subprocess(available_detectors, subparsers):
-    detect_parser = subparsers.add_parser(
-        'detect',
-        help="This subprocess expects an identifier for the detector to run. Use `py benchmark/benchmark.py eval -h` to see all runnable detectors.\n" +
-             "Note that this also expects the detector to run on complete projects, hence it needs to generate its own usage models. This will probably be changed in the future to have a clean split between mine and eval.\n" +
-             "This subprocess will implicitly load all projects into the `checkouts` folder.",
-        epilog="You can find all MUBench data files in the `data` subfolder")  # type: ArgumentParser
-    detect_parser.add_argument('detector', help="the detector to evaluate", choices=available_detectors)
+    detect_parser = subparsers.add_parser('detect',
+        description="Run a detector on the repositories containing the misuses from the MUBench dataset. Run `checkout` if necessary.",
+        help="Run a detector on the repositories containing the misuses from the MUBench dataset. Run `checkout` if necessary. " +
+        "Run `detect -h` to see a list of available detectors.",
+        epilog="The results are written to `results/<detector>/<misuse>/`.")  # type: ArgumentParser
+    detect_parser.add_argument('detector', help="the detector to run", choices=available_detectors)
     detect_parser.add_argument('--only', metavar='X', nargs='+', dest='white_list', default=[""],
-                               help="runs only on MUBench data files which contain any one of the given strings")
+                               help="run the detector only on the misuses whose names contain any of the given strings")
 
-    detect_parser.add_argument('--ignore', metavar='Y', nargs='+', dest='black_list', default=[],
-                               help="ignores MUBench data files which contain any one of the given strings")
+    detect_parser.add_argument('--skip', metavar='Y', nargs='+', dest='black_list', default=[],
+                               help="skip running the detector on the misuses whose names contain any of the given strings")
 
     detect_parser.add_argument('--timeout', type=int, default=None, metavar='s',
-                               help="will set a timeout (in seconds) for the misuse detector; cases where a timeout occurred will be ignored in the evaluation  ")
+                               help="abort detection of a misuse after the provided number of seconds and pretend the detector failed to find anything")
 
 
 def __add_evaluate_subprocess(available_detectors, subparsers):
-    eval_parser = subparsers.add_parser(
-        'eval',
-        help="This subprocess evaluates the results of a mining run. Will implicitly run detection if no results are available.",
-        epilog="A file containing all results can be found in the `results/<detector>/Results.txt` file. ")  # type: ArgumentParser
-    eval_parser.add_argument('detector', help="the results of this detector will be evaluated",
+    eval_parser = subparsers.add_parser('eval',
+        description="Evaluate detection results. Run `detect` if necessary. Write results to `results/<detector>/Results.txt`.",
+        help="Evaluate detection results. Run `detect` if necessary. Write results to `results/<detector>/Results.txt`." +
+        "Run `eval -h` to see a list of available detectors.")  # type: ArgumentParser
+    eval_parser.add_argument('detector', help="the detector whose findings to evaluate",
                              choices=available_detectors)
     eval_parser.add_argument('--only', metavar='X', nargs='+', dest='white_list', default=[""],
-                             help="runs only on MUBench data files which contain any one of the given strings")
+                             help="consider only the misuses whose names contain any of the given strings")
 
-    eval_parser.add_argument('--ignore', metavar='Y', nargs='+', dest='black_list', default=[],
-                             help="ignores MUBench data files which contain any one of the given strings")
+    eval_parser.add_argument('--skip', metavar='Y', nargs='+', dest='black_list', default=[],
+                             help="ignore all misuses whose names contain any of the given strings")
 
     eval_parser.add_argument('--timeout', type=int, default=None, metavar='s',
-                             help="will set a timeout (in seconds) for the misuse detector; cases where a timeout occurred will be ignored in the evaluation  ")
+                             help="abort detection of a misuse after the provided number of seconds (if it needs to be run) and pretend the detector failed to find anything")
