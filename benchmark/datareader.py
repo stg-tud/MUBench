@@ -40,7 +40,7 @@ class DataReader:
                         if function_out is not None:
                             result.append(function_out)
                     except Continue:
-                        continue
+                        break
             finally:
                 stream.close()
 
