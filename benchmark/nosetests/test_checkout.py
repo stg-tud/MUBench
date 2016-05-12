@@ -58,6 +58,8 @@ class TestCheckout:
 
         self.uut = Checkout(checkout_parent=False, setup_revisions=False)
 
+    # TODO implement unittests for checkouts
+
 
 class TestGetParent:
     def test_get_parent_git(self):

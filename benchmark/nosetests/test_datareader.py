@@ -1,4 +1,6 @@
-from benchmark.datareader import on_all_data_do
+from nose.tools import assert_equals
+
+from benchmark.datareader import DataReader
 from benchmark.nosetests.test_utils.test_env_util import TestEnv
 
 
@@ -6,6 +8,7 @@ from benchmark.nosetests.test_utils.test_env_util import TestEnv
 class TestDatareader:
     def setup(self):
         self.test_env = TestEnv()
+        self.uut = DataReader(self.test_env.DATA_PATH, white_list=[""], black_list=[])
 
     def teardown(self):
         self.test_env.tearDown()
@@ -14,32 +17,43 @@ class TestDatareader:
         def save_values(file, data): values_used.append((file, data))
 
         values_used = []
-        on_all_data_do(self.test_env.DATA_PATH, save_values, white_list=[""], black_list=[])
+        self.uut.add(save_values)
+        self.uut.run()
         assert len(values_used) == len(self.test_env.DATA)
 
     def test_correct_values_passed(self):
         def save_values(file, data): values_used.append((file, data))
 
         values_used = []
-        on_all_data_do(self.test_env.DATA_PATH, save_values, white_list=[""], black_list=[])
+        self.uut.add(save_values)
+        self.uut.run()
         assert values_used == self.test_env.DATA
 
     def test_return_values(self):
         def return_values(file, data): return file, data
 
-        return_values = on_all_data_do(self.test_env.DATA_PATH, return_values, white_list=[""], black_list=[])
-        assert return_values == self.test_env.DATA
+        self.uut.add(return_values)
+        actual = self.uut.run()
+        assert_equals(self.test_env.DATA, actual)
 
     def test_black_list(self):
         def save_values(file, data): values_used.append((file, data))
 
+        self.uut = DataReader(self.test_env.DATA_PATH, [""], [""])
+
         values_used = []
-        on_all_data_do(self.test_env.DATA_PATH, save_values, white_list=[""], black_list=[""])
+        self.uut.add(save_values)
+        self.uut.run()
+
         assert not values_used
 
     def test_white_list(self):
         def save_values(file, data): values_used.append((file, data))
 
+        self.uut = DataReader(self.test_env.DATA_PATH, [], [])
+
         values_used = []
-        on_all_data_do(self.test_env.DATA_PATH, save_values, white_list=[], black_list=[])
+        self.uut.add(save_values)
+        self.uut.run()
+
         assert not values_used
