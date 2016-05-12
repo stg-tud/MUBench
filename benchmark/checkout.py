@@ -37,14 +37,14 @@ class Checkout:
 
         if exists(checkout_dir):
             if not self.setup_revisions:
-                print("already checked out.".format(project_name))
+                print("already checked out.".format(project_name), flush=True)
                 return False
             reset_only = True
         else:
             reset_only = False
             makedirs(checkout_dir, exist_ok=True)
 
-        print("running... ", end='')
+        print("running... ", end='', flush=True)
 
         with safe_open(join(self.checkout_base_dir, "stdout.log"), 'a+') as outlog, \
                 safe_open(join(self.checkout_base_dir, "stderr.log"), 'a+') as errlog:
@@ -81,14 +81,14 @@ class Checkout:
                 if not reset_only:
                     copy(join(os.getcwd(), 'data', repository), checkout_dir)
             else:
-                print("unknown vcs {}!".format(vcs))
+                print("unknown vcs {}!".format(vcs), flush=True)
                 raise ValueError("Unknown version control type: {}".format(vcs))
 
         if returncode == 0:
             print_ok()
             return True
         else:
-            print("error! (consider .log files in checkout subfolder for more detail)")
+            print("error! (consider .log files in checkout subfolder for more detail)", flush=True)
             return False
 
     @staticmethod

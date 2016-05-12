@@ -51,15 +51,16 @@ class DetectorRunner:
                     try:
                         absolute_misuse_detector_path = DetectorRunner.__get_misuse_detector_path(self.detector)
 
-                        subprocess_print("Detect : running... ", end='')
+                        pattern_file = join(splitext(file)[0], '.pattern')
 
-                        subprocess.call(["java", "-jar", absolute_misuse_detector_path, checkout_dir, result_dir],
+                        subprocess_print("Detect : running... ", end='')
+                        subprocess.call(["java", "-jar", absolute_misuse_detector_path, checkout_dir, join(result_dir, "findings.yml"), pattern_file],
                                         bufsize=1, stdout=out_log, stderr=error_log, timeout=self.timeout)
 
                         print_ok()
 
                     except subprocess.TimeoutExpired:
-                        print("timeout!")
+                        print("timeout!", flush=True)
                         safe_write("Timeout: {}".format(file), error_log, append=True)
                         return
 

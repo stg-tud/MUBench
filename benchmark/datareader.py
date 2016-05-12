@@ -20,12 +20,12 @@ def on_all_data_do(data_path: str,
         whitelisted = any([white_listed in file for white_listed in white_list])
         blacklisted = any([black_listed in file for black_listed in black_list])
         if not whitelisted or blacklisted:
-            print("({}/{}) {} : ignored".format(i, len(datafiles), basename(file)))
+            print("Misuse '{}' ({}/{}) > ignored".format(basename(file), i, len(datafiles)), flush=True)
             continue
 
         stream = open(file, 'r')
 
-        print("Misuse '{}' ({}/{}) > ".format(basename(file), i, len(datafiles)))
+        print("Misuse '{}' ({}/{}) > ".format(basename(file), i, len(datafiles)), flush=True)
 
         try:
             yaml_content = yaml.load(stream)
