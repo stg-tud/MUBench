@@ -74,13 +74,13 @@ def test_detect_timeout():
     assert result.timeout == int(value)
 
 
-def test_detect_timeout_default_none():
+def test_timeout_default_none():
     parser = get_command_line_parser(['valid-detector'])
     result = parser.parse_args(['detect', 'valid-detector'])
     assert result.timeout is None
 
 
-def test_detect_timeout_non_int_fails():
+def test_timeout_non_int_fails():
     parser = get_command_line_parser(['valid-detector'])
     assert_raises(SystemExit, parser.parse_args, ['detect', 'valid-detector', '--timeout', 'string'])
 

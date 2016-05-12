@@ -83,15 +83,23 @@ config = command_line_util.parse_args(sys.argv, available_detectors)
 
 check()
 
+if 'detector' not in config:
+    config.detector = ''
+if 'white_list' not in config:
+    config.white_list = [""]
+if 'black_list' not in config:
+    config.black_list = []
+if 'timeout' not in config:
+    config.timeout = None
+
+benchmark = MUBenchmark(detector=config.detector, white_list=config.white_list, black_list=config.black_list,
+                        timeout=config.timeout)
+
 if config.subprocess == 'check':
     pass  # prerequisites are always checked before
 if config.subprocess == 'checkout':
-    benchmark = MUBenchmark(detector="", white_list=[], black_list=[], timeout=None)
     benchmark.checkout()
 if config.subprocess == 'detect':
-    benchmark = MUBenchmark(detector=config.detector, white_list=config.white_list, black_list=config.black_list,
-                            timeout=config.timeout)
     benchmark.detect()
 if config.subprocess == 'eval':
-    benchmark = MUBenchmark(detector=config.detector, white_list=[""], black_list=[], timeout=None)
     benchmark.evaluate()
