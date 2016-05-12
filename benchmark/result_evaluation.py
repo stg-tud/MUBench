@@ -8,6 +8,7 @@ from os.path import normpath, basename
 from typing import Dict, Tuple, Optional, Union
 
 from benchmark import datareader
+from benchmark.detector_runner import DetectorRunner
 from benchmark.utils.data_util import normalize_result_misuse_path, normalize_data_misuse_path
 from benchmark.utils.dotgraph_util import get_labels_from_result_file, get_labels_from_data_content
 from benchmark.utils.io import safe_open, safe_write
@@ -30,9 +31,8 @@ class ResultEvaluation:
         self.catch_errors = catch_errors
 
         if not exists(self.results_path):
-            sys.exit(
-                "No results found for this detector! Please run `py benchmark.py detect {}` to generate results.".format(
-                    self.detector))
+            detector_runner = DetectorRunner(data_path, detector, checkout_base_dir, results_path, None, [""], [])
+            detector_runner.run_detector_on_all_data()
 
     def evaluate_single_result(self,
                                data_file: str,
