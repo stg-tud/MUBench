@@ -2,7 +2,6 @@ package main;
 
 import java.io.File;
 import java.io.PrintStream;
-import java.nio.file.Paths;
 import java.util.LinkedList;
 
 public class Main {
@@ -11,16 +10,15 @@ public class Main {
 	 */
 	public static void main(String[] args) throws Exception {
 		String dirPath = args[0];
-		String resultPath = args[1];
+		String resultFilePath = args[1];
 		System.out.println("Running on: " + dirPath);
-		System.out.println("Result  in: " + resultPath);
+		System.out.println("Result  in: " + resultFilePath);
 
-		LinkedList<File> files = listFiles(dirPath);
-
-		File resultFile = Paths.get(resultPath, "result.txt").toFile();
+		File resultFile = new File(resultFilePath);
 		try (PrintStream writer = new PrintStream(resultFile)) {
-			for (File file : files) {
-				writer.println("File: " + file.getAbsolutePath());
+			for (File file : listFiles(dirPath)) {
+				writer.println("file: " + file.getAbsolutePath());
+				writer.println("---");
 			}
 		}
 	}
