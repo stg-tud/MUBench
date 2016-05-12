@@ -51,32 +51,29 @@ To benchmark your own detector the following steps are necessary:
 
 *Which inputs will I get?* All inputs are passed through the args array:   
 - args[0]:	The path to the project root. This may be used by your miner to find patterns.
-- args[1]:	Your output folder. For the benchmark to evaluate your results correctly you must write the result file given in your config into this folder. If you want to manually check your results you will find them in the `results/<your-detector>` subfolder.
+- args[1]:	Your output file. For the benchmark to evaluate your results correctly they must be written into this file. If you want to manually check your results you will find them in the `results/<your-detector>` subfolder.
 - args[2]:	The path to a `.pattern` file. These files contain a java code snippet of the misuse. You may use this file if you want to benchmark your misuse detection without relying on pattern mining. Please note that this argument is optional since we might not have a pattern file available for some misuses. Check the array length before accessing it.
 
-*What should my result file look like?* If you want to evaluate your results using `py benchmark.py eval <your-detector>` after running the `detect` subprocess we expect the following format in your result file:   
-- `File: <file-with-misuse>` lines:	this option only makes sense if you can't output more specific information and is only considered if no other information is given. You will probably have to manually check the positive results after the evaluation.
-- DOT graphs:	you may add graphs in the DOT format to your result file. Separate the graphs by a `---` line. The benchmark will compare all labels mentioned in your graphs to the misuse graph in our data. This will lead to more precise results but we still recommend manually checking the positive results.
+*What should my output file look like?* If you want to evaluate your results using `py benchmark.py eval <your-detector>` after running the `detect` subprocess we expect the following format in your result file:   
+Detector outputs are expected in the [YAML](http://yaml.org/) format. The benchmark reads the two keys `file` and `graph`.
 
-Example file line output:
+Example output file:
 ```
-File: commons/proper/lang/trunk/src/java/org/apache/commons/lang/text/StrBuilder.java
-File: src/com/google/javascript/rhino/jstype/UnionType.java
-```
-
-Example DOT graph output:
-```
-digraph {
-  0 [label="StrBuilder#this#getNullText"]
-  1 [label="String#str#length"]
-  0 -> 1
-}
+file: commons/proper/lang/trunk/src/java/org/apache/commons/lang/text/StrBuilder.java
+graph: >
+	digraph {
+	  0 [label="StrBuilder#this#getNullText"]
+	  1 [label="String#str#length"]
+	  0 -> 1
+	}
 ---
-digraph {
-  0 [label="UnionTypeBuilder#builder#build"]
-  1 [label="IF#IF#CONTROL"]
-  0 -> 1
-}
+file: src/com/google/javascript/rhino/jstype/UnionType.java
+graph: >
+	digraph {
+	  0 [label="UnionTypeBuilder#builder#build"]
+	  1 [label="IF#IF#CONTROL"]
+	  0 -> 1
+	}
 ```
 
 ## Contribute
