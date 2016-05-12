@@ -10,52 +10,60 @@ The MUBench dataset is an [MSR 2016 Data Showcase](http://2016.msrconf.org/#/dat
 * [Sarah Nadi](http://www.sarahnadi.org/)
 * Hoan A. Nguyen
 * [Tien N. Nguyen](http://home.eng.iastate.edu/~tien/)
+* [Mattis Kämmerer](https://github.com/M8is)
 
 ## Publications
 
 * ['*MUBench: A Benchmark of API-Misuse Detectors*'](http://sven-amann.de/publications/#ANNNM16)
 * ['*The Misuse Classification*'](http://www.st.informatik.tu-darmstadt.de/artifacts/muc/)
 
-## Run Scripts
+## Run MUBench
+
+### Requirements
+
+* Python 3.x
+* Java 8
+* git 2.x
+* svn 1.8+
+
+(Other version might work, but where not tested)
+
+### Setup
 
 1. [Download PyYAML](http://pyyaml.org/wiki/PyYAML) to somewhere on your machine.
 2. Unzip the package and install with `python setup.py install`.
 3. Run `scripts/verify.py` to check correct setup.
-4. Run the script of your choice (see file header for documentation).
 
-## MUBench benchmark
+### Scripts
 
-The MUBench benchmark is a benchmark for usage model miners and misuse detectors  
-Note: MUBenchmark relies on relative paths. You may move the complete MUBench folder anywhere, but removing parts of its content might make the benchmark unusable.  
+Run any of the scripts in `scripts`. See script headers for details.
 
-__Setup__   
+### Benchmark
 
-1. Follow the instructions in the section Run Scripts to install PyYAML
-2. Install git , svn, and java
-   (Note: MUBenchmark was only tested with the following versions: java version 1.8.0_66, git version 2.6.0, svn version 1.9.3)
-3. Run `py benchmark.py check` to check correct setup
+MUBench is a benchmark for API-misuse detectors. Run `python benchmark.py -h` for details about how to benchmark detectors.
 
-__Run the Benchmark__   
+MUBench uses the misuses specified in the `data` subfolder. The first time a misuse is used in benchmarking, the repository containing that misuse is cloned. Subsequently, the existing clone is used, such that benchmarking runs offline.
 
-The benchmark consists of several subprocesses.  
-To see a list of available subprocesses, you may use `py benchmark.py -h`.  
-For more detail about how to use a specific subprocess, you may use `py benchmark.py <subprocess> -h`.   
-
-__Contribute to the Benchmark__   
+## Benchmark Your Detector
 
 To benchmark your own detector the following steps are necessary:   
 
-1. Create a new subfolder in the [detectors](https://github.com/stg-tud/MUBench/tree/master/detectors) folder. The name of this subfolder will be the ID of your detector in the benchmark. From now on, we refer to it as `<your-detector>`.
-2. In your new subfolder, create a `<your-detector>.cfg` file. This file will contain everything which is specific to your detector. We expect a `DEFAULT` section, containg the key `Result File`, which is the name of the file you will write your results into. You may refer to the [dummy-detector.cfg](https://github.com/stg-tud/MUBench/blob/master/detectors/dummy-detector/dummy-detector.cfg) for formatting.
-3. Add your detector as `<your-detector>.jar` to your subfolder. The following will describe the inputs and outputs your detector must handle to work in the benchmark:
+1. Create a new subfolder `my-detector` in the [detectors](https://github.com/stg-tud/MUBench/tree/master/detectors) folder. `my-detector` will be the Id used to refer to your detector when running the benchmark.
+2. Create a `my-detector/my-detector.cfg`. Add a `DEFAULT` section to the file and set the `Result File` key to the name of the file your detector will write its findings to. See our example configuration for details: [dummy-detector.cfg](https://github.com/stg-tud/MUBench/blob/master/detectors/dummy-detector/dummy-detector.cfg).
+3. Add an executable JAR with your detector as `my-detector/my-detector.jar`. When running MUBench, this JAR will be invoked with the arguments and is expected to write the outputs described below.
+4. Run MUBench
+5. Manually review the results.
 
-*Which inputs will I get?* All inputs are passed through the args array:   
-- args[0]:	The path to the project root. This may be used by your miner to find patterns.
-- args[1]:	Your output file. For the benchmark to evaluate your results correctly they must be written into this file. If you want to manually check your results you will find them in the `results/<your-detector>` subfolder.
-- args[2]:	The path to a `.pattern` file. These files contain a java code snippet of the misuse. You may use this file if you want to benchmark your misuse detection without relying on pattern mining. Please note that this argument is optional since we might not have a pattern file available for some misuses. Check the array length before accessing it.
+*Which Inputs Will I Get?*
 
-*What should my output file look like?* If you want to evaluate your results using `py benchmark.py eval <your-detector>` after running the `detect` subprocess we expect the following format in your result file:   
-Detector outputs are expected in the [YAML](http://yaml.org/) format. The benchmark reads the two keys `file` and `graph`.
+All inputs are passed to the JAR as command-line arguments.
+- args[0]: The path to the project containing the misuse. You may use this to mine usage patterns and find misuses.
+- args[1]: The file MUBench expects you to write your findings to. This file is `results/my-detector/<misuse>/findings.txt`.
+- args[2]: (Optional) The path to a `.pattern` file, which contains the fixed version of the usage MUBench expects your detector to find in the project. The file contains a Java Source Code snippet. For examples see the `*.pattern` files in [`data`](https://github.com/stg-tud/MUBench/tree/master/data).
+
+*What Should My Output File Look Like?*
+
+MUBench expects you findings in the [YAML](http://yaml.org/) format. The benchmark reads the two keys `file` (the path to a file your detector found a misuse in) and `graph` (a DOT graph describing the misuse your detector found in that file). You can provide both or only one of the keys per finding. Providing a DOT graph helps MUBench filter false positives and, thereby, reduce the review effort you have to invest later.
 
 Example output file:
 ```
