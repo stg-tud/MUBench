@@ -28,13 +28,13 @@ class Checkout:
 
         repository_url = fix["repository"]["url"]
 
-        subprocess_print("Checkout ({}) - {} # {} : ", end='')
-
         if self.checkout_parent:
             revision = self.get_parent(vcs, revision)
 
         project_name = extract_project_name_from_file_path(file)
         checkout_dir = join(self.checkout_base_dir, project_name)
+
+        subprocess_print("Checkout ({}) - {} # {} : ".format(vcs, repository_url, revision), end='')
 
         if exists(checkout_dir):
             if not self.setup_revisions:
