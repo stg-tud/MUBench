@@ -1,13 +1,14 @@
 import os
 import subprocess
 from os import makedirs
-from os.path import join
+from os.path import join, exists
 from shutil import rmtree
 from tempfile import mkdtemp
 
 from nose.tools import assert_raises
 
 from benchmark.checkout import Checkout
+from benchmark.utils.io import create_file
 
 GIT = 'git'
 SVN = 'svn'
@@ -23,36 +24,59 @@ class TestCheckout:
     def setup(self):
         self.temp_dir = mkdtemp(prefix='mubench-checkout-test_')
 
-        test_checkout_dir = join(self.temp_dir, 'checkouts', 'unittest-checkouts')
-        test_data_path = join(self.temp_dir, 'data')
+        os.chdir(self.temp_dir)
 
-        makedirs(test_checkout_dir)
-        makedirs(test_data_path)
+        self.test_checkout_dir = join(self.temp_dir, 'checkouts', 'unittest-checkouts')
+        self.test_data_path = join(self.temp_dir, 'data')
 
-        self.__setup_repositories(test_checkout_dir)
+        makedirs(self.test_checkout_dir)
+        makedirs(self.test_data_path)
+
+        setup_repositories(self.test_checkout_dir)
 
         self.uut = Checkout(checkout_parent=False, setup_revisions=False)
 
     def teardown(self):
         rmtree(self.temp_dir, ignore_errors=True)
 
-    def test_checkout(self):
-        pass  # TODO implement unittests
+    def test_checkout_git(self):
+        git_url = join(self.test_checkout_dir, 'git')
+        Checkout(True, True).checkout('', get_yaml(git_url, 'git'))
+        git_repository = join(self.temp_dir, 'checkouts', 'git', '.git')
+        assert exists(git_repository)
 
-    @staticmethod
-    def __setup_repositories(test_checkout_dir):
-        with open(os.devnull, 'w') as FNULL:
-            # initialize git repository
-            git_repository_path = join('checkout', 'unittest-checkouts', 'repository-git')
-            makedirs(git_repository_path, exist_ok=True)
-            subprocess.call('git init', cwd=git_repository_path, bufsize=1, shell=True, stdout=FNULL)
+    def test_checkout_svn(self):
+        svn_url = join(self.test_checkout_dir, 'svn')
+        Checkout(True, True).checkout('', get_yaml(svn_url, 'svn', revision='1'))
+        svn_repository = join(self.temp_dir, 'checkouts', 'svn', '.svn')
+        assert exists(svn_repository)
 
-            # initialize svn repository
-            # svnadmin create creates the subdirectory 'repository-svn'
-            svn_repository_path = test_checkout_dir
-            svn_subfolder = 'repository-svn'
-            subprocess.call('svnadmin create ' + svn_subfolder, cwd=svn_repository_path, bufsize=1, shell=True,
-                            stdout=FNULL)
+    def test_checkout_synthetic(self):
+        create_file(join(self.test_data_path, 'synthetic.java'))
+        synthetic_url = 'synthetic.java'
+        Checkout(True, True).checkout('synthetic.yml', get_yaml(synthetic_url, 'synthetic', file='synthetic.java'))
+        synthetic_file = join(self.temp_dir, 'checkouts', 'synthetic', 'synthetic.java')
+        assert exists(synthetic_file)
+
+
+def get_yaml(url: str, vcs_type: str, revision: str = '', file: str = ''):
+    repository = {'url': url, 'type': vcs_type}
+    return {'fix': {'repository': repository, 'revision': revision, 'file': file}}
+
+
+def setup_repositories(checkout_dir: str):
+    with open(os.devnull, 'w') as FNULL:
+        # initialize git repository
+        git_repository_path = join(checkout_dir, 'git')
+        makedirs(git_repository_path, exist_ok=True)
+        subprocess.call('git init', cwd=git_repository_path, bufsize=1, shell=True, stdout=FNULL)
+
+        # initialize svn repository
+        # svnadmin create creates the subdirectory 'repository-svn'
+        svn_repository_path = checkout_dir
+        svn_subfolder = 'svn'
+        subprocess.call('svnadmin create ' + svn_subfolder, cwd=svn_repository_path, bufsize=1, shell=True,
+                        stdout=FNULL)
 
 
 class TestGetParent:
