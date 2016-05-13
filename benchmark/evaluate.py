@@ -10,7 +10,7 @@ from benchmark.utils.io import safe_open
 from benchmark.utils.printing import subprocess_print
 
 
-class ResultEvaluation:
+class Evaluation:
     def __init__(self,
                  results_path: str,
                  detector: str,
@@ -23,7 +23,7 @@ class ResultEvaluation:
 
         self.results = []
 
-    def evaluate_findings(self, data_file: str, data_content: Dict[str, Any]) -> Tuple[str, Optional[int]]:
+    def evaluate(self, data_file: str, data_content: Dict[str, Any]) -> Tuple[str, Optional[int]]:
 
         dirs_results = [join(self.results_path, result_dir) for result_dir in listdir(self.results_path) if
                         isdir(join(self.results_path, result_dir)) and not result_dir == '_LOGS']
@@ -48,9 +48,9 @@ class ResultEvaluation:
                     label_found = False
 
                     if exists(result_file):
-                        file_found = ResultEvaluation.__is_file_found(result_file, data_content, self.checkout_base_dir,
-                                                                      log)
-                        label_found = ResultEvaluation.__is_label_found(result_file, data_content, log)
+                        file_found = Evaluation.__is_file_found(result_file, data_content, self.checkout_base_dir,
+                                                                log)
+                        label_found = Evaluation.__is_label_found(result_file, data_content, log)
 
                     if file_found and label_found:
                         print("potential hit", flush=True)

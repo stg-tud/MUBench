@@ -8,8 +8,8 @@ from typing import Optional, List
 
 from benchmark.checkout import Checkout
 from benchmark.datareader import DataReader
-from benchmark.detector_runner import DetectorRunner
-from benchmark.result_evaluation import ResultEvaluation
+from benchmark.detect import Detect
+from benchmark.evaluate import Evaluation
 from benchmark.utils import command_line_util
 from benchmark.utils.prerequisites_checker import check_prerequisites
 
@@ -38,8 +38,8 @@ class MUBenchmark:
         self.datareader.run()
 
     def detect(self) -> None:
-        detector_runner = DetectorRunner(self.detector, self.detector_result_file, self.checkout_dir, self.results_path,
-                                         self.timeout)
+        detector_runner = Detect(self.detector, self.detector_result_file, self.checkout_dir, self.results_path,
+                                 self.timeout)
         checkout_handler = Checkout(setup_revisions=True, checkout_parent=True)
 
         self.datareader.add(checkout_handler.checkout)
@@ -49,17 +49,17 @@ class MUBenchmark:
     def evaluate(self) -> None:
         cfg = ConfigParser()
         cfg.read(realpath(join('detectors', self.detector, self.detector + '.cfg')))
-        evaluation_handler = ResultEvaluation(self.results_path, self.detector, self.detector_result_file,
-                                              self.checkout_dir)
+        evaluation_handler = Evaluation(self.results_path, self.detector, self.detector_result_file,
+                                        self.checkout_dir)
 
         if not exists(self.results_path):
-            detector_runner = DetectorRunner(self.detector, self.detector_result_file, self.checkout_dir,
-                                             self.results_path, self.timeout)
+            detector_runner = Detect(self.detector, self.detector_result_file, self.checkout_dir,
+                                     self.results_path, self.timeout)
             checkout_handler = Checkout(setup_revisions=True, checkout_parent=True)
             self.datareader.add(checkout_handler.checkout)
             self.datareader.add(detector_runner.run_detector)
 
-        self.datareader.add(evaluation_handler.evaluate_findings)
+        self.datareader.add(evaluation_handler.evaluate)
 
         self.datareader.run()
 

@@ -3,7 +3,7 @@ from os.path import join
 from shutil import rmtree
 from tempfile import mkdtemp
 
-from benchmark.result_evaluation import ResultEvaluation
+from benchmark.evaluate import Evaluation
 from benchmark.utils.io import safe_write
 
 
@@ -15,13 +15,12 @@ class TestResultEvaluation:
         chdir(self.temp_dir)
 
         self.checkout_dir = join(self.temp_dir, 'checkouts')
-
         self.results_path = join(self.temp_dir, 'results')
         self.detector = 'dummy-detector'
         self.file_detector_result = 'findings.yaml'
 
-        self.uut = ResultEvaluation(self.results_path, self.detector,
-                                    self.file_detector_result, self.checkout_dir)
+        self.uut = Evaluation(self.results_path, self.detector,
+                              self.file_detector_result, self.checkout_dir)
 
     def teardown(self):
         rmtree(self.temp_dir, ignore_errors=True)

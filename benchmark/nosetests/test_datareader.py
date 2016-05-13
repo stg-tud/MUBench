@@ -94,7 +94,8 @@ class TestDatareader:
         content = {'misuse': misuse, 'fix': fix}
         return content
 
-    def __get_svn_yaml(self):
+    @staticmethod
+    def __get_svn_yaml():
         content = {
             'fix': {'repository': {'url': 'svn', 'type': 'svn'}, 'revision': '1',
                     'files': [{'name': 'some-class.java'}]}}

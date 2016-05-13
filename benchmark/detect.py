@@ -8,7 +8,7 @@ from benchmark.utils.io import safe_open, safe_write
 from benchmark.utils.printing import subprocess_print, print_ok
 
 
-class DetectorRunner:
+class Detect:
     def __init__(self,
                  detector: str,
                  detector_result_file: str,
@@ -30,7 +30,7 @@ class DetectorRunner:
         with safe_open(join(result_dir, "out.log"), 'w+') as out_log:
             with safe_open(join(result_dir, "error.log"), 'w+') as error_log:
                 try:
-                    absolute_misuse_detector_path = DetectorRunner.__get_misuse_detector_path(self.detector)
+                    absolute_misuse_detector_path = Detect.__get_misuse_detector_path(self.detector)
 
                     detector_args = [checkout_dir, join(result_dir, self.detector_result_file)]
 
