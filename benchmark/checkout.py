@@ -54,8 +54,8 @@ class Checkout:
                 else:
                     git_init = 'git init'
                     git_set_remote = 'git remote add origin ' + repository_url
-                    git_fetch = 'git fetch'
-                    git_checkout = 'git checkout ' + revision
+                    git_fetch = 'git fetch --quiet'
+                    git_checkout = 'git checkout {} --quiet'.format(revision)
 
                     returncode += subprocess.call(git_init, cwd=checkout_dir, bufsize=1, shell=True,
                                                   stdout=outlog, stderr=errlog)
