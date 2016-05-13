@@ -51,13 +51,13 @@ def test_detect_only_default():
 
 def test_detect_ignore_empty_list_fails():
     parser = get_command_line_parser(['valid-detector'])
-    assert_raises(SystemExit, parser.parse_args, ['detect', 'valid-detector', '--ignore'])
+    assert_raises(SystemExit, parser.parse_args, ['detect', 'valid-detector', '--skip'])
 
 
 def test_detect_ignore():
     parser = get_command_line_parser(['valid-detector'])
     black_list = ['a', 'b', 'c']
-    result = parser.parse_args(['detect', 'valid-detector', '--ignore'] + black_list)
+    result = parser.parse_args(['detect', 'valid-detector', '--skip'] + black_list)
     assert result.black_list == black_list
 
 
