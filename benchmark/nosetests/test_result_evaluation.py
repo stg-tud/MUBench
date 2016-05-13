@@ -1,6 +1,8 @@
+from os import chdir
 from os.path import join
+from shutil import rmtree
+from tempfile import mkdtemp
 
-from benchmark.nosetests.test_utils.test_env_util import TestEnv
 from benchmark.result_evaluation import ResultEvaluation
 from benchmark.utils.io import safe_write
 
@@ -8,21 +10,25 @@ from benchmark.utils.io import safe_write
 # noinspection PyAttributeOutsideInit
 class TestResultEvaluation:
     def setup(self):
-        self.test_env = TestEnv()
+        self.temp_dir = mkdtemp(prefix='mubench-datareader-test_')
 
-        self.file_result_git = join(self.test_env.RESULTS_PATH, self.test_env.DETECTOR, 'git',
-                                    self.test_env.FILE_DETECTOR_RESULT)
-        self.file_result_svn = join(self.test_env.RESULTS_PATH, self.test_env.DETECTOR, 'svn',
-                                    self.test_env.FILE_DETECTOR_RESULT)
+        chdir(self.temp_dir)
 
-        self.uut = ResultEvaluation(self.test_env.RESULTS_PATH, self.test_env.DETECTOR,
-                                    self.test_env.FILE_DETECTOR_RESULT, self.test_env.CHECKOUT_DIR)
+        self.checkout_dir = join(self.temp_dir, 'checkouts')
+
+        self.results_path = join(self.temp_dir, 'results')
+        self.detector = 'dummy-detector'
+        self.file_detector_result = 'findings.yaml'
+
+        self.uut = ResultEvaluation(self.results_path, self.detector,
+                                    self.file_detector_result, self.checkout_dir)
 
     def teardown(self):
-        self.test_env.tearDown()
+        rmtree(self.temp_dir, ignore_errors=True)
 
-        # TODO implement unittests for checkouts
+    def test_result_evaluation(self):
+        pass  # TODO implement unittests
 
-
-def create_result(file_result, content):
-    safe_write(content, file_result, append=False)
+    def create_result(self, misuse_name, content):
+        safe_write(content, join(self.results_path, self.detector, misuse_name, self.file_detector_result),
+                   append=False)
