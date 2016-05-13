@@ -33,44 +33,8 @@ class TestEnv:
 
         self.TIMEOUT = None
 
-        self.__create_yaml_data()
-
     # noinspection PyPep8Naming
     def tearDown(self):
         rmtree(self.TEST_ENV_INSTANCE_PATH, ignore_errors=True)
 
-    def __create_yaml_data(self):
-        git_yaml = self.__get_git_yaml()
-        svn_yaml = self.__get_svn_yaml()
-        synthetic_yaml = self.__get_synthetic_yaml()
-        self.create_data_file('git.yml', git_yaml)
-        self.create_data_file('svn.yml', svn_yaml)
-        self.create_data_file('synthetic.yml', synthetic_yaml)
 
-    def __get_git_yaml(self):
-        repository = {'url': self.REPOSITORY_GIT, 'type': 'git'}
-        files = [{'name': 'some-class.java'}]
-        fix = {'repository': repository, 'revision': '', 'files': files}
-        self.git_misuse_label = "someClass#this#doSomething"
-        misuse = {'file': files[0], 'type': 'some-type', 'method': 'doSomething(Object, int)',
-                  'usage': 'digraph { 0 [label="' + self.git_misuse_label + '"] }'}
-        content = {'misuse': misuse, 'fix': fix}
-        return content
-
-    def __get_svn_yaml(self):
-        content = {
-            'fix': {'repository': {'url': self.REPOSITORY_SVN, 'type': 'svn'}, 'revision': '1',
-                    'files': [{'name': 'some-class.java'}]}}
-        return content
-
-    @staticmethod
-    def __get_synthetic_yaml():
-        content = {
-            'fix': {'repository': {'url': 'synthetic-close-1.java', 'revision': '', 'type': 'synthetic'},
-                    'files': [{'name': 'synthetic.java'}]}}
-        return content
-
-    def create_data_file(self, file_name: str, content: dict):
-        file = join(self.DATA_PATH, file_name)
-        safe_write(yaml.dump(content), file, append=False)
-        self.DATA.append((file, content))
