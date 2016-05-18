@@ -21,9 +21,9 @@ challenges:
 fix:
   commit: http://svn.apache.org/viewvc?view=revision&revision=160490
   repository:
-    url: http://svn.apache.org/repos/asf/httpcomponents/httpclient/trunk/
+    url: http://svn.apache.org/repos/asf/jakarta/commons/proper/httpclient/trunk/
     type: svn
   revision: 160490
   files:
-    - name: jakarta/commons/proper/httpclient/trunk/src/java/org/apache/commons/httpclient/HttpMethodDirector.java
+    - name: src/java/org/apache/commons/httpclient/HttpMethodDirector.java
       diff: http://svn.apache.org/viewvc/jakarta/commons/proper/httpclient/trunk/src/java/org/apache/commons/httpclient/HttpMethodDirector.java?r1=160490&r2=160489&pathrev=160490

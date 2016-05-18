@@ -22,5 +22,5 @@ fix:
     type: svn
   revision: 677893
   files:
-    - name: trunk/jackrabbit-jcr-server/src/main/java/org/apache/jackrabbit/webdav/jcr/JcrDavException.java
+    - name: src/main/java/org/apache/jackrabbit/webdav/jcr/JcrDavException.java
       diff: http://svn.apache.org/viewvc/jackrabbit/trunk/jackrabbit-jcr-server/src/main/java/org/apache/jackrabbit/webdav/jcr/JcrDavException.java?r1=677893&r2=677892&pathrev=677893

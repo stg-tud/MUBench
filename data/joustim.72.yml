@@ -18,8 +18,8 @@ fix:
     Request Cipher "Blowfish/CFB64/NoPadding" instead.
   commit: http://joscar.googlecode.com/svn/trunk/joscar/src/net/kano/joscartests/TrillianEncSession.java?p=72
   repository:
-    url: http://joscar.googlecode.com/svn/trunk/
+    url: http://joscar.googlecode.com/svn/trunk/joscar/
     type: svn
   revision: 72
   files:
-    - name: trunk/joscar/src/net/kano/joscartests/TrillianEncSession.java
+    - name: src/net/kano/joscartests/TrillianEncSession.java

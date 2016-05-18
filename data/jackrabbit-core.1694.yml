@@ -26,5 +26,5 @@ fix:
     type: svn
   revision: 695766
   files:
-    - name: trunk/jackrabbit-core/src/main/java/org/apache/jackrabbit/core/config/RepositoryConfigurationParser.java
+    - name: src/main/java/org/apache/jackrabbit/core/config/RepositoryConfigurationParser.java
       diff: http://svn.apache.org/viewvc/jackrabbit/trunk/jackrabbit-core/src/main/java/org/apache/jackrabbit/core/config/RepositoryConfigurationParser.java?r1=695766&r2=695765&pathrev=695766

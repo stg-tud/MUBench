@@ -22,5 +22,5 @@ fix:
     type: svn
   revision: 880743
   files:
-    - name: jackrabbit/trunk/jackrabbit-jcr-server/src/main/java/org/apache/jackrabbit/server/io/DefaultHandler.java
+    - name: src/main/java/org/apache/jackrabbit/server/io/DefaultHandler.java
       diff: http://svn.apache.org/viewvc/jackrabbit/trunk/jackrabbit-jcr-server/src/main/java/org/apache/jackrabbit/server/io/DefaultHandler.java?r1=880743&r2=880742&pathrev=880743

@@ -25,5 +25,5 @@ fix:
     type: svn
   revision: 965539
   files:
-    - name: trunk/jackrabbit-core/src/main/java/org/apache/jackrabbit/core/persistence/xml/XMLPersistenceManager.java
+    - name: src/main/java/org/apache/jackrabbit/core/persistence/xml/XMLPersistenceManager.java
       diff: http://svn.apache.org/viewvc/jackrabbit/trunk/jackrabbit-core/src/main/java/org/apache/jackrabbit/core/persistence/xml/XMLPersistenceManager.java?r1=965539&r2=965538&pathrev=965539

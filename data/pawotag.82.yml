@@ -21,9 +21,9 @@ fix:
     Check array length and call other doFinal() variant, if it's empty.
   commit: https://sourceforge.net/p/stripes/code/900/
   repository:
-    url: svn://svn.code.sf.net/p/stripes/code/trunk
+    url: http://svn.code.sf.net/p/stripes/code/trunk/stripes/
     type: svn
   revision: 900
   files:
-    - name: /trunk/stripes/src/net/sourceforge/stripes/util/CryptoUtil.java
-      diff: https://sourceforge.net/p/stripes/code/900/tree//trunk/stripes/src/net/sourceforge/stripes/util/CryptoUtil.java?diff=51b8a06634309d64406bf084:899
+    - name: src/net/sourceforge/stripes/util/CryptoUtil.java
+      diff: https://sourceforge.net/p/stripes/code/900/tree/trunk/stripes/src/net/sourceforge/stripes/util/CryptoUtil.java?diff=51b8a06634309d64406bf084:899

@@ -26,5 +26,5 @@ fix:
     type: svn
   revision: 926354
   files:
-    - name: src/main/java/a/Client.javatrunk/jackrabbit-core/src/main/java/org/apache/jackrabbit/core/query/lucene/IndexingConfigurationImpl.java
+    - name: src/main/java/org/apache/jackrabbit/core/query/lucene/IndexingConfigurationImpl.java
       diff: http://svn.apache.org/viewvc/jackrabbit/trunk/jackrabbit-core/src/main/java/org/apache/jackrabbit/core/query/lucene/IndexingConfigurationImpl.java?r1=926354&r2=926353&pathrev=926354

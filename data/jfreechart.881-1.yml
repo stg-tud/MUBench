@@ -21,9 +21,9 @@ fix:
     Check for null.
   commit: https://sourceforge.net/p/jfreechart/code/811/
   repository:
-    url: svn://svn.code.sf.net/p/jfreechart/code/trunk
+    url: http://svn.code.sf.net/p/jfreechart/code/trunk/
     type: svn
   revision: 811
   files:
-    - name: /trunk/source/org/jfree/chart/plot/CategoryPlot.java
-      diff: https://sourceforge.net/p/jfreechart/code/811/tree//trunk/source/org/jfree/chart/plot/CategoryPlot.java?diff=50b53b485fcbc92b6542a639:810
+    - name: source/org/jfree/chart/plot/CategoryPlot.java
+      diff: https://sourceforge.net/p/jfreechart/code/811/tree/trunk/source/org/jfree/chart/plot/CategoryPlot.java?diff=50b53b485fcbc92b6542a639:810

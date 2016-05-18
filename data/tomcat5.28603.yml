@@ -27,9 +27,9 @@ fix:
     Call ServletWriter.close() before attempting to delete the file.
   commit: http://svn.apache.org/viewvc?view=revision&revision=305982
   repository:
-    url: http://svn.apache.org/repos/asf/tomcat/trunk
+    url: http://svn.apache.org/repos/asf/tomcat/jasper/trunk/jasper2/
     type: svn
   revision: 305982
   files:
-    - name: tomcat/jasper/trunk/jasper2/src/share/org/apache/jasper/compiler/Compiler.java
+    - name: src/share/org/apache/jasper/compiler/Compiler.java
       diff: http://svn.apache.org/viewvc/tomcat/jasper/trunk/jasper2/src/share/org/apache/jasper/compiler/Compiler.java?r1=305982&r2=305981&pathrev=305982

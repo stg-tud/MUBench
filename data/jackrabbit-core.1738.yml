@@ -23,5 +23,5 @@ fix:
     type: svn
   revision: 696651
   files:
-    - name: trunk/jackrabbit-core/src/main/java/org/apache/jackrabbit/core/config/BeanConfig.java
+    - name: src/main/java/org/apache/jackrabbit/core/config/BeanConfig.java
       diff: http://svn.apache.org/viewvc/jackrabbit/trunk/jackrabbit-core/src/main/java/org/apache/jackrabbit/core/config/BeanConfig.java?r1=696651&r2=696650&pathrev=696651

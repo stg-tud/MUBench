@@ -20,9 +20,9 @@ challenges:
 fix:
   commit: http://svn.apache.org/viewvc?view=revision&revision=263892
   repository:
-    url: http://svn.apache.org/repos/asf/jackrabbit/trunk/
+    url: http://svn.apache.org/repos/asf/jackrabbit/trunk/contrib/bdb-persistence/
     type: svn
   revision: 263892
   files:
-    - name: trunk/contrib/bdb-persistence/src/java/org/apache/jackrabbit/core/state/bdb/BerkeleyDBPersistenceManager.java
+    - name: src/java/org/apache/jackrabbit/core/state/bdb/BerkeleyDBPersistenceManager.java
       diff: http://svn.apache.org/viewvc/incubator/jackrabbit/trunk/contrib/bdb-persistence/src/java/org/apache/jackrabbit/core/state/bdb/BerkeleyDBPersistenceManager.java?r1=263892&r2=263891&pathrev=263892

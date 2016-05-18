@@ -18,9 +18,9 @@ fix:
     Add try/catch and fallback handling.
   commit: https://sourceforge.net/p/itext/code/5091/
   repository:
-    url: svn://svn.code.sf.net/p/itext/code/trunk
+    url: http://svn.code.sf.net/p/itext/code/trunk/itext/
     type: svn
   revision: 5091
   files:
-    - name: /trunk/itext/src/main/java/com/itextpdf/text/pdf/PdfPublicKeySecurityHandler.java
-      diff: https://sourceforge.net/p/itext/code/5091/tree//trunk/itext/src/main/java/com/itextpdf/text/pdf/PdfPublicKeySecurityHandler.java?diff=5041fbafbfc09e48583d0e45:5090
+    - name: src/main/java/com/itextpdf/text/pdf/PdfPublicKeySecurityHandler.java
+      diff: https://sourceforge.net/p/itext/code/5091/tree/trunk/itext/src/main/java/com/itextpdf/text/pdf/PdfPublicKeySecurityHandler.java?diff=5041fbafbfc09e48583d0e45:5090

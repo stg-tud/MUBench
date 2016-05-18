@@ -25,9 +25,9 @@ fix:
     same.
   commit: https://sourceforge.net/p/jfreechart/code/1025/
   repository:
-    url: svn://svn.code.sf.net/p/jfreechart/code/trunk
+    url: http://svn.code.sf.net/p/jfreechart/code/trunk/
     type: svn
   revision: 1025
   files:
-    - name: /trunk/source/org/jfree/chart/util/ShapeUtilities.java
-      diff: https://sourceforge.net/p/jfreechart/code/1025/tree//trunk/source/org/jfree/chart/util/ShapeUtilities.java?diff=50b53b485fcbc92b6542a639:1024
+    - name: source/org/jfree/chart/util/ShapeUtilities.java
+      diff: https://sourceforge.net/p/jfreechart/code/1025/tree/trunk/source/org/jfree/chart/util/ShapeUtilities.java?diff=50b53b485fcbc92b6542a639:1024
