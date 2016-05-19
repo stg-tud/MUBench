@@ -25,7 +25,6 @@ class DataReader:
             whitelisted = any([white_listed in file for white_listed in self.white_list])
             blacklisted = any([black_listed in file for black_listed in self.black_list])
             if not whitelisted or blacklisted:
-                print("Misuse '{}' ({}/{}) > ignored".format(basename(file), i, len(datafiles)), flush=True)
                 continue
 
             stream = open(file, 'r')
