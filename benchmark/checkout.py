@@ -2,20 +2,22 @@ import subprocess
 from os import makedirs, listdir
 from os.path import join, exists, realpath
 from shutil import copy
+
 from typing import Union, Dict, Any
 
 from benchmark import datareader
 from benchmark.utils.data_util import extract_project_name_from_file_path
-from benchmark.utils.io import safe_open
 from benchmark.utils.printing import subprocess_print, print_ok
 
 
 class Checkout:
-    def __init__(self, checkout_parent: bool, setup_revisions: bool):
+    def __init__(self, checkout_parent: bool, setup_revisions: bool, outlog, errlog):
         self.data_path = realpath('data')
         self.checkout_base_dir = realpath('checkouts')
         self.checkout_parent = checkout_parent
         self.setup_revisions = setup_revisions
+        self.outlog = outlog
+        self.errlog = errlog
 
     def checkout(self, file: str, misuse: Dict[str, Any]) -> bool:
         fix = misuse["fix"]
@@ -43,43 +45,41 @@ class Checkout:
 
         print("running... ", end='', flush=True)
 
-        with safe_open(join(self.checkout_base_dir, "stdout.log"), 'a+') as outlog, \
-                safe_open(join(self.checkout_base_dir, "stderr.log"), 'a+') as errlog:
-            returncode = 0
+        returncode = 0
 
-            if vcs == 'git':
-                if reset_only:
-                    returncode += subprocess.call('git checkout ' + revision, cwd=checkout_dir, bufsize=1,
-                                                  shell=True, stdout=outlog, stderr=errlog)
-                else:
-                    git_init = 'git init'
-                    git_set_remote = 'git remote add origin ' + repository_url
-                    git_fetch = 'git fetch --quiet'
-                    git_checkout = 'git checkout {} --quiet'.format(revision)
-
-                    returncode += subprocess.call(git_init, cwd=checkout_dir, bufsize=1, shell=True,
-                                                  stdout=outlog, stderr=errlog)
-                    returncode += subprocess.call(git_set_remote, cwd=checkout_dir, bufsize=1, shell=True,
-                                                  stdout=outlog, stderr=errlog)
-                    returncode += subprocess.call(git_fetch, cwd=checkout_dir, bufsize=1, shell=True,
-                                                  stdout=outlog, stderr=errlog)
-                    returncode += subprocess.call(git_checkout, cwd=checkout_dir, bufsize=1, shell=True,
-                                                  stdout=outlog, stderr=errlog)
-            elif vcs == 'svn':
-                if reset_only:
-                    svn_update = 'svn update -r {}'.format(revision)
-                    returncode += subprocess.call(svn_update, cwd=checkout_dir, bufsize=1,
-                                                  shell=True, stdout=outlog, stderr=errlog)
-                else:
-                    svn_checkout = 'svn checkout {}@{} .'.format(repository_url, revision)
-                    returncode += subprocess.call(svn_checkout, cwd=checkout_dir, bufsize=1, shell=True,
-                                                  stdout=outlog, stderr=errlog)
-            elif vcs == 'synthetic':
-                if not reset_only:
-                    copy(join('data', repository_url), checkout_dir)
+        if vcs == 'git':
+            if reset_only:
+                returncode += subprocess.call('git checkout ' + revision, cwd=checkout_dir, bufsize=1,
+                                              shell=True, stdout=self.outlog, stderr=self.errlog)
             else:
-                print("unknown vcs {}!".format(vcs), flush=True)
-                raise ValueError("Unknown version control type: {}".format(vcs))
+                git_init = 'git init'
+                git_set_remote = 'git remote add origin ' + repository_url
+                git_fetch = 'git fetch --quiet'
+                git_checkout = 'git checkout {} --quiet'.format(revision)
+
+                returncode += subprocess.call(git_init, cwd=checkout_dir, bufsize=1, shell=True,
+                                              stdout=self.outlog, stderr=self.errlog)
+                returncode += subprocess.call(git_set_remote, cwd=checkout_dir, bufsize=1, shell=True,
+                                              stdout=self.outlog, stderr=self.errlog)
+                returncode += subprocess.call(git_fetch, cwd=checkout_dir, bufsize=1, shell=True,
+                                              stdout=self.outlog, stderr=self.errlog)
+                returncode += subprocess.call(git_checkout, cwd=checkout_dir, bufsize=1, shell=True,
+                                              stdout=self.outlog, stderr=self.errlog)
+        elif vcs == 'svn':
+            if reset_only:
+                svn_update = 'svn update -r {}'.format(revision)
+                returncode += subprocess.call(svn_update, cwd=checkout_dir, bufsize=1,
+                                              shell=True, stdout=self.outlog, stderr=self.errlog)
+            else:
+                svn_checkout = 'svn checkout {}@{} .'.format(repository_url, revision)
+                returncode += subprocess.call(svn_checkout, cwd=checkout_dir, bufsize=1, shell=True,
+                                              stdout=self.outlog, stderr=self.errlog)
+        elif vcs == 'synthetic':
+            if not reset_only:
+                copy(join('data', repository_url), checkout_dir)
+        else:
+            print("unknown vcs {}!".format(vcs), flush=True)
+            raise ValueError("Unknown version control type: {}".format(vcs))
 
         if returncode == 0:
             print_ok()

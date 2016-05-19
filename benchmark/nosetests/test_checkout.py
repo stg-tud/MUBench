@@ -32,51 +32,52 @@ class TestCheckout:
         makedirs(self.test_checkout_dir)
         makedirs(self.test_data_path)
 
-        setup_repositories(self.test_checkout_dir)
-
-        self.uut = Checkout(checkout_parent=False, setup_revisions=False)
+        self.uut = Checkout(checkout_parent=False, setup_revisions=False, outlog=None, errlog=None)
 
     def teardown(self):
         rmtree(self.temp_dir, ignore_errors=True)
 
     def test_checkout_git(self):
+        self.create_git_repository()
         git_url = join(self.test_checkout_dir, 'git')
-        Checkout(True, True).checkout('', get_yaml(git_url, 'git'))
+        Checkout(True, True, None, None).checkout('', self.get_yaml(git_url, 'git'))
         git_repository = join(self.temp_dir, 'checkouts', 'git', '.git')
         assert exists(git_repository)
 
     def test_checkout_svn(self):
+        self.create_svn_repository()
         svn_url = join(self.test_checkout_dir, 'svn')
-        Checkout(True, True).checkout('', get_yaml(svn_url, 'svn', revision='1'))
+        Checkout(True, True, None, None).checkout('', self.get_yaml(svn_url, 'svn', revision='1'))
         svn_repository = join(self.temp_dir, 'checkouts', 'svn', '.svn')
         assert exists(svn_repository)
 
     def test_checkout_synthetic(self):
         create_file(join(self.test_data_path, 'synthetic.java'))
         synthetic_url = 'synthetic.java'
-        Checkout(True, True).checkout('synthetic.yml', get_yaml(synthetic_url, 'synthetic', file='synthetic.java'))
+        Checkout(True, True, None, None).checkout('synthetic.yml', self.get_yaml(synthetic_url, 'synthetic', file='synthetic.java'))
         synthetic_file = join(self.temp_dir, 'checkouts', 'synthetic', 'synthetic.java')
         assert exists(synthetic_file)
 
+    @staticmethod
+    def get_yaml(url: str, vcs_type: str, revision: str = '', file: str = ''):
+        repository = {'url': url, 'type': vcs_type}
+        return {'fix': {'repository': repository, 'revision': revision, 'file': file}}
 
-def get_yaml(url: str, vcs_type: str, revision: str = '', file: str = ''):
-    repository = {'url': url, 'type': vcs_type}
-    return {'fix': {'repository': repository, 'revision': revision, 'file': file}}
+    def create_git_repository(self):
+        with open(os.devnull, 'w') as FNULL:
+            # initialize git repository
+            git_repository_path = join(self.test_checkout_dir, 'git')
+            makedirs(git_repository_path, exist_ok=True)
+            subprocess.call('git init', cwd=git_repository_path, bufsize=1, shell=True, stdout=FNULL)
 
-
-def setup_repositories(checkout_dir: str):
-    with open(os.devnull, 'w') as FNULL:
-        # initialize git repository
-        git_repository_path = join(checkout_dir, 'git')
-        makedirs(git_repository_path, exist_ok=True)
-        subprocess.call('git init', cwd=git_repository_path, bufsize=1, shell=True, stdout=FNULL)
-
-        # initialize svn repository
-        # svnadmin create creates the subdirectory 'repository-svn'
-        svn_repository_path = checkout_dir
-        svn_subfolder = 'svn'
-        subprocess.call('svnadmin create ' + svn_subfolder, cwd=svn_repository_path, bufsize=1, shell=True,
-                        stdout=FNULL)
+    def create_svn_repository(self):
+        with open(os.devnull, 'w') as FNULL:
+            # initialize svn repository
+            # svnadmin create creates the subdirectory 'repository-svn'
+            svn_repository_path = self.test_checkout_dir
+            svn_subfolder = 'svn'
+            subprocess.call('svnadmin create ' + svn_subfolder, cwd=svn_repository_path, bufsize=1, shell=True,
+                            stdout=FNULL)
 
 
 class TestGetParent:

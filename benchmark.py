@@ -11,6 +11,7 @@ from benchmark.datareader import DataReader
 from benchmark.detect import Detect
 from benchmark.evaluate import Evaluation
 from benchmark.utils import command_line_util
+from benchmark.utils.io import safe_open
 from benchmark.utils.prerequisites_checker import check_prerequisites
 
 
@@ -33,14 +34,18 @@ class MUBenchmark:
         self.datareader = DataReader(self.data_path, self.white_list, self.black_list)
 
     def checkout(self) -> None:
-        checkout_handler = Checkout(setup_revisions=False, checkout_parent=False)
+        checkout_handler = Checkout(setup_revisions=False, checkout_parent=False,
+                                    outlog=safe_open(join('checkouts', 'stdout.log'), 'a+'),
+                                    errlog=safe_open(join('checkouts', 'stderr.log'), 'a+'))
         self.datareader.add(checkout_handler.checkout)
         self.datareader.run()
 
     def detect(self) -> None:
         detector_runner = Detect(self.detector, self.detector_result_file, self.checkout_dir, self.results_path,
                                  self.timeout)
-        checkout_handler = Checkout(setup_revisions=True, checkout_parent=True)
+        checkout_handler = Checkout(setup_revisions=True, checkout_parent=True,
+                                    outlog=safe_open(join('checkouts', 'stdout.log'), 'a+'),
+                                    errlog=safe_open(join('checkouts', 'stderr.log'), 'a+'))
 
         self.datareader.add(checkout_handler.checkout)
         self.datareader.add(detector_runner.run_detector)
@@ -55,7 +60,9 @@ class MUBenchmark:
         if not exists(self.results_path):
             detector_runner = Detect(self.detector, self.detector_result_file, self.checkout_dir,
                                      self.results_path, self.timeout)
-            checkout_handler = Checkout(setup_revisions=True, checkout_parent=True)
+            checkout_handler = Checkout(setup_revisions=True, checkout_parent=True,
+                                        outlog=safe_open(join('checkouts', 'stdout.log'), 'a+'),
+                                        errlog=safe_open(join('checkouts', 'stderr.log'), 'a+'))
             self.datareader.add(checkout_handler.checkout)
             self.datareader.add(detector_runner.run_detector)
 
