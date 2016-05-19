@@ -1,5 +1,5 @@
 import subprocess
-from os import makedirs
+from os import makedirs, listdir
 from os.path import join, exists, realpath
 from shutil import copy
 from typing import Union, Dict, Any
@@ -32,7 +32,7 @@ class Checkout:
 
         subprocess_print("Checkout ({}) - {} # {} : ".format(vcs, repository_url, revision), end='')
 
-        if exists(checkout_dir):
+        if exists(checkout_dir) and listdir(checkout_dir):
             if not self.setup_revisions:
                 print("already checked out.".format(project_name), flush=True)
                 return False
