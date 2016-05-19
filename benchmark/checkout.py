@@ -71,7 +71,7 @@ class Checkout:
                     returncode += subprocess.call(svn_update, cwd=checkout_dir, bufsize=1,
                                                   shell=True, stdout=outlog, stderr=errlog)
                 else:
-                    svn_checkout = 'svn checkout {}@{}'.format(repository_url, revision)
+                    svn_checkout = 'svn checkout {}@{} .'.format(repository_url, revision)
                     returncode += subprocess.call(svn_checkout, cwd=checkout_dir, bufsize=1, shell=True,
                                                   stdout=outlog, stderr=errlog)
             elif vcs == 'synthetic':
