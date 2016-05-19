@@ -18,15 +18,10 @@ class DataReader:
     def run(self) -> List[Any]:
 
         datafiles = [join(self.data_path, file) for file in listdir(self.data_path) if
-                     isfile(join(self.data_path, file)) and file.endswith(".yml")]
+                     isfile(join(self.data_path, file)) and file.endswith(".yml") and not self.__skip(file)]
 
         result = []
         for i, file in enumerate(datafiles, start=1):
-            whitelisted = any([white_listed in file for white_listed in self.white_list])
-            blacklisted = any([black_listed in file for black_listed in self.black_list])
-            if not whitelisted or blacklisted:
-                continue
-
             stream = open(file, 'r')
 
             print("Misuse '{}' ({}/{}) > ".format(basename(file), i, len(datafiles)), flush=True)
@@ -44,6 +39,11 @@ class DataReader:
                 stream.close()
 
         return result
+
+    def __skip(self, file: str):
+        whitelisted = any([white_listed in file for white_listed in self.white_list])
+        blacklisted = any([black_listed in file for black_listed in self.black_list])
+        return not whitelisted or blacklisted
 
 
 class Continue(Exception):
