@@ -32,7 +32,7 @@ class Checkout:
         project_name = extract_project_name_from_file_path(file)
         checkout_dir = join(self.checkout_base_dir, project_name)
 
-        subprocess_print("Fetching ({}) from {}@{}: ".format(vcs, repository_url, revision), end='')
+        subprocess_print("Fetching {}:{}#{}: ".format(vcs, repository_url, revision), end='')
 
         if exists(checkout_dir) and listdir(checkout_dir):
             if not self.setup_revisions:
