@@ -27,3 +27,5 @@ fix:
   files:
     - name: framework/modules/security/src/main/java/ch/elca/el4j/services/security/encryption/AESCipher.java
       diff: https://sourceforge.net/p/el4j/code/3198/tree/trunk/el4j/framework/modules/security/src/main/java/ch/elca/el4j/services/security/encryption/AESCipher.java?diff=51827105e88f3d77c13030a0:3197
+build:
+  src: framework/modules/security/src/main/java/

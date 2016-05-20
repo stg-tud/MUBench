@@ -27,3 +27,5 @@ fix:
   files:
     - name: src/net/sourceforge/stripes/util/CryptoUtil.java
       diff: https://sourceforge.net/p/stripes/code/900/tree/trunk/stripes/src/net/sourceforge/stripes/util/CryptoUtil.java?diff=51b8a06634309d64406bf084:899
+build:
+  src: src/

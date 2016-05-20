@@ -25,3 +25,5 @@ fix:
   revision: 02e046e5cc53ad218264dc28a4b96941f2902e38
   files:
     - name: src/com/dalthed/tucan/Connection/SimpleSecureBrowser.java
+build:
+  src: src/

@@ -36,3 +36,5 @@ fix:
   revision: 67289ae4cbaba3ae70cd2e8fb92f3f2898039dfb
   files:
     - name: src/com/google/javascript/rhino/jstype/UnionType.java
+build:
+  src: src/

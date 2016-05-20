@@ -37,3 +37,5 @@ fix:
       diff: http://svn.apache.org/viewvc/incubator/jackrabbit/trunk/src/java/org/apache/jackrabbit/core/state/xml/XMLPersistenceManager.java?r1=55854&r2=55853&pathrev=55854
     - name: src/java/org/apache/jackrabbit/core/fs/FileSystemResource.java
       diff: http://svn.apache.org/viewvc/incubator/jackrabbit/trunk/src/java/org/apache/jackrabbit/core/fs/FileSystemResource.java?r1=55854&r2=55853&pathrev=55854
+build:
+  src: src/java/

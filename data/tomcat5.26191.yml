@@ -29,3 +29,5 @@ fix:
   files:
     - name: src/share/org/apache/jasper/compiler/JspDocumentParser.java
       diff: http://svn.apache.org/viewvc/tomcat/jasper/trunk/jasper2/src/share/org/apache/jasper/compiler/JspDocumentParser.java?r1=305891&r2=305890&pathrev=305891
+build:
+  src: src/share/

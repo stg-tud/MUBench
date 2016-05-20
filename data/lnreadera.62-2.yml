@@ -26,3 +26,5 @@ fix:
   revision: 2071b3cb8e977ba19fe51ca7cdb32ccc264563fa
   files:
     - name: LNReader/src/com/erakk/lnreader/activity/DisplayLightNovelContentActivity.java
+build:
+  src: LNReader/src/

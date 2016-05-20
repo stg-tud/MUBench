@@ -26,5 +26,7 @@ fix:
     type: git
   revision: 1e2715d18d980e4f8c8cb5ac12abf3752851ee10
   files:
-    - name: lucene/java/trunk/src/java/org/apache/lucene/store/FSDirectory.java
+    - name: src/java/org/apache/lucene/store/FSDirectory.java
       diff: http://svn.apache.org/viewvc/lucene/java/trunk/src/java/org/apache/lucene/store/FSDirectory.java?r1=150347&r2=150346&pathrev=150347
+build:
+  src: src/java/

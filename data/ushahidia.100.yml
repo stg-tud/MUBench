@@ -27,3 +27,5 @@ fix:
   revision: 16adf0c3cfc9ebef01e7e9042b13d3b5b4da965f
   files:
     - name: Core/src/com/ushahidi/android/app/database/OpenGeoSmsDao.java
+build:
+  src: Core/src/

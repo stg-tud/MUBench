@@ -24,3 +24,5 @@ fix:
   revision: d1cfe67977d8f3aaa85ec20c262171da394d5977
   files:
     - name: src/com/google/javascript/jscomp/TypeCheck.java
+build:
+  src: src/

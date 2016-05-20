@@ -24,4 +24,6 @@ fix:
     type: git
   revision: c21e5969154d1cafb15fd0becf252e8e81760b98
   files:
-    - name: src/org/wordpress/android/ui/posts/EditPostContentFragment.java
+    - name: WordPress/src/main/java/org/wordpress/android/ui/posts/EditPostContentFragment.java
+build:
+  src: WordPress/src/main/java/

@@ -25,3 +25,5 @@ fix:
   revision: 54a9038d7cc13fd46a922ce1c059610d0690115d
   files:
     - name: library/src/com/nostra13/universalimageloader/utils/StorageUtils.java
+build:
+  src: library/src/

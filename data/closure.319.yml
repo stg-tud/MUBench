@@ -24,3 +24,5 @@ fix:
   revision: 43c245f0ff8d409e81e25687e69d34666b7cf26a
   files:
     - name: src/com/google/javascript/jscomp/CommandLineRunner.java
+build:
+  src: src/

@@ -31,3 +31,5 @@ fix:
     - name: WordPress/src/main/java/org/wordpress/android/ui/comments/CommentsListFragment.java
     - name: WordPress/src/main/java/org/wordpress/android/ui/media/MediaBrowserActivity.java
     - name: WordPress/src/main/java/org/wordpress/android/ui/posts/PostsListFragment.java
+build:
+  src: WordPress/src/main/java/

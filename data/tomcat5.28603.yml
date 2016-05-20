@@ -33,3 +33,5 @@ fix:
   files:
     - name: src/share/org/apache/jasper/compiler/Compiler.java
       diff: http://svn.apache.org/viewvc/tomcat/jasper/trunk/jasper2/src/share/org/apache/jasper/compiler/Compiler.java?r1=305982&r2=305981&pathrev=305982
+build:
+  src: src/share/

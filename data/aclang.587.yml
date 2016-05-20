@@ -36,3 +36,5 @@ fix:
   files:
     - name: commons/proper/lang/trunk/src/java/org/apache/commons/lang/text/StrBuilder.java
       diff: http://svn.apache.org/viewvc/commons/proper/lang/trunk/src/java/org/apache/commons/lang/text/StrBuilder.java?r1=627248&r2=627247&pathrev=627248
+build:
+  src: src/java/

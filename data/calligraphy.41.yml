@@ -26,3 +26,5 @@ fix:
   revision: 0f15e9199c02771408566071884b099db7f54b64
   files:
     - name: calligraphy/src/main/java/uk/co/chrisjenx/calligraphy/CalligraphyUtils.java
+build:
+  src: calligraphy/src/main/java/

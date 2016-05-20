@@ -26,3 +26,5 @@ fix:
   files:
     - name: jackrabbit-jcr2spi/src/main/java/org/apache/jackrabbit/jcr2spi/NamespaceRegistryImpl.java
       diff: http://svn.apache.org/viewvc/jackrabbit/trunk/jackrabbit-jcr2spi/src/main/java/org/apache/jackrabbit/jcr2spi/NamespaceRegistryImpl.java?r1=1133332&r2=1133331&pathrev=1133332
+build:
+  src: jackrabbit-jcr2spi/src/main/java/

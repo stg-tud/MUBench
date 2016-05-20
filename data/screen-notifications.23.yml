@@ -27,3 +27,5 @@ fix:
   revision: afc542066ae1a3c57974dc180374407a7954124d
   files:
     - name: src/com/lukekorth/screennotifications/AppsActivity.java
+build:
+  src: src/

@@ -28,3 +28,5 @@ fix:
   files:
     - name: app/src/org/gnucash/android/ui/passcode/PassLockActivity.java
     - name: app/src/org/gnucash/android/ui/passcode/PasscodeLockScreenActivity.java
+build:
+  src: app/src/

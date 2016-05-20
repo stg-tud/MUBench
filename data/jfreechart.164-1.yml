@@ -28,3 +28,5 @@ fix:
   files:
     - name: source/org/jfree/chart/renderer/category/StatisticalBarRenderer.java
       diff: https://sourceforge.net/p/jfreechart/code/164/tree/trunk/source/org/jfree/chart/renderer/category/StatisticalBarRenderer.java?diff=50b53b485fcbc92b6542a639:163
+build:
+  src: source/

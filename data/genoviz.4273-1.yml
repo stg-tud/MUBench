@@ -26,3 +26,5 @@ fix:
   files:
     - name: igb/src/com/affymetrix/igb/util/StringEncrypter.java
       diff: https://sourceforge.net/p/genoviz/code/4273/tree/branches/das2_manager/igb/src/com/affymetrix/igb/util/StringEncrypter.java?diff=505b7b97bfc09e26e1a8d781:4272
+build:
+  src: igb/src/

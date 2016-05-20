@@ -25,3 +25,5 @@ fix:
   files:
     - name: src/org/compiere/util/Secure.java
       diff: http://sourceforge.net/p/adempiere/svn/1312/tree/trunk/looks/src/org/compiere/util/Secure.java?diff=5139a2ef34309d2ec1827857:1311
+build:
+  src: src/

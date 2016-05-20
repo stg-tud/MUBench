@@ -27,3 +27,5 @@ fix:
   revision: 7bc931e7b5fcab1953b1fd5cb4535fff4e743591
   files:
     - name: main/src/cgeo/geocaching/cgeoimages.java
+build:
+  src: main/src/

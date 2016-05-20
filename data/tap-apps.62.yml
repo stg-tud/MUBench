@@ -24,3 +24,5 @@ fix:
   files:
     - name: source/org/jSyncManager/Conduit/NSMobileMessenger/NSMobileMessenger.java
       diff: https://sourceforge.net/p/tap-apps/code/62/tree/trunk/opentapas/jconduits/source/org/jSyncManager/Conduit/NSMobileMessenger/NSMobileMessenger.java?diff=516ed98f2718467b8b821998:61
+build:
+  src: source/

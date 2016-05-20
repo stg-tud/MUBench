@@ -27,3 +27,5 @@ fix:
   revision: 7a1e5a505c8d56794bb43954b8ba48cab7757238
   files:
     - name: WordPress/src/main/java/org/wordpress/android/ui/notifications/NotificationsListFragment.java
+build:
+  src: WordPress/src/main/java/

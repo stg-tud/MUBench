@@ -30,3 +30,5 @@ fix:
   revision: 0e2a7570ab4491d0c4680ef52ee1008bef33fc02
   files:
     - name: src/main/java/com/vaguehope/onosendai/update/AlarmReceiver.java
+build:
+  src: src/main/java/
