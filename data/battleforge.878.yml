@@ -27,3 +27,7 @@ fix:
       diff: http://sourceforge.net/p/battleforge/code/878/tree/trunk/de.battleforge/src/java/de/battleforge/util/BFProperties.java?diff=50ee84dee88f3d24b3d975fe:877
 build:
   src: src/java/
+  commands:
+    - mkdir classes
+    - ant
+  classes: dist/battleforge/battleforge.jar

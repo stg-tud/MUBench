@@ -28,3 +28,6 @@ fix:
       diff: http://svn.apache.org/viewvc/lucene/java/trunk/src/java/org/apache/lucene/store/FSDirectory.java?r1=642339&r2=642338&pathrev=642339
 build:
   src: src/java/
+  commands:
+    - ant compile-core
+  classes: build/classes/java/

@@ -28,3 +28,6 @@ fix:
     - name: src/org/mozilla/javascript/Parser.java
 build:
   src: src/
+  compile:
+    - MUCompile
+  classes: build/classes/main/

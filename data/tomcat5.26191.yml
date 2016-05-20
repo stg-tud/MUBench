@@ -31,3 +31,7 @@ fix:
       diff: http://svn.apache.org/viewvc/tomcat/jasper/trunk/jasper2/src/share/org/apache/jasper/compiler/JspDocumentParser.java?r1=305891&r2=305890&pathrev=305891
 build:
   src: src/share/
+  compile:
+    - "sed -i 's/new CodeSource(url,null)/new CodeSource(url,(java.security.CodeSigner[])null)/g' src/share/org/apache/jasper/compiler/JspRuntimeContext.java"
+    - MUCompile
+  classes: build/classes/main/

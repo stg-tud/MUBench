@@ -28,3 +28,6 @@ fix:
       diff: http://svn.apache.org/viewvc/commons/proper/math/trunk/src/main/java/org/apache/commons/math3/geometry/euclidean/threed/SubLine.java?r1=1488866&r2=1488865&pathrev=1488866
 build:
   src: src/main/java/
+  commands:
+    - mvn compile
+  classes: target/classes/

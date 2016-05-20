@@ -26,3 +26,6 @@ fix:
     - name: src/com/google/javascript/jscomp/CommandLineRunner.java
 build:
   src: src/
+  commands:
+    - ant compile
+  classes: build/classes/

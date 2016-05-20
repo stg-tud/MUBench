@@ -28,3 +28,7 @@ fix:
     - name: JodaTimeContrib/hibernate/src/java/org/joda/time/contrib/hibernate/PersistentInterval.java
 build:
   src: JodaTimeContrib/hibernate/src/java/
+  commands:
+    - cd JodaTimeContrib/hibernate/src/java
+    - MUCompile
+  classes: JodaTimeContrib/hibernate/build/classes/main/

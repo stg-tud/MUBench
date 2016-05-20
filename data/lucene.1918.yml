@@ -26,3 +26,6 @@ fix:
       diff: http://svn.apache.org/viewvc/lucene/java/trunk/src/java/org/apache/lucene/index/ParallelReader.java?r1=816602&r2=816601&pathrev=816602
 build:
   src: src/java/
+  commands:
+    - ant compile-core
+  classes: build/classes/java/

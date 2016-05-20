@@ -26,3 +26,6 @@ fix:
       diff: https://sourceforge.net/p/itext/code/5091/tree/trunk/itext/src/main/java/com/itextpdf/text/pdf/PdfPublicKeySecurityHandler.java?diff=5041fbafbfc09e48583d0e45:5090
 build:
   src: src/main/java/
+  commands:
+    - mvn compile
+  classes: target/classes/
