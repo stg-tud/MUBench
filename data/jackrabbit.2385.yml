@@ -18,9 +18,9 @@ pattern:
 fix:
   commit: http://svn.apache.org/viewvc?view=revision&revision=880743
   repository:
-    url: http://svn.apache.org/repos/asf/jackrabbit/trunk/jackrabbit-jcr-server/
+    url: http://svn.apache.org/repos/asf/jackrabbit/trunk/
     type: svn
   revision: 880743
   files:
-    - name: src/main/java/org/apache/jackrabbit/server/io/DefaultHandler.java
+    - name: jackrabbit-jcr-server/src/main/java/org/apache/jackrabbit/server/io/DefaultHandler.java
       diff: http://svn.apache.org/viewvc/jackrabbit/trunk/jackrabbit-jcr-server/src/main/java/org/apache/jackrabbit/server/io/DefaultHandler.java?r1=880743&r2=880742&pathrev=880743

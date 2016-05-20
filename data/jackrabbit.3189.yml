@@ -20,9 +20,9 @@ pattern:
 fix:
   commit: http://svn.apache.org/viewvc?view=revision&revision=1232831
   repository:
-    url: http://svn.apache.org/repos/asf/jackrabbit/trunk/jackrabbit-jca/
+    url: http://svn.apache.org/repos/asf/jackrabbit/trunk/
     type: svn
   revision: 1232831
   files:
-    - name: src/main/java/org/apache/jackrabbit/jca/JCARepositoryManager.java
+    - name: jackrabbit-jca/src/main/java/org/apache/jackrabbit/jca/JCARepositoryManager.java
       diff: http://svn.apache.org/viewvc/jackrabbit/trunk/jackrabbit-jca/src/main/java/org/apache/jackrabbit/jca/JCARepositoryManager.java?r1=1232831&r2=1232830&pathrev=1232831

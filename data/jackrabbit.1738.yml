@@ -19,9 +19,9 @@ pattern:
 fix:
   commit: http://svn.apache.org/viewvc?view=revision&revision=696651
   repository:
-    url: http://svn.apache.org/repos/asf/jackrabbit/trunk/jackrabbit-core/
+    url: http://svn.apache.org/repos/asf/jackrabbit/trunk/
     type: svn
   revision: 696651
   files:
-    - name: src/main/java/org/apache/jackrabbit/core/config/BeanConfig.java
+    - name: jackrabbit-core/src/main/java/org/apache/jackrabbit/core/config/BeanConfig.java
       diff: http://svn.apache.org/viewvc/jackrabbit/trunk/jackrabbit-core/src/main/java/org/apache/jackrabbit/core/config/BeanConfig.java?r1=696651&r2=696650&pathrev=696651
