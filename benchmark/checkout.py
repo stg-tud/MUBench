@@ -48,23 +48,14 @@ class Checkout:
         returncode = 0
 
         if vcs == 'git':
-            if reset_only:
-                returncode += subprocess.call('git checkout ' + revision, cwd=checkout_dir, bufsize=1,
-                                              shell=True, stdout=self.outlog, stderr=self.errlog)
-            else:
-                git_init = 'git init'
-                git_set_remote = 'git remote add origin ' + repository_url
-                git_fetch = 'git fetch --quiet'
-                git_checkout = 'git checkout {} --quiet'.format(revision)
+            if not reset_only:
+                git_clone = 'git clone {} . --quiet'.format(repository_url)
+                returncode += subprocess.call(git_clone, cwd=checkout_dir, bufsize=1, shell=True,
+                                              stdout=self.outlog, stderr=self.errlog)
 
-                returncode += subprocess.call(git_init, cwd=checkout_dir, bufsize=1, shell=True,
-                                              stdout=self.outlog, stderr=self.errlog)
-                returncode += subprocess.call(git_set_remote, cwd=checkout_dir, bufsize=1, shell=True,
-                                              stdout=self.outlog, stderr=self.errlog)
-                returncode += subprocess.call(git_fetch, cwd=checkout_dir, bufsize=1, shell=True,
-                                              stdout=self.outlog, stderr=self.errlog)
-                returncode += subprocess.call(git_checkout, cwd=checkout_dir, bufsize=1, shell=True,
-                                              stdout=self.outlog, stderr=self.errlog)
+            git_checkout = 'git checkout {} --quiet'.format(revision)
+            returncode += subprocess.call(git_checkout, cwd=checkout_dir, bufsize=1,
+                                          shell=True, stdout=self.outlog, stderr=self.errlog)
         elif vcs == 'svn':
             if reset_only:
                 svn_update = 'svn update -r {}'.format(revision)
