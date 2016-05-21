@@ -8,7 +8,7 @@ def get_graphs(file_content: List[str]) -> List[List[str]]:
     result = []
 
     for line in file_content:
-        if not in_graph and line.startswith("digraph"):
+        if not in_graph and "digraph" in line:
             in_graph = True
 
         if in_graph and line.startswith("---"):
