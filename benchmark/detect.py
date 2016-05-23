@@ -39,10 +39,13 @@ class Detect:
                         detector_args.append(pattern_file)
 
                     subprocess_print("Detect : running... ", end='')
-                    subprocess.call(["java", "-jar", absolute_misuse_detector_path] + detector_args,
-                                    bufsize=1, stdout=out_log, stderr=error_log, timeout=self.timeout)
+                    returncode = subprocess.call(["java", "-jar", absolute_misuse_detector_path] + detector_args,
+                                                 bufsize=1, stdout=out_log, stderr=error_log, timeout=self.timeout)
 
-                    print_ok()
+                    if returncode == 0:
+                        print_ok()
+                    else:
+                        print("Detector encountered an error! Logs can be found in the results folder.")
 
                 except subprocess.TimeoutExpired:
                     print("timeout!", flush=True)
