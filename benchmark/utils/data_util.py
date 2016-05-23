@@ -1,5 +1,4 @@
-import os
-from os.path import splitext, basename, normpath
+from os.path import splitext, basename
 
 
 def extract_project_name_from_file_path(file: str) -> str:

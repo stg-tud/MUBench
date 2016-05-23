@@ -35,8 +35,25 @@ class TestEvaluation:
         assert_equals(('svn.yml', 1), actual_result)
 
     def test_compares_graphs_correctly(self):
-        self.create_result('git', 'file: some-class.java\ndigraph { 0 [label="someClass#this#doSomething"] }')
-        self.uut.evaluate('git.yml', {'misuse': {'usage': 'digraph { 0 [label="someClass#this#doSomething"] }'},
+        self.create_result('git',
+                           'file: some-class.java\n' +
+                           'graph: >\n' +
+                           '  digraph some-method {\n' +
+                           '    0 [label="StrBuilder#this#getNullText"]\n' +
+                           '    1 [label="String#str#length"]\n' +
+                           '    0 -> 1\n' +
+                           '  }\n' +
+                           '---\n' +
+                           'file: other-class.java\n' +
+                           '---\n' +
+                           'graph: >\n' +
+                           '  digraph graph {}\n')
+        self.uut.evaluate('git.yml', {'misuse': {'usage': 'graph: >\n' +
+                                                          '  digraph some-method {\n' +
+                                                          '    0 [label="StrBuilder#this#getNullText"]\n' +
+                                                          '    1 [label="String#str#length"]\n' +
+                                                          '    0 -> 1\n' +
+                                                          '  }\n'},
                                       'fix': {'revision': '', 'files': [{'name': 'some-class.java'}]}})
         actual_result = self.uut.results[0]
         assert_equals(('git.yml', 1), actual_result)

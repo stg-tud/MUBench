@@ -2,10 +2,12 @@ from genericpath import isdir, exists, isfile, getsize
 from os import listdir
 from os.path import join, splitext
 from os.path import normpath, basename
-from typing import Dict, Tuple, Optional, Any
+
+import yaml
+from typing import Dict, Tuple, Optional, Any, Iterable
 
 from benchmark.utils.data_util import normalize_result_misuse_path, normalize_data_misuse_path
-from benchmark.utils.dotgraph_util import get_labels_from_result_file, get_labels_from_data_content
+from benchmark.utils.dotgraph_util import get_labels
 from benchmark.utils.io import safe_open
 from benchmark.utils.printing import subprocess_print
 
@@ -31,26 +33,27 @@ class Evaluation:
         subprocess_print("Evaluation : running... ", end='')
 
         for dir_result in dirs_results:
-            is_result_for_file = splitext(basename(normpath(data_file)))[0] == basename(normpath(dir_result))
+            is_findings_for_file = splitext(basename(normpath(data_file)))[0] == basename(normpath(dir_result))
 
             error_log = join(dir_result, "error.log")
             errors_occurred = exists(error_log) and isfile(error_log) and getsize(error_log) > 0
 
-            if is_result_for_file and not errors_occurred:
+            if is_findings_for_file and not errors_occurred:
 
-                with safe_open(join(self.results_path, "_LOGS", "result-evaluation.log"), 'a+') as log:
+                with safe_open(join(self.results_path, "_LOGS", "evaluation.log"), 'a+') as log:
                     print("===========================================================", file=log)
 
-                    result_file = join(dir_result, self.detector_result_file)
-                    print("Evaluating result {} against data {}".format(result_file, data_file), file=log)
+                    findings_file = join(dir_result, self.detector_result_file)
+                    print("Evaluating result {} against data {}".format(findings_file, data_file), file=log)
 
                     file_found = False
                     label_found = False
 
-                    if exists(result_file):
-                        file_found = Evaluation.__is_file_found(result_file, data_content, self.checkout_base_dir,
-                                                                log)
-                        label_found = Evaluation.__is_label_found(result_file, data_content, log)
+                    if exists(findings_file):
+                        findings = yaml.load_all(safe_open(findings_file, 'r'))
+
+                        file_found = Evaluation.__is_file_found(findings, data_content, self.checkout_base_dir, log)
+                        label_found = Evaluation.__is_label_found(findings, data_content, log)
 
                     if file_found and label_found:
                         print("potential hit", flush=True)
@@ -110,46 +113,60 @@ class Evaluation:
             print('----------------------------------------------', file=file_result)
 
     @staticmethod
-    def __is_file_found(result_file: str,
+    def __is_file_found(findings: Iterable[Dict[str, str]],
                         data_content: Dict[str, Any],
                         checkout_base_dir: str,
                         log_stream) -> bool:
-        lines = [line.rstrip('\n') for line in safe_open(result_file, 'r')]
 
-        for line in lines:
-            if line.startswith("file: "):
-                # cut file: from the line to get the path
-                found_misuse = line[len("file: "):]
-                normed_found_misuse = normalize_result_misuse_path(found_misuse, checkout_base_dir)
+        for finding in findings:
+            marked_file = finding.get("file")
+            if marked_file is None:
+                continue
 
-                for misuse_file in data_content["fix"]["files"]:
-                    normed_misuse_file = normalize_data_misuse_path(misuse_file["name"])
+            normed_finding = normalize_result_misuse_path(marked_file, checkout_base_dir)
 
-                    print("{}: Comparing found misuse {}".format(normed_misuse_file, normed_found_misuse),
-                          file=log_stream)
+            for misuse_file in data_content["fix"]["files"]:
+                normed_misuse_file = normalize_data_misuse_path(misuse_file["name"])
 
-                    if normed_found_misuse == normed_misuse_file:
-                        print("Match found!", file=log_stream)
-                        return True
-                    else:
-                        print("No match", file=log_stream)
+                print("{}: Comparing found misuse {}".format(normed_misuse_file, normed_finding),
+                      file=log_stream)
+
+                if normed_finding == normed_misuse_file:
+                    print("Match found!", file=log_stream)
+                    return True
+                else:
+                    print("No match", file=log_stream)
 
         return False
 
     @staticmethod
-    def __is_label_found(result_file: str,
+    def __is_label_found(findings: Iterable[Dict[str, str]],
                          data_content: Dict[str, Any],
                          log_stream) -> bool:
-        misuse_labels = get_labels_from_data_content(data_content)
-        result_labels = get_labels_from_result_file(result_file)
 
-        # don't check if no labels are given on any end
-        if not misuse_labels or not result_labels:
+        marked_labels = []
+
+        for finding in findings:
+            graph = finding.get("graph")
+            if graph is not None:
+                marked_labels += get_labels(graph)
+
+        misuse = data_content.get('misuse')
+
+        if misuse is None:
             return True
 
-        for result_label in result_labels:
-            is_misuse_label = result_label in misuse_labels
-            if is_misuse_label:
+        graph = misuse['usage']
+
+        expected_labels = get_labels(graph)
+
+        # don't check if no labels are given on any end
+        if not expected_labels or not marked_labels:
+            return True
+
+        for marked_label in marked_labels:
+            is_expected_label = marked_label in expected_labels
+            if is_expected_label:
                 print("Found correct label!", file=log_stream)
                 return True
 
