@@ -105,6 +105,10 @@ if 'black_list' not in config:
     config.black_list = []
 if 'timeout' not in config:
     config.timeout = None
+if 'java_options' not in config:
+    config.java_options = []
+if 'force_detect' not in config:
+    config.force_detect = False
 
 benchmark = MUBenchmark(detector=config.detector, white_list=config.white_list, black_list=config.black_list,
                         timeout=config.timeout, java_options=config.java_options, force_detect=config.force_detect)
