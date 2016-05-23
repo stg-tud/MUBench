@@ -1,9 +1,9 @@
 import java.awt.Dimension;
 import javax.swing.JFrame;
 
-public class Pack1 {
-	public void misuse(JFrame f, Dimension d) {
-		f.pack();
+public class C {
+	public void pattern(JFrame f, Dimension d) {
 		f.setPreferredSize(d);
+		f.pack();
 	}
 }

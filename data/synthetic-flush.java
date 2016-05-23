@@ -16,37 +16,4 @@ public class ChannelFlush {
 		FileChannel in = FileChannel.open(path, StandardOpenOption.READ);
 		in.read(content);
 	}
-	
-	public void flush(ByteBuffer content) throws IOException {
-		Path path = new File("foo").toPath();
-		
-		FileChannel out = FileChannel.open(path, StandardOpenOption.WRITE);
-		out.write(content);
-		out.force(false);
-		
-		FileChannel in = FileChannel.open(path, StandardOpenOption.READ);
-		in.read(content);
-	}
-	
-	public void close(ByteBuffer content) throws IOException {
-		Path path = new File("foo").toPath();
-		
-		FileChannel out = FileChannel.open(path, StandardOpenOption.WRITE);
-		out.write(content);
-		out.close(); // <-- flushes implicitly
-		
-		FileChannel in = FileChannel.open(path, StandardOpenOption.READ);
-		in.read(content);
-	}
-	
-	public void tryWithResources(ByteBuffer content) throws IOException {
-		Path path = new File("foo").toPath();
-		
-		try (FileChannel out = FileChannel.open(path, StandardOpenOption.WRITE)) {
-			out.write(content);
-		}
-		
-		FileChannel in = FileChannel.open(path, StandardOpenOption.READ);
-		in.read(content);
-	}
 }

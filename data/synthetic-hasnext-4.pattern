@@ -1,8 +1,9 @@
 import java.util.Collection;
 import java.util.Iterator;
 
-public class HasNext {
-  public Object misuse(Collection<Object> os) {
+public class C {
+	public Object pattern(Collection<Object> os, Object def) {
+		os.add(def);
 		Iterator<Object> itr = os.iterator();
 		return itr.next();
 	}

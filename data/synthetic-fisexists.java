@@ -3,18 +3,9 @@ import java.io.FileInputStream;
 import java.io.IOException;
 
 public class FISExists {
-
-	public void misuse(String path) throws IOException {
-		File file = new File(path);
-		FileInputStream fis = new FileInputStream(file);
-		fis.close();
-	}
-
-	public void exists(String path) throws IOException {
-		File file = new File(path);
-		if (file.exists()) {
-			FileInputStream fis = new FileInputStream(file);
-			fis.close();
+	public void misuse(File file) throws IOException {
+		try (FileInputStream fis = new FileInputStream(file)) {
+		  // do something with fis...
 		}
 	}
 }
