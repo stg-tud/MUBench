@@ -42,7 +42,7 @@ class Detect:
 
                     subprocess_print("Detect : running... ", end='')
                     returncode = subprocess.call(
-                        ["java", self.java_options, "-jar", absolute_misuse_detector_path] + detector_args,
+                        ["java"] + self.java_options + ["-jar", absolute_misuse_detector_path] + detector_args,
                         bufsize=1, stdout=out_log, stderr=error_log, timeout=self.timeout)
 
                     if returncode == 0:
