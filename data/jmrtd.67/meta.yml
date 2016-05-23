@@ -27,3 +27,6 @@ fix:
       diff: https://sourceforge.net/p/jmrtd/code/67/tree//passporthostapi/src/sos/mrtd/PassportAuthService.java?diff=5058d727fd48f84fd52d6740:66
 build:
   src: src/
+  commands:
+    - MUCompile
+  classes: build/classes/main/
