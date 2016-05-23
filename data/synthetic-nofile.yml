@@ -19,3 +19,8 @@ fix:
   description: >
     Pass OpenOption.CREATE to the write call.
   commit: https://github.com/stg-tud/MUBench/blob/master/data/synthetic-nofile.java
+build:
+  src: src/
+  commands:
+    - MUCompile
+  classes: build/classes/main/

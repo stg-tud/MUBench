@@ -24,3 +24,8 @@ fix:
   description: >
     Add a call to ByteBuffer.flip()
   commit: https://github.com/stg-tud/MUBench/blob/master/data/synthetic-flip.java
+build:
+  src: src/
+  commands:
+    - MUCompile
+  classes: build/classes/main/

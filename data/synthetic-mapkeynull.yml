@@ -20,3 +20,8 @@ fix:
   description: >
     Check that the key is not null before calling Map.get().
   commit: https://github.com/stg-tud/MUBench/blob/master/data/synthetic-mapkeynull.java
+build:
+  src: src/
+  commands:
+    - MUCompile
+  classes: build/classes/main/

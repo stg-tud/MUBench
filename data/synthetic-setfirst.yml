@@ -23,3 +23,8 @@ fix:
   description: >
     Check that Set.isEmpty() is false.
   commit: https://github.com/stg-tud/MUBench/blob/master/data/synthetic-setfirst.java
+build:
+  src: src/
+  commands:
+    - MUCompile
+  classes: build/classes/main/

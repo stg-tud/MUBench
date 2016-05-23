@@ -58,3 +58,8 @@ fix:
   description: >
     Modify the collection via the Iterator.
   commit: https://github.com/stg-tud/MUBench/blob/master/data/synthetic-cme.java
+build:
+  src: src/
+  commands:
+    - MUCompile
+  classes: build/classes/main/

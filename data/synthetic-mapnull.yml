@@ -20,3 +20,8 @@ fix:
   description: >
     Use Map.containsKey() to check whether a key is set.
   commit: https://github.com/stg-tud/MUBench/blob/master/data/synthetic-mapnull.java
+build:
+  src: src/
+  commands:
+    - MUCompile
+  classes: build/classes/main/

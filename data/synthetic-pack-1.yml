@@ -20,3 +20,8 @@ fix:
   description: >
     Call JFrame.setPreferredSize() before JFrame.pack().
   commit: https://github.com/stg-tud/MUBench/blob/master/data/synthetic-pack-1.java
+build:
+  src: src/
+  commands:
+    - MUCompile
+  classes: build/classes/main/

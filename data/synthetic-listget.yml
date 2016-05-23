@@ -21,3 +21,8 @@ fix:
   description: >
     Check that index is between 0 and List.size() - 1.
   commit: https://github.com/stg-tud/MUBench/blob/master/data/synthetic-listget.java
+build:
+  src: src/
+  commands:
+    - MUCompile
+  classes: build/classes/main/

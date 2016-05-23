@@ -19,3 +19,8 @@ fix:
   description: >
     Call close() after using the Closable.
   commit: https://github.com/stg-tud/MUBench/blob/master/data/synthetic-close-1.java
+build:
+  src: src/
+  commands:
+    - MUCompile
+  classes: build/classes/main/

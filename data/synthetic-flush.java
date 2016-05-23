@@ -6,7 +6,6 @@ import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 
 public class ChannelFlush {
-	
 	public void misuse(ByteBuffer content) throws IOException {
 		Path path = new File("foo").toPath();
 		

@@ -20,3 +20,8 @@ fix:
   description: >
     Continue to work on the new instance.
   commit: https://github.com/stg-tud/MUBench/blob/master/data/synthetic-bigint.java
+build:
+  src: src/
+  commands:
+    - MUCompile
+  classes: build/classes/main/
