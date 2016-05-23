@@ -54,8 +54,6 @@ class MUBenchmark:
         self.datareader.run()
 
     def evaluate(self) -> None:
-        cfg = ConfigParser()
-        cfg.read(realpath(join('detectors', self.detector, self.detector + '.cfg')))
         evaluation_handler = Evaluation(self.results_path, self.detector, self.detector_result_file,
                                         self.checkout_dir)
 
