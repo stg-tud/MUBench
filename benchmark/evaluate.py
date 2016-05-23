@@ -119,6 +119,9 @@ class Evaluation:
                         log_stream) -> bool:
 
         for finding in findings:
+            if finding is None:
+                continue
+
             marked_file = finding.get("file")
             if marked_file is None:
                 continue
@@ -147,6 +150,8 @@ class Evaluation:
         marked_labels = []
 
         for finding in findings:
+            if finding is None:
+                continue
             graph = finding.get("graph")
             if graph is not None:
                 marked_labels += get_labels(graph)
