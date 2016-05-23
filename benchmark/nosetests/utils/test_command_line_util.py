@@ -1,4 +1,4 @@
-from nose.tools import assert_raises
+from nose.tools import assert_raises, assert_equals
 
 from benchmark.utils.command_line_util import get_command_line_parser
 
@@ -99,3 +99,15 @@ def test_eval():
     parser = get_command_line_parser(['valid-detector'])
     result = parser.parse_args(['eval', 'valid-detector'])
     assert result.detector == 'valid-detector'
+
+
+def test_java_options():
+    parser = get_command_line_parser(['valid-detector'])
+    result = parser.parse_args(['detect', 'valid-detector', '--java-options', 'Xmx6144M', 'd64'])
+    assert_equals(['Xmx6144M', 'd64'], result.java_options)
+
+
+def test_java_options_default_empty():
+    parser = get_command_line_parser(['valid-detector'])
+    result = parser.parse_args(['detect', 'valid-detector'])
+    assert_equals([], result.java_options)

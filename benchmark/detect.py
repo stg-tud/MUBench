@@ -1,7 +1,7 @@
 import subprocess
 from genericpath import exists
 from os.path import join, splitext, basename, realpath
-from typing import Optional, Dict, Union
+from typing import Optional, Dict, Union, List
 
 from benchmark.utils.data_util import extract_project_name_from_file_path
 from benchmark.utils.io import safe_open, safe_write
@@ -14,12 +14,14 @@ class Detect:
                  detector_result_file: str,
                  checkout_base_dir: str,
                  results_path: str,
-                 timeout: Optional[int]):
+                 timeout: Optional[int],
+                 java_options: List[str]):
         self.detector = detector
         self.detector_result_file = detector_result_file
         self.checkout_base_dir = checkout_base_dir
         self.results_path = results_path
         self.timeout = timeout
+        self.java_options = ['-' + option for option in java_options]
 
     def run_detector(self, file: str, misuse: Dict[str, Union[str, Dict]]) -> None:
         result_dir = join(self.results_path, splitext(basename(file))[0])
@@ -39,8 +41,9 @@ class Detect:
                         detector_args.append(pattern_file)
 
                     subprocess_print("Detect : running... ", end='')
-                    returncode = subprocess.call(["java", "-jar", absolute_misuse_detector_path] + detector_args,
-                                                 bufsize=1, stdout=out_log, stderr=error_log, timeout=self.timeout)
+                    returncode = subprocess.call(
+                        ["java", self.java_options, "-jar", absolute_misuse_detector_path] + detector_args,
+                        bufsize=1, stdout=out_log, stderr=error_log, timeout=self.timeout)
 
                     if returncode == 0:
                         print_ok()
