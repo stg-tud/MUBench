@@ -1,7 +1,8 @@
+import os
 import subprocess
 from os import makedirs, listdir
 from os.path import join, exists, realpath
-from shutil import copy
+from shutil import copy, rmtree
 
 from typing import Union, Dict, Any
 
@@ -34,13 +35,14 @@ class Checkout:
 
         subprocess_print("Fetching {}:{}#{}: ".format(vcs, repository_url, revision), end='')
 
-        if exists(checkout_dir) and listdir(checkout_dir):
+        if self.__check_correct_checkout(vcs, checkout_dir):
             if not self.setup_revisions:
                 print("already checked out.".format(project_name), flush=True)
                 return False
             reset_only = True
         else:
             reset_only = False
+            rmtree(checkout_dir, ignore_errors=True)
             makedirs(checkout_dir, exist_ok=True)
 
         print("running... ", end='', flush=True)
@@ -88,3 +90,20 @@ class Checkout:
             return revision
         else:
             raise ValueError("Unknown version control type: {}".format(vcs))
+
+    @staticmethod
+    def __check_correct_checkout(vcs: str, checkout_dir: str):
+        if not exists(checkout_dir) or not listdir(checkout_dir):
+            return False
+
+        with open(os.devnull, 'w') as FNULL:
+            if vcs == 'svn':
+                returncode = subprocess.call('svn info', cwd=checkout_dir, bufsize=1, shell=True,
+                                             stdout=FNULL, stderr=FNULL)
+            elif vcs == 'git':
+                returncode = subprocess.call('git status', cwd=checkout_dir, bufsize=1, shell=True,
+                                             stdout=FNULL, stderr=FNULL)
+            else:
+                returncode = 0
+
+        return returncode == 0
