@@ -150,11 +150,7 @@ hs_err_pid*
 
 ### MUBench ###
 
-# DummyMiner project files
-scripts/benchmark/DummyMiner/.classpath
-scripts/benchmark/DummyMiner/.gitignore
-scripts/benchmark/DummyMiner/.project
-
 # Benchmark created folders
 checkouts/
 results/
+!detectors/*/*.jar
