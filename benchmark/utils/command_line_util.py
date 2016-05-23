@@ -64,6 +64,7 @@ def __add_evaluate_subprocess(available_detectors: List[str], subparsers) -> Non
                                         help="Evaluate detection results. Run `detect` if necessary. Write results to `results/<detector>/Results.txt`." +
                                              "Run `eval -h` to see a list of available detectors.")  # type: ArgumentParser
     __setup_detector_running_subprocess(available_detectors, eval_parser)
+    eval_parser.add_argument('--force-detect', dest='force_detect', action='store_true', default=False)
 
 
 def __setup_detector_running_subprocess(available_detectors: List[str], subprocess_parser: ArgumentParser) -> None:

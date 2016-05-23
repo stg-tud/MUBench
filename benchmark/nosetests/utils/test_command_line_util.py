@@ -111,3 +111,15 @@ def test_java_options_default_empty():
     parser = get_command_line_parser(['valid-detector'])
     result = parser.parse_args(['detect', 'valid-detector'])
     assert_equals([], result.java_options)
+
+
+def test_force_detect():
+    parser = get_command_line_parser(['valid-detector'])
+    result = parser.parse_args(['eval', 'valid-detector', '--force-detect'])
+    assert result.force_detect
+
+
+def test_force_detect_default_false():
+    parser = get_command_line_parser(['valid-detector'])
+    result = parser.parse_args(['eval', 'valid-detector'])
+    assert not result.force_detect

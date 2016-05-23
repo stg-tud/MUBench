@@ -4,6 +4,8 @@ import sys
 from configparser import ConfigParser
 from os import getcwd, chdir, listdir
 from os.path import join, realpath, dirname, exists
+
+from shutil import rmtree
 from typing import Optional, List
 
 from benchmark.checkout import Checkout
@@ -21,13 +23,15 @@ class MUBenchmark:
                  timeout: Optional[int],
                  black_list: List[str],
                  white_list: List[str],
-                 java_options: List[str]
+                 java_options: List[str],
+                 force_detect: bool
                  ):
         self.detector = detector
         self.timeout = timeout
         self.black_list = black_list
         self.white_list = white_list
         self.java_options = java_options
+        self.force_detect = force_detect
         self.data_path = join(getcwd(), "data")
         self.results_path = realpath(join("results", self.detector))
         self.checkout_dir = realpath("checkouts")
@@ -56,6 +60,9 @@ class MUBenchmark:
     def evaluate(self) -> None:
         evaluation_handler = Evaluation(self.results_path, self.detector, self.detector_result_file,
                                         self.checkout_dir)
+
+        if self.force_detect:
+            rmtree(self.results_path)
 
         if not exists(self.results_path):
             detector_runner = Detect(self.detector, self.detector_result_file, self.checkout_dir,
@@ -100,7 +107,7 @@ if 'timeout' not in config:
     config.timeout = None
 
 benchmark = MUBenchmark(detector=config.detector, white_list=config.white_list, black_list=config.black_list,
-                        timeout=config.timeout, java_options= config.java_options)
+                        timeout=config.timeout, java_options=config.java_options, force_detect=config.force_detect)
 
 if config.subprocess == 'check':
     pass  # prerequisites are always checked before
