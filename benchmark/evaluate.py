@@ -66,7 +66,7 @@ class Evaluation:
                         return
 
         print("ignored (no available findings)", flush=True)
-        self.results.append((basename(data_file), None))
+        self.results.append((misuse.name, None))
 
     def output_results(self) -> None:
         if not self.results:
