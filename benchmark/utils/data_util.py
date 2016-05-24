@@ -1,4 +1,4 @@
-from os.path import splitext, basename
+from os.path import basename
 
 
 def normalize_data_misuse_path(misuse_file: str) -> str:
