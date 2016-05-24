@@ -20,7 +20,7 @@ class TestDataReader:
         self.repo_dir = join(self.temp_dir, 'repositories')
         self.data_path = join(self.temp_dir, 'data')
 
-        self.data = []
+        self.data = set()
 
         self.create_misuse('git', self.__get_git_yaml())
         self.create_misuse('svn', self.__get_svn_yaml())
@@ -40,9 +40,9 @@ class TestDataReader:
         assert len(values_used) == len(self.data)
 
     def test_correct_values_passed(self):
-        def save_values(misuse): values_used.append(misuse.path)
+        def save_values(misuse): values_used.add(misuse.path)
 
-        values_used = []
+        values_used = set()
         self.uut.add(save_values)
         self.uut.run()
         assert values_used == self.data
@@ -51,26 +51,26 @@ class TestDataReader:
         def return_values(misuse): return misuse.path
 
         self.uut.add(return_values)
-        actual = self.uut.run()
+        actual = set(self.uut.run())
         assert_equals(self.data, actual)
 
     def test_black_list(self):
-        def save_values(misuse): values_used.append(misuse)
+        def save_values(misuse): values_used.add(misuse)
 
         self.uut = DataReader(self.data_path, [""], [""])
 
-        values_used = []
+        values_used = set()
         self.uut.add(save_values)
         self.uut.run()
 
         assert not values_used
 
     def test_white_list(self):
-        def save_values(misuse): values_used.append(misuse)
+        def save_values(misuse): values_used.add(misuse)
 
         self.uut = DataReader(self.data_path, [], [])
 
-        values_used = []
+        values_used = set()
         self.uut.add(save_values)
         self.uut.run()
 
@@ -112,4 +112,4 @@ class TestDataReader:
         dir = join(self.data_path, misuse_name)
         file = join(dir, "meta.yml")
         safe_write(yaml.dump(content), file, append=False)
-        self.data.append(dir)
+        self.data.add(dir)
