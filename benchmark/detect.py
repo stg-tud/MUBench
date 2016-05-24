@@ -41,9 +41,7 @@ class Detect:
                         detector_args.append(pattern_file)
 
                     subprocess_print("Detect : running... ", end='')
-                    returncode = subprocess.call(
-                        ["java"] + self.java_options + ["-jar", absolute_misuse_detector_path] + detector_args,
-                        bufsize=1, stdout=out_log, stderr=error_log, timeout=self.timeout)
+                    returncode = self._invoke_detector(absolute_misuse_detector_path, detector_args, out_log, error_log)
 
                     if returncode == 0:
                         print_ok()
@@ -54,6 +52,10 @@ class Detect:
                     print("timeout!", flush=True)
                     safe_write("Timeout: {}".format(file), error_log, append=True)
                     return
+
+    def _invoke_detector(self, absolute_misuse_detector_path: str, detector_args: str, out_log, error_log):
+        return subprocess.call(["java"] + self.java_options + ["-jar", absolute_misuse_detector_path] + detector_args,
+                                bufsize=1, stdout=out_log, stderr=error_log, timeout=self.timeout)
 
     @staticmethod
     def __get_misuse_detector_path(detector: str):
