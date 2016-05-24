@@ -11,7 +11,7 @@ from benchmark.utils.io import safe_write
 
 
 # noinspection PyAttributeOutsideInit
-class TestDatareader:
+class TestDataReader:
     def setup(self):
         self.temp_dir = mkdtemp(prefix='mubench-datareader-test_')
 
@@ -32,7 +32,7 @@ class TestDatareader:
         rmtree(self.temp_dir, ignore_errors=True)
 
     def test_finds_all_files(self):
-        def save_values(file, data): values_used.append((file, data))
+        def save_values(misuse): values_used.append(misuse)
 
         values_used = []
         self.uut.add(save_values)
@@ -40,7 +40,7 @@ class TestDatareader:
         assert len(values_used) == len(self.data)
 
     def test_correct_values_passed(self):
-        def save_values(file, data): values_used.append((file, data))
+        def save_values(misuse): values_used.append(misuse.path)
 
         values_used = []
         self.uut.add(save_values)
@@ -48,14 +48,14 @@ class TestDatareader:
         assert values_used == self.data
 
     def test_return_values(self):
-        def return_values(file, data): return file, data
+        def return_values(misuse): return misuse.path
 
         self.uut.add(return_values)
         actual = self.uut.run()
         assert_equals(self.data, actual)
 
     def test_black_list(self):
-        def save_values(file, data): values_used.append((file, data))
+        def save_values(misuse): values_used.append(misuse)
 
         self.uut = DataReader(self.data_path, [""], [""])
 
@@ -66,7 +66,7 @@ class TestDatareader:
         assert not values_used
 
     def test_white_list(self):
-        def save_values(file, data): values_used.append((file, data))
+        def save_values(misuse): values_used.append(misuse)
 
         self.uut = DataReader(self.data_path, [], [])
 
@@ -112,4 +112,4 @@ class TestDatareader:
         dir = join(self.data_path, misuse_name)
         file = join(dir, "meta.yml")
         safe_write(yaml.dump(content), file, append=False)
-        self.data.append((dir, content))
+        self.data.append(dir)

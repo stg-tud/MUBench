@@ -7,7 +7,6 @@ from benchmark.misuse import Misuse
 class DataReader:
     def __init__(self, data_path: str, white_list: List[str], black_list: List[str]):
         self.functions = []
-
         self.data_path = data_path
         self.white_list = white_list
         self.black_list = black_list
@@ -16,7 +15,6 @@ class DataReader:
         self.functions.append(function)
 
     def run(self) -> List[Any]:
-
         candidates = [join(self.data_path, file) for file in listdir(self.data_path)]
         misuses = [Misuse(path) for path in candidates if Misuse.ismisuse(path)]
         misuses = [misuse for misuse in misuses if not self.__skip(misuse.name)]
