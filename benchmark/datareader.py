@@ -15,7 +15,7 @@ class DataReader:
         self.functions.append(function)
 
     def run(self) -> List[Any]:
-        candidates = [join(self.data_path, file) for file in listdir(self.data_path)]
+        candidates = [join(self.data_path, file) for file in sorted(listdir(self.data_path))]
         misuses = [Misuse(path) for path in candidates if Misuse.ismisuse(path)]
         misuses = [misuse for misuse in misuses if not self.__skip(misuse.name)]
         
