@@ -9,7 +9,6 @@ from typing import Union, Dict, Any
 
 from benchmark import datareader
 from benchmark.misuse import Misuse
-from benchmark.utils.data_util import extract_project_name_from_file_path
 from benchmark.utils.printing import subprocess_print, print_ok
 
 
@@ -32,7 +31,7 @@ class Checkout:
         if self.checkout_parent:
             revision = self.get_parent(vcs, revision)
 
-        project_name = extract_project_name_from_file_path(misuse.name)
+        project_name = misuse.project_name
         checkout_dir = join(self.checkout_base_dir, project_name)
 
         subprocess_print("Fetching {}:{}#{}: ".format(vcs, repository_url, revision), end='')

@@ -14,6 +14,13 @@ class Misuse:
         self.meta_file = join(path, Misuse.META_FILE)
     
     @property
+    def project_name(self) -> str:
+        project_name = self.name
+        if '.' in project_name:
+            project_name = project_name.split('.', 1)[0]
+        return project_name
+    
+    @property
     def meta(self):
         if getattr(self, '_META', None) is None:
             stream = open(self.meta_file, 'r')

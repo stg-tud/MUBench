@@ -22,6 +22,14 @@ class TestMisuse:
         uut = TMisuse("MUBench/data/project.id", {})
         assert uut.meta_file == "MUBench/data/project.id/meta.yml"
     
+    def test_project_name(self):
+        uut = TMisuse(join("C:", "my-path", "project.42-2"), {})
+        assert "project" == uut.project_name
+
+    def test_synthetic_project_name(self):
+        uut = TMisuse((join("C:", "my-path", "synthetic-example")), {})
+        assert "synthetic-example" == uut.project_name
+    
     def test_read_meta_file(self):
         self.temp_dir = mkdtemp(prefix='mubench-misuse.')
         try:

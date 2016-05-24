@@ -4,7 +4,6 @@ from os.path import join, splitext, basename, realpath
 from typing import Optional, Dict, Union, List
 
 from benchmark.misuse import Misuse
-from benchmark.utils.data_util import extract_project_name_from_file_path
 from benchmark.utils.io import safe_open, safe_write
 from benchmark.utils.printing import subprocess_print, print_ok
 
@@ -27,7 +26,7 @@ class Detect:
     def run_detector(self, misuse: Misuse) -> None:
         result_dir = join(self.results_path, splitext(misuse.name)[0])
 
-        project_name = extract_project_name_from_file_path(misuse.name)
+        project_name = misuse.project_name
         checkout_dir = join(self.checkout_base_dir, project_name)
 
         with safe_open(join(result_dir, "out.log"), 'w+') as out_log:

@@ -1,13 +1,6 @@
 from os.path import splitext, basename
 
 
-def extract_project_name_from_file_path(file: str) -> str:
-    project_name = splitext(basename(file))[0]
-    if 'synthetic' not in project_name and '.' in project_name:
-        project_name = project_name.split('.', 1)[0]
-    return project_name
-
-
 def normalize_data_misuse_path(misuse_file: str) -> str:
     normed_misuse_file = misuse_file
 
