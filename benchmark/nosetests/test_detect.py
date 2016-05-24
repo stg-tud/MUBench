@@ -13,7 +13,7 @@ class TestDetect:
     def setup(self):
         self.temp_dir = mkdtemp(prefix='mubench-detect-test_')
         self.checkout_base = join(self.temp_dir, "checkout")
-        self.findings_file = join(self.temp_dir, "findings.yml")
+        self.findings_file = "findings.yml"
         self.results_path = join(self.temp_dir, "results")
         
         self.uut = Detect("detector", self.findings_file, self.checkout_base, self.results_path, None, [])
@@ -39,8 +39,18 @@ class TestDetect:
     def test_invokes_detector(self):
         self.uut.run_detector(TMisuse("project.id", {}))
         
-        assert_equals(self.last_invoke, ("detector.jar", [join(self.checkout_base, "project"), self.findings_file]))
+        assert_equals(self.last_invoke[0], "detector.jar")
+    
+    def test_passes_project_checkout(self):
+        self.uut.run_detector(TMisuse("project.id", {}))
         
+        assert_equals(self.last_invoke[1][0], join(self.checkout_base, "project"))
+    
+    def test_passes_findings_files(self):
+        self.uut.run_detector(TMisuse("project.id", {}))
+        
+        assert_equals(self.last_invoke[1][1], join(self.results_path, "project.id", self.findings_file))
+    
     def test_invokes_detector_with_patterns(self):
         @property
         def mock_pattern(self):
@@ -52,6 +62,6 @@ class TestDetect:
             TMisuse.pattern = mock_pattern
             self.uut.run_detector(misuse)
             
-            assert_equals(self.last_invoke, ("detector.jar", [join(self.checkout_base, "project"), self.findings_file, "p1", "p2"]))
+            assert_equals(self.last_invoke[1][2:], ["p1", "p2"])
         finally:
             TMisuse.pattern = orig_pattern

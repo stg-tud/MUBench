@@ -1,6 +1,6 @@
 import subprocess
 from genericpath import exists
-from os.path import join, splitext, basename, realpath
+from os.path import join, realpath
 from typing import Optional, Dict, Union, List
 
 from benchmark.misuse import Misuse
@@ -24,7 +24,7 @@ class Detect:
         self.java_options = ['-' + option for option in java_options]
 
     def run_detector(self, misuse: Misuse) -> None:
-        result_dir = join(self.results_path, splitext(misuse.name)[0])
+        result_dir = join(self.results_path, misuse.name)
 
         project_name = misuse.project_name
         checkout_dir = join(self.checkout_base_dir, project_name)
