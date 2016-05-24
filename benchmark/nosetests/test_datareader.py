@@ -1,5 +1,5 @@
 import yaml
-from os import chdir
+from os import chdir, makedirs
 from os.path import join
 from shutil import rmtree
 from tempfile import mkdtemp
@@ -22,9 +22,9 @@ class TestDatareader:
 
         self.data = []
 
-        self.create_data_file('git.yml', self.__get_git_yaml())
-        self.create_data_file('svn.yml', self.__get_svn_yaml())
-        self.create_data_file('synthetic.yml', self.__get_synthetic_yaml())
+        self.create_misuse('git', self.__get_git_yaml())
+        self.create_misuse('svn', self.__get_svn_yaml())
+        self.create_misuse('synthetic', self.__get_synthetic_yaml())
 
         self.uut = DataReader(self.data_path, white_list=[""], black_list=[])
 
@@ -108,7 +108,8 @@ class TestDatareader:
                     'files': [{'name': 'synthetic.java'}]}}
         return content
 
-    def create_data_file(self, file_name: str, content: dict):
-        file = join(self.data_path, file_name)
+    def create_misuse(self, misuse_name: str, content: dict):
+        dir = join(self.data_path, misuse_name)
+        file = join(dir, "meta.yml")
         safe_write(yaml.dump(content), file, append=False)
-        self.data.append((file, content))
+        self.data.append((dir, content))

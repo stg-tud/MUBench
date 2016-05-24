@@ -1,7 +1,7 @@
-import yaml
 from os import listdir
-from os.path import isfile, join, basename
+from os.path import join
 from typing import List, Any, Callable
+from benchmark.misuse import Misuse
 
 
 class DataReader:
@@ -17,26 +17,21 @@ class DataReader:
 
     def run(self) -> List[Any]:
 
-        datafiles = [join(self.data_path, file) for file in listdir(self.data_path) if
-                     isfile(join(self.data_path, file)) and file.endswith(".yml") and not self.__skip(file)]
-
+        candidates = [join(self.data_path, file) for file in listdir(self.data_path)]
+        misuses = [Misuse(path) for path in candidates if Misuse.ismisuse(path)]
+        misuses = [misuse for misuse in misuses if not self.__skip(misuse.name)]
+        
         result = []
-        for i, file in enumerate(datafiles, start=1):
-            stream = open(file, 'r')
+        for i, misuse in enumerate(misuses, start=1):
+            print("Misuse '{}' ({}/{}) > ".format(misuse, i, len(misuses)), flush=True)
 
-            print("Misuse '{}' ({}/{}) > ".format(basename(file), i, len(datafiles)), flush=True)
-
-            try:
-                yaml_content = yaml.load(stream)
-                for function in self.functions:
-                    try:
-                        function_out = function(file, yaml_content)
-                        if function_out is not None:
-                            result.append(function_out)
-                    except Continue:
-                        break
-            finally:
-                stream.close()
+            for function in self.functions:
+                try:
+                    function_out = function(misuse.path, misuse.meta)
+                    if function_out is not None:
+                        result.append(function_out)
+                except Continue:
+                    break
 
         return result
 
