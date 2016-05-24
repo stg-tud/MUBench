@@ -16,7 +16,7 @@ class TestDetect:
         self.findings_file = join(self.temp_dir, "findings.yml")
         self.results_path = join(self.temp_dir, "results")
         
-        self.uut = Detect("dummy-detector", self.findings_file, self.checkout_base, self.results_path, None, [])
+        self.uut = Detect("detector", self.findings_file, self.checkout_base, self.results_path, None, [])
         
         # mock command-line invocation
         def mock_invoke_detector(detect, absolute_misuse_detector_path: str, detector_args: str, out_log, error_log):
@@ -36,7 +36,22 @@ class TestDetect:
         Detect._Detect__get_misuse_detector_path = self.orig_get_misuse_detector_path
         rmtree(self.temp_dir, ignore_errors=True)
     
-    def test_foo(self):
-        self.uut.run_detector(TMisuse("project.id", []))
+    def test_invokes_detector(self):
+        self.uut.run_detector(TMisuse("project.id", {}))
         
-        assert_equals(self.last_invoke, ("dummy-detector.jar", [join(self.checkout_base, "project"), self.findings_file]))
+        assert_equals(self.last_invoke, ("detector.jar", [join(self.checkout_base, "project"), self.findings_file]))
+        
+    def test_invokes_detector_with_patterns(self):
+        @property
+        def mock_pattern(self):
+            return ["p1", "p2"]
+        
+        misuse = TMisuse("project", {})
+        orig_pattern = TMisuse.pattern
+        try:
+            TMisuse.pattern = mock_pattern
+            self.uut.run_detector(misuse)
+            
+            assert_equals(self.last_invoke, ("detector.jar", [join(self.checkout_base, "project"), self.findings_file, "p1", "p2"]))
+        finally:
+            TMisuse.pattern = orig_pattern

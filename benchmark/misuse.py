@@ -1,5 +1,7 @@
 import yaml
+from os import listdir
 from os.path import isdir, isfile, join, basename
+from typing import Set
 
 class Misuse:
     META_FILE = "meta.yml"
@@ -19,6 +21,14 @@ class Misuse:
         if '.' in project_name:
             project_name = project_name.split('.', 1)[0]
         return project_name
+    
+    @property
+    def pattern(self) -> Set[str]:
+        pattern_path = join(self.path, "pattern")
+        if isdir(pattern_path):
+            return set([join(pattern_path, file) for file in listdir(pattern_path)])
+        else:
+            return set()
     
     @property
     def meta(self):

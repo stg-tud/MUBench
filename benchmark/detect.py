@@ -35,10 +35,7 @@ class Detect:
                     absolute_misuse_detector_path = Detect.__get_misuse_detector_path(self.detector)
 
                     detector_args = [checkout_dir, join(result_dir, self.detector_result_file)]
-
-                    pattern_file = join(splitext(misuse.name)[0], '.pattern')
-                    if exists(pattern_file):
-                        detector_args.append(pattern_file)
+                    detector_args.extend(misuse.pattern)
 
                     subprocess_print("Detect : running... ", end='')
                     returncode = self._invoke_detector(absolute_misuse_detector_path, detector_args, out_log, error_log)
