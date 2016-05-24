@@ -1,5 +1,6 @@
 import yaml
 from typing import Dict, Union
+from os import makedirs
 from os.path import join
 from shutil import rmtree
 from tempfile import mkdtemp
@@ -25,15 +26,15 @@ class TestMisuse:
         assert uut.name == "project.id"
     
     def test_finds_meta_file(self):
-        uut = TMisuse("MUBench/data/project.id", {})
+        uut = Misuse("MUBench/data/project.id")
         assert uut.meta_file == "MUBench/data/project.id/meta.yml"
     
-    def test_project_name(self):
-        uut = TMisuse(join("C:", "my-path", "project.42-2"), {})
+    def test_extracts_project_name(self):
+        uut = Misuse(join("C:", "my-path", "project.42-2"))
         assert "project" == uut.project_name
 
-    def test_synthetic_project_name(self):
-        uut = TMisuse((join("C:", "my-path", "synthetic-example")), {})
+    def test_extracts_synthetic_project_name(self):
+        uut = Misuse((join("C:", "my-path", "synthetic-example")))
         assert "synthetic-example" == uut.project_name
     
     def test_reads_meta_file(self):
@@ -71,9 +72,10 @@ class TestMisuse:
         assert uut.pattern == {pattern1_file, pattern2_file}
     
     def test_equals_by_path(self):
-        assert TMisuse("foo/bar", {}) == TMisuse("foo/bar", {})
+        assert Misuse("foo/bar") == Misuse("foo/bar")
     
-    def test_not_equal_by_path(self):
-        assert TMisuse("foo/bar", {}) != TMisuse("bar/bazz", {})    
+    def test_differs_by_path(self):
+        assert Misuse("foo/bar") != Misuse("bar/bazz")
+    
     def create_file(self, path: str):
         open(path, 'a').close()
