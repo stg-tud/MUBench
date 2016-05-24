@@ -8,7 +8,7 @@ from tempfile import mkdtemp
 
 from nose.tools import assert_raises
 
-from benchmark.nosetests.testmisuse import TMisuse
+from benchmark.nosetests.test_misuse import TMisuse
 from benchmark.checkout import Checkout
 from benchmark.utils.io import create_file
 

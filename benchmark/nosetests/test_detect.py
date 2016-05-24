@@ -5,7 +5,7 @@ from shutil import rmtree
 from benchmark.detect import Detect
 
 from nose.tools import assert_equals
-from benchmark.nosetests.testmisuse import TMisuse
+from benchmark.nosetests.test_misuse import TMisuse
 
 # noinspection PyAttributeOutsideInit
 class TestDetect:

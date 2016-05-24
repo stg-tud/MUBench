@@ -4,7 +4,7 @@ from shutil import rmtree
 from tempfile import mkdtemp
 
 from nose.tools import assert_equals
-from benchmark.nosetests.testmisuse import TMisuse
+from benchmark.nosetests.test_misuse import TMisuse
 
 from benchmark.evaluate import Evaluation
 from benchmark.utils.io import safe_write
