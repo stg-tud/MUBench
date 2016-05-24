@@ -6,6 +6,7 @@ from os.path import normpath, basename
 import yaml
 from typing import Dict, Tuple, Optional, Any, Iterable
 
+from benchmark.misuse import Misuse
 from benchmark.utils.data_util import normalize_result_misuse_path, normalize_data_misuse_path
 from benchmark.utils.dotgraph_util import get_labels
 from benchmark.utils.io import safe_open
@@ -25,7 +26,7 @@ class Evaluation:
 
         self.results = []
 
-    def evaluate(self, data_file: str, data_content: Dict[str, Any]) -> Tuple[str, Optional[int]]:
+    def evaluate(self, misuse: Misuse) -> Tuple[str, Optional[int]]:
 
         dirs_results = [join(self.results_path, result_dir) for result_dir in listdir(self.results_path) if
                         isdir(join(self.results_path, result_dir)) and not result_dir == '_LOGS']
@@ -33,7 +34,7 @@ class Evaluation:
         subprocess_print("Evaluation : running... ", end='')
 
         for dir_result in dirs_results:
-            is_findings_for_file = splitext(basename(normpath(data_file)))[0] == basename(normpath(dir_result))
+            is_findings_for_file = splitext(basename(normpath(misuse.path)))[0] == basename(normpath(dir_result))
 
             error_log = join(dir_result, "error.log")
             errors_occurred = exists(error_log) and isfile(error_log) and getsize(error_log) > 0
@@ -44,7 +45,7 @@ class Evaluation:
                     print("===========================================================", file=log)
 
                     findings_file = join(dir_result, self.detector_result_file)
-                    print("Evaluating result {} against data {}".format(findings_file, data_file), file=log)
+                    print("Evaluating result {}".format(findings_file), file=log)
 
                     file_found = False
                     label_found = False
@@ -52,16 +53,16 @@ class Evaluation:
                     if exists(findings_file):
                         findings = yaml.load_all(safe_open(findings_file, 'r'))
 
-                        file_found = Evaluation.__is_file_found(findings, data_content, self.checkout_base_dir, log)
-                        label_found = Evaluation.__is_label_found(findings, data_content, log)
+                        file_found = Evaluation.__is_file_found(findings, misuse.meta, self.checkout_base_dir, log)
+                        label_found = Evaluation.__is_label_found(findings, misuse.meta, log)
 
                     if file_found and label_found:
                         print("potential hit", flush=True)
-                        self.results.append((basename(data_file), 1))
+                        self.results.append((misuse.name, 1))
                         return
                     else:
                         print("no hit", flush=True)
-                        self.results.append((basename(data_file), 0))
+                        self.results.append((misuse.name, 0))
                         return
 
         print("ignored (no available findings)", flush=True)

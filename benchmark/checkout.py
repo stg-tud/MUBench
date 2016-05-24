@@ -2,11 +2,13 @@ import os
 import subprocess
 from os import makedirs, listdir
 from os.path import join, exists, realpath
-from shutil import copy, rmtree
+from shutil import rmtree
+from distutils.dir_util import copy_tree
 
 from typing import Union, Dict, Any
 
 from benchmark import datareader
+from benchmark.misuse import Misuse
 from benchmark.utils.data_util import extract_project_name_from_file_path
 from benchmark.utils.printing import subprocess_print, print_ok
 
@@ -20,8 +22,8 @@ class Checkout:
         self.outlog = outlog
         self.errlog = errlog
 
-    def checkout(self, file: str, misuse: Dict[str, Any]) -> bool:
-        fix = misuse["fix"]
+    def checkout(self, misuse: Misuse) -> bool:
+        fix = misuse.meta["fix"]
         vcs = fix["repository"]["type"]
         revision = fix.get("revision", "")
 
@@ -30,7 +32,7 @@ class Checkout:
         if self.checkout_parent:
             revision = self.get_parent(vcs, revision)
 
-        project_name = extract_project_name_from_file_path(file)
+        project_name = extract_project_name_from_file_path(misuse.name)
         checkout_dir = join(self.checkout_base_dir, project_name)
 
         subprocess_print("Fetching {}:{}#{}: ".format(vcs, repository_url, revision), end='')
@@ -69,7 +71,7 @@ class Checkout:
                                               stdout=self.outlog, stderr=self.errlog)
         elif vcs == 'synthetic':
             if not reset_only:
-                copy(join('data', repository_url), checkout_dir)
+                copy_tree(join(misuse.path, 'compile'), checkout_dir)
         else:
             print("unknown vcs {}!".format(vcs), flush=True)
             raise ValueError("Unknown version control type: {}".format(vcs))

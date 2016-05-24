@@ -8,6 +8,7 @@ from tempfile import mkdtemp
 
 from nose.tools import assert_raises
 
+from benchmark.nosetests.testmisuse import TMisuse
 from benchmark.checkout import Checkout
 from benchmark.utils.io import create_file
 
@@ -40,7 +41,7 @@ class TestCheckout(unittest.TestCase):
     def test_checkout_git(self):
         self.create_git_repository()
         git_url = join(self.test_checkout_dir, 'git')
-        Checkout(True, True, None, None).checkout('', self.get_yaml(git_url, 'git'))
+        Checkout(True, True, None, None).checkout(TMisuse('', self.get_yaml(git_url, 'git')))
         git_repository = join(self.test_checkout_dir, 'git', '.git')
         assert exists(git_repository)
 
@@ -48,16 +49,14 @@ class TestCheckout(unittest.TestCase):
     def test_checkout_svn(self):
         self.create_svn_repository()
         svn_url = join(self.test_checkout_dir, 'svn')
-        Checkout(True, True, None, None).checkout('', self.get_yaml(svn_url, 'svn', revision='1'))
+        Checkout(True, True, None, None).checkout(TMisuse('', self.get_yaml(svn_url, 'svn', revision='1')))
         svn_repository = join(self.test_checkout_dir, 'svn', '.svn')
         assert exists(svn_repository)
 
     def test_checkout_synthetic(self):
-        self.create_synthetic_repository()
-        synthetic_url = 'synthetic.java'
-        Checkout(True, True, None, None).checkout('synthetic.yml',
-                                                  self.get_yaml(synthetic_url, 'synthetic', file='synthetic.java'))
-        synthetic_file = join(self.test_checkout_dir, 'synthetic', 'synthetic.java')
+        self.create_synthetic_repository('synthetic-exmpl', 'synthetic.java')
+        Checkout(True, True, None, None).checkout(TMisuse('synthetic-exmpl', self.get_yaml(":url:", 'synthetic')))
+        synthetic_file = join(self.test_checkout_dir, 'synthetic-exmpl', 'synthetic.java')
         assert exists(synthetic_file)
 
     @staticmethod
@@ -82,10 +81,10 @@ class TestCheckout(unittest.TestCase):
             subprocess.call('svn update ', cwd=join(self.test_checkout_dir, svn_subfolder), bufsize=1, shell=True,
                             stdout=FNULL)
 
-    def create_synthetic_repository(self):
-        test_data_path = join(self.temp_dir, 'data')
+    def create_synthetic_repository(self, misuse_name: str, example_file: str):
+        test_data_path = join(self.temp_dir, misuse_name, 'compile')
         makedirs(test_data_path, exist_ok=True)
-        create_file(join(test_data_path, 'synthetic.java'))
+        create_file(join(test_data_path, example_file))
 
 
 class TestGetParent:

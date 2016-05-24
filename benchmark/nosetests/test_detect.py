@@ -5,6 +5,7 @@ from shutil import rmtree
 from benchmark.detect import Detect
 
 from nose.tools import assert_equals
+from benchmark.nosetests.testmisuse import TMisuse
 
 # noinspection PyAttributeOutsideInit
 class TestDetect:
@@ -36,7 +37,6 @@ class TestDetect:
         rmtree(self.temp_dir, ignore_errors=True)
     
     def test_foo(self):
-        checkout = join(self.checkout_base, "project")
-        self.uut.run_detector(checkout, [])
+        self.uut.run_detector(TMisuse("project.id", []))
         
-        assert_equals(self.last_invoke, ("dummy-detector.jar", [checkout, self.findings_file]))
+        assert_equals(self.last_invoke, ("dummy-detector.jar", [join(self.checkout_base, "project"), self.findings_file]))

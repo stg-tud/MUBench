@@ -4,6 +4,7 @@ from shutil import rmtree
 from tempfile import mkdtemp
 
 from nose.tools import assert_equals
+from benchmark.nosetests.testmisuse import TMisuse
 
 from benchmark.evaluate import Evaluation
 from benchmark.utils.io import safe_write
@@ -30,7 +31,7 @@ class TestEvaluation:
 
     def test_compares_files_correctly(self):
         self.create_result('svn', 'file: some-class.java')
-        self.uut.evaluate('svn.yml', {'fix': {'files': [{'name': 'some-class.java'}]}})
+        self.uut.evaluate(TMisuse('svn.yml', {'fix': {'files': [{'name': 'some-class.java'}]}}))
         actual_result = self.uut.results[0]
         assert_equals(('svn.yml', 1), actual_result)
 
@@ -48,13 +49,13 @@ class TestEvaluation:
                            '---\n' +
                            'graph: >\n' +
                            '  digraph graph {}\n')
-        self.uut.evaluate('git.yml', {'misuse': {'usage': 'graph: >\n' +
+        self.uut.evaluate(TMisuse('git.yml', {'misuse': {'usage': 'graph: >\n' +
                                                           '  digraph some-method {\n' +
                                                           '    0 [label="StrBuilder#this#getNullText"]\n' +
                                                           '    1 [label="String#str#length"]\n' +
                                                           '    0 -> 1\n' +
                                                           '  }\n'},
-                                      'fix': {'revision': '', 'files': [{'name': 'some-class.java'}]}})
+                                      'fix': {'revision': '', 'files': [{'name': 'some-class.java'}]}}))
         actual_result = self.uut.results[0]
         assert_equals(('git.yml', 1), actual_result)
 

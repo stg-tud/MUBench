@@ -3,6 +3,7 @@ from genericpath import exists
 from os.path import join, splitext, basename, realpath
 from typing import Optional, Dict, Union, List
 
+from benchmark.misuse import Misuse
 from benchmark.utils.data_util import extract_project_name_from_file_path
 from benchmark.utils.io import safe_open, safe_write
 from benchmark.utils.printing import subprocess_print, print_ok
@@ -23,10 +24,10 @@ class Detect:
         self.timeout = timeout
         self.java_options = ['-' + option for option in java_options]
 
-    def run_detector(self, file: str, misuse: Dict[str, Union[str, Dict]]) -> None:
-        result_dir = join(self.results_path, splitext(basename(file))[0])
+    def run_detector(self, misuse: Misuse) -> None:
+        result_dir = join(self.results_path, splitext(misuse.name)[0])
 
-        project_name = extract_project_name_from_file_path(file)
+        project_name = extract_project_name_from_file_path(misuse.name)
         checkout_dir = join(self.checkout_base_dir, project_name)
 
         with safe_open(join(result_dir, "out.log"), 'w+') as out_log:
@@ -36,7 +37,7 @@ class Detect:
 
                     detector_args = [checkout_dir, join(result_dir, self.detector_result_file)]
 
-                    pattern_file = join(splitext(file)[0], '.pattern')
+                    pattern_file = join(splitext(misuse.name)[0], '.pattern')
                     if exists(pattern_file):
                         detector_args.append(pattern_file)
 

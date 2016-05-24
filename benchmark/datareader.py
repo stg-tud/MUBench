@@ -25,7 +25,7 @@ class DataReader:
 
             for function in self.functions:
                 try:
-                    function_out = function(misuse.path, misuse.meta)
+                    function_out = function(misuse)
                     if function_out is not None:
                         result.append(function_out)
                 except Continue:
