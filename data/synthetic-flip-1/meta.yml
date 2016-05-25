@@ -17,10 +17,9 @@ pattern:
   - single object
 fix:
   repository:
-    url: synthetic-flip.java
     type: synthetic
   files:
-    - name: synthetic-flip.java
+    - name: src/ByteBufferFlip.java
   description: >
     Add a call to ByteBuffer.flip()
   commit: https://github.com/stg-tud/MUBench/blob/master/data/synthetic-flip.java

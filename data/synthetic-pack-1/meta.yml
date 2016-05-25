@@ -13,10 +13,9 @@ pattern:
   - single object
 fix:
   repository:
-    url: synthetic-pack-1.java
     type: synthetic
   files:
-    - name: synthetic-pack-1.java
+    - name: src/Pack1.java
   description: >
     Call JFrame.setPreferredSize() before JFrame.pack().
   commit: https://github.com/stg-tud/MUBench/blob/master/data/synthetic-pack-1.java

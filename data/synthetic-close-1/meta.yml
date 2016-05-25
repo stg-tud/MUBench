@@ -12,10 +12,9 @@ pattern:
   - single object
 fix:
   repository:
-    url: synthetic-close-1.java
     type: synthetic
   files:
-    - name: synthetic-close-1.java
+    - name: src/Close.java
   description: >
     Call close() after using the Closable.
   commit: https://github.com/stg-tud/MUBench/blob/master/data/synthetic-close-1.java

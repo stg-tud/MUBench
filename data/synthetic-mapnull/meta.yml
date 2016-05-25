@@ -13,10 +13,9 @@ pattern:
   - single object
 fix:
   repository:
-    url: synthetic-mapnull.java
     type: synthetic
   files:
-    - name: synthetic-mapnull.java
+    - name: src/MapNull.java
   description: >
     Use Map.containsKey() to check whether a key is set.
   commit: https://github.com/stg-tud/MUBench/blob/master/data/synthetic-mapnull.java

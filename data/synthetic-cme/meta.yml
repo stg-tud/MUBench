@@ -51,10 +51,9 @@ challenges:
   - path dependent
 fix:
   repository:
-    url: synthetic-cme.java
     type: synthetic
   files:
-    - name: synthetic-cme.java
+    - name: src/CME.java
   description: >
     Modify the collection via the Iterator.
   commit: https://github.com/stg-tud/MUBench/blob/master/data/synthetic-cme.java

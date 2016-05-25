@@ -13,10 +13,9 @@ pattern:
   - single object
 fix:
   repository:
-    url: synthetic-flush.java
     type: synthetic
   files:
-    - name: synthetic-flush.java
+    - name: src/ChannelFlush.java
   description: >
     Add a call to FileChannel.force() or close the channel.
   commit: https://github.com/stg-tud/MUBench/blob/master/data/synthetic-flush.java

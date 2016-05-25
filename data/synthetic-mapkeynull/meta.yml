@@ -13,10 +13,9 @@ pattern:
   - single object
 fix:
   repository:
-    url: synthetic-mapkeynull.java
     type: synthetic
   files:
-    - name: synthetic-mapkeynull.java
+    - name: src/MapKeyNull.java
   description: >
     Check that the key is not null before calling Map.get().
   commit: https://github.com/stg-tud/MUBench/blob/master/data/synthetic-mapkeynull.java
