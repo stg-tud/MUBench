@@ -47,7 +47,7 @@ class Detect:
 
                 except subprocess.TimeoutExpired:
                     print("timeout!", flush=True)
-                    safe_write("Timeout: {}".format(file), error_log, append=True)
+                    safe_write("Timeout: {}".format(misuse.name), error_log, append=True)
                     return
 
     def _invoke_detector(self, absolute_misuse_detector_path: str, detector_args: str, out_log, error_log):
