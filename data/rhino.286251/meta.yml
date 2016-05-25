@@ -29,5 +29,5 @@ fix:
 build:
   src: src/
   compile:
-    - MUCompile
+    - gradle build
   classes: build/classes/main/

@@ -33,5 +33,5 @@ build:
   src: src/share/
   compile:
     - "sed -i 's/new CodeSource(url,null)/new CodeSource(url,(java.security.CodeSigner[])null)/g' src/share/org/apache/jasper/compiler/JspRuntimeContext.java"
-    - MUCompile
+    - gradle build
   classes: build/classes/main/
