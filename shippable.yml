@@ -19,10 +19,7 @@ install:
 
 script: 
   - nosetests --with-xunit --xunit-file=shippable/testresults/nosetests.xml
-  - "./benchmark.py check"
-  - "./benchmark.py checkout"
-  - "./benchmark.py detect dummy-detector"
-  - "./benchmark.py eval dummy-detector"
+  - "./benchmark.py eval dummy-detector --only synthetic"
   
 notifications:
   email:
