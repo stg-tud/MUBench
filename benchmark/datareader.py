@@ -15,9 +15,7 @@ class DataReader:
         self.functions.append(function)
 
     def run(self) -> List[Any]:
-        candidates = [join(self.data_path, file) for file in sorted(listdir(self.data_path))]
-        misuses = [Misuse(path) for path in candidates if Misuse.ismisuse(path)]
-        misuses = [misuse for misuse in misuses if not self.__skip(misuse.name)]
+        misuses = self._get_misuses()
         
         result = []
         for i, misuse in enumerate(misuses, start=1):
@@ -32,6 +30,12 @@ class DataReader:
                     break
 
         return result
+
+    def _get_misuses(self):
+        candidates = [join(self.data_path, file) for file in sorted(listdir(self.data_path))]
+        misuses = [Misuse(path) for path in candidates if Misuse.ismisuse(path)]
+        misuses = [misuse for misuse in misuses if not self.__skip(misuse.name)]
+        return misuses
 
     def __skip(self, file: str):
         whitelisted = any([white_listed in file for white_listed in self.white_list])
