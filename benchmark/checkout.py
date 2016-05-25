@@ -22,11 +22,9 @@ class Checkout:
         self.errlog = errlog
 
     def checkout(self, misuse: Misuse) -> bool:
-        fix = misuse.meta["fix"]
-        vcs = fix["repository"]["type"]
-        revision = fix.get("revision", "")
-
-        repository_url = fix["repository"]["url"]
+        repository_url = misuse.repository.url
+        vcs = misuse.repository.type
+        revision = misuse.fix_revision
 
         if self.checkout_parent:
             revision = self.get_parent(vcs, revision)
@@ -70,7 +68,7 @@ class Checkout:
                                               stdout=self.outlog, stderr=self.errlog)
         elif vcs == 'synthetic':
             if not reset_only:
-                copy_tree(join(misuse.path, 'compile'), checkout_dir)
+                copy_tree(repository_url, checkout_dir)
         else:
             print("unknown vcs {}!".format(vcs), flush=True)
             raise ValueError("Unknown version control type: {}".format(vcs))

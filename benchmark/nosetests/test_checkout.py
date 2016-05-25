@@ -41,7 +41,7 @@ class TestCheckout(unittest.TestCase):
     def test_checkout_git(self):
         self.create_git_repository()
         git_url = join(self.test_checkout_dir, 'git')
-        Checkout(True, True, None, None).checkout(TMisuse('', self.get_yaml(git_url, 'git')))
+        Checkout(True, True, None, None).checkout(TMisuse('', self.get_yaml('git', git_url)))
         git_repository = join(self.test_checkout_dir, 'git', '.git')
         assert exists(git_repository)
 
@@ -49,19 +49,22 @@ class TestCheckout(unittest.TestCase):
     def test_checkout_svn(self):
         self.create_svn_repository()
         svn_url = join(self.test_checkout_dir, 'svn')
-        Checkout(True, True, None, None).checkout(TMisuse('', self.get_yaml(svn_url, 'svn', revision='1')))
+        Checkout(True, True, None, None).checkout(TMisuse('', self.get_yaml('svn', svn_url, revision='1')))
         svn_repository = join(self.test_checkout_dir, 'svn', '.svn')
         assert exists(svn_repository)
 
     def test_checkout_synthetic(self):
         self.create_synthetic_repository('synthetic-exmpl', 'synthetic.java')
-        Checkout(True, True, None, None).checkout(TMisuse('synthetic-exmpl', self.get_yaml(":url:", 'synthetic')))
+        Checkout(True, True, None, None).checkout(TMisuse('synthetic-exmpl', self.get_yaml('synthetic')))
         synthetic_file = join(self.test_checkout_dir, 'synthetic-exmpl', 'synthetic.java')
         assert exists(synthetic_file)
 
     @staticmethod
-    def get_yaml(url: str, vcs_type: str, revision: str = '', file: str = ''):
-        repository = {'url': url, 'type': vcs_type}
+    def get_yaml(vcs_type: str, url: str = None, revision: str = '', file: str = ''):
+        if url == None:
+            repository = {'type': vcs_type}
+        else:
+            repository = {'url': url, 'type': vcs_type}
         return {'fix': {'repository': repository, 'revision': revision, 'file': file}}
 
     def create_git_repository(self):

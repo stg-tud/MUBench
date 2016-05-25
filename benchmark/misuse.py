@@ -38,7 +38,19 @@ class Misuse:
                 self._META = yaml.load(stream)
             finally:
                 stream.close()
+        
         return self._META
+    
+    @property
+    def repository(self):
+        repository = self.meta["fix"]["repository"]
+        if repository["type"] == "synthetic":
+            repository["url"] = join(self.path, "compile")
+        return Repository(repository["type"], repository["url"])
+    
+    @property
+    def fix_revision(self):
+        return self.meta["fix"].get("revision", None)
     
     def __str__(self):
         return self.name
@@ -48,3 +60,8 @@ class Misuse:
     
     def __ne__(self, other):
         return not self.__eq__(other)
+
+class Repository:
+    def __init__(self, type: str, url: str):
+        self.type = type
+        self.url = url
