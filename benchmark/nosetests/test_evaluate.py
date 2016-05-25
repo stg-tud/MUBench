@@ -21,19 +21,18 @@ class TestEvaluation:
         self.checkout_dir = join(self.temp_dir, 'checkouts')
         self.results_path = join(self.temp_dir, 'results', 'test-detector')
         self.detector = 'test-detector'
-        self.file_detector_result = 'findings.yaml'
+        self.file_detector_result = 'findings.yml'
 
-        self.uut = Evaluation(self.results_path, self.detector,
-                              self.file_detector_result, self.checkout_dir)
+        self.uut = Evaluation(self.results_path, self.file_detector_result, self.checkout_dir)
 
     def teardown(self):
         rmtree(self.temp_dir, ignore_errors=True)
 
     def test_compares_files_correctly(self):
         self.create_result('svn', 'file: some-class.java')
-        self.uut.evaluate(TMisuse('svn.yml', {'fix': {'files': [{'name': 'some-class.java'}]}}))
+        self.uut.evaluate(TMisuse('svn', {'fix': {'files': [{'name': 'some-class.java'}]}}))
         actual_result = self.uut.results[0]
-        assert_equals(('svn.yml', 1), actual_result)
+        assert_equals(('svn', 1), actual_result)
 
     def test_compares_graphs_correctly(self):
         self.create_result('git',
@@ -49,7 +48,7 @@ class TestEvaluation:
                            '---\n' +
                            'graph: >\n' +
                            '  digraph graph {}\n')
-        self.uut.evaluate(TMisuse('git.yml', {'misuse': {'usage': 'graph: >\n' +
+        self.uut.evaluate(TMisuse('git', {'misuse': {'usage': 'graph: >\n' +
                                                           '  digraph some-method {\n' +
                                                           '    0 [label="StrBuilder#this#getNullText"]\n' +
                                                           '    1 [label="String#str#length"]\n' +
@@ -57,7 +56,7 @@ class TestEvaluation:
                                                           '  }\n'},
                                       'fix': {'revision': '', 'files': [{'name': 'some-class.java'}]}}))
         actual_result = self.uut.results[0]
-        assert_equals(('git.yml', 1), actual_result)
+        assert_equals(('git', 1), actual_result)
 
     def create_result(self, misuse_name, content):
         safe_write(content, join(self.results_path, misuse_name, self.file_detector_result),

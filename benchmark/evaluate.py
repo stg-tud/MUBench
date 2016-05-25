@@ -16,11 +16,9 @@ from benchmark.utils.printing import subprocess_print
 class Evaluation:
     def __init__(self,
                  results_path: str,
-                 detector: str,
                  detector_result_file: str,
                  checkout_base_dir: str):
         self.results_path = results_path
-        self.detector = detector
         self.detector_result_file = detector_result_file
         self.checkout_base_dir = checkout_base_dir
 
@@ -28,42 +26,37 @@ class Evaluation:
 
     def evaluate(self, misuse: Misuse) -> Tuple[str, Optional[int]]:
 
-        dirs_results = [join(self.results_path, result_dir) for result_dir in listdir(self.results_path) if
-                        isdir(join(self.results_path, result_dir)) and not result_dir == '_LOGS']
-
         subprocess_print("Evaluation : running... ", end='')
 
-        for dir_result in dirs_results:
-            is_findings_for_file = splitext(basename(normpath(misuse.path)))[0] == basename(normpath(dir_result))
+        dir_result = join(self.results_path, misuse.name)
 
-            error_log = join(dir_result, "error.log")
-            errors_occurred = exists(error_log) and isfile(error_log) and getsize(error_log) > 0
+        error_log = join(dir_result, "error.log")
+        errors_occurred = exists(error_log) and isfile(error_log) and getsize(error_log) > 0
 
-            if is_findings_for_file and not errors_occurred:
+        if not errors_occurred:
+            with safe_open(join(self.results_path, "_LOGS", "evaluation.log"), 'a+') as log:
+                print("===========================================================", file=log)
 
-                with safe_open(join(self.results_path, "_LOGS", "evaluation.log"), 'a+') as log:
-                    print("===========================================================", file=log)
+                findings_file = join(dir_result, self.detector_result_file)
+                print("Evaluating result {}".format(findings_file), file=log)
 
-                    findings_file = join(dir_result, self.detector_result_file)
-                    print("Evaluating result {}".format(findings_file), file=log)
+                file_found = False
+                label_found = False
 
-                    file_found = False
-                    label_found = False
+                if exists(findings_file):
+                    findings = yaml.load_all(safe_open(findings_file, 'r'))
 
-                    if exists(findings_file):
-                        findings = yaml.load_all(safe_open(findings_file, 'r'))
+                    file_found = Evaluation.__is_file_found(findings, misuse.meta, self.checkout_base_dir, log)
+                    label_found = Evaluation.__is_label_found(findings, misuse.meta, log)
 
-                        file_found = Evaluation.__is_file_found(findings, misuse.meta, self.checkout_base_dir, log)
-                        label_found = Evaluation.__is_label_found(findings, misuse.meta, log)
-
-                    if file_found and label_found:
-                        print("potential hit", flush=True)
-                        self.results.append((misuse.name, 1))
-                        return
-                    else:
-                        print("no hit", flush=True)
-                        self.results.append((misuse.name, 0))
-                        return
+                if file_found and label_found:
+                    print("potential hit", flush=True)
+                    self.results.append((misuse.name, 1))
+                    return
+                else:
+                    print("no hit", flush=True)
+                    self.results.append((misuse.name, 0))
+                    return
 
         print("ignored (no available findings)", flush=True)
         self.results.append((misuse.name, None))

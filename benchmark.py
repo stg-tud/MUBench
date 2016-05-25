@@ -58,8 +58,7 @@ class MUBenchmark:
         self.datareader.run()
 
     def evaluate(self) -> None:
-        evaluation_handler = Evaluation(self.results_path, self.detector, self.detector_result_file,
-                                        self.checkout_dir)
+        evaluation_handler = Evaluation(self.results_path, self.detector_result_file, self.checkout_dir)
 
         if self.force_detect:
             rmtree(self.results_path)
