@@ -114,6 +114,10 @@ class TestMisuse:
         assert_equals(["mvn compile"], actual_config.commands)
         assert_equals("target/classes/", actual_config.classes)
 
+    def test_derives_additional_compile_sources_path(self):
+        uut = TMisuse("/path/misuse")
+        assert_equals(join("/path/misuse", "compile"), uut.additional_compile_sources)
+
     @staticmethod
     def create_file(path: str):
         open(path, 'a').close()

@@ -62,6 +62,10 @@ class Misuse:
 
         return BuildConfig(build["src"], build["commands"], build["classes"])
 
+    @property
+    def additional_compile_sources(self):
+        return join(self.path, 'compile')
+
     def __str__(self):
         return self.name
 
