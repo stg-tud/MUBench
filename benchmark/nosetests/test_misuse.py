@@ -31,7 +31,7 @@ class TestMisuse:
 
     def test_finds_meta_file(self):
         uut = Misuse("MUBench/data/project.id")
-        assert uut.meta_file == "MUBench/data/project.id/meta.yml"
+        assert_equals(uut.meta_file, join("MUBench/data/project.id", "meta.yml"))
 
     def test_extracts_project_name(self):
         uut = Misuse(join("C:", "my-path", "project.42-2"))
@@ -60,7 +60,7 @@ class TestMisuse:
         repo = uut.repository
 
         assert_equals("synthetic", repo.type)
-        assert_equals("/path/misuse/compile", repo.url)
+        assert_equals(join("/path/misuse", "compile"), repo.url)
 
     def test_fix_revision(self):
         uut = TMisuse(meta={"fix": {"revision": 42}})
