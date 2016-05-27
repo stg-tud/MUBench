@@ -1,7 +1,7 @@
 import yaml
 from os import listdir
 from os.path import isdir, isfile, join, basename
-from typing import Set
+from typing import Set, List
 
 
 # noinspection PyAttributeOutsideInit
@@ -54,6 +54,14 @@ class Misuse:
     def fix_revision(self):
         return self.meta["fix"].get("revision", None)
 
+    @property
+    def build_config(self):
+        build = self.meta.get("build")
+        if build is None:
+            return None
+
+        return BuildConfig(build["src"], build["commands"], build["classes"])
+
     def __str__(self):
         return self.name
 
@@ -68,3 +76,10 @@ class Repository:
     def __init__(self, type: str, url: str):
         self.type = type
         self.url = url
+
+
+class BuildConfig:
+    def __init__(self, src: str, commands: List[str], classes: str):
+        self.src = src
+        self.commands = commands
+        self.classes = classes

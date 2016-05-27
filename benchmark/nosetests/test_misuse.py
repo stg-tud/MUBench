@@ -12,7 +12,7 @@ from benchmark.utils.io import safe_write
 
 
 class TMisuse(Misuse):
-    def __init__(self, path: str = ":irrelevant:", meta: Dict[str, Union[str, Dict]]={}):
+    def __init__(self, path: str = ":irrelevant:", meta: Dict[str, Union[str, Dict]] = {}):
         Misuse.__init__(self, path)
         self._META = meta
 
@@ -104,6 +104,15 @@ class TestMisuse:
 
     def test_differs_by_path(self):
         assert Misuse("foo/bar") != Misuse("bar/bazz")
+
+    def test_extracts_build_config(self):
+        uut = TMisuse("/path/misuse",
+                      {"build": {"src": "src/java/", "commands": ["mvn compile"], "classes": "target/classes/"}})
+
+        actual_config = uut.build_config
+        assert_equals("src/java/", actual_config.src)
+        assert_equals(["mvn compile"], actual_config.commands)
+        assert_equals("target/classes/", actual_config.classes)
 
     @staticmethod
     def create_file(path: str):
