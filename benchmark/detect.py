@@ -1,7 +1,7 @@
 import subprocess
-from genericpath import exists
 from os.path import join, realpath
-from typing import Optional, Dict, Union, List
+
+from typing import Optional, List
 
 from benchmark.misuse import Misuse
 from benchmark.utils.io import safe_open, safe_write
@@ -50,9 +50,9 @@ class Detect:
                     safe_write("Timeout: {}".format(misuse.name), error_log, append=True)
                     return
 
-    def _invoke_detector(self, absolute_misuse_detector_path: str, detector_args: str, out_log, error_log):
+    def _invoke_detector(self, absolute_misuse_detector_path: str, detector_args: List[str], out_log, error_log):
         return subprocess.call(["java"] + self.java_options + ["-jar", absolute_misuse_detector_path] + detector_args,
-                                bufsize=1, stdout=out_log, stderr=error_log, timeout=self.timeout)
+                               bufsize=1, stdout=out_log, stderr=error_log, timeout=self.timeout)
 
     @staticmethod
     def __get_misuse_detector_path(detector: str):

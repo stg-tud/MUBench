@@ -1,6 +1,3 @@
-from os.path import basename
-
-
 def normalize_data_misuse_path(misuse_file: str) -> str:
     normed_misuse_file = misuse_file
 

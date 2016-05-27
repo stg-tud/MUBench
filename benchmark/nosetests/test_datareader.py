@@ -1,9 +1,9 @@
-import yaml
-from os import chdir, makedirs
+from os import chdir
 from os.path import join
 from shutil import rmtree
 from tempfile import mkdtemp
 
+import yaml
 from nose.tools import assert_equals
 
 from benchmark.datareader import DataReader
@@ -75,14 +75,6 @@ class TestDataReader:
         self.uut.run()
 
         assert not values_used
-
-    def __create_yaml_data(self):
-        git_yaml = self.__get_git_yaml()
-        svn_yaml = self.__get_svn_yaml()
-        synthetic_yaml = self.__get_synthetic_yaml()
-        self.create_data_file('git.yml', git_yaml)
-        self.create_data_file('svn.yml', svn_yaml)
-        self.create_data_file('synthetic.yml', synthetic_yaml)
 
     def __get_git_yaml(self):
         repository = {'url': 'git', 'type': 'git'}

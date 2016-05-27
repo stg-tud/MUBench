@@ -61,7 +61,7 @@ class TestCheckout(unittest.TestCase):
 
     @staticmethod
     def get_yaml(vcs_type: str, url: str = None, revision: str = '', file: str = ''):
-        if url == None:
+        if url is None:
             repository = {'type': vcs_type}
         else:
             repository = {'url': url, 'type': vcs_type}

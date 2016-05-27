@@ -49,12 +49,12 @@ class TestEvaluation:
                            'graph: >\n' +
                            '  digraph graph {}\n')
         self.uut.evaluate(TMisuse('git', {'misuse': {'usage': 'graph: >\n' +
-                                                          '  digraph some-method {\n' +
-                                                          '    0 [label="StrBuilder#this#getNullText"]\n' +
-                                                          '    1 [label="String#str#length"]\n' +
-                                                          '    0 -> 1\n' +
-                                                          '  }\n'},
-                                      'fix': {'revision': '', 'files': [{'name': 'some-class.java'}]}}))
+                                                              '  digraph some-method {\n' +
+                                                              '    0 [label="StrBuilder#this#getNullText"]\n' +
+                                                              '    1 [label="String#str#length"]\n' +
+                                                              '    0 -> 1\n' +
+                                                              '  }\n'},
+                                          'fix': {'revision': '', 'files': [{'name': 'some-class.java'}]}}))
         actual_result = self.uut.results[0]
         assert_equals(('git', 1), actual_result)
 

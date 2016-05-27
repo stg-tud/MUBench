@@ -1,8 +1,7 @@
-from os.path import join
-
 from nose.tools import assert_equals
 
 from benchmark.utils.data_util import normalize_data_misuse_path, normalize_result_misuse_path
+
 
 def test_normalize_git_path_from_data():
     non_normalized_path = r'src/main/java/com/alibaba/druid/filter/config/ConfigTools.java'

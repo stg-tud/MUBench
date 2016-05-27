@@ -1,11 +1,11 @@
 import os
 import subprocess
+from distutils.dir_util import copy_tree
 from os import makedirs, listdir
 from os.path import join, exists, realpath
 from shutil import rmtree
-from distutils.dir_util import copy_tree
 
-from typing import Union, Dict, Any
+from typing import Union
 
 from benchmark import datareader
 from benchmark.misuse import Misuse

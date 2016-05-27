@@ -1,7 +1,5 @@
-from genericpath import isdir, exists, isfile, getsize
-from os import listdir
-from os.path import join, splitext
-from os.path import normpath, basename
+from genericpath import exists, isfile, getsize
+from os.path import join
 
 import yaml
 from typing import Dict, Tuple, Optional, Any, Iterable
