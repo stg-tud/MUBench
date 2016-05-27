@@ -48,5 +48,7 @@ class TestCompile:
             content = actual_log.read()
             assert_equals("Hallo Echo!\n", content)
 
-    
-
+    def test_no_fail_without_build_config(self):
+        uut = Compile(outlog=self.outlog, errlog=self.errlog)
+        misuse = TMisuse()
+        uut.build(misuse)

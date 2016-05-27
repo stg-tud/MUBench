@@ -11,6 +11,9 @@ class Compile:
     def build(self, misuse: Misuse):
         build_config = misuse.build_config
 
+        if build_config is None:
+            return
+
         for command in build_config.commands:
             self._call(command)
 
