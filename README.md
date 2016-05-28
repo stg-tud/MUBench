@@ -57,9 +57,10 @@ To benchmark your own detector the following steps are necessary:
 *Which Inputs Will I Get?*
 
 All inputs are passed to the JAR as command-line arguments.
-- args[0]: The path to the project containing the misuse. You may use this to mine usage patterns and find misuses.
-- args[1]: The file MUBench expects you to write your findings to. This file is `results/my-detector/<misuse>/findings.txt`.
-- args[2]: (Optional) The path to a `.pattern` file, which contains the fixed version of the usage MUBench expects your detector to find in the project. The file contains a Java Source Code snippet. For examples see the `*.pattern` files in [`data`](https://github.com/stg-tud/MUBench/tree/master/data).
+- args[0]: The path to the project sources containing the misuse. You may use this to mine usage patterns and find misuses.
+- args[1]: The path to the compiled project classes containing the misuse. You may use this like args[0] if your mining runs on compiled code.
+- args[2]: The file MUBench expects you to write your findings to. This file is `results/my-detector/<misuse>/findings.txt`.
+- args[3]+: (Optional) The path to pattern files, which contain the fixed version of the usage MUBench expects your detector to find in the project. The files contain Java Source Code snippets. For examples, see the `pattern` folders in [`data`](https://github.com/stg-tud/MUBench/tree/master/data).
 
 *What Should My Output File Look Like?*
 
