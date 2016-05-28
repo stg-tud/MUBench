@@ -3,7 +3,9 @@ from os.path import join, exists
 
 from shutil import copytree
 
+from benchmark.datareader import Continue
 from benchmark.misuse import Misuse
+from benchmark.utils.printing import subprocess_print, print_ok
 
 
 class Compile:
@@ -23,8 +25,12 @@ class Compile:
             return
 
         for command in build_config.commands:
-            self._call(command)
+            ok = self._call(command)
+            if not ok:
+                raise Continue
 
-    def _call(self, command: str):
+
+    def _call(self, command: str) -> bool:
         with open(self.outlog, 'a+') as outlog, open(self.errlog, 'a+') as errlog:
-            subprocess.call(command, shell=True, stdout=outlog, stderr=errlog, bufsize=1)
+            returncode = subprocess.call(command, shell=True, stdout=outlog, stderr=errlog, bufsize=1)
+        return returncode == 0

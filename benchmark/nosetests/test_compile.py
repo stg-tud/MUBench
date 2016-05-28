@@ -3,12 +3,11 @@ from os.path import join, exists
 from shutil import rmtree
 from tempfile import mkdtemp
 
-from nose.tools import assert_equals
+from nose.tools import assert_equals, assert_raises
 
 from benchmark.compile import Compile
+from benchmark.datareader import Continue
 from benchmark.nosetests.test_misuse import TMisuse
-
-
 from benchmark.utils.io import create_file
 
 
@@ -27,7 +26,9 @@ class TestCompile:
     def test_runs_commands(self):
         called_commands = []
 
-        def _call_mock(command: str): called_commands.append(command)
+        def _call_mock(command):
+            called_commands.append(command)
+            return True
 
         uut = Compile(checkout_base_dir=self.test_checkout_dir, outlog=self.outlog, errlog=self.errlog)
         uut._call = _call_mock
@@ -78,3 +79,14 @@ class TestCompile:
 
         assert exists(join(self.test_checkout_dir, "project", "file1.java"))
         assert exists(join(self.test_checkout_dir, "project", "src", "file2.java"))
+
+    def test_continues_on_build_error(self):
+        # noinspection PyUnusedLocal
+        def _call_mock(command): return False
+
+        uut = Compile(checkout_base_dir=self.test_checkout_dir, outlog=self.outlog, errlog=self.errlog)
+        uut._call = _call_mock
+
+        misuse = TMisuse(self.temp_dir, {"build": {"src": "", "commands": ["command"], "classes": ""}})
+
+        assert_raises(Continue, uut.build, misuse)
