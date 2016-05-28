@@ -10,7 +10,7 @@ public class Main {
 	 */
 	public static void main(String[] args) throws Exception {
 		String dirPath = args[0];
-		String resultFilePath = args[1];
+		String resultFilePath = args[2];
 		System.out.println("Running on: " + dirPath);
 		System.out.println("Result  in: " + resultFilePath);
 
