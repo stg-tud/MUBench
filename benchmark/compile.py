@@ -15,6 +15,7 @@ class Compile:
         self.errlog = errlog
 
     def build(self, misuse: Misuse):
+        subprocess_print("Building project... ", end='')
         additional_sources = misuse.additional_compile_sources
         if exists(additional_sources):
             copytree(additional_sources, join(self.checkout_base_dir, misuse.project_name))
@@ -27,8 +28,10 @@ class Compile:
         for command in build_config.commands:
             ok = self._call(command)
             if not ok:
+                print("error in command {}!".format(command))
                 raise Continue
 
+        print_ok()
 
     def _call(self, command: str) -> bool:
         with open(self.outlog, 'a+') as outlog, open(self.errlog, 'a+') as errlog:
