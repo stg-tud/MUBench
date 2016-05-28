@@ -29,12 +29,22 @@ class Detect:
         project_name = misuse.project_name
         checkout_dir = join(self.checkout_base_dir, project_name)
 
+        src_dir = ''
+        classes_dir = ''
+
+        build_config = misuse.build_config
+        if build_config is not None:
+            if build_config.src is not None:
+                src_dir = join(checkout_dir, build_config.src)
+            if build_config.classes is not None:
+                classes_dir = join(checkout_dir, build_config.classes)
+
         with safe_open(join(result_dir, "out.log"), 'w+') as out_log:
             with safe_open(join(result_dir, "error.log"), 'w+') as error_log:
                 try:
                     absolute_misuse_detector_path = Detect.__get_misuse_detector_path(self.detector)
 
-                    detector_args = [checkout_dir, join(result_dir, self.detector_result_file)]
+                    detector_args = [src_dir, classes_dir, join(result_dir, self.detector_result_file)]
                     detector_args.extend(misuse.pattern)
 
                     subprocess_print("Detect : running... ", end='')

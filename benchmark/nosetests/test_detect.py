@@ -45,15 +45,22 @@ class TestDetect:
 
         assert_equals(self.last_invoke[0], "detector.jar")
 
-    def test_passes_project_checkout(self):
-        self.uut.run_detector(TMisuse("project.id", {}))
+    def test_passes_project_src(self):
+        src_path = "src/java/"
+        self.uut.run_detector(TMisuse("project.id", {"build": {"src": src_path}}))
 
-        assert_equals(self.last_invoke[1][0], join(self.checkout_base, "project"))
+        assert_equals(self.last_invoke[1][0], join(self.checkout_base, "project", src_path))
+
+    def test_passes_classes_path(self):
+        classes_path = "target/classes/"
+        self.uut.run_detector(TMisuse("project.id", {"build": {"classes": classes_path}}))
+
+        assert_equals(self.last_invoke[1][1], join(self.checkout_base, "project", classes_path))
 
     def test_passes_findings_files(self):
         self.uut.run_detector(TMisuse("project.id", {}))
 
-        assert_equals(self.last_invoke[1][1], join(self.results_path, "project.id", self.findings_file))
+        assert_equals(self.last_invoke[1][2], join(self.results_path, "project.id", self.findings_file))
 
     def test_invokes_detector_with_patterns(self):
         @property
@@ -66,6 +73,6 @@ class TestDetect:
             TMisuse.pattern = mock_pattern
             self.uut.run_detector(misuse)
 
-            assert_equals(self.last_invoke[1][2:], ["p1", "p2"])
+            assert_equals(self.last_invoke[1][3:], ["p1", "p2"])
         finally:
             TMisuse.pattern = orig_pattern
