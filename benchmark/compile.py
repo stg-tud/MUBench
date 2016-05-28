@@ -1,7 +1,6 @@
 import subprocess
+from distutils.dir_util import copy_tree
 from os.path import join, exists
-
-from shutil import copytree
 
 from benchmark.datareader import Continue
 from benchmark.misuse import Misuse
@@ -18,11 +17,12 @@ class Compile:
         subprocess_print("Building project... ", end='')
         additional_sources = misuse.additional_compile_sources
         if exists(additional_sources):
-            copytree(additional_sources, join(self.checkout_base_dir, misuse.project_name))
+            copy_tree(additional_sources, join(self.checkout_base_dir, misuse.project_name), verbose=0)
 
         build_config = misuse.build_config
 
-        if build_config is None:
+        if build_config is None or build_config.commands is None:
+            print("no commands specified, continuing without compiled sources.")
             return
 
         for command in build_config.commands:

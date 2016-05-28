@@ -60,7 +60,11 @@ class Misuse:
         if build is None:
             return None
 
-        return BuildConfig(build["src"], build["commands"], build["classes"])
+        src = build.get("src")
+        commands = build.get("commands")
+        classes = build.get("classes")
+
+        return BuildConfig(src, commands, classes)
 
     @property
     def additional_compile_sources(self):
