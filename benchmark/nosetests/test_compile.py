@@ -1,3 +1,4 @@
+import os
 from os.path import join, exists
 from shutil import rmtree
 from tempfile import mkdtemp
@@ -18,6 +19,7 @@ class TestCompile:
         self.test_checkout_dir = join(self.temp_dir, "checkouts")
         self.outlog = join(self.temp_dir, "out.log")
         self.errlog = join(self.temp_dir, "err.log")
+        os.chdir(self.temp_dir)
 
     def teardown(self):
         rmtree(self.temp_dir, ignore_errors=True)
