@@ -44,7 +44,10 @@ class Evaluation:
                 if exists(findings_file):
                     findings = yaml.load_all(safe_open(findings_file, 'r'))
 
-                    file_found = Evaluation.__is_file_found(findings, misuse.meta, self.checkout_base_dir, log)
+                    src_prefix = None if misuse.build_config is None else misuse.build_config.src
+
+                    file_found = Evaluation.__is_file_found(findings, misuse.meta, self.checkout_base_dir, src_prefix,
+                                                            log)
                     label_found = Evaluation.__is_label_found(findings, misuse.meta, log)
 
                 if file_found and label_found:
@@ -108,6 +111,7 @@ class Evaluation:
     def __is_file_found(findings: Iterable[Dict[str, str]],
                         data_content: Dict[str, Any],
                         checkout_base_dir: str,
+                        src_prefix: Optional[str],
                         log_stream) -> bool:
 
         for finding in findings:
@@ -118,10 +122,10 @@ class Evaluation:
             if marked_file is None:
                 continue
 
-            normed_finding = normalize_result_misuse_path(marked_file, checkout_base_dir)
+            normed_finding = normalize_result_misuse_path(marked_file, checkout_base_dir, src_prefix)
 
             for misuse_file in data_content["fix"]["files"]:
-                normed_misuse_file = normalize_data_misuse_path(misuse_file["name"])
+                normed_misuse_file = normalize_data_misuse_path(misuse_file["name"], src_prefix)
 
                 print("{}: Comparing found misuse {}".format(normed_misuse_file, normed_finding),
                       file=log_stream)
