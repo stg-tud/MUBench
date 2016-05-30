@@ -46,7 +46,7 @@ class Evaluation:
 
                     src_prefix = None if misuse.build_config is None else misuse.build_config.src
 
-                    file_found = Evaluation.__is_file_found(findings, misuse.meta, self.checkout_base_dir, src_prefix,
+                    file_found = Evaluation.__is_file_found(findings, misuse.meta, join(self.checkout_base_dir, misuse.project_name), src_prefix,
                                                             log)
                     label_found = Evaluation.__is_label_found(findings, misuse.meta, log)
 
@@ -110,7 +110,7 @@ class Evaluation:
     @staticmethod
     def __is_file_found(findings: Iterable[Dict[str, str]],
                         data_content: Dict[str, Any],
-                        checkout_base_dir: str,
+                        checkout_dir: str,
                         src_prefix: Optional[str],
                         log_stream) -> bool:
 
@@ -122,7 +122,7 @@ class Evaluation:
             if marked_file is None:
                 continue
 
-            normed_finding = normalize_result_misuse_path(marked_file, checkout_base_dir, src_prefix)
+            normed_finding = normalize_result_misuse_path(marked_file, checkout_dir, src_prefix)
 
             for misuse_file in data_content["fix"]["files"]:
                 normed_misuse_file = normalize_data_misuse_path(misuse_file["name"], src_prefix)
