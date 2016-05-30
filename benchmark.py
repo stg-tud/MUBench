@@ -62,7 +62,7 @@ class MUBenchmark:
     def evaluate(self) -> None:
         evaluation_handler = Evaluation(self.results_path, self.detector_result_file, self.checkout_dir)
 
-        if self.force_detect:
+        if self.force_detect and exists(self.results_path):
             rmtree(self.results_path)
 
         if not exists(self.results_path):
