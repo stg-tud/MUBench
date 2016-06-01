@@ -71,8 +71,8 @@ class MUBenchmark:
             detector_runner = Detect(self.detector, self.detector_result_file, self.checkout_dir,
                                      self.results_path, self.timeout, self.java_options)
             checkout_handler = Checkout(setup_revisions=True, checkout_parent=True,
-                                        outlog=safe_open(join('checkouts', 'stdout.log'), 'a+'),
-                                        errlog=safe_open(join('checkouts', 'stderr.log'), 'a+'))
+                                        outlog=safe_open(join('checkouts', 'checkout-out.log'), 'a+'),
+                                        errlog=safe_open(join('checkouts', 'checkout-error.log'), 'a+'))
             self.datareader.add(compile_handler.build)
             self.datareader.add(checkout_handler.checkout)
             self.datareader.add(detector_runner.run_detector)
