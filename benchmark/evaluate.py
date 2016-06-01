@@ -32,7 +32,7 @@ class Evaluation:
         errors_occurred = exists(error_log) and isfile(error_log) and getsize(error_log) > 0
 
         if not errors_occurred:
-            with safe_open(join(self.results_path, "_LOGS", "evaluation.log"), 'a+') as log:
+            with safe_open(join(dir_result, "evaluation.log"), 'a+') as log:
                 print("===========================================================", file=log)
 
                 findings_file = join(dir_result, self.detector_result_file)
