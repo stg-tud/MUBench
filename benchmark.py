@@ -63,7 +63,7 @@ class MUBenchmark:
         evaluation_handler = Evaluation(self.results_path, self.detector_result_file, self.checkout_dir)
 
         if self.force_detect and exists(self.results_path):
-            rmtree(self.results_path)
+            rmtree(self.results_path, ignore_errors=True)
 
         if not exists(self.results_path):
             compile_handler = Compile(self.checkout_dir, join(self.checkout_dir, "compile-out.log"),
