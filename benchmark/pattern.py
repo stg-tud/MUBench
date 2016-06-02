@@ -8,6 +8,15 @@ class Pattern:
     def __init__(self, path: str):
         self.path = path
 
+    def __hash__(self):
+        return hash(self.path)
+
+    def __eq__(self, other):
+        return isinstance(other, Pattern) and self.path == other.path
+
+    def __str__(self):
+        return self.path
+
     def is_valid(self) -> bool:
         if not self.path.endswith(".java") or not exists(self.path):
             raise NoPatternFileError("Pattern file is not valid!")

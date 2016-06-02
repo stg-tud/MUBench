@@ -1,16 +1,16 @@
 from os import makedirs
 from os.path import join, exists
+from shutil import rmtree
 from tempfile import mkdtemp
 
-from nose.tools import assert_raises
-from shutil import rmtree
+from nose.tools import assert_raises, assert_equals
 
 from benchmark.pattern import Pattern, NoPatternFileError
 from benchmark.utils.io import create_file
 
 
-# noinspection PyAttributeOutsideInit
 class TestPattern:
+    # noinspection PyAttributeOutsideInit
     def setup(self):
         self.temp_dir = mkdtemp(prefix="mubench-pattern-test_")
         self.orig_dir = join(join(self.temp_dir, "origin"))
@@ -77,3 +77,22 @@ class TestPattern:
         uut = Pattern(self.pattern_file_path)
         uut.duplicate(destination, 5)
         assert exists(join(destination, self.pattern_file_base_name + "4" + self.pattern_file_extension))
+
+    def test_equality(self):
+        assert Pattern("a") == Pattern("a")
+
+    def test_equality_with_other_type(self):
+        Pattern("a") == 1
+
+    def test_no_equality(self):
+        assert Pattern("a") != Pattern("b")
+
+    def test_no_equality_with_other_type(self):
+        Pattern("a") != 1
+
+    def test_to_string_is_path(self):
+        assert_equals("a", str(Pattern("a")))
+
+    def test_hashable(self):
+        path = "a"
+        assert_equals(hash(path), hash(Pattern(path)))
