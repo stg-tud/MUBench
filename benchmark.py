@@ -39,49 +39,55 @@ class MUBenchmark:
 
         self.datareader = DataReader(self.data_path, self.white_list, self.black_list)
 
-    def checkout(self) -> None:
-        checkout_handler = Checkout(setup_revisions=False, checkout_parent=False,
-                                    outlog=safe_open(join('checkouts', 'stdout.log'), 'a+'),
-                                    errlog=safe_open(join('checkouts', 'stderr.log'), 'a+'))
-        self.datareader.add(checkout_handler.checkout)
+    def run_checkout(self) -> None:
+        self._setup_checkout(setup_revisions=False, checkout_parent=False)
+        self.run()
+
+    def run_detect(self) -> None:
+        self._setup_checkout(setup_revisions=True, checkout_parent=True)
+        self._setup_compile()
+        self._setup_detect()
         self.datareader.run()
 
-    def detect(self) -> None:
+    def run_evaluate(self) -> None:
+        if self.force_detect:
+            if exists(self.results_path):
+                def print_error_and_exit(func, path, _):
+                    exit("Couldn't delete directory `{}`! " +
+                         "Please make sure no other applications are using it or delete it manually.".format(path))
+
+                rmtree(self.results_path, onerror=print_error_and_exit)
+
+            self._setup_detect()
+
+        self._setup_eval()
+
+        self.datareader.run()
+
+        self.evaluation_handler.output_results()
+
+    def _setup_compile(self):
         compile_handler = Compile(self.checkout_dir, join(self.checkout_dir, "compile-out.log"),
                                   join(self.checkout_dir, "compile-error.log"))
+        self.datareader.add(compile_handler.build)
+
+    def _setup_checkout(self, setup_revisions: bool, checkout_parent: bool):
+        checkout_handler = Checkout(setup_revisions=setup_revisions, checkout_parent=checkout_parent,
+                                    outlog=safe_open(join('checkouts', 'checkout-out.log'), 'a+'),
+                                    errlog=safe_open(join('checkouts', 'checkout-error.log'), 'a+'))
+        self.datareader.add(checkout_handler.checkout)
+
+    def _setup_detect(self):
         detector_runner = Detect(self.detector, self.detector_result_file, self.checkout_dir, self.results_path,
                                  self.timeout, self.java_options)
-        checkout_handler = Checkout(setup_revisions=True, checkout_parent=True,
-                                    outlog=safe_open(join('checkouts', 'stdout.log'), 'a+'),
-                                    errlog=safe_open(join('checkouts', 'stderr.log'), 'a+'))
-        self.datareader.add(compile_handler.build)
-        self.datareader.add(checkout_handler.checkout)
         self.datareader.add(detector_runner.run_detector)
+
+    def _setup_eval(self):
+        self.evaluation_handler = Evaluation(self.results_path, self.detector_result_file, self.checkout_dir)
+        self.datareader.add(self.evaluation_handler.evaluate)
+
+    def run(self) -> None:
         self.datareader.run()
-
-    def evaluate(self) -> None:
-        evaluation_handler = Evaluation(self.results_path, self.detector_result_file, self.checkout_dir)
-
-        if self.force_detect and exists(self.results_path):
-            rmtree(self.results_path, ignore_errors=True)
-
-        if not exists(self.results_path):
-            compile_handler = Compile(self.checkout_dir, join(self.checkout_dir, "compile-out.log"),
-                                      join(self.checkout_dir, "compile-error.log"))
-            detector_runner = Detect(self.detector, self.detector_result_file, self.checkout_dir,
-                                     self.results_path, self.timeout, self.java_options)
-            checkout_handler = Checkout(setup_revisions=True, checkout_parent=True,
-                                        outlog=safe_open(join('checkouts', 'checkout-out.log'), 'a+'),
-                                        errlog=safe_open(join('checkouts', 'checkout-error.log'), 'a+'))
-            self.datareader.add(compile_handler.build)
-            self.datareader.add(checkout_handler.checkout)
-            self.datareader.add(detector_runner.run_detector)
-
-        self.datareader.add(evaluation_handler.evaluate)
-
-        self.datareader.run()
-
-        evaluation_handler.output_results()
 
 
 def check() -> None:
@@ -119,9 +125,9 @@ benchmark = MUBenchmark(detector=config.detector, white_list=config.white_list, 
 
 if config.subprocess == 'check':
     pass  # prerequisites are always checked before
-if config.subprocess == 'checkout':
-    benchmark.checkout()
-if config.subprocess == 'detect':
-    benchmark.detect()
+if config.subprocess == 'run_checkout':
+    benchmark.run_checkout()
+if config.subprocess == 'run_detect':
+    benchmark.run_detect()
 if config.subprocess == 'eval':
-    benchmark.evaluate()
+    benchmark.run_evaluate()
