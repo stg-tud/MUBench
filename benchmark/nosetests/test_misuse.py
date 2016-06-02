@@ -9,6 +9,7 @@ from nose.tools import assert_equals
 
 from benchmark.misuse import Misuse
 from benchmark.utils.io import safe_write
+from benchmark.pattern import Pattern
 
 
 class TMisuse(Misuse):
@@ -75,29 +76,29 @@ class TestMisuse:
     def test_finds_no_pattern(self):
         uut = Misuse(self.temp_dir)
 
-        assert uut.pattern == set()
+        assert uut.patterns == set()
 
     def test_finds_single_pattern(self):
         uut = Misuse(self.temp_dir)
 
-        pattern_dir = join(self.temp_dir, "pattern")
+        pattern_dir = join(self.temp_dir, "patterns")
         makedirs(pattern_dir)
         pattern_file = join(pattern_dir, "APattern.java")
         self.create_file(pattern_file)
 
-        assert uut.pattern == {pattern_file}
+        assert_equals(uut.patterns, {Pattern(pattern_file)})
 
     def test_finds_multiple_patterns(self):
         uut = Misuse(self.temp_dir)
 
-        pattern_dir = join(self.temp_dir, "pattern")
+        pattern_dir = join(self.temp_dir, "patterns")
         makedirs(pattern_dir)
         pattern1_file = join(pattern_dir, "OnePattern.java")
         self.create_file(pattern1_file)
         pattern2_file = join(pattern_dir, "AnotherPattern.java")
         self.create_file(pattern2_file)
 
-        assert uut.pattern == {pattern1_file, pattern2_file}
+        assert_equals(uut.patterns, {Pattern(pattern1_file), Pattern(pattern2_file)})
 
     def test_equals_by_path(self):
         assert Misuse("foo/bar") == Misuse("foo/bar")

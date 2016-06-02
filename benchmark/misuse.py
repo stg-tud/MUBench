@@ -1,7 +1,10 @@
-import yaml
 from os import listdir
 from os.path import isdir, isfile, join, basename
+
+import yaml
 from typing import Set, List
+
+from benchmark.pattern import Pattern
 
 
 # noinspection PyAttributeOutsideInit
@@ -25,10 +28,10 @@ class Misuse:
         return project_name
 
     @property
-    def pattern(self) -> Set[str]:
-        pattern_path = join(self.path, "pattern")
+    def patterns(self) -> Set[Pattern]:
+        pattern_path = join(self.path, "patterns")
         if isdir(pattern_path):
-            return set([join(pattern_path, file) for file in listdir(pattern_path)])
+            return set([Pattern(join(pattern_path, file)) for file in listdir(pattern_path)])
         else:
             return set()
 

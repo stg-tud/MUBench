@@ -7,9 +7,11 @@ from benchmark.detect import Detect
 from nose.tools import assert_equals
 from benchmark.nosetests.test_misuse import TMisuse
 
+from benchmark.pattern import Pattern
 
-# noinspection PyAttributeOutsideInit
+
 class TestDetect:
+    # noinspection PyAttributeOutsideInit
     def setup(self):
         self.temp_dir = mkdtemp(prefix='mubench-detect-test_')
         self.checkout_base = join(self.temp_dir, "checkout")
@@ -64,15 +66,15 @@ class TestDetect:
 
     def test_invokes_detector_with_patterns(self):
         @property
-        def mock_pattern(self):
-            return ["p1", "p2"]
+        def mock_patterns(self):
+            return [Pattern("p1"), Pattern("p2")]
 
         misuse = TMisuse("project", {})
-        orig_pattern = TMisuse.pattern
+        orig_pattern = TMisuse.patterns
         try:
-            TMisuse.pattern = mock_pattern
+            TMisuse.patterns = mock_patterns
             self.uut.run_detector(misuse)
 
-            assert_equals(self.last_invoke[1][3:], ["p1", "p2"])
+            assert_equals(["p1", "p2"], self.last_invoke[1][3:])
         finally:
-            TMisuse.pattern = orig_pattern
+            TMisuse.patterns = orig_pattern
