@@ -1,44 +1,99 @@
+import os
+import shutil
 import subprocess
 from distutils.dir_util import copy_tree
 from os import makedirs
 from os.path import join, exists
 
+from typing import Set, List
+
 from benchmark.datareader import Continue
 from benchmark.misuse import Misuse
+from benchmark.pattern import Pattern
 from benchmark.utils.printing import subprocess_print, print_ok
 
 
 class Compile:
-    def __init__(self, checkout_base_dir: str, outlog: str, errlog: str):
+    def __init__(self, checkout_base_dir: str, checkout_subdir: str, src_normal: str, classes_normal: str,
+                 src_patterns: str, classes_patterns: str, pattern_frequency: int, outlog: str, errlog: str):
         self.checkout_base_dir = checkout_base_dir
+        self.checkout_subdir = checkout_subdir
+        self.src_normal = src_normal
+        self.classes_normal = classes_normal
+        self.src_patterns = src_patterns
+        self.classes_patterns = classes_patterns
+        self.pattern_frequency = pattern_frequency
         self.outlog = outlog
         self.errlog = errlog
 
     def build(self, misuse: Misuse):
         subprocess_print("Building project... ", end='')
 
+        build_config = misuse.build_config
+        if build_config is None:
+            print("no build configured for this project, continuing without compiled sources.")
+            return
+
         project_dir = join(self.checkout_base_dir, misuse.project_name)
+        checkout_dir = join(project_dir, self.checkout_subdir)
+        build_dir = join(project_dir, "build")
 
         additional_sources = misuse.additional_compile_sources
         if exists(additional_sources):
-            copy_tree(additional_sources, project_dir, verbose=0)
+            copy_tree(additional_sources, checkout_dir, verbose=0)
 
-        build_config = misuse.build_config
+        self._copy(checkout_dir, build_dir)
+        self._build(build_config.commands, build_dir)
+        self._move(join(build_dir, build_config.src), join(project_dir, self.src_normal))
+        self._move(join(build_dir, build_config.classes), join(project_dir, self.classes_normal))
 
-        if build_config is None or build_config.commands is None:
-            print("no commands specified, continuing without compiled sources.")
-            return
+        self._copy(checkout_dir, build_dir)
+        self._build_with_patterns(build_config.commands, build_config.src, build_dir, self.pattern_frequency,
+                                  misuse.patterns)
+        self._move(join(build_dir, build_config.src), join(project_dir, self.src_patterns))
+        self._move(join(build_dir, build_config.classes), join(project_dir, self.classes_patterns))
 
-        for command in build_config.commands:
+        print_ok()
+
+    def _build(self, commands: List[str], project_dir: str):
+        for command in commands:
             ok = self._call(command, project_dir)
             if not ok:
                 print("error in command {}!".format(command))
                 raise Continue
-
-        print_ok()
 
     def _call(self, command: str, cwd: str) -> bool:
         makedirs(cwd, exist_ok=True)
         with open(self.outlog, 'a+') as outlog, open(self.errlog, 'a+') as errlog:
             returncode = subprocess.call(command, shell=True, cwd=cwd, stdout=outlog, stderr=errlog, bufsize=1)
         return returncode == 0
+
+    def _build_with_patterns(self, commands: List[str], src: str, build_dir: str, pattern_frequency: int,
+                             patterns: Set[Pattern]):
+        shutil.rmtree(join(build_dir, src), ignore_errors=True)
+
+        for pattern in patterns:
+            pattern.duplicate(join(build_dir, src), pattern_frequency)
+
+        self._build(commands, build_dir)
+
+    # noinspection PyMethodMayBeStatic
+    def _copy(self, src, dst):
+        shutil.rmtree(dst, ignore_errors=True)
+        shutil.copytree(src, dst)
+
+    # noinspection PyMethodMayBeStatic
+    def _move(self, src, dst):
+        shutil.rmtree(dst, ignore_errors=True)
+
+        # copied from http://stackoverflow.com/a/7420617
+        for src_dir, dirs, files in os.walk(src):
+            dst_dir = src_dir.replace(src, dst, 1)
+            if not os.path.exists(dst_dir):
+                os.makedirs(dst_dir)
+            for file_ in files:
+                src_file = os.path.join(src_dir, file_)
+                dst_file = os.path.join(dst_dir, file_)
+                if os.path.exists(dst_file):
+                    os.remove(dst_file)
+                shutil.move(src_file, dst_dir)

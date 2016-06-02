@@ -35,6 +35,11 @@ class MUBenchmark:
         self.data_path = join(getcwd(), "data")
         self.results_path = realpath(join("results", self.detector))
         self.checkout_dir = realpath("checkouts")
+        self.checkout_subdir = "checkout"
+        self.original_src = "original-src"
+        self.original_classes = "original-classes"
+        self.patterns_src = "patterns-src"
+        self.patterns_classes = "patterns-classes"
         self.detector_result_file = 'findings.yml'
 
         self.datareader = DataReader(self.data_path, self.white_list, self.black_list)
@@ -67,18 +72,23 @@ class MUBenchmark:
         self.evaluation_handler.output_results()
 
     def _setup_compile(self):
-        compile_handler = Compile(self.checkout_dir, join(self.checkout_dir, "compile-out.log"),
+        compile_handler = Compile(self.checkout_dir, self.checkout_subdir,
+                                  self.original_src, self.original_classes,
+                                  self.patterns_src, self.patterns_classes, 20,
+                                  join(self.checkout_dir, "compile-out.log"),
                                   join(self.checkout_dir, "compile-error.log"))
         self.datareader.add(compile_handler.build)
 
     def _setup_checkout(self, setup_revisions: bool, checkout_parent: bool):
         checkout_handler = Checkout(setup_revisions=setup_revisions, checkout_parent=checkout_parent,
+                                    checkout_subdir=self.checkout_subdir,
                                     outlog=safe_open(join('checkouts', 'checkout-out.log'), 'a+'),
                                     errlog=safe_open(join('checkouts', 'checkout-error.log'), 'a+'))
         self.datareader.add(checkout_handler.checkout)
 
     def _setup_detect(self):
-        detector_runner = Detect(self.detector, self.detector_result_file, self.checkout_dir, self.results_path,
+        detector_runner = Detect(self.detector, self.detector_result_file, self.checkout_dir, self.original_src,
+                                 self.original_classes, self.patterns_src, self.patterns_classes, self.results_path,
                                  self.timeout, self.java_options)
         self.datareader.add(detector_runner.run_detector)
 

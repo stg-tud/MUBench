@@ -13,9 +13,10 @@ from benchmark.utils.printing import subprocess_print, print_ok
 
 
 class Checkout:
-    def __init__(self, checkout_parent: bool, setup_revisions: bool, outlog, errlog):
+    def __init__(self, checkout_parent: bool, setup_revisions: bool, checkout_subdir: str, outlog, errlog):
         self.data_path = realpath('data')
         self.checkout_base_dir = realpath('checkouts')
+        self.checkout_subdir = checkout_subdir
         self.checkout_parent = checkout_parent
         self.setup_revisions = setup_revisions
         self.outlog = outlog
@@ -30,7 +31,8 @@ class Checkout:
             revision = self.get_parent(vcs, revision)
 
         project_name = misuse.project_name
-        checkout_dir = join(self.checkout_base_dir, project_name)
+        project_dir = join(self.checkout_base_dir, project_name)
+        checkout_dir = join(project_dir, self.checkout_subdir)
 
         subprocess_print("Fetching {}:{}#{}: ".format(vcs, repository_url, revision), end='')
 
@@ -67,8 +69,8 @@ class Checkout:
                 returncode += subprocess.call(svn_checkout, cwd=checkout_dir, bufsize=1, shell=True,
                                               stdout=self.outlog, stderr=self.errlog)
         elif vcs == 'synthetic':
-            if not reset_only:
-                copy_tree(repository_url, checkout_dir)
+            rmtree(project_dir, ignore_errors=True)
+            copy_tree(repository_url, checkout_dir)
         else:
             print("unknown vcs {}!".format(vcs), flush=True)
             raise ValueError("Unknown version control type: {}".format(vcs))

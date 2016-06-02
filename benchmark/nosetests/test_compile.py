@@ -7,6 +7,7 @@ from nose.tools import assert_equals, assert_raises
 from benchmark.compile import Compile
 from benchmark.datareader import Continue
 from benchmark.nosetests.test_misuse import TMisuse
+from benchmark.pattern import Pattern
 from benchmark.utils.io import create_file
 
 
@@ -19,98 +20,93 @@ class TestCompile:
         self.outlog = join(self.temp_dir, "out.log")
         self.errlog = join(self.temp_dir, "err.log")
 
+        self.call_calls = []
+        self.move_calls = []
+        self.build_with_patterns_calls = []
+        self.copy_calls = []
+
+        def _call_mock(a, b):
+            self.call_calls.append((a, b))
+            return True
+
+        def _move_mock(a, b):
+            self.move_calls.append((a, b))
+
+        def _build_with_patterns_mock(a, b, c, d, e):
+            self.build_with_patterns_calls.append((a, b, c, d, e))
+
+        def _copy_mock(a, b):
+            self.copy_calls.append((a, b))
+
+        self.uut = Compile(self.test_checkout_dir, "checkout", "", "", "", "", 0, self.outlog, self.errlog)
+        self.uut._call = _call_mock
+        self.uut._build_with_patterns = _build_with_patterns_mock
+        self.uut._move = _move_mock
+        self.uut._copy = _copy_mock
+
     def teardown(self):
         rmtree(self.temp_dir, ignore_errors=True)
 
     def test_runs_commands(self):
-        called_commands = []
-
-        def _call_mock(command, cwd):
-            called_commands.append(command)
-            return True
-
-        uut = Compile(checkout_base_dir=self.test_checkout_dir, outlog=self.outlog, errlog=self.errlog)
-        uut._call = _call_mock
-
         misuse = TMisuse(self.misuse_path, {"build": {"src": "", "commands": ["c1", "c2", "c3"], "classes": ""}})
 
-        uut.build(misuse)
+        self.uut.build(misuse)
 
-        assert_equals(["c1", "c2", "c3"], called_commands)
+        assert_equals(["c1", "c2", "c3"], [call[0] for call in self.call_calls])
 
     def test_gives_correct_cwd(self):
-        actual_cwd = []
-
-        def _call_mock(command, cwd):
-            actual_cwd.append(cwd)
-            return True
-
-        uut = Compile(checkout_base_dir=self.test_checkout_dir, outlog=self.outlog, errlog=self.errlog)
-        uut._call = _call_mock
-
         misuse = TMisuse(self.misuse_path, {"build": {"src": "", "commands": ["command"], "classes": ""}})
 
-        uut.build(misuse)
+        self.uut.build(misuse)
 
-        assert_equals(join(self.test_checkout_dir, "project"), actual_cwd[0])
-
-    def test_uses_out_log(self):
-        print_to_out_log = "echo Hallo Echo!"
-        uut = Compile(checkout_base_dir=self.test_checkout_dir, outlog=self.outlog, errlog=self.errlog)
-        misuse = TMisuse(self.misuse_path, {"build": {"src": "", "commands": [print_to_out_log], "classes": ""}})
-
-        uut.build(misuse)
-
-        with open(self.outlog, 'r') as actual_log:
-            content = actual_log.read()
-            assert_equals("Hallo Echo!\n", content)
-
-    def test_uses_err_log(self):
-        print_to_err_log = ">&2 echo Hallo Echo!"
-        uut = Compile(checkout_base_dir=self.test_checkout_dir, outlog=self.outlog, errlog=self.errlog)
-        misuse = TMisuse(self.misuse_path, {"build": {"src": "", "commands": [print_to_err_log], "classes": ""}})
-
-        uut.build(misuse)
-
-        with open(self.errlog, 'r') as actual_log:
-            content = actual_log.read()
-            assert_equals("Hallo Echo!\n", content)
+        assert_equals(join(self.test_checkout_dir, "project", "build"), self.call_calls[0][1])
 
     def test_no_fail_without_build_config(self):
-        uut = Compile(checkout_base_dir=self.test_checkout_dir, outlog=self.outlog, errlog=self.errlog)
         misuse = TMisuse(self.misuse_path)
-        uut.build(misuse)
+        self.uut.build(misuse)
 
     def test_copies_over_build_files(self):
-        test_sources = join(self.temp_dir, "project", "compile")
+        test_sources = join(self.temp_dir, "project", "checkout")
         create_file(join(test_sources, "file1.java"))
         create_file(join(test_sources, "src", "file2.java"))
+        misuse = TMisuse(self.misuse_path, {"build": {"src": "", "commands": ["command"], "classes": ""}})
 
-        uut = Compile(checkout_base_dir=self.test_checkout_dir, outlog=self.outlog, errlog=self.errlog)
+        self.uut.build(misuse)
 
-        misuse = TMisuse(self.misuse_path)
-
-        uut.build(misuse)
-
-        assert exists(join(self.test_checkout_dir, "project", "file1.java"))
-        assert exists(join(self.test_checkout_dir, "project", "src", "file2.java"))
+        assert_equals(join(self.test_checkout_dir, "project", "checkout"), self.copy_calls[0][0])
+        assert_equals(join(self.test_checkout_dir, "project", "build"), self.copy_calls[0][1])
 
     def test_continues_on_build_error(self):
         # noinspection PyUnusedLocal
         def _call_mock(command, cwd): return False
 
-        uut = Compile(checkout_base_dir=self.test_checkout_dir, outlog=self.outlog, errlog=self.errlog)
-        uut._call = _call_mock
-
+        self.uut._call = _call_mock
         misuse = TMisuse(self.misuse_path, {"build": {"src": "", "commands": ["command"], "classes": ""}})
 
-        assert_raises(Continue, uut.build, misuse)
+        assert_raises(Continue, self.uut.build, misuse)
 
-    def test_sets_cwd_for_command(self):
-        create_file = "echo '' > echo.txt"
-        uut = Compile(checkout_base_dir=self.test_checkout_dir, outlog=self.outlog, errlog=self.errlog)
-        misuse = TMisuse(self.misuse_path, {"build": {"src": "", "commands": [create_file], "classes": ""}})
+    def test_builds_with_patterns(self):
+        @property
+        def patterns_mock(self):
+            return [Pattern("a")]
 
-        uut.build(misuse)
+        misuse = TMisuse(self.misuse_path, {"build": {"src": "src", "commands": ["command"], "classes": "classes"}})
 
-        assert exists(join(self.test_checkout_dir, "project", "echo.txt"))
+        orig_patterns = TMisuse.patterns
+        try:
+            TMisuse.patterns = patterns_mock
+
+            self.uut.build(misuse)
+
+            assert_equals(1, len(self.build_with_patterns_calls))
+            actual_args = self.build_with_patterns_calls[0]
+
+            assert_equals(["command"], actual_args[0])
+            assert_equals("src", actual_args[1])
+            assert_equals(join(self.test_checkout_dir, "project", "build"), actual_args[2])
+            assert_equals(0, actual_args[3])
+            assert_equals([Pattern("a")], actual_args[4])
+        finally:
+            TMisuse.patterns = orig_patterns
+
+

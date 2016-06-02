@@ -13,12 +13,20 @@ class Detect:
                  detector: str,
                  detector_result_file: str,
                  checkout_base_dir: str,
+                 src_normal_subdir: str,
+                 classes_normal_subdir: str,
+                 src_patterns_subdir: str,
+                 classes_patterns_subdir: str,
                  results_path: str,
                  timeout: Optional[int],
                  java_options: List[str]):
         self.detector = detector
         self.detector_result_file = detector_result_file
         self.checkout_base_dir = checkout_base_dir
+        self.src_normal_subdir = src_normal_subdir
+        self.classes_normal_subdir = classes_normal_subdir
+        self.src_patterns_subdir = src_patterns_subdir
+        self.classes_patterns_subdir = classes_patterns_subdir
         self.results_path = results_path
         self.timeout = timeout
         self.java_options = ['-' + option for option in java_options]
@@ -27,25 +35,20 @@ class Detect:
         result_dir = join(self.results_path, misuse.name)
 
         project_name = misuse.project_name
-        checkout_dir = join(self.checkout_base_dir, project_name)
-
-        src_dir = ''
-        classes_dir = ''
-
-        build_config = misuse.build_config
-        if build_config is not None:
-            if build_config.src is not None:
-                src_dir = join(checkout_dir, build_config.src)
-            if build_config.classes is not None:
-                classes_dir = join(checkout_dir, build_config.classes)
+        project_dir = join(self.checkout_base_dir, project_name)
 
         with safe_open(join(result_dir, "out.log"), 'w+') as out_log:
             with safe_open(join(result_dir, "error.log"), 'w+') as error_log:
                 try:
                     absolute_misuse_detector_path = Detect.__get_misuse_detector_path(self.detector)
 
-                    detector_args = [src_dir, classes_dir, join(result_dir, self.detector_result_file)]
-                    detector_args.extend([pattern.path for pattern in misuse.patterns])
+                    src_normal = join(project_dir, self.src_normal_subdir)
+                    src_patterns = join(project_dir, self.src_patterns_subdir)
+                    detector_args = [src_normal, src_patterns, join(result_dir, self.detector_result_file)]
+                    if misuse.build_config is not None:
+                        classes_normal = join(project_dir, self.classes_normal_subdir)
+                        classes_patterns = join(project_dir, self.classes_patterns_subdir)
+                        detector_args += [classes_normal, classes_patterns]
 
                     subprocess_print("Detect : running... ", end='')
                     returncode = self._invoke_detector(absolute_misuse_detector_path, detector_args, out_log, error_log)

@@ -32,7 +32,7 @@ class TestCheckout(unittest.TestCase):
         self.test_checkout_dir = join(self.temp_dir, 'checkouts')
         makedirs(self.test_checkout_dir)
 
-        self.uut = Checkout(checkout_parent=False, setup_revisions=False, outlog=None, errlog=None)
+        self.uut = Checkout(checkout_parent=False, setup_revisions=False, checkout_subdir="", outlog=None, errlog=None)
 
     def tearDown(self):
         rmtree(self.temp_dir, ignore_errors=True)
@@ -41,7 +41,7 @@ class TestCheckout(unittest.TestCase):
     def test_checkout_git(self):
         self.create_git_repository()
         git_url = join(self.test_checkout_dir, 'git')
-        Checkout(True, True, None, None).checkout(TMisuse('', self.get_yaml('git', git_url)))
+        Checkout(True, True, "", None, None).checkout(TMisuse('', self.get_yaml('git', git_url)))
         git_repository = join(self.test_checkout_dir, 'git', '.git')
         assert exists(git_repository)
 
@@ -49,13 +49,13 @@ class TestCheckout(unittest.TestCase):
     def test_checkout_svn(self):
         self.create_svn_repository()
         svn_url = join(self.test_checkout_dir, 'svn')
-        Checkout(True, True, None, None).checkout(TMisuse('', self.get_yaml('svn', svn_url, revision='1')))
+        Checkout(True, True, "", None, None).checkout(TMisuse('', self.get_yaml('svn', svn_url, revision='1')))
         svn_repository = join(self.test_checkout_dir, 'svn', '.svn')
         assert exists(svn_repository)
 
     def test_checkout_synthetic(self):
         self.create_synthetic_repository('synthetic-exmpl', 'synthetic.java')
-        Checkout(True, True, None, None).checkout(TMisuse('synthetic-exmpl', self.get_yaml('synthetic')))
+        Checkout(True, True, "", None, None).checkout(TMisuse('synthetic-exmpl', self.get_yaml('synthetic')))
         synthetic_file = join(self.test_checkout_dir, 'synthetic-exmpl', 'synthetic.java')
         assert exists(synthetic_file)
 
