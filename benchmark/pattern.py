@@ -62,9 +62,8 @@ class Pattern:
     def _replace_class_name(self, copied_file: str, i: int) -> None:
         with FileInput(copied_file, inplace=True) as file:
             for line in file:
-                if self.class_name in line:
-                    # FileInput inplace redirects stdout to the file
-                    print(line.replace(self.class_name, self.class_name + str(i)), end='')
+                # FileInput inplace redirects stdout to the file
+                print(line.replace(self.class_name, self.class_name + str(i)), end='')
 
 
 class NoPatternFileError(FileNotFoundError):
