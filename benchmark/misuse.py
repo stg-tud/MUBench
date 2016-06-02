@@ -67,6 +67,9 @@ class Misuse:
         commands = build.get("commands")
         classes = build.get("classes")
 
+        if None in [src, commands, classes]:
+            return None
+
         return BuildConfig(src, commands, classes)
 
     @property
@@ -94,3 +97,15 @@ class BuildConfig:
         self.src = src
         self.commands = commands
         self.classes = classes
+
+    def __eq__(self, other):
+        return isinstance(other, BuildConfig) and \
+               self.src == other.src and \
+               self.commands == other.commands and \
+               self.classes == other.classes
+
+    def __hash__(self):
+        return hash(self.src + "".join(self.commands) + self.classes)
+
+    def __str__(self):
+        return "[src: {}, classes: {}, commands: {}]".format(self.src, self.classes, self.commands)

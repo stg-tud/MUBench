@@ -5,9 +5,9 @@ from os.path import join
 from shutil import rmtree
 from tempfile import mkdtemp
 
-from nose.tools import assert_equals
+from nose.tools import assert_equals, assert_not_equals
 
-from benchmark.misuse import Misuse
+from benchmark.misuse import Misuse, BuildConfig
 from benchmark.utils.io import safe_write
 from benchmark.pattern import Pattern
 
@@ -115,6 +115,10 @@ class TestMisuse:
         assert_equals(["mvn compile"], actual_config.commands)
         assert_equals("target/classes/", actual_config.classes)
 
+    def test_build_config_is_none_if_any_part_is_missing(self):
+        uut = TMisuse("/path/misuse", {"build": {"src": "src/java/", "classes": "target/classes/"}})
+        assert uut.build_config is None
+
     def test_derives_additional_compile_sources_path(self):
         uut = TMisuse("/path/misuse")
         assert_equals(join("/path/misuse", "compile"), uut.additional_compile_sources)
@@ -122,3 +126,27 @@ class TestMisuse:
     @staticmethod
     def create_file(path: str):
         open(path, 'a').close()
+
+
+class TestBuildConfig:
+    def test_to_string(self):
+        assert_equals("[src: a, classes: b, commands: ['echo c', 'echo d']]",
+                      str(BuildConfig("a", ["echo c", "echo d"], "b")))
+
+    def test_equals(self):
+        assert BuildConfig("src", ["command"], "classes") == BuildConfig("src", ["command"], "classes")
+
+    def test_not_equals_src(self):
+        assert BuildConfig("src", ["command"], "classes") != BuildConfig("other", ["command"], "classes")
+
+    def test_not_equals_command(self):
+        assert BuildConfig("src", ["command"], "classes") != BuildConfig("src", ["other"], "classes")
+
+    def test_not_equals_classes(self):
+        assert BuildConfig("src", ["command"], "classes") != BuildConfig("src", ["command"], "other")
+
+    def test_hash_not_equals(self):
+        assert_not_equals(hash(BuildConfig("", [], "")), hash(BuildConfig("a", ["b"], "c")))
+
+    def test_hash_equals(self):
+        assert_equals(hash(BuildConfig("a", ["b"], "c")), hash(BuildConfig("a", ["b"], "c")))

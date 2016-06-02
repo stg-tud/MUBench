@@ -49,13 +49,13 @@ class TestDetect:
 
     def test_passes_project_src(self):
         src_path = "src/java/"
-        self.uut.run_detector(TMisuse("project.id", {"build": {"src": src_path}}))
+        self.uut.run_detector(TMisuse("project.id", {"build": {"src": src_path, "classes": "", "commands": []}}))
 
         assert_equals(self.last_invoke[1][0], join(self.checkout_base, "project", src_path))
 
     def test_passes_classes_path(self):
         classes_path = "target/classes/"
-        self.uut.run_detector(TMisuse("project.id", {"build": {"classes": classes_path}}))
+        self.uut.run_detector(TMisuse("project.id", {"build": {"classes": classes_path, "src": "", "commands": []}}))
 
         assert_equals(self.last_invoke[1][1], join(self.checkout_base, "project", classes_path))
 
