@@ -125,9 +125,9 @@ benchmark = MUBenchmark(detector=config.detector, white_list=config.white_list, 
 
 if config.subprocess == 'check':
     pass  # prerequisites are always checked before
-if config.subprocess == 'run_checkout':
+if config.subprocess == 'checkout':
     benchmark.run_checkout()
-if config.subprocess == 'run_detect':
+if config.subprocess == 'detect':
     benchmark.run_detect()
 if config.subprocess == 'eval':
     benchmark.run_evaluate()
