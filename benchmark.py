@@ -49,8 +49,7 @@ class MUBenchmark:
         self.run()
 
     def run_detect(self) -> None:
-        self._setup_checkout(setup_revisions=True, checkout_parent=True)
-        self._setup_compile()
+
         self._setup_detect()
         self.datareader.run()
 
@@ -87,6 +86,8 @@ class MUBenchmark:
         self.datareader.add(checkout_handler.checkout)
 
     def _setup_detect(self):
+        self._setup_checkout(setup_revisions=True, checkout_parent=True)
+        self._setup_compile()
         detector_runner = Detect(self.detector, self.detector_result_file, self.checkout_dir, self.original_src,
                                  self.original_classes, self.patterns_src, self.patterns_classes, self.results_path,
                                  self.timeout, self.java_options)
