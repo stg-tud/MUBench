@@ -16,6 +16,7 @@ install:
   - sudo apt-get install default-jre
   - sudo pip install nose
   - pip install pyyaml
+  - sudo apt-get install maven
 
 script: 
   - nosetests --with-xunit --xunit-file=shippable/testresults/nosetests.xml
