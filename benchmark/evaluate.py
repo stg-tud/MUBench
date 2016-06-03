@@ -46,8 +46,9 @@ class Evaluation:
 
                     src_prefix = None if misuse.build_config is None else misuse.build_config.src
 
-                    file_found = Evaluation.__is_file_found(findings, misuse.meta, join(self.checkout_base_dir, misuse.project_name), src_prefix,
-                                                            log)
+                    file_found = Evaluation.__is_file_found(findings, misuse.meta,
+                                                            join(self.checkout_base_dir, misuse.project_name),
+                                                            src_prefix, log)
                     label_found = Evaluation.__is_label_found(findings, misuse.meta, log)
 
                 if file_found and label_found:
