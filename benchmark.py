@@ -42,6 +42,8 @@ class MUBenchmark:
         self.patterns_classes = "patterns-classes"
         self.detector_result_file = 'findings.yml'
 
+        self.pattern_frequency = 20
+
         self.datareader = DataReader(self.data_path, self.white_list, self.black_list)
 
     def run_checkout(self) -> None:
@@ -73,7 +75,7 @@ class MUBenchmark:
     def _setup_compile(self):
         compile_handler = Compile(self.checkout_dir, self.checkout_subdir,
                                   self.original_src, self.original_classes,
-                                  self.patterns_src, self.patterns_classes, 20,
+                                  self.patterns_src, self.patterns_classes, self.pattern_frequency,
                                   join(self.checkout_dir, "compile-out.log"),
                                   join(self.checkout_dir, "compile-error.log"))
         self.datareader.add(compile_handler.build)
