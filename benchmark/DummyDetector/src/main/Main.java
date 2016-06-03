@@ -4,13 +4,19 @@ import java.io.File;
 import java.io.PrintStream;
 import java.util.LinkedList;
 
+import de.tu_darmstadt.stg.mubench.cli.ArgParser;
+import de.tu_darmstadt.stg.mubench.cli.DetectorArgs;
+
 public class Main {
 	/**
 	 * @param args
 	 */
 	public static void main(String[] args) throws Exception {
-		String dirPath = args[0];
-		String resultFilePath = args[2];
+		DetectorArgs myArgs = ArgParser.parse(args);
+		
+		String dirPath = myArgs.projectSrcPath;
+		String resultFilePath = myArgs.findingsFile;
+		
 		System.out.println("Running on: " + dirPath);
 		System.out.println("Result  in: " + resultFilePath);
 
