@@ -55,27 +55,68 @@ class TestDetect:
         assert_equals(self.last_invoke[0], "detector.jar")
 
     def test_passes_project_src(self):
-        self.uut.run_detector(TMisuse("project.id", {"build": {"src": "src/java/", "classes": "", "commands": []}}))
+        self.uut.run_detector(TMisuse("project.id", {"build": {"src": "", "classes": "", "commands": []}}))
 
-        assert_equals(self.last_invoke[1][0], join(self.checkout_base, "project", self.src_normal_subdir))
+        self.assert_last_invoke_arg_value_equals(self.uut.key_src_project,
+                                                 join(self.checkout_base, "project", self.src_normal_subdir))
 
-    def test_passes_classes_path(self):
+    def test_passes_project_classes_path(self):
         self.uut.run_detector(
-            TMisuse("project.id", {"build": {"classes": "target/classes/", "src": "", "commands": []}}))
+            TMisuse("project.id", {"build": {"classes": "", "src": "", "commands": []}}))
 
-        assert_equals(self.last_invoke[1][3], join(self.checkout_base, "project", self.classes_normal_subdir))
+        self.assert_last_invoke_arg_value_equals(self.uut.key_classes_project,
+                                                 join(self.checkout_base, "project", self.classes_normal_subdir))
 
     def test_passes_findings_files(self):
         self.uut.run_detector(TMisuse("project.id", {}))
 
-        assert_equals(self.last_invoke[1][2], join(self.results_path, "project.id", self.findings_file))
+        self.assert_last_invoke_arg_value_equals(self.uut.key_findings_file,
+                                                 join(self.results_path, "project.id", self.findings_file))
 
-    def test_invokes_detector_with_patterns_src_dir(self):
-        self.uut.run_detector(TMisuse("project.id", {"build": {"src": "src/java/", "classes": "", "commands": []}}))
+    def test_invokes_detector_without_patterns_paths_without_patterns(self):
+        self.uut.run_detector(TMisuse("project.id", {"build": {"src": "", "classes": "", "commands": []}}))
+        self.assert_arg_not_in_last_invoke(self.uut.key_src_patterns)
+        self.assert_arg_not_in_last_invoke(self.uut.key_classes_patterns)
 
-        assert_equals(self.last_invoke[1][1], join(self.checkout_base, "project", self.src_patterns_subdir))
+    def test_invokes_detector_with_patterns_src_path(self):
+        @property
+        def patterns_mock(detect):
+            return Pattern("a")
+
+        orig_patterns = TMisuse.patterns
+        try:
+            TMisuse.patterns = patterns_mock
+
+            self.uut.run_detector(TMisuse("project.id", {"build": {"src": "", "classes": "", "commands": []}}))
+            self.assert_last_invoke_arg_value_equals(self.uut.key_src_patterns,
+                                                     join(self.checkout_base, "project", self.src_patterns_subdir))
+        finally:
+            TMisuse.patterns = orig_patterns
 
     def test_invokes_detector_with_patterns_class_path(self):
-        self.uut.run_detector(TMisuse("project.id", {"build": {"src": "src/java/", "classes": "", "commands": []}}))
+        @property
+        def patterns_mock(detect):
+            return Pattern("a")
 
-        assert_equals(self.last_invoke[1][4], join(self.checkout_base, "project", self.classes_patterns_subdir))
+        orig_patterns = TMisuse.patterns
+        try:
+            TMisuse.patterns = patterns_mock
+
+            self.uut.run_detector(TMisuse("project.id", {"build": {"src": "", "classes": "", "commands": []}}))
+            self.assert_last_invoke_arg_value_equals(self.uut.key_classes_patterns,
+                                                     join(self.checkout_base, "project", self.classes_patterns_subdir))
+        finally:
+            TMisuse.patterns = orig_patterns
+
+    def assert_last_invoke_arg_value_equals(self, key, value):
+        self.assert_arg_value_equals(self.last_invoke[1], key, value)
+
+    def assert_arg_not_in_last_invoke(self, key):
+        assert key not in self.last_invoke[1]
+
+    @staticmethod
+    def assert_arg_value_equals(args, key, value):
+        assert key in args
+        for i, arg in enumerate(args):
+            if arg is key:
+                assert_equals(args[i + 1], value)
