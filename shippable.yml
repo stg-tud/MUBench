@@ -19,7 +19,8 @@ install:
 
 script: 
   - nosetests --with-xunit --xunit-file=shippable/testresults/nosetests.xml
-  - "./benchmark.py eval dummy-detector --only synthetic"
+  - mvn test -f benchmark/mubench.cli/pom.xml
+  - ./benchmark.py eval dummy-detector --only synthetic
   
 notifications:
   email:
