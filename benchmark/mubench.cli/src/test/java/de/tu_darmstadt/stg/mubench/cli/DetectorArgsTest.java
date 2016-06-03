@@ -8,30 +8,30 @@ public class DetectorArgsTest {
 	@Test
 	public void getProjectSrcPathTest() {
 		DetectorArgs uut = new DetectorArgs("findings.yml", "src", "classes", "psrc", "pclasses");
-		assertEquals("src", uut.getProjectSrcPath());
+		assertEquals("src", uut.projectSrcPath);
 	}
 
 	@Test
 	public void getProjectClassPathTest() {
 		DetectorArgs uut = new DetectorArgs("findings.yml", "src", "classes", "psrc", "pclasses");
-		assertEquals("classes", uut.getProjectClassPath());
+		assertEquals("classes", uut.projectClassPath);
 	}
 
 	@Test
 	public void getPatternsSrcPathTest() {
 		DetectorArgs uut = new DetectorArgs("findings.yml", "src", "classes", "psrc", "pclasses");
-		assertEquals("psrc", uut.getPatternsSrcPath());
+		assertEquals("psrc", uut.patternsSrcPath);
 	}
 
 	@Test
 	public void getPatternsClassPathTest() {
 		DetectorArgs uut = new DetectorArgs("findings.yml", "src", "classes", "psrc", "pclasses");
-		assertEquals("pclasses", uut.getPatternsClassesPath());
+		assertEquals("pclasses", uut.patternsClassPath);
 	}
 
 	@Test
 	public void getFindingsFileTest() {
 		DetectorArgs uut = new DetectorArgs("findings.yml", "src", "classes", "psrc", "pclasses");
-		assertEquals("findings.yml", uut.getFindingsFile());
+		assertEquals("findings.yml", uut.findingsFile);
 	}
 }

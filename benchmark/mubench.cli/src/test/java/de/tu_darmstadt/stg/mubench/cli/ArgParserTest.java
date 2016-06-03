@@ -20,41 +20,41 @@ public class ArgParserTest {
 	public void defaultNull() {
 		String[] empty_args = new String[0];
 		DetectorArgs actual = ArgParser.parse(empty_args);
-		assertNull(actual.getFindingsFile());
-		assertNull(actual.getProjectSrcPath());
-		assertNull(actual.getProjectClassPath());
-		assertNull(actual.getPatternsSrcPath());
-		assertNull(actual.getPatternsClassesPath());		
+		assertNull(actual.findingsFile);
+		assertNull(actual.projectSrcPath);
+		assertNull(actual.projectClassPath);
+		assertNull(actual.patternsSrcPath);
+		assertNull(actual.patternsClassPath);		
 	}
 
 	@Test
 	public void parseFindingsFile() {
 		DetectorArgs actual = ArgParser.parse(testArgs);
-		assertEquals(testFindingsFile, actual.getFindingsFile());
+		assertEquals(testFindingsFile, actual.findingsFile);
 	}
 
 	@Test
 	public void parseProjectSrcPathTest() {
 		DetectorArgs actual = ArgParser.parse(testArgs);
-		assertEquals(testProjectSrcPath, actual.getProjectSrcPath());
+		assertEquals(testProjectSrcPath, actual.projectSrcPath);
 	}
 
 	@Test
 	public void parseProjectClassPathTest() {
 		DetectorArgs actual = ArgParser.parse(testArgs);
-		assertEquals(testProjectClassPath, actual.getProjectClassPath());
+		assertEquals(testProjectClassPath, actual.projectClassPath);
 	}
 
 	@Test
 	public void parsePatternsSrcPathTest() {
 		DetectorArgs actual = ArgParser.parse(testArgs);
-		assertEquals(testPatternsSrcPath, actual.getPatternsSrcPath());
+		assertEquals(testPatternsSrcPath, actual.patternsSrcPath);
 	}
 
 	@Test
 	public void parsePatternsClassPathTest() {
 		DetectorArgs actual = ArgParser.parse(testArgs);
-		assertEquals(testPatternsClassPath, actual.getPatternsClassesPath());
+		assertEquals(testPatternsClassPath, actual.patternsClassPath);
 	}
 	
 	@Test(expected = IllegalArgumentException.class)
