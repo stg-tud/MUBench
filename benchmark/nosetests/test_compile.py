@@ -65,16 +65,16 @@ class TestCompile:
         misuse = TMisuse(self.misuse_path)
         self.uut.build(misuse)
 
-    def test_copies_over_build_files(self):
+    def test_copies_over_src_files(self):
         test_sources = join(self.temp_dir, "project", "checkout")
         create_file(join(test_sources, "file1.java"))
         create_file(join(test_sources, "src", "file2.java"))
-        misuse = TMisuse(self.misuse_path, {"build": {"src": "", "commands": ["command"], "classes": ""}})
+        misuse = TMisuse(self.misuse_path, {"build": {"src": "src", "commands": ["command"], "classes": ""}})
 
         self.uut.build(misuse)
 
-        assert_equals(join(self.test_checkout_dir, "project", "checkout"), self.copy_calls[0][0])
-        assert_equals(join(self.test_checkout_dir, "project", "build"), self.copy_calls[0][1])
+        assert_equals(join(self.test_checkout_dir, "project", "checkout", "src"), self.copy_calls[0][0])
+        assert_equals(join(self.test_checkout_dir, "project", self.uut.src_normal), self.copy_calls[0][1])
 
     def test_continues_on_build_error(self):
         # noinspection PyUnusedLocal

@@ -29,28 +29,37 @@ class Compile:
     def build(self, misuse: Misuse):
         subprocess_print("Building project... ", end='')
 
+        project_dir = join(self.checkout_base_dir, misuse.project_name)
+        checkout_dir = join(project_dir, self.checkout_subdir)
         build_config = misuse.build_config
+
+        # copy project src
+        project_src = checkout_dir if build_config is None else join(checkout_dir, build_config.src)
+        self._copy(project_src, join(project_dir, self.src_normal))
+
+        # copy patterns src
+        for pattern in misuse.patterns:
+            pattern.duplicate(join(project_dir, self.src_patterns), self.pattern_frequency)
+
         if build_config is None:
             print("no build configured for this project, continuing without compiled sources.")
             return
 
-        project_dir = join(self.checkout_base_dir, misuse.project_name)
-        checkout_dir = join(project_dir, self.checkout_subdir)
         build_dir = join(project_dir, "build")
 
         additional_sources = misuse.additional_compile_sources
         if exists(additional_sources):
             copy_tree(additional_sources, checkout_dir, verbose=0)
 
+        # create and move project classes
         self._copy(checkout_dir, build_dir)
         self._build(build_config.commands, build_dir)
-        self._move(join(build_dir, build_config.src), join(project_dir, self.src_normal))
         self._move(join(build_dir, build_config.classes), join(project_dir, self.classes_normal))
 
+        # create and move patterns classes
         self._copy(checkout_dir, build_dir)
         self._build_with_patterns(build_config.commands, build_config.src, build_dir, self.pattern_frequency,
                                   misuse.patterns)
-        self._move(join(build_dir, build_config.src), join(project_dir, self.src_patterns))
         self._move(join(build_dir, build_config.classes), join(project_dir, self.classes_patterns))
 
         print_ok()
