@@ -56,7 +56,7 @@ class MUBenchmark:
         self.datareader.run()
 
     def run_evaluate(self) -> None:
-        if self.force_detect:
+        if self.force_detect or not exists(self.results_path):
             if exists(self.results_path):
                 def print_error_and_exit(func, path, _):
                     exit("Couldn't delete directory `{}`! ".format(path) +
