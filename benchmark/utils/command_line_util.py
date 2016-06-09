@@ -64,7 +64,8 @@ def __add_evaluate_subprocess(available_detectors: List[str], subparsers) -> Non
                                         help="Evaluate detection results. Run `detect` if necessary. Write results to `results/<detector>/Results.txt`." +
                                              "Run `eval -h` to see a list of available detectors.")  # type: ArgumentParser
     __setup_detector_running_subprocess(available_detectors, eval_parser)
-    eval_parser.add_argument('--force-detect', dest='force_detect', action='store_true', default=False)
+    eval_parser.add_argument('--force-detect', dest='force_detect', action='store_true', default=False,
+                             help="force a new `detect` run, deleting the previous result")
 
 
 def __setup_detector_running_subprocess(available_detectors: List[str], subprocess_parser: ArgumentParser) -> None:
@@ -78,7 +79,7 @@ def __setup_detector_running_subprocess(available_detectors: List[str], subproce
                                    help="ignore all misuses whose names contain any of the given strings")
 
     subprocess_parser.add_argument('--timeout', type=int, default=None, metavar='s',
-                                   help="abort detection of a misuse after the provided number of seconds (if it needs to be run) and pretend the detector failed to find anything")
+                                   help="abort detection of a misuse after the provided number of seconds (if it needs to be run) and skip the misuse")
 
     subprocess_parser.add_argument('--java-options', metavar='option', nargs='+', dest='java_options', default=[],
-                                   help="will be passed to the java subprocess running the detector (example: `--java-options Xmx6144M` will run `java -Xmx6144M`")
+                                   help="will be passed to the java subprocess running the detector (example: `--java-options Xmx6144M` will run `java -Xmx6144M`)")
