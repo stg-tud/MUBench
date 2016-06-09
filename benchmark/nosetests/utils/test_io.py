@@ -3,7 +3,7 @@ from os.path import join, dirname, exists, isfile
 from shutil import rmtree
 from tempfile import mkdtemp
 
-from benchmark.utils.io import create_file, create_file_path, safe_open, safe_write
+from benchmark.utils.io import create_file, create_file_path, safe_open, safe_write, remove_tree, copy_tree
 
 
 # noinspection PyAttributeOutsideInit
@@ -13,7 +13,7 @@ class TestIo:
         self.test_file = join(self.temp_dir, 'some-subdirectory', 'some-file.txt')
 
     def teardown(self):
-        rmtree(self.temp_dir)
+        rmtree(self.temp_dir, ignore_errors=True)
 
     def test_creates_file(self):
         makedirs(dirname(self.test_file))
@@ -33,3 +33,27 @@ class TestIo:
         safe_write(some_content, self.test_file, append=False)
         with open(self.test_file) as actual_file:
             assert actual_file.read() == some_content + '\n'
+
+    def test_removes_folder_completely(self):
+        create_file(join(self.temp_dir, "dir1", "dir2", "file1"))
+        create_file(join(self.temp_dir, "dir1", "file2"))
+        create_file(join(self.temp_dir, "file3"))
+
+        remove_tree(self.temp_dir)
+
+        assert not exists(self.temp_dir)
+
+    def test_copies_tree(self):
+        file1 = join("dir1", "dir2", "file1")
+        file2 = join("dir1", "file2")
+        file3 = join("file3")
+        create_file(join(self.temp_dir, file1))
+        create_file(join(self.temp_dir, file2))
+        create_file(join(self.temp_dir, file3))
+
+        dst = join(self.temp_dir, "new_dir")
+        copy_tree(self.temp_dir, dst)
+
+        assert exists(join(dst, file1))
+        assert exists(join(dst, file2))
+        assert exists(join(dst, file3))

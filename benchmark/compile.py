@@ -1,7 +1,6 @@
 import os
 import shutil
 import subprocess
-from distutils.dir_util import copy_tree
 from os import makedirs
 from os.path import join, exists
 
@@ -10,6 +9,7 @@ from typing import Set, List
 from benchmark.datareader import Continue
 from benchmark.misuse import Misuse
 from benchmark.pattern import Pattern
+from benchmark.utils.io import remove_tree, copy_tree
 from benchmark.utils.printing import subprocess_print, print_ok
 
 
@@ -49,7 +49,7 @@ class Compile:
 
         additional_sources = misuse.additional_compile_sources
         if exists(additional_sources):
-            copy_tree(additional_sources, checkout_dir, verbose=0)
+            copy_tree(additional_sources, checkout_dir)
 
         # create and move project classes
         self._copy(checkout_dir, build_dir)
@@ -88,8 +88,8 @@ class Compile:
 
     # noinspection PyMethodMayBeStatic
     def _copy(self, src, dst):
-        shutil.rmtree(dst, ignore_errors=True)
-        shutil.copytree(src, dst)
+        remove_tree(dst)
+        copy_tree(src, dst)
 
     # noinspection PyMethodMayBeStatic
     def _move(self, src, dst):
