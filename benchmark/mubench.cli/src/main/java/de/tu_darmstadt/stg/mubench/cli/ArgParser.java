@@ -39,6 +39,13 @@ public class ArgParser {
 			}
 		}
 
+		System.out.println("FindingsFile : " + findingsFile);
+		System.out.println("ProjectSrcPath : " + projectSrcPath);
+		System.out.println("ProjectClassPath : " + projectClassPath);
+		System.out.println("PatternsSrcPath : " + patternsSrcPath);
+		System.out.println("PatternsClassPath : " + patternsClassPath);
+		
+		
 		return new DetectorArgs(findingsFile, projectSrcPath, projectClassPath, patternsSrcPath, patternsClassPath);
 	}
 }
