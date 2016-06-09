@@ -59,8 +59,8 @@ class MUBenchmark:
         if self.force_detect:
             if exists(self.results_path):
                 def print_error_and_exit(func, path, _):
-                    exit("Couldn't delete directory `{}`! " +
-                         "Please make sure no other applications are using it or delete it manually.".format(path))
+                    exit("Couldn't delete directory `{}`! ".format(path) +
+                         "Please make sure no other applications are using it or delete it manually.")
 
                 rmtree(self.results_path, onerror=print_error_and_exit)
 
