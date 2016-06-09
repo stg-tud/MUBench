@@ -10,6 +10,23 @@
 	<name>mubench.cli</name>
 	<url>https://github.com/stg-tud/MUBench</url>
 
+	<distributionManagement>
+		<repository>
+			<id>stg-eko</id>
+			<name>Eko Releases</name>
+			<url>http://vm16.rbg.informatik.tu-darmstadt.de/nexus/repository/maven-releases</url>
+		</repository>
+		<snapshotRepository>
+			<id>stg-eko</id>
+			<name>Eko Snapshot</name>
+			<url>http://vm16.rbg.informatik.tu-darmstadt.de/nexus/repository/maven-snapshots</url>
+		</snapshotRepository>
+	</distributionManagement>
+	
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
+
 	<build>
 		<plugins>
 			<plugin>
