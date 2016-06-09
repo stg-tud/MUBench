@@ -1,6 +1,9 @@
+from enum import Enum
 from os import listdir
 from os.path import join
-from typing import List, Any, Callable
+
+from typing import List, Callable
+
 from benchmark.misuse import Misuse
 
 
@@ -14,22 +17,18 @@ class DataReader:
     def add(self, function: Callable):
         self.functions.append(function)
 
-    def run(self) -> List[Any]:
+    def run(self) -> None:
         misuses = self._get_misuses()
-        
-        result = []
+
         for i, misuse in enumerate(misuses, start=1):
             print("Misuse '{}' ({}/{}) > ".format(misuse, i, len(misuses)), flush=True)
 
             for function in self.functions:
-                try:
-                    function_out = function(misuse)
-                    if function_out is not None:
-                        result.append(function_out)
-                except Continue:
+                function_out = function(misuse)
+                if function_out is DataReader.Result.skip:
+                    continue
+                if function_out is DataReader.Result.exit:
                     break
-
-        return result
 
     def _get_misuses(self):
         candidates = [join(self.data_path, file) for file in sorted(listdir(self.data_path))]
@@ -42,7 +41,7 @@ class DataReader:
         blacklisted = any([black_listed in file for black_listed in self.black_list])
         return not whitelisted or blacklisted
 
-
-class Continue(Exception):
-    def __init__(self):
-        super(Continue, self).__init__()
+    class Result(Enum):
+        ok = 0
+        skip = 1
+        exit = 2

@@ -6,7 +6,7 @@ from os.path import join, exists
 
 from typing import Set, List
 
-from benchmark.datareader import Continue
+from benchmark.datareader import DataReader
 from benchmark.misuse import Misuse
 from benchmark.pattern import Pattern
 from benchmark.utils.io import remove_tree, copy_tree
@@ -43,7 +43,7 @@ class Compile:
 
         if build_config is None:
             print("no build configured for this project, continuing without compiled sources.")
-            return
+            return DataReader.Result.ok
 
         build_dir = join(project_dir, "build")
 
@@ -53,23 +53,32 @@ class Compile:
 
         # create and move project classes
         self._copy(checkout_dir, build_dir)
-        self._build(build_config.commands, build_dir)
+        build_ok = self._build(build_config.commands, build_dir)
+        if not build_ok:
+            print("error building project!")
+            return DataReader.Result.skip
+
         self._move(join(build_dir, build_config.classes), join(project_dir, self.classes_normal))
 
         # create and move patterns classes
         self._copy(checkout_dir, build_dir)
-        self._build_with_patterns(build_config.commands, build_config.src, build_dir, self.pattern_frequency,
-                                  misuse.patterns)
+        build_ok = self._build_with_patterns(build_config.commands, build_config.src, build_dir, self.pattern_frequency,
+                                             misuse.patterns)
+        if not build_ok:
+            print("error building patterns!")
+            return DataReader.Result.skip
+
         self._move(join(build_dir, build_config.classes), join(project_dir, self.classes_patterns))
 
         print_ok()
+        return DataReader.Result.ok
 
-    def _build(self, commands: List[str], project_dir: str):
+    def _build(self, commands: List[str], project_dir: str) -> bool:
         for command in commands:
             ok = self._call(command, project_dir)
             if not ok:
-                print("error in command {}!".format(command))
-                raise Continue
+                return False
+        return True
 
     def _call(self, command: str, cwd: str) -> bool:
         makedirs(cwd, exist_ok=True)
@@ -78,13 +87,13 @@ class Compile:
         return returncode == 0
 
     def _build_with_patterns(self, commands: List[str], src: str, build_dir: str, pattern_frequency: int,
-                             patterns: Set[Pattern]):
+                             patterns: Set[Pattern]) -> bool:
         shutil.rmtree(join(build_dir, src), ignore_errors=True)
 
         for pattern in patterns:
             pattern.duplicate(join(build_dir, src), pattern_frequency)
 
-        self._build(commands, build_dir)
+        return self._build(commands, build_dir)
 
     # noinspection PyMethodMayBeStatic
     def _copy(self, src, dst):

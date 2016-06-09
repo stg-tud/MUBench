@@ -7,7 +7,7 @@ from shutil import rmtree
 
 from typing import Union
 
-from benchmark import datareader
+from benchmark.datareader import DataReader
 from benchmark.misuse import Misuse
 from benchmark.utils.printing import subprocess_print, print_ok
 
@@ -73,13 +73,14 @@ class Checkout:
             copy_tree(repository_url, checkout_dir)
         else:
             print("unknown vcs {}!".format(vcs), flush=True)
-            raise ValueError("Unknown version control type: {}".format(vcs))
+            return DataReader.Result.skip
 
         if returncode == 0:
             print_ok()
+            return DataReader.Result.ok
         else:
             print("error! (consider .log files in checkout subfolder for more detail)", flush=True)
-            raise datareader.Continue
+            raise DataReader.Result.skip
 
     @staticmethod
     def get_parent(vcs: str, revision: Union[int, str]) -> Union[str, int]:

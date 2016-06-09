@@ -3,6 +3,7 @@ from os.path import join, realpath
 
 from typing import Optional, List
 
+from benchmark.datareader import DataReader
 from benchmark.misuse import Misuse
 from benchmark.utils.io import safe_open, safe_write
 from benchmark.utils.printing import subprocess_print, print_ok
@@ -70,13 +71,15 @@ class Detect:
 
                     if returncode == 0:
                         print_ok()
+                        return DataReader.Result.ok
                     else:
                         print("Detector encountered an error! Logs can be found in the results folder.")
+                        return DataReader.Result.skip
 
                 except subprocess.TimeoutExpired:
                     print("timeout!", flush=True)
                     safe_write("Timeout: {}".format(misuse.name), error_log, append=True)
-                    return
+                    return DataReader.Result.skip
 
     def _invoke_detector(self, absolute_misuse_detector_path: str, detector_args: List[str], out_log, error_log):
         return subprocess.call(["java"] + self.java_options + ["-jar", absolute_misuse_detector_path] + detector_args,

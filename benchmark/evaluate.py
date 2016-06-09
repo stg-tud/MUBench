@@ -4,6 +4,7 @@ from os.path import join
 import yaml
 from typing import Dict, Tuple, Optional, Any, Iterable
 
+from benchmark.datareader import DataReader
 from benchmark.misuse import Misuse
 from benchmark.utils.data_util import normalize_result_misuse_path, normalize_data_misuse_path
 from benchmark.utils.dotgraph_util import get_labels
@@ -54,14 +55,15 @@ class Evaluation:
                 if file_found and label_found:
                     print("potential hit", flush=True)
                     self.results.append((misuse.name, 1))
-                    return
+                    return DataReader.Result.ok
                 else:
                     print("no hit", flush=True)
                     self.results.append((misuse.name, 0))
-                    return
+                    return DataReader.Result.ok
 
         print("ignored (no available findings)", flush=True)
         self.results.append((misuse.name, None))
+        return DataReader.Result.ok
 
     def output_results(self) -> None:
         if not self.results:

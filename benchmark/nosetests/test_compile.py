@@ -1,11 +1,11 @@
-from os.path import join, exists
+from os.path import join
 from shutil import rmtree
 from tempfile import mkdtemp
 
 from nose.tools import assert_equals, assert_raises
 
 from benchmark.compile import Compile
-from benchmark.datareader import Continue
+from benchmark.datareader import DataReader
 from benchmark.nosetests.test_misuse import TMisuse
 from benchmark.pattern import Pattern
 from benchmark.utils.io import create_file
@@ -83,7 +83,7 @@ class TestCompile:
         self.uut._call = _call_mock
         misuse = TMisuse(self.misuse_path, {"build": {"src": "", "commands": ["command"], "classes": ""}})
 
-        assert_raises(Continue, self.uut.build, misuse)
+        assert_equals(DataReader.Result.skip, self.uut.build(misuse))
 
     def test_builds_with_patterns(self):
         @property

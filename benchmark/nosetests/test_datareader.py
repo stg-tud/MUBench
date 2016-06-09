@@ -47,13 +47,6 @@ class TestDataReader:
         self.uut.run()
         assert values_used == self.data
 
-    def test_return_values(self):
-        def return_values(misuse): return misuse.path
-
-        self.uut.add(return_values)
-        actual = set(self.uut.run())
-        assert_equals(self.data, actual)
-
     def test_black_list(self):
         def save_values(misuse): values_used.add(misuse)
 
