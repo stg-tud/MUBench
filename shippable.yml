@@ -16,6 +16,7 @@ install:
   - sudo apt-get install default-jre
   - sudo pip install nose
   - pip install pyyaml
+  - pip install request
   - sudo apt-get install maven
 
 script: 
