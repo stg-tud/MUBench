@@ -5,8 +5,10 @@ from tempfile import mkdtemp
 
 import yaml
 from nose.tools import assert_equals
+from typing import Set
 
-from benchmark.datareader import DataReader
+from benchmark.datareader import DataReader, DataReaderSubprocess
+from benchmark.misuse import Misuse
 from benchmark.utils.io import safe_write
 
 
@@ -32,42 +34,51 @@ class TestDataReader:
         rmtree(self.temp_dir, ignore_errors=True)
 
     def test_finds_all_files(self):
-        def save_values(misuse): values_used.append(misuse)
-
-        values_used = []
-        self.uut.add(save_values)
+        subprocess = SavePaths()
+        self.uut.add(subprocess)
         self.uut.run()
-        assert len(values_used) == len(self.data)
+        assert_equals(len(self.data), len(subprocess.values))
 
     def test_correct_values_passed(self):
-        def save_values(misuse): values_used.add(misuse.path)
-
-        values_used = set()
-        self.uut.add(save_values)
+        subprocess = SavePaths()
+        self.uut.add(subprocess)
         self.uut.run()
-        assert values_used == self.data
+        assert_equals(self.data, subprocess.values)
 
     def test_black_list(self):
-        def save_values(misuse): values_used.add(misuse)
-
+        subprocess = SavePaths()
         self.uut = DataReader(self.data_path, [""], [""])
 
-        values_used = set()
-        self.uut.add(save_values)
+        self.uut.add(subprocess)
         self.uut.run()
 
-        assert not values_used
+        assert not subprocess.values
 
     def test_white_list(self):
-        def save_values(misuse): values_used.add(misuse)
+        subprocess = SavePaths()
 
         self.uut = DataReader(self.data_path, [], [])
 
-        values_used = set()
-        self.uut.add(save_values)
+        self.uut.add(subprocess)
         self.uut.run()
 
-        assert not values_used
+        assert not subprocess.values
+
+    def test_setup_called_correctly(self):
+        subprocess = SavePaths()
+
+        self.uut.add(subprocess)
+        self.uut.run()
+
+        assert subprocess.setup_was_called_correctly
+
+    def test_teardown_called_correctly(self):
+        subprocess = SavePaths()
+
+        self.uut.add(subprocess)
+        self.uut.run()
+
+        assert subprocess.teardown_was_called_correctly
 
     def __get_git_yaml(self):
         repository = {'url': 'git', 'type': 'git'}
@@ -98,3 +109,21 @@ class TestDataReader:
         file = join(dir, "meta.yml")
         safe_write(yaml.dump(content), file, append=False)
         self.data.add(dir)
+
+
+class SavePaths(DataReaderSubprocess):
+    def __init__(self):
+        self.setup_was_called_correctly = False
+        self.teardown_was_called_correctly = False
+        self.values = set()  # type: Set[Misuse]
+
+    def setup(self):
+        if not self.values:
+            self.setup_was_called_correctly = True
+
+    def run(self, misuse: Misuse) -> DataReaderSubprocess.Answer:
+        self.values.add(misuse.path)
+
+    def teardown(self):
+        if self.values:
+            self.teardown_was_called_correctly = True

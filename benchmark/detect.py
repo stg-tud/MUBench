@@ -3,13 +3,13 @@ from os.path import join, realpath
 
 from typing import Optional, List
 
-from benchmark.datareader import DataReader
+from benchmark.datareader import DataReaderSubprocess
 from benchmark.misuse import Misuse
 from benchmark.utils.io import safe_open, safe_write
 from benchmark.utils.printing import subprocess_print, print_ok
 
 
-class Detect:
+class Detect(DataReaderSubprocess):
     def __init__(self,
                  detector: str,
                  detector_result_file: str,
@@ -38,7 +38,7 @@ class Detect:
         self.key_classes_project = "classpath"
         self.key_classes_patterns = "classpath_patterns"
 
-    def run_detector(self, misuse: Misuse) -> None:
+    def run(self, misuse: Misuse) -> None:
         result_dir = join(self.results_path, misuse.name)
 
         project_name = misuse.project_name
@@ -71,15 +71,15 @@ class Detect:
 
                     if returncode == 0:
                         print_ok()
-                        return DataReader.Result.ok
+                        return DataReaderSubprocess.Answer.ok
                     else:
                         print("Detector encountered an error! Logs can be found in the results folder.")
-                        return DataReader.Result.skip
+                        return DataReaderSubprocess.Answer.skip
 
                 except subprocess.TimeoutExpired:
                     print("timeout!", flush=True)
                     safe_write("Timeout: {}".format(misuse.name), error_log, append=True)
-                    return DataReader.Result.skip
+                    return DataReaderSubprocess.Answer.skip
 
     def _invoke_detector(self, absolute_misuse_detector_path: str, detector_args: List[str], out_log, error_log):
         return subprocess.call(["java"] + self.java_options + ["-jar", absolute_misuse_detector_path] + detector_args,

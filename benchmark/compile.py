@@ -6,14 +6,14 @@ from os.path import join, exists
 
 from typing import Set, List
 
-from benchmark.datareader import DataReader
+from benchmark.datareader import DataReaderSubprocess
 from benchmark.misuse import Misuse
 from benchmark.pattern import Pattern
 from benchmark.utils.io import remove_tree, copy_tree
 from benchmark.utils.printing import subprocess_print, print_ok
 
 
-class Compile:
+class Compile(DataReaderSubprocess):
     def __init__(self, checkout_base_dir: str, checkout_subdir: str, src_normal: str, classes_normal: str,
                  src_patterns: str, classes_patterns: str, pattern_frequency: int, outlog: str, errlog: str):
         self.checkout_base_dir = checkout_base_dir
@@ -26,7 +26,7 @@ class Compile:
         self.outlog = outlog
         self.errlog = errlog
 
-    def build(self, misuse: Misuse):
+    def run(self, misuse: Misuse):
         subprocess_print("Building project... ", end='')
 
         project_dir = join(self.checkout_base_dir, misuse.project_name)
@@ -43,7 +43,7 @@ class Compile:
 
         if build_config is None:
             print("no build configured for this project, continuing without compiled sources.")
-            return DataReader.Result.ok
+            return DataReaderSubprocess.Answer.ok
 
         build_dir = join(project_dir, "build")
 
@@ -56,7 +56,7 @@ class Compile:
         build_ok = self._build(build_config.commands, build_dir)
         if not build_ok:
             print("error building project!")
-            return DataReader.Result.skip
+            return DataReaderSubprocess.Answer.skip
 
         self._move(join(build_dir, build_config.classes), join(project_dir, self.classes_normal))
 
@@ -66,12 +66,12 @@ class Compile:
                                              misuse.patterns)
         if not build_ok:
             print("error building patterns!")
-            return DataReader.Result.skip
+            return DataReaderSubprocess.Answer.skip
 
         self._move(join(build_dir, build_config.classes), join(project_dir, self.classes_patterns))
 
         print_ok()
-        return DataReader.Result.ok
+        return DataReaderSubprocess.Answer.ok
 
     def _build(self, commands: List[str], project_dir: str) -> bool:
         for command in commands:

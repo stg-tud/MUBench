@@ -10,6 +10,7 @@ from nose.tools import assert_raises
 
 from benchmark.nosetests.test_misuse import TMisuse
 from benchmark.checkout import Checkout
+from benchmark.nosetests.test_utils.subprocess_util import run_on_misuse
 from benchmark.utils.io import create_file
 
 GIT = 'git'
@@ -41,7 +42,7 @@ class TestCheckout(unittest.TestCase):
     def test_checkout_git(self):
         self.create_git_repository()
         git_url = join(self.test_checkout_dir, 'git')
-        Checkout(True, True, "", None, None).checkout(TMisuse('', self.get_yaml('git', git_url)))
+        run_on_misuse(Checkout(True, True, "", None, None), TMisuse('', self.get_yaml('git', git_url)))
         git_repository = join(self.test_checkout_dir, 'git', '.git')
         assert exists(git_repository)
 
@@ -49,13 +50,13 @@ class TestCheckout(unittest.TestCase):
     def test_checkout_svn(self):
         self.create_svn_repository()
         svn_url = join(self.test_checkout_dir, 'svn')
-        Checkout(True, True, "", None, None).checkout(TMisuse('', self.get_yaml('svn', svn_url, revision='1')))
+        run_on_misuse(Checkout(True, True, "", None, None), TMisuse('', self.get_yaml('svn', svn_url, revision='1')))
         svn_repository = join(self.test_checkout_dir, 'svn', '.svn')
         assert exists(svn_repository)
 
     def test_checkout_synthetic(self):
         self.create_synthetic_repository('synthetic-exmpl', 'synthetic.java')
-        Checkout(True, True, "", None, None).checkout(TMisuse('synthetic-exmpl', self.get_yaml('synthetic')))
+        run_on_misuse(Checkout(True, True, "", None, None), TMisuse('synthetic-exmpl', self.get_yaml('synthetic')))
         synthetic_file = join(self.test_checkout_dir, 'synthetic-exmpl', 'synthetic.java')
         assert exists(synthetic_file)
 

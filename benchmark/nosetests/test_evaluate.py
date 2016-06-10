@@ -7,6 +7,7 @@ from nose.tools import assert_equals
 from benchmark.nosetests.test_misuse import TMisuse
 
 from benchmark.evaluate import Evaluation
+from benchmark.nosetests.test_utils.subprocess_util import run_on_misuse
 from benchmark.utils.io import safe_write
 
 
@@ -30,7 +31,7 @@ class TestEvaluation:
 
     def test_compares_files_correctly(self):
         self.create_result('svn', 'file: some-class.java')
-        self.uut.evaluate(TMisuse('svn', {'fix': {'files': [{'name': 'some-class.java'}]}}))
+        run_on_misuse(self.uut, TMisuse('svn', {'fix': {'files': [{'name': 'some-class.java'}]}}))
         actual_result = self.uut.results[0]
         assert_equals(('svn', 1), actual_result)
 
@@ -48,13 +49,13 @@ class TestEvaluation:
                            '---\n' +
                            'graph: >\n' +
                            '  digraph graph {}\n')
-        self.uut.evaluate(TMisuse('git', {'misuse': {'usage': 'graph: >\n' +
-                                                              '  digraph some-method {\n' +
-                                                              '    0 [label="StrBuilder#this#getNullText"]\n' +
-                                                              '    1 [label="String#str#length"]\n' +
-                                                              '    0 -> 1\n' +
-                                                              '  }\n'},
-                                          'fix': {'revision': '', 'files': [{'name': 'some-class.java'}]}}))
+        run_on_misuse(self.uut, TMisuse('git', {'misuse': {'usage': 'graph: >\n' +
+                                                                    '  digraph some-method {\n' +
+                                                                    '    0 [label="StrBuilder#this#getNullText"]\n' +
+                                                                    '    1 [label="String#str#length"]\n' +
+                                                                    '    0 -> 1\n' +
+                                                                    '  }\n'},
+                                                'fix': {'revision': '', 'files': [{'name': 'some-class.java'}]}}))
         actual_result = self.uut.results[0]
         assert_equals(('git', 1), actual_result)
 

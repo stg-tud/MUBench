@@ -2,11 +2,12 @@ from os.path import join
 from shutil import rmtree
 from tempfile import mkdtemp
 
-from nose.tools import assert_equals, assert_raises
+from nose.tools import assert_equals
 
 from benchmark.compile import Compile
-from benchmark.datareader import DataReader
+from benchmark.datareader import DataReaderSubprocess
 from benchmark.nosetests.test_misuse import TMisuse
+from benchmark.nosetests.test_utils.subprocess_util import run_on_misuse
 from benchmark.pattern import Pattern
 from benchmark.utils.io import create_file
 
@@ -50,20 +51,20 @@ class TestCompile:
     def test_runs_commands(self):
         misuse = TMisuse(self.misuse_path, {"build": {"src": "", "commands": ["c1", "c2", "c3"], "classes": ""}})
 
-        self.uut.build(misuse)
+        run_on_misuse(self.uut, misuse)
 
         assert_equals(["c1", "c2", "c3"], [call[0] for call in self.call_calls])
 
     def test_gives_correct_cwd(self):
         misuse = TMisuse(self.misuse_path, {"build": {"src": "", "commands": ["command"], "classes": ""}})
 
-        self.uut.build(misuse)
+        run_on_misuse(self.uut, misuse)
 
         assert_equals(join(self.test_checkout_dir, "project", "build"), self.call_calls[0][1])
 
     def test_no_fail_without_build_config(self):
         misuse = TMisuse(self.misuse_path)
-        self.uut.build(misuse)
+        run_on_misuse(self.uut, misuse)
 
     def test_copies_over_src_files(self):
         test_sources = join(self.temp_dir, "project", "checkout")
@@ -71,7 +72,7 @@ class TestCompile:
         create_file(join(test_sources, "src", "file2.java"))
         misuse = TMisuse(self.misuse_path, {"build": {"src": "src", "commands": ["command"], "classes": ""}})
 
-        self.uut.build(misuse)
+        run_on_misuse(self.uut, misuse)
 
         assert_equals(join(self.test_checkout_dir, "project", "checkout", "src"), self.copy_calls[0][0])
         assert_equals(join(self.test_checkout_dir, "project", self.uut.src_normal), self.copy_calls[0][1])
@@ -83,7 +84,7 @@ class TestCompile:
         self.uut._call = _call_mock
         misuse = TMisuse(self.misuse_path, {"build": {"src": "", "commands": ["command"], "classes": ""}})
 
-        assert_equals(DataReader.Result.skip, self.uut.build(misuse))
+        assert_equals(DataReaderSubprocess.Answer.skip, run_on_misuse(self.uut, misuse))
 
     def test_builds_with_patterns(self):
         @property
@@ -96,7 +97,7 @@ class TestCompile:
         try:
             TMisuse.patterns = patterns_mock
 
-            self.uut.build(misuse)
+            run_on_misuse(self.uut, misuse)
 
             assert_equals(1, len(self.build_with_patterns_calls))
             actual_args = self.build_with_patterns_calls[0]

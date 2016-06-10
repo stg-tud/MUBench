@@ -4,7 +4,7 @@ from os.path import join
 import yaml
 from typing import Dict, Tuple, Optional, Any, Iterable
 
-from benchmark.datareader import DataReader
+from benchmark.datareader import DataReaderSubprocess
 from benchmark.misuse import Misuse
 from benchmark.utils.data_util import normalize_result_misuse_path, normalize_data_misuse_path
 from benchmark.utils.dotgraph_util import get_labels
@@ -12,7 +12,7 @@ from benchmark.utils.io import safe_open
 from benchmark.utils.printing import subprocess_print
 
 
-class Evaluation:
+class Evaluation(DataReaderSubprocess):
     def __init__(self,
                  results_path: str,
                  detector_result_file: str,
@@ -23,7 +23,7 @@ class Evaluation:
 
         self.results = []
 
-    def evaluate(self, misuse: Misuse) -> Tuple[str, Optional[int]]:
+    def run(self, misuse: Misuse) -> Tuple[str, Optional[int]]:
 
         subprocess_print("Evaluation : running... ", end='')
 
@@ -55,15 +55,15 @@ class Evaluation:
                 if file_found and label_found:
                     print("potential hit", flush=True)
                     self.results.append((misuse.name, 1))
-                    return DataReader.Result.ok
+                    return DataReaderSubprocess.Answer.ok
                 else:
                     print("no hit", flush=True)
                     self.results.append((misuse.name, 0))
-                    return DataReader.Result.ok
+                    return DataReaderSubprocess.Answer.ok
 
         print("ignored (no available findings)", flush=True)
         self.results.append((misuse.name, None))
-        return DataReader.Result.ok
+        return DataReaderSubprocess.Answer.ok
 
     def output_results(self) -> None:
         if not self.results:

@@ -7,12 +7,12 @@ from shutil import rmtree
 
 from typing import Union
 
-from benchmark.datareader import DataReader
+from benchmark.datareader import DataReaderSubprocess
 from benchmark.misuse import Misuse
 from benchmark.utils.printing import subprocess_print, print_ok
 
 
-class Checkout:
+class Checkout(DataReaderSubprocess):
     def __init__(self, checkout_parent: bool, setup_revisions: bool, checkout_subdir: str, outlog, errlog):
         self.data_path = realpath('data')
         self.checkout_base_dir = realpath('checkouts')
@@ -22,7 +22,7 @@ class Checkout:
         self.outlog = outlog
         self.errlog = errlog
 
-    def checkout(self, misuse: Misuse) -> bool:
+    def run(self, misuse: Misuse) -> bool:
         repository_url = misuse.repository.url
         vcs = misuse.repository.type
         revision = misuse.fix_revision
@@ -73,14 +73,14 @@ class Checkout:
             copy_tree(repository_url, checkout_dir)
         else:
             print("unknown vcs {}!".format(vcs), flush=True)
-            return DataReader.Result.skip
+            return DataReaderSubprocess.Answer.skip
 
         if returncode == 0:
             print_ok()
-            return DataReader.Result.ok
+            return DataReaderSubprocess.Answer.ok
         else:
             print("error! (consider .log files in checkout subfolder for more detail)", flush=True)
-            raise DataReader.Result.skip
+            raise DataReaderSubprocess.Answer.skip
 
     @staticmethod
     def get_parent(vcs: str, revision: Union[int, str]) -> Union[str, int]:

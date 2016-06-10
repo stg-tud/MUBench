@@ -6,10 +6,12 @@ from benchmark.detect import Detect
 
 from nose.tools import assert_equals
 from benchmark.nosetests.test_misuse import TMisuse
+from benchmark.nosetests.test_utils.subprocess_util import run_on_misuse
 
 from benchmark.pattern import Pattern
 
 
+# noinspection PyUnusedLocal
 class TestDetect:
     # noinspection PyAttributeOutsideInit
     def setup(self):
@@ -50,31 +52,30 @@ class TestDetect:
         rmtree(self.temp_dir, ignore_errors=True)
 
     def test_invokes_detector(self):
-        self.uut.run_detector(TMisuse("project.id", {}))
+        run_on_misuse(self.uut, TMisuse("project.id", {}))
 
         assert_equals(self.last_invoke[0], "detector.jar")
 
     def test_passes_project_src(self):
-        self.uut.run_detector(TMisuse("project.id", {"build": {"src": "", "classes": "", "commands": []}}))
+        run_on_misuse(self.uut, TMisuse("project.id", {"build": {"src": "", "classes": "", "commands": []}}))
 
         self.assert_last_invoke_arg_value_equals(self.uut.key_src_project,
                                                  join(self.checkout_base, "project", self.src_normal_subdir))
 
     def test_passes_project_classes_path(self):
-        self.uut.run_detector(
-            TMisuse("project.id", {"build": {"classes": "", "src": "", "commands": []}}))
+        run_on_misuse(self.uut, TMisuse("project.id", {"build": {"classes": "", "src": "", "commands": []}}))
 
         self.assert_last_invoke_arg_value_equals(self.uut.key_classes_project,
                                                  join(self.checkout_base, "project", self.classes_normal_subdir))
 
     def test_passes_findings_files(self):
-        self.uut.run_detector(TMisuse("project.id", {}))
+        run_on_misuse(self.uut, TMisuse("project.id", {}))
 
         self.assert_last_invoke_arg_value_equals(self.uut.key_findings_file,
                                                  join(self.results_path, "project.id", self.findings_file))
 
     def test_invokes_detector_without_patterns_paths_without_patterns(self):
-        self.uut.run_detector(TMisuse("project.id", {"build": {"src": "", "classes": "", "commands": []}}))
+        run_on_misuse(self.uut, TMisuse("project.id", {"build": {"src": "", "classes": "", "commands": []}}))
         self.assert_arg_not_in_last_invoke(self.uut.key_src_patterns)
         self.assert_arg_not_in_last_invoke(self.uut.key_classes_patterns)
 
@@ -87,7 +88,7 @@ class TestDetect:
         try:
             TMisuse.patterns = patterns_mock
 
-            self.uut.run_detector(TMisuse("project.id", {"build": {"src": "", "classes": "", "commands": []}}))
+            run_on_misuse(self.uut, TMisuse("project.id", {"build": {"src": "", "classes": "", "commands": []}}))
             self.assert_last_invoke_arg_value_equals(self.uut.key_src_patterns,
                                                      join(self.checkout_base, "project", self.src_patterns_subdir))
         finally:
@@ -102,7 +103,7 @@ class TestDetect:
         try:
             TMisuse.patterns = patterns_mock
 
-            self.uut.run_detector(TMisuse("project.id", {"build": {"src": "", "classes": "", "commands": []}}))
+            run_on_misuse(self.uut, TMisuse("project.id", {"build": {"src": "", "classes": "", "commands": []}}))
             self.assert_last_invoke_arg_value_equals(self.uut.key_classes_patterns,
                                                      join(self.checkout_base, "project", self.classes_patterns_subdir))
         finally:
