@@ -1,4 +1,4 @@
-from nose.tools import assert_raises, assert_equals
+from nose.tools import assert_raises, assert_equals, nottest
 
 from benchmark.utils.command_line_util import get_command_line_parser
 
@@ -85,6 +85,7 @@ def test_timeout_non_int_fails():
     assert_raises(SystemExit, parser.parse_args, ['detect', 'valid-detector', '--timeout', 'string'])
 
 
+@nottest
 def test_detect_fails_for_invalid_detector():
     parser = get_command_line_parser(['valid-detector'])
     assert_raises(SystemExit, parser.parse_args, ['detect', 'invalid-detector'])
