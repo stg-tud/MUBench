@@ -60,10 +60,15 @@ class Pattern:
         return join(destination, self.file_name + str(i) + self.file_extension)
 
     def _replace_class_name(self, copied_file: str, i: int) -> None:
+        class_name_already_replaced = False
         with FileInput(copied_file, inplace=True) as file:
             for line in file:
                 # FileInput inplace redirects stdout to the file
-                print(line.replace(self.class_name, self.class_name + str(i)), end='')
+                if not class_name_already_replaced and self.class_name in line:
+                    print(line.replace(self.class_name, self.class_name + str(i), 1), end='')
+                    class_name_already_replaced = True
+                else:
+                    print(line, end='')
 
 
 class NoPatternFileError(FileNotFoundError):

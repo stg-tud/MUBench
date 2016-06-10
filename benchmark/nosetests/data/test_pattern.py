@@ -52,15 +52,15 @@ class TestPattern:
         destination = join(self.temp_dir, "destination")
 
         test_pattern_file = join(self.orig_dir, "UseResult.java")
-        test_content = ["import java.math.BigInteger;", "", "public class UseResult {",
-                        "\tpublic void pattern(String value, int bit) {",
-                        "\t\tBigInteger i = new BigInteger(value);",
-                        "\t\ti = i.setBit(bit);",
-                        "\t\treturn i;",
-                        "\t}",
-                        "}"]
-        with open(test_pattern_file, 'w') as second_copy:
-            second_copy.writelines(test_content)
+        test_content = ["import java.math.BigInteger;\n", "\n", "public class UseResult {\n",
+                        "\tpublic void pattern(String value, int bit) {\n",
+                        "\t\tBigInteger i = new BigInteger(value);\n",
+                        "\t\ti = i.setBit(bit);\n",
+                        "\t\treturn i;\n",
+                        "\t}\n",
+                        "}\n"]
+        with open(test_pattern_file, 'w') as test_source_file:
+            test_source_file.writelines(test_content)
 
         uut = Pattern(test_pattern_file)
 
@@ -71,6 +71,24 @@ class TestPattern:
             actual_content = second_copy.read()
 
         assert "class UseResult1" in actual_content
+
+    def test_replace_only_first_class_name(self):
+        destination = join(self.temp_dir, "destination")
+
+        test_pattern_file = join(self.orig_dir, "Class.java")
+        test_content = ["Class\n", "Class "]
+        with open(test_pattern_file, 'w') as test_source_file:
+            test_source_file.writelines(test_content)
+
+        uut = Pattern(test_pattern_file)
+
+        uut.copy(destination)
+        uut.copy(destination)
+
+        with open(join(destination, "Class1.java"), "r") as second_copy:
+            actual_content = second_copy.read()
+
+        assert "Class " in actual_content
 
     def test_duplicate(self):
         destination = join(self.temp_dir, "destination")
