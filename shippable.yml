@@ -4,7 +4,7 @@ build_environment:
 language: python
 
 python:
-  - "3.5"
+  - 3.5
 
 before_script:
   - mkdir -p shippable/codecoverage shippable/testresults
