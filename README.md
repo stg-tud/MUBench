@@ -49,14 +49,13 @@ MUBench uses the misuses specified in the `data` subfolder. The first time a mis
 To benchmark your own detector the following steps are necessary:   
 
 1. Create a new subfolder `my-detector` in the [detectors](https://github.com/stg-tud/MUBench/tree/master/detectors) folder. `my-detector` will be the Id used to refer to your detector when running the benchmark.
-2. Create a `my-detector/my-detector.cfg`. Add a `DEFAULT` section to the file and set the `Result File` key to the name of the file your detector will write its findings to. See our example configuration for details: [dummy-detector.cfg](https://github.com/stg-tud/MUBench/blob/master/detectors/dummy-detector/dummy-detector.cfg).
-3. Add an executable JAR with your detector as `my-detector/my-detector.jar`. When running MUBench, this JAR will be invoked with the arguments and is expected to write the outputs described below.
-4. Run MUBench
-5. Manually review the results.
+2. Add an executable JAR with your detector as `my-detector/my-detector.jar`. When running MUBench, this JAR will be invoked with the arguments and is expected to write the outputs described below.
+3. Run MUBench
+4. Manually review the results.
 
 *Which Inputs Will I Get?*
 
-To parse the input, you may use `mubench.cli`. You may use the maven depency:
+To parse the input, you may use `mubench.cli`. You may use the Maven dependency:
 ```
 <dependencies>
 		<dependency>
@@ -66,7 +65,7 @@ To parse the input, you may use `mubench.cli`. You may use the maven depency:
 		</dependency>
 </dependencies>
 ```
-[See this pom.xml for reference](https://github.com/stg-tud/MUBench/blob/master/benchmark/DummyDetector/pom.xml)
+The dependency is not yet hosted in a public Maven repository. For the time being, you have to build it yourself. You find the project [in this repository](https://github.com/stg-tud/MUBench/tree/master/benchmark/mubench.cli).
 
 Using `de.tu_darmstadt.stg.mubench.cli.ArgParser.parse(String[] args)` you will get an instance of `de.tu_darmstadt.stg.mubench.cli.DetectorArgs`. Always check arguments for null since some arguments may be optional.
 
