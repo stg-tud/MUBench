@@ -7,8 +7,8 @@ import yaml
 from nose.tools import assert_equals
 from typing import Set
 
-from benchmark.datareader import DataReader, DataReaderSubprocess
-from benchmark.misuse import Misuse
+from benchmark.data.misuse import Misuse
+from benchmark.subprocesses.datareader import DataReader, DataReaderSubprocess
 from benchmark.utils.io import safe_write
 
 

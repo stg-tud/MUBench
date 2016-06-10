@@ -1,19 +1,19 @@
-import yaml
-from typing import Dict, Union
 from os import makedirs
 from os.path import join
 from shutil import rmtree
 from tempfile import mkdtemp
 
+import yaml
+from benchmark.data.misuse import Misuse, BuildConfig
 from nose.tools import assert_equals, assert_not_equals
+from typing import Dict, Union
 
-from benchmark.misuse import Misuse, BuildConfig
+from benchmark.data.pattern import Pattern
 from benchmark.utils.io import safe_write
-from benchmark.pattern import Pattern
 
 
 class TMisuse(Misuse):
-    def __init__(self, path: str = ":irrelevant:", meta: Dict[str, Union[str, Dict]] = {}):
+    def __init__(self, path: str = ":irrelevant:", meta: Dict[str, Union[str, Dict]]={}):
         Misuse.__init__(self, path)
         self._META = meta
 

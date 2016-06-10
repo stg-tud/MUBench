@@ -3,8 +3,8 @@ from os.path import join, realpath
 
 from typing import Optional, List
 
-from benchmark.datareader import DataReaderSubprocess
-from benchmark.misuse import Misuse
+from benchmark.data.misuse import Misuse
+from benchmark.subprocesses.datareader import DataReaderSubprocess
 from benchmark.utils.io import safe_open, safe_write
 from benchmark.utils.printing import subprocess_print, print_ok
 

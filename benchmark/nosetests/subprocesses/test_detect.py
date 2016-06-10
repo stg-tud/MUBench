@@ -1,14 +1,13 @@
 from os.path import join
-from tempfile import mkdtemp
 from shutil import rmtree
-
-from benchmark.detect import Detect
+from tempfile import mkdtemp
 
 from nose.tools import assert_equals
-from benchmark.nosetests.test_misuse import TMisuse
-from benchmark.nosetests.test_utils.subprocess_util import run_on_misuse
 
-from benchmark.pattern import Pattern
+from benchmark.data.pattern import Pattern
+from benchmark.nosetests.data.test_misuse import TMisuse
+from benchmark.nosetests.test_utils.subprocess_util import run_on_misuse
+from benchmark.subprocesses.detect import Detect
 
 
 # noinspection PyUnusedLocal

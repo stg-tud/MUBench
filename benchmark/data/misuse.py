@@ -4,7 +4,7 @@ from os.path import isdir, isfile, join, basename
 import yaml
 from typing import Set, List
 
-from benchmark.pattern import Pattern
+from benchmark.data.pattern import Pattern
 
 
 # noinspection PyAttributeOutsideInit

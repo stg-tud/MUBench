@@ -4,10 +4,10 @@ from shutil import rmtree
 from tempfile import mkdtemp
 
 from nose.tools import assert_equals
-from benchmark.nosetests.test_misuse import TMisuse
 
-from benchmark.evaluate import Evaluation
+from benchmark.nosetests.data.test_misuse import TMisuse
 from benchmark.nosetests.test_utils.subprocess_util import run_on_misuse
+from benchmark.subprocesses.evaluate import Evaluation
 from benchmark.utils.io import safe_write
 
 

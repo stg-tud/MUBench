@@ -5,7 +5,7 @@ from tempfile import mkdtemp
 
 from nose.tools import assert_raises, assert_equals
 
-from benchmark.pattern import Pattern, NoPatternFileError
+from benchmark.data.pattern import Pattern, NoPatternFileError
 from benchmark.utils.io import create_file
 
 

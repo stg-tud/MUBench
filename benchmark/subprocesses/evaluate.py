@@ -4,8 +4,8 @@ from os.path import join
 import yaml
 from typing import Dict, Tuple, Optional, Any, Iterable
 
-from benchmark.datareader import DataReaderSubprocess
-from benchmark.misuse import Misuse
+from benchmark.data.misuse import Misuse
+from benchmark.subprocesses.datareader import DataReaderSubprocess
 from benchmark.utils.data_util import normalize_result_misuse_path, normalize_data_misuse_path
 from benchmark.utils.dotgraph_util import get_labels
 from benchmark.utils.io import safe_open

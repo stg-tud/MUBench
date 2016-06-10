@@ -8,9 +8,9 @@ from tempfile import mkdtemp
 
 from nose.tools import assert_raises
 
-from benchmark.nosetests.test_misuse import TMisuse
-from benchmark.checkout import Checkout
+from benchmark.nosetests.data.test_misuse import TMisuse
 from benchmark.nosetests.test_utils.subprocess_util import run_on_misuse
+from benchmark.subprocesses.checkout import Checkout
 from benchmark.utils.io import create_file
 
 GIT = 'git'

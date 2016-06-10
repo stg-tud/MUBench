@@ -6,9 +6,9 @@ from os.path import join, exists
 
 from typing import Set, List
 
-from benchmark.datareader import DataReaderSubprocess
-from benchmark.misuse import Misuse
-from benchmark.pattern import Pattern
+from benchmark.data.misuse import Misuse
+from benchmark.data.pattern import Pattern
+from benchmark.subprocesses.datareader import DataReaderSubprocess
 from benchmark.utils.io import remove_tree, copy_tree
 from benchmark.utils.printing import subprocess_print, print_ok
 

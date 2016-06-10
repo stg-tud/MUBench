@@ -4,11 +4,11 @@ from tempfile import mkdtemp
 
 from nose.tools import assert_equals
 
-from benchmark.compile import Compile
-from benchmark.datareader import DataReaderSubprocess
-from benchmark.nosetests.test_misuse import TMisuse
+from benchmark.data.pattern import Pattern
+from benchmark.nosetests.data.test_misuse import TMisuse
 from benchmark.nosetests.test_utils.subprocess_util import run_on_misuse
-from benchmark.pattern import Pattern
+from benchmark.subprocesses.compile import Compile
+from benchmark.subprocesses.datareader import DataReaderSubprocess
 from benchmark.utils.io import create_file
 
 

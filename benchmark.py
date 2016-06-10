@@ -7,11 +7,11 @@ from shutil import rmtree
 
 from typing import Optional, List
 
-from benchmark.checkout import Checkout
-from benchmark.compile import Compile
-from benchmark.datareader import DataReader
-from benchmark.detect import Detect
-from benchmark.evaluate import Evaluation
+from benchmark.subprocesses.checkout import Checkout
+from benchmark.subprocesses.compile import Compile
+from benchmark.subprocesses.datareader import DataReader
+from benchmark.subprocesses.detect import Detect
+from benchmark.subprocesses.evaluate import Evaluation
 from benchmark.utils import command_line_util
 from benchmark.utils.io import safe_open
 from benchmark.utils.prerequisites_checker import check_prerequisites

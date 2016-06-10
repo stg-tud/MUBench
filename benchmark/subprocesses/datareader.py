@@ -4,7 +4,7 @@ from os.path import join
 
 from typing import List
 
-from benchmark.misuse import Misuse
+from benchmark.data.misuse import Misuse
 
 
 class DataReaderSubprocess:

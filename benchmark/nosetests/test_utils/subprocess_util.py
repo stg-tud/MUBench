@@ -1,5 +1,5 @@
-from benchmark.datareader import DataReaderSubprocess
-from benchmark.misuse import Misuse
+from benchmark.data.misuse import Misuse
+from benchmark.subprocesses.datareader import DataReaderSubprocess
 
 
 def run_on_misuse(subprocess: DataReaderSubprocess, misuse: Misuse) -> DataReaderSubprocess.Answer:
