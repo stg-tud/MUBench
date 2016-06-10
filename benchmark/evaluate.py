@@ -176,3 +176,6 @@ class Evaluation(DataReaderSubprocess):
 
         print("Correct label was not found!", file=log_stream)
         return False
+
+    def teardown(self):
+        self.output_results()

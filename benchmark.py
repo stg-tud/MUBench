@@ -70,22 +70,20 @@ class MUBenchmark:
 
         self.datareader.run()
 
-        self.evaluation_handler.output_results()
-
     def _setup_compile(self):
         compile_handler = Compile(self.checkout_dir, self.checkout_subdir,
                                   self.original_src, self.original_classes,
                                   self.patterns_src, self.patterns_classes, self.pattern_frequency,
                                   join(self.checkout_dir, "compile-out.log"),
                                   join(self.checkout_dir, "compile-error.log"))
-        self.datareader.add(compile_handler.build)
+        self.datareader.add(compile_handler)
 
     def _setup_checkout(self, setup_revisions: bool, checkout_parent: bool):
         checkout_handler = Checkout(setup_revisions=setup_revisions, checkout_parent=checkout_parent,
                                     checkout_subdir=self.checkout_subdir,
                                     outlog=safe_open(join('checkouts', 'checkout-out.log'), 'a+'),
                                     errlog=safe_open(join('checkouts', 'checkout-error.log'), 'a+'))
-        self.datareader.add(checkout_handler.checkout)
+        self.datareader.add(checkout_handler)
 
     def _setup_detect(self):
         self._setup_checkout(setup_revisions=True, checkout_parent=True)
@@ -93,11 +91,11 @@ class MUBenchmark:
         detector_runner = Detect(self.detector, self.detector_result_file, self.checkout_dir, self.original_src,
                                  self.original_classes, self.patterns_src, self.patterns_classes, self.results_path,
                                  self.timeout, self.java_options)
-        self.datareader.add(detector_runner.run_detector)
+        self.datareader.add(detector_runner)
 
     def _setup_eval(self):
         self.evaluation_handler = Evaluation(self.results_path, self.detector_result_file, self.checkout_dir)
-        self.datareader.add(self.evaluation_handler.evaluate)
+        self.datareader.add(self.evaluation_handler)
 
     def run(self) -> None:
         self.datareader.run()
