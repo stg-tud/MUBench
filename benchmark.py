@@ -50,6 +50,7 @@ class MUBenchmark:
 
     def run_check(self):
         # check subprocess is always registered by __init__
+        self.datareader.black_list = [""]
         self.datareader.run()
 
     def run_checkout(self) -> None:
@@ -57,7 +58,6 @@ class MUBenchmark:
         self.run()
 
     def run_detect(self) -> None:
-
         self._setup_detect()
         self.datareader.run()
 

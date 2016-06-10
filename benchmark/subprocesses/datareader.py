@@ -36,9 +36,7 @@ class DataReader:
         misuses = self._get_misuses()
 
         try:
-            print("Running setup... ", end='')
             self._run_setup()
-            print("ready.")
 
             for i, misuse in enumerate(misuses, start=1):
                 print("Misuse '{}' ({}/{}) > ".format(misuse, i, len(misuses)), flush=True)
