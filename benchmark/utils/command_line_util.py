@@ -69,8 +69,9 @@ def __add_evaluate_subprocess(available_detectors: List[str], subparsers) -> Non
 
 
 def __setup_detector_running_subprocess(available_detectors: List[str], subprocess_parser: ArgumentParser) -> None:
-    subprocess_parser.add_argument('detector', help="the detector whose findings to evaluate",
-                                   choices=available_detectors)
+    subprocess_parser.add_argument('detector', help="the detector whose findings to evaluate"
+                                   #, choices=available_detectors
+                                   )
 
     subprocess_parser.add_argument('--only', metavar='X', nargs='+', dest='white_list', default=[""],
                                    help="consider only the misuses whose names contain any of the given strings")
