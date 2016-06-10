@@ -3,16 +3,15 @@ from shutil import rmtree
 from tempfile import mkdtemp
 
 from benchmark_tests.test_utils.subprocess_util import run_on_misuse
-from nose.tools import assert_equals
+from nose.tools import assert_equals, assert_raises
 
 from benchmark.data.pattern import Pattern
 from benchmark.subprocesses.detect import Detect
 from benchmark_tests.data.test_misuse import TMisuse
 
 
-# noinspection PyUnusedLocal
+# noinspection PyUnusedLocal,PyAttributeOutsideInit
 class TestDetect:
-    # noinspection PyAttributeOutsideInit
     def setup(self):
         self.temp_dir = mkdtemp(prefix='mubench-detect-test_')
         self.checkout_base = join(self.temp_dir, "checkout")
@@ -28,14 +27,28 @@ class TestDetect:
                           self.classes_normal_subdir, self.src_patterns_subdir, self.classes_patterns_subdir,
                           self.results_path, None, [])
 
+        self.last_invoke = None
+
         # mock command-line invocation
         def mock_invoke_detector(detect, absolute_misuse_detector_path: str, detector_args: str, out_log, error_log):
             self.last_invoke = absolute_misuse_detector_path, detector_args
 
-        self.last_invoke = None
+        self.triggered_download = False
+        self.download_ok = True
+
+        def mock_download():
+            self.triggered_download = True
+            return self.download_ok
+
+        self.detector_available = True
+
+        def mock_detector_available():
+            return self.detector_available
 
         self.orig_invoke_detector = Detect._invoke_detector
         Detect._invoke_detector = mock_invoke_detector
+        self.uut._download = mock_download
+        self.uut._detector_available = mock_detector_available
 
         # mock path resolving
         def mock_get_misuse_detector_path(detector: str):
@@ -107,6 +120,18 @@ class TestDetect:
                                                      join(self.checkout_base, "project", self.classes_patterns_subdir))
         finally:
             TMisuse.patterns = orig_patterns
+
+    def test_downloads_detector_if_not_available(self):
+        self.detector_available = False
+
+        self.uut.setup()
+
+        assert self.triggered_download
+
+    def test_exits_on_download_error(self):
+        self.detector_available = False
+        self.download_ok = False
+        assert_raises(SystemExit, self.uut.setup)
 
     def assert_last_invoke_arg_value_equals(self, key, value):
         self.assert_arg_value_equals(self.last_invoke[1], key, value)
