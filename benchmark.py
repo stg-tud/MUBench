@@ -14,7 +14,6 @@ from benchmark.subprocesses.detect import Detect
 from benchmark.subprocesses.evaluate import Evaluation
 from benchmark.utils import command_line_util
 from benchmark.utils.io import safe_open
-from benchmark.utils.prerequisites_checker import check_prerequisites
 
 
 class MUBenchmark:
@@ -102,13 +101,8 @@ class MUBenchmark:
 
 
 def check() -> None:
-    print("Checking prerequisites... ", end='')
-    prerequisites_okay, error_message = check_prerequisites()
-    if not prerequisites_okay:
-        print('')  # add the before omitted newline
-        sys.exit(error_message)
-    else:
-        print("okay")
+    # noinspection PyUnresolvedReferences
+    import check
 
 
 mubench = dirname(realpath(inspect.stack()[0][1]))  # most reliable way to get the scripts absolute location
