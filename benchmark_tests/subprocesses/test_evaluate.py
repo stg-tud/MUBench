@@ -3,12 +3,12 @@ from os.path import join
 from shutil import rmtree
 from tempfile import mkdtemp
 
+from benchmark_tests.test_utils.subprocess_util import run_on_misuse
 from nose.tools import assert_equals
 
-from benchmark.nosetests.data.test_misuse import TMisuse
-from benchmark.nosetests.test_utils.subprocess_util import run_on_misuse
 from benchmark.subprocesses.evaluate import Evaluation
 from benchmark.utils.io import safe_write
+from benchmark_tests.data.test_misuse import TMisuse
 
 
 # noinspection PyAttributeOutsideInit

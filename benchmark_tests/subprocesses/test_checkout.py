@@ -6,12 +6,12 @@ from os.path import join, exists
 from shutil import rmtree
 from tempfile import mkdtemp
 
+from benchmark_tests.test_utils.subprocess_util import run_on_misuse
 from nose.tools import assert_raises
 
-from benchmark.nosetests.data.test_misuse import TMisuse
-from benchmark.nosetests.test_utils.subprocess_util import run_on_misuse
 from benchmark.subprocesses.checkout import Checkout
 from benchmark.utils.io import create_file
+from benchmark_tests.data.test_misuse import TMisuse
 
 GIT = 'git'
 SVN = 'svn'
