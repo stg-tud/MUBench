@@ -45,6 +45,8 @@ class Detect(DataReaderSubprocess):
             download_ok = self._download()
             if not download_ok:
                 exit("error!")
+            else:
+                print_ok()
 
     def run(self, misuse: Misuse) -> None:
         result_dir = join(self.results_path, misuse.name)
@@ -98,12 +100,21 @@ class Detect(DataReaderSubprocess):
 
     def _download(self) -> bool:
         return web_util.download(Detect.__get_misuse_detector_url(self.detector),
-                                 Detect.__get_misuse_detector_path(self.detector))
+                                 Detect.__get_misuse_detector_path(self.detector),
+                                 Detect.__get_misuse_detector_md5(self.detector))
+
+    @staticmethod
+    def __get_misuse_detector_dir(detector: str):
+        return realpath(join("detectors", detector))
 
     @staticmethod
     def __get_misuse_detector_path(detector: str):
-        return realpath(join("detectors", detector, detector + '.jar'))
+        return join(Detect.__get_misuse_detector_dir(detector), detector + ".jar")
 
     @staticmethod
     def __get_misuse_detector_url(detector: str):
         return "http://www.st.informatik.tu-darmstadt.de/artifacts/mubench/{}.jar".format(detector)
+
+    @staticmethod
+    def __get_misuse_detector_md5(detector: str):
+        return join(Detect.__get_misuse_detector_dir(detector), detector + ".md5")
