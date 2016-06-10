@@ -1,22 +1,33 @@
 import hashlib
 import shutil
 import urllib
+from os import remove
 from os.path import exists
 
 from typing import Optional
 
+from benchmark.utils.printing import print_ok
 
-def download(url: str, file: str, md5_file: Optional[str] = None) -> bool:
-    with urllib.request.urlopen(url) as response, open(file, 'wb') as out_file:
-        shutil.copyfileobj(response, out_file)
+
+def load_detector(url: str, file: str, md5_file: Optional[str] = None) -> None:
+    print("Loading detector... ", end='')
+
+    try:
+        with urllib.request.urlopen(url) as response, open(file, 'wb') as out_file:
+            shutil.copyfileobj(response, out_file)
+    except ValueError:
+        exit("error! Invalid detector URL: {}".format(url))
+    except urllib.error.URLError:
+        exit("error! Could not connect to server on {}".format(url))
 
     if not exists(file):
-        return False
+        exit("error! Detector could not be loaded.")
 
-    if md5_file is not None:
-        return _check_md5(file, md5_file)
+    if md5_file is not None and not _check_md5(file, md5_file):
+        remove(file)
+        exit("error! Incorrect md5; detector was not loaded correctly.")
 
-    return True
+    print_ok()
 
 
 def _check_md5(file, reference_file):
@@ -33,3 +44,11 @@ def _md5(file: str):
         for chunk in iter(lambda: f.read(4096), b""):
             hash_md5.update(chunk)
     return hash_md5.hexdigest()
+
+
+class InvalidURLError(Exception):
+    pass
+
+
+class ConnectionFailedError(Exception):
+    pass

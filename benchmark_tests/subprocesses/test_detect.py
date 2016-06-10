@@ -128,11 +128,6 @@ class TestDetect:
 
         assert self.triggered_download
 
-    def test_exits_on_download_error(self):
-        self.detector_available = False
-        self.download_ok = False
-        assert_raises(SystemExit, self.uut.setup)
-
     def assert_last_invoke_arg_value_equals(self, key, value):
         self.assert_arg_value_equals(self.last_invoke[1], key, value)
 

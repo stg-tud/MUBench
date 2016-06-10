@@ -41,12 +41,9 @@ class Detect(DataReaderSubprocess):
 
     def setup(self):
         if not self._detector_available():
-            print("Loading detector... ", end='')
+
             download_ok = self._download()
-            if not download_ok:
-                exit("error!")
-            else:
-                print_ok()
+
 
     def run(self, misuse: Misuse) -> None:
         result_dir = join(self.results_path, misuse.name)
@@ -99,9 +96,9 @@ class Detect(DataReaderSubprocess):
         return exists(Detect.__get_misuse_detector_path(self.detector))
 
     def _download(self) -> bool:
-        return web_util.download(Detect.__get_misuse_detector_url(self.detector),
-                                 Detect.__get_misuse_detector_path(self.detector),
-                                 Detect.__get_misuse_detector_md5(self.detector))
+        return web_util.load_detector(Detect.__get_misuse_detector_url(self.detector),
+                                      Detect.__get_misuse_detector_path(self.detector),
+                                      Detect.__get_misuse_detector_md5(self.detector))
 
     @staticmethod
     def __get_misuse_detector_dir(detector: str):
