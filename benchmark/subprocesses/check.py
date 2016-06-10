@@ -28,7 +28,7 @@ class Prerequisites:
     # noinspection PyUnresolvedReferences
     @staticmethod
     def request():
-        import request
+        import urllib.request
 
 
 class Check(DataReaderSubprocess):
