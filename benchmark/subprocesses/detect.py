@@ -1,10 +1,11 @@
 import subprocess
-from os.path import join, realpath
+from os.path import join, realpath, exists, basename
 
 from typing import Optional, List
 
 from benchmark.data.misuse import Misuse
 from benchmark.subprocesses.datareader import DataReaderSubprocess
+from benchmark.utils import web_util
 from benchmark.utils.io import safe_open, safe_write
 from benchmark.utils.printing import subprocess_print, print_ok
 
@@ -37,6 +38,13 @@ class Detect(DataReaderSubprocess):
         self.key_src_patterns = "src_patterns"
         self.key_classes_project = "classpath"
         self.key_classes_patterns = "classpath_patterns"
+
+    def setup(self):
+        if not self._detector_available():
+            print("Loading detector... ", end='')
+            download_ok = self._download()
+            if not download_ok:
+                exit("error!")
 
     def run(self, misuse: Misuse) -> None:
         result_dir = join(self.results_path, misuse.name)
@@ -85,6 +93,17 @@ class Detect(DataReaderSubprocess):
         return subprocess.call(["java"] + self.java_options + ["-jar", absolute_misuse_detector_path] + detector_args,
                                bufsize=1, stdout=out_log, stderr=error_log, timeout=self.timeout)
 
+    def _detector_available(self) -> bool:
+        return exists(Detect.__get_misuse_detector_path(self.detector))
+
+    def _download(self) -> bool:
+        return web_util.download(Detect.__get_misuse_detector_url(self.detector),
+                                 Detect.__get_misuse_detector_path(self.detector))
+
     @staticmethod
     def __get_misuse_detector_path(detector: str):
         return realpath(join("detectors", detector, detector + '.jar'))
+
+    @staticmethod
+    def __get_misuse_detector_url(detector: str):
+        return "http://www.st.informatik.tu-darmstadt.de/artifacts/mubench/{}.jar".format(detector)
