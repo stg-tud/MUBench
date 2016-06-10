@@ -7,6 +7,7 @@ from shutil import rmtree
 
 from typing import Optional, List
 
+from benchmark.subprocesses.check import Check
 from benchmark.subprocesses.checkout import Checkout
 from benchmark.subprocesses.compile import Compile
 from benchmark.subprocesses.datareader import DataReader
@@ -44,6 +45,12 @@ class MUBenchmark:
         self.pattern_frequency = 20
 
         self.datareader = DataReader(self.data_path, self.white_list, self.black_list)
+
+        self.datareader.add(Check())
+
+    def run_check(self):
+        # check subprocess is always registered by __init__
+        self.datareader.run()
 
     def run_checkout(self) -> None:
         self._setup_checkout(setup_revisions=False, checkout_parent=False)
@@ -100,17 +107,10 @@ class MUBenchmark:
         self.datareader.run()
 
 
-def check() -> None:
-    # noinspection PyUnresolvedReferences
-    import check
-
-
 mubench = dirname(realpath(inspect.stack()[0][1]))  # most reliable way to get the scripts absolute location
 chdir(mubench)  # set the cwd to the MUBench folder
 available_detectors = listdir(realpath('detectors'))
 config = command_line_util.parse_args(sys.argv, available_detectors)
-
-check()
 
 if 'detector' not in config:
     config.detector = ''
@@ -129,7 +129,7 @@ benchmark = MUBenchmark(detector=config.detector, white_list=config.white_list, 
                         timeout=config.timeout, java_options=config.java_options, force_detect=config.force_detect)
 
 if config.subprocess == 'check':
-    pass  # prerequisites are always checked before
+    benchmark.run_check()
 if config.subprocess == 'checkout':
     benchmark.run_checkout()
 if config.subprocess == 'detect':
