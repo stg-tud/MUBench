@@ -1,4 +1,5 @@
 import subprocess
+import time
 from os.path import join, realpath, exists, basename
 
 from typing import Optional, List
@@ -74,13 +75,16 @@ class Detect(DataReaderSubprocess):
                     detector_args = findings_file + src_project + src_patterns + classes_project + classes_patterns
 
                     subprocess_print("Detect : running... ", end='')
+                    start = time.time()
                     returncode = self._invoke_detector(absolute_misuse_detector_path, detector_args, out_log, error_log)
+                    end = time.time()
+                    runtime = end - start
 
                     if returncode == 0:
-                        print_ok()
+                        print("ok. Took {0:.2f}s.".format(runtime))
                         return DataReaderSubprocess.Answer.ok
                     else:
-                        print("Detector encountered an error! Logs can be found in the results folder.")
+                        print("error! Check logs in the results folder.")
                         return DataReaderSubprocess.Answer.skip
 
                 except subprocess.TimeoutExpired:
