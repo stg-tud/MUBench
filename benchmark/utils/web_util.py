@@ -16,16 +16,16 @@ def load_detector(url: str, file: str, md5_file: Optional[str] = None) -> None:
         with urllib.request.urlopen(url) as response, open(file, 'wb') as out_file:
             shutil.copyfileobj(response, out_file)
     except ValueError:
-        exit("error! Invalid detector URL: {}".format(url))
+        exit("error! Invalid URL: {}".format(url))
     except urllib.error.URLError:
-        exit("error! Could not connect to server on {}".format(url))
+        exit("error! Could not connect to {}".format(url))
 
     if not exists(file):
         exit("error! Detector could not be loaded.")
 
     if md5_file is not None and not _check_md5(file, md5_file):
         remove(file)
-        exit("error! Incorrect md5; detector was not loaded correctly.")
+        exit("error! Detector corrupted (md5 mismatch).")
 
     print_ok()
 
