@@ -30,3 +30,6 @@ fix:
       diff: http://svn.apache.org/viewvc/jackrabbit/trunk/jackrabbit-core/src/main/java/org/apache/jackrabbit/core/config/RepositoryConfigurationParser.java?r1=695766&r2=695765&pathrev=695766
 build:
   src: jackrabbit-core/src/main/java/
+  commands:
+    - mvn compile
+  classes: jackrabbit-core/target/classes/

@@ -26,3 +26,6 @@ fix:
       diff: http://svn.apache.org/viewvc/jackrabbit/trunk/jackrabbit-jcr-server/src/main/java/org/apache/jackrabbit/server/io/DefaultHandler.java?r1=880743&r2=880742&pathrev=880743
 build:
   src: jackrabbit-jcr-server/src/main/java/
+  commands:
+    - mvn compile -Dmaven.compiler.failOnError=false
+  classes: jackrabbit-jcr-server/target/classes/

@@ -26,3 +26,6 @@ fix:
       diff: http://svn.apache.org/viewvc/jackrabbit/trunk/jackrabbit-core/src/main/java/org/apache/jackrabbit/core/ItemManager.java?r1=656282&r2=656281&pathrev=656282
 build:
   src: jackrabbit-core/src/main/java/
+  commands:
+    - mvn compile
+  classes: jackrabbit-core/target/classes/

@@ -26,3 +26,6 @@ fix:
       diff: http://svn.apache.org/viewvc/jackrabbit/trunk/jackrabbit-jcr2spi/src/main/java/org/apache/jackrabbit/jcr2spi/state/ItemState.java?r1=1240198&r2=1240197&pathrev=1240198
 build:
   src: jackrabbit-jcr2spi/src/main/java/
+  commands:
+    - mvn compile -Dmaven.compiler.failOnError=fals
+  classes: jackrabbit-jcr2spi/target/classes/
