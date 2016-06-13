@@ -26,6 +26,8 @@ class Compile(DataReaderSubprocess):
         self.outlog = outlog
         self.errlog = errlog
 
+        self.command_with_error = ""
+
     def run(self, misuse: Misuse):
         subprocess_print("Building project... ", end='')
 
@@ -55,7 +57,7 @@ class Compile(DataReaderSubprocess):
         self._copy(checkout_dir, build_dir)
         build_ok = self._build(build_config.commands, build_dir)
         if not build_ok:
-            print("error building project!")
+            print("error in command '{}'!".format(self.command_with_error))
             return DataReaderSubprocess.Answer.skip
 
         self._move(join(build_dir, build_config.classes), join(project_dir, self.classes_normal))
@@ -65,7 +67,7 @@ class Compile(DataReaderSubprocess):
         build_ok = self._build_with_patterns(build_config.commands, build_config.src, build_dir, self.pattern_frequency,
                                              misuse.patterns)
         if not build_ok:
-            print("error building patterns!")
+            print("error in command '{}'!".format(self.command_with_error))
             return DataReaderSubprocess.Answer.skip
 
         self._move(join(build_dir, build_config.classes), join(project_dir, self.classes_patterns))
@@ -77,6 +79,7 @@ class Compile(DataReaderSubprocess):
         for command in commands:
             ok = self._call(command, project_dir)
             if not ok:
+                self.command_with_error = command
                 return False
         return True
 
