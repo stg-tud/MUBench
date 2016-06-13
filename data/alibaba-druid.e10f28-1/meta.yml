@@ -28,3 +28,8 @@ fix:
     - name: src/main/java/com/alibaba/druid/filter/config/ConfigTools.java
 build:
   src: src/main/java
+  commands:
+    - "sed -i 's/10.2.0.2/10.2.0.2.0/g' pom.xml"
+    - "sed -i 's/code.alibabatech.com\/mvn\/releases\//vm16.rbg.informatik.tu-darmstadt.de\/nexus\/repository\/mubench-m2\//g' pom.xml"
+    - mvn compile
+  classes: target/classes
