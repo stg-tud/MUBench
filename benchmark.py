@@ -57,6 +57,11 @@ class MUBenchmark:
         self._setup_checkout(setup_revisions=False, checkout_parent=False)
         self.run()
 
+    def run_compile(self) -> None:
+        self._setup_checkout(setup_revisions=True, checkout_parent=True)
+        self._setup_compile()
+        self.run()
+
     def run_detect(self) -> None:
         self._setup_checkout(setup_revisions=True, checkout_parent=True)
         self._setup_compile()
@@ -134,6 +139,8 @@ if config.subprocess == 'check':
     benchmark.run_check()
 if config.subprocess == 'checkout':
     benchmark.run_checkout()
+if config.subprocess == 'compile':
+    benchmark.run_compile()
 if config.subprocess == 'detect':
     benchmark.run_detect()
 if config.subprocess == 'eval':
