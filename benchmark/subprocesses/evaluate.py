@@ -1,5 +1,5 @@
 from genericpath import exists, isfile, getsize
-from os.path import join
+from os.path import join, basename, splitext
 
 import yaml
 from typing import Dict, Tuple, Optional, Any, Iterable
@@ -47,7 +47,7 @@ class Evaluation(DataReaderSubprocess):
 
                     src_prefix = None if misuse.build_config is None else misuse.build_config.src
 
-                    file_found = Evaluation.__is_file_found(findings, misuse.meta,
+                    file_found = Evaluation.__is_file_found(findings, misuse,
                                                             join(self.checkout_base_dir, misuse.project_name),
                                                             src_prefix, log)
                     label_found = Evaluation.__is_label_found(findings, misuse.meta, log)
@@ -112,7 +112,7 @@ class Evaluation(DataReaderSubprocess):
 
     @staticmethod
     def __is_file_found(findings: Iterable[Dict[str, str]],
-                        data_content: Dict[str, Any],
+                        misuse: Misuse,
                         checkout_dir: str,
                         src_prefix: Optional[str],
                         log_stream) -> bool:
@@ -127,7 +127,15 @@ class Evaluation(DataReaderSubprocess):
 
             normed_finding = normalize_result_misuse_path(marked_file, checkout_dir, src_prefix)
 
-            for misuse_file in data_content["fix"]["files"]:
+            for pattern in misuse.patterns:
+                # convert 'pattern123.java' back to 'pattern.java'
+                finding_file_name, finding_file_extension = splitext(basename(normed_finding))
+                finding_file_name = finding_file_name.rstrip('1234567890')
+
+                if finding_file_name + finding_file_extension == pattern.file_name + pattern.file_extension:
+                    return True
+
+            for misuse_file in misuse.meta["fix"]["files"]:
                 normed_misuse_file = normalize_data_misuse_path(misuse_file["name"], src_prefix)
 
                 print("{}: Comparing found misuse {}".format(normed_misuse_file, normed_finding),

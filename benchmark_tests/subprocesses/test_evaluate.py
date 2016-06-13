@@ -3,6 +3,7 @@ from os.path import join
 from shutil import rmtree
 from tempfile import mkdtemp
 
+from benchmark.data.pattern import Pattern
 from benchmark_tests.test_utils.subprocess_util import run_on_misuse
 from nose.tools import assert_equals
 
@@ -58,6 +59,24 @@ class TestEvaluation:
                                                 'fix': {'revision': '', 'files': [{'name': 'some-class.java'}]}}))
         actual_result = self.uut.results[0]
         assert_equals(('git', 1), actual_result)
+
+    def test_handles_patterns(self):
+        self.create_result('git', 'file: pattern0.java\n')
+
+        @property
+        def patterns_mock(misuse):
+            return {Pattern('pattern.java')}
+
+        patterns_orig = TMisuse.patterns
+        try:
+            TMisuse.patterns = patterns_mock
+
+            run_on_misuse(self.uut, TMisuse('git', {'fix': {'files': [{'name': 'some-class.java'}]}}))
+
+            actual_result = self.uut.results[0]
+            assert_equals(('git', 1), actual_result)
+        finally:
+            TMisuse.patterns = patterns_orig
 
     def create_result(self, misuse_name, content):
         safe_write(content, join(self.results_path, misuse_name, self.file_detector_result),
