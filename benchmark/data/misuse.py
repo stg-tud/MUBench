@@ -29,11 +29,14 @@ class Misuse:
 
     @property
     def patterns(self) -> Set[Pattern]:
-        pattern_path = join(self.path, "patterns")
-        if isdir(pattern_path):
-            return set([Pattern(join(pattern_path, file)) for file in listdir(pattern_path)])
-        else:
-            return set()
+        if getattr(self, '_PATTERNS', None) is None:
+            pattern_path = join(self.path, "patterns")
+            if isdir(pattern_path):
+                self._PATTERNS = set([Pattern(join(pattern_path, file)) for file in listdir(pattern_path)])
+            else:
+                self._PATTERNS = set()
+
+        return self._PATTERNS
 
     @property
     def meta(self):
