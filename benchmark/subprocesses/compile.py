@@ -41,7 +41,7 @@ class Compile(DataReaderSubprocess):
             subprocess_print("No build configured for this misuse.")
             return DataReaderSubprocess.Answer.ok
 
-        subprocess_print("Building project... ", end='')
+        subprocess_print("Compiling project... ", end='')
         additional_sources = misuse.additional_compile_sources
         if exists(additional_sources):
             copy_tree(additional_sources, checkout_dir)
@@ -57,7 +57,7 @@ class Compile(DataReaderSubprocess):
         self._move(join(build_dir, build_config.classes), join(project_dir, self.classes_normal))
         print_ok()
 
-        subprocess_print("Building patterns... ", end='')
+        subprocess_print("Compiling patterns... ", end='')
 
         # create and move patterns classes
         self._copy(checkout_dir, build_dir)
