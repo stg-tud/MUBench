@@ -1,7 +1,8 @@
 from distutils.file_util import copy_file
 from fileinput import FileInput
 from os import makedirs
-from os.path import exists, basename, join, splitext, dirname
+from os.path import exists, join, splitext, dirname
+from typing import Set
 
 
 class Pattern:
@@ -29,7 +30,7 @@ class Pattern:
 
     @property
     def file_name(self):
-        return splitext(basename(self.path))[0]
+        return splitext(self.pattern_path)[0]
 
     @property
     def class_name(self):
@@ -39,35 +40,33 @@ class Pattern:
     def file_extension(self):
         return splitext(self.path)[1]
 
-    def duplicate(self, destination: str, times: int) -> str:
+    def duplicate(self, destination: str, times: int):
+        duplicates = set()
         for i in range(times):
-            self.copy(destination)
-        return destination
+            duplicates.add(self.copy(destination, str(i)))
+        return duplicates
 
-    def copy(self, destination: str) -> str:
-        makedirs(destination, exist_ok=True)
+    def copy(self, destination: str, suffix: str="") -> str:
+        new_pattern_path = self.file_name + suffix + self.file_extension
+        new_pattern = Pattern(destination, new_pattern_path)
 
-        i = 0
-        while exists(self._get_destination_file(destination, i)):
-            i += 1
+        makedirs(new_pattern.orig_dir, exist_ok=True)
+        copy_file(self.path, new_pattern.path)
 
-        copied_file = self._get_destination_file(destination, i)
-        copy_file(self.path, copied_file)
+        self._replace_class_name(new_pattern.path, suffix)
 
-        self._replace_class_name(copied_file, i)
-
-        return destination
+        return new_pattern
 
     def _get_destination_file(self, destination: str, i: int) -> str:
         return join(destination, self.file_name + str(i) + self.file_extension)
 
-    def _replace_class_name(self, copied_file: str, i: int) -> None:
+    def _replace_class_name(self, copied_file: str, suffix: str) -> None:
         class_name_already_replaced = False
         with FileInput(copied_file, inplace=True) as file:
             for line in file:
                 # FileInput inplace redirects stdout to the file
                 if not class_name_already_replaced and self.class_name in line:
-                    print(line.replace(self.class_name, self.class_name + str(i), 1), end='')
+                    print(line.replace(self.class_name, self.class_name + suffix, 1), end='')
                     class_name_already_replaced = True
                 else:
                     print(line, end='')

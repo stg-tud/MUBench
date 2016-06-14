@@ -2,6 +2,8 @@ from os.path import join
 from shutil import rmtree
 from tempfile import mkdtemp
 
+from os import makedirs
+
 from benchmark_tests.test_utils.subprocess_util import run_on_misuse
 from nose.tools import assert_equals
 
@@ -35,7 +37,7 @@ class TestCompile:
         def _copy_mock(a, b):
             self.copy_calls.append((a, b))
 
-        self.uut = Compile(self.test_checkout_dir, "checkout", "", "", "", "", 0, self.outlog, self.errlog)
+        self.uut = Compile(self.test_checkout_dir, "checkout", "project-src", "project-classes", "pattern-src", "pattern-classes", 1, self.outlog, self.errlog)
         self.uut._call = _call_mock
         self.uut._move = _move_mock
         self.uut._copy = _copy_mock
@@ -80,15 +82,30 @@ class TestCompile:
 
         assert_equals(DataReaderSubprocess.Answer.skip, run_on_misuse(self.uut, misuse))
 
-    def test_again_builds_with_patterns(self):
+    def test_builds_patterns(self):
         misuse = TMisuse(self.misuse_path, {"build": {"src": "src", "commands": ["command"], "classes": "classes"}})
-        misuse._PATTERNS = {Pattern("", "a")}
+        pattern = Pattern(self.temp_dir, "a")
+        create_file(pattern.path)
+        misuse._PATTERNS = {pattern}
 
         run_on_misuse(self.uut, misuse)
 
         assert_equals(["command", "command"], [call[0] for call in self.call_calls])
         self.assert_copy_in_working_directory(
-            join("build", "classes", "a.class"), join(self.uut.classes_patterns, "a.class"), self.copy_calls[3])
+            join("build", "classes", "a0.class"), join(self.uut.classes_patterns, "a0.class"), self.copy_calls[3])
+
+    def test_builds_patterns_in_package(self):
+        misuse = TMisuse(self.misuse_path, {"build": {"src": "src", "commands": ["command"], "classes": "classes"}})
+        pattern = Pattern(self.temp_dir, join("a", "b.java"))
+        makedirs(pattern.orig_dir)
+        create_file(pattern.path)
+        misuse._PATTERNS = {pattern}
+
+        run_on_misuse(self.uut, misuse)
+
+        assert_equals(["command", "command"], [call[0] for call in self.call_calls])
+        self.assert_copy_in_working_directory(
+            join("build", "classes", "a", "b0.class"), join(self.uut.classes_patterns, "a", "b0.class"), self.copy_calls[3])
 
     def assert_copy_in_working_directory(self, source: str, target: str, copy: (str, str)):
         working_directory = join(self.test_checkout_dir, "project")

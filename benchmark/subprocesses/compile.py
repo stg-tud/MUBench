@@ -66,8 +66,10 @@ class Compile(DataReaderSubprocess):
 
         self._copy(checkout_dir, build_dir)
         src_dir = join(build_dir, build_config.src)
+        patterns = set()
         for pattern in misuse.patterns:
-            pattern.duplicate(src_dir, self.pattern_frequency)
+            duplicates = pattern.duplicate(src_dir, self.pattern_frequency)
+            patterns.update(duplicates)
         try:
             self._compile(build_config.commands, build_dir)
         except CompileError as ce:
@@ -75,7 +77,7 @@ class Compile(DataReaderSubprocess):
             return DataReaderSubprocess.Answer.skip
 
         classes_dir = join(build_dir, build_config.classes)
-        for pattern in misuse.patterns:
+        for pattern in patterns:
             pattern_class_file_name = pattern.file_name + ".class"
             class_file = join(classes_dir, pattern_class_file_name)
             class_file_dest = join(project_dir, self.classes_patterns, pattern_class_file_name)
