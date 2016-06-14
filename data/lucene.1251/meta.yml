@@ -29,5 +29,5 @@ fix:
 build:
   src: src/java/
   commands:
-    - ant compile-core
-  classes: build/classes/java/
+    - gradle build
+  classes: build/classes/main/
