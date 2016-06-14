@@ -125,17 +125,16 @@ class Compile(DataReaderSubprocess):
 
     # noinspection PyMethodMayBeStatic
     def _move(self, src, dst):
-        shutil.rmtree(dst, ignore_errors=True)
+        remove_tree(dst)
 
         # copied from http://stackoverflow.com/a/7420617
         for src_dir, dirs, files in os.walk(src):
-            dst_dir = src_dir.replace(src, dst, 1)
-            if not os.path.exists(dst_dir):
-                os.makedirs(dst_dir)
+            dst_dir = join(dst, src_dir[len(src):])
+            makedirs(dst_dir, exist_ok=True)
             for file_ in files:
-                src_file = os.path.join(src_dir, file_)
-                dst_file = os.path.join(dst_dir, file_)
-                if os.path.exists(dst_file):
+                src_file = join(src_dir, file_)
+                dst_file = join(dst_dir, file_)
+                if exists(dst_file):
                     os.remove(dst_file)
                 shutil.move(src_file, dst_dir)
 
