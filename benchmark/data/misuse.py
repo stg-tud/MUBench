@@ -1,6 +1,5 @@
 import os
 from glob import glob
-from os import listdir
 from os.path import isdir, isfile, join, basename
 
 import yaml
