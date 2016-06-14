@@ -41,36 +41,48 @@ class Compile(DataReaderSubprocess):
             subprocess_print("No build configured for this misuse.")
             return DataReaderSubprocess.Answer.ok
 
-        subprocess_print("Compiling project... ", end='')
-        additional_sources = misuse.additional_compile_sources
-        if exists(additional_sources):
-            copy_tree(additional_sources, checkout_dir)
-
-        # create and move project classes
+        self.copy_additional_compile_sources(misuse, checkout_dir)
         build_dir = join(project_dir, "build")
+
+        subprocess_print("Compiling project... ", end='')
+
         self._copy(checkout_dir, build_dir)
-        build_ok = self._build(build_config.commands, build_dir)
-        if not build_ok:
-            print("error in command '{}'!".format(self.command_with_error))
+        try:
+            self._compile(build_config.commands, build_dir)
+        except CompileError as ce:
+            print("error in command '{}'!".format(ce.command_with_error))
             return DataReaderSubprocess.Answer.skip
 
         self._move(join(build_dir, build_config.classes), join(project_dir, self.classes_normal))
-        print_ok()
 
+        print_ok()
         subprocess_print("Compiling patterns... ", end='')
 
-        # create and move patterns classes
         self._copy(checkout_dir, build_dir)
-        build_ok = self._build_with_patterns(build_config.commands, build_config.src, build_dir, self.pattern_frequency,
-                                             misuse.patterns)
-        if not build_ok:
-            print("error in command '{}'!".format(self.command_with_error))
+        src_dir = join(build_dir, build_config.src)
+        for pattern in misuse.patterns:
+            pattern.duplicate(src_dir, self.pattern_frequency)
+        try:
+            self._compile(build_config.commands, build_dir)
+        except CompileError as ce:
+            print("error in command '{}'!".format(ce.command_with_error))
             return DataReaderSubprocess.Answer.skip
 
-        self._move(join(build_dir, build_config.classes), join(project_dir, self.classes_patterns))
+        classes_dir = join(build_dir, build_config.classes)
+        for pattern in misuse.patterns:
+            pattern_class_file_name = pattern.file_name + ".class"
+            class_file = join(classes_dir, pattern_class_file_name)
+            class_file_dest = join(project_dir, self.classes_patterns, pattern_class_file_name)
+            shutil.move(class_file, class_file_dest)
 
         print_ok()
         return DataReaderSubprocess.Answer.ok
+
+    @staticmethod
+    def copy_additional_compile_sources(misuse, checkout_dir):
+        additional_sources = misuse.additional_compile_sources
+        if exists(additional_sources):
+            copy_tree(additional_sources, checkout_dir)
 
     def copy_pattern_src(self, project_dir, misuse):
         for pattern in misuse.patterns:
@@ -80,28 +92,17 @@ class Compile(DataReaderSubprocess):
         project_src = checkout_dir if build_config is None else join(checkout_dir, build_config.src)
         self._copy(project_src, join(project_dir, self.src_normal))
 
-    def _build(self, commands: List[str], project_dir: str) -> bool:
+    def _compile(self, commands: List[str], project_dir: str) -> None:
         for command in commands:
             ok = self._call(command, project_dir)
             if not ok:
-                self.command_with_error = command
-                return False
-        return True
+                raise CompileError(command)
 
     def _call(self, command: str, cwd: str) -> bool:
         makedirs(cwd, exist_ok=True)
         with open(self.outlog, 'a+') as outlog, open(self.errlog, 'a+') as errlog:
             returncode = subprocess.call(command, shell=True, cwd=cwd, stdout=outlog, stderr=errlog, bufsize=1)
         return returncode == 0
-
-    def _build_with_patterns(self, commands: List[str], src: str, build_dir: str, pattern_frequency: int,
-                             patterns: Set[Pattern]) -> bool:
-        shutil.rmtree(join(build_dir, src), ignore_errors=True)
-
-        for pattern in patterns:
-            pattern.duplicate(join(build_dir, src), pattern_frequency)
-
-        return self._build(commands, build_dir)
 
     # noinspection PyMethodMayBeStatic
     def _copy(self, src, dst):
@@ -123,3 +124,8 @@ class Compile(DataReaderSubprocess):
                 if os.path.exists(dst_file):
                     os.remove(dst_file)
                 shutil.move(src_file, dst_dir)
+
+
+class CompileError(Exception):
+    def __init__(self, command_with_error: str):
+        self.command_with_error = command_with_error
