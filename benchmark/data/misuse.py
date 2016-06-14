@@ -1,3 +1,5 @@
+import os
+from glob import glob
 from os import listdir
 from os.path import isdir, isfile, join, basename
 
@@ -32,7 +34,8 @@ class Misuse:
         if getattr(self, '_PATTERNS', None) is None:
             pattern_path = join(self.path, "patterns")
             if isdir(pattern_path):
-                self._PATTERNS = set([Pattern(join(pattern_path, file)) for file in listdir(pattern_path)])
+                self._PATTERNS = set(
+                    [Pattern(pattern_path, y[len(pattern_path) + 1:]) for x in os.walk(pattern_path) for y in glob(os.path.join(x[0], '*.java'))])
             else:
                 self._PATTERNS = set()
 

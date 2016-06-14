@@ -2,7 +2,7 @@ import os
 import shutil
 import subprocess
 from os import makedirs
-from os.path import join, exists
+from os.path import join, exists, isdir
 
 from typing import Set, List
 
@@ -56,6 +56,12 @@ class Compile(DataReaderSubprocess):
         self._move(join(build_dir, build_config.classes), join(project_dir, self.classes_normal))
 
         print_ok()
+
+        # skip pattern compilation if there's no patterns
+        if len(misuse.patterns) == 0:
+            print("no patterns, exiting")
+            return DataReaderSubprocess.Answer.ok
+
         subprocess_print("Compiling patterns... ", end='')
 
         self._copy(checkout_dir, build_dir)
@@ -73,7 +79,7 @@ class Compile(DataReaderSubprocess):
             pattern_class_file_name = pattern.file_name + ".class"
             class_file = join(classes_dir, pattern_class_file_name)
             class_file_dest = join(project_dir, self.classes_patterns, pattern_class_file_name)
-            shutil.move(class_file, class_file_dest)
+            self._copy(class_file, class_file_dest)
 
         print_ok()
         return DataReaderSubprocess.Answer.ok
@@ -106,8 +112,12 @@ class Compile(DataReaderSubprocess):
 
     # noinspection PyMethodMayBeStatic
     def _copy(self, src, dst):
-        remove_tree(dst)
-        copy_tree(src, dst)
+        if isdir(dst):
+            remove_tree(dst)
+        if isdir(src):
+            copy_tree(src, dst)
+        else:
+            shutil.copy(src, dst)
 
     # noinspection PyMethodMayBeStatic
     def _move(self, src, dst):

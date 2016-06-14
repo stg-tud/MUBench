@@ -65,7 +65,7 @@ class TestEvaluation:
 
         @property
         def patterns_mock(misuse):
-            return {Pattern('pattern.java')}
+            return {Pattern("", 'pattern.java')}
 
         patterns_orig = TMisuse.patterns
         try:

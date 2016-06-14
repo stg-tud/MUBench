@@ -94,7 +94,7 @@ class TestDetect:
     def test_invokes_detector_with_patterns_src_path(self):
         @property
         def patterns_mock(detect):
-            return Pattern("a")
+            return Pattern("", "a")
 
         orig_patterns = TMisuse.patterns
         try:
@@ -109,7 +109,7 @@ class TestDetect:
     def test_invokes_detector_with_patterns_class_path(self):
         @property
         def patterns_mock(detect):
-            return Pattern("a")
+            return Pattern("", "a")
 
         orig_patterns = TMisuse.patterns
         try:

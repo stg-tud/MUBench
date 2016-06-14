@@ -1,12 +1,12 @@
 from os import makedirs
-from os.path import join
+from os.path import join, dirname, exists
 from shutil import rmtree
 from tempfile import mkdtemp
 
 import yaml
 from benchmark.data.misuse import Misuse, BuildConfig
 from nose.tools import assert_equals, assert_not_equals
-from typing import Dict, Union
+from typing import Dict, Union, Set
 
 from benchmark.data.pattern import Pattern
 from benchmark.utils.io import safe_write
@@ -16,6 +16,7 @@ class TMisuse(Misuse):
     def __init__(self, path: str = ":irrelevant:", meta: Dict[str, Union[str, Dict]]={}):
         Misuse.__init__(self, path)
         self._META = meta
+
 
 
 # noinspection PyAttributeOutsideInit
@@ -81,24 +82,24 @@ class TestMisuse:
     def test_finds_single_pattern(self):
         uut = Misuse(self.temp_dir)
 
-        pattern_dir = join(self.temp_dir, "patterns")
-        makedirs(pattern_dir)
-        pattern_file = join(pattern_dir, "APattern.java")
-        self.create_file(pattern_file)
+        expected = self.create_pattern_file(uut, "APattern.java")
 
-        assert_equals(uut.patterns, {Pattern(pattern_file)})
+        assert_equals(uut.patterns, {expected})
 
     def test_finds_multiple_patterns(self):
         uut = Misuse(self.temp_dir)
 
-        pattern_dir = join(self.temp_dir, "patterns")
-        makedirs(pattern_dir)
-        pattern1_file = join(pattern_dir, "OnePattern.java")
-        self.create_file(pattern1_file)
-        pattern2_file = join(pattern_dir, "AnotherPattern.java")
-        self.create_file(pattern2_file)
+        pattern1 = self.create_pattern_file(uut, "OnePattern.java")
+        pattern2 = self.create_pattern_file(uut, "AnotherPattern.java")
 
-        assert_equals(uut.patterns, {Pattern(pattern1_file), Pattern(pattern2_file)})
+        assert_equals(uut.patterns, {pattern1, pattern2})
+
+    def test_finds_pattern_in_package(self):
+        uut = Misuse(self.temp_dir)
+
+        pattern = self.create_pattern_file(uut, join("mypackage", "Pattern.java"))
+
+        assert_equals(uut.patterns, {pattern})
 
     def test_equals_by_path(self):
         assert Misuse("foo/bar") == Misuse("foo/bar")
@@ -124,8 +125,14 @@ class TestMisuse:
         assert_equals(join("/path/misuse", "compile"), uut.additional_compile_sources)
 
     @staticmethod
-    def create_file(path: str):
+    def create_pattern_file(misuse: Misuse, filename: str) -> Pattern:
+        patterns_path = join(misuse.path, "patterns")
+        path = join(patterns_path, filename)
+        directory = dirname(path)
+        if not exists(directory):
+            makedirs(directory)
         open(path, 'a').close()
+        return Pattern(patterns_path, filename)
 
 
 class TestBuildConfig:

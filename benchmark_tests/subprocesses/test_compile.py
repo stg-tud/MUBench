@@ -23,7 +23,6 @@ class TestCompile:
 
         self.call_calls = []
         self.move_calls = []
-        self.build_with_patterns_calls = []
         self.copy_calls = []
 
         def _call_mock(a, b):
@@ -33,15 +32,11 @@ class TestCompile:
         def _move_mock(a, b):
             self.move_calls.append((a, b))
 
-        def _build_with_patterns_mock(a, b, c, d, e):
-            self.build_with_patterns_calls.append((a, b, c, d, e))
-
         def _copy_mock(a, b):
             self.copy_calls.append((a, b))
 
         self.uut = Compile(self.test_checkout_dir, "checkout", "", "", "", "", 0, self.outlog, self.errlog)
         self.uut._call = _call_mock
-        self.uut._build_with_patterns = _build_with_patterns_mock
         self.uut._move = _move_mock
         self.uut._copy = _copy_mock
 
@@ -66,7 +61,7 @@ class TestCompile:
         misuse = TMisuse(self.misuse_path)
         run_on_misuse(self.uut, misuse)
 
-    def test_copies_over_src_files(self):
+    def test_copies_project_sources(self):
         test_sources = join(self.temp_dir, "project", "checkout")
         create_file(join(test_sources, "file1.java"))
         create_file(join(test_sources, "src", "file2.java"))
@@ -74,8 +69,7 @@ class TestCompile:
 
         run_on_misuse(self.uut, misuse)
 
-        assert_equals(join(self.test_checkout_dir, "project", "checkout", "src"), self.copy_calls[0][0])
-        assert_equals(join(self.test_checkout_dir, "project", self.uut.src_normal), self.copy_calls[0][1])
+        self.assert_copy_in_working_directory(join("checkout", "src"), self.uut.src_normal, self.copy_calls[0])
 
     def test_continues_on_build_error(self):
         # noinspection PyUnusedLocal
@@ -86,28 +80,18 @@ class TestCompile:
 
         assert_equals(DataReaderSubprocess.Answer.skip, run_on_misuse(self.uut, misuse))
 
-    def test_builds_with_patterns(self):
-        @property
-        def patterns_mock(self):
-            return [Pattern("a")]
-
+    def test_again_builds_with_patterns(self):
         misuse = TMisuse(self.misuse_path, {"build": {"src": "src", "commands": ["command"], "classes": "classes"}})
+        misuse._PATTERNS = {Pattern("", "a")}
 
-        orig_patterns = TMisuse.patterns
-        try:
-            TMisuse.patterns = patterns_mock
+        run_on_misuse(self.uut, misuse)
 
-            run_on_misuse(self.uut, misuse)
+        assert_equals(["command", "command"], [call[0] for call in self.call_calls])
+        self.assert_copy_in_working_directory(
+            join("build", "classes", "a.class"), join(self.uut.classes_patterns, "a.class"), self.copy_calls[3])
 
-            assert_equals(1, len(self.build_with_patterns_calls))
-            actual_args = self.build_with_patterns_calls[0]
-
-            assert_equals(["command"], actual_args[0])
-            assert_equals("src", actual_args[1])
-            assert_equals(join(self.test_checkout_dir, "project", "build"), actual_args[2])
-            assert_equals(0, actual_args[3])
-            assert_equals([Pattern("a")], actual_args[4])
-        finally:
-            TMisuse.patterns = orig_patterns
-
+    def assert_copy_in_working_directory(self, source: str, target: str, copy: (str, str)):
+        working_directory = join(self.test_checkout_dir, "project")
+        assert_equals(join(working_directory, source), copy[0])
+        assert_equals(join(working_directory, target), copy[1])
 

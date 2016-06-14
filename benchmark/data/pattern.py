@@ -5,8 +5,10 @@ from os.path import exists, basename, join, splitext, dirname
 
 
 class Pattern:
-    def __init__(self, path: str):
-        self.path = path
+    def __init__(self, basepath: str, pattern_path: str):
+        self.basepath = basepath
+        self.pattern_path = pattern_path
+        self.path = join(basepath, pattern_path)
 
     def __hash__(self):
         return hash(self.path)
@@ -19,7 +21,7 @@ class Pattern:
 
     def is_valid(self) -> bool:
         if not self.path.endswith(".java") or not exists(self.path):
-            raise NoPatternFileError("Pattern file is not valid!")
+            raise NoPatternFileError("Pattern file is invalid!")
 
     @property
     def orig_dir(self):
