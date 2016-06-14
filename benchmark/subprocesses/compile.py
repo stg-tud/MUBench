@@ -2,18 +2,19 @@ import os
 import shutil
 import subprocess
 from os import makedirs
-from os.path import join, exists, isdir
+from os.path import join, exists, isdir, dirname
 
-from typing import Set, List
+from typing import List
 
 from benchmark.data.misuse import Misuse
-from benchmark.data.pattern import Pattern
 from benchmark.subprocesses.datareader import DataReaderSubprocess
 from benchmark.utils.io import remove_tree, copy_tree
 from benchmark.utils.printing import subprocess_print, print_ok
 
 
 class Compile(DataReaderSubprocess):
+    BUILD_DIR = "build"
+
     def __init__(self, checkout_base_dir: str, checkout_subdir: str, src_normal: str, classes_normal: str,
                  src_patterns: str, classes_patterns: str, pattern_frequency: int, outlog: str, errlog: str):
         self.checkout_base_dir = checkout_base_dir
@@ -29,8 +30,11 @@ class Compile(DataReaderSubprocess):
         self.command_with_error = ""
 
     def run(self, misuse: Misuse):
-
         project_dir = join(self.checkout_base_dir, misuse.project_name)
+        build_dir = join(project_dir, Compile.BUILD_DIR)
+
+        self.clean(project_dir, build_dir)
+
         checkout_dir = join(project_dir, self.checkout_subdir)
         build_config = misuse.build_config
 
@@ -38,53 +42,53 @@ class Compile(DataReaderSubprocess):
         self.copy_pattern_src(project_dir, misuse)
 
         if build_config is None:
-            subprocess_print("No build configured for this misuse.")
+            subprocess_print("No compilation configured for this misuse.")
             return DataReaderSubprocess.Answer.ok
 
         self.copy_additional_compile_sources(misuse, checkout_dir)
-        build_dir = join(project_dir, "build")
 
-        subprocess_print("Compiling project... ", end='')
-
-        self._copy(checkout_dir, build_dir)
         try:
+            subprocess_print("Compiling project... ", end='')
+            self._copy(checkout_dir, build_dir)
             self._compile(build_config.commands, build_dir)
+            self._move(join(build_dir, build_config.classes), join(project_dir, self.classes_normal))
+            print_ok()
         except CompileError as ce:
             print("error in command '{}'!".format(ce.command_with_error))
             return DataReaderSubprocess.Answer.skip
 
-        self._move(join(build_dir, build_config.classes), join(project_dir, self.classes_normal))
-
-        print_ok()
-
-        # skip pattern compilation if there's no patterns
         if len(misuse.patterns) == 0:
-            print("no patterns, exiting")
             return DataReaderSubprocess.Answer.ok
 
-        subprocess_print("Compiling patterns... ", end='')
-
-        self._copy(checkout_dir, build_dir)
-        src_dir = join(build_dir, build_config.src)
-        patterns = set()
-        for pattern in misuse.patterns:
-            duplicates = pattern.duplicate(src_dir, self.pattern_frequency)
-            patterns.update(duplicates)
         try:
+            subprocess_print("Compiling patterns... ", end='')
+
+            self._copy(checkout_dir, build_dir)
+            src_dir = join(build_dir, build_config.src)
+            patterns = set()
+            for pattern in misuse.patterns:
+                duplicates = pattern.duplicate(src_dir, self.pattern_frequency)
+                patterns.update(duplicates)
             self._compile(build_config.commands, build_dir)
+            classes_dir = join(build_dir, build_config.classes)
+            for pattern in patterns:
+                pattern_class_file_name = pattern.file_name + ".class"
+                class_file = join(classes_dir, pattern_class_file_name)
+                class_file_dest = join(project_dir, self.classes_patterns, pattern_class_file_name)
+                self._copy(class_file, class_file_dest)
+            print_ok()
         except CompileError as ce:
             print("error in command '{}'!".format(ce.command_with_error))
             return DataReaderSubprocess.Answer.skip
 
-        classes_dir = join(build_dir, build_config.classes)
-        for pattern in patterns:
-            pattern_class_file_name = pattern.file_name + ".class"
-            class_file = join(classes_dir, pattern_class_file_name)
-            class_file_dest = join(project_dir, self.classes_patterns, pattern_class_file_name)
-            self._copy(class_file, class_file_dest)
-
-        print_ok()
         return DataReaderSubprocess.Answer.ok
+
+    def clean(self, project_dir, build_dir):
+        remove_tree(join(project_dir, self.src_normal))
+        remove_tree(join(project_dir, self.classes_normal))
+        remove_tree(join(project_dir, self.src_patterns))
+        remove_tree(join(project_dir, self.classes_patterns))
+        remove_tree(build_dir)
 
     @staticmethod
     def copy_additional_compile_sources(misuse, checkout_dir):
