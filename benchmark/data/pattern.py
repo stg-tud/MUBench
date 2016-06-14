@@ -1,7 +1,7 @@
 from distutils.file_util import copy_file
 from fileinput import FileInput
 from os import makedirs
-from os.path import exists, join, splitext, dirname
+from os.path import exists, join, splitext, dirname, basename
 from typing import Set
 
 
@@ -34,7 +34,7 @@ class Pattern:
 
     @property
     def class_name(self):
-        return self.file_name
+        return basename(self.file_name)
 
     @property
     def file_extension(self):
