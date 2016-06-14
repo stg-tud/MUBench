@@ -116,9 +116,11 @@ class Compile(DataReaderSubprocess):
     def _copy(self, src, dst):
         if isdir(dst):
             remove_tree(dst)
+
         if isdir(src):
             copy_tree(src, dst)
         else:
+            makedirs(dirname(dst), exist_ok=True)
             shutil.copy(src, dst)
 
     # noinspection PyMethodMayBeStatic
