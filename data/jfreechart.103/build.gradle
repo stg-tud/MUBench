@@ -1,0 +1,17 @@
+apply plugin: 'java'
+
+sourceSets {
+    main {
+        java {
+            srcDir 'source'
+        }
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+  compile group: 'javax.servlet', name: 'servlet-api', version: '2.2'
+}

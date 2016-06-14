@@ -30,3 +30,6 @@ fix:
       diff: https://sourceforge.net/p/jfreechart/code/164/tree/trunk/source/org/jfree/chart/renderer/category/StatisticalBarRenderer.java?diff=50b53b485fcbc92b6542a639:163
 build:
   src: source/
+  commands:
+    - gradle build
+  classes: build/classes/main/

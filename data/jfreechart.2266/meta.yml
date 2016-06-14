@@ -30,3 +30,6 @@ fix:
       diff: https://sourceforge.net/p/jfreechart/code/2266/tree/trunk/source/org/jfree/chart/renderer/category/AbstractCategoryItemRenderer.java?diff=50b53b485fcbc92b6542a639:2265
 build:
   src: source/
+  commands:
+    - gradle build
+  classes: build/classes/main/

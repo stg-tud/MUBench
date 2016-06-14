@@ -33,3 +33,6 @@ fix:
       diff: https://sourceforge.net/p/jfreechart/code/1025/tree/trunk/source/org/jfree/chart/util/ShapeUtilities.java?diff=50b53b485fcbc92b6542a639:1024
 build:
   src: source/
+  commands:
+    - gradle build
+  classes: build/classes/main/

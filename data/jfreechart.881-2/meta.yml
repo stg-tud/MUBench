@@ -29,3 +29,6 @@ fix:
       diff: https://sourceforge.net/p/jfreechart/code/811/tree/trunk/source/org/jfree/chart/plot/XYPlot.java?diff=50b53b485fcbc92b6542a639:810
 build:
   src: source/
+  commands:
+    - gradle build
+  classes: build/classes/main/
