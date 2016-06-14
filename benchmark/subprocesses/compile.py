@@ -29,31 +29,25 @@ class Compile(DataReaderSubprocess):
         self.command_with_error = ""
 
     def run(self, misuse: Misuse):
-        subprocess_print("Building project... ", end='')
 
         project_dir = join(self.checkout_base_dir, misuse.project_name)
         checkout_dir = join(project_dir, self.checkout_subdir)
         build_config = misuse.build_config
 
-        # copy project src
-        project_src = checkout_dir if build_config is None else join(checkout_dir, build_config.src)
-        self._copy(project_src, join(project_dir, self.src_normal))
-
-        # copy patterns src
-        for pattern in misuse.patterns:
-            pattern.duplicate(join(project_dir, self.src_patterns), self.pattern_frequency)
+        self.copy_project_src(project_dir, checkout_dir, build_config)
+        self.copy_pattern_src(project_dir, misuse)
 
         if build_config is None:
-            print("no build configured for this project, continuing without compiled sources.")
+            subprocess_print("No build configured for this misuse.")
             return DataReaderSubprocess.Answer.ok
 
-        build_dir = join(project_dir, "build")
-
+        subprocess_print("Building project... ", end='')
         additional_sources = misuse.additional_compile_sources
         if exists(additional_sources):
             copy_tree(additional_sources, checkout_dir)
 
         # create and move project classes
+        build_dir = join(project_dir, "build")
         self._copy(checkout_dir, build_dir)
         build_ok = self._build(build_config.commands, build_dir)
         if not build_ok:
@@ -61,6 +55,9 @@ class Compile(DataReaderSubprocess):
             return DataReaderSubprocess.Answer.skip
 
         self._move(join(build_dir, build_config.classes), join(project_dir, self.classes_normal))
+        print_ok()
+
+        subprocess_print("Building patterns... ", end='')
 
         # create and move patterns classes
         self._copy(checkout_dir, build_dir)
@@ -74,6 +71,14 @@ class Compile(DataReaderSubprocess):
 
         print_ok()
         return DataReaderSubprocess.Answer.ok
+
+    def copy_pattern_src(self, project_dir, misuse):
+        for pattern in misuse.patterns:
+            pattern.duplicate(join(project_dir, self.src_patterns), self.pattern_frequency)
+
+    def copy_project_src(self, project_dir, checkout_dir, build_config):
+        project_src = checkout_dir if build_config is None else join(checkout_dir, build_config.src)
+        self._copy(project_src, join(project_dir, self.src_normal))
 
     def _build(self, commands: List[str], project_dir: str) -> bool:
         for command in commands:
