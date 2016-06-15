@@ -57,7 +57,7 @@ class Compile(DataReaderSubprocess):
             print("error in command '{}'!".format(ce.command_with_error))
             return DataReaderSubprocess.Answer.skip
 
-        if len(misuse.patterns) == 0:
+        if not misuse.patterns:
             return DataReaderSubprocess.Answer.ok
 
         try:

@@ -1,6 +1,6 @@
 import subprocess
 import time
-from os.path import join, realpath, exists, basename
+from os.path import join, realpath, exists
 
 from typing import Optional, List
 
@@ -8,7 +8,7 @@ from benchmark.data.misuse import Misuse
 from benchmark.subprocesses.datareader import DataReaderSubprocess
 from benchmark.utils import web_util
 from benchmark.utils.io import safe_open, safe_write
-from benchmark.utils.printing import subprocess_print, print_ok
+from benchmark.utils.printing import subprocess_print
 
 
 class Detect(DataReaderSubprocess):
@@ -42,9 +42,7 @@ class Detect(DataReaderSubprocess):
 
     def setup(self):
         if not self._detector_available():
-
-            download_ok = self._download()
-
+            self._download()
 
     def run(self, misuse: Misuse) -> None:
         result_dir = join(self.results_path, misuse.name)
