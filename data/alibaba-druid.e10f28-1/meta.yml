@@ -29,7 +29,10 @@ fix:
 build:
   src: src/main/java
   commands:
-    - "sed -i 's/10.2.0.2/10.2.0.2.0/g' pom.xml"
-    - "sed -i 's/code.alibabatech.com\/mvn\/releases\//vm16.rbg.informatik.tu-darmstadt.de\/nexus\/repository\/mubench-m2\//g' pom.xml"
+    - "sed -i 's#code.alibabatech.com/mvn/releases/#vm16.rbg.informatik.tu-darmstadt.de/nexus/repository/mubench-m2/#g' pom.xml"
+    - sed -i '314i<dependency><groupId>avalon-framework</groupId><artifactId>avalon-framework-api</artifactId><version>4.1.5</version></dependency>' pom.xml
+    - sed -i 's/10.2.0.2/10.2.0.2.0/g' pom.xml
+    - "sed -i 's#<groupId>proxool</groupId>#<groupId>com.cloudhopper.proxool</groupId>#g' pom.xml"
+    - sed -i '485i<exclusions><exclusion><groupId>avalon-framework</groupId><artifactId>avalon-framework-api</artifactId></exclusion></exclusions>' pom.xml
     - mvn compile
-  classes: target/classes
+  classes: target/classes/
