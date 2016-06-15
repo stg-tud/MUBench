@@ -28,6 +28,6 @@ fix:
     - name: src/org/mozilla/javascript/Parser.java
 build:
   src: src/
-  compile:
+  commands:
     - gradle build
   classes: build/classes/main/
