@@ -30,3 +30,7 @@ fix:
       diff: http://svn.apache.org/viewvc/jakarta/commons/proper/httpclient/trunk/src/java/org/apache/commons/httpclient/HttpMethodDirector.java?r1=134493&r2=134494&pathrev=134494
 build:
   src: src/java/
+  commands:
+    - sed -i 's/<javac/<javac encoding="iso-8859-1"/g' build.xml
+    - ant compile
+  classes: target/classes/

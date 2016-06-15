@@ -26,3 +26,7 @@ fix:
       diff: http://svn.apache.org/viewvc/jakarta/commons/proper/httpclient/trunk/src/java/org/apache/commons/httpclient/util/DateUtil.java?r1=190480&r2=190479&pathrev=190480
 build:
   src: src/java/
+  commands:
+    - sed -i 's/<javac/<javac encoding="iso-8859-1"/g' build.xml
+    - ant compile
+  classes: target/classes/
