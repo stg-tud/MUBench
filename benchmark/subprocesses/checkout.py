@@ -80,7 +80,7 @@ class Checkout(DataReaderSubprocess):
             return DataReaderSubprocess.Answer.ok
         else:
             print("error! (consider .log files in checkout subfolder for more detail)", flush=True)
-            raise DataReaderSubprocess.Answer.skip
+            return DataReaderSubprocess.Answer.skip
 
     @staticmethod
     def get_parent(vcs: str, revision: Union[int, str]) -> Union[str, int]:
