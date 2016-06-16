@@ -41,6 +41,7 @@ class MUBenchmark:
         self.patterns_src = "patterns-src"
         self.patterns_classes = "patterns-classes"
         self.detector_result_file = 'findings.yml'
+        self.eval_result_file = 'result.csv'
 
         self.pattern_frequency = 20
 
@@ -107,7 +108,8 @@ class MUBenchmark:
         self.datareader.add(detector_runner)
 
     def _setup_eval(self):
-        evaluation_handler = Evaluation(self.results_path, self.detector_result_file, self.checkout_dir)
+        evaluation_handler = Evaluation(self.results_path, self.detector_result_file, self.checkout_dir,
+                                        self.eval_result_file)
         self.datareader.add(evaluation_handler)
 
     def run(self) -> None:

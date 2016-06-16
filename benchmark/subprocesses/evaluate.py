@@ -13,17 +13,22 @@ from benchmark.utils.printing import subprocess_print
 
 
 class Evaluation(DataReaderSubprocess):
+    no_hit = 0
+    potential_hit = 1
+
     def __init__(self,
                  results_path: str,
                  detector_result_file: str,
-                 checkout_base_dir: str):
+                 checkout_base_dir: str,
+                 eval_result_file: str):
         self.results_path = results_path
         self.detector_result_file = detector_result_file
         self.checkout_base_dir = checkout_base_dir
+        self.eval_result_file = eval_result_file
 
         self.results = []
 
-    def run(self, misuse: Misuse) -> Tuple[str, Optional[int]]:
+    def run(self, misuse: Misuse) -> Tuple[str, int]:
 
         subprocess_print("Evaluation : running... ", end='')
 
@@ -54,61 +59,23 @@ class Evaluation(DataReaderSubprocess):
 
                 if file_found and label_found:
                     print("potential hit", flush=True)
-                    self.results.append((misuse.name, 1))
+                    self.results.append((misuse.name, Evaluation.potential_hit))
                     return DataReaderSubprocess.Answer.ok
                 else:
                     print("no hit", flush=True)
-                    self.results.append((misuse.name, 0))
+                    self.results.append((misuse.name, Evaluation.no_hit))
                     return DataReaderSubprocess.Answer.ok
 
         print("ignored (no available findings)", flush=True)
-        self.results.append((misuse.name, None))
         return DataReaderSubprocess.Answer.ok
 
+    def teardown(self):
+        self.output_results()
+
     def output_results(self) -> None:
-        if not self.results:
-            return
-
-        def to_data_name(result: Tuple[str, int]) -> str:
-            return result[0]
-
-        def to_success(result: Tuple[str, int]) -> int:
-            return result[1]
-
-        applied_results = [result for result in self.results if result[1] is not None]
-        total = len(self.results)
-        applied = len(applied_results)
-        found = sum(map(to_success, applied_results))
-
-        def was_successful(result: Tuple[str, int]) -> bool:
-            return result[1] is 1
-
-        def was_not_successful(result: Tuple[str, int]) -> bool:
-            return result[1] is 0
-
-        def finished_with_error(result: Tuple[str, int]) -> bool:
-            return result[1] is None
-
-        found_misuses = map(to_data_name, filter(was_successful, self.results))
-        not_found_misuses = map(to_data_name, filter(was_not_successful, self.results))
-        misuses_with_errors = map(to_data_name, filter(finished_with_error, self.results))
-        with safe_open(join(self.results_path, "Result.txt"), 'w+') as file_result:
-            print('----------------------------------------------', file=file_result)
-            print('Total number of misuses in the benchmark: ' + str(total), file=file_result)
-            print('Number of analyzed misuses (might be less due to ignore or errors): ' + str(applied),
-                  file=file_result)
-            print('Number of misuses found: ' + str(found), file=file_result)
-            print('----------------------------------------------', file=file_result)
-            print('These misuses were found:', file=file_result)
-            print('\n'.join(found_misuses), file=file_result)
-            print('----------------------------------------------', file=file_result)
-            print('These misuses were not found:', file=file_result)
-            print('\n'.join(not_found_misuses), file=file_result)
-            print('----------------------------------------------', file=file_result)
-            print('These cases encountered an error (see logs for more information) or were ignored:',
-                  file=file_result)
-            print('\n'.join(misuses_with_errors), file=file_result)
-            print('----------------------------------------------', file=file_result)
+        with safe_open(join(self.results_path, self.eval_result_file), 'w+') as file_result:
+            for result in self.results:
+                print(str(result).lstrip('(').rstrip(')'), file=file_result)
 
     @staticmethod
     def __is_file_found(findings: Iterable[Dict[str, str]],
@@ -184,6 +151,3 @@ class Evaluation(DataReaderSubprocess):
 
         print("Correct label was not found!", file=log_stream)
         return False
-
-    def teardown(self):
-        self.output_results()

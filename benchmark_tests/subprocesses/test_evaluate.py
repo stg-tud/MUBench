@@ -1,3 +1,4 @@
+import ast
 from os import chdir
 from os.path import join
 from shutil import rmtree
@@ -5,7 +6,7 @@ from tempfile import mkdtemp
 
 from benchmark.data.pattern import Pattern
 from benchmark_tests.test_utils.subprocess_util import run_on_misuse
-from nose.tools import assert_equals
+from nose.tools import assert_equals, assert_in
 
 from benchmark.subprocesses.evaluate import Evaluation
 from benchmark.utils.io import safe_write
@@ -24,8 +25,9 @@ class TestEvaluation:
         self.results_path = join(self.temp_dir, 'results', 'test-detector')
         self.detector = 'test-detector'
         self.file_detector_result = 'findings.yml'
+        self.eval_result_file = 'result.csv'
 
-        self.uut = Evaluation(self.results_path, self.file_detector_result, self.checkout_dir)
+        self.uut = Evaluation(self.results_path, self.file_detector_result, self.checkout_dir, self.eval_result_file)
 
     def teardown(self):
         rmtree(self.temp_dir, ignore_errors=True)
@@ -63,20 +65,36 @@ class TestEvaluation:
     def test_handles_patterns(self):
         self.create_result('git', 'file: pattern0.java\n')
 
-        @property
-        def patterns_mock(misuse):
-            return {Pattern("", 'pattern.java')}
+        test_misuse = TMisuse('git', {'fix': {'files': [{'name': 'some-class.java'}]}})
+        test_misuse._PATTERNS = {Pattern("", 'pattern.java')}
 
-        patterns_orig = TMisuse.patterns
-        try:
-            TMisuse.patterns = patterns_mock
+        run_on_misuse(self.uut, test_misuse)
 
-            run_on_misuse(self.uut, TMisuse('git', {'fix': {'files': [{'name': 'some-class.java'}]}}))
+        actual_result = self.uut.results[0]
+        assert_equals(('git', 1), actual_result)
 
-            actual_result = self.uut.results[0]
-            assert_equals(('git', 1), actual_result)
-        finally:
-            TMisuse.patterns = patterns_orig
+    def test_writes_results_on_teardown(self):
+        self.uut.results = {('NoHit', 0), ('PotentialHit', 1)}
+
+        self.uut.teardown()
+
+        with open(join(self.results_path, self.eval_result_file), 'r') as actual_result_file:
+            actual_content = actual_result_file.read().splitlines()
+
+        assert_in("'NoHit', 0", actual_content)
+        assert_in("'PotentialHit', 1", actual_content)
+        assert_equals(2, len(actual_content))
+
+    def test_output_format_is_parseable(self):
+        test_result = ('Misuse', 0)
+        self.uut.results = {test_result}
+
+        self.uut.teardown()
+
+        with open(join(self.results_path, self.eval_result_file), 'r') as actual_result_file:
+            actual = actual_result_file.read().splitlines()[0]
+
+        assert_equals(test_result, ast.literal_eval(actual))
 
     def create_result(self, misuse_name, content):
         safe_write(content, join(self.results_path, misuse_name, self.file_detector_result),
