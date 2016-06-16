@@ -23,7 +23,8 @@ class MUBenchmark:
                  black_list: List[str],
                  white_list: List[str],
                  java_options: List[str],
-                 force_detect: bool
+                 force_detect: bool,
+                 skip_compile: bool,
                  ):
         self.detector = detector
         self.timeout = timeout
@@ -31,6 +32,7 @@ class MUBenchmark:
         self.white_list = white_list
         self.java_options = java_options
         self.force_detect = force_detect
+        self.skip_compile = skip_compile
         self.data_path = join(getcwd(), "data")
         self.results_path = realpath(join("results", self.detector))
         self.checkout_dir = realpath("checkouts")
@@ -93,12 +95,13 @@ class MUBenchmark:
         self.datareader.add(checkout_handler)
 
     def _setup_compile(self):
-        compile_handler = Compile(self.checkout_dir, self.checkout_subdir,
+        if not self.skip_compile:
+            compile_handler = Compile(self.checkout_dir, self.checkout_subdir,
                                   self.original_src, self.original_classes,
                                   self.patterns_src, self.patterns_classes, self.pattern_frequency,
                                   join(self.checkout_dir, "compile-out.log"),
                                   join(self.checkout_dir, "compile-error.log"))
-        self.datareader.add(compile_handler)
+            self.datareader.add(compile_handler)
 
     def _setup_detect(self):
         detector_runner = Detect(self.detector, self.detector_result_file, self.checkout_dir, self.original_src,
@@ -129,9 +132,12 @@ if 'java_options' not in config:
     config.java_options = []
 if 'force_detect' not in config:
     config.force_detect = False
+if 'skip_compile' not in config:
+    config.skip_compile = False
 
 benchmark = MUBenchmark(detector=config.detector, white_list=config.white_list, black_list=config.black_list,
-                        timeout=config.timeout, java_options=config.java_options, force_detect=config.force_detect)
+                        timeout=config.timeout, java_options=config.java_options, force_detect=config.force_detect,
+                        skip_compile=config.skip_compile)
 
 if config.subprocess == 'check':
     benchmark.run_check()

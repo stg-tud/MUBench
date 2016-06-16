@@ -72,9 +72,7 @@ def __add_evaluate_subprocess(available_detectors: List[str], subparsers) -> Non
 
 
 def __setup_detector_running_subprocess(available_detectors: List[str], subprocess_parser: ArgumentParser) -> None:
-    subprocess_parser.add_argument('detector', help="the detector whose findings to evaluate"
-                                   #, choices=available_detectors
-                                   )
+    subprocess_parser.add_argument('detector', help="the detector whose findings to evaluate", choices=available_detectors)
 
     __setup_misuse_filter_arguments(subprocess_parser)
 
@@ -83,6 +81,9 @@ def __setup_detector_running_subprocess(available_detectors: List[str], subproce
 
     subprocess_parser.add_argument('--java-options', metavar='option', nargs='+', dest='java_options', default=[],
                                    help="will be passed to the java subprocess running the detector (example: `--java-options Xmx6144M` will run `java -Xmx6144M`)")
+
+    subprocess_parser.add_argument('--skip-compile', dest='skip_compile', action='store_true', default=False,
+                                   help="skip the `compile` step")
 
 
 def __setup_misuse_filter_arguments(compile_parser):
