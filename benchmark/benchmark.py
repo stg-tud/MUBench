@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
-import inspect
 import sys
-from os import getcwd, chdir, listdir
-from os.path import join, realpath, dirname, exists
+from os import getcwd, listdir
+from os.path import join, realpath, exists
 from shutil import rmtree
 
 from typing import Optional, List
@@ -115,9 +114,6 @@ class MUBenchmark:
     def run(self) -> None:
         self.datareader.run()
 
-
-mubench = dirname(realpath(inspect.stack()[0][1]))  # most reliable way to get the scripts absolute location
-chdir(mubench)  # set the cwd to the MUBench folder
 available_detectors = listdir(realpath('detectors'))
 config = command_line_util.parse_args(sys.argv, available_detectors)
 
