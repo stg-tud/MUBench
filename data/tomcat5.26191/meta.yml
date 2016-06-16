@@ -32,6 +32,6 @@ fix:
 build:
   src: src/share/
   commands:
-    - "sed -i 's/new CodeSource(url,null)/new CodeSource(url,(java.security.CodeSigner[])null)/g' src/share/org/apache/jasper/compiler/JspRuntimeContext.java"
+    - "sed -i 's/new CodeSource(url,null)/new CodeSource(url,(java.security.cert.Certificate[])null)/g' src/share/org/apache/jasper/compiler/JspRuntimeContext.java"
     - gradle build
   classes: build/classes/main/
