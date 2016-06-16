@@ -8,7 +8,7 @@ python:
 
 before_script:
   - mkdir -p shippable/codecoverage shippable/testresults
-  - sudo chmod +x benchmark.py
+  - sudo chmod +x MUBench
 
 install:
   - sudo apt-get install git
