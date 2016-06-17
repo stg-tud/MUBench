@@ -46,7 +46,7 @@ class Visualizer:
             headers = ['Detector'] + sorted(list(misuses))
             w = csv.DictWriter(result_file, fieldnames=headers)
             w.writeheader()
-            for detector in results:
+            for detector in sorted(results):
                 print(detector, end='', file=result_file)
                 w.writerow({misuse: results[detector].get(misuse) or '' for misuse in headers[1:]})
 
