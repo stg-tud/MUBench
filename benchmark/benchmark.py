@@ -12,6 +12,7 @@ from benchmark.subprocesses.compile import Compile
 from benchmark.subprocesses.datareader import DataReader
 from benchmark.subprocesses.detect import Detect
 from benchmark.subprocesses.evaluate import Evaluation
+from benchmark.subprocesses.visualize_results import Visualizer
 from benchmark.utils import command_line_util
 from benchmark.utils.io import safe_open
 
@@ -43,6 +44,8 @@ class MUBenchmark:
         self.patterns_classes = "patterns-classes"
         self.detector_result_file = 'findings.yml'
         self.eval_result_file = 'result.csv'
+        self.reviewed_eval_result_file = 'reviewed-result.csv'
+        self.visualize_result_file = 'result.csv'
 
         self.pattern_frequency = 20
 
@@ -87,6 +90,10 @@ class MUBenchmark:
 
         self.run()
 
+    def run_visualize(self) -> None:
+        visualizer = Visualizer(realpath("results"), self.reviewed_eval_result_file, self.visualize_result_file)
+        visualizer.run()
+
     def _setup_checkout(self, setup_revisions: bool, checkout_parent: bool):
         checkout_handler = Checkout(setup_revisions=setup_revisions, checkout_parent=checkout_parent,
                                     checkout_subdir=self.checkout_subdir,
@@ -97,10 +104,10 @@ class MUBenchmark:
     def _setup_compile(self):
         if not self.skip_compile:
             compile_handler = Compile(self.checkout_dir, self.checkout_subdir,
-                                  self.original_src, self.original_classes,
-                                  self.patterns_src, self.patterns_classes, self.pattern_frequency,
-                                  join(self.checkout_dir, "compile-out.log"),
-                                  join(self.checkout_dir, "compile-error.log"))
+                                      self.original_src, self.original_classes,
+                                      self.patterns_src, self.patterns_classes, self.pattern_frequency,
+                                      join(self.checkout_dir, "compile-out.log"),
+                                      join(self.checkout_dir, "compile-error.log"))
             self.datareader.add(compile_handler)
 
     def _setup_detect(self):
@@ -116,6 +123,7 @@ class MUBenchmark:
 
     def run(self) -> None:
         self.datareader.run()
+
 
 available_detectors = listdir(realpath('detectors'))
 config = command_line_util.parse_args(sys.argv, available_detectors)
@@ -149,3 +157,5 @@ if config.subprocess == 'detect':
     benchmark.run_detect()
 if config.subprocess == 'eval':
     benchmark.run_evaluate()
+if config.subprocess == 'visualize':
+    benchmark.run_visualize()

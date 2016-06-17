@@ -17,6 +17,7 @@ def get_command_line_parser(available_detectors: List[str]) -> ArgumentParser:
     __add_compile_subprocess(subparsers)
     __add_detect_subprocess(available_detectors, subparsers)
     __add_evaluate_subprocess(available_detectors, subparsers)
+    __add_visualize_subprocess(subparsers)
 
     return parser
 
@@ -45,6 +46,7 @@ def __add_checkout_subprocess(subparsers) -> None:
                                             help="Clone the repositories containing the misuses from the MUBench dataset. The clones will be created below the `checkouts` folder.")  # type: ArgumentParser
     __setup_misuse_filter_arguments(checkout_parser)
 
+
 def __add_compile_subprocess(subparsers) -> None:
     compile_parser = subparsers.add_parser('compile',
                                            description="Compile the checkouts and the the patterns. Run `checkout`, if necessary.",
@@ -71,8 +73,15 @@ def __add_evaluate_subprocess(available_detectors: List[str], subparsers) -> Non
                              help="force a new `detect` run, deleting the previous result")
 
 
+def __add_visualize_subprocess(subparsers) -> None:
+    visualize_subparser = subparsers.add_parser('visualize',
+                                                description="Collect all detect and manual review results and write them to `results/result.csv`",
+                                                help="Collect all detect and manual review results and write them to `results/result.csv`")  # type: ArgumentParser
+
+
 def __setup_detector_running_subprocess(available_detectors: List[str], subprocess_parser: ArgumentParser) -> None:
-    subprocess_parser.add_argument('detector', help="the detector whose findings to evaluate", choices=available_detectors)
+    subprocess_parser.add_argument('detector', help="the detector whose findings to evaluate",
+                                   choices=available_detectors)
 
     __setup_misuse_filter_arguments(subprocess_parser)
 
