@@ -38,7 +38,7 @@ class TestVisualizer:
         with open(visualize_result_file) as actual_file:
             actual_result = actual_file.read()
 
-        expected_result = "Detector,Misuse1,Misuse2,Misuse3\n\nDetector1, 0, 1, 0\n\n"
+        expected_result = "Detector,Misuse1,Misuse2,Misuse3\nDetector1, 0, 1, 0\n"
         assert_equals(expected_result, actual_result)
 
     def test_generates_result_for_multiple_detectors(self):
@@ -54,7 +54,7 @@ class TestVisualizer:
         with open(visualize_result_file) as actual_file:
             actual_result = actual_file.read()
 
-        expected_result = "Detector,Misuse1,Misuse2,Misuse3\n\nDetector1, 0, 1,\n\nDetector2,, 1, 0\n\n"
+        expected_result = "Detector,Misuse1,Misuse2,Misuse3\nDetector1, 0, 1,\nDetector2,, 1, 0\n"
         assert_equals(expected_result, actual_result)
 
     def create_detector_result(self, detector, content):
