@@ -34,6 +34,10 @@ class Prerequisites:
     def gradle():
         subprocess.check_output(['gradle', '-version'], stderr=subprocess.PIPE)
 
+    @staticmethod
+    def maven():
+        subprocess.check_output(['mvn', '-v'])
+
 
 class Check(DataReaderSubprocess):
     def setup(self):
