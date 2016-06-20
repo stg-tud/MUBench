@@ -30,6 +30,10 @@ class Prerequisites:
     def request():
         import urllib.request
 
+    @staticmethod
+    def gradle():
+        subprocess.check_output(['gradle', '-version'], stderr=subprocess.PIPE)
+
 
 class Check(DataReaderSubprocess):
     def setup(self):
