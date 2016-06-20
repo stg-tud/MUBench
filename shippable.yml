@@ -18,6 +18,7 @@ install:
   - pip install pyyaml
   - pip install request
   - sudo apt-get install maven
+  - sudo apt-get install gradle
 
 script: 
   - nosetests --with-xunit --xunit-file=shippable/testresults/nosetests.xml
