@@ -112,7 +112,8 @@ class Compile(DataReaderSubprocess):
 
     def _call(self, command: str, cwd: str) -> bool:
         makedirs(cwd, exist_ok=True)
-        with open(self.outlog, 'a+') as outlog, open(self.errlog, 'a+') as errlog:
+        with open(join(self.checkout_base_dir, self.outlog), 'a+') as outlog, \
+                open(join(self.checkout_base_dir, self.errlog), 'a+') as errlog:
             returncode = subprocess.call(command, shell=True, cwd=cwd, stdout=outlog, stderr=errlog, bufsize=1)
         return returncode == 0
 

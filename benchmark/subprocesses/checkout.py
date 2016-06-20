@@ -9,11 +9,12 @@ from typing import Union
 
 from benchmark.data.misuse import Misuse
 from benchmark.subprocesses.datareader import DataReaderSubprocess
+from benchmark.utils.io import safe_open
 from benchmark.utils.printing import subprocess_print, print_ok
 
 
 class Checkout(DataReaderSubprocess):
-    def __init__(self, checkout_parent: bool, setup_revisions: bool, checkout_subdir: str, outlog, errlog):
+    def __init__(self, checkout_parent: bool, setup_revisions: bool, checkout_subdir: str, outlog: str, errlog: str):
         self.data_path = realpath('data')
         self.checkout_base_dir = realpath('checkouts')
         self.checkout_subdir = checkout_subdir
@@ -50,30 +51,32 @@ class Checkout(DataReaderSubprocess):
 
         returncode = 0
 
-        if vcs == 'git':
-            if not reset_only:
-                git_clone = 'git clone {} . --quiet'.format(repository_url)
-                returncode += subprocess.call(git_clone, cwd=checkout_dir, bufsize=1, shell=True,
-                                              stdout=self.outlog, stderr=self.errlog)
+        with safe_open(join(project_dir, self.outlog), 'w+') as outlog, \
+                safe_open(join(project_dir, self.errlog), 'w+') as errlog:
+            if vcs == 'git':
+                if not reset_only:
+                    git_clone = 'git clone {} . --quiet'.format(repository_url)
+                    returncode += subprocess.call(git_clone, cwd=checkout_dir, bufsize=1, shell=True,
+                                                  stdout=outlog, stderr=errlog)
 
-            git_checkout = 'git checkout {} --quiet'.format(revision)
-            returncode += subprocess.call(git_checkout, cwd=checkout_dir, bufsize=1,
-                                          shell=True, stdout=self.outlog, stderr=self.errlog)
-        elif vcs == 'svn':
-            if reset_only:
-                svn_update = 'svn update -r {}'.format(revision)
-                returncode += subprocess.call(svn_update, cwd=checkout_dir, bufsize=1,
-                                              shell=True, stdout=self.outlog, stderr=self.errlog)
+                git_checkout = 'git checkout {} --quiet'.format(revision)
+                returncode += subprocess.call(git_checkout, cwd=checkout_dir, bufsize=1,
+                                              shell=True, stdout=outlog, stderr=errlog)
+            elif vcs == 'svn':
+                if reset_only:
+                    svn_update = 'svn update -r {}'.format(revision)
+                    returncode += subprocess.call(svn_update, cwd=checkout_dir, bufsize=1,
+                                                  shell=True, stdout=outlog, stderr=errlog)
+                else:
+                    svn_checkout = 'svn checkout {}@{} .'.format(repository_url, revision)
+                    returncode += subprocess.call(svn_checkout, cwd=checkout_dir, bufsize=1, shell=True,
+                                                  stdout=outlog, stderr=errlog)
+            elif vcs == 'synthetic':
+                rmtree(project_dir, ignore_errors=True)
+                copy_tree(repository_url, checkout_dir)
             else:
-                svn_checkout = 'svn checkout {}@{} .'.format(repository_url, revision)
-                returncode += subprocess.call(svn_checkout, cwd=checkout_dir, bufsize=1, shell=True,
-                                              stdout=self.outlog, stderr=self.errlog)
-        elif vcs == 'synthetic':
-            rmtree(project_dir, ignore_errors=True)
-            copy_tree(repository_url, checkout_dir)
-        else:
-            print("unknown vcs {}!".format(vcs), flush=True)
-            return DataReaderSubprocess.Answer.skip
+                print("unknown vcs {}!".format(vcs), flush=True)
+                return DataReaderSubprocess.Answer.skip
 
         if returncode == 0:
             print_ok()

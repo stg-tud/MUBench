@@ -95,10 +95,8 @@ class MUBenchmark:
         visualizer.run()
 
     def _setup_checkout(self, setup_revisions: bool, checkout_parent: bool):
-        checkout_handler = Checkout(setup_revisions=setup_revisions, checkout_parent=checkout_parent,
-                                    checkout_subdir=self.checkout_subdir,
-                                    outlog=safe_open(join('checkouts', 'checkout-out.log'), 'a+'),
-                                    errlog=safe_open(join('checkouts', 'checkout-error.log'), 'a+'))
+        checkout_handler = Checkout(checkout_parent, setup_revisions, self.checkout_subdir,
+                                    'checkout-out.log', 'checkout-error.log')
         self.datareader.add(checkout_handler)
 
     def _setup_compile(self):
@@ -106,8 +104,7 @@ class MUBenchmark:
             compile_handler = Compile(self.checkout_dir, self.checkout_subdir,
                                       self.original_src, self.original_classes,
                                       self.patterns_src, self.patterns_classes, self.pattern_frequency,
-                                      join(self.checkout_dir, "compile-out.log"),
-                                      join(self.checkout_dir, "compile-error.log"))
+                                      "compile-out.log", "compile-error.log")
             self.datareader.add(compile_handler)
 
     def _setup_detect(self):

@@ -20,8 +20,8 @@ class TestCompile:
         self.temp_dir = mkdtemp(prefix="mubench-compile-test_")
         self.misuse_path = join(self.temp_dir, "project")
         self.test_checkout_dir = join(self.temp_dir, "checkouts")
-        self.outlog = join(self.temp_dir, "out.log")
-        self.errlog = join(self.temp_dir, "err.log")
+        self.outlog = "out.log"
+        self.errlog = "err.log"
 
         self.call_calls = []
         self.move_calls = []
