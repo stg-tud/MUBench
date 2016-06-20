@@ -1,15 +1,14 @@
 from io import StringIO
 
-from nose.tools import assert_equals, assert_not_equals
+from nose.tools import assert_equals, assert_raises
 
-from benchmark.utils.shell import Shell
+from benchmark.utils.shell import Shell, CommandFailedError
 
 
 class TestShell:
     def test_runs(self):
         uut = Shell()
-        return_code = uut.exec("echo 'test'")
-        assert_equals(0, return_code)
+        uut.exec("echo 'test'")
 
     def test_output(self):
         out = StringIO()
@@ -19,5 +18,13 @@ class TestShell:
 
     def test_command_failure(self):
         uut = Shell()
-        return_code = uut.exec("unknown command")
-        assert_not_equals(0, return_code)
+        with assert_raises(CommandFailedError):
+            uut.exec("unknown command")
+
+    def test_command_try(self):
+        uut = Shell()
+        assert uut.try_exec("echo 'test'")
+
+    def test_command_try_failure(self):
+        uut = Shell()
+        assert not uut.try_exec("unknown command")
