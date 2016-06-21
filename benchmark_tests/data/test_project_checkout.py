@@ -34,6 +34,20 @@ class TestLocalProjectCheckout:
         assert_equals(expected_checkout_path, uut.checkout_dir)
         assert exists(join(expected_checkout_path, "some.file"))
 
+    def test_not_exists(self):
+        uut = LocalProjectCheckout(self.shell, self.local_url, self.checkouts_dir, ":project:")
+        assert not uut.exists()
+
+    def test_exists_after_create(self):
+        uut = LocalProjectCheckout(self.shell, self.local_url, self.checkouts_dir, ":project:")
+        uut.create()
+        assert uut.exists()
+
+    def test_not_exists_empty(self):
+        uut = LocalProjectCheckout(self.shell, self.local_url, self.checkouts_dir, ":project:")
+        os.makedirs(uut.checkout_dir)
+        assert not uut.exists()
+
     def test_get_parent(self):
         uut = LocalProjectCheckout(self.shell, self.local_url, self.checkouts_dir, ":project:")
 
@@ -80,6 +94,20 @@ class TestGitProjectCheckout:
         expected_checkout_path = join(self.checkouts_dir, ":project:", ":id:", "checkout")
         assert_equals(expected_checkout_path, uut.checkout_dir)
         assert exists(join(expected_checkout_path, ".git"))
+
+    def test_not_exists(self):
+        uut = GitProjectCheckout(self.shell, self.git_url, self.checkouts_dir, ":project:", ":id:", "HEAD")
+        assert not uut.exists()
+
+    def test_exists_after_create(self):
+        uut = GitProjectCheckout(self.shell, self.git_url, self.checkouts_dir, ":project:", ":id:", "HEAD")
+        uut.create()
+        assert uut.exists()
+
+    def test_not_exists_broken(self):
+        uut = GitProjectCheckout(self.shell, self.git_url, self.checkouts_dir, ":project:", ":id:", "HEAD")
+        os.makedirs(join(uut.checkout_dir, ".git"))
+        assert not uut.exists()
 
     def test_get_parent(self):
         uut = GitProjectCheckout(self.shell, self.git_url, self.checkouts_dir, ":project:", ":id:", "HEAD")

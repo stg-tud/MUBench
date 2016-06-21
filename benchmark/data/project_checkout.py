@@ -13,6 +13,9 @@ class ProjectCheckout:
         self.name = name
         self.checkout_dir = join(self.base_path, name, "checkout")
 
+    def exists(self) -> bool:
+        raise NotImplementedError
+
     def create(self) -> None:
         raise NotImplementedError
 
@@ -24,6 +27,9 @@ class ProjectCheckout:
 
 
 class LocalProjectCheckout(ProjectCheckout):
+    def exists(self):
+        return exists(self.checkout_dir) and listdir(self.checkout_dir)
+
     def create(self) -> str:
         if not exists(self.checkout_dir):
             makedirs(self.checkout_dir)
@@ -46,6 +52,9 @@ class RepoProjectCheckout(ProjectCheckout):
         self.__base_checkout_dir = self.checkout_dir
         self.child = LocalProjectCheckout(self.shell, self.checkout_dir, join(self.base_path, self.name), self.version)
         self.checkout_dir = self.child.checkout_dir
+
+    def exists(self):
+        return self.child.exists() and self._is_repo(self.checkout_dir)
 
     def create(self) -> None:
         if not self._is_repo(self.__base_checkout_dir):
