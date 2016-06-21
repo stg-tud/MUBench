@@ -61,16 +61,16 @@ class MUBenchmark:
         self.run()
 
     def run_checkout(self) -> None:
-        self._setup_checkout(setup_revisions=False, checkout_parent=False)
+        self._setup_checkout()
         self.run()
 
     def run_compile(self) -> None:
-        self._setup_checkout(setup_revisions=True, checkout_parent=True)
+        self._setup_checkout()
         self._setup_compile()
         self.run()
 
     def run_detect(self) -> None:
-        self._setup_checkout(setup_revisions=True, checkout_parent=True)
+        self._setup_checkout()
         self._setup_compile()
         self._setup_detect()
         self.run()
@@ -84,7 +84,7 @@ class MUBenchmark:
 
                 rmtree(self.results_path, onerror=print_error_and_exit)
 
-            self._setup_checkout(setup_revisions=True, checkout_parent=True)
+            self._setup_checkout()
             self._setup_compile()
             self._setup_detect()
 
@@ -96,7 +96,7 @@ class MUBenchmark:
         visualizer = Visualizer(realpath("results"), self.reviewed_eval_result_file, self.visualize_result_file)
         visualizer.run()
 
-    def _setup_checkout(self, setup_revisions: bool, checkout_parent: bool):
+    def _setup_checkout(self):
         checkout_handler = Checkout(self.force_checkout, self.checkout_subdir)
         self.datareader.add(checkout_handler)
 
