@@ -4,13 +4,13 @@ from os.path import join
 from shutil import rmtree
 from tempfile import mkdtemp
 
-from benchmark.data.pattern import Pattern
-from benchmark_tests.test_utils.subprocess_util import run_on_misuse
 from nose.tools import assert_equals, assert_in
 
+from benchmark.data.pattern import Pattern
 from benchmark.subprocesses.evaluate import Evaluation
 from benchmark.utils.io import safe_write
-from benchmark_tests.data.test_misuse import TMisuse
+from benchmark_tests.data.test_misuse import create_misuse
+from benchmark_tests.test_utils.subprocess_util import run_on_misuse
 
 
 # noinspection PyAttributeOutsideInit
@@ -34,7 +34,7 @@ class TestEvaluation:
 
     def test_compares_files_correctly(self):
         self.create_result('svn', 'file: some-class.java')
-        run_on_misuse(self.uut, TMisuse('svn', {'fix': {'files': [{'name': 'some-class.java'}]}}))
+        run_on_misuse(self.uut, create_misuse('svn', {'fix': {'files': [{'name': 'some-class.java'}]}}))
         actual_result = self.uut.results[0]
         assert_equals(('svn', 1), actual_result)
 
@@ -52,20 +52,20 @@ class TestEvaluation:
                            '---\n' +
                            'graph: >\n' +
                            '  digraph graph {}\n')
-        run_on_misuse(self.uut, TMisuse('git', {'misuse': {'usage': 'graph: >\n' +
-                                                                    '  digraph some-method {\n' +
-                                                                    '    0 [label="StrBuilder#this#getNullText"]\n' +
-                                                                    '    1 [label="String#str#length"]\n' +
-                                                                    '    0 -> 1\n' +
-                                                                    '  }\n'},
-                                                'fix': {'revision': '', 'files': [{'name': 'some-class.java'}]}}))
+        run_on_misuse(self.uut, create_misuse('git', {'misuse': {'usage': 'graph: >\n' +
+                                                                          '  digraph some-method {\n' +
+                                                                          '    0 [label="StrBuilder#this#getNullText"]\n' +
+                                                                          '    1 [label="String#str#length"]\n' +
+                                                                          '    0 -> 1\n' +
+                                                                          '  }\n'},
+                                                      'fix': {'revision': '', 'files': [{'name': 'some-class.java'}]}}))
         actual_result = self.uut.results[0]
         assert_equals(('git', 1), actual_result)
 
     def test_handles_patterns(self):
         self.create_result('git', 'file: pattern0.java\n')
 
-        test_misuse = TMisuse('git', {'fix': {'files': [{'name': 'some-class.java'}]}})
+        test_misuse = create_misuse('git', {'fix': {'files': [{'name': 'some-class.java'}]}})
         test_misuse._PATTERNS = {Pattern("", 'pattern.java')}
 
         run_on_misuse(self.uut, test_misuse)

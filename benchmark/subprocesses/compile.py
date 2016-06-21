@@ -10,6 +10,7 @@ from benchmark.data.misuse import Misuse
 from benchmark.subprocesses.datareader import DataReaderSubprocess
 from benchmark.utils.io import remove_tree, copy_tree
 from benchmark.utils.printing import subprocess_print, print_ok
+from benchmark.utils.shell import Shell
 
 
 class Compile(DataReaderSubprocess):
@@ -26,11 +27,14 @@ class Compile(DataReaderSubprocess):
         self.pattern_frequency = pattern_frequency
         self.outlog = outlog
         self.errlog = errlog
+        self.shell = Shell()
 
         self.command_with_error = ""
 
     def run(self, misuse: Misuse):
         project_dir = join(self.checkout_base_dir, misuse.project_name)
+        checkout = misuse.get_checkout(self.shell, self.checkout_base_dir)
+        project_dir = dirname(checkout.checkout_dir)
         build_dir = join(project_dir, Compile.BUILD_DIR)
 
         self.clean(project_dir, build_dir)

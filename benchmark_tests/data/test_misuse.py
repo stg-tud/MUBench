@@ -4,20 +4,21 @@ from shutil import rmtree
 from tempfile import mkdtemp
 
 import yaml
-from benchmark.data.misuse import Misuse, BuildConfig
 from nose.tools import assert_equals, assert_not_equals, assert_raises
-from typing import Dict, Union, Set
 
+from benchmark.data.misuse import Misuse, BuildConfig
 from benchmark.data.pattern import Pattern
 from benchmark.data.project_checkout import LocalProjectCheckout, GitProjectCheckout, SVNProjectCheckout
 from benchmark.utils.io import safe_write
-from benchmark.utils.shell import Shell
 
 
-class TMisuse(Misuse):
-    def __init__(self, path: str = ":irrelevant:", meta: Dict[str, Union[str, Dict]]={}):
-        Misuse.__init__(self, path)
-        self._META = meta
+def create_misuse(path: str = ":irrelevant:", meta=None):
+    if meta is None:
+        meta = {}
+    misuse = Misuse(path)
+    defaults = {"fix": {"repository": {"url": ":repo-url:", "type": "git"}, "revision": "HEAD"}}
+    misuse._META = {**defaults, **meta}
+    return misuse
 
 
 # noinspection PyAttributeOutsideInit
@@ -93,8 +94,8 @@ class TestMisuse:
         assert Misuse("foo/bar") != Misuse("bar/bazz")
 
     def test_extracts_build_config(self):
-        uut = TMisuse("/path/misuse",
-                      {"build": {"src": "src/java/", "commands": ["mvn compile"], "classes": "target/classes/"}})
+        uut = create_misuse(
+            meta={"build": {"src": "src/java/", "commands": ["mvn compile"], "classes": "target/classes/"}})
 
         actual_config = uut.build_config
         assert_equals("src/java/", actual_config.src)
@@ -102,11 +103,11 @@ class TestMisuse:
         assert_equals("target/classes/", actual_config.classes)
 
     def test_build_config_is_none_if_any_part_is_missing(self):
-        uut = TMisuse("/path/misuse", {"build": {"src": "src/java/", "classes": "target/classes/"}})
+        uut = create_misuse("/path/misuse", {"build": {"src": "src/java/", "classes": "target/classes/"}})
         assert uut.build_config is None
 
     def test_derives_additional_compile_sources_path(self):
-        uut = TMisuse("/path/misuse")
+        uut = create_misuse("/path/misuse")
         assert_equals(join("/path/misuse", "compile"), uut.additional_compile_sources)
 
     @staticmethod
@@ -146,7 +147,7 @@ class TestBuildConfig:
 
 class TestProjectCheckout:
     def test_synthetic_project(self):
-        uut = TMisuse(":project:", meta={"fix": {"repository": {"type": "synthetic"}}})
+        uut = create_misuse(":project:", meta={"fix": {"repository": {"type": "synthetic"}}})
 
         checkout = uut.get_checkout(None, ":base_path:")
 
@@ -155,9 +156,9 @@ class TestProjectCheckout:
         assert_equals(":project:", checkout.name)
 
     def test_git_project(self):
-        uut = TMisuse(":project:.:version:", meta={"fix":
-                                                       {"repository": {"type": "git", "url": "ssh://foobar.git"},
-                                                        "revision": ":revision:"}})
+        uut = create_misuse(":project:.:version:", meta={"fix":
+                                                             {"repository": {"type": "git", "url": "ssh://foobar.git"},
+                                                              "revision": ":revision:"}})
 
         checkout = uut.get_checkout(None, ":base_path:")
 
@@ -168,9 +169,9 @@ class TestProjectCheckout:
         assert_equals(":revision:~1", checkout.revision)
 
     def test_svn_project(self):
-        uut = TMisuse(":project:.:version:", meta={"fix":
-                                                       {"repository": {"type": "svn", "url": "http://url/svn"},
-                                                        "revision": "667"}})
+        uut = create_misuse(":project:.:version:", meta={"fix":
+                                                             {"repository": {"type": "svn", "url": "http://url/svn"},
+                                                              "revision": "667"}})
 
         checkout = uut.get_checkout(None, ":base_path:")
 
@@ -182,6 +183,5 @@ class TestProjectCheckout:
 
     def test_unknown_type(self):
         with assert_raises(ValueError):
-            uut = TMisuse("", meta={"fix": {"repository": {"type": ":unknown type:"}}})
+            uut = create_misuse("", meta={"fix": {"repository": {"type": ":unknown type:"}}})
             uut.get_checkout(None, ":irrelevant:")
-

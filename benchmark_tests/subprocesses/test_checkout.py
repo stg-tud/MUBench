@@ -7,7 +7,7 @@ from benchmark.data.project_checkout import ProjectCheckout
 from benchmark.subprocesses.checkout import Checkout
 from benchmark.subprocesses.datareader import DataReaderSubprocess
 from benchmark.utils.shell import Shell, CommandFailedError
-from benchmark_tests.data.test_misuse import TMisuse
+from benchmark_tests.data.test_misuse import create_misuse
 
 
 class TestCheckout(unittest.TestCase):
@@ -17,7 +17,7 @@ class TestCheckout(unittest.TestCase):
         self.checkout.create = MagicMock()
         self.checkout.delete = MagicMock()
 
-        self.misuse = TMisuse()
+        self.misuse = create_misuse()
         self.misuse.get_checkout = MagicMock(return_value=self.checkout)
 
         self.uut = Checkout(checkout_parent=False, setup_revisions=False, checkout_subdir="", shell=Shell())

@@ -2,12 +2,12 @@ from os.path import join
 from shutil import rmtree
 from tempfile import mkdtemp
 
-from benchmark_tests.test_utils.subprocess_util import run_on_misuse
-from nose.tools import assert_equals, assert_raises
+from nose.tools import assert_equals
 
 from benchmark.data.pattern import Pattern
 from benchmark.subprocesses.detect import Detect
-from benchmark_tests.data.test_misuse import TMisuse
+from benchmark_tests.data.test_misuse import create_misuse
+from benchmark_tests.test_utils.subprocess_util import run_on_misuse
 
 
 # noinspection PyUnusedLocal,PyAttributeOutsideInit
@@ -64,62 +64,48 @@ class TestDetect:
         rmtree(self.temp_dir, ignore_errors=True)
 
     def test_invokes_detector(self):
-        run_on_misuse(self.uut, TMisuse("project.id", {}))
+        run_on_misuse(self.uut, create_misuse())
 
         assert_equals(self.last_invoke[0], "detector.jar")
 
     def test_passes_project_src(self):
-        run_on_misuse(self.uut, TMisuse("project.id", {"build": {"src": "", "classes": "", "commands": []}}))
+        run_on_misuse(self.uut, create_misuse("project.id", {"build": {"src": "", "classes": "", "commands": []}}))
 
         self.assert_last_invoke_arg_value_equals(self.uut.key_src_project,
                                                  join(self.checkout_base, "project", self.src_normal_subdir))
 
     def test_passes_project_classes_path(self):
-        run_on_misuse(self.uut, TMisuse("project.id", {"build": {"classes": "", "src": "", "commands": []}}))
+        run_on_misuse(self.uut, create_misuse("project.id", {"build": {"classes": "", "src": "", "commands": []}}))
 
         self.assert_last_invoke_arg_value_equals(self.uut.key_classes_project,
                                                  join(self.checkout_base, "project", self.classes_normal_subdir))
 
     def test_passes_findings_files(self):
-        run_on_misuse(self.uut, TMisuse("project.id", {}))
+        run_on_misuse(self.uut, create_misuse("project.id", {}))
 
         self.assert_last_invoke_arg_value_equals(self.uut.key_findings_file,
                                                  join(self.results_path, "project.id", self.findings_file))
 
     def test_invokes_detector_without_patterns_paths_without_patterns(self):
-        run_on_misuse(self.uut, TMisuse("project.id", {"build": {"src": "", "classes": "", "commands": []}}))
+        run_on_misuse(self.uut, create_misuse("project.id", {"build": {"src": "", "classes": "", "commands": []}}))
         self.assert_arg_not_in_last_invoke(self.uut.key_src_patterns)
         self.assert_arg_not_in_last_invoke(self.uut.key_classes_patterns)
 
     def test_invokes_detector_with_patterns_src_path(self):
-        @property
-        def patterns_mock(detect):
-            return Pattern("", "a")
+        misuse = create_misuse("project.id", {"build": {"src": "", "classes": "", "commands": []}})
+        misuse._PATTERNS = [Pattern("", "a")]
 
-        orig_patterns = TMisuse.patterns
-        try:
-            TMisuse.patterns = patterns_mock
-
-            run_on_misuse(self.uut, TMisuse("project.id", {"build": {"src": "", "classes": "", "commands": []}}))
-            self.assert_last_invoke_arg_value_equals(self.uut.key_src_patterns,
+        run_on_misuse(self.uut, misuse)
+        self.assert_last_invoke_arg_value_equals(self.uut.key_src_patterns,
                                                      join(self.checkout_base, "project", self.src_patterns_subdir))
-        finally:
-            TMisuse.patterns = orig_patterns
 
     def test_invokes_detector_with_patterns_class_path(self):
-        @property
-        def patterns_mock(detect):
-            return Pattern("", "a")
+        misuse = create_misuse("project.id", {"build": {"src": "", "classes": "", "commands": []}})
+        misuse._PATTERNS = [Pattern("", "a")]
 
-        orig_patterns = TMisuse.patterns
-        try:
-            TMisuse.patterns = patterns_mock
-
-            run_on_misuse(self.uut, TMisuse("project.id", {"build": {"src": "", "classes": "", "commands": []}}))
-            self.assert_last_invoke_arg_value_equals(self.uut.key_classes_patterns,
+        run_on_misuse(self.uut, misuse)
+        self.assert_last_invoke_arg_value_equals(self.uut.key_classes_patterns,
                                                      join(self.checkout_base, "project", self.classes_patterns_subdir))
-        finally:
-            TMisuse.patterns = orig_patterns
 
     def test_downloads_detector_if_not_available(self):
         self.detector_available = False
