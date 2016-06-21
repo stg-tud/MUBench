@@ -59,30 +59,6 @@ class TestMisuse:
 
         assert uut.meta['key'] == 'value'
 
-    def test_repository(self):
-        uut = TMisuse(meta={"fix": {"repository": {"type": "git", "url": "ssh://foobar.git"}}})
-        repo = uut.repository
-
-        assert_equals("git", repo.type)
-        assert_equals("ssh://foobar.git", repo.url)
-
-    def test_synthetic_repository(self):
-        uut = TMisuse("/path/misuse", {"fix": {"repository": {"type": "synthetic"}}})
-        repo = uut.repository
-
-        assert_equals("synthetic", repo.type)
-        assert_equals(join("/path/misuse", "compile"), repo.url)
-
-    def test_fix_revision(self):
-        uut = TMisuse(meta={"fix": {"revision": 42}})
-
-        assert_equals(42, uut.fix_revision)
-
-    def test_no_fix_revision(self):
-        uut = TMisuse(meta={"fix": {}})
-
-        assert_equals(None, uut.fix_revision)
-
     def test_finds_no_pattern(self):
         uut = Misuse(self.temp_dir)
 

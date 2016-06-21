@@ -63,17 +63,6 @@ class Misuse:
 
         return self._META
 
-    @property
-    def repository(self):
-        repository = self.meta["fix"]["repository"]
-        if repository["type"] == "synthetic":
-            repository["url"] = join(self.path, "compile")
-        return Repository(repository["type"], repository["url"])
-
-    @property
-    def fix_revision(self):
-        return self.meta["fix"].get("revision", None)
-
     def get_checkout(self, shell: Shell, base_path: str) -> ProjectCheckout:
         repository = self.meta["fix"]["repository"]
         if repository["type"] == "git":
