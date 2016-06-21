@@ -70,7 +70,7 @@ class TestGitProjectCheckout:
         Shell.exec("git init .", cwd=self.git_url)
         Shell.exec("touch foo", cwd=self.git_url)
         Shell.exec("git add -A", cwd=self.git_url)
-        Shell.exec("git commit -a -m 'Initial commit.'", cwd=self.git_url)
+        Shell.exec("git commit --author \"Bob <bob@dummy.com>\" -a -m 'Initial commit.'", cwd=self.git_url)
 
         self.checkouts_dir = join(self.temp_dir, "checkouts")
 
