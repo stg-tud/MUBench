@@ -2,7 +2,7 @@
 import logging
 import sys
 from os import getcwd, listdir
-from os.path import join, realpath, exists
+from os.path import join, realpath, exists, isdir
 from shutil import rmtree
 
 from typing import Optional, List
@@ -146,7 +146,8 @@ handler.setFormatter(formatter)
 logger.addHandler(handler)
 logger.setLevel(logging.INFO)
 
-available_detectors = listdir(realpath('detectors'))
+detectors_path = realpath('detectors')
+available_detectors = [detector for detector in listdir(detectors_path) if isdir(join(detectors_path, detector))]
 config = command_line_util.parse_args(sys.argv, available_detectors)
 
 if 'detector' not in config:
