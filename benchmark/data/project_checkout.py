@@ -19,6 +19,9 @@ class ProjectCheckout:
     def get_parent_checkout(self):
         raise NotImplementedError
 
+    def __str__(self):
+        raise NotImplementedError
+
 
 class LocalProjectCheckout(ProjectCheckout):
     def create(self) -> str:
@@ -30,6 +33,9 @@ class LocalProjectCheckout(ProjectCheckout):
 
     def get_parent_checkout(self):
         return self
+
+    def __str__(self):
+        return "synthetic:{}".format(self.url)
 
 
 class RepoProjectCheckout(ProjectCheckout):
@@ -74,6 +80,9 @@ class GitProjectCheckout(RepoProjectCheckout):
         parent_revision = self.revision + "~1"
         return GitProjectCheckout(self.shell, self.url, self.base_path, self.name, self.version, parent_revision)
 
+    def __str__(self):
+        return "git:{}#{}".format(self.url, self.revision[:8])
+
 
 class SVNProjectCheckout(RepoProjectCheckout):
     def _clone(self, url: str, revision: str, path: str):
@@ -88,3 +97,6 @@ class SVNProjectCheckout(RepoProjectCheckout):
     def get_parent_checkout(self):
         parent_revision = str(int(self.revision) - 1)
         return SVNProjectCheckout(self.shell, self.url, self.base_path, self.name, self.version, parent_revision)
+
+    def __str__(self):
+        return "svn:{}@{}".format(self.url, self.revision)

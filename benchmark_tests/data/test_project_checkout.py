@@ -41,6 +41,11 @@ class TestLocalProjectCheckout:
 
         assert_equals(uut, parent)
 
+    def test_to_string(self):
+        uut = LocalProjectCheckout(self.shell, self.local_url, self.checkouts_dir, ":project:")
+
+        assert_equals("synthetic:{}".format(self.local_url), str(uut))
+
 
 class TestGitProjectCheckout:
     # noinspection PyAttributeOutsideInit
@@ -83,6 +88,11 @@ class TestGitProjectCheckout:
 
         assert_equals("HEAD~1", parent.revision)
 
+    def test_to_string(self):
+        uut = GitProjectCheckout(self.shell, self.git_url, self.checkouts_dir, ":project:", ":id:", ":revision:")
+
+        assert_equals("git:{}#:revisio".format(self.git_url), str(uut))
+
 
 class TestSVNProjectCheckout:
     # noinspection PyAttributeOutsideInit
@@ -95,3 +105,8 @@ class TestSVNProjectCheckout:
         parent = uut.get_parent_checkout()
 
         assert_equals("42", parent.revision)
+
+    def test_to_string(self):
+        uut = SVNProjectCheckout(self.shell, ":url:", ":path:", ":project:", ":id:", ":revision:")
+
+        assert_equals("svn::url:@:revision:", str(uut))
