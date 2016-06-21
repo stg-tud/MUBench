@@ -9,7 +9,8 @@ from benchmark.data.pattern import Pattern
 
 
 # noinspection PyAttributeOutsideInit
-from benchmark.data.project_checkout import LocalProjectCheckout, GitProjectCheckout, SVNProjectCheckout
+from benchmark.data.project_checkout import LocalProjectCheckout, GitProjectCheckout, SVNProjectCheckout, \
+    ProjectCheckout
 from benchmark.utils.shell import Shell
 
 
@@ -73,7 +74,7 @@ class Misuse:
     def fix_revision(self):
         return self.meta["fix"].get("revision", None)
 
-    def get_checkout(self, shell: Shell, base_path: str):
+    def get_checkout(self, shell: Shell, base_path: str) -> ProjectCheckout:
         repository = self.meta["fix"]["repository"]
         if repository["type"] == "git":
             url = repository["url"]
