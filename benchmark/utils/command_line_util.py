@@ -45,6 +45,12 @@ def __add_checkout_subprocess(subparsers) -> None:
                                             description="Clone the repositories containing the misuses from the MUBench dataset. The clones will be created below the `checkouts` folder.",
                                             help="Clone the repositories containing the misuses from the MUBench dataset. The clones will be created below the `checkouts` folder.")  # type: ArgumentParser
     __setup_misuse_filter_arguments(checkout_parser)
+    __setup_checkout_arguments(checkout_parser)
+
+
+def __setup_checkout_arguments(parser: ArgumentParser):
+    parser.add_argument('--force-checkout', dest='force_checkout', action='store_true', default=False,
+                        help="force a clean checkout, deleting any existing files")
 
 
 def __add_compile_subprocess(subparsers) -> None:
@@ -52,6 +58,7 @@ def __add_compile_subprocess(subparsers) -> None:
                                            description="Compile the checkouts and the the patterns. Run `checkout`, if necessary.",
                                            help="Compile the checkouts and the patterns. Run `checkout`, if necessary.")
     __setup_misuse_filter_arguments(compile_parser)
+    __setup_checkout_arguments(compile_parser)
 
 
 def __add_detect_subprocess(available_detectors: List[str], subparsers) -> None:
@@ -61,6 +68,7 @@ def __add_detect_subprocess(available_detectors: List[str], subparsers) -> None:
                                                "Run `detect -h` to see a list of available detectors.",
                                           epilog="The results are written to `results/<detector>/<misuse>/`.")  # type: ArgumentParser
     __setup_detector_running_subprocess(available_detectors, detect_parser)
+    __setup_checkout_arguments(detect_parser)
 
 
 def __add_evaluate_subprocess(available_detectors: List[str], subparsers) -> None:
@@ -71,6 +79,7 @@ def __add_evaluate_subprocess(available_detectors: List[str], subparsers) -> Non
     __setup_detector_running_subprocess(available_detectors, eval_parser)
     eval_parser.add_argument('--force-detect', dest='force_detect', action='store_true', default=False,
                              help="force a new `detect` run, deleting the previous result")
+    __setup_checkout_arguments(eval_parser)
 
 
 def __add_visualize_subprocess(subparsers) -> None:
@@ -95,8 +104,8 @@ def __setup_detector_running_subprocess(available_detectors: List[str], subproce
                                    help="skip the `compile` step")
 
 
-def __setup_misuse_filter_arguments(compile_parser):
-    compile_parser.add_argument('--only', metavar='X', nargs='+', dest='white_list', default=[""],
-                                help="process only misuses whose names contain any of the given strings")
-    compile_parser.add_argument('--skip', metavar='Y', nargs='+', dest='black_list', default=[],
-                                help="skip all misuses whose names contain any of the given strings")
+def __setup_misuse_filter_arguments(parser: ArgumentParser):
+    parser.add_argument('--only', metavar='X', nargs='+', dest='white_list', default=[""],
+                        help="process only misuses whose names contain any of the given strings")
+    parser.add_argument('--skip', metavar='Y', nargs='+', dest='black_list', default=[],
+                        help="skip all misuses whose names contain any of the given strings")

@@ -6,7 +6,7 @@ from nose.tools import assert_equals
 from benchmark.data.project_checkout import ProjectCheckout
 from benchmark.subprocesses.checkout import Checkout
 from benchmark.subprocesses.datareader import DataReaderSubprocess
-from benchmark.utils.shell import Shell, CommandFailedError
+from benchmark.utils.shell import CommandFailedError
 from benchmark_tests.data.test_misuse import create_misuse
 
 
@@ -20,7 +20,7 @@ class TestCheckout(unittest.TestCase):
         self.misuse = create_misuse()
         self.misuse.get_checkout = MagicMock(return_value=self.checkout)
 
-        self.uut = Checkout(checkout_parent=False, setup_revisions=False, checkout_subdir="")
+        self.uut = Checkout(force_checkout=False, checkout_subdir="")
 
     def test_initial_checkout(self):
         self.checkout.exists = MagicMock(return_value=False)
@@ -55,3 +55,11 @@ class TestCheckout(unittest.TestCase):
 
         assert_equals(DataReaderSubprocess.Answer.skip, answer)
 
+    def test_force_checkout(self):
+        self.checkout.exists = MagicMock(return_value=True)
+        self.uut.force_checkout = True
+
+        self.uut.run(self.misuse)
+
+        self.checkout.delete.assert_called_with()
+        self.checkout.create.assert_called_with()

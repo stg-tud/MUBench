@@ -26,6 +26,7 @@ class MUBenchmark:
                  java_options: List[str],
                  force_detect: bool,
                  skip_compile: bool,
+                 force_checkout: bool,
                  ):
         self.detector = detector
         self.timeout = timeout
@@ -46,6 +47,7 @@ class MUBenchmark:
         self.eval_result_file = 'result.csv'
         self.reviewed_eval_result_file = 'reviewed-result.csv'
         self.visualize_result_file = 'result.csv'
+        self.force_checkout = force_checkout
 
         self.pattern_frequency = 20
 
@@ -95,7 +97,7 @@ class MUBenchmark:
         visualizer.run()
 
     def _setup_checkout(self, setup_revisions: bool, checkout_parent: bool):
-        checkout_handler = Checkout(checkout_parent, setup_revisions, self.checkout_subdir)
+        checkout_handler = Checkout(self.force_checkout, self.checkout_subdir)
         self.datareader.add(checkout_handler)
 
     def _setup_compile(self):
@@ -164,7 +166,7 @@ if 'skip_compile' not in config:
 
 benchmark = MUBenchmark(detector=config.detector, white_list=config.white_list, black_list=config.black_list,
                         timeout=config.timeout, java_options=config.java_options, force_detect=config.force_detect,
-                        skip_compile=config.skip_compile)
+                        skip_compile=config.skip_compile, force_checkout=config.force_checkout)
 
 if config.subprocess == 'check':
     benchmark.run_check()

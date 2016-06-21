@@ -1,7 +1,6 @@
 import subprocess
 import time
 from os.path import join, realpath, exists, dirname
-
 from typing import Optional, List
 
 from benchmark.data.misuse import Misuse
@@ -9,7 +8,6 @@ from benchmark.subprocesses.datareader import DataReaderSubprocess
 from benchmark.utils import web_util
 from benchmark.utils.io import safe_open, safe_write
 from benchmark.utils.printing import subprocess_print
-from benchmark.utils.shell import Shell
 
 
 class Detect(DataReaderSubprocess):

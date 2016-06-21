@@ -7,13 +7,11 @@ from benchmark.utils.shell import Shell, CommandFailedError
 
 
 class Checkout(DataReaderSubprocess):
-    def __init__(self, checkout_parent: bool, setup_revisions: bool, checkout_subdir: str):
+    def __init__(self, force_checkout: bool, checkout_subdir: str):
         self.data_path = realpath('data')
         self.checkout_base_dir = realpath('checkouts')
         self.checkout_subdir = checkout_subdir
-        self.checkout_parent = checkout_parent
-        self.setup_revisions = setup_revisions
-        self.force_checkout = False # TODO implement
+        self.force_checkout = force_checkout
 
     def run(self, misuse: Misuse) -> bool:
         logger = logging.getLogger("checkout")
