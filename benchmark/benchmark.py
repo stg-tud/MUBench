@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import logging
 import sys
 from os import getcwd, listdir
 from os.path import join, realpath, exists
@@ -15,6 +16,7 @@ from benchmark.subprocesses.evaluate import Evaluation
 from benchmark.subprocesses.visualize_results import Visualizer
 from benchmark.utils import command_line_util
 from benchmark.utils.io import safe_open
+from benchmark.utils.shell import Shell
 
 
 class MUBenchmark:
@@ -95,8 +97,7 @@ class MUBenchmark:
         visualizer.run()
 
     def _setup_checkout(self, setup_revisions: bool, checkout_parent: bool):
-        checkout_handler = Checkout(checkout_parent, setup_revisions, self.checkout_subdir,
-                                    'checkout-out.log', 'checkout-error.log')
+        checkout_handler = Checkout(checkout_parent, setup_revisions, self.checkout_subdir, Shell())
         self.datareader.add(checkout_handler)
 
     def _setup_compile(self):
@@ -121,6 +122,29 @@ class MUBenchmark:
     def run(self) -> None:
         self.datareader.run()
 
+
+class IndentFormatter(logging.Formatter):
+    def __init__(self, fmt=None, datefmt=None):
+        logging.Formatter.__init__(self, fmt, datefmt)
+
+    def format(self, rec):
+        logger_name = rec.name
+        logger_level = 0
+        if logger_name:
+            logger_level = logger_name.count('.') + 1
+        rec.indent = "    " * logger_level
+        out = logging.Formatter.format(self, rec)
+        out = out.replace("\n", "\n" + rec.indent)
+        del rec.indent
+        return out
+
+formatter = IndentFormatter("%(indent)s%(message)s")
+
+logger = logging.getLogger()
+handler = logging.StreamHandler()
+handler.setFormatter(formatter)
+logger.addHandler(handler)
+logger.setLevel(logging.INFO)
 
 available_detectors = listdir(realpath('detectors'))
 config = command_line_util.parse_args(sys.argv, available_detectors)

@@ -1,108 +1,57 @@
-import os
-import subprocess
 import unittest
-from os import makedirs
-from os.path import join, exists
-from shutil import rmtree
-from tempfile import mkdtemp
+from unittest.mock import MagicMock
 
-from benchmark_tests.test_utils.subprocess_util import run_on_misuse
-from nose.tools import assert_raises
+from nose.tools import assert_equals
 
+from benchmark.data.project_checkout import ProjectCheckout
 from benchmark.subprocesses.checkout import Checkout
-from benchmark.utils.io import create_file
+from benchmark.subprocesses.datareader import DataReaderSubprocess
+from benchmark.utils.shell import Shell, CommandFailedError
 from benchmark_tests.data.test_misuse import TMisuse
 
-GIT = 'git'
-SVN = 'svn'
-SYNTHETIC = 'synthetic'
 
-GIT_REVISION = '2c4e93c712461ae20051409f472e4857e2189393'
-
-SVN_REVISION = "1"
-
-
-# noinspection PyAttributeOutsideInit
 class TestCheckout(unittest.TestCase):
+    # noinspection PyAttributeOutsideInit
     def setUp(self):
+        self.checkout = ProjectCheckout(Shell(), ":url:", ":base_path:", ":name:")
+        self.checkout.create = MagicMock()
+        self.checkout.delete = MagicMock()
 
-        self.temp_dir = mkdtemp(prefix='mubench-checkout-test_')
+        self.misuse = TMisuse()
+        self.misuse.get_checkout = MagicMock(return_value=self.checkout)
 
-        os.chdir(self.temp_dir)
+        self.uut = Checkout(checkout_parent=False, setup_revisions=False, checkout_subdir="", shell=Shell())
 
-        self.test_checkout_dir = join(self.temp_dir, 'checkouts')
-        makedirs(self.test_checkout_dir)
+    def test_initial_checkout(self):
+        self.checkout.exists = MagicMock(return_value=False)
 
-        self.uut = Checkout(False, False, "", "out.log", "err.log")
+        answer = self.uut.run(self.misuse)
 
-    def tearDown(self):
-        rmtree(self.temp_dir, ignore_errors=True)
+        self.checkout.delete.assert_called_with()
+        self.checkout.create.assert_called_with()
+        assert_equals(DataReaderSubprocess.Answer.ok, answer)
 
-    @unittest.skip("")
-    def test_checkout_git(self):
-        self.create_git_repository()
-        git_url = join(self.test_checkout_dir, 'git')
-        run_on_misuse(Checkout(True, True, "", "out.log", "err.log"), TMisuse('', self.get_yaml('git', git_url)))
-        git_repository = join(self.test_checkout_dir, 'git', '.git')
-        assert exists(git_repository)
+    def test_exists(self):
+        self.checkout.exists = MagicMock(return_value=True)
 
-    @unittest.skip("")
-    def test_checkout_svn(self):
-        self.create_svn_repository()
-        svn_url = join(self.test_checkout_dir, 'svn')
-        run_on_misuse(Checkout(True, True, "", "out.log", "err.log"), TMisuse('', self.get_yaml('svn', svn_url, revision='1')))
-        svn_repository = join(self.test_checkout_dir, 'svn', '.svn')
-        assert exists(svn_repository)
+        answer = self.uut.run(self.misuse)
 
-    def test_checkout_synthetic(self):
-        self.create_synthetic_repository('synthetic-exmpl', 'synthetic.java')
-        run_on_misuse(Checkout(True, True, "", "out.log", "err.log"), TMisuse('synthetic-exmpl', self.get_yaml('synthetic')))
-        synthetic_file = join(self.test_checkout_dir, 'synthetic-exmpl', 'synthetic.java')
-        assert exists(synthetic_file)
+        self.checkout.delete.assert_not_called()
+        self.checkout.create.assert_not_called()
+        assert_equals(DataReaderSubprocess.Answer.ok, answer)
 
-    @staticmethod
-    def get_yaml(vcs_type: str, url: str = None, revision: str = '', file: str = ''):
-        if url is None:
-            repository = {'type': vcs_type}
-        else:
-            repository = {'url': url, 'type': vcs_type}
-        return {'fix': {'repository': repository, 'revision': revision, 'file': file}}
+    def test_error_get_checkout(self):
+        self.misuse.get_checkout = MagicMock(side_effect=ValueError)
 
-    def create_git_repository(self):
-        with open(os.devnull, 'w') as FNULL:
-            # initialize git repository
-            git_repository_path = join(self.test_checkout_dir, 'git')
-            makedirs(git_repository_path, exist_ok=True)
-            subprocess.call('git init', cwd=git_repository_path, bufsize=1, shell=True, stdout=FNULL)
+        answer = self.uut.run(self.misuse)
 
-    def create_svn_repository(self):
-        with open(os.devnull, 'w') as FNULL:
-            # initialize svn repository
-            # svnadmin create creates the subdirectory 'repository-svn'
-            svn_subfolder = 'svn'
-            subprocess.call('svnadmin create ' + svn_subfolder, cwd=self.test_checkout_dir, bufsize=1, shell=True,
-                            stdout=FNULL)
-            subprocess.call('svn update ', cwd=join(self.test_checkout_dir, svn_subfolder), bufsize=1, shell=True,
-                            stdout=FNULL)
+        assert_equals(DataReaderSubprocess.Answer.skip, answer)
 
-    def create_synthetic_repository(self, misuse_name: str, example_file: str):
-        test_data_path = join(self.temp_dir, misuse_name, 'compile')
-        makedirs(test_data_path, exist_ok=True)
-        create_file(join(test_data_path, example_file))
+    def test_error_checkout(self):
+        self.checkout.exists = MagicMock(return_value=False)
+        self.checkout.create = MagicMock(side_effect=CommandFailedError(":cmd:", ":out:"))
 
+        answer = self.uut.run(self.misuse)
 
-class TestGetParent:
-    def test_get_parent_git(self):
-        assert "bla~1" == Checkout.get_parent(GIT, "bla")
+        assert_equals(DataReaderSubprocess.Answer.skip, answer)
 
-    def test_get_parent_svn(self):
-        assert 41 == Checkout.get_parent(SVN, 42)
-
-    def test_get_parent_svn_with_string_input(self):
-        assert 41 == Checkout.get_parent(SVN, "42")
-
-    def test_get_parent_synthetic(self):
-        assert 100 == Checkout.get_parent(SYNTHETIC, 100)
-
-    def test_value_error_on_unknown_vcs(self):
-        assert_raises(ValueError, Checkout.get_parent, 'unknown vcs', 1)

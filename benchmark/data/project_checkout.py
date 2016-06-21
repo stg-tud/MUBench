@@ -1,3 +1,4 @@
+import logging
 from os import listdir, makedirs
 from os.path import join, exists
 
@@ -23,9 +24,6 @@ class ProjectCheckout:
         raise NotImplementedError
 
     def get_parent_checkout(self):
-        raise NotImplementedError
-
-    def __str__(self):
         raise NotImplementedError
 
 
@@ -90,13 +88,13 @@ class RepoProjectCheckout(ProjectCheckout):
 
 class GitProjectCheckout(RepoProjectCheckout):
     def _clone(self, url: str, revision: str, path: str):
-        self.shell.exec("git clone {} . --quiet".format(url), cwd=path)
+        self.shell.exec("git clone {} . --quiet".format(url), cwd=path, logger=logging.getLogger("checkout.project"))
 
     def _update(self, url: str, revision: str, path: str):
-        self.shell.exec("git checkout {} --quiet".format(revision), cwd=path)
+        self.shell.exec("git checkout {} --quiet".format(revision), cwd=path, logger=logging.getLogger("checkout.project"))
 
     def _is_repo(self, path: str):
-        return exists(path) and self.shell.try_exec("git status", cwd=path)
+        return exists(path) and self.shell.try_exec("git status", cwd=path, logger=logging.getLogger("checkout.project"))
 
     def get_parent_checkout(self):
         parent_revision = self.revision + "~1"
