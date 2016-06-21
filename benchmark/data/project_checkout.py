@@ -1,7 +1,7 @@
 from os import listdir, makedirs
 from os.path import join, exists
 
-from benchmark.utils.io import copy_tree
+from benchmark.utils.io import copy_tree, remove_tree
 from benchmark.utils.shell import Shell
 
 
@@ -17,6 +17,9 @@ class ProjectCheckout:
         raise NotImplementedError
 
     def create(self) -> None:
+        raise NotImplementedError
+
+    def delete(self) -> None:
         raise NotImplementedError
 
     def get_parent_checkout(self):
@@ -37,6 +40,9 @@ class LocalProjectCheckout(ProjectCheckout):
             copy_tree(self.url, self.checkout_dir)
         return self.checkout_dir
 
+    def delete(self):
+        remove_tree(self.checkout_dir)
+
     def get_parent_checkout(self):
         return self
 
@@ -50,20 +56,24 @@ class RepoProjectCheckout(ProjectCheckout):
         self.version = version
         self.revision = revision
         self.__base_checkout_dir = self.checkout_dir
-        self.child = LocalProjectCheckout(self.shell, self.checkout_dir, join(self.base_path, self.name), self.version)
-        self.checkout_dir = self.child.checkout_dir
+        self.__child = LocalProjectCheckout(self.shell, self.checkout_dir, join(self.base_path, self.name), self.version)
+        self.checkout_dir = self.__child.checkout_dir
 
     def exists(self):
-        return self.child.exists() and self._is_repo(self.checkout_dir)
+        return self.__child.exists() and self._is_repo(self.checkout_dir)
 
     def create(self) -> None:
         if not self._is_repo(self.__base_checkout_dir):
             makedirs(self.__base_checkout_dir, exist_ok=True)
             self._clone(self.url, self.revision, self.__base_checkout_dir)
 
-        if not self._is_repo(self.child.checkout_dir):
-            self.child.create()
-            self._update(self.url, self.revision, self.child.checkout_dir)
+        if not self._is_repo(self.__child.checkout_dir):
+            self.__child.create()
+            self._update(self.url, self.revision, self.__child.checkout_dir)
+
+    def delete(self):
+        remove_tree(self.__base_checkout_dir)
+        self.__child.delete()
 
     def _clone(self, url: str, revision: str, path: str):
         raise NotImplementedError

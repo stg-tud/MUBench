@@ -48,6 +48,12 @@ class TestLocalProjectCheckout:
         os.makedirs(uut.checkout_dir)
         assert not uut.exists()
 
+    def test_delete(self):
+        uut = LocalProjectCheckout(self.shell, self.local_url, self.checkouts_dir, ":project:")
+        uut.create()
+        uut.delete()
+        assert not exists(uut.checkout_dir)
+
     def test_get_parent(self):
         uut = LocalProjectCheckout(self.shell, self.local_url, self.checkouts_dir, ":project:")
 
@@ -108,6 +114,13 @@ class TestGitProjectCheckout:
         uut = GitProjectCheckout(self.shell, self.git_url, self.checkouts_dir, ":project:", ":id:", "HEAD")
         os.makedirs(join(uut.checkout_dir, ".git"))
         assert not uut.exists()
+
+    def test_delete(self):
+        uut = GitProjectCheckout(self.shell, self.git_url, self.checkouts_dir, ":project:", ":id:", "HEAD")
+        uut.create()
+        uut.delete()
+        assert not exists(join(self.checkouts_dir, ":project:", "checkout"))
+        assert not exists(uut.checkout_dir)
 
     def test_get_parent(self):
         uut = GitProjectCheckout(self.shell, self.git_url, self.checkouts_dir, ":project:", ":id:", "HEAD")
