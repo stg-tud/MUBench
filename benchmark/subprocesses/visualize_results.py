@@ -3,11 +3,10 @@
 import csv
 from os import listdir
 from os.path import exists, join, isdir, basename
-
 from typing import Dict
 from typing import Set
 
-from benchmark.utils.io import safe_open
+from benchmark.utils import csv_util
 
 
 class Visualizer:
@@ -42,13 +41,9 @@ class Visualizer:
         if not results:
             exit("No results found.")
 
-        with safe_open(join(self.results_base_path, self.result_file), 'w+') as result_file:
-            headers = ['Detector'] + sorted(list(misuses))
-            w = csv.DictWriter(result_file, fieldnames=headers)
-            w.writeheader()
-            for detector in sorted(results):
-                print(detector, end='', file=result_file)
-                w.writerow({misuse: results[detector].get(misuse) or '' for misuse in headers[1:]})
+        headers = ['Detector'] + sorted(list(misuses))
+        file = join(self.results_base_path, self.result_file)
+        csv_util.write_table(file, headers, results)
 
     @staticmethod
     def __get_immediate_subdirs(directory: str):
