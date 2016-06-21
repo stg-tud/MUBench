@@ -16,6 +16,9 @@ class ProjectCheckout:
     def create(self) -> str:
         raise NotImplementedError
 
+    def get_parent_checkout(self):
+        raise NotImplementedError
+
 
 class LocalProjectCheckout(ProjectCheckout):
     def create(self) -> str:
@@ -24,6 +27,9 @@ class LocalProjectCheckout(ProjectCheckout):
         if not listdir(self.checkout_dir):
             copy_tree(self.url, self.checkout_dir)
         return self.checkout_dir
+
+    def get_parent_checkout(self):
+        return self
 
 
 class RepoProjectCheckout(ProjectCheckout):
@@ -56,21 +62,29 @@ class RepoProjectCheckout(ProjectCheckout):
 
 class GitProjectCheckout(RepoProjectCheckout):
     def _clone(self, url: str, revision: str, path: str):
-        self.shell.exec('git clone {} . --quiet'.format(url), cwd=path)
+        self.shell.exec("git clone {} . --quiet".format(url), cwd=path)
 
     def _update(self, url: str, revision: str, path: str):
-        self.shell.exec('git checkout {} --quiet'.format(revision), cwd=path)
+        self.shell.exec("git checkout {} --quiet".format(revision), cwd=path)
 
     def _is_repo(self, path: str):
         return exists(path) and self.shell.try_exec("git status", cwd=path)
 
+    def get_parent_checkout(self):
+        parent_revision = self.revision + "~1"
+        return GitProjectCheckout(self.shell, self.url, self.base_path, self.name, self.version, parent_revision)
+
 
 class SVNProjectCheckout(RepoProjectCheckout):
     def _clone(self, url: str, revision: str, path: str):
-        self.shell.exec('svn checkout {}@{} .'.format(url, revision), cwd=path)
+        self.shell.exec("svn checkout {}@{} .".format(url, revision), cwd=path)
 
     def _update(self, url: str, revision: str, path: str):
-        self.shell.exec('svn update -r {}'.format(revision), cwd=path)
+        self.shell.exec("svn update -r {}".format(revision), cwd=path)
 
     def _is_repo(self, path: str):
         return exists(path) and self.shell.try_exec("svn info", cwd=path)
+
+    def get_parent_checkout(self):
+        parent_revision = str(int(self.revision) - 1)
+        return SVNProjectCheckout(self.shell, self.url, self.base_path, self.name, self.version, parent_revision)
