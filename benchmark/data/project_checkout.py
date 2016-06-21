@@ -7,8 +7,8 @@ from benchmark.utils.shell import Shell
 
 
 class ProjectCheckout:
-
     def __init__(self, url: str, base_path: str, name: str):
+        self._logger = logging.getLogger("checkout.project")
         self.url = url
         self.base_path = base_path
         self.name = name
@@ -28,14 +28,16 @@ class LocalProjectCheckout(ProjectCheckout):
     def exists(self):
         return exists(self.checkout_dir) and listdir(self.checkout_dir)
 
-    def create(self) -> str:
+    def create(self):
         if not exists(self.checkout_dir):
+            self._logger.debug("Create checkout directory %s", self.checkout_dir)
             makedirs(self.checkout_dir)
         if not listdir(self.checkout_dir):
+            self._logger.debug("Copy from %s", self.url)
             copy_tree(self.url, self.checkout_dir)
-        return self.checkout_dir
 
     def delete(self):
+        self._logger.debug("Delete %s", self.checkout_dir)
         remove_tree(self.checkout_dir)
 
     def __str__(self):
@@ -54,16 +56,20 @@ class RepoProjectCheckout(ProjectCheckout):
     def exists(self):
         return self.__child.exists() and self._is_repo(self.checkout_dir)
 
-    def create(self) -> None:
+    def create(self):
         if not self._is_repo(self.__base_checkout_dir):
+            self._logger.debug("Create base checkout directory %s", self.__base_checkout_dir)
             makedirs(self.__base_checkout_dir, exist_ok=True)
+            self._logger.debug("Clone from %s", self)
             self._clone(self.url, self.revision, self.__base_checkout_dir)
 
         if not self._is_repo(self.__child.checkout_dir):
             self.__child.create()
+            self._logger.debug("Update to revision %s", self.revision)
             self._update(self.url, self.revision, self.__child.checkout_dir)
 
     def delete(self):
+        self._logger.debug("Delete %s", self.__base_checkout_dir)
         remove_tree(self.__base_checkout_dir)
         self.__child.delete()
 
@@ -82,13 +88,13 @@ class RepoProjectCheckout(ProjectCheckout):
 
 class GitProjectCheckout(RepoProjectCheckout):
     def _clone(self, url: str, revision: str, path: str):
-        Shell.exec("git clone {} . --quiet".format(url), cwd=path, logger=logging.getLogger("checkout.project"))
+        Shell.exec("git clone {} . --quiet".format(url), cwd=path, logger=self._logger)
 
     def _update(self, url: str, revision: str, path: str):
-        Shell.exec("git checkout {} --quiet".format(revision), cwd=path, logger=logging.getLogger("checkout.project"))
+        Shell.exec("git checkout {} --quiet".format(revision), cwd=path, logger=self._logger)
 
     def _is_repo(self, path: str):
-        return exists(path) and Shell.try_exec("git status", cwd=path, logger=logging.getLogger("checkout.project"))
+        return exists(path) and Shell.try_exec("git status", cwd=path, logger=self._logger)
 
     def __str__(self):
         return "git:{}#{}".format(self.url, self.revision[:8])

@@ -1,4 +1,5 @@
 import inspect
+import logging
 import subprocess
 import sys
 
@@ -40,24 +41,25 @@ class Prerequisites:
 
 
 class Check(DataReaderSubprocess):
-    def setup(self):
-        print("Checking prerequisites... ", end='', flush=True)
+    def __init__(self):
+        self._logger = logging.getLogger()
 
-        missing_prerequisites = []
+    def setup(self):
+        missing_prerequisites = False
         for prerequisite_name, prerequisite_check in inspect.getmembers(Prerequisites, predicate=inspect.isfunction):
             # noinspection PyBroadException
             try:
                 prerequisite_check()
+                self._logger.debug("Prerequisite '%s' satisfied", prerequisite_name)
             except:
-                missing_prerequisites.append(prerequisite_name)
+                self._logger.error("Prerequisite '%s' not satisfied", prerequisite_name)
+                missing_prerequisites = True
 
         if missing_prerequisites:
-            error_message = "ERROR! Missing Prerequisites: "
-            error_message += ", ".join(missing_prerequisites)
-            sys.exit(error_message)
-
+            self._logger.error("Cannot run MUBench. Please provide prerequisites.")
+            sys.exit("Cannot run MUBench. Please provide prerequisites.")
         else:
-            print("Prerequisites okay!")
+            self._logger.info("Prerequisites ok.")
 
     def run(self, misuse: Misuse) -> DataReaderSubprocess.Answer:
         return DataReaderSubprocess.Answer.ok

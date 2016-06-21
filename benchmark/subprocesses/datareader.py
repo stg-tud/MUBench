@@ -1,3 +1,4 @@
+import logging
 from enum import Enum
 from os import listdir
 from os.path import join
@@ -24,6 +25,7 @@ class DataReaderSubprocess:
 
 class DataReader:
     def __init__(self, data_path: str, white_list: List[str], black_list: List[str]):
+        self._logger = logging.getLogger()
         self.steps = []  # type: List[DataReaderSubprocess]
         self.data_path = data_path
         self.white_list = white_list
@@ -39,7 +41,7 @@ class DataReader:
             self._run_setup()
 
             for i, misuse in enumerate(misuses, start=1):
-                print("Misuse '{}' ({}/{}) > ".format(misuse, i, len(misuses)), flush=True)
+                self._logger.info("Misuse '%s' (%r/%r) >", misuse, i, len(misuses))
 
                 for step in self.steps:
                     answer = step.run(misuse)
@@ -51,13 +53,15 @@ class DataReader:
     def _run_setup(self):
         for step in self.steps:
             try:
+                self._logger.debug("Setup '%s'", type(step).__name__)
                 step.setup()
             except Exception:
-                print(end="\n", flush=True)  # print newline
+                self._logger.error("Error in setup", exc_info=True)
                 raise
 
     def _run_teardown(self):
         for step in self.steps:
+            self._logger.debug("Teardown '%s'", type(step).__name__)
             step.teardown()
 
     def _get_misuses(self):

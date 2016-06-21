@@ -130,7 +130,7 @@ class IndentFormatter(logging.Formatter):
     def format(self, rec):
         logger_name = rec.name
         logger_level = 0
-        if logger_name:
+        if logger_name != "root":
             logger_level = logger_name.count('.') + 1
         rec.indent = "    " * logger_level
         out = logging.Formatter.format(self, rec)
@@ -139,13 +139,17 @@ class IndentFormatter(logging.Formatter):
         return out
 
 
-formatter = IndentFormatter("%(indent)s%(message)s")
-
 logger = logging.getLogger()
+logger.setLevel(logging.DEBUG)
 handler = logging.StreamHandler()
-handler.setFormatter(formatter)
+handler.setFormatter(IndentFormatter("%(indent)s%(message)s"))
+handler.setLevel(logging.INFO)
 logger.addHandler(handler)
-logger.setLevel(logging.INFO)
+handler = logging.FileHandler("out.log")
+handler.setFormatter(logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s'))
+handler.setLevel(logging.DEBUG)
+logger.addHandler(handler)
+
 
 detectors_path = realpath('detectors')
 available_detectors = [detector for detector in listdir(detectors_path) if isdir(join(detectors_path, detector))]

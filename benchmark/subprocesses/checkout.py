@@ -20,7 +20,9 @@ class Checkout(DataReaderSubprocess):
             return DataReaderSubprocess.Answer.skip
 
         try:
-            if checkout.exists() and not self.force_checkout:
+            checkout_exists = checkout.exists()
+            logger.debug("Checkout exists = %r", checkout_exists)
+            if checkout_exists and not self.force_checkout:
                 logger.info("Already checked out %s.", checkout)
             else:
                 logger.info("Fetching %s...", checkout)

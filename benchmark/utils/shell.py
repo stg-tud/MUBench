@@ -6,11 +6,12 @@ import subprocess
 class Shell:
     @staticmethod
     def exec(command: str, cwd: str = os.getcwd(), logger=logging.getLogger(__name__)):
+        logger.debug("Execute '%s' in '%s'", command, cwd)
         process = subprocess.Popen(command, cwd=cwd, bufsize=1, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
                                    shell=True)
         output, _ = process.communicate()
         output = output.decode("utf-8")
-        logger.debug(output)
+        logger.debug(output[:-1])
         if process.wait():
             raise CommandFailedError(command, output)
         else:
