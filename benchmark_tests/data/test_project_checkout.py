@@ -28,10 +28,10 @@ class TestLocalProjectCheckout:
     def test_create(self):
         uut = LocalProjectCheckout(self.shell, self.local_url, self.checkouts_dir, ":project:")
 
-        checkout_path = uut.create()
+        uut.create()
 
         expected_checkout_path = join(self.checkouts_dir, ":project:", "checkout")
-        assert_equals(expected_checkout_path, checkout_path)
+        assert_equals(expected_checkout_path, uut.checkout_dir)
         assert exists(join(expected_checkout_path, "some.file"))
 
     def test_get_parent(self):
@@ -75,10 +75,10 @@ class TestGitProjectCheckout:
     def test_create_copies_and_checks_out_repo(self):
         uut = GitProjectCheckout(self.shell, self.git_url, self.checkouts_dir, ":project:", ":id:", "HEAD")
 
-        checkout_path = uut.create()
+        uut.create()
 
         expected_checkout_path = join(self.checkouts_dir, ":project:", ":id:", "checkout")
-        assert_equals(expected_checkout_path, checkout_path)
+        assert_equals(expected_checkout_path, uut.checkout_dir)
         assert exists(join(expected_checkout_path, ".git"))
 
     def test_get_parent(self):

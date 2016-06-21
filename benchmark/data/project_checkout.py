@@ -13,7 +13,7 @@ class ProjectCheckout:
         self.name = name
         self.checkout_dir = join(self.base_path, name, "checkout")
 
-    def create(self) -> str:
+    def create(self) -> None:
         raise NotImplementedError
 
     def get_parent_checkout(self):
@@ -43,18 +43,18 @@ class RepoProjectCheckout(ProjectCheckout):
         super(RepoProjectCheckout, self).__init__(shell, url, base_path, name)
         self.version = version
         self.revision = revision
+        self.__base_checkout_dir = self.checkout_dir
+        self.child = LocalProjectCheckout(self.shell, self.checkout_dir, join(self.base_path, self.name), self.version)
+        self.checkout_dir = self.child.checkout_dir
 
-    def create(self):
-        if not self._is_repo(self.checkout_dir):
-            makedirs(self.checkout_dir, exist_ok=True)
-            self._clone(self.url, self.revision, self.checkout_dir)
+    def create(self) -> None:
+        if not self._is_repo(self.__base_checkout_dir):
+            makedirs(self.__base_checkout_dir, exist_ok=True)
+            self._clone(self.url, self.revision, self.__base_checkout_dir)
 
-        child = LocalProjectCheckout(self.shell, self.checkout_dir, join(self.base_path, self.name), self.version)
-        if not self._is_repo(child.checkout_dir):
-            child.create()
-            self._update(self.url, self.revision, child.checkout_dir)
-
-        return child.checkout_dir
+        if not self._is_repo(self.child.checkout_dir):
+            self.child.create()
+            self._update(self.url, self.revision, self.child.checkout_dir)
 
     def _clone(self, url: str, revision: str, path: str):
         raise NotImplementedError
@@ -63,6 +63,9 @@ class RepoProjectCheckout(ProjectCheckout):
         raise NotImplementedError
 
     def _is_repo(self, path: str) -> bool:
+        raise NotImplementedError
+
+    def __str__(self):
         raise NotImplementedError
 
 
