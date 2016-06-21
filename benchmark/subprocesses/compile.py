@@ -10,16 +10,14 @@ from benchmark.data.misuse import Misuse
 from benchmark.subprocesses.datareader import DataReaderSubprocess
 from benchmark.utils.io import remove_tree, copy_tree
 from benchmark.utils.printing import subprocess_print, print_ok
-from benchmark.utils.shell import Shell
 
 
 class Compile(DataReaderSubprocess):
-    BUILD_DIR = "build"
+    __BUILD_DIR = "build"
 
-    def __init__(self, checkout_base_dir: str, checkout_subdir: str, src_normal: str, classes_normal: str,
+    def __init__(self, checkout_base_dir: str, src_normal: str, classes_normal: str,
                  src_patterns: str, classes_patterns: str, pattern_frequency: int, outlog: str, errlog: str):
         self.checkout_base_dir = checkout_base_dir
-        self.checkout_subdir = checkout_subdir
         self.src_normal = src_normal
         self.classes_normal = classes_normal
         self.src_patterns = src_patterns
@@ -27,18 +25,15 @@ class Compile(DataReaderSubprocess):
         self.pattern_frequency = pattern_frequency
         self.outlog = outlog
         self.errlog = errlog
-        self.shell = Shell()
-
-        self.command_with_error = ""
 
     def run(self, misuse: Misuse):
         checkout = misuse.get_checkout(self.checkout_base_dir)
-        project_dir = dirname(checkout.checkout_dir)
-        build_dir = join(project_dir, Compile.BUILD_DIR)
+        checkout_dir = checkout.checkout_dir
+        project_dir = dirname(checkout_dir)
+        build_dir = join(project_dir, Compile.__BUILD_DIR)
 
         self.clean(project_dir, build_dir)
 
-        checkout_dir = join(project_dir, self.checkout_subdir)
         build_config = misuse.build_config
 
         self.copy_project_src(project_dir, checkout_dir, build_config)

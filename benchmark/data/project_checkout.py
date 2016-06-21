@@ -7,6 +7,7 @@ from benchmark.utils.shell import Shell
 
 
 class ProjectCheckout:
+
     def __init__(self, url: str, base_path: str, name: str):
         self.url = url
         self.base_path = base_path

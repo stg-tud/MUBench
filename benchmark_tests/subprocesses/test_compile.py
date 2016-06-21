@@ -37,7 +37,7 @@ class TestCompile:
         def _copy_mock(a, b):
             self.copy_calls.append((a, b))
 
-        self.uut = Compile(self.test_checkout_dir, "checkout", "project-src", "project-classes", "pattern-src", "pattern-classes", 1, self.outlog, self.errlog)
+        self.uut = Compile(self.test_checkout_dir, "project-src", "project-classes", "pattern-src", "pattern-classes", 1, self.outlog, self.errlog)
         self.uut._call = _call_mock
         self.uut._move = _move_mock
         self.uut._copy = _copy_mock

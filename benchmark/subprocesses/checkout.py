@@ -1,23 +1,20 @@
 import logging
-from os.path import realpath
 
 from benchmark.data.misuse import Misuse
 from benchmark.subprocesses.datareader import DataReaderSubprocess
-from benchmark.utils.shell import Shell, CommandFailedError
+from benchmark.utils.shell import CommandFailedError
 
 
 class Checkout(DataReaderSubprocess):
-    def __init__(self, force_checkout: bool, checkout_subdir: str):
-        self.data_path = realpath('data')
-        self.checkout_base_dir = realpath('checkouts')
-        self.checkout_subdir = checkout_subdir
+    def __init__(self, checkouts_path: str, force_checkout: bool):
+        self.checkouts_path = checkouts_path
         self.force_checkout = force_checkout
 
     def run(self, misuse: Misuse) -> bool:
         logger = logging.getLogger("checkout")
 
         try:
-            checkout = misuse.get_checkout(self.checkout_base_dir)
+            checkout = misuse.get_checkout(self.checkouts_path)
         except ValueError as e:
             logger.error("Checkout data corrupted: %s", e)
             return DataReaderSubprocess.Answer.skip

@@ -20,7 +20,7 @@ class TestCheckout(unittest.TestCase):
         self.misuse = create_misuse()
         self.misuse.get_checkout = MagicMock(return_value=self.checkout)
 
-        self.uut = Checkout(force_checkout=False, checkout_subdir="")
+        self.uut = Checkout(":checkouts:", force_checkout=False)
 
     def test_initial_checkout(self):
         self.checkout.exists = MagicMock(return_value=False)

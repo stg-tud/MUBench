@@ -1,10 +1,9 @@
 #!/usr/bin/env python3
 import logging
 import sys
-from os import getcwd, listdir
+from os import listdir
 from os.path import join, realpath, exists, isdir
 from shutil import rmtree
-
 from typing import Optional, List
 
 from benchmark.subprocesses.check import Check
@@ -17,7 +16,11 @@ from benchmark.subprocesses.visualize_results import Visualizer
 from benchmark.utils import command_line_util
 
 
-class MUBenchmark:
+class Benchmark:
+    DATA_PATH = realpath("data")
+    CHECKOUTS_PATH = realpath("checkouts")
+    RESULTS_PATH = realpath("results")
+
     def __init__(self,
                  detector: str,
                  timeout: Optional[int],
@@ -28,31 +31,29 @@ class MUBenchmark:
                  skip_compile: bool,
                  force_checkout: bool,
                  ):
+        # command-line options
         self.detector = detector
         self.timeout = timeout
         self.black_list = black_list
         self.white_list = white_list
         self.java_options = java_options
+        self.force_checkout = force_checkout
         self.force_detect = force_detect
         self.skip_compile = skip_compile
-        self.data_path = join(getcwd(), "data")
-        self.results_path = realpath(join("results", self.detector))
-        self.checkout_dir = realpath("checkouts")
-        self.checkout_subdir = "checkout"
+        self.pattern_frequency = 20  # TODO make configurable
+
+        self.results_path = join(Benchmark.RESULTS_PATH, self.detector)
         self.original_src = "original-src"
         self.original_classes = "original-classes"
         self.patterns_src = "patterns-src"
         self.patterns_classes = "patterns-classes"
+
         self.detector_result_file = 'findings.yml'
         self.eval_result_file = 'result.csv'
         self.reviewed_eval_result_file = 'reviewed-result.csv'
         self.visualize_result_file = 'result.csv'
-        self.force_checkout = force_checkout
 
-        self.pattern_frequency = 20
-
-        self.datareader = DataReader(self.data_path, self.white_list, self.black_list)
-
+        self.datareader = DataReader(Benchmark.DATA_PATH, self.white_list, self.black_list)
         self.datareader.add(Check())
 
     def run_check(self):
@@ -93,29 +94,28 @@ class MUBenchmark:
         self.run()
 
     def run_visualize(self) -> None:
-        visualizer = Visualizer(realpath("results"), self.reviewed_eval_result_file, self.visualize_result_file)
+        visualizer = Visualizer(Benchmark.RESULTS_PATH, self.reviewed_eval_result_file, self.visualize_result_file)
         visualizer.run()
 
     def _setup_checkout(self):
-        checkout_handler = Checkout(self.force_checkout, self.checkout_subdir)
+        checkout_handler = Checkout(Benchmark.CHECKOUTS_PATH, self.force_checkout)
         self.datareader.add(checkout_handler)
 
     def _setup_compile(self):
         if not self.skip_compile:
-            compile_handler = Compile(self.checkout_dir, self.checkout_subdir,
-                                      self.original_src, self.original_classes,
+            compile_handler = Compile(Benchmark.CHECKOUTS_PATH, self.original_src, self.original_classes,
                                       self.patterns_src, self.patterns_classes, self.pattern_frequency,
                                       "compile-out.log", "compile-error.log")
             self.datareader.add(compile_handler)
 
     def _setup_detect(self):
-        detector_runner = Detect(self.detector, self.detector_result_file, self.checkout_dir, self.original_src,
-                                 self.original_classes, self.patterns_src, self.patterns_classes, self.results_path,
-                                 self.timeout, self.java_options)
+        detector_runner = Detect(self.detector, self.detector_result_file, Benchmark.CHECKOUTS_PATH,
+                                 self.original_src, self.original_classes, self.patterns_src, self.patterns_classes,
+                                 self.results_path, self.timeout, self.java_options)
         self.datareader.add(detector_runner)
 
     def _setup_eval(self):
-        evaluation_handler = Evaluation(self.results_path, self.detector_result_file, self.checkout_dir,
+        evaluation_handler = Evaluation(self.results_path, self.detector_result_file, Benchmark.CHECKOUTS_PATH,
                                         self.eval_result_file)
         self.datareader.add(evaluation_handler)
 
@@ -137,6 +137,7 @@ class IndentFormatter(logging.Formatter):
         out = out.replace("\n", "\n" + rec.indent)
         del rec.indent
         return out
+
 
 formatter = IndentFormatter("%(indent)s%(message)s")
 
@@ -165,9 +166,9 @@ if 'force_detect' not in config:
 if 'skip_compile' not in config:
     config.skip_compile = False
 
-benchmark = MUBenchmark(detector=config.detector, white_list=config.white_list, black_list=config.black_list,
-                        timeout=config.timeout, java_options=config.java_options, force_detect=config.force_detect,
-                        skip_compile=config.skip_compile, force_checkout=config.force_checkout)
+benchmark = Benchmark(detector=config.detector, white_list=config.white_list, black_list=config.black_list,
+                      timeout=config.timeout, java_options=config.java_options, force_detect=config.force_detect,
+                      skip_compile=config.skip_compile, force_checkout=config.force_checkout)
 
 if config.subprocess == 'check':
     benchmark.run_check()
