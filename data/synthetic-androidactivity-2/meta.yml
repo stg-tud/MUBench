@@ -18,3 +18,5 @@ fix:
   description: >
     Call super.onCreate() before calling setContentView().
   commit: https://github.com/stg-tud/MUBench/blob/master/data/synthetic-androidactivity-2.java
+build:
+  src: src/

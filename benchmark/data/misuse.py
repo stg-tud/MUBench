@@ -9,6 +9,10 @@ from benchmark.data.pattern import Pattern
 
 
 # noinspection PyAttributeOutsideInit
+from benchmark.data.project_checkout import LocalProjectCheckout, GitProjectCheckout, SVNProjectCheckout
+from benchmark.utils.shell import Shell
+
+
 class Misuse:
     META_FILE = "meta.yml"
 
@@ -27,6 +31,13 @@ class Misuse:
         if '.' in project_name:
             project_name = project_name.split('.', 1)[0]
         return project_name
+
+    @property
+    def project_version(self) -> str:
+        project_version = None
+        if '.' in self.name:
+            project_version = self.name.split('.', 1)[1]
+        return project_version
 
     @property
     def patterns(self) -> Set[Pattern]:
@@ -61,6 +72,22 @@ class Misuse:
     @property
     def fix_revision(self):
         return self.meta["fix"].get("revision", None)
+
+    def get_checkout(self, shell: Shell, base_path: str):
+        repository = self.meta["fix"]["repository"]
+        if repository["type"] == "git":
+            url = repository["url"]
+            revision = self.meta["fix"]["revision"] + "~1"
+            return GitProjectCheckout(shell, url, base_path, self.project_name, self.project_version, revision)
+        elif repository["type"] == "svn":
+            url = repository["url"]
+            revision = str(int(self.meta["fix"]["revision"]) - 1 )
+            return SVNProjectCheckout(shell, url, base_path, self.project_name, self.project_version, revision)
+        elif repository["type"] == "synthetic":
+            url = join(self.path, "compile")
+            return LocalProjectCheckout(shell, url, base_path, self.name)
+        else:
+            raise ValueError("unknown repository type: {}".format(repository["type"]))
 
     @property
     def build_config(self):

@@ -29,3 +29,7 @@ fix:
       diff: https://sourceforge.net/p/el4j/code/3198/tree/trunk/el4j/framework/modules/security/src/main/java/ch/elca/el4j/services/security/encryption/AESCipher.java?diff=51827105e88f3d77c13030a0:3197
 build:
   src: framework/modules/security/src/main/java/
+  commands:
+    - SETUP: http://el4j.sourceforge.net/docs/pdf/SetupEL4J.pdf
+    - mvn compile -pl security-module -am
+  classes: framework/modules/security/target/classes/

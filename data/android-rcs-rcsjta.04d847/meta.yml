@@ -27,3 +27,8 @@ fix:
       diff: https://github.com/android-rcs/rcsjta/commit/04d84799daa51ed7cc0ad270f0eea51ffaf7a53a#diff-bf160ca00204f2ae4c100aabe57a1dfd
 build:
   src: core/src/
+  commands:
+    - cd core
+    - android update project
+    - ant
+  classes: core/build/

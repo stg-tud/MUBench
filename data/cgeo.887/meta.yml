@@ -29,3 +29,6 @@ fix:
     - name: main/src/cgeo/geocaching/cgeoimages.java
 build:
   src: main/src/
+  commands:
+    - UNKNOWN
+  classes: UNKNOWN

@@ -26,3 +26,7 @@ fix:
       diff: https://sourceforge.net/p/tap-apps/code/62/tree/trunk/opentapas/jconduits/source/org/jSyncManager/Conduit/NSMobileMessenger/NSMobileMessenger.java?diff=516ed98f2718467b8b821998:61
 build:
   src: source/
+  commands:
+    - wget http://downloads.sourceforge.net/project/jsyncmanager/jsyncmanager-api/v3.0%20final/jsyncmanager-api-v3_0-final.zip
+    - unzip jsyncmanager-api-v3_0-final.zip
+    - gradle build

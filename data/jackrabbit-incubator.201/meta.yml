@@ -28,3 +28,6 @@ fix:
       diff: http://svn.apache.org/viewvc/incubator/jackrabbit/trunk/contrib/bdb-persistence/src/java/org/apache/jackrabbit/core/state/bdb/BerkeleyDBPersistenceManager.java?r1=263892&r2=263891&pathrev=263892
 build:
   src: contrib/bdb-persistence/src/java/
+  commands:
+    - UNKNOWN
+  classes: UNKNOWN

@@ -5,18 +5,19 @@ from tempfile import mkdtemp
 
 import yaml
 from benchmark.data.misuse import Misuse, BuildConfig
-from nose.tools import assert_equals, assert_not_equals
+from nose.tools import assert_equals, assert_not_equals, assert_raises
 from typing import Dict, Union, Set
 
 from benchmark.data.pattern import Pattern
+from benchmark.data.project_checkout import LocalProjectCheckout, GitProjectCheckout, SVNProjectCheckout
 from benchmark.utils.io import safe_write
+from benchmark.utils.shell import Shell
 
 
 class TMisuse(Misuse):
     def __init__(self, path: str = ":irrelevant:", meta: Dict[str, Union[str, Dict]]={}):
         Misuse.__init__(self, path)
         self._META = meta
-
 
 
 # noinspection PyAttributeOutsideInit
@@ -37,11 +38,19 @@ class TestMisuse:
 
     def test_extracts_project_name(self):
         uut = Misuse(join("C:", "my-path", "project.42-2"))
-        assert "project" == uut.project_name
+        assert_equals("project", uut.project_name)
 
     def test_extracts_synthetic_project_name(self):
         uut = Misuse((join("C:", "my-path", "synthetic-example")))
-        assert "synthetic-example" == uut.project_name
+        assert_equals("synthetic-example", uut.project_name)
+
+    def test_extracts_version(self):
+        uut = Misuse("project.version")
+        assert_equals("version", uut.project_version)
+
+    def test_extracts_version_from_synthetic(self):
+        uut = Misuse("synthetic")
+        assert_equals(None, uut.project_version)
 
     def test_reads_meta_file(self):
         uut = Misuse(self.temp_dir)
@@ -157,3 +166,46 @@ class TestBuildConfig:
 
     def test_hash_equals(self):
         assert_equals(hash(BuildConfig("a", ["b"], "c")), hash(BuildConfig("a", ["b"], "c")))
+
+
+class TestProjectCheckout:
+    def test_synthetic_project(self):
+        uut = TMisuse(":project:", meta={"fix": {"repository": {"type": "synthetic"}}})
+
+        checkout = uut.get_checkout(None, ":base_path:")
+
+        assert isinstance(checkout, LocalProjectCheckout)
+        assert_equals(join(":project:", "compile"), checkout.url)
+        assert_equals(":project:", checkout.name)
+
+    def test_git_project(self):
+        uut = TMisuse(":project:.:version:", meta={"fix":
+                                                       {"repository": {"type": "git", "url": "ssh://foobar.git"},
+                                                        "revision": ":revision:"}})
+
+        checkout = uut.get_checkout(None, ":base_path:")
+
+        assert isinstance(checkout, GitProjectCheckout)
+        assert_equals("ssh://foobar.git", checkout.url)
+        assert_equals(":project:", checkout.name)
+        assert_equals(":version:", checkout.version)
+        assert_equals(":revision:~1", checkout.revision)
+
+    def test_svn_project(self):
+        uut = TMisuse(":project:.:version:", meta={"fix":
+                                                       {"repository": {"type": "svn", "url": "http://url/svn"},
+                                                        "revision": "667"}})
+
+        checkout = uut.get_checkout(None, ":base_path:")
+
+        assert isinstance(checkout, SVNProjectCheckout)
+        assert_equals("http://url/svn", checkout.url)
+        assert_equals(":project:", checkout.name)
+        assert_equals(":version:", checkout.version)
+        assert_equals("666", checkout.revision)
+
+    def test_unknown_type(self):
+        with assert_raises(ValueError):
+            uut = TMisuse("", meta={"fix": {"repository": {"type": ":unknown type:"}}})
+            uut.get_checkout(None, ":irrelevant:")
+

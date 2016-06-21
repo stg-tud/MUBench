@@ -30,3 +30,6 @@ fix:
     - name: app/src/org/gnucash/android/ui/passcode/PasscodeLockScreenActivity.java
 build:
   src: app/src/
+  commands:
+    - UNKNOWN
+  classes: UNKNOWN
