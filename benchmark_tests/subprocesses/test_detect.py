@@ -72,13 +72,13 @@ class TestDetect:
         run_on_misuse(self.uut, create_misuse("project.id", {"build": {"src": "", "classes": "", "commands": []}}))
 
         self.assert_last_invoke_arg_value_equals(self.uut.key_src_project,
-                                                 join(self.checkout_base, "project", self.src_normal_subdir))
+                                                 join(self.checkout_base, "project", "id", self.src_normal_subdir))
 
     def test_passes_project_classes_path(self):
         run_on_misuse(self.uut, create_misuse("project.id", {"build": {"classes": "", "src": "", "commands": []}}))
 
         self.assert_last_invoke_arg_value_equals(self.uut.key_classes_project,
-                                                 join(self.checkout_base, "project", self.classes_normal_subdir))
+                                                 join(self.checkout_base, "project", "id", self.classes_normal_subdir))
 
     def test_passes_findings_files(self):
         run_on_misuse(self.uut, create_misuse("project.id", {}))
@@ -97,7 +97,7 @@ class TestDetect:
 
         run_on_misuse(self.uut, misuse)
         self.assert_last_invoke_arg_value_equals(self.uut.key_src_patterns,
-                                                     join(self.checkout_base, "project", self.src_patterns_subdir))
+                                                 join(self.checkout_base, "project", "id", self.src_patterns_subdir))
 
     def test_invokes_detector_with_patterns_class_path(self):
         misuse = create_misuse("project.id", {"build": {"src": "", "classes": "", "commands": []}})
@@ -105,7 +105,8 @@ class TestDetect:
 
         run_on_misuse(self.uut, misuse)
         self.assert_last_invoke_arg_value_equals(self.uut.key_classes_patterns,
-                                                     join(self.checkout_base, "project", self.classes_patterns_subdir))
+                                                 join(self.checkout_base, "project", "id",
+                                                      self.classes_patterns_subdir))
 
     def test_downloads_detector_if_not_available(self):
         self.detector_available = False
