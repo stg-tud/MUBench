@@ -25,5 +25,5 @@ fix:
 build:
   src: src/
   commands:
-    - gradle build
+    - gradle :compileJava
   classes: build/classes/main/

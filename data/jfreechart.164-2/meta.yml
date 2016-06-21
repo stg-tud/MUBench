@@ -31,5 +31,5 @@ fix:
 build:
   src: source/
   commands:
-    - gradle build
+    - gradle :compileJava
   classes: build/classes/main/

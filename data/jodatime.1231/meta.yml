@@ -30,5 +30,5 @@ build:
   src: JodaTimeContrib/hibernate/src/java/
   commands:
     - cd JodaTimeContrib/hibernate/src/java
-    - gradle build
+    - gradle :compileJava
   classes: JodaTimeContrib/hibernate/build/classes/main/

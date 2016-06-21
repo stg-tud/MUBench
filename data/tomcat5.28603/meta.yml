@@ -37,5 +37,5 @@ build:
   src: src/share/
   commands:
     - "sed -i 's/new CodeSource(url,null)/new CodeSource(url,(java.security.cert.Certificate[])null)/g' src/share/org/apache/jasper/compiler/JspRuntimeContext.java"
-    - gradle build
+    - gradle :compileJava
   classes: build/classes/main/

@@ -32,5 +32,5 @@ build:
     - echo "sonatypeUsername=foo" > gradle.properties
     - echo "sonatypePassword=bar" > gradle.properties
     - android update sdk -u -a --filter build-tools-19.0.3
-    - gradle build
+    - gradle :compileJava
   classes: calligraphy/build/classes/release/
