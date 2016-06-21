@@ -12,6 +12,8 @@ before_script:
 
 install:
   - sudo apt-get install git
+  - git config --global user.email "bob@builder.com"
+  - git config --global user.name "Bob the Builder"
   - sudo apt-get install subversion
   - sudo apt-get install default-jre
   - sudo pip install nose
