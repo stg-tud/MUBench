@@ -26,7 +26,7 @@ class TestLocalProjectCheckout:
         rmtree(self.temp_dir)
 
     def test_create(self):
-        uut = LocalProjectCheckout(self.shell, self.local_url, self.checkouts_dir, ":project:")
+        uut = LocalProjectCheckout(self.local_url, self.checkouts_dir, ":project:")
 
         uut.create()
 
@@ -35,34 +35,27 @@ class TestLocalProjectCheckout:
         assert exists(join(expected_checkout_path, "some.file"))
 
     def test_not_exists(self):
-        uut = LocalProjectCheckout(self.shell, self.local_url, self.checkouts_dir, ":project:")
+        uut = LocalProjectCheckout(self.local_url, self.checkouts_dir, ":project:")
         assert not uut.exists()
 
     def test_exists_after_create(self):
-        uut = LocalProjectCheckout(self.shell, self.local_url, self.checkouts_dir, ":project:")
+        uut = LocalProjectCheckout(self.local_url, self.checkouts_dir, ":project:")
         uut.create()
         assert uut.exists()
 
     def test_not_exists_empty(self):
-        uut = LocalProjectCheckout(self.shell, self.local_url, self.checkouts_dir, ":project:")
+        uut = LocalProjectCheckout(self.local_url, self.checkouts_dir, ":project:")
         os.makedirs(uut.checkout_dir)
         assert not uut.exists()
 
     def test_delete(self):
-        uut = LocalProjectCheckout(self.shell, self.local_url, self.checkouts_dir, ":project:")
+        uut = LocalProjectCheckout(self.local_url, self.checkouts_dir, ":project:")
         uut.create()
         uut.delete()
         assert not exists(uut.checkout_dir)
 
-    def test_get_parent(self):
-        uut = LocalProjectCheckout(self.shell, self.local_url, self.checkouts_dir, ":project:")
-
-        parent = uut.get_parent_checkout()
-
-        assert_equals(uut, parent)
-
     def test_to_string(self):
-        uut = LocalProjectCheckout(self.shell, self.local_url, self.checkouts_dir, ":project:")
+        uut = LocalProjectCheckout(self.local_url, self.checkouts_dir, ":project:")
 
         assert_equals("synthetic:{}".format(self.local_url), str(uut))
 
@@ -70,15 +63,14 @@ class TestLocalProjectCheckout:
 class TestGitProjectCheckout:
     # noinspection PyAttributeOutsideInit
     def setup(self):
-        self.shell = Shell()
         self.temp_dir = mkdtemp(prefix='mubench-checkout-git_')
         self.git_url = join(self.temp_dir, "remote")
 
         os.makedirs(self.git_url)
-        self.shell.exec("git init .", cwd=self.git_url)
-        self.shell.exec("touch foo", cwd=self.git_url)
-        self.shell.exec("git add -A", cwd=self.git_url)
-        self.shell.exec("git commit -a -m 'Initial commit.'", cwd=self.git_url)
+        Shell.exec("git init .", cwd=self.git_url)
+        Shell.exec("touch foo", cwd=self.git_url)
+        Shell.exec("git add -A", cwd=self.git_url)
+        Shell.exec("git commit -a -m 'Initial commit.'", cwd=self.git_url)
 
         self.checkouts_dir = join(self.temp_dir, "checkouts")
 
@@ -86,14 +78,14 @@ class TestGitProjectCheckout:
         rmtree(self.temp_dir)
 
     def test_create_clones_repo(self):
-        uut = GitProjectCheckout(self.shell, self.git_url, self.checkouts_dir, ":project:", ":id:", "HEAD")
+        uut = GitProjectCheckout(self.git_url, self.checkouts_dir, ":project:", ":id:", "HEAD")
 
         uut.create()
 
         assert exists(join(self.checkouts_dir, ":project:", "checkout", ".git"))
 
     def test_create_copies_and_checks_out_repo(self):
-        uut = GitProjectCheckout(self.shell, self.git_url, self.checkouts_dir, ":project:", ":id:", "HEAD")
+        uut = GitProjectCheckout(self.git_url, self.checkouts_dir, ":project:", ":id:", "HEAD")
 
         uut.create()
 
@@ -102,35 +94,28 @@ class TestGitProjectCheckout:
         assert exists(join(expected_checkout_path, ".git"))
 
     def test_not_exists(self):
-        uut = GitProjectCheckout(self.shell, self.git_url, self.checkouts_dir, ":project:", ":id:", "HEAD")
+        uut = GitProjectCheckout(self.git_url, self.checkouts_dir, ":project:", ":id:", "HEAD")
         assert not uut.exists()
 
     def test_exists_after_create(self):
-        uut = GitProjectCheckout(self.shell, self.git_url, self.checkouts_dir, ":project:", ":id:", "HEAD")
+        uut = GitProjectCheckout(self.git_url, self.checkouts_dir, ":project:", ":id:", "HEAD")
         uut.create()
         assert uut.exists()
 
     def test_not_exists_broken(self):
-        uut = GitProjectCheckout(self.shell, self.git_url, self.checkouts_dir, ":project:", ":id:", "HEAD")
+        uut = GitProjectCheckout(self.git_url, self.checkouts_dir, ":project:", ":id:", "HEAD")
         os.makedirs(join(uut.checkout_dir, ".git"))
         assert not uut.exists()
 
     def test_delete(self):
-        uut = GitProjectCheckout(self.shell, self.git_url, self.checkouts_dir, ":project:", ":id:", "HEAD")
+        uut = GitProjectCheckout(self.git_url, self.checkouts_dir, ":project:", ":id:", "HEAD")
         uut.create()
         uut.delete()
         assert not exists(join(self.checkouts_dir, ":project:", "checkout"))
         assert not exists(uut.checkout_dir)
 
-    def test_get_parent(self):
-        uut = GitProjectCheckout(self.shell, self.git_url, self.checkouts_dir, ":project:", ":id:", "HEAD")
-
-        parent = uut.get_parent_checkout()
-
-        assert_equals("HEAD~1", parent.revision)
-
     def test_to_string(self):
-        uut = GitProjectCheckout(self.shell, self.git_url, self.checkouts_dir, ":project:", ":id:", ":revision:")
+        uut = GitProjectCheckout(self.git_url, self.checkouts_dir, ":project:", ":id:", ":revision:")
 
         assert_equals("git:{}#:revisio".format(self.git_url), str(uut))
 
@@ -140,14 +125,7 @@ class TestSVNProjectCheckout:
     def setup(self):
         self.shell = Shell()
 
-    def test_get_parent(self):
-        uut = SVNProjectCheckout(self.shell, ":url:", ":path:", ":project:", ":id:", "43")
-
-        parent = uut.get_parent_checkout()
-
-        assert_equals("42", parent.revision)
-
     def test_to_string(self):
-        uut = SVNProjectCheckout(self.shell, ":url:", ":path:", ":project:", ":id:", ":revision:")
+        uut = SVNProjectCheckout(":url:", ":path:", ":project:", ":id:", ":revision:")
 
         assert_equals("svn::url:@:revision:", str(uut))

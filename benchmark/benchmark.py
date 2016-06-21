@@ -15,8 +15,6 @@ from benchmark.subprocesses.detect import Detect
 from benchmark.subprocesses.evaluate import Evaluation
 from benchmark.subprocesses.visualize_results import Visualizer
 from benchmark.utils import command_line_util
-from benchmark.utils.io import safe_open
-from benchmark.utils.shell import Shell
 
 
 class MUBenchmark:
@@ -97,7 +95,7 @@ class MUBenchmark:
         visualizer.run()
 
     def _setup_checkout(self, setup_revisions: bool, checkout_parent: bool):
-        checkout_handler = Checkout(checkout_parent, setup_revisions, self.checkout_subdir, Shell())
+        checkout_handler = Checkout(checkout_parent, setup_revisions, self.checkout_subdir)
         self.datareader.add(checkout_handler)
 
     def _setup_compile(self):

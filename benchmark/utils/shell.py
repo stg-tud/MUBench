@@ -4,7 +4,8 @@ import subprocess
 
 
 class Shell:
-    def exec(self, command: str, cwd: str = os.getcwd(), logger=logging.getLogger(__name__)):
+    @staticmethod
+    def exec(command: str, cwd: str = os.getcwd(), logger=logging.getLogger(__name__)):
         process = subprocess.Popen(command, cwd=cwd, bufsize=1, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
                                    shell=True)
         output, _ = process.communicate()
@@ -15,9 +16,10 @@ class Shell:
         else:
             return output
 
-    def try_exec(self, command: str, cwd: str = os.getcwd(), logger=logging.getLogger(__name__)) -> bool:
+    @staticmethod
+    def try_exec(command: str, cwd: str = os.getcwd(), logger=logging.getLogger(__name__)) -> bool:
         try:
-            self.exec(command, cwd=cwd, logger=logger)
+            Shell.exec(command, cwd=cwd, logger=logger)
             return True
         except CommandFailedError:
             return False

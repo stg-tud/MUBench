@@ -7,20 +7,19 @@ from benchmark.utils.shell import Shell, CommandFailedError
 
 
 class Checkout(DataReaderSubprocess):
-    def __init__(self, checkout_parent: bool, setup_revisions: bool, checkout_subdir: str, shell: Shell):
+    def __init__(self, checkout_parent: bool, setup_revisions: bool, checkout_subdir: str):
         self.data_path = realpath('data')
         self.checkout_base_dir = realpath('checkouts')
         self.checkout_subdir = checkout_subdir
         self.checkout_parent = checkout_parent
         self.setup_revisions = setup_revisions
-        self.shell = shell
         self.force_checkout = False # TODO implement
 
     def run(self, misuse: Misuse) -> bool:
         logger = logging.getLogger("checkout")
 
         try:
-            checkout = misuse.get_checkout(self.shell, self.checkout_base_dir)
+            checkout = misuse.get_checkout(self.checkout_base_dir)
         except ValueError as e:
             logger.error("Checkout data corrupted: %s", e)
             return DataReaderSubprocess.Answer.skip

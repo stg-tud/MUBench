@@ -32,8 +32,7 @@ class Compile(DataReaderSubprocess):
         self.command_with_error = ""
 
     def run(self, misuse: Misuse):
-        project_dir = join(self.checkout_base_dir, misuse.project_name)
-        checkout = misuse.get_checkout(self.shell, self.checkout_base_dir)
+        checkout = misuse.get_checkout(self.checkout_base_dir)
         project_dir = dirname(checkout.checkout_dir)
         build_dir = join(project_dir, Compile.BUILD_DIR)
 

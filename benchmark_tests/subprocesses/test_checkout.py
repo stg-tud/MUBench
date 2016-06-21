@@ -13,14 +13,14 @@ from benchmark_tests.data.test_misuse import create_misuse
 class TestCheckout(unittest.TestCase):
     # noinspection PyAttributeOutsideInit
     def setUp(self):
-        self.checkout = ProjectCheckout(Shell(), ":url:", ":base_path:", ":name:")
+        self.checkout = ProjectCheckout(":url:", ":base_path:", ":name:")
         self.checkout.create = MagicMock()
         self.checkout.delete = MagicMock()
 
         self.misuse = create_misuse()
         self.misuse.get_checkout = MagicMock(return_value=self.checkout)
 
-        self.uut = Checkout(checkout_parent=False, setup_revisions=False, checkout_subdir="", shell=Shell())
+        self.uut = Checkout(checkout_parent=False, setup_revisions=False, checkout_subdir="")
 
     def test_initial_checkout(self):
         self.checkout.exists = MagicMock(return_value=False)

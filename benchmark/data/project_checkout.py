@@ -7,8 +7,7 @@ from benchmark.utils.shell import Shell
 
 
 class ProjectCheckout:
-    def __init__(self, shell: Shell, url: str, base_path: str, name: str):
-        self.shell = shell
+    def __init__(self, url: str, base_path: str, name: str):
         self.url = url
         self.base_path = base_path
         self.name = name
@@ -21,9 +20,6 @@ class ProjectCheckout:
         raise NotImplementedError
 
     def delete(self) -> None:
-        raise NotImplementedError
-
-    def get_parent_checkout(self):
         raise NotImplementedError
 
 
@@ -41,20 +37,17 @@ class LocalProjectCheckout(ProjectCheckout):
     def delete(self):
         remove_tree(self.checkout_dir)
 
-    def get_parent_checkout(self):
-        return self
-
     def __str__(self):
         return "synthetic:{}".format(self.url)
 
 
 class RepoProjectCheckout(ProjectCheckout):
-    def __init__(self, shell: Shell, url: str, base_path: str, name: str, version: str, revision: str):
-        super(RepoProjectCheckout, self).__init__(shell, url, base_path, name)
+    def __init__(self, url: str, base_path: str, name: str, version: str, revision: str):
+        super(RepoProjectCheckout, self).__init__(url, base_path, name)
         self.version = version
         self.revision = revision
         self.__base_checkout_dir = self.checkout_dir
-        self.__child = LocalProjectCheckout(self.shell, self.checkout_dir, join(self.base_path, self.name), self.version)
+        self.__child = LocalProjectCheckout(self.checkout_dir, join(self.base_path, self.name), self.version)
         self.checkout_dir = self.__child.checkout_dir
 
     def exists(self):
@@ -88,17 +81,13 @@ class RepoProjectCheckout(ProjectCheckout):
 
 class GitProjectCheckout(RepoProjectCheckout):
     def _clone(self, url: str, revision: str, path: str):
-        self.shell.exec("git clone {} . --quiet".format(url), cwd=path, logger=logging.getLogger("checkout.project"))
+        Shell.exec("git clone {} . --quiet".format(url), cwd=path, logger=logging.getLogger("checkout.project"))
 
     def _update(self, url: str, revision: str, path: str):
-        self.shell.exec("git checkout {} --quiet".format(revision), cwd=path, logger=logging.getLogger("checkout.project"))
+        Shell.exec("git checkout {} --quiet".format(revision), cwd=path, logger=logging.getLogger("checkout.project"))
 
     def _is_repo(self, path: str):
-        return exists(path) and self.shell.try_exec("git status", cwd=path, logger=logging.getLogger("checkout.project"))
-
-    def get_parent_checkout(self):
-        parent_revision = self.revision + "~1"
-        return GitProjectCheckout(self.shell, self.url, self.base_path, self.name, self.version, parent_revision)
+        return exists(path) and Shell.try_exec("git status", cwd=path, logger=logging.getLogger("checkout.project"))
 
     def __str__(self):
         return "git:{}#{}".format(self.url, self.revision[:8])
@@ -106,17 +95,13 @@ class GitProjectCheckout(RepoProjectCheckout):
 
 class SVNProjectCheckout(RepoProjectCheckout):
     def _clone(self, url: str, revision: str, path: str):
-        self.shell.exec("svn checkout {}@{} .".format(url, revision), cwd=path)
+        Shell.exec("svn checkout {}@{} .".format(url, revision), cwd=path)
 
     def _update(self, url: str, revision: str, path: str):
-        self.shell.exec("svn update -r {}".format(revision), cwd=path)
+        Shell.exec("svn update -r {}".format(revision), cwd=path)
 
     def _is_repo(self, path: str):
-        return exists(path) and self.shell.try_exec("svn info", cwd=path)
-
-    def get_parent_checkout(self):
-        parent_revision = str(int(self.revision) - 1)
-        return SVNProjectCheckout(self.shell, self.url, self.base_path, self.name, self.version, parent_revision)
+        return exists(path) and Shell.try_exec("svn info", cwd=path)
 
     def __str__(self):
         return "svn:{}@{}".format(self.url, self.revision)

@@ -63,19 +63,19 @@ class Misuse:
 
         return self._META
 
-    def get_checkout(self, shell: Shell, base_path: str) -> ProjectCheckout:
+    def get_checkout(self, base_path: str) -> ProjectCheckout:
         repository = self.meta["fix"]["repository"]
         if repository["type"] == "git":
             url = repository["url"]
             revision = self.meta["fix"]["revision"] + "~1"
-            return GitProjectCheckout(shell, url, base_path, self.project_name, self.project_version, revision)
+            return GitProjectCheckout(url, base_path, self.project_name, self.project_version, revision)
         elif repository["type"] == "svn":
             url = repository["url"]
             revision = str(int(self.meta["fix"]["revision"]) - 1 )
-            return SVNProjectCheckout(shell, url, base_path, self.project_name, self.project_version, revision)
+            return SVNProjectCheckout(url, base_path, self.project_name, self.project_version, revision)
         elif repository["type"] == "synthetic":
             url = join(self.path, "compile")
-            return LocalProjectCheckout(shell, url, base_path, self.name)
+            return LocalProjectCheckout(url, base_path, self.name)
         else:
             raise ValueError("unknown repository type: {}".format(repository["type"]))
 

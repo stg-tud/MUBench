@@ -47,7 +47,7 @@ class Detect(DataReaderSubprocess):
 
     def run(self, misuse: Misuse) -> None:
         result_dir = join(self.results_path, misuse.name)
-        checkout = misuse.get_checkout(Shell(), self.checkout_base_dir)
+        checkout = misuse.get_checkout(self.checkout_base_dir)
         project_dir = dirname(checkout.checkout_dir)
 
         with safe_open(join(result_dir, "out.log"), 'w+') as out_log:

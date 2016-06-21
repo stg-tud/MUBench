@@ -149,7 +149,7 @@ class TestProjectCheckout:
     def test_synthetic_project(self):
         uut = create_misuse(":project:", meta={"fix": {"repository": {"type": "synthetic"}}})
 
-        checkout = uut.get_checkout(None, ":base_path:")
+        checkout = uut.get_checkout(":base_path:")
 
         assert isinstance(checkout, LocalProjectCheckout)
         assert_equals(join(":project:", "compile"), checkout.url)
@@ -160,7 +160,7 @@ class TestProjectCheckout:
                                                              {"repository": {"type": "git", "url": "ssh://foobar.git"},
                                                               "revision": ":revision:"}})
 
-        checkout = uut.get_checkout(None, ":base_path:")
+        checkout = uut.get_checkout(":base_path:")
 
         assert isinstance(checkout, GitProjectCheckout)
         assert_equals("ssh://foobar.git", checkout.url)
@@ -173,7 +173,7 @@ class TestProjectCheckout:
                                                              {"repository": {"type": "svn", "url": "http://url/svn"},
                                                               "revision": "667"}})
 
-        checkout = uut.get_checkout(None, ":base_path:")
+        checkout = uut.get_checkout(":base_path:")
 
         assert isinstance(checkout, SVNProjectCheckout)
         assert_equals("http://url/svn", checkout.url)
@@ -184,4 +184,4 @@ class TestProjectCheckout:
     def test_unknown_type(self):
         with assert_raises(ValueError):
             uut = create_misuse("", meta={"fix": {"repository": {"type": ":unknown type:"}}})
-            uut.get_checkout(None, ":irrelevant:")
+            uut.get_checkout(":irrelevant:")
