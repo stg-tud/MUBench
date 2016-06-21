@@ -1,24 +1,23 @@
+import logging
 import os
 import subprocess
-import sys
 
 
 class Shell:
-    def __init__(self, log=sys.stdout):
-        self.log = log
-
-    def exec(self, command: str, cwd: str = os.getcwd()):
+    def exec(self, command: str, cwd: str = os.getcwd(), logger=logging.getLogger(__name__)):
         process = subprocess.Popen(command, cwd=cwd, bufsize=1, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
                                    shell=True)
         output, _ = process.communicate()
         output = output.decode("utf-8")
-        self.log.write(output)
+        logger.debug(output)
         if process.wait():
             raise CommandFailedError(command, output)
+        else:
+            return output
 
-    def try_exec(self, command: str, cwd: str = os.getcwd()) -> bool:
+    def try_exec(self, command: str, cwd: str = os.getcwd(), logger=logging.getLogger(__name__)) -> bool:
         try:
-            self.exec(command, cwd=cwd)
+            self.exec(command, cwd=cwd, logger=logger)
             return True
         except CommandFailedError:
             return False
@@ -29,3 +28,5 @@ class CommandFailedError(Exception):
         self.command = command
         self.output = output
 
+    def __str__(self):
+        return "failed to execute {}: {}".format(self.command, self.output)

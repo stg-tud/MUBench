@@ -11,10 +11,9 @@ class TestShell:
         uut.exec("echo 'test'")
 
     def test_output(self):
-        out = StringIO()
-        uut = Shell(log=out)
-        uut.exec("echo 'test'")
-        assert_equals("test\n", out.getvalue())
+        uut = Shell()
+        out = uut.exec("echo 'test'")
+        assert_equals("test\n", out)
 
     def test_command_failure(self):
         uut = Shell()
