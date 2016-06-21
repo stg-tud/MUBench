@@ -2,7 +2,7 @@ import os
 import shutil
 import subprocess
 from os import makedirs
-from os.path import join, exists, isdir, dirname
+from os.path import join, exists, isdir, dirname, isfile
 
 from typing import List
 
@@ -36,8 +36,12 @@ class Compile(DataReaderSubprocess):
 
         build_config = misuse.build_config
 
-        self.copy_project_src(project_dir, checkout_dir, build_config)
-        self.copy_pattern_src(project_dir, misuse)
+        try:
+            self.copy_project_src(project_dir, checkout_dir, build_config)
+            self.copy_pattern_src(project_dir, misuse)
+        except IOError as e:
+            subprocess_print("Failed to copy sources: {}".format(e))
+            return DataReaderSubprocess.Answer.skip
 
         if build_config is None:
             subprocess_print("No compilation configured for this misuse.")
@@ -122,9 +126,11 @@ class Compile(DataReaderSubprocess):
 
         if isdir(src):
             copy_tree(src, dst)
-        else:
+        elif isfile(src):
             makedirs(dirname(dst), exist_ok=True)
             shutil.copy(src, dst)
+        else:
+            raise FileNotFoundError("no such file or directory {}".format(src))
 
     # noinspection PyMethodMayBeStatic
     def _move(self, src, dst):
