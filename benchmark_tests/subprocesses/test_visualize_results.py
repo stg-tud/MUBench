@@ -4,7 +4,8 @@ from tempfile import mkdtemp
 
 from nose.tools import assert_equals, assert_raises
 
-from benchmark.subprocesses.visualize_results import Visualizer
+from benchmark.data.misuse import Misuse
+from benchmark.subprocesses.visualize_results import Visualizer, Grouping
 from benchmark.utils.io import remove_tree, safe_write
 
 
@@ -15,23 +16,25 @@ class TestVisualizer:
         self.results_base_dir = join(self.temp_dir, "results")
         self.reviewed_detector_result = "reviewed-result.csv"
         self.visualize_result_file = "result.csv"
-        self.uut = Visualizer(self.results_base_dir, self.reviewed_detector_result, self.visualize_result_file)
+        self.data_path = join(self.temp_dir, "data")
+        self.uut = Visualizer(self.results_base_dir, self.reviewed_detector_result, self.visualize_result_file,
+                              self.data_path)
 
     def teardown(self):
         remove_tree(self.temp_dir)
 
     def exits_if_result_folder_doesnt_exist(self):
-        self.uut = Visualizer("non-existent-dir", self.reviewed_detector_result, self.visualize_result_file)
-        assert_raises(SystemExit, self.uut.run)
+        self.uut = Visualizer("non-existent-dir", self.reviewed_detector_result, self.visualize_result_file, "")
+        assert_raises(SystemExit, self.uut.create)
 
     def exits_if_no_results_are_found(self):
-        assert_raises(SystemExit, self.uut.run)
+        assert_raises(SystemExit, self.uut.create)
 
     def test_generates_result_for_one_detector(self):
         test_result = "Misuse1, 0\nMisuse2, 1\nMisuse3, 0"
         self.create_detector_result("Detector1", test_result)
 
-        self.uut.run()
+        self.uut.create()
 
         visualize_result_file = join(self.results_base_dir, self.visualize_result_file)
         assert exists(visualize_result_file)
@@ -47,7 +50,7 @@ class TestVisualizer:
         self.create_detector_result("Detector1", test_result1)
         self.create_detector_result("Detector2", test_result2)
 
-        self.uut.run()
+        self.uut.create()
 
         visualize_result_file = join(self.results_base_dir, self.visualize_result_file)
         assert exists(visualize_result_file)
@@ -56,6 +59,37 @@ class TestVisualizer:
 
         expected_result = "Detector,Misuse1,Misuse2,Misuse3\nDetector1, 0, 1,\nDetector2,, 1, 0\n"
         assert_equals(expected_result, actual_result)
+
+    def test_group_results(self):
+        source_file = join(self.results_base_dir, self.visualize_result_file)
+        target_file = 'test-grouping.csv'
+
+        # Detector  MU1 MU2 MU3 MU4
+        # Det1      0   0   0   1
+        # Det2      1   0   1   1
+        safe_write("Detector,MU1,MU2,MU3,MU4\nDet1,0,0,0,1\nDet2,1,0,1,1", source_file, append=False)
+        # Assuming MU1/MU2 and MU3/MU4 belong to the same groups we expect:
+        # Detector  Group1  Group2
+        # Det1      0.0     0.5
+        # Det2      0.5     1.0
+        expected = "Detector,Group1,Group2\nDet1,0.0,0.5\nDet2,0.5,1.0\n"
+
+        ismisuse_orig = Misuse.ismisuse
+        try:
+            Misuse.ismisuse = lambda path: any(name in path for name in ["MU1", "MU2", "MU3", "MU4"])
+
+            class TestGrouping(Grouping):
+                def get(self, misuse: Misuse) -> str:
+                    return "Group1" if misuse.name in ["MU1", "MU2"] else "Group2"
+
+            self.uut.group('test-grouping.csv', TestGrouping())
+        finally:
+            Misuse.ismisuse = ismisuse_orig
+
+        with open(join(self.results_base_dir, target_file)) as actual_file:
+            actual = actual_file.read()
+
+        assert_equals(expected, actual)
 
     def create_detector_result(self, detector, content):
         detector_result_file = join(self.results_base_dir, detector, self.reviewed_detector_result)

@@ -94,8 +94,9 @@ class Benchmark:
         self.run()
 
     def run_visualize(self) -> None:
-        visualizer = Visualizer(Benchmark.RESULTS_PATH, self.reviewed_eval_result_file, self.visualize_result_file)
-        visualizer.run()
+        visualizer = Visualizer(Benchmark.RESULTS_PATH, self.reviewed_eval_result_file, self.visualize_result_file,
+                                Benchmark.DATA_PATH)
+        visualizer.create()
 
     def _setup_checkout(self):
         checkout_handler = Checkout(Benchmark.CHECKOUTS_PATH, self.force_checkout)
