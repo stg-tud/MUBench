@@ -5,7 +5,7 @@ from benchmark.utils.io import safe_open
 
 
 def write_table(file: str, headers: List[str], content: Dict[str, Dict[str, str]]):
-    with safe_open(file, 'w+') as result_file:
+    with safe_open(file, 'w+', newline='') as result_file:
         w = csv.DictWriter(result_file, fieldnames=headers)
         w.writeheader()
         for row_key in sorted(content):

@@ -11,9 +11,9 @@ def safe_write(content: str, file_path: str, append: bool) -> None:
         print(content, file=file)
 
 
-def safe_open(file_path: str, mode: str):
+def safe_open(file_path: str, mode: str, newline: str = None):
     create_file_path(file_path)
-    return open(file_path, mode)
+    return open(file_path, mode, newline=newline)
 
 
 def create_file_path(file_path: str) -> None:
