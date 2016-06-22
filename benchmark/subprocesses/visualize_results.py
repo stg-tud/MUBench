@@ -44,7 +44,7 @@ class Visualizer:
         self.detector_header = 'Detector'
 
     def create(self):
-        logger = logging.getLogger("visualize")
+        logger = logging.getLogger()
 
         if not exists(self.results_base_path):
             logger.error("No results found.")
@@ -77,23 +77,15 @@ class Visualizer:
         headers = [self.detector_header] + sorted(list(misuses))
         file = join(self.results_base_path, self.result_file)
         csv_util.write_table(file, headers, results)
+        self.write_all_groupings()
 
-    def run_group(self, grouping_name: str, target_file: str):
-        if grouping_name == 'info':
-            exit("Available grouping methods are: \n{}".format(Grouping.get_available_grouping_names()))
-
-        if target_file is None:
-            exit("Please provide a target file (e.g. 'grouped.csv')")
-
-        grouping = Grouping.get_by_name(grouping_name)
-        if grouping is None:
-            exit("Invalid grouping method {}\n".format(grouping_name) +
-                 "Available grouping methods are:\n{}".format(Grouping.get_available_grouping_names()))
-
-        self.group(target_file, grouping())
+    def write_all_groupings(self):
+        for grouping in Grouping.get_available_groupings():
+            self.group('result-{}.csv'.format(grouping.__name__), grouping())
 
     def group(self, target_file: str, grouping: Grouping):
-        logger = logging.getLogger("visualize-group")
+        logger = logging.getLogger()
+        logger.info("Grouping by rule %s", type(grouping).__name__)
 
         merged_result_file = join(self.results_base_path, self.result_file)
 
@@ -107,7 +99,7 @@ class Visualizer:
         all_groups = set()  # type: Set[str]
 
         for detector, results_per_misuse in results.items():
-            logger.info("Grouping results for detector %s", detector)
+            logger.info("    Grouping results for detector %s", detector)
 
             grouped_results[detector] = dict()
             results_per_group = dict()  # type: Dict[str, List[int]]

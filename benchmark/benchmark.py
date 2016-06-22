@@ -98,11 +98,6 @@ class Benchmark:
                                 Benchmark.DATA_PATH)
         visualizer.create()
 
-    def run_group(self, grouping: str, target_file: str) -> None:
-        visualizer = Visualizer(Benchmark.RESULTS_PATH, self.reviewed_eval_result_file, self.visualize_result_file,
-                                Benchmark.DATA_PATH)
-        visualizer.run_group(grouping, target_file)
-
     def _setup_checkout(self):
         checkout_handler = Checkout(Benchmark.CHECKOUTS_PATH, self.force_checkout)
         self.datareader.add(checkout_handler)
@@ -194,5 +189,3 @@ if config.subprocess == 'eval':
     benchmark.run_evaluate()
 if config.subprocess == 'visualize':
     benchmark.run_visualize()
-if config.subprocess == 'group':
-    benchmark.run_group(config.grouping, config.file)
