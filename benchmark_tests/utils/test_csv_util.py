@@ -27,8 +27,7 @@ class TestCsvUtil:
                         "D2": {"MU1": "1", "MU3": "0"},
                         "D3": {"MU1": "1", "MU2": "0", "MU3": "1"}}
 
-        expected_lines = ["Detector,MU1,MU2,MU3", "D1,0,1,0", "D2,1,,0", "D3,1,0,1"]
-        expected = "\n".join(expected_lines)
+        expected = "Detector,MU1,MU2,MU3\nD1,0,1,0\nD2,1,,0\nD3,1,0,1\n"
 
         csv_util.write_table(self.temp_file, ["Detector", "MU1", "MU2", "MU3"], test_content)
 
