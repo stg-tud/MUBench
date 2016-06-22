@@ -6,3 +6,8 @@ from benchmark.subprocesses.visualize_results import Grouping
 class project(Grouping):
     def get(self, misuse: Misuse) -> str:
         return misuse.project_name
+
+
+class synthetic(Grouping):
+    def get(self, misuse: Misuse) -> str:
+        return "synthetic" if "synthetic" in misuse.name else "not synthetic"
