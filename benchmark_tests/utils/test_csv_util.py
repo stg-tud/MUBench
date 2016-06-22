@@ -50,3 +50,17 @@ class TestCsvUtil:
         read_content = csv_util.read_table(self.temp_file, "Detector")
 
         assert_equals(test_content, read_content)
+
+    def test_writes_zeros(self):
+        # Detector  MU1
+        # D1        0
+
+        test_content = {"D1": {"MU1": 0}}
+        expected = "Detector,MU1\nD1,0\n"
+
+        csv_util.write_table(self.temp_file, ["Detector", "MU1"], test_content)
+
+        with open(self.temp_file, 'r') as actual_file:
+            actual = actual_file.read()
+
+        assert_equals(expected, actual)

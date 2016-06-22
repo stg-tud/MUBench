@@ -10,7 +10,7 @@ def write_table(file: str, headers: List[str], content: Dict[str, Dict[str, str]
         w.writeheader()
         for row_key in sorted(content):
             print(row_key, end='', file=result_file)
-            w.writerow({column_key: content[row_key].get(column_key) or '' for column_key in headers[1:]})
+            w.writerow({column_key: content[row_key].get(column_key, '') for column_key in headers[1:]})
 
 
 def read_table(file: str, row_key: str) -> Dict[str, Dict[str, str]]:
