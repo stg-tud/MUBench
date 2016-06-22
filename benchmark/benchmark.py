@@ -170,6 +170,8 @@ if 'force_detect' not in config:
     config.force_detect = False
 if 'skip_compile' not in config:
     config.skip_compile = False
+if 'force_checkout' not in config:
+    config.force_checkout = False
 
 benchmark = Benchmark(detector=config.detector, white_list=config.white_list, black_list=config.black_list,
                       timeout=config.timeout, java_options=config.java_options, force_detect=config.force_detect,
