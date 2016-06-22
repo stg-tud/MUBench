@@ -82,7 +82,7 @@ class TestVisualizer:
                 def get(self, misuse: Misuse) -> str:
                     return "Group1" if misuse.name in ["MU1", "MU2"] else "Group2"
 
-            self.uut.group('test-grouping.csv', TestGrouping())
+            self.uut.group('test-grouping.csv', GroupingTestImpl())
         finally:
             Misuse.ismisuse = ismisuse_orig
 

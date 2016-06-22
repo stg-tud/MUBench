@@ -113,7 +113,7 @@ class Visualizer:
             results_per_group = dict()  # type: Dict[str, List[int]]
 
             for misuse_name, result_as_str in results_per_misuse.items():
-                misuse_name = misuse_name[1:-1]  # strip ''
+                misuse_name = misuse_name.lstrip("'").rstrip("'")
                 misuse_path = join(self.data_path, misuse_name)
                 if not Misuse.ismisuse(misuse_path):
                     logger.error("Couldn't validate misuse %s", misuse_path)
