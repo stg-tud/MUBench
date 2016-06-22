@@ -1,17 +1,16 @@
 import os
 from glob import glob
 from os.path import isdir, isfile, join, basename
+from typing import Set
 
 import yaml
-from typing import Set, List
 
+from benchmark.data.build_config import BuildConfig
 from benchmark.data.pattern import Pattern
-
 
 # noinspection PyAttributeOutsideInit
 from benchmark.data.project_checkout import LocalProjectCheckout, GitProjectCheckout, SVNProjectCheckout, \
     ProjectCheckout
-from benchmark.utils.shell import Shell
 
 
 class Misuse:
@@ -80,7 +79,7 @@ class Misuse:
             raise ValueError("unknown repository type: {}".format(repository["type"]))
 
     @property
-    def build_config(self):
+    def build_config(self) -> BuildConfig:
         build = self.meta.get("build")
         if build is None:
             return None
@@ -106,28 +105,3 @@ class Misuse:
 
     def __ne__(self, other):
         return not self.__eq__(other)
-
-
-class Repository:
-    def __init__(self, type: str, url: str):
-        self.type = type
-        self.url = url
-
-
-class BuildConfig:
-    def __init__(self, src: str, commands: List[str], classes: str):
-        self.src = src
-        self.commands = commands
-        self.classes = classes
-
-    def __eq__(self, other):
-        return isinstance(other, BuildConfig) and \
-               self.src == other.src and \
-               self.commands == other.commands and \
-               self.classes == other.classes
-
-    def __hash__(self):
-        return hash(self.src + "".join(self.commands) + self.classes)
-
-    def __str__(self):
-        return "[src: {}, classes: {}, commands: {}]".format(self.src, self.classes, self.commands)

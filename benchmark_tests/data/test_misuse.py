@@ -6,7 +6,8 @@ from tempfile import mkdtemp
 import yaml
 from nose.tools import assert_equals, assert_not_equals, assert_raises
 
-from benchmark.data.misuse import Misuse, BuildConfig
+from benchmark.data.misuse import Misuse
+from benchmark.data.build_config import BuildConfig
 from benchmark.data.pattern import Pattern
 from benchmark.data.project_checkout import LocalProjectCheckout, GitProjectCheckout, SVNProjectCheckout
 from benchmark.utils.io import safe_write
