@@ -31,7 +31,7 @@ class Grouping:
 
         return None
 
-    def get(self, misuse: Misuse) -> str:
+    def get_groups(self, misuse: Misuse) -> Iterable[str]:
         raise NotImplementedError
 
 
@@ -104,7 +104,7 @@ class Visualizer:
         results = csv_util.read_table(merged_result_file, self.detector_header)  # type: Dict[str, Dict[str, str]]
 
         grouped_results = dict()  # type: Dict[str, Dict[str, str]]
-        groups = set()  # type: Set[str]
+        all_groups = set()  # type: Set[str]
 
         for detector, results_per_misuse in results.items():
             logger.info("Grouping results for detector %s", detector)
@@ -120,20 +120,21 @@ class Visualizer:
                     continue
 
                 result = int(result_as_str)  # type: int
-                group = grouping.get(Misuse(misuse_path))
+                groups = grouping.get_groups(Misuse(misuse_path))
 
-                if group not in results_per_group:
-                    results_per_group[group] = [result]
-                else:
-                    results_per_group[group].append(result)
+                for group in groups:
+                    if group not in results_per_group:
+                        results_per_group[group] = [result]
+                    else:
+                        results_per_group[group].append(result)
 
-                groups.add(group)
+                    all_groups.add(group)
 
             for group, results_for_group in results_per_group.items():
                 average = sum(results_for_group) / len(results_for_group)
                 grouped_results[detector][group] = average
 
-        headers = [self.detector_header] + sorted(list(groups))
+        headers = [self.detector_header] + sorted(list(all_groups))
         file = join(self.results_base_path, target_file)
         csv_util.write_table(file, headers, grouped_results)
 

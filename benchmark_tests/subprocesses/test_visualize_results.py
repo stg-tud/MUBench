@@ -3,6 +3,7 @@ from os.path import join, exists
 from tempfile import mkdtemp
 
 from nose.tools import assert_equals, assert_raises
+from typing import Iterable
 
 from benchmark.data.misuse import Misuse
 from benchmark.subprocesses.visualize_results import Visualizer, Grouping
@@ -79,8 +80,8 @@ class TestVisualizer:
             Misuse.ismisuse = lambda path: any(name in path for name in ["MU1", "MU2", "MU3", "MU4"])
 
             class GroupingTestImpl(Grouping):
-                def get(self, misuse: Misuse) -> str:
-                    return "Group1" if misuse.name in ["MU1", "MU2"] else "Group2"
+                def get_groups(self, misuse: Misuse) -> Iterable[str]:
+                    return ["Group1" if misuse.name in ["MU1", "MU2"] else "Group2"]
 
             self.uut.group('test-grouping.csv', GroupingTestImpl())
         finally:
@@ -98,8 +99,8 @@ class TestVisualizer:
 
 class TestGrouping:
     class GroupingTestImpl(Grouping):
-        def get(self, misuse: Misuse) -> str:
-            return ''
+        def get_groups(self, misuse: Misuse) -> Iterable[str]:
+            return ['']
 
     def test_get_available_groupings(self):
         actual = Grouping.get_available_groupings()
