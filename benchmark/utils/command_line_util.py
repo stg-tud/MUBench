@@ -18,6 +18,7 @@ def get_command_line_parser(available_detectors: List[str]) -> ArgumentParser:
     __add_detect_subprocess(available_detectors, subparsers)
     __add_evaluate_subprocess(available_detectors, subparsers)
     __add_visualize_subprocess(subparsers)
+    __add_group_subprocess(subparsers)
 
     return parser
 
@@ -83,9 +84,18 @@ def __add_evaluate_subprocess(available_detectors: List[str], subparsers) -> Non
 
 
 def __add_visualize_subprocess(subparsers) -> None:
-    visualize_subparser = subparsers.add_parser('visualize',
+    visualize_parser = subparsers.add_parser('visualize',
                                                 description="Collect all detect and manual review results and write them to `results/result.csv`",
                                                 help="Collect all detect and manual review results and write them to `results/result.csv`")  # type: ArgumentParser
+
+
+def __add_group_subprocess(subparsers) -> None:
+    group_parser = subparsers.add_parser('group',
+                                         description="Group the results collected by `visualize` (e.g. average hit rate per project)",
+                                         help="Group the results collected by `visualize` (e.g. average hit rate per project)")
+    group_parser.add_argument('grouping',
+                              help="the grouping method to use.")
+    group_parser.add_argument('file', nargs='?', help="write to `results/<file>`.")
 
 
 def __setup_detector_running_subprocess(available_detectors: List[str], subprocess_parser: ArgumentParser) -> None:

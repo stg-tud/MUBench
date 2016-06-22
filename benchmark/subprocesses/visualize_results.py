@@ -4,7 +4,7 @@ import csv
 import logging
 from os import listdir
 from os.path import exists, join, isdir, basename
-from typing import Dict
+from typing import Dict, Iterable, Optional
 from typing import List
 from typing import Set
 
@@ -13,6 +13,24 @@ from benchmark.utils import csv_util
 
 
 class Grouping:
+    @staticmethod
+    def get_available_groupings() -> Iterable[type]:
+        # noinspection PyUnresolvedReferences
+        import benchmark.subprocesses.groupings.groupings
+        return Grouping.__subclasses__()
+
+    @staticmethod
+    def get_available_grouping_names() -> Iterable[str]:
+        return [grouping.__name__ for grouping in Grouping.get_available_groupings()]
+
+    @staticmethod
+    def get_by_name(name: str) -> Optional[type]:
+        for grouping in Grouping.get_available_groupings():
+            if grouping.__name__ == name:
+                return grouping
+
+        return None
+
     def get(self, misuse: Misuse) -> str:
         raise NotImplementedError
 
@@ -60,19 +78,40 @@ class Visualizer:
         file = join(self.results_base_path, self.result_file)
         csv_util.write_table(file, headers, results)
 
+    def run_group(self, grouping_name: str, target_file: str):
+        if grouping_name == 'info':
+            exit("Available grouping methods are: \n{}".format(Grouping.get_available_grouping_names()))
+
+        if target_file is None:
+            exit("Please provide a target file (e.g. 'grouped.csv')")
+
+        grouping = Grouping.get_by_name(grouping_name)
+        if grouping is None:
+            exit("Invalid grouping method {}\n".format(grouping_name) +
+                 "Available grouping methods are:\n{}".format(Grouping.get_available_grouping_names()))
+
+        self.group(target_file, grouping())
+
     def group(self, target_file: str, grouping: Grouping):
         logger = logging.getLogger("visualize-group")
 
-        results = csv_util.read_table(join(self.results_base_path, self.result_file),
-                                      self.detector_header)  # type: Dict[str, Dict[str, str]]
+        merged_result_file = join(self.results_base_path, self.result_file)
+
+        # TODO: implicitly run visualize in this case?
+        if not exists(merged_result_file):
+            exit("No result file available! Please run `visualize` to generate it.")
+
+        results = csv_util.read_table(merged_result_file, self.detector_header)  # type: Dict[str, Dict[str, str]]
 
         grouped_results = dict()  # type: Dict[str, Dict[str, str]]
         groups = set()  # type: Set[str]
 
         for detector, results_per_misuse in results.items():
             logger.info("Grouping results for detector %s", detector)
+
             grouped_results[detector] = dict()
             results_per_group = dict()  # type: Dict[str, List[int]]
+
             for misuse_name, result_as_str in results_per_misuse.items():
                 misuse_path = join(self.data_path, misuse_name)
                 if not Misuse.ismisuse(misuse_path):

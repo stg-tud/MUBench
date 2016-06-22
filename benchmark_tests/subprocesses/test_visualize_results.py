@@ -78,7 +78,7 @@ class TestVisualizer:
         try:
             Misuse.ismisuse = lambda path: any(name in path for name in ["MU1", "MU2", "MU3", "MU4"])
 
-            class TestGrouping(Grouping):
+            class GroupingTestImpl(Grouping):
                 def get(self, misuse: Misuse) -> str:
                     return "Group1" if misuse.name in ["MU1", "MU2"] else "Group2"
 
@@ -94,3 +94,21 @@ class TestVisualizer:
     def create_detector_result(self, detector, content):
         detector_result_file = join(self.results_base_dir, detector, self.reviewed_detector_result)
         safe_write(content, detector_result_file, append=False)
+
+
+class TestGrouping:
+    class GroupingTestImpl(Grouping):
+        def get(self, misuse: Misuse) -> str:
+            return ''
+
+    def test_get_available_groupings(self):
+        actual = Grouping.get_available_groupings()
+        assert TestGrouping.GroupingTestImpl in actual
+
+    def test_get_available_grouping_names(self):
+        actual = Grouping.get_available_grouping_names()
+        assert "GroupingTestImpl" in actual
+
+    def test_get_by_name(self):
+        assert_equals(TestGrouping.GroupingTestImpl, Grouping.get_by_name("GroupingTestImpl"))
+

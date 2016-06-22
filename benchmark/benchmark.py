@@ -12,7 +12,7 @@ from benchmark.subprocesses.compile import Compile
 from benchmark.subprocesses.datareader import DataReader
 from benchmark.subprocesses.detect import Detect
 from benchmark.subprocesses.evaluate import Evaluation
-from benchmark.subprocesses.visualize_results import Visualizer
+from benchmark.subprocesses.visualize_results import Visualizer, Grouping
 from benchmark.utils import command_line_util
 
 
@@ -29,7 +29,7 @@ class Benchmark:
                  java_options: List[str],
                  force_detect: bool,
                  skip_compile: bool,
-                 force_checkout: bool,
+                 force_checkout: bool
                  ):
         # command-line options
         self.detector = detector
@@ -97,6 +97,11 @@ class Benchmark:
         visualizer = Visualizer(Benchmark.RESULTS_PATH, self.reviewed_eval_result_file, self.visualize_result_file,
                                 Benchmark.DATA_PATH)
         visualizer.create()
+
+    def run_group(self, grouping: str, target_file: str) -> None:
+        visualizer = Visualizer(Benchmark.RESULTS_PATH, self.reviewed_eval_result_file, self.visualize_result_file,
+                                Benchmark.DATA_PATH)
+        visualizer.run_group(grouping, target_file)
 
     def _setup_checkout(self):
         checkout_handler = Checkout(Benchmark.CHECKOUTS_PATH, self.force_checkout)
@@ -189,3 +194,5 @@ if config.subprocess == 'eval':
     benchmark.run_evaluate()
 if config.subprocess == 'visualize':
     benchmark.run_visualize()
+if config.subprocess == 'group':
+    benchmark.run_group(config.grouping, config.file)
