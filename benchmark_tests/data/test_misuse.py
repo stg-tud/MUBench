@@ -12,12 +12,13 @@ from benchmark.data.project_checkout import LocalProjectCheckout, GitProjectChec
 from benchmark.utils.io import safe_write
 
 
-def create_misuse(path: str = ":project:.:id:", meta=None):
+def create_misuse(path: str = "-project-.-id-", meta=None):
     if meta is None:
         meta = {}
     misuse = Misuse(path)
-    defaults = {"fix": {"repository": {"url": ":repo-url:", "type": "git"}, "revision": "HEAD"}}
-    misuse._META = {**defaults, **meta}
+    defaults = {"fix": {"repository": {"url": "-repo-url-", "type": "git"}, "revision": "HEAD"}}
+    misuse._META = defaults
+    misuse._META.update(meta)
     return misuse
 
 

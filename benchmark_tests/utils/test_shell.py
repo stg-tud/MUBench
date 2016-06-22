@@ -1,3 +1,4 @@
+import os
 from io import StringIO
 
 from nose.tools import assert_equals, assert_raises
@@ -12,8 +13,8 @@ class TestShell:
 
     def test_output(self):
         uut = Shell()
-        out = uut.exec("echo 'test'")
-        assert_equals("test\n", out)
+        out = uut.exec("echo test")
+        assert_equals("test" + os.linesep, out)
 
     def test_command_failure(self):
         uut = Shell()

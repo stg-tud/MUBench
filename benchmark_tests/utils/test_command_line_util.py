@@ -124,14 +124,3 @@ def test_force_detect_default_false():
     parser = get_command_line_parser(['valid-detector'])
     result = parser.parse_args(['eval', 'valid-detector'])
     assert not result.force_detect
-
-
-def test_group_requires_grouping():
-    parser = get_command_line_parser([])
-    assert_raises(SystemExit, parser.parse_args, ['group'])
-
-
-def test_group_reads_file():
-    parser = get_command_line_parser([])
-    result = parser.parse_args(['group', 'grouping', 'file.csv'])
-    assert_equals('file.csv', result.file)
