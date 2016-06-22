@@ -27,6 +27,4 @@ fix:
     - name: library/src/com/nostra13/universalimageloader/utils/StorageUtils.java
 build:
   src: library/src/
-  commands:
-    - ?
   classes: library/target/classes/
