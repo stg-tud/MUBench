@@ -36,6 +36,9 @@ class ProjectCompile:
     def delete_original_source(self):
         remove_tree(self.original_sources_path)
 
+    def exists_copy_of_pattern_sources(self):
+        return isdir(self.pattern_sources_path)
+
     def copy_pattern_sources(self, pattern_frequency: int):
         for pattern in self.__patterns:
             pattern.duplicate(self.pattern_sources_path, pattern_frequency)

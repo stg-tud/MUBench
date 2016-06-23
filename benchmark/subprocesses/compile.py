@@ -49,11 +49,12 @@ class Compile(DataReaderSubprocess):
                 logger.error("Failed to copy project sources: %s", e)
                 return DataReaderSubprocess.Answer.skip
 
-        try:
-            compile.copy_pattern_sources(self.pattern_frequency)
-        except IOError as e:
-            logger.error("Failed to copy pattern sources: %s", e)
-            return DataReaderSubprocess.Answer.skip
+        if not compile.exists_copy_of_pattern_sources():
+            try:
+                compile.copy_pattern_sources(self.pattern_frequency)
+            except IOError as e:
+                logger.error("Failed to copy pattern sources: %s", e)
+                return DataReaderSubprocess.Answer.skip
 
 
         project_dir = base_path

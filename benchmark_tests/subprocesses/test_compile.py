@@ -108,6 +108,15 @@ class TestCompile:
 
         assert exists(join(self.base_path, "patterns-src", "a0.java"))
 
+    def test_skips_copy_of_pattern_sources_if_copy_exists(self):
+        self.misuse._PATTERNS = {self.create_pattern("a.java")}
+        self.uut.run(self.misuse)
+        self.misuse._PATTERNS = {self.create_pattern("b.java")}
+
+        self.uut.run(self.misuse)
+
+        assert not exists(join(self.base_path, "patterns-src", "b0.java"))
+
     def test_runs_commands(self):
         misuse = create_misuse(self.misuse_path, {"build": {"src": "", "commands": ["a", "b"], "classes": ""}})
 
