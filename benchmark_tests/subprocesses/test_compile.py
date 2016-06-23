@@ -128,19 +128,19 @@ class TestCompile:
         assert exists(join(self.base_path, "patterns-src", "b0.java"))
         assert not exists(join(self.base_path, "patterns-src", "a0.java"))
 
-    def test_runs_compile(self):
-        self.misuse.meta["build"]["commands"] = ["a", "b"]
-
-        self.uut.run(self.misuse)
-
-        self.uut._compile.assert_called_with(["a", "b"], self.build_path)
-
     def test_continues_if_no_config(self):
         del self.misuse.meta["build"]
 
         answer = self.uut.run(self.misuse)
 
         assert_equals(DataReaderSubprocess.Answer.ok, answer)
+
+    def test_runs_compile(self):
+        self.misuse.meta["build"]["commands"] = ["a", "b"]
+
+        self.uut.run(self.misuse)
+
+        self.uut._compile.assert_called_with(["a", "b"], self.build_path)
 
     def test_continues_on_build_error(self):
         self.uut._compile.side_effect = CompileError("command")
