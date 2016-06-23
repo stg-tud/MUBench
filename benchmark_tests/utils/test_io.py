@@ -3,6 +3,8 @@ from os.path import join, dirname, exists, isfile
 from shutil import rmtree
 from tempfile import mkdtemp
 
+from nose.tools import assert_raises
+
 from benchmark.utils.io import create_file, create_file_path, safe_open, safe_write, remove_tree, copy_tree
 
 
@@ -44,16 +46,38 @@ class TestIo:
         assert not exists(self.temp_dir)
 
     def test_copies_tree(self):
+        src = join(self.temp_dir, "src")
         file1 = join("dir1", "dir2", "file1")
         file2 = join("dir1", "file2")
         file3 = join("file3")
-        create_file(join(self.temp_dir, file1))
-        create_file(join(self.temp_dir, file2))
-        create_file(join(self.temp_dir, file3))
+        create_file(join(src, file1))
+        create_file(join(src, file2))
+        create_file(join(src, file3))
 
-        dst = join(self.temp_dir, "new_dir")
-        copy_tree(self.temp_dir, dst)
+        copy_tree(src, self.temp_dir)
 
-        assert exists(join(dst, file1))
-        assert exists(join(dst, file2))
-        assert exists(join(dst, file3))
+        assert exists(join(self.temp_dir, file1))
+        assert exists(join(self.temp_dir, file2))
+        assert exists(join(self.temp_dir, file3))
+
+    def test_copies_empty_directory(self):
+        src = join(self.temp_dir, "src")
+        makedirs(join(src, "empty"))
+
+        copy_tree(src, self.temp_dir)
+
+        assert exists(join(self.temp_dir, "empty"))
+
+    def test_copy_creates_destination(self):
+        src = join(self.temp_dir, "src")
+        makedirs(src)
+
+        dst = join(self.temp_dir, "dst")
+        copy_tree(src, dst)
+
+        assert exists(dst)
+
+    def test_copy_fails_if_source_misssing(self):
+        src = join(self.temp_dir, "src")
+        with assert_raises(FileNotFoundError):
+            copy_tree(src, "-irrelevant-")

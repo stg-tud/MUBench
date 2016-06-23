@@ -40,11 +40,13 @@ def remove_tree(root: str) -> None:
 
 
 def copy_tree(src: str, dst: str) -> None:
-    contents = [join(src, content) for content in listdir(src)]
+    if not exists(src): raise FileNotFoundError("Cannot copy non-existent file or directory '{}'.".format(src))
+    makedirs(dst, exist_ok=True)
 
-    for content in contents:
+    for content in [join(src, content) for content in listdir(src)]:
         if isfile(content):
-            makedirs(dst, exist_ok=True)
             copy(content, dst)
         elif isdir(content):
-            copy_tree(content, join(dst, basename(content)))
+            directory_name = join(dst, basename(content))
+            makedirs(directory_name, exist_ok=True)
+            copy_tree(content, directory_name)
