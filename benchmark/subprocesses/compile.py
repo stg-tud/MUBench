@@ -1,3 +1,4 @@
+import logging
 import os
 import shutil
 import subprocess
@@ -7,6 +8,7 @@ from os.path import join, exists, isdir, dirname, isfile
 from typing import List
 
 from benchmark.data.misuse import Misuse
+from benchmark.data.project_compile import ProjectCompile
 from benchmark.subprocesses.datareader import DataReaderSubprocess
 from benchmark.utils.io import remove_tree, copy_tree
 from benchmark.utils.printing import subprocess_print, print_ok
@@ -25,19 +27,34 @@ class Compile(DataReaderSubprocess):
         self.pattern_frequency = pattern_frequency
         self.outlog = outlog
         self.errlog = errlog
+        self.force_compile = False # TODO make parameter
 
     def run(self, misuse: Misuse):
+        logger = logging.getLogger("compile")
+
         checkout = misuse.get_checkout(self.checkout_base_dir)
         checkout_dir = checkout.checkout_dir
-        project_dir = dirname(checkout_dir)
-        build_dir = join(project_dir, Compile.__BUILD_DIR)
+        base_path = dirname(checkout_dir)
+        build_dir = join(base_path, Compile.__BUILD_DIR)
 
-        self.clean(project_dir, build_dir)
+        compile = ProjectCompile(checkout_dir, base_path, misuse.build_config, misuse.patterns)
+
+        # TODO fixme
+        #self.clean(base_path, build_dir)
+
+        if not compile.exists_copy_of_original_source() or self.force_compile:
+            try:
+                compile.copy_original_sources()
+            except IOError as e:
+                logger.error("Failed to copy project sources: %s", e)
+                return DataReaderSubprocess.Answer.skip
+
+
+        project_dir = base_path
 
         build_config = misuse.build_config
 
         try:
-            self.copy_project_src(project_dir, checkout_dir, build_config)
             self.copy_pattern_src(project_dir, misuse)
         except IOError as e:
             subprocess_print("Failed to copy sources: {}".format(e))
@@ -53,7 +70,7 @@ class Compile(DataReaderSubprocess):
             subprocess_print("Compiling project... ", end='')
             self._copy(checkout_dir, build_dir)
             self._compile(build_config.commands, build_dir)
-            self._move(join(build_dir, build_config.classes), join(project_dir, self.classes_normal))
+            self._copy(join(build_dir, build_config.classes), join(project_dir, self.classes_normal))
             print_ok()
         except CompileError as ce:
             print("error in command '{}'!".format(ce.command_with_error))
@@ -101,10 +118,6 @@ class Compile(DataReaderSubprocess):
     def copy_pattern_src(self, project_dir, misuse):
         for pattern in misuse.patterns:
             pattern.duplicate(join(project_dir, self.src_patterns), self.pattern_frequency)
-
-    def copy_project_src(self, project_dir, checkout_dir, build_config):
-        project_src = checkout_dir if build_config is None else join(checkout_dir, build_config.src)
-        self._copy(project_src, join(project_dir, self.src_normal))
 
     def _compile(self, commands: List[str], project_dir: str) -> None:
         for command in commands:
