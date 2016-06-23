@@ -29,17 +29,16 @@ class ProjectCompile:
         return isdir(self.original_sources_path)
 
     def copy_original_sources(self):
+        remove_tree(self.original_sources_path)
         project_source_path = join(self.__checkout_dir, self.__build_config.src)
         makedirs(self.original_sources_path, exist_ok=True)
         self._copy(project_source_path, self.original_sources_path)
-
-    def delete_original_source(self):
-        remove_tree(self.original_sources_path)
 
     def exists_copy_of_pattern_sources(self):
         return isdir(self.pattern_sources_path)
 
     def copy_pattern_sources(self, pattern_frequency: int):
+        remove_tree(self.pattern_sources_path)
         for pattern in self.__patterns:
             pattern.duplicate(self.pattern_sources_path, pattern_frequency)
 
