@@ -23,7 +23,7 @@ class TestDetect:
         self.last_invoke = None
 
         # mock command-line invocation
-        def mock_invoke_detector(detect, absolute_misuse_detector_path: str, detector_args: str, out_log, error_log):
+        def mock_invoke_detector(detect, absolute_misuse_detector_path: str, detector_args: str):
             self.last_invoke = absolute_misuse_detector_path, detector_args
 
         self.triggered_download = False
@@ -67,7 +67,7 @@ class TestDetect:
         run_on_misuse(self.uut, misuse)
 
         self.assert_last_invoke_arg_value_equals(self.uut.key_src_project,
-                                                 misuse.get_compile(self.checkout_base).original_sources_path)
+                                                 '"' + misuse.get_compile(self.checkout_base).original_sources_path + '"')
 
     def test_passes_project_classes_path(self):
         misuse = create_misuse("project.id", {"build": {"commands": ["any"]}})
@@ -75,7 +75,7 @@ class TestDetect:
         run_on_misuse(self.uut, misuse)
 
         self.assert_last_invoke_arg_value_equals(self.uut.key_classes_project,
-                                                 misuse.get_compile(self.checkout_base).original_classes_path)
+                                                 '"' + misuse.get_compile(self.checkout_base).original_classes_path + '"')
 
     def test_passes_findings_files(self):
         misuse = create_misuse("project.id")
@@ -83,7 +83,7 @@ class TestDetect:
         run_on_misuse(self.uut, misuse)
 
         self.assert_last_invoke_arg_value_equals(self.uut.key_findings_file,
-                                                 join(self.results_path, "project.id", self.findings_file))
+                                                 '"' + join(self.results_path, "project.id", self.findings_file) + '"')
 
     def test_invokes_detector_without_patterns_paths_without_patterns(self):
         run_on_misuse(self.uut, create_misuse("project.id", {"build": {"src": "", "classes": "", "commands": []}}))
@@ -96,7 +96,7 @@ class TestDetect:
 
         run_on_misuse(self.uut, misuse)
         self.assert_last_invoke_arg_value_equals(self.uut.key_src_patterns,
-                                                 misuse.get_compile(self.checkout_base).pattern_sources_path)
+                                                 '"' + misuse.get_compile(self.checkout_base).pattern_sources_path + '"')
 
     def test_invokes_detector_with_patterns_class_path(self):
         misuse = create_misuse("project.id", {"build": {"commands": ["any"]}})
@@ -104,7 +104,7 @@ class TestDetect:
 
         run_on_misuse(self.uut, misuse)
         self.assert_last_invoke_arg_value_equals(self.uut.key_classes_patterns,
-                                                 misuse.get_compile(self.checkout_base).pattern_classes_path)
+                                                 '"' + misuse.get_compile(self.checkout_base).pattern_classes_path + '"')
 
     def test_downloads_detector_if_not_available(self):
         self.detector_available = False
