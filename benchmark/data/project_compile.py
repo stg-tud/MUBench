@@ -42,6 +42,9 @@ class ProjectCompile:
         for pattern in self.__patterns:
             pattern.duplicate(self.pattern_sources_path, pattern_frequency)
 
+    def can_compile(self):
+        return self.__build_config and self.__build_config.commands
+
     def is_original_compile(self) -> bool:
         return False
 

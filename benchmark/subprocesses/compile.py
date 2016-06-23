@@ -56,14 +56,13 @@ class Compile(DataReaderSubprocess):
                 logger.error("Failed to copy pattern sources: %s", e)
                 return DataReaderSubprocess.Answer.skip
 
+        if not compile.can_compile():
+            logger.warn("Skipping compilation: not configured.")
+            return DataReaderSubprocess.Answer.ok
 
         project_dir = base_path
 
         build_config = misuse.build_config
-
-        if build_config is None:
-            subprocess_print("No compilation configured for this misuse.")
-            return DataReaderSubprocess.Answer.ok
 
         self.copy_additional_compile_sources(misuse, checkout_dir)
 
