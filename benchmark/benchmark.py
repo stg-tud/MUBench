@@ -28,7 +28,6 @@ class Benchmark:
                  white_list: List[str],
                  java_options: List[str],
                  force_detect: bool,
-                 skip_compile: bool,
                  force_checkout: bool,
                  force_compile: bool
                  ):
@@ -40,7 +39,6 @@ class Benchmark:
         self.java_options = java_options
         self.force_checkout = force_checkout
         self.force_detect = force_detect
-        self.skip_compile = skip_compile
         self.force_compile = force_compile
         self.pattern_frequency = 20  # TODO make configurable
 
@@ -105,9 +103,8 @@ class Benchmark:
         self.datareader.add(checkout_handler)
 
     def _setup_compile(self):
-        if not self.skip_compile:
-            compile_handler = Compile(Benchmark.CHECKOUTS_PATH, self.pattern_frequency, self.force_compile)
-            self.datareader.add(compile_handler)
+        compile_handler = Compile(Benchmark.CHECKOUTS_PATH, self.pattern_frequency, self.force_compile)
+        self.datareader.add(compile_handler)
 
     def _setup_detect(self):
         detector_runner = Detect(self.detector, self.detector_result_file, Benchmark.CHECKOUTS_PATH,
@@ -167,8 +164,6 @@ if 'java_options' not in config:
     config.java_options = []
 if 'force_detect' not in config:
     config.force_detect = False
-if 'skip_compile' not in config:
-    config.skip_compile = False
 if 'force_checkout' not in config:
     config.force_checkout = False
 if 'force_compile' not in config:
@@ -176,8 +171,7 @@ if 'force_compile' not in config:
 
 benchmark = Benchmark(detector=config.detector, white_list=config.white_list, black_list=config.black_list,
                       timeout=config.timeout, java_options=config.java_options, force_detect=config.force_detect,
-                      skip_compile=config.skip_compile, force_checkout=config.force_checkout,
-                      force_compile=config.force_compile)
+                      force_checkout=config.force_checkout, force_compile=config.force_compile)
 
 if config.subprocess == 'check':
     benchmark.run_check()

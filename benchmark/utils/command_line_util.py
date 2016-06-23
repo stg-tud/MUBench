@@ -109,8 +109,6 @@ def __setup_checkout_arguments(parser: ArgumentParser):
 def __setup_compile_arguments(parser: ArgumentParser):
     parser.add_argument('--force-compile', dest='force_compile', action='store_true', default=False,
                         help="force a clean compilation")
-    parser.add_argument('--skip-compile', dest='skip_compile', action='store_true', default=False,
-                        help="skip the compilation, only prepare sources")
 
 
 def __setup_detector_arguments(parser: ArgumentParser, available_detectors: List[str]) -> None:
