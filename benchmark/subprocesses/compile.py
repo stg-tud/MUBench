@@ -71,17 +71,18 @@ class Compile(DataReaderSubprocess):
         logger.debug("Copying to build directory...")
         self._copy(checkout_dir, build_path)
         logger.debug("Copying additional resources...")
-        self.copy_additional_compile_sources(misuse, build_path)
+        self.__copy_additional_compile_sources(misuse, build_path)
 
         build_config = misuse.build_config
-
+        sources_path = join(build_path, build_config.src)
+        classes_path = join(build_path, build_config.classes)
 
         try:
             logger.info("Compiling project...")
             self._compile(build_config.commands, build_path)
 
             logger.debug("Copying project classes...")
-            self._copy(join(build_path, build_config.classes), join(base_path, self.classes_normal))
+            self._copy(classes_path, compile.original_classes_path)
         except CommandFailedError as e:
             logger.error("Compilation failed: %s", e)
             return DataReaderSubprocess.Answer.skip
@@ -91,23 +92,12 @@ class Compile(DataReaderSubprocess):
             return DataReaderSubprocess.Answer.ok
 
         try:
-            src_dir = join(build_path, build_config.src)
             logger.debug("Copying patterns to source directory...")
-            patterns = set()
-            for pattern in misuse.patterns:
-                duplicates = pattern.duplicate(src_dir, self.pattern_frequency)
-                patterns.update(duplicates)
-
+            duplicates = self.__duplicate(misuse.patterns, sources_path)
             logger.info("Compiling patterns...")
             self._compile(build_config.commands, build_path)
-            classes_dir = join(build_path, build_config.classes)
-
             logger.debug("Copying pattern classes...")
-            for pattern in patterns:
-                pattern_class_file_name = pattern.file_name + ".class"
-                class_file = join(classes_dir, pattern_class_file_name)
-                class_file_dest = join(base_path, self.classes_patterns, pattern_class_file_name)
-                self._copy(class_file, class_file_dest)
+            self.__copy(duplicates, classes_path, compile.pattern_classes_path)
         except CommandFailedError as e:
             logger.error("Compilation failed: %s", e)
             return DataReaderSubprocess.Answer.skip
@@ -115,7 +105,7 @@ class Compile(DataReaderSubprocess):
         return DataReaderSubprocess.Answer.ok
 
     @staticmethod
-    def copy_additional_compile_sources(misuse, checkout_dir):
+    def __copy_additional_compile_sources(misuse, checkout_dir):
         additional_sources = misuse.additional_compile_sources
         if exists(additional_sources):
             copy_tree(additional_sources, checkout_dir)
@@ -126,8 +116,19 @@ class Compile(DataReaderSubprocess):
         for command in commands:
             Shell.exec(command, cwd=project_dir, logger=logger)
 
-    # noinspection PyMethodMayBeStatic
-    def _copy(self, src, dst):
+    def __duplicate(self, patterns, destination):
+        duplicates = set()
+        for pattern in patterns:
+            duplicates.update(pattern.duplicate(destination, self.pattern_frequency))
+        return duplicates
+
+    def __copy(self, patterns, classes_path, destination):
+        for pattern in patterns:
+            pattern_class_file_name = pattern.file_name + ".class"
+            self._copy(join(classes_path, pattern_class_file_name), join(destination, pattern_class_file_name))
+
+    @staticmethod
+    def _copy(src, dst):
         if isdir(dst):
             remove_tree(dst)
 
