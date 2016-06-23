@@ -13,13 +13,14 @@ from benchmark.data.project_checkout import LocalProjectCheckout, GitProjectChec
 from benchmark.utils.io import safe_write
 
 
-def create_misuse(path: str = "-project-.-id-", meta=None):
-    if meta is None:
-        meta = {}
+def create_misuse(path: str = "-project-.-id-", misuse={}, project={}, version={}):
     misuse = Misuse(path)
     defaults = {"fix": {"repository": {"url": "-repo-url-", "type": "git"}, "revision": "HEAD"}}
-    misuse._META = defaults
-    misuse._META.update(meta)
+
+    misuse._MISUSE = {}
+    misuse._VERSION = {}
+    misuse._PROJECT = {}
+
     return misuse
 
 
@@ -32,35 +33,24 @@ class TestMisuse:
         rmtree(self.temp_dir, ignore_errors=True)
 
     def test_extracts_name(self):
-        uut = Misuse("/MUBench/data/project.id")
+        uut = Misuse("/MUBench/data/project/misuses/id")
         assert uut.name == "project.id"
 
-    def test_finds_meta_file(self):
-        uut = Misuse("MUBench/data/project.id")
-        assert_equals(uut.meta_file, join("MUBench/data/project.id", "meta.yml"))
-
     def test_extracts_project_name(self):
-        uut = Misuse(join("C:", "my-path", "project.42-2"))
+        uut = Misuse("/MUBench/data/project/misuses/id")
         assert_equals("project", uut.project_name)
 
     def test_extracts_synthetic_project_name(self):
-        uut = Misuse((join("C:", "my-path", "synthetic-example")))
-        assert_equals("synthetic-example", uut.project_name)
+        uut = Misuse("/MUBench/data/synthetic-project/misuses/id")
+        assert_equals("synthetic-project", uut.project_name)
 
     def test_extracts_version(self):
-        uut = Misuse("project.version")
-        assert_equals("version", uut.project_version)
+        version_dir = join(self.temp_dir, "42")
+        safe_write(yaml.dump({"misuses": ["2", "1"]}), join(version_dir, 'version.yml'), append=False)
 
-    def test_extracts_version_from_synthetic(self):
-        uut = Misuse("synthetic")
-        assert_equals(None, uut.project_version)
+        uut = Misuse(join(self.temp_dir, "misuses", "1"))
 
-    def test_reads_meta_file(self):
-        uut = Misuse(self.temp_dir)
-
-        safe_write(yaml.dump({'key': 'value'}), uut.meta_file, append=False)
-
-        assert uut.meta['key'] == 'value'
+        assert_equals("42", uut.project_version)
 
     def test_finds_no_pattern(self):
         uut = Misuse(self.temp_dir)
@@ -97,7 +87,7 @@ class TestMisuse:
 
     def test_extracts_build_config(self):
         uut = create_misuse(
-            meta={"build": {"src": "src/java/", "commands": ["mvn compile"], "classes": "target/classes/"}})
+            version={"build": {"src": "src/java/", "commands": ["mvn compile"], "classes": "target/classes/"}})
 
         actual_config = uut.build_config
         assert_equals("src/java/", actual_config.src)
@@ -105,16 +95,16 @@ class TestMisuse:
         assert_equals("target/classes/", actual_config.classes)
 
     def test_extracts_build_config_with_defaults(self):
-        uut = create_misuse("/path/misuse")
+        uut = create_misuse("/path/misuse", version={"build": {"src": "src/java/", "classes": "target/classes/"}})
 
         assert_equals("", uut.build_config.src)
         assert_equals([], uut.build_config.commands)
         assert_equals("", uut.build_config.classes)
 
     def test_derives_additional_compile_sources_path(self):
-        uut = create_misuse("/path/misuse")
-        assert_equals(join("/path/misuse", "compile"), uut.additional_compile_sources)
-
+        uut = create_misuse("/MUBench/data/project/misuses/1")
+        uut._PROJECT_VERSION = "42"
+        assert_equals(join("/MUBench/data/project/42/compile"), uut.additional_compile_sources)
     def test_derives_compile_base_path(self):
         uut = create_misuse("project.id")
 

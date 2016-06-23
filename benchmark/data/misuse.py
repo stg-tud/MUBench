@@ -35,10 +35,13 @@ class Misuse:
 
     @property
     def project_version(self) -> str:
-        project_version = None
-        if '.' in self.name:
-            project_version = self.name.split('.', 1)[1]
-        return project_version
+        if getattr(self, '_PROJECT_VERSION', None) is None:
+            project_version = None
+            if '.' in self.name:
+                project_version = self.name.split('.', 1)[1]
+            self._PROJECT_VERSION = project_version
+
+        return self._PROJECT_VERSION
 
     @property
     def patterns(self) -> Set[Pattern]:
