@@ -4,5 +4,5 @@ build:
   - mvn compile
   src: jackrabbit-core/src/main/java/
 misuses:
-- '1'
+- '2'
 revision: 656282

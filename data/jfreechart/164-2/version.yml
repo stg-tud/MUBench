@@ -1,8 +1,0 @@
-build:
-  classes: build/classes/main/
-  commands:
-  - gradle :compileJava
-  src: source/
-misuses:
-- '1'
-revision: 164

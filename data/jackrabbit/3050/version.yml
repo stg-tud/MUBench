@@ -4,5 +4,5 @@ build:
   - mvn compile -Dmaven.compiler.failOnError=fals
   src: jackrabbit-jcr2spi/src/main/java/
 misuses:
-- '1'
+- '11'
 revision: 1240198

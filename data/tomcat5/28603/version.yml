@@ -6,5 +6,5 @@ build:
   - gradle :compileJava
   src: src/share/
 misuses:
-- '1'
+- '2'
 revision: 305982

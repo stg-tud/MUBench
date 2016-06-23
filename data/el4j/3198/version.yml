@@ -6,4 +6,5 @@ build:
   src: framework/modules/security/src/main/java/
 misuses:
 - '1'
+- '2'
 revision: 3198

@@ -4,5 +4,5 @@ build:
   - UNKNOWN
   src: contrib/bdb-persistence/src/java/
 misuses:
-- '1'
+- '2'
 revision: 263892

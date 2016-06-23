@@ -1,9 +1,0 @@
-build:
-  classes: framework/modules/security/target/classes/
-  commands:
-  - SETUP: http://el4j.sourceforge.net/docs/pdf/SetupEL4J.pdf
-  - mvn compile -pl security-module -am
-  src: framework/modules/security/src/main/java/
-misuses:
-- '1'
-revision: 3198

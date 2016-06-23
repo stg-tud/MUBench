@@ -5,5 +5,5 @@ build:
   - ant compile
   src: src/java/
 misuses:
-- '1'
+- '2'
 revision: 160490
