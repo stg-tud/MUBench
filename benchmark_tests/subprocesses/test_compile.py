@@ -135,7 +135,7 @@ class TestCompile:
 
         assert exists(join(self.build_path, "additional.file"))
 
-    def test_continues_on_build_error(self):
+    def test_skips_on_build_error(self):
         self.uut._compile.side_effect = CommandFailedError("-cmd-", "-error message-")
 
         answer = self.uut.run(self.misuse)
