@@ -5,7 +5,6 @@ from os.path import join, exists, isdir, dirname
 from typing import List, Set
 
 from benchmark.data.misuse import Misuse, Pattern
-from benchmark.data.project_compile import ProjectCompile
 from benchmark.subprocesses.datareader import DataReaderSubprocess
 from benchmark.utils.io import remove_tree, copy_tree
 from benchmark.utils.shell import Shell, CommandFailedError
@@ -14,8 +13,9 @@ from benchmark.utils.shell import Shell, CommandFailedError
 class Compile(DataReaderSubprocess):
     __BUILD_DIR = "build"
 
-    def __init__(self, checkout_base_dir: str, pattern_frequency: int, force_compile):
-        self.checkout_base_dir = checkout_base_dir
+    def __init__(self, checkouts_base_path: str, compiles_base_path: str, pattern_frequency: int, force_compile):
+        self.checkouts_base_path = checkouts_base_path
+        self.compiles_base_path = compiles_base_path
         self.pattern_frequency = pattern_frequency
         self.force_compile = force_compile
 
@@ -26,12 +26,12 @@ class Compile(DataReaderSubprocess):
         logger.debug("- Pattern frequency = %r", self.pattern_frequency)
         logger = logging.getLogger("compile.tasks")
 
+        compile_base_path = self.get_compile_base_path(misuse)
+        build_path = join(compile_base_path, Compile.__BUILD_DIR)
         build_config = misuse.build_config
-        base_path, checkout_dir = self.get_compile_base_path(misuse)
-        build_path = join(base_path, Compile.__BUILD_DIR)
         sources_path = join(build_path, build_config.src)
         classes_path = join(build_path, build_config.classes)
-        project_compile = misuse.get_compile(base_path)
+        project_compile = misuse.get_compile(compile_base_path)
 
         needs_copy_sources = not isdir(project_compile.original_sources_path) or self.force_compile
         needs_copy_pattern_sources = not isdir(project_compile.pattern_sources_path) or self.force_compile
@@ -41,7 +41,8 @@ class Compile(DataReaderSubprocess):
         if needs_copy_sources or needs_copy_pattern_sources or needs_compile or needs_compile_patterns:
             remove_tree(build_path)
             logger.debug("Copying to build directory...")
-            copy_tree(checkout_dir, build_path)
+            checkout_path = misuse.get_checkout(self.checkouts_base_path).checkout_dir
+            copy_tree(checkout_path, build_path)
             logger.debug("Copying additional resources...")
             self.__copy_additional_compile_sources(misuse, build_path)
 
@@ -103,10 +104,10 @@ class Compile(DataReaderSubprocess):
         return DataReaderSubprocess.Answer.ok
 
     def get_compile_base_path(self, misuse):
-        checkout = misuse.get_checkout(self.checkout_base_dir)
-        checkout_dir = checkout.checkout_dir
-        base_path = dirname(checkout_dir)
-        return base_path, checkout_dir
+        if misuse.project_version:
+            return join(self.compiles_base_path, misuse.project_name, misuse.project_version)
+        else:
+            return join(self.compiles_base_path, misuse.project_name)
 
     @staticmethod
     def __copy_original_sources(sources_path: str, destination: str):

@@ -103,13 +103,13 @@ class Benchmark:
         self.datareader.add(checkout_handler)
 
     def _setup_compile(self):
-        compile_handler = Compile(Benchmark.CHECKOUTS_PATH, self.pattern_frequency, self.force_compile)
+        compile_handler = Compile(Benchmark.CHECKOUTS_PATH, Benchmark.CHECKOUTS_PATH, self.pattern_frequency, self.force_compile)
         self.datareader.add(compile_handler)
 
     def _setup_detect(self):
         detector_runner = Detect(self.detector, self.detector_result_file, Benchmark.CHECKOUTS_PATH,
                                  self.original_src, self.original_classes, self.patterns_src, self.patterns_classes,
-                                 self.results_path, self.timeout, self.java_options)
+                                 Benchmark.CHECKOUTS_PATH, self.results_path, self.timeout, self.java_options)
         self.datareader.add(detector_runner)
 
     def _setup_eval(self):

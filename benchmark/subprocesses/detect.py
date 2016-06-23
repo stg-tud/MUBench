@@ -19,7 +19,8 @@ class Detect(DataReaderSubprocess):
                  original_classes_subdir: str,
                  patterns_src_subdir: str,
                  patterns_classes_subdir: str,
-                 results_path: str,
+                 compiles_base_path: str,
+                 results_base_path: str,
                  timeout: Optional[int],
                  java_options: List[str]):
         self.detector = detector
@@ -29,7 +30,8 @@ class Detect(DataReaderSubprocess):
         self.project_classes_subdir = original_classes_subdir
         self.patterns_src_subdir = patterns_src_subdir
         self.patterns_classes_subdir = patterns_classes_subdir
-        self.results_path = results_path
+        self.compiles_base_path = compiles_base_path
+        self.results_base_path = results_base_path
         self.timeout = timeout
         self.java_options = ['-' + option for option in java_options]
 
@@ -44,16 +46,18 @@ class Detect(DataReaderSubprocess):
             self._download()
 
     def run(self, misuse: Misuse) -> None:
-        result_dir = join(self.results_path, misuse.name)
+        result_path = join(self.results_base_path, misuse.name)
+        misuse.get_compile(self.compiles_base_path)
+
         checkout = misuse.get_checkout(self.checkout_base_dir)
         project_dir = dirname(checkout.checkout_dir)
 
-        with safe_open(join(result_dir, "out.log"), 'w+') as out_log:
-            with safe_open(join(result_dir, "error.log"), 'w+') as error_log:
+        with safe_open(join(result_path, "out.log"), 'w+') as out_log:
+            with safe_open(join(result_path, "error.log"), 'w+') as error_log:
                 try:
                     absolute_misuse_detector_path = Detect.__get_misuse_detector_path(self.detector)
 
-                    findings_file = [self.key_findings_file, join(result_dir, self.detector_findings_file)]
+                    findings_file = [self.key_findings_file, join(result_path, self.detector_findings_file)]
                     src_project = [self.key_src_project, join(project_dir, self.project_src_subdir)]
                     src_patterns = []
                     classes_project = []

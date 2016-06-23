@@ -49,7 +49,7 @@ class TestCompile:
                     create_file(join(class_path, package, file))
                     print("fake compile: {}".format(join(class_path, package, file)))
 
-        self.uut = Compile(self.checkout_base_path, 1, False)
+        self.uut = Compile(self.checkout_base_path, self.checkout_base_path, 1, False)
         self.uut._compile = MagicMock(side_effect=mock_compile)
 
     def teardown(self):

@@ -25,7 +25,7 @@ class TestDetect:
 
         self.uut = Detect("detector", self.findings_file, self.checkout_base, self.src_normal_subdir,
                           self.classes_normal_subdir, self.src_patterns_subdir, self.classes_patterns_subdir,
-                          self.results_path, None, [])
+                          self.checkout_base, self.results_path, None, [])
 
         self.last_invoke = None
 
