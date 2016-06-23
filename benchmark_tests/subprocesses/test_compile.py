@@ -9,9 +9,10 @@ from unittest.mock import MagicMock, call
 from nose.tools import assert_equals
 
 from benchmark.data.pattern import Pattern
-from benchmark.subprocesses.compile import Compile, CompileError
+from benchmark.subprocesses.compile import Compile
 from benchmark.subprocesses.datareader import DataReaderSubprocess
 from benchmark.utils.io import create_file
+from benchmark.utils.shell import CommandFailedError
 from benchmark_tests.data.test_misuse import create_misuse
 from benchmark_tests.test_utils.subprocess_util import run_on_misuse
 
@@ -41,36 +42,16 @@ class TestCompile:
         def mock_compile(commands: List[str], cwd: str):
             source_path = join(cwd, self.source_dir)
             class_path = join(cwd, "classes")
-            makedirs(class_path)
+            makedirs(class_path, exist_ok=True)
             for root, dirs, files in os.walk(source_path):
                 package = relpath(root, source_path)
                 for file in files:
                     file = file.replace(".java", ".class")
                     create_file(join(class_path, package, file))
+                    print("fake compile: {}".format(join(class_path, package, file)))
 
-        self.uut = Compile(self.checkout_base_path, "original-src", "project-classes", "pattern-src", "pattern-classes", 1, "out.log", "error.log")
+        self.uut = Compile(self.checkout_base_path, "original-src", "project-classes", "patterns-src", "patterns-classes", 1, "out.log", "error.log")
         self.uut._compile = MagicMock(side_effect=mock_compile)
-
-        _call_orig = self.uut._call
-        _move_orig = self.uut._move
-        _copy_orig = self.uut._copy
-
-        def _call_mock(a, b):
-            print("call {} in {}".format(a, b))
-            self.call_calls.append((a, b))
-            return _call_orig(a, b)
-
-        def _move_mock(a, b):
-            self.move_calls.append((a, b))
-            _move_orig(a, b)
-
-        def _copy_mock(a, b):
-            self.copy_calls.append((a, b))
-            _copy_orig(a, b)
-
-        self.uut._call = _call_mock
-        self.uut._move = _move_mock
-        self.uut._copy = _copy_mock
 
     def teardown(self):
         rmtree(self.temp_dir, ignore_errors=True)
@@ -142,36 +123,36 @@ class TestCompile:
 
         self.uut._compile.assert_called_with(["a", "b"], self.build_path)
 
+    def test_copies_additional_sources(self):
+        create_file(join(self.misuse_path, "compile", "additional.file"))
+
+        self.uut.run(self.misuse)
+
+        assert exists(join(self.build_path, "additional.file"))
+
     def test_continues_on_build_error(self):
-        self.uut._compile.side_effect = CompileError("command")
+        self.uut._compile.side_effect = CommandFailedError("-cmd-", "-error message-")
 
         answer = self.uut.run(self.misuse)
 
         assert_equals(DataReaderSubprocess.Answer.skip, answer)
 
     def test_builds_patterns(self):
-        misuse = create_misuse(self.misuse_path, {"build": {"src": "src", "commands": ["build"], "classes": "classes"}})
-        misuse._PATTERNS = {self.create_pattern("a.java")}
+        self.misuse.meta["build"]["commands"] = ["c"]
+        self.misuse._PATTERNS = {self.create_pattern("a.java")}
 
-        run_on_misuse(self.uut, misuse)
+        self.uut.run(self.misuse)
 
-        assert_equals(self.uut._compile.mock_calls, [call(["build"], self.build_path), call(["build"], self.build_path)])
-        self.assert_copy_in_working_directory(
-            join("build", "classes", "a0.class"), join(self.uut.classes_patterns, "a0.class"), self.copy_calls[3])
+        assert_equals(self.uut._compile.mock_calls, [call(["c"], self.build_path), call(["c"], self.build_path)])
+        print("expecting {}".format(join(self.uut.classes_patterns, "a0.class")))
+        assert exists(join(self.base_path, "patterns-classes", "a0.class"))
 
     def test_builds_patterns_in_package(self):
-        misuse = create_misuse(self.misuse_path, {"build": {"src": "src", "commands": ["mkdir classes", "mkdir classes/a", "touch classes/a/b0.class"], "classes": "classes"}})
-        misuse._PATTERNS = {self.create_pattern(join("a", "b.java"))}
+        self.misuse._PATTERNS = {self.create_pattern(join("a", "b.java"))}
 
-        run_on_misuse(self.uut, misuse)
+        self.uut.run(self.misuse)
 
-        self.assert_copy_in_working_directory(
-            join("build", "classes", "a", "b0.class"), join(self.uut.classes_patterns, "a", "b0.class"), self.copy_calls[3])
-
-    def assert_copy_in_working_directory(self, source: str, target: str, copy: (str, str)):
-        working_directory = join(self.checkout_base_path, "project", "id")
-        assert_equals(join(working_directory, source), copy[0])
-        assert_equals(join(working_directory, target), copy[1])
+        assert exists(join(self.base_path, "patterns-classes", "a", "b0.class"))
 
     def create_pattern(self, filename):
         pattern = Pattern(self.temp_dir, filename)
