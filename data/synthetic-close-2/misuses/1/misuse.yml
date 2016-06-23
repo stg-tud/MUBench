@@ -1,0 +1,24 @@
+api:
+- java.io.Closeable
+characteristics:
+- missing finally
+crash: false
+description: 'Calls Closeable.close() outside of finally block, which might fail to
+  close the resource in case of an exception.
+
+  '
+fix:
+  commit: https://github.com/stg-tud/MUBench/blob/master/data/synthetic-close-2.java
+  description: 'Call close() in finally block.
+
+    '
+  files:
+  - name: src/CloseFinally.java
+  repository:
+    type: synthetic
+internal: false
+pattern:
+- single object
+report: null
+source:
+  name: Survey

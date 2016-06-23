@@ -1,0 +1,10 @@
+build:
+  classes: build/classes/main/
+  commands:
+  - sed -i 's/new CodeSource(url,null)/new CodeSource(url,(java.security.cert.Certificate[])null)/g'
+    src/share/org/apache/jasper/compiler/JspRuntimeContext.java
+  - gradle :compileJava
+  src: src/share/
+misuses:
+- '1'
+revision: 305982

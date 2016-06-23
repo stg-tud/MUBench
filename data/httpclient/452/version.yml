@@ -1,0 +1,9 @@
+build:
+  classes: target/classes/
+  commands:
+  - sed -i 's/<javac/<javac encoding="iso-8859-1"/g' build.xml
+  - ant compile
+  src: src/java/
+misuses:
+- '1'
+revision: 190480

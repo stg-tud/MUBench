@@ -1,0 +1,26 @@
+api:
+- java.util.Map
+characteristics:
+- missing precondition/parameter constraint
+crash: false
+description: 'Map.get() and Map.put() are called with different (types of) objects
+  as key. There is another Map, for which the accidentially used key is the correct
+  key.
+
+  '
+fix:
+  commit: https://git-wip-us.apache.org/repos/asf/lucene-solr/commit/f4b3239092b2a5588d512b337e461bc5078aeba4
+  files:
+  - diff: http://svn.apache.org/viewvc/lucene/java/trunk/src/java/org/apache/lucene/search/FieldCacheImpl.java?r1=488908&r2=488907&pathrev=488908
+    name: src/java/org/apache/lucene/search/FieldCacheImpl.java
+  repository:
+    type: git
+    url: https://git-wip-us.apache.org/repos/asf/lucene-solr
+  revision: f4b3239092b2a5588d512b337e461bc5078aeba4
+internal: false
+pattern:
+- single object
+report: https://issues.apache.org/jira/browse/LUCENE-754
+source:
+  name: BugClassify
+  url: https://www.st.cs.uni-saarland.de/softevo//bugclassify/

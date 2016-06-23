@@ -1,0 +1,28 @@
+api:
+- org.apache.lucene.index.MultiFields
+characteristics:
+- missing precondition/parameter constraint
+crash: true
+description: 'Down-casts exception without previous check (i.e., in more general catch
+  clause).
+
+  '
+fix:
+  commit: http://svn.apache.org/viewvc?view=revision&revision=305891
+  description: 'Create specific catch clause, avoids cast entirely.
+
+    '
+  files:
+  - diff: http://svn.apache.org/viewvc/tomcat/jasper/trunk/jasper2/src/share/org/apache/jasper/compiler/JspDocumentParser.java?r1=305891&r2=305890&pathrev=305891
+    name: src/share/org/apache/jasper/compiler/JspDocumentParser.java
+  repository:
+    type: svn
+    url: http://svn.apache.org/repos/asf/tomcat/jasper/trunk/jasper2/
+  revision: 305891
+internal: false
+pattern:
+- single object
+report: https://bz.apache.org/bugzilla/show_bug.cgi?id=26191
+source:
+  name: BugClassify
+  url: https://www.st.cs.uni-saarland.de/softevo//bugclassify/

@@ -1,0 +1,33 @@
+api:
+- org.apache.jackrabbit.core.fs.FileSystem
+- org.apache.jackrabbit.core.fs.FileSystemResource
+characteristics:
+- missing precondition/predicate
+crash: true
+description: 'ObjectPersistenceManager.destroy() calls FileSystemResource.delete()
+  (which delegates to FileSystem.deleteFile()) without checking FileSystemResource.fileExists()
+  (which delegates to FileSytem.fileExists()). FileSystem.deleteFile() throws, if
+  the file does not exist. A refactoring was performed in the course of the fix, to
+  remove duplication.
+
+  '
+fix:
+  commit: http://svn.apache.org/viewvc?view=revision&revision=55854
+  files:
+  - diff: http://svn.apache.org/viewvc/incubator/jackrabbit/trunk/src/java/org/apache/jackrabbit/core/state/obj/ObjectPersistenceManager.java?r1=55854&r2=55853&pathrev=55854
+    name: src/java/org/apache/jackrabbit/core/state/obj/ObjectPersistenceManager.java
+  - diff: http://svn.apache.org/viewvc/incubator/jackrabbit/trunk/src/java/org/apache/jackrabbit/core/state/xml/XMLPersistenceManager.java?r1=55854&r2=55853&pathrev=55854
+    name: src/java/org/apache/jackrabbit/core/state/xml/XMLPersistenceManager.java
+  - diff: http://svn.apache.org/viewvc/incubator/jackrabbit/trunk/src/java/org/apache/jackrabbit/core/fs/FileSystemResource.java?r1=55854&r2=55853&pathrev=55854
+    name: src/java/org/apache/jackrabbit/core/fs/FileSystemResource.java
+  repository:
+    type: svn
+    url: http://svn.apache.org/repos/asf/incubator/jackrabbit/trunk/
+  revision: 55854
+internal: true
+pattern:
+- single object
+report: https://issues.apache.org/jira/browse/JCR-14
+source:
+  name: BugClassify
+  url: https://www.st.cs.uni-saarland.de/softevo//bugclassify/

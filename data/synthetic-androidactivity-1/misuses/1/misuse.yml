@@ -1,0 +1,23 @@
+api:
+- android.app.Activity
+characteristics:
+- missing call
+crash: true
+description: 'Fails to find view by id in onCreate().
+
+  '
+fix:
+  commit: https://github.com/stg-tud/MUBench/blob/master/data/synthetic-androidactivity-1.java
+  description: 'Call setContentView() before calling findViewById().
+
+    '
+  files:
+  - name: src/AndroidContentView.java
+  repository:
+    type: synthetic
+internal: false
+pattern:
+- single object
+report: null
+source:
+  name: Survey

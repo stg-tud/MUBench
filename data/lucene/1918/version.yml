@@ -1,0 +1,8 @@
+build:
+  classes: build/classes/main/
+  commands:
+  - gradle :compileJava
+  src: src/java/
+misuses:
+- '1'
+revision: 0cb96adf12063c1ec2d586d0cec6a209abe9a2dd

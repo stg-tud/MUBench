@@ -1,0 +1,26 @@
+api:
+- javax.crypto.Cipher
+characteristics:
+- missing catch
+crash: true
+description: 'Cipher.init may throw InvalidKeyException.
+
+  '
+fix:
+  commit: https://sourceforge.net/p/itext/code/5091/
+  description: 'Add try/catch and fallback handling.
+
+    '
+  files:
+  - diff: https://sourceforge.net/p/itext/code/5091/tree/trunk/itext/src/main/java/com/itextpdf/text/pdf/PdfPublicKeySecurityHandler.java?diff=5041fbafbfc09e48583d0e45:5090
+    name: src/main/java/com/itextpdf/text/pdf/PdfPublicKeySecurityHandler.java
+  repository:
+    type: svn
+    url: http://svn.code.sf.net/p/itext/code/trunk/itext/
+  revision: 5091
+internal: false
+pattern:
+- multiple objects
+report: null
+source:
+  name: SourceForge

@@ -1,0 +1,26 @@
+api:
+- org.wordpress.android.util.WPEditText
+characteristics:
+- missing precondition/null
+crash: true
+description: 'The result of WPEditText.getText() may be null.
+
+  '
+fix:
+  commit: https://github.com/wordpress-mobile/WordPress-Android/commit/c21e5969154d1cafb15fd0becf252e8e81760b98
+  description: 'Check for null before using it.
+
+    '
+  files:
+  - name: WordPress/src/main/java/org/wordpress/android/ui/posts/EditPostContentFragment.java
+  repository:
+    type: git
+    url: https://github.com/wordpress-mobile/WordPress-Android.git
+  revision: c21e5969154d1cafb15fd0becf252e8e81760b98
+internal: true
+pattern:
+- single object
+report: https://github.com/wordpress-mobile/WordPress-Android/issues/780
+source:
+  name: QACrashFix
+  url: http://sei.pku.edu.cn/~gaoqing11/qacrashfix/home.htm

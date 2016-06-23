@@ -1,0 +1,25 @@
+api:
+- org.apache.lucene.index.MultiFields
+- org.apache.lucene.util.Bits
+characteristics:
+- missing precondition/null
+crash: true
+description: 'MultiFields.getDeletedDocs() may return null.
+
+  '
+fix:
+  commit: https://git-wip-us.apache.org/repos/asf/lucene-solr/commit/f81a5d9bf6fdcdab23bff680dee8075209bae8cf
+  files:
+  - diff: http://svn.apache.org/viewvc/lucene/dev/trunk/lucene/contrib/benchmark/src/java/org/apache/lucene/benchmark/byTask/tasks/DeleteByPercentTask.java?r1=957486&r2=957485&pathrev=957486
+    name: contrib/benchmark/src/java/org/apache/lucene/benchmark/byTask/tasks/DeleteByPercentTask.java
+  repository:
+    type: git
+    url: https://git-wip-us.apache.org/repos/asf/lucene-solr
+  revision: f81a5d9bf6fdcdab23bff680dee8075209bae8cf
+internal: true
+pattern:
+- multiple objects
+report: https://issues.apache.org/jira/browse/LUCENE-2521
+source:
+  name: BugClassify
+  url: https://www.st.cs.uni-saarland.de/softevo//bugclassify/

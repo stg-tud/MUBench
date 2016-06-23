@@ -1,0 +1,24 @@
+api:
+- javax.swing.JFrame
+characteristics:
+- wrong call order
+crash: false
+description: 'Calls JFrame.setPreferredSize() after JFrame.pack(), such that the size
+  is not respected when rendering the frame.
+
+  '
+fix:
+  commit: https://github.com/stg-tud/MUBench/blob/master/data/synthetic-pack-1.java
+  description: 'Call JFrame.setPreferredSize() before JFrame.pack().
+
+    '
+  files:
+  - name: src/Pack1.java
+  repository:
+    type: synthetic
+internal: false
+pattern:
+- single object
+report: null
+source:
+  name: Survey

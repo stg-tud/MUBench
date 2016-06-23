@@ -1,0 +1,26 @@
+api:
+- android.os.Environment
+characteristics:
+- missing catch
+crash: true
+description: 'Environment.getExternalStorageState() may throw NullPointerException.
+
+  '
+fix:
+  commit: https://github.com/nostra13/Android-Universal-Image-Loader/commit/54a9038d7cc13fd46a922ce1c059610d0690115d
+  description: 'Catch the exception and do fallback handling.
+
+    '
+  files:
+  - name: library/src/com/nostra13/universalimageloader/utils/StorageUtils.java
+  repository:
+    type: git
+    url: https://github.com/nostra13/Android-Universal-Image-Loader.git
+  revision: 54a9038d7cc13fd46a922ce1c059610d0690115d
+internal: false
+pattern:
+- single object
+report: https://github.com/nostra13/Android-Universal-Image-Loader/issues/660
+source:
+  name: QACrashFix
+  url: http://sei.pku.edu.cn/~gaoqing11/qacrashfix/home.htm

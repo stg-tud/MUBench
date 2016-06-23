@@ -1,0 +1,26 @@
+api:
+- java.util.Map
+- org.apache.jackrabbit.core.config.RepositoryConfig
+characteristics:
+- missing precondition/null
+crash: true
+description: 'Map.get() may return null and RepositoryConfig.create() expects non-null
+  parameter.
+
+  '
+fix:
+  commit: http://svn.apache.org/viewvc?view=revision&revision=1232831
+  files:
+  - diff: http://svn.apache.org/viewvc/jackrabbit/trunk/jackrabbit-jca/src/main/java/org/apache/jackrabbit/jca/JCARepositoryManager.java?r1=1232831&r2=1232830&pathrev=1232831
+    name: jackrabbit-jca/src/main/java/org/apache/jackrabbit/jca/JCARepositoryManager.java
+  repository:
+    type: svn
+    url: http://svn.apache.org/repos/asf/jackrabbit/trunk/
+  revision: 1232831
+internal: true
+pattern:
+- multiple objects
+report: https://issues.apache.org/jira/browse/JCR-3189
+source:
+  name: BugClassify
+  url: https://www.st.cs.uni-saarland.de/softevo//bugclassify/

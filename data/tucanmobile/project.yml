@@ -1,0 +1,5 @@
+name: TuCanMobile
+repository:
+  type: git
+  url: https://github.com/Tyde/TuCanMobile.git
+url: https://github.com/Tyde/TuCanMobile

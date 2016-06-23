@@ -1,0 +1,32 @@
+api:
+- org.apache.commons.lang.text.StrBuilder
+characteristics:
+- missing precondition/null
+crash: true
+description: 'StrBuilder.getNullText() may return null.
+
+  '
+file: commons/proper/lang/trunk/src/java/org/apache/commons/lang/text/StrBuilder.java
+fix:
+  commit: https://git-wip-us.apache.org/repos/asf/commons-lang.git/commit/1fe5439baf32af2114958e3cfc3512bd72c84773
+  description: 'Check for null before using.
+
+    '
+  files:
+  - diff: http://svn.apache.org/viewvc/commons/proper/lang/trunk/src/java/org/apache/commons/lang/text/StrBuilder.java?r1=627248&r2=627247&pathrev=627248
+    name: commons/proper/lang/trunk/src/java/org/apache/commons/lang/text/StrBuilder.java
+  repository:
+    type: git
+    url: https://git-wip-us.apache.org/repos/asf/commons-lang.git
+  revision: 1fe5439baf32af2114958e3cfc3512bd72c84773
+internal: true
+method: appendFixedWidthPadLeft(Object, int, char)
+pattern:
+- single object
+report: https://issues.apache.org/jira/browse/LANG-412
+source:
+  name: Defects4J
+  url: https://github.com/rjust/defects4j
+type: org.apache.commons.lang.text.StrBuilder
+usage: "digraph {\n  0 [label=\"StrBuilder#this#getNullText\"]\n  1 [label=\"String#str#length\"\
+  ]\n  0 -> 1\n}\n"

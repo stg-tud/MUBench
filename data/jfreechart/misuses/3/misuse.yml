@@ -1,0 +1,28 @@
+api:
+- org.jfree.data.statistics.StatisticalCategoryDataset
+- java.Number
+characteristics:
+- missing precondition/null
+crash: true
+description: 'StatisticalCategoryDataset.getMeanValue() may return null.
+
+  '
+fix:
+  commit: https://sourceforge.net/p/jfreechart/code/164/
+  description: 'Check for null.
+
+    '
+  files:
+  - diff: https://sourceforge.net/p/jfreechart/code/164/tree/trunk/source/org/jfree/chart/renderer/category/StatisticalBarRenderer.java?diff=50b53b485fcbc92b6542a639:163
+    name: source/org/jfree/chart/renderer/category/StatisticalBarRenderer.java
+  repository:
+    type: svn
+    url: http://svn.code.sf.net/p/jfreechart/code/trunk/
+  revision: 164
+internal: true
+pattern:
+- multiple objects
+report: null
+source:
+  name: Defects4J
+  url: https://github.com/rjust/defects4j

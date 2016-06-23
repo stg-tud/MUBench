@@ -1,0 +1,24 @@
+api:
+- java.nio.channels.FileChannel
+characteristics:
+- missing call
+crash: false
+description: 'Misses to flush FileChannel, such that the contents have not been written
+  before the next attempt to read from the underlying resource.
+
+  '
+fix:
+  commit: https://github.com/stg-tud/MUBench/blob/master/data/synthetic-flush.java
+  description: 'Add a call to FileChannel.force() or close the channel.
+
+    '
+  files:
+  - name: src/ChannelFlush.java
+  repository:
+    type: synthetic
+internal: false
+pattern:
+- single object
+report: null
+source:
+  name: Survey

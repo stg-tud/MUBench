@@ -1,0 +1,24 @@
+api:
+- java.io.FileInputStream
+- java.io.File
+characteristics:
+- missing precondition/predicate
+crash: true
+description: 'Open a FileInputStream on a non-existing file throws.
+
+  '
+fix:
+  commit: https://github.com/stg-tud/MUBench/blob/master/data/synthetic-fisexists.java
+  description: 'Check File.exists() first.
+
+    '
+  files:
+  - name: src/FISExists.java
+  repository:
+    type: synthetic
+internal: false
+pattern:
+- multiple objects
+report: null
+source:
+  name: Survey

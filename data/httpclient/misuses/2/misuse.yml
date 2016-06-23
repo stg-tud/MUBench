@@ -1,0 +1,25 @@
+api:
+- org.apache.commons.httpclient.auth.AuthState
+characteristics:
+- missing call
+crash: false
+description: 'When AuthState.isPreemptive(), both invalidate() and setAuthRequested(true)
+  should be called. The latter was missing.
+
+  '
+fix:
+  commit: http://svn.apache.org/viewvc?view=revision&revision=160490
+  files:
+  - diff: http://svn.apache.org/viewvc/jakarta/commons/proper/httpclient/trunk/src/java/org/apache/commons/httpclient/HttpMethodDirector.java?r1=160490&r2=160489&pathrev=160490
+    name: src/java/org/apache/commons/httpclient/HttpMethodDirector.java
+  repository:
+    type: svn
+    url: http://svn.apache.org/repos/asf/jakarta/commons/proper/httpclient/trunk/
+  revision: 160490
+internal: true
+pattern:
+- single object
+report: https://issues.apache.org/jira/browse/HTTPCLIENT-444
+source:
+  name: BugClassify
+  url: https://www.st.cs.uni-saarland.de/softevo//bugclassify/

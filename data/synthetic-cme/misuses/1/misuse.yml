@@ -1,0 +1,50 @@
+api:
+- java.util.Collection (and subtypes)
+- java.util.Iterator
+characteristics:
+- superfluous call
+crash: true
+description: "Modifying a collection after an Iterator has been created and continue\
+  \ to use the Iterator afterwards. Often happens with foreach loops.\nFound 2584\
+  \ threads for 'ConcurrentModificationException' on StackOverflow. Top 10% by relevance:\
+  \ Modifying the collection after creating the iterator:\n  - http://stackoverflow.com/questions/20818637/concurrentmodificationexception\n\
+  \  - http://stackoverflow.com/questions/223918/iterating-through-a-list-avoiding-concurrentmodificationexception-when-removing\n\
+  \  - http://stackoverflow.com/questions/14994277/java-concurrentmodificationexception\n\
+  \  - http://stackoverflow.com/questions/6790856/concurrentmodificationexception\n\
+  \  - http://stackoverflow.com/questions/15444391/concurrentmodificationexception\n\
+  \  - http://stackoverflow.com/questions/12793199/why-concurrentmodificationexception-in-arraylist\n\
+  \  - http://stackoverflow.com/questions/17740858/concurrentmodificationexception-minigame\n\
+  \  - http://stackoverflow.com/questions/27350034/hashmap-concurrentmodificationexception\n\
+  \  - http://stackoverflow.com/questions/28088085/arraylist-addall-concurrentmodificationexception\n\
+  \  - http://stackoverflow.com/questions/23918707/understanding-concurrentmodificationexception\n\
+  \  - http://stackoverflow.com/questions/24085674/spurious-concurrentmodificationexception\n\
+  \  - http://stackoverflow.com/questions/34070915/java-concurrentmodificationexception\n\
+  \  - http://stackoverflow.com/questions/25832790/odd-concurrentmodificationexception\n\
+  \  - http://stackoverflow.com/questions/15811799/concurrentmodificationexception-woes\n\
+  \  - http://stackoverflow.com/questions/1655362/concurrentmodificationexception-despite-using-synchronized\n\
+  \  - http://stackoverflow.com/questions/2826380/concurrentmodificationexception-hashmap-in-java\n\
+  \  - http://stackoverflow.com/questions/18773734/concurrentmodificationexception-when-using-iterators\n\
+  \  - http://stackoverflow.com/questions/30892727/java-set-concurrentmodificationexception\n\
+  \  - http://stackoverflow.com/questions/19726337/concurrentmodificationexception-in-unmodifiable-collection\n\
+  Asks for best practice on iterating collections while modifying them:\n  - http://stackoverflow.com/questions/1066589/iterate-through-a-hashmap/1066603#1066603\n\
+  Threading issues:\n  - http://stackoverflow.com/questions/17567743/concurrentmodificationexception\n\
+  \  - http://stackoverflow.com/questions/3132970/mapview-concurrentmodificationexception\n\
+  \  - http://stackoverflow.com/questions/34950553/concurrentmodificationexception-error\n\
+  \  - http://stackoverflow.com/questions/6901093/concurrentmodificationexception-thrown-on-iterator-remove\n\
+  Unknown cause:\n  - http://stackoverflow.com/questions/9027413/java-concurrentmodificationexception\n\
+  \  - http://stackoverflow.com/questions/34062920/titan-concurrentmodificationexception\n"
+fix:
+  commit: https://github.com/stg-tud/MUBench/blob/master/data/synthetic-cme.java
+  description: 'Modify the collection via the Iterator.
+
+    '
+  files:
+  - name: src/CME.java
+  repository:
+    type: synthetic
+internal: false
+pattern:
+- multiple objects
+report: null
+source:
+  name: Survey

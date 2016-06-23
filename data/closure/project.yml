@@ -1,0 +1,5 @@
+name: Closure Compiler
+repository:
+  type: git
+  url: https://github.com/google/closure-compiler.git
+url: https://developers.google.com/closure/compiler/

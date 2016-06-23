@@ -1,0 +1,27 @@
+api:
+- javax.crypto.Cipher
+- java.String
+characteristics:
+- missing call
+crash: false
+description: 'Use manual conversion from bytes to String.
+
+  '
+fix:
+  commit: https://sourceforge.net/p/genoviz/code/4273/
+  description: 'Use new String(bytes, "UTF-8").
+
+    '
+  files:
+  - diff: https://sourceforge.net/p/genoviz/code/4273/tree/branches/das2_manager/igb/src/com/affymetrix/igb/util/StringEncrypter.java?diff=505b7b97bfc09e26e1a8d781:4272
+    name: igb/src/com/affymetrix/igb/util/StringEncrypter.java
+  repository:
+    type: svn
+    url: http://svn.code.sf.net/p/genoviz/code/branches/das2_manager/
+  revision: 4273
+internal: false
+pattern:
+- multiple objects
+report: null
+source:
+  name: SourceForge

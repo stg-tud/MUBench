@@ -1,0 +1,24 @@
+api:
+- java.math.BigInteger
+characteristics:
+- ignored result
+crash: false
+description: 'Does not use the result of BigInteger.setScale(), which (despite its
+  name) returns a new instance, instead of modifying the receiver.
+
+  '
+fix:
+  commit: https://github.com/stg-tud/MUBench/blob/master/data/synthetic-bigint.java
+  description: 'Continue to work on the new instance.
+
+    '
+  files:
+  - name: src/BigInt.java
+  repository:
+    type: synthetic
+internal: false
+pattern:
+- single object
+report: null
+source:
+  name: Survey

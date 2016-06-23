@@ -1,0 +1,26 @@
+api:
+- org.apache.jackrabbit.core.config.ConfigurationParser
+- org.apache.jackrabbit.core.config.ClusterConfig
+characteristics:
+- missing call
+crash: false
+description: 'The results of ConfigurationParser.getAttribute() should be processed
+  by ConfigurationParser.replaceVariables(). This step was missing.
+
+  '
+fix:
+  commit: http://svn.apache.org/viewvc?view=revision&revision=695766
+  files:
+  - diff: http://svn.apache.org/viewvc/jackrabbit/trunk/jackrabbit-core/src/main/java/org/apache/jackrabbit/core/config/RepositoryConfigurationParser.java?r1=695766&r2=695765&pathrev=695766
+    name: jackrabbit-core/src/main/java/org/apache/jackrabbit/core/config/RepositoryConfigurationParser.java
+  repository:
+    type: svn
+    url: http://svn.apache.org/repos/asf/jackrabbit/trunk/
+  revision: 695766
+internal: true
+pattern:
+- single object
+report: https://issues.apache.org/jira/browse/JCR-1694
+source:
+  name: BugClassify
+  url: https://www.st.cs.uni-saarland.de/softevo//bugclassify/

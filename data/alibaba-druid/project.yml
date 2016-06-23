@@ -1,0 +1,5 @@
+name: alibaba/druid
+repository:
+  type: git
+  url: https://github.com/alibaba/druid.git
+url: https://github.com/alibaba/druid

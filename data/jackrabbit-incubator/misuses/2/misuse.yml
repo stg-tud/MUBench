@@ -1,0 +1,24 @@
+api:
+- java.io.File
+characteristics:
+- wrong call
+crash: true
+description: 'Below !File.exists() File.mkdir() was called, instead of File.mkdirs().
+
+  '
+fix:
+  commit: http://svn.apache.org/viewvc?view=revision&revision=263892
+  files:
+  - diff: http://svn.apache.org/viewvc/incubator/jackrabbit/trunk/contrib/bdb-persistence/src/java/org/apache/jackrabbit/core/state/bdb/BerkeleyDBPersistenceManager.java?r1=263892&r2=263891&pathrev=263892
+    name: contrib/bdb-persistence/src/java/org/apache/jackrabbit/core/state/bdb/BerkeleyDBPersistenceManager.java
+  repository:
+    type: svn
+    url: http://svn.apache.org/repos/asf/incubator/jackrabbit/trunk/
+  revision: 263892
+internal: false
+pattern:
+- single object
+report: https://issues.apache.org/jira/browse/JCR-201
+source:
+  name: BugClassify
+  url: https://www.st.cs.uni-saarland.de/softevo//bugclassify/

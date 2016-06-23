@@ -1,0 +1,5 @@
+name: Apache Commons Math
+repository:
+  type: git
+  url: https://git-wip-us.apache.org/repos/asf/commons-math.git
+url: http://commons.apache.org/proper/commons-math/

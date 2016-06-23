@@ -1,0 +1,8 @@
+build:
+  classes: UNKNOWN
+  commands:
+  - UNKNOWN
+  src: contrib/bdb-persistence/src/java/
+misuses:
+- '1'
+revision: 263892

@@ -1,0 +1,26 @@
+api:
+- java.Boolean
+characteristics:
+- wrong call
+crash: false
+description: 'Boolean.parseBoolean() turns a string to a boolean, while Boolean.getBoolean()
+  looks up the boolean value of a system property. The latter method was called here,
+  where it should have been the former.
+
+  '
+fix:
+  commit: http://svn.apache.org/viewvc?view=revision&revision=965539
+  files:
+  - diff: http://svn.apache.org/viewvc/jackrabbit/trunk/jackrabbit-core/src/main/java/org/apache/jackrabbit/core/persistence/xml/XMLPersistenceManager.java?r1=965539&r2=965538&pathrev=965539
+    name: jackrabbit-core/src/main/java/org/apache/jackrabbit/core/persistence/xml/XMLPersistenceManager.java
+  repository:
+    type: svn
+    url: http://svn.apache.org/repos/asf/jackrabbit/trunk/
+  revision: 965539
+internal: false
+pattern:
+- single node
+report: https://issues.apache.org/jira/browse/JCR-2681
+source:
+  name: BugClassify
+  url: https://www.st.cs.uni-saarland.de/softevo//bugclassify/

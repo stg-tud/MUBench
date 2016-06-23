@@ -1,0 +1,27 @@
+api:
+- javax.crypto.Mac
+- java.String
+characteristics:
+- wrong call
+crash: false
+description: 'Exports bytes for Mac.doFinal() without specifying the encoding.
+
+  '
+fix:
+  commit: https://github.com/android-rcs/rcsjta/commit/04d84799daa51ed7cc0ad270f0eea51ffaf7a53a
+  description: 'Call String.getBytes() with explicit encoding ("utf-8").
+
+    '
+  files:
+  - diff: https://github.com/android-rcs/rcsjta/commit/04d84799daa51ed7cc0ad270f0eea51ffaf7a53a#diff-bf160ca00204f2ae4c100aabe57a1dfd
+    name: core/src/com/orangelabs/rcs/core/ims/service/im/chat/ContributionIdGenerator.java
+  repository:
+    type: git
+    url: https://github.com/android-rcs/rcsjta.git
+  revision: 04d84799daa51ed7cc0ad270f0eea51ffaf7a53a
+internal: false
+pattern:
+- multiple objects
+report: null
+source:
+  name: GitHub

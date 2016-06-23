@@ -1,0 +1,28 @@
+api:
+- org.jfree.chart.plot.CategoryPlot
+- org.jfree.data.category.CategoryDataset
+characteristics:
+- wrong guard
+crash: true
+description: 'CategoryPlot.getDataset() may return null. The check for null was flipped.
+
+  '
+fix:
+  commit: https://sourceforge.net/p/jfreechart/code/2266/
+  description: 'Flip the condition.
+
+    '
+  files:
+  - diff: https://sourceforge.net/p/jfreechart/code/2266/tree/trunk/source/org/jfree/chart/renderer/category/AbstractCategoryItemRenderer.java?diff=50b53b485fcbc92b6542a639:2265
+    name: source/org/jfree/chart/renderer/category/AbstractCategoryItemRenderer.java
+  repository:
+    type: svn
+    url: http://svn.code.sf.net/p/jfreechart/code/trunk/
+  revision: 2266
+internal: true
+pattern:
+- multiple objects
+report: null
+source:
+  name: Defects4J
+  url: https://github.com/rjust/defects4j

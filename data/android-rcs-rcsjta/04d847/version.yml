@@ -1,0 +1,10 @@
+build:
+  classes: core/build/
+  commands:
+  - cd core
+  - android update project
+  - ant
+  src: core/src/
+misuses:
+- '1'
+revision: 04d84799daa51ed7cc0ad270f0eea51ffaf7a53a

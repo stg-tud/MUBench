@@ -1,0 +1,25 @@
+api:
+- java.sql.PreparedStatement
+characteristics:
+- missing precondition/parameter constraint
+crash: true
+description: 'PreparedStatement.setFetchSize(x) and PreparedStatement.setMaxRows(y)
+  have the constraint x <= y iff y > 0.
+
+  '
+fix:
+  commit: http://svn.apache.org/viewvc?view=revision&revision=1178892
+  files:
+  - diff: http://svn.apache.org/viewvc/jackrabbit/trunk/jackrabbit-core/src/main/java/org/apache/jackrabbit/core/util/db/ConnectionHelper.java?r1=1178892&r2=1178891&pathrev=1178892
+    name: jackrabbit-core/src/main/java/org/apache/jackrabbit/core/util/db/ConnectionHelper.java
+  repository:
+    type: svn
+    url: http://svn.apache.org/repos/asf/jackrabbit/trunk/
+  revision: 1178892
+internal: false
+pattern:
+- single object
+report: https://issues.apache.org/jira/browse/JCR-3090
+source:
+  name: BugClassify
+  url: https://www.st.cs.uni-saarland.de/softevo//bugclassify/

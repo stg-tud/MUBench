@@ -1,0 +1,5 @@
+name: rcsjta
+repository:
+  type: git
+  url: https://github.com/android-rcs/rcsjta.git
+url: https://github.com/android-rcs/rcsjta

@@ -1,0 +1,5 @@
+name: 'BFS-C3: Strategy-Tool (BattleTech)'
+repository:
+  type: svn
+  url: http://svn.code.sf.net/p/battleforge/code/trunk/de.battleforge/
+url: http://sourceforge.net/projects/battleforge/

@@ -1,0 +1,8 @@
+build:
+  classes: jackrabbit-jcr2spi/target/classes/
+  commands:
+  - mvn compile -Dmaven.compiler.failOnError=fals
+  src: jackrabbit-jcr2spi/src/main/java/
+misuses:
+- '1'
+revision: 1240198

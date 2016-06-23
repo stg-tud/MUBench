@@ -1,0 +1,27 @@
+api:
+- java.util.Map
+characteristics:
+- missing precondition/null
+crash: true
+description: 'Map.get() may return null.
+
+  '
+fix:
+  commit: https://sourceforge.net/p/jfreechart/code/811/
+  description: 'Check for null.
+
+    '
+  files:
+  - diff: https://sourceforge.net/p/jfreechart/code/811/tree/trunk/source/org/jfree/chart/plot/CategoryPlot.java?diff=50b53b485fcbc92b6542a639:810
+    name: source/org/jfree/chart/plot/CategoryPlot.java
+  repository:
+    type: svn
+    url: http://svn.code.sf.net/p/jfreechart/code/trunk/
+  revision: 811
+internal: false
+pattern:
+- multiple objects
+report: null
+source:
+  name: Defects4J
+  url: https://github.com/rjust/defects4j

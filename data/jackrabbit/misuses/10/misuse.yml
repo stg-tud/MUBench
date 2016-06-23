@@ -1,0 +1,24 @@
+api:
+- org.apache.jackrabbit.jcr2spi.hierarchy.HierarchyEntry
+characteristics:
+- missing precondition/null
+crash: true
+description: 'HierarchyEntry.getParent() may return null.
+
+  '
+fix:
+  commit: http://svn.apache.org/viewvc?view=revision&revision=1240198
+  files:
+  - diff: http://svn.apache.org/viewvc/jackrabbit/trunk/jackrabbit-jcr2spi/src/main/java/org/apache/jackrabbit/jcr2spi/state/ItemState.java?r1=1240198&r2=1240197&pathrev=1240198
+    name: jackrabbit-jcr2spi/src/main/java/org/apache/jackrabbit/jcr2spi/state/ItemState.java
+  repository:
+    type: svn
+    url: http://svn.apache.org/repos/asf/jackrabbit/trunk/
+  revision: 1240198
+internal: true
+pattern:
+- single object
+report: https://issues.apache.org/jira/browse/JCR-3050
+source:
+  name: BugClassify
+  url: https://www.st.cs.uni-saarland.de/softevo//bugclassify/

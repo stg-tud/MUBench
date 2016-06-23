@@ -1,0 +1,5 @@
+name: ADempiere ERP Business Suite
+repository:
+  type: svn
+  url: http://svn.code.sf.net/p/adempiere/svn/trunk/looks/
+url: http://adempiere.net/web/guest/welcome

@@ -1,0 +1,8 @@
+build:
+  classes: build/classes/
+  commands:
+  - ant compile
+  src: src/
+misuses:
+- '1'
+revision: 67289ae4cbaba3ae70cd2e8fb92f3f2898039dfb

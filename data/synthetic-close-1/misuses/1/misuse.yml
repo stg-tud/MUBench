@@ -1,0 +1,23 @@
+api:
+- java.io.Closeable
+characteristics:
+- missing call
+crash: false
+description: 'Misses to call Closeable.close().
+
+  '
+fix:
+  commit: https://github.com/stg-tud/MUBench/blob/master/data/synthetic-close-1.java
+  description: 'Call close() after using the Closable.
+
+    '
+  files:
+  - name: src/Close.java
+  repository:
+    type: synthetic
+internal: false
+pattern:
+- single object
+report: null
+source:
+  name: Survey
