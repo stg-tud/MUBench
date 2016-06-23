@@ -1,34 +1,23 @@
 import logging
-import os
 import shutil
-import subprocess
 from os import makedirs
-from os.path import join, exists, isdir, dirname, isfile
+from os.path import join, exists, isdir, dirname
+from typing import List, Set
 
-from typing import List
-
-from benchmark.data.misuse import Misuse
+from benchmark.data.misuse import Misuse, Pattern
 from benchmark.data.project_compile import ProjectCompile
 from benchmark.subprocesses.datareader import DataReaderSubprocess
 from benchmark.utils.io import remove_tree, copy_tree
-from benchmark.utils.printing import subprocess_print, print_ok
 from benchmark.utils.shell import Shell, CommandFailedError
 
 
 class Compile(DataReaderSubprocess):
     __BUILD_DIR = "build"
 
-    def __init__(self, checkout_base_dir: str, src_normal: str, classes_normal: str,
-                 src_patterns: str, classes_patterns: str, pattern_frequency: int, outlog: str, errlog: str):
+    def __init__(self, checkout_base_dir: str, pattern_frequency: int, force_compile):
         self.checkout_base_dir = checkout_base_dir
-        self.src_normal = src_normal
-        self.classes_normal = classes_normal
-        self.src_patterns = src_patterns
-        self.classes_patterns = classes_patterns
         self.pattern_frequency = pattern_frequency
-        self.outlog = outlog
-        self.errlog = errlog
-        self.force_compile = False # TODO make parameter
+        self.force_compile = force_compile
 
     def run(self, misuse: Misuse):
         logger = logging.getLogger("compile")
@@ -37,52 +26,53 @@ class Compile(DataReaderSubprocess):
         logger.debug("- Pattern frequency = %r", self.pattern_frequency)
         logger = logging.getLogger("compile.tasks")
 
+        build_config = misuse.build_config
+
         checkout = misuse.get_checkout(self.checkout_base_dir)
         checkout_dir = checkout.checkout_dir
         base_path = dirname(checkout_dir)
+
         build_path = join(base_path, Compile.__BUILD_DIR)
+        sources_path = join(build_path, build_config.src)
+        classes_path = join(build_path, build_config.classes)
 
-        compile = ProjectCompile(checkout_dir, base_path, misuse.build_config, misuse.patterns)
+        compile = ProjectCompile(base_path)
 
-        if compile.exists_copy_of_original_source() and not self.force_compile:
+        logger.debug("Copying to build directory...")
+        copy_tree(checkout_dir, build_path)
+        logger.debug("Copying additional resources...")
+        self.__copy_additional_compile_sources(misuse, build_path)
+
+        if isdir(compile.original_sources_path) and not self.force_compile:
             logger.info("Already copied project source.")
         else:
             try:
                 logger.info("Copying project sources...")
-                compile.copy_original_sources()
+                self.__copy_original_sources(sources_path, compile.original_sources_path)
             except IOError as e:
                 logger.error("Failed to copy project sources: %s", e)
                 return DataReaderSubprocess.Answer.skip
 
-        if compile.exists_copy_of_pattern_sources() and not self.force_compile:
+        if isdir(compile.pattern_sources_path) and not self.force_compile:
             logger.info("Already copied pattern sources.")
         else:
             try:
                 logger.info("Copying pattern sources...")
-                compile.copy_pattern_sources(self.pattern_frequency)
+                self.__copy_pattern_sources(misuse.patterns, compile.pattern_sources_path, self.pattern_frequency)
             except IOError as e:
                 logger.error("Failed to copy pattern sources: %s", e)
                 return DataReaderSubprocess.Answer.skip
 
-        if not compile.can_compile():
+        if not build_config.commands:
             logger.warn("Skipping compilation: not configured.")
             return DataReaderSubprocess.Answer.ok
-
-        logger.debug("Copying to build directory...")
-        self._copy(checkout_dir, build_path)
-        logger.debug("Copying additional resources...")
-        self.__copy_additional_compile_sources(misuse, build_path)
-
-        build_config = misuse.build_config
-        sources_path = join(build_path, build_config.src)
-        classes_path = join(build_path, build_config.classes)
 
         try:
             logger.info("Compiling project...")
             self._compile(build_config.commands, build_path)
 
             logger.debug("Copying project classes...")
-            self._copy(classes_path, compile.original_classes_path)
+            copy_tree(classes_path, compile.original_classes_path)
         except CommandFailedError as e:
             logger.error("Compilation failed: %s", e)
             return DataReaderSubprocess.Answer.skip
@@ -93,7 +83,7 @@ class Compile(DataReaderSubprocess):
 
         try:
             logger.debug("Copying patterns to source directory...")
-            duplicates = self.__duplicate(misuse.patterns, sources_path)
+            duplicates = self.__duplicate(misuse.patterns, sources_path, self.pattern_frequency)
             logger.info("Compiling patterns...")
             self._compile(build_config.commands, build_path)
             logger.debug("Copying pattern classes...")
@@ -103,6 +93,19 @@ class Compile(DataReaderSubprocess):
             return DataReaderSubprocess.Answer.skip
 
         return DataReaderSubprocess.Answer.ok
+
+    @staticmethod
+    def __copy_original_sources(sources_path: str, destination: str):
+        remove_tree(destination)
+        makedirs(destination, exist_ok=True)
+        print("copy {}\n     {}".format(sources_path, destination))
+        copy_tree(sources_path, destination)
+
+    @staticmethod
+    def __copy_pattern_sources(patterns: Set[Pattern], destination: str, pattern_frequency: int):
+        remove_tree(destination)
+        for pattern in patterns:
+            pattern.duplicate(destination, pattern_frequency)
 
     @staticmethod
     def __copy_additional_compile_sources(misuse, checkout_dir):
@@ -116,26 +119,17 @@ class Compile(DataReaderSubprocess):
         for command in commands:
             Shell.exec(command, cwd=project_dir, logger=logger)
 
-    def __duplicate(self, patterns, destination):
+    @staticmethod
+    def __duplicate(patterns, destination, pattern_frequency: int):
         duplicates = set()
         for pattern in patterns:
-            duplicates.update(pattern.duplicate(destination, self.pattern_frequency))
+            duplicates.update(pattern.duplicate(destination, pattern_frequency))
         return duplicates
 
-    def __copy(self, patterns, classes_path, destination):
+    @staticmethod
+    def __copy(patterns, classes_path, destination):
         for pattern in patterns:
             pattern_class_file_name = pattern.file_name + ".class"
-            self._copy(join(classes_path, pattern_class_file_name), join(destination, pattern_class_file_name))
-
-    @staticmethod
-    def _copy(src, dst):
-        if isdir(dst):
-            remove_tree(dst)
-
-        if isdir(src):
-            copy_tree(src, dst)
-        elif isfile(src):
-            makedirs(dirname(dst), exist_ok=True)
-            shutil.copy(src, dst)
-        else:
-            raise FileNotFoundError("no such file or directory {}".format(src))
+            new_name = join(destination, pattern_class_file_name)
+            makedirs(dirname(new_name), exist_ok=True)
+            shutil.copy(join(classes_path, pattern_class_file_name), new_name)

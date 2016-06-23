@@ -104,9 +104,7 @@ class Benchmark:
 
     def _setup_compile(self):
         if not self.skip_compile:
-            compile_handler = Compile(Benchmark.CHECKOUTS_PATH, self.original_src, self.original_classes,
-                                      self.patterns_src, self.patterns_classes, self.pattern_frequency,
-                                      "compile-out.log", "compile-error.log")
+            compile_handler = Compile(Benchmark.CHECKOUTS_PATH, self.pattern_frequency, self.force_compile)
             self.datareader.add(compile_handler)
 
     def _setup_detect(self):

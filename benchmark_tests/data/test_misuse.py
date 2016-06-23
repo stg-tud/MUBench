@@ -104,9 +104,12 @@ class TestMisuse:
         assert_equals(["mvn compile"], actual_config.commands)
         assert_equals("target/classes/", actual_config.classes)
 
-    def test_build_config_is_none_if_any_part_is_missing(self):
-        uut = create_misuse("/path/misuse", {"build": {"src": "src/java/", "classes": "target/classes/"}})
-        assert uut.build_config is None
+    def test_extracts_build_config_with_defaults(self):
+        uut = create_misuse("/path/misuse")
+
+        assert_equals("", uut.build_config.src)
+        assert_equals([], uut.build_config.commands)
+        assert_equals("", uut.build_config.classes)
 
     def test_derives_additional_compile_sources_path(self):
         uut = create_misuse("/path/misuse")

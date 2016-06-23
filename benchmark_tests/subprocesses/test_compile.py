@@ -14,7 +14,6 @@ from benchmark.subprocesses.datareader import DataReaderSubprocess
 from benchmark.utils.io import create_file
 from benchmark.utils.shell import CommandFailedError
 from benchmark_tests.data.test_misuse import create_misuse
-from benchmark_tests.test_utils.subprocess_util import run_on_misuse
 
 
 # noinspection PyAttributeOutsideInit
@@ -34,10 +33,10 @@ class TestCompile:
 
         self.base_path = dirname(self.checkout_path)
         self.build_path = join(self.base_path, "build")
-
-        self.call_calls = []
-        self.move_calls = []
-        self.copy_calls = []
+        self.original_sources_path = join(self.base_path, "original-src")
+        self.original_classes_path = join(self.base_path, "original-classes")
+        self.pattern_sources_path = join(self.base_path, "patterns-src")
+        self.pattern_classes_path = join(self.base_path, "patterns-classes")
 
         def mock_compile(commands: List[str], cwd: str):
             source_path = join(cwd, self.source_dir)
@@ -50,7 +49,7 @@ class TestCompile:
                     create_file(join(class_path, package, file))
                     print("fake compile: {}".format(join(class_path, package, file)))
 
-        self.uut = Compile(self.checkout_base_path, "original-src", "project-classes", "patterns-src", "patterns-classes", 1, "out.log", "error.log")
+        self.uut = Compile(self.checkout_base_path, 1, False)
         self.uut._compile = MagicMock(side_effect=mock_compile)
 
     def teardown(self):
@@ -61,33 +60,39 @@ class TestCompile:
 
         self.uut.run(self.misuse)
 
-        assert exists(join(self.base_path, "original-src", "a.file"))
+        assert exists(join(self.original_sources_path, "a.file"))
 
     def test_skips_copy_of_original_sources_if_copy_exists(self):
-        create_file(join(self.source_path, "a.file"))
-        self.uut.run(self.misuse)
+        makedirs(join(self.base_path, "original-src"))
         create_file(join(self.source_path, "b.file"))
 
         self.uut.run(self.misuse)
 
-        assert not exists(join(self.base_path, "original-src", "b.file"))
+        assert not exists(join(self.original_sources_path, "b.file"))
 
     def test_forces_copy_of_original_sources(self):
+        makedirs(self.original_sources_path)
         create_file(join(self.source_path, "a.file"))
-        self.uut.run(self.misuse)
-        create_file(join(self.source_path, "b.file"))
         self.uut.force_compile = True
 
         self.uut.run(self.misuse)
 
-        assert exists(join(self.base_path, "original-src", "b.file"))
+        assert exists(join(self.original_sources_path, "a.file"))
+
+    def test_forces_clean_copy_of_original_sources(self):
+        create_file(join(self.original_sources_path, "old.file"))
+        self.uut.force_compile = True
+
+        self.uut.run(self.misuse)
+
+        assert not exists(join(self.original_sources_path, "old.file"))
 
     def test_copies_pattern_sources(self):
         self.misuse._PATTERNS = {self.create_pattern("a.java")}
 
         self.uut.run(self.misuse)
 
-        assert exists(join(self.base_path, "patterns-src", "a0.java"))
+        assert exists(join(self.pattern_sources_path, "a0.java"))
 
     def test_skips_copy_of_pattern_sources_if_copy_exists(self):
         self.misuse._PATTERNS = {self.create_pattern("a.java")}
@@ -96,7 +101,7 @@ class TestCompile:
 
         self.uut.run(self.misuse)
 
-        assert not exists(join(self.base_path, "patterns-src", "b0.java"))
+        assert not exists(join(self.pattern_sources_path, "b0.java"))
 
     def test_forces_copy_of_pattern_sources(self):
         self.misuse._PATTERNS = {self.create_pattern("a.java")}
@@ -106,8 +111,8 @@ class TestCompile:
 
         self.uut.run(self.misuse)
 
-        assert exists(join(self.base_path, "patterns-src", "b0.java"))
-        assert not exists(join(self.base_path, "patterns-src", "a0.java"))
+        assert exists(join(self.pattern_sources_path, "b0.java"))
+        assert not exists(join(self.pattern_sources_path, "a0.java"))
 
     def test_continues_if_no_config(self):
         del self.misuse.meta["build"]
@@ -144,15 +149,14 @@ class TestCompile:
         self.uut.run(self.misuse)
 
         assert_equals(self.uut._compile.mock_calls, [call(["c"], self.build_path), call(["c"], self.build_path)])
-        print("expecting {}".format(join(self.uut.classes_patterns, "a0.class")))
-        assert exists(join(self.base_path, "patterns-classes", "a0.class"))
+        assert exists(join(self.pattern_classes_path, "a0.class"))
 
     def test_builds_patterns_in_package(self):
         self.misuse._PATTERNS = {self.create_pattern(join("a", "b.java"))}
 
         self.uut.run(self.misuse)
 
-        assert exists(join(self.base_path, "patterns-classes", "a", "b0.class"))
+        assert exists(join(self.pattern_classes_path, "a", "b0.class"))
 
     def create_pattern(self, filename):
         pattern = Pattern(self.temp_dir, filename)

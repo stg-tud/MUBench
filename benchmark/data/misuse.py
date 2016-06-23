@@ -80,16 +80,11 @@ class Misuse:
 
     @property
     def build_config(self) -> BuildConfig:
-        build = self.meta.get("build")
-        if build is None:
-            return None
-
+        build = {"src": "", "commands": [], "classes": ""}
+        build.update(self.meta.get("build", {}))
         src = build.get("src")
         commands = build.get("commands")
         classes = build.get("classes")
-
-        if None in [src, commands, classes]:
-            return None
 
         return BuildConfig(src, commands, classes)
 
