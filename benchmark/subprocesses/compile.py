@@ -27,21 +27,16 @@ class Compile(DataReaderSubprocess):
         logger = logging.getLogger("compile.tasks")
 
         build_config = misuse.build_config
-
-        checkout = misuse.get_checkout(self.checkout_base_dir)
-        checkout_dir = checkout.checkout_dir
-        base_path = dirname(checkout_dir)
-
+        base_path, checkout_dir = self.get_compile_base_path(misuse)
         build_path = join(base_path, Compile.__BUILD_DIR)
         sources_path = join(build_path, build_config.src)
         classes_path = join(build_path, build_config.classes)
+        project_compile = misuse.get_compile(base_path)
 
-        compile = ProjectCompile(base_path)
-
-        needs_copy_sources = not isdir(compile.original_sources_path) or self.force_compile
-        needs_copy_pattern_sources = not isdir(compile.pattern_sources_path) or self.force_compile
-        needs_compile = not isdir(compile.original_classes_path) or self.force_compile
-        needs_compile_patterns = not isdir(compile.pattern_classes_path) or self.force_compile
+        needs_copy_sources = not isdir(project_compile.original_sources_path) or self.force_compile
+        needs_copy_pattern_sources = not isdir(project_compile.pattern_sources_path) or self.force_compile
+        needs_compile = not isdir(project_compile.original_classes_path) or self.force_compile
+        needs_compile_patterns = not isdir(project_compile.pattern_classes_path) or self.force_compile
 
         if needs_copy_sources or needs_copy_pattern_sources or needs_compile or needs_compile_patterns:
             remove_tree(build_path)
@@ -55,7 +50,7 @@ class Compile(DataReaderSubprocess):
         else:
             try:
                 logger.info("Copying project sources...")
-                self.__copy_original_sources(sources_path, compile.original_sources_path)
+                self.__copy_original_sources(sources_path, project_compile.original_sources_path)
             except IOError as e:
                 logger.error("Failed to copy project sources: %s", e)
                 return DataReaderSubprocess.Answer.skip
@@ -65,7 +60,7 @@ class Compile(DataReaderSubprocess):
         else:
             try:
                 logger.info("Copying pattern sources...")
-                self.__copy_pattern_sources(misuse.patterns, compile.pattern_sources_path, self.pattern_frequency)
+                self.__copy_pattern_sources(misuse.patterns, project_compile.pattern_sources_path, self.pattern_frequency)
             except IOError as e:
                 logger.error("Failed to copy pattern sources: %s", e)
                 return DataReaderSubprocess.Answer.skip
@@ -82,7 +77,7 @@ class Compile(DataReaderSubprocess):
                 self._compile(build_config.commands, build_path)
 
                 logger.debug("Copying project classes...")
-                copy_tree(classes_path, compile.original_classes_path)
+                copy_tree(classes_path, project_compile.original_classes_path)
             except CommandFailedError as e:
                 logger.error("Compilation failed: %s", e)
                 return DataReaderSubprocess.Answer.skip
@@ -100,12 +95,18 @@ class Compile(DataReaderSubprocess):
                 logger.info("Compiling patterns...")
                 self._compile(build_config.commands, build_path)
                 logger.debug("Copying pattern classes...")
-                self.__copy(duplicates, classes_path, compile.pattern_classes_path)
+                self.__copy(duplicates, classes_path, project_compile.pattern_classes_path)
             except CommandFailedError as e:
                 logger.error("Compilation failed: %s", e)
                 return DataReaderSubprocess.Answer.skip
 
         return DataReaderSubprocess.Answer.ok
+
+    def get_compile_base_path(self, misuse):
+        checkout = misuse.get_checkout(self.checkout_base_dir)
+        checkout_dir = checkout.checkout_dir
+        base_path = dirname(checkout_dir)
+        return base_path, checkout_dir
 
     @staticmethod
     def __copy_original_sources(sources_path: str, destination: str):

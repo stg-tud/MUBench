@@ -11,6 +11,7 @@ from benchmark.data.pattern import Pattern
 # noinspection PyAttributeOutsideInit
 from benchmark.data.project_checkout import LocalProjectCheckout, GitProjectCheckout, SVNProjectCheckout, \
     ProjectCheckout
+from benchmark.data.project_compile import ProjectCompile
 
 
 class Misuse:
@@ -87,6 +88,9 @@ class Misuse:
         classes = build.get("classes")
 
         return BuildConfig(src, commands, classes)
+
+    def get_compile(self, base_path: str) -> ProjectCompile:
+        return ProjectCompile(base_path)
 
     @property
     def additional_compile_sources(self):
