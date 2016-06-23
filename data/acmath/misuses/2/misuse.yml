@@ -3,14 +3,12 @@ api:
 characteristics:
 - missing precondition/null
 crash: true
-description: 'SubLine.intersection() may return null.
-
-  '
+description: >
+  SubLine.intersection() may return null.
 fix:
   commit: https://git-wip-us.apache.org/repos/asf/commons-math.git/commit/d270055e874148a2742604be36ab977eec030fba
-  description: 'Check result for null before using.
-
-    '
+  description: >
+    Check result for null before using.
   files:
   - diff: http://svn.apache.org/viewvc/commons/proper/math/trunk/src/main/java/org/apache/commons/math3/geometry/euclidean/twod/SubLine.java?r1=1488866&r2=1488865&pathrev=1488866
     name: commons/proper/math/trunk/src/main/java/org/apache/commons/math3/geometry/euclidean/twod/SubLine.java

@@ -3,9 +3,8 @@ api:
 characteristics:
 - wrong call
 crash: false
-description: 'Misses to pass Locale to constructor of SimpleDateFormat.
-
-  '
+description: >
+  Misses to pass Locale to constructor of SimpleDateFormat.
 fix:
   commit: http://svn.apache.org/viewvc?view=revision&revision=190480
   files:

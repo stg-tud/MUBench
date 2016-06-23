@@ -5,14 +5,12 @@ api:
 characteristics:
 - wrong call
 crash: true
-description: 'Used VM specific class sun.misc.BASE64Decoder for decoding after decryption.
-
-  '
+description: >
+  Used VM specific class sun.misc.BASE64Decoder for decoding after decryption.
 fix:
   commit: https://sourceforge.net/p/genoviz/code/4273/
-  description: 'Use Apache Common''s Base64.decodeBase64() instead.
-
-    '
+  description: >
+    Use Apache Common's Base64.decodeBase64() instead.
   files:
   - diff: https://sourceforge.net/p/genoviz/code/4273/tree/branches/das2_manager/igb/src/com/affymetrix/igb/util/StringEncrypter.java?diff=505b7b97bfc09e26e1a8d781:4272
     name: igb/src/com/affymetrix/igb/util/StringEncrypter.java

@@ -3,9 +3,8 @@ api:
 characteristics:
 - missing precondition/null
 crash: true
-description: 'Map.get() may return null.
-
-  '
+description: >
+  Map.get() may return null.
 fix:
   commit: http://svn.apache.org/viewvc?view=revision&revision=677893
   files:

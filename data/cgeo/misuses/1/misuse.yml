@@ -3,16 +3,13 @@ api:
 characteristics:
 - missing precondition/parameter constraint
 crash: true
-description: 'Passes invalid mime-type to Intent.setDataAndType().
-
+description: >
+  Passes invalid mime-type to Intent.setDataAndType().
   http://stackoverflow.com/questions/6573541/no-intent-to-view-jpg-on-honeycomb
-
-  '
 fix:
   commit: https://github.com/cgeo/cgeo/commit/7bc931e7b5fcab1953b1fd5cb4535fff4e743591
-  description: 'Use "image/jpeg" instead of "image/jpg".
-
-    '
+  description: >
+    Use "image/jpeg" instead of "image/jpg".
   files:
   - name: main/src/cgeo/geocaching/cgeoimages.java
   repository:

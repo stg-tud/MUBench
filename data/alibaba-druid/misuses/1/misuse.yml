@@ -3,11 +3,10 @@ api:
 characteristics:
 - superfluous call
 crash: true
-description: 'An instance of Cipher is used twice (the init() method is called again),
+description: >
+  An instance of Cipher is used twice (the init() method is called again),
   which is an invalid operation. The fix creates a new instance of Cipher before the
   second init().
-
-  '
 fix:
   commit: https://github.com/alibaba/druid/commit/e10f2849d046265bf17360ab4aa9eb60fd3ab8de
   files:

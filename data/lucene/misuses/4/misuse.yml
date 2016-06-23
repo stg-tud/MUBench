@@ -4,9 +4,8 @@ api:
 characteristics:
 - missing precondition/null
 crash: true
-description: 'MultiFields.getDeletedDocs() may return null.
-
-  '
+description: >
+  MultiFields.getDeletedDocs() may return null.
 fix:
   commit: https://git-wip-us.apache.org/repos/asf/lucene-solr/commit/f81a5d9bf6fdcdab23bff680dee8075209bae8cf
   files:

@@ -3,9 +3,8 @@ api:
 characteristics:
 - missing precondition/null
 crash: true
-description: 'ItemDate.getState() may be null.
-
-  '
+description: >
+  ItemDate.getState() may be null.
 fix:
   commit: http://svn.apache.org/viewvc?view=revision&revision=656282
   files:

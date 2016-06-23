@@ -4,10 +4,9 @@ api:
 characteristics:
 - missing precondition/null
 crash: false
-description: 'PersistentDateTime.nullSafeGet() may return null, while constructor
+description: >
+  PersistentDateTime.nullSafeGet() may return null, while constructor
   of Interval expects non-null parameters.
-
-  '
 fix:
   commit: https://github.com/JodaOrg/joda-time/commit/4f0fa2ece24061b8e47e793ada1cb1b6804df334
   files:

@@ -3,10 +3,9 @@ api:
 characteristics:
 - wrong call
 crash: false
-description: 'Check for BeanMap.get(key) == null may lead to wrong results. Fix uses
+description: >
+  Check for BeanMap.get(key) == null may lead to wrong results. Fix uses
   BeanMap.containsKey(key) instead.
-
-  '
 fix:
   commit: http://svn.apache.org/viewvc?view=revision&revision=696651
   files:

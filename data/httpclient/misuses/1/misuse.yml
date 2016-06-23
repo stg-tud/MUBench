@@ -4,10 +4,9 @@ characteristics:
 - missing call
 - missing catch
 crash: false
-description: 'Exception on HttpConnection.writeRequest() leaves the connection open.
+description: >
+  Exception on HttpConnection.writeRequest() leaves the connection open.
   The fix introduces close() calls in respective catch blocks.
-
-  '
 fix:
   commit: http://svn.apache.org/viewvc?view=revision&revision=134494
   files:

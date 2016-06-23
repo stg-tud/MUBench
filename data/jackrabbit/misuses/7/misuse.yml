@@ -4,10 +4,9 @@ api:
 characteristics:
 - missing precondition/null
 crash: true
-description: 'NodeState.getParentId() may return null and ItemStateManager.getItemState()
+description: >
+  NodeState.getParentId() may return null and ItemStateManager.getItemState()
   expects non-null parameter.
-
-  '
 fix:
   commit: http://svn.apache.org/viewvc?view=revision&revision=926354
   files:

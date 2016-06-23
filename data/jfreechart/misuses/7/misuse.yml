@@ -3,14 +3,12 @@ api:
 characteristics:
 - missing precondition/null
 crash: true
-description: 'Map.get() may return null.
-
-  '
+description: >
+  Map.get() may return null.
 fix:
   commit: https://sourceforge.net/p/jfreechart/code/811/
-  description: 'Check for null.
-
-    '
+  description: >
+    Check for null.
   files:
   - diff: https://sourceforge.net/p/jfreechart/code/811/tree/trunk/source/org/jfree/chart/plot/CategoryPlot.java?diff=50b53b485fcbc92b6542a639:810
     name: source/org/jfree/chart/plot/CategoryPlot.java

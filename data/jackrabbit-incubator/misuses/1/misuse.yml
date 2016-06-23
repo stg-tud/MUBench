@@ -4,13 +4,12 @@ api:
 characteristics:
 - missing precondition/predicate
 crash: true
-description: 'ObjectPersistenceManager.destroy() calls FileSystemResource.delete()
+description: >
+  ObjectPersistenceManager.destroy() calls FileSystemResource.delete()
   (which delegates to FileSystem.deleteFile()) without checking FileSystemResource.fileExists()
   (which delegates to FileSytem.fileExists()). FileSystem.deleteFile() throws, if
   the file does not exist. A refactoring was performed in the course of the fix, to
   remove duplication.
-
-  '
 fix:
   commit: http://svn.apache.org/viewvc?view=revision&revision=55854
   files:

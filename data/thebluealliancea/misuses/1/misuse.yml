@@ -3,14 +3,12 @@ api:
 characteristics:
 - missing precondition/predicate
 crash: true
-description: 'Call JsonElement.getAsString() on JsonNullElement.
-
-  '
+description: >
+  Call JsonElement.getAsString() on JsonNullElement.
 fix:
   commit: https://github.com/Adam8234/the-blue-alliance-android/commit/d373815aeb3f065160f14986b3c952a45207bb15
-  description: 'Check that JsonElement.isJsonNull() is false.
-
-    '
+  description: >
+    Check that JsonElement.isJsonNull() is false.
   files:
   - name: android/src/main/java/com/thebluealliance/androidclient/datafeed/TBAv2.java
   repository:

@@ -3,11 +3,10 @@ api:
 characteristics:
 - missing call
 crash: false
-description: 'InputStream.close() should be called after finished using the stream.
+description: >
+  InputStream.close() should be called after finished using the stream.
   The particular stream is passed to QValueFactoryImpl.create() as a parameter, but
   should be closed by the method, as defined in its contract.
-
-  '
 fix:
   commit: http://svn.apache.org/viewvc?view=revision&revision=698246
   files:

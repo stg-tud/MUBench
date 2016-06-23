@@ -4,16 +4,14 @@ api:
 characteristics:
 - missing precondition/predicate
 crash: false
-description: 'UnionTypeBuilder.build() returns a JSType that can never be null. Branching
+description: >
+  UnionTypeBuilder.build() returns a JSType that can never be null. Branching
   on a null check therefore results in dead code.
-
-  '
 file: src/com/google/javascript/rhino/jstype/UnionType.java
 fix:
   commit: https://github.com/google/closure-compiler/commit/67289ae4cbaba3ae70cd2e8fb92f3f2898039dfb
-  description: 'Check Node.isNoType() instead.
-
-    '
+  description: >
+    Check Node.isNoType() instead.
   files:
   - name: src/com/google/javascript/rhino/jstype/UnionType.java
   repository:
@@ -29,5 +27,9 @@ source:
   name: Defects4J
   url: https://github.com/rjust/defects4j
 type: com.google.javascript.rhino.jstype.UnionTypeBuilder
-usage: "digraph {\n  0 [label=\"UnionTypeBuilder#builder#build\"]\n  1 [label=\"IF#IF#CONTROL\"\
-  ]\n  0 -> 1\n}\n"
+usage: >
+  digraph {
+    0 [label="UnionTypeBuilder#builder#build"]
+    1 [label="IF#IF#CONTROL"]
+    0 -> 1
+  }

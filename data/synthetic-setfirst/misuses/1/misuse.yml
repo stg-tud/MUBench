@@ -4,15 +4,13 @@ api:
 characteristics:
 - missing precondition/predicate
 crash: true
-description: 'To get one (arbitrary) value from a set you can call Set.iterator().next(),
+description: >
+  To get one (arbitrary) value from a set you can call Set.iterator().next(),
   but this throws if the set is empty.
-
-  '
 fix:
   commit: https://github.com/stg-tud/MUBench/blob/master/data/synthetic-setfirst.java
-  description: 'Check that Set.isEmpty() is false.
-
-    '
+  description: >
+    Check that Set.isEmpty() is false.
   files:
   - name: src/SetFirst.java
   repository:

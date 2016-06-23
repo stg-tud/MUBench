@@ -4,14 +4,12 @@ api:
 characteristics:
 - missing precondition/null
 crash: true
-description: 'StatisticalCategoryDataset.getMeanValue() may return null.
-
-  '
+description: >
+  StatisticalCategoryDataset.getMeanValue() may return null.
 fix:
   commit: https://sourceforge.net/p/jfreechart/code/164/
-  description: 'Check for null.
-
-    '
+  description: >
+    Check for null.
   files:
   - diff: https://sourceforge.net/p/jfreechart/code/164/tree/trunk/source/org/jfree/chart/renderer/category/StatisticalBarRenderer.java?diff=50b53b485fcbc92b6542a639:163
     name: source/org/jfree/chart/renderer/category/StatisticalBarRenderer.java

@@ -3,14 +3,12 @@ api:
 characteristics:
 - missing precondition/null
 crash: true
-description: 'XYPlot.getRendererForDataset() may return null.
-
-  '
+description: >
+  XYPlot.getRendererForDataset() may return null.
 fix:
   commit: https://sourceforge.net/p/jfreechart/code/2183/
-  description: 'Check for null.
-
-    '
+  description: >
+    Check for null.
   files:
   - diff: https://sourceforge.net/p/jfreechart/code/2183/tree/trunk/source/org/jfree/chart/plot/XYPlot.java?diff=50b53b485fcbc92b6542a639:2182
     name: source/org/jfree/chart/plot/XYPlot.java

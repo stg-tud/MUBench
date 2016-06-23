@@ -3,14 +3,12 @@ api:
 characteristics:
 - missing precondition/parameter constraint
 crash: false
-description: 'Requests Cipher "Blowfish", which returns unsafe default configuration.
-
-  '
+description: >
+  Requests Cipher "Blowfish", which returns unsafe default configuration.
 fix:
   commit: https://sourceforge.net/p/tap-apps/code/62/
-  description: 'Request Cipher "Blowfish/ECB/NoPadding" instead (still insecure).
-
-    '
+  description: >
+    Request Cipher "Blowfish/ECB/NoPadding" instead (still insecure).
   files:
   - diff: https://sourceforge.net/p/tap-apps/code/62/tree/trunk/opentapas/jconduits/source/org/jSyncManager/Conduit/NSMobileMessenger/NSMobileMessenger.java?diff=516ed98f2718467b8b821998:61
     name: source/org/jSyncManager/Conduit/NSMobileMessenger/NSMobileMessenger.java

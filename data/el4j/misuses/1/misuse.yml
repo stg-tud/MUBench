@@ -5,10 +5,9 @@ api:
 characteristics:
 - wrong call
 crash: true
-description: 'Used VM specific classes sun.misc.BASE64Encoder for encoding before
+description: >
+  Used VM specific classes sun.misc.BASE64Encoder for encoding before
   encryption.
-
-  '
 fix:
   commit: https://sourceforge.net/p/el4j/code/3198/
   description: 'Use Apache Common''s Base64.encodeBase64() instead.

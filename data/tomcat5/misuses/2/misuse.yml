@@ -5,16 +5,14 @@ characteristics:
 - missing call
 - missing catch
 crash: false
-description: 'ServletWriter holds lock on file, such that the file cannot be deleted.
-  The writer is created as ''new ServletWriter(new PrintWriter( new OutputStreamWriter(new
-  FileOutputStream(javaFileName))))'' while the file is deleted using ''new File(javaFileName).delete()''.
-
-  '
+description: >
+  ServletWriter holds lock on file, such that the file cannot be deleted.
+  The writer is created as 'new ServletWriter(new PrintWriter( new OutputStreamWriter(new
+  FileOutputStream(javaFileName))))' while the file is deleted using 'new File(javaFileName).delete()'.
 fix:
   commit: http://svn.apache.org/viewvc?view=revision&revision=305982
-  description: 'Call ServletWriter.close() before attempting to delete the file.
-
-    '
+  description: >
+    Call ServletWriter.close() before attempting to delete the file.
   files:
   - diff: http://svn.apache.org/viewvc/tomcat/jasper/trunk/jasper2/src/share/org/apache/jasper/compiler/Compiler.java?r1=305982&r2=305981&pathrev=305982
     name: src/share/org/apache/jasper/compiler/Compiler.java

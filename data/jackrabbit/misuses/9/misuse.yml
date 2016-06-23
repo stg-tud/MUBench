@@ -3,11 +3,10 @@ api:
 characteristics:
 - missing call
 crash: true
-description: 'NamespaceRegistryImpl.unregisterNamespace() passes its parameter ''prefix''
+description: >
+  NamespaceRegistryImpl.unregisterNamespace() passes its parameter 'prefix'
   directly to NamespaceStorage.unregisterNamespace(uri). Fix passes it through NamespaceStorage.getURI()
   first.
-
-  '
 fix:
   commit: http://svn.apache.org/viewvc?view=revision&revision=1133332
   files:

@@ -4,16 +4,14 @@ api:
 characteristics:
 - wrong call
 crash: true
-description: 'Calls SherlockDialogFragment.show() passing a FragmentTransaction, which
+description: >
+  Calls SherlockDialogFragment.show() passing a FragmentTransaction, which
   might crash if the transaction times out.
-
-  '
 fix:
   commit: https://github.com/wordpress-mobile/WordPress-Android/commit/7f5181f0d025d27332653a027528bdb28caaf161
-  description: 'Call FragmentTransaction.add() (passing the fragment) and FragmentTransaction.commitAllowingStateLoss()
+  description: >
+    Call FragmentTransaction.add() (passing the fragment) and FragmentTransaction.commitAllowingStateLoss()
     instead.
-
-    '
   files:
   - name: src/org/wordpress/android/ui/accounts/WelcomeFragmentSignIn.java
   - name: src/org/wordpress/android/ui/comments/CommentsListFragment.java

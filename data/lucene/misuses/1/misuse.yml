@@ -3,9 +3,8 @@ api:
 characteristics:
 - missing finally
 crash: false
-description: 'RandomAccessFile.close() maybe skipped if previous call throws.
-
-  '
+description: >
+  RandomAccessFile.close() maybe skipped if previous call throws.
 fix:
   commit: https://git-wip-us.apache.org/repos/asf/lucene-solr/commit/09b3a56ae2ecc68b56a0142e48e12247ba160dbb
   files:

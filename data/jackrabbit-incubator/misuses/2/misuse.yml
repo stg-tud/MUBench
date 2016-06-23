@@ -3,9 +3,8 @@ api:
 characteristics:
 - wrong call
 crash: true
-description: 'Below !File.exists() File.mkdir() was called, instead of File.mkdirs().
-
-  '
+description: >
+  Below !File.exists() File.mkdir() was called, instead of File.mkdirs().
 fix:
   commit: http://svn.apache.org/viewvc?view=revision&revision=263892
   files:

@@ -5,14 +5,12 @@ api:
 characteristics:
 - wrong call
 crash: true
-description: 'Used VM specific class sun.misc.BASE64Decoder for decoding after decryption.
-
-  '
+description: >
+  Used VM specific class sun.misc.BASE64Decoder for decoding after decryption.
 fix:
   commit: https://sourceforge.net/p/el4j/code/3198/
-  description: 'Use Apache Common''s Base64.decodeBase64() instead.
-
-    '
+  description: >
+    Use Apache Common's Base64.decodeBase64() instead.
   files:
   - diff: https://sourceforge.net/p/el4j/code/3198/tree/trunk/el4j/framework/modules/security/src/main/java/ch/elca/el4j/services/security/encryption/AESCipher.java?diff=51827105e88f3d77c13030a0:3197
     name: framework/modules/security/src/main/java/ch/elca/el4j/services/security/encryption/AESCipher.java

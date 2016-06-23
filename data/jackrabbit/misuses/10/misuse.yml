@@ -3,9 +3,8 @@ api:
 characteristics:
 - missing precondition/null
 crash: true
-description: 'HierarchyEntry.getParent() may return null.
-
-  '
+description: >
+  HierarchyEntry.getParent() may return null.
 fix:
   commit: http://svn.apache.org/viewvc?view=revision&revision=1240198
   files:

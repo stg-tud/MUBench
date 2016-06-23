@@ -4,14 +4,12 @@ api:
 characteristics:
 - missing precondition/predicate
 crash: true
-description: 'Misses to check that there is another element before calling Iterator.next().
-
-  '
+description: >
+  Misses to check that there is another element before calling Iterator.next().
 fix:
   commit: https://github.com/stg-tud/MUBench/blob/master/data/synthetic-hasnext.java
-  description: 'Check iterator.hasNext() or ensure size of the collection.
-
-    '
+  description: >
+    Check iterator.hasNext() or ensure size of the collection.
   files:
   - name: src/HasNext.java
   repository:

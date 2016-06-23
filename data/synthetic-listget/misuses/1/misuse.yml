@@ -3,14 +3,12 @@ api:
 characteristics:
 - missing precondition/parameter constraint
 crash: true
-description: 'Call List.get() without checking if the index is valid.
-
-  '
+description: >
+  Call List.get() without checking if the index is valid.
 fix:
   commit: https://github.com/stg-tud/MUBench/blob/master/data/synthetic-listget.java
-  description: 'Check that index is between 0 and List.size() - 1.
-
-    '
+  description: >
+    Check that index is between 0 and List.size() - 1.
   files:
   - name: src/ListGet.java
   repository:

@@ -5,10 +5,9 @@ api:
 characteristics:
 - missing call
 crash: false
-description: 'Missing Base64.encode() of decrypted values and Base64.decode() of values
+description: >
+  Missing Base64.encode() of decrypted values and Base64.decode() of values
   before encryption.
-
-  '
 fix:
   commit: http://sourceforge.net/p/battleforge/code/878/
   files:

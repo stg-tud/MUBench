@@ -3,9 +3,8 @@ api:
 characteristics:
 - missing catch
 crash: true
-description: 'Should catch NoSuchElementException around SortedMap.firstKey()
-
-  '
+description: >
+  Should catch NoSuchElementException around SortedMap.firstKey()
 fix:
   commit: https://git-wip-us.apache.org/repos/asf/lucene-solr/commit/0cb96adf12063c1ec2d586d0cec6a209abe9a2dd
   files:

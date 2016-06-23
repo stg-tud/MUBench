@@ -4,10 +4,9 @@ api:
 characteristics:
 - missing call
 crash: false
-description: 'The results of ConfigurationParser.getAttribute() should be processed
+description: >
+  The results of ConfigurationParser.getAttribute() should be processed
   by ConfigurationParser.replaceVariables(). This step was missing.
-
-  '
 fix:
   commit: http://svn.apache.org/viewvc?view=revision&revision=695766
   files:

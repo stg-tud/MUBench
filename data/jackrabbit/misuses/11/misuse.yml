@@ -3,10 +3,9 @@ api:
 characteristics:
 - missing precondition/parameter constraint
 crash: true
-description: 'PreparedStatement.setFetchSize(x) and PreparedStatement.setMaxRows(y)
+description: >
+  PreparedStatement.setFetchSize(x) and PreparedStatement.setMaxRows(y)
   have the constraint x <= y iff y > 0.
-
-  '
 fix:
   commit: http://svn.apache.org/viewvc?view=revision&revision=1178892
   files:

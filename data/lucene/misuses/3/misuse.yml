@@ -4,9 +4,8 @@ characteristics:
 - missing precondition/predicate
 - missing call
 crash: true
-description: 'Misses to check File.exists()/File.mkdirs() before calling File.createNewFile().
-
-  '
+description: >
+  Misses to check File.exists()/File.mkdirs() before calling File.createNewFile().
 fix:
   commit: https://git-wip-us.apache.org/repos/asf/lucene-solr/commit/1e2715d18d980e4f8c8cb5ac12abf3752851ee10
   files:

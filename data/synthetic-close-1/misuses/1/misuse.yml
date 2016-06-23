@@ -3,14 +3,12 @@ api:
 characteristics:
 - missing call
 crash: false
-description: 'Misses to call Closeable.close().
-
-  '
+description: >
+  Misses to call Closeable.close().
 fix:
   commit: https://github.com/stg-tud/MUBench/blob/master/data/synthetic-close-1.java
-  description: 'Call close() after using the Closable.
-
-    '
+  description: >
+    Call close() after using the Closable.
   files:
   - name: src/Close.java
   repository:

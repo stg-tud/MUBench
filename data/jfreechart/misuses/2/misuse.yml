@@ -4,14 +4,12 @@ api:
 characteristics:
 - missing precondition/null
 crash: true
-description: 'PlotRenderingInfo.getOwner() may return null.
-
-  '
+description: >
+  PlotRenderingInfo.getOwner() may return null.
 fix:
   commit: https://sourceforge.net/p/jfreechart/code/103/
-  description: 'Check for null.
-
-    '
+  description: >
+    Check for null.
   files:
   - diff: https://sourceforge.net/p/jfreechart/code/103/tree/trunk/source/org/jfree/chart/axis/Axis.java?diff=50b53b485fcbc92b6542a639:102
     name: source/org/jfree/chart/axis/Axis.java

@@ -3,11 +3,10 @@ api:
 characteristics:
 - wrong call
 crash: false
-description: 'Boolean.parseBoolean() turns a string to a boolean, while Boolean.getBoolean()
+description: >
+  Boolean.parseBoolean() turns a string to a boolean, while Boolean.getBoolean()
   looks up the boolean value of a system property. The latter method was called here,
   where it should have been the former.
-
-  '
 fix:
   commit: http://svn.apache.org/viewvc?view=revision&revision=965539
   files:

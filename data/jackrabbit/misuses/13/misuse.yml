@@ -3,9 +3,8 @@ api:
 characteristics:
 - missing precondition/null
 crash: true
-description: 'PropertyDefinition.getValueConstaints() may return null.
-
-  '
+description: >
+  PropertyDefinition.getValueConstaints() may return null.
 fix:
   commit: http://svn.apache.org/viewvc?view=revision&revision=430715
   files:

@@ -3,9 +3,8 @@ api:
 characteristics:
 - missing precondition/null
 crash: true
-description: 'IOManager.getDetector() may return null.
-
-  '
+description: >
+  IOManager.getDetector() may return null.
 fix:
   commit: http://svn.apache.org/viewvc?view=revision&revision=880743
   files:

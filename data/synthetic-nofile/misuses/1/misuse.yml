@@ -3,14 +3,12 @@ api:
 characteristics:
 - missing precondition/parameter constraint
 crash: true
-description: 'Tries to write to a file that may not exist.
-
-  '
+description: >
+  Tries to write to a file that may not exist.
 fix:
   commit: https://github.com/stg-tud/MUBench/blob/master/data/synthetic-nofile.java
-  description: 'Pass OpenOption.CREATE to the write call.
-
-    '
+  description: >
+    Pass OpenOption.CREATE to the write call.
   files:
   - name: src/NoFile.java
   repository:

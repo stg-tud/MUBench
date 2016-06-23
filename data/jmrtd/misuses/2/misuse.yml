@@ -3,15 +3,13 @@ api:
 characteristics:
 - missing precondition/parameter constraint
 crash: false
-description: 'Passes Cipher.ENCRYPT_MODE to Cipher.init(), but uses the cipher for
+description: >
+  Passes Cipher.ENCRYPT_MODE to Cipher.init(), but uses the cipher for
   decryption.
-
-  '
 fix:
   commit: https://sourceforge.net/p/jmrtd/code/67/
-  description: 'Pass Ciphter.DECRYPT_MODE instead.
-
-    '
+  description: >
+    Pass Ciphter.DECRYPT_MODE instead.
   files:
   - diff: https://sourceforge.net/p/jmrtd/code/67/tree//passporthostapi/src/sos/mrtd/PassportAuthService.java?diff=5058d727fd48f84fd52d6740:66
     name: src/sos/mrtd/PassportAuthService.java

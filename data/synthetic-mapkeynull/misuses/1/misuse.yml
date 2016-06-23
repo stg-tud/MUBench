@@ -3,15 +3,13 @@ api:
 characteristics:
 - missing precondition/null
 crash: true
-description: 'HashMap.get() throws if the key is null. Since you don''t know which
+description: >
+  HashMap.get() throws if the key is null. Since you don't know which
   implementation of Map you get, you should always guard against this.
-
-  '
 fix:
   commit: https://github.com/stg-tud/MUBench/blob/master/data/synthetic-mapkeynull.java
-  description: 'Check that the key is not null before calling Map.get().
-
-    '
+  description: >
+    Check that the key is not null before calling Map.get().
   files:
   - name: src/MapKeyNull.java
   repository:

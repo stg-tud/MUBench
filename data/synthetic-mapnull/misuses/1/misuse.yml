@@ -3,15 +3,13 @@ api:
 characteristics:
 - missing call
 crash: false
-description: 'Checks the return value of Map.put() to check whether the key was set
+description: >
+  Checks the return value of Map.put() to check whether the key was set
   before. If the Map allows null values, this usage breaks.
-
-  '
 fix:
   commit: https://github.com/stg-tud/MUBench/blob/master/data/synthetic-mapnull.java
-  description: 'Use Map.containsKey() to check whether a key is set.
-
-    '
+  description: >
+    Use Map.containsKey() to check whether a key is set.
   files:
   - name: src/MapNull.java
   repository:

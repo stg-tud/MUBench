@@ -4,10 +4,9 @@ api:
 characteristics:
 - missing precondition/null
 crash: true
-description: 'Map.get() may return null and RepositoryConfig.create() expects non-null
+description: >
+  Map.get() may return null and RepositoryConfig.create() expects non-null
   parameter.
-
-  '
 fix:
   commit: http://svn.apache.org/viewvc?view=revision&revision=1232831
   files:
