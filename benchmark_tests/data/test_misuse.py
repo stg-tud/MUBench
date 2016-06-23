@@ -115,6 +115,20 @@ class TestMisuse:
         uut = create_misuse("/path/misuse")
         assert_equals(join("/path/misuse", "compile"), uut.additional_compile_sources)
 
+    def test_derives_compile_base_path(self):
+        uut = create_misuse("project.id")
+
+        project_compile = uut.get_compile("/base/path")
+
+        assert_equals("/base/path/project/id", project_compile.base_path)
+
+    def test_derives_compile_base_path_without_version(self):
+        uut = create_misuse("project")
+
+        project_compile = uut.get_compile("/base/path")
+
+        assert_equals("/base/path/project", project_compile.base_path)
+
     @staticmethod
     def create_pattern_file(misuse: Misuse, filename: str) -> Pattern:
         patterns_path = join(misuse.path, "patterns")

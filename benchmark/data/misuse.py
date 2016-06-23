@@ -90,6 +90,10 @@ class Misuse:
         return BuildConfig(src, commands, classes)
 
     def get_compile(self, base_path: str) -> ProjectCompile:
+        if self.project_version:
+            base_path = join(base_path, self.project_name, self.project_version)
+        else:
+            base_path = join(base_path, self.project_name)
         return ProjectCompile(base_path)
 
     @property

@@ -26,12 +26,11 @@ class Compile(DataReaderSubprocess):
         logger.debug("- Pattern frequency = %r", self.pattern_frequency)
         logger = logging.getLogger("compile.tasks")
 
-        compile_base_path = self.get_compile_base_path(misuse)
-        build_path = join(compile_base_path, Compile.__BUILD_DIR)
+        project_compile = misuse.get_compile(self.compiles_base_path)
+        build_path = join(project_compile.base_path, Compile.__BUILD_DIR)
         build_config = misuse.build_config
         sources_path = join(build_path, build_config.src)
         classes_path = join(build_path, build_config.classes)
-        project_compile = misuse.get_compile(compile_base_path)
 
         needs_copy_sources = not isdir(project_compile.original_sources_path) or self.force_compile
         needs_copy_pattern_sources = not isdir(project_compile.pattern_sources_path) or self.force_compile
@@ -102,12 +101,6 @@ class Compile(DataReaderSubprocess):
                 return DataReaderSubprocess.Answer.skip
 
         return DataReaderSubprocess.Answer.ok
-
-    def get_compile_base_path(self, misuse):
-        if misuse.project_version:
-            return join(self.compiles_base_path, misuse.project_name, misuse.project_version)
-        else:
-            return join(self.compiles_base_path, misuse.project_name)
 
     @staticmethod
     def __copy_original_sources(sources_path: str, destination: str):

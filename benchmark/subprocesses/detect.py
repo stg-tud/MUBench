@@ -14,22 +14,12 @@ class Detect(DataReaderSubprocess):
     def __init__(self,
                  detector: str,
                  detector_result_file: str,
-                 checkout_base_dir: str,
-                 original_src_subdir: str,
-                 original_classes_subdir: str,
-                 patterns_src_subdir: str,
-                 patterns_classes_subdir: str,
                  compiles_base_path: str,
                  results_base_path: str,
                  timeout: Optional[int],
                  java_options: List[str]):
         self.detector = detector
         self.detector_findings_file = detector_result_file
-        self.checkout_base_dir = checkout_base_dir
-        self.project_src_subdir = original_src_subdir
-        self.project_classes_subdir = original_classes_subdir
-        self.patterns_src_subdir = patterns_src_subdir
-        self.patterns_classes_subdir = patterns_classes_subdir
         self.compiles_base_path = compiles_base_path
         self.results_base_path = results_base_path
         self.timeout = timeout
@@ -47,10 +37,7 @@ class Detect(DataReaderSubprocess):
 
     def run(self, misuse: Misuse) -> None:
         result_path = join(self.results_base_path, misuse.name)
-        misuse.get_compile(self.compiles_base_path)
-
-        checkout = misuse.get_checkout(self.checkout_base_dir)
-        project_dir = dirname(checkout.checkout_dir)
+        project_compile = misuse.get_compile(self.compiles_base_path)
 
         with safe_open(join(result_path, "out.log"), 'w+') as out_log:
             with safe_open(join(result_path, "error.log"), 'w+') as error_log:
@@ -58,19 +45,18 @@ class Detect(DataReaderSubprocess):
                     absolute_misuse_detector_path = Detect.__get_misuse_detector_path(self.detector)
 
                     findings_file = [self.key_findings_file, join(result_path, self.detector_findings_file)]
-                    src_project = [self.key_src_project, join(project_dir, self.project_src_subdir)]
+                    src_project = [self.key_src_project, project_compile.original_sources_path]
                     src_patterns = []
                     classes_project = []
                     classes_patterns = []
 
                     if misuse.patterns:
-                        src_patterns = [self.key_src_patterns, join(project_dir, self.patterns_src_subdir)]
+                        src_patterns = [self.key_src_patterns, project_compile.pattern_sources_path]
 
-                    if misuse.build_config is not None:
-                        classes_project = [self.key_classes_project, join(project_dir, self.project_classes_subdir)]
+                    if misuse.build_config.commands:
+                        classes_project = [self.key_classes_project, project_compile.original_classes_path]
                         if misuse.patterns:
-                            classes_patterns = [self.key_classes_patterns,
-                                                join(project_dir, self.patterns_classes_subdir)]
+                            classes_patterns = [self.key_classes_patterns, project_compile.pattern_classes_path]
 
                     detector_args = findings_file + src_project + src_patterns + classes_project + classes_patterns
 

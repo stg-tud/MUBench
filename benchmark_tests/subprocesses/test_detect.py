@@ -18,14 +18,7 @@ class TestDetect:
         self.findings_file = "findings.yml"
         self.results_path = join(self.temp_dir, "results")
 
-        self.src_normal_subdir = "src-normal"
-        self.classes_normal_subdir = "classes-normal"
-        self.src_patterns_subdir = "src-patterns"
-        self.classes_patterns_subdir = "classes-patterns"
-
-        self.uut = Detect("detector", self.findings_file, self.checkout_base, self.src_normal_subdir,
-                          self.classes_normal_subdir, self.src_patterns_subdir, self.classes_patterns_subdir,
-                          self.checkout_base, self.results_path, None, [])
+        self.uut = Detect("detector", self.findings_file, self.checkout_base, self.results_path, None, [])
 
         self.last_invoke = None
 
@@ -69,19 +62,25 @@ class TestDetect:
         assert_equals(self.last_invoke[0], "detector.jar")
 
     def test_passes_project_src(self):
-        run_on_misuse(self.uut, create_misuse("project.id", {"build": {"src": "", "classes": "", "commands": []}}))
+        misuse = create_misuse("project.id")
+
+        run_on_misuse(self.uut, misuse)
 
         self.assert_last_invoke_arg_value_equals(self.uut.key_src_project,
-                                                 join(self.checkout_base, "project", "id", self.src_normal_subdir))
+                                                 misuse.get_compile(self.checkout_base).original_sources_path)
 
     def test_passes_project_classes_path(self):
-        run_on_misuse(self.uut, create_misuse("project.id", {"build": {"classes": "", "src": "", "commands": []}}))
+        misuse = create_misuse("project.id", {"build": {"commands": ["any"]}})
+
+        run_on_misuse(self.uut, misuse)
 
         self.assert_last_invoke_arg_value_equals(self.uut.key_classes_project,
-                                                 join(self.checkout_base, "project", "id", self.classes_normal_subdir))
+                                                 misuse.get_compile(self.checkout_base).original_classes_path)
 
     def test_passes_findings_files(self):
-        run_on_misuse(self.uut, create_misuse("project.id", {}))
+        misuse = create_misuse("project.id")
+
+        run_on_misuse(self.uut, misuse)
 
         self.assert_last_invoke_arg_value_equals(self.uut.key_findings_file,
                                                  join(self.results_path, "project.id", self.findings_file))
@@ -92,21 +91,20 @@ class TestDetect:
         self.assert_arg_not_in_last_invoke(self.uut.key_classes_patterns)
 
     def test_invokes_detector_with_patterns_src_path(self):
-        misuse = create_misuse("project.id", {"build": {"src": "", "classes": "", "commands": []}})
+        misuse = create_misuse("project.id")
         misuse._PATTERNS = [Pattern("", "a")]
 
         run_on_misuse(self.uut, misuse)
         self.assert_last_invoke_arg_value_equals(self.uut.key_src_patterns,
-                                                 join(self.checkout_base, "project", "id", self.src_patterns_subdir))
+                                                 misuse.get_compile(self.checkout_base).pattern_sources_path)
 
     def test_invokes_detector_with_patterns_class_path(self):
-        misuse = create_misuse("project.id", {"build": {"src": "", "classes": "", "commands": []}})
+        misuse = create_misuse("project.id", {"build": {"commands": ["any"]}})
         misuse._PATTERNS = [Pattern("", "a")]
 
         run_on_misuse(self.uut, misuse)
         self.assert_last_invoke_arg_value_equals(self.uut.key_classes_patterns,
-                                                 join(self.checkout_base, "project", "id",
-                                                      self.classes_patterns_subdir))
+                                                 misuse.get_compile(self.checkout_base).pattern_classes_path)
 
     def test_downloads_detector_if_not_available(self):
         self.detector_available = False

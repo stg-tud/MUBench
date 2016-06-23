@@ -43,10 +43,6 @@ class Benchmark:
         self.pattern_frequency = 20  # TODO make configurable
 
         self.results_path = join(Benchmark.RESULTS_PATH, self.detector)
-        self.original_src = "original-src"
-        self.original_classes = "original-classes"
-        self.patterns_src = "patterns-src"
-        self.patterns_classes = "patterns-classes"
 
         self.detector_result_file = 'findings.yml'
         self.eval_result_file = 'result.csv'
@@ -107,9 +103,7 @@ class Benchmark:
         self.datareader.add(compile_handler)
 
     def _setup_detect(self):
-        detector_runner = Detect(self.detector, self.detector_result_file, Benchmark.CHECKOUTS_PATH,
-                                 self.original_src, self.original_classes, self.patterns_src, self.patterns_classes,
-                                 Benchmark.CHECKOUTS_PATH, self.results_path, self.timeout, self.java_options)
+        detector_runner = Detect(self.detector, self.detector_result_file, Benchmark.CHECKOUTS_PATH, self.results_path, self.timeout, self.java_options)
         self.datareader.add(detector_runner)
 
     def _setup_eval(self):
