@@ -81,6 +81,9 @@ class Compile(DataReaderSubprocess):
             except CommandFailedError as e:
                 logger.error("Compilation failed: %s", e)
                 return DataReaderSubprocess.Answer.skip
+            except FileNotFoundError as e:
+                logger.error("Failed to copy classes: %s", e)
+                return DataReaderSubprocess.Answer.skip
 
         if not misuse.patterns:
             logger.info("Skipping pattern compilation: no patterns.")
