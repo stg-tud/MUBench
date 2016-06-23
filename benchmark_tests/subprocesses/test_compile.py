@@ -121,7 +121,7 @@ class TestCompile:
 
         assert_equals(DataReaderSubprocess.Answer.ok, answer)
 
-    def test_runs_compile(self):
+    def test_passes_compile_commands(self):
         self.misuse.meta["build"]["commands"] = ["a", "b"]
 
         self.uut.run(self.misuse)
@@ -135,6 +135,23 @@ class TestCompile:
 
         assert exists(join(self.build_path, "additional.file"))
 
+    def test_skips_compile_if_classes_exist(self):
+        makedirs(self.original_classes_path)
+        create_file(join(self.source_path, "some.file"))
+
+        self.uut.run(self.misuse)
+
+        assert not exists(join(self.original_classes_path, "some.file"))
+
+    def test_forces_compile(self):
+        makedirs(self.original_classes_path)
+        create_file(join(self.source_path, "some.file"))
+        self.uut.force_compile = True
+
+        self.uut.run(self.misuse)
+
+        assert exists(join(self.original_classes_path, "some.file"))
+
     def test_skips_on_build_error(self):
         self.uut._compile.side_effect = CommandFailedError("-cmd-", "-error message-")
 
@@ -142,21 +159,36 @@ class TestCompile:
 
         assert_equals(DataReaderSubprocess.Answer.skip, answer)
 
-    def test_builds_patterns(self):
-        self.misuse.meta["build"]["commands"] = ["c"]
+    def test_compiles_patterns(self):
         self.misuse._PATTERNS = {self.create_pattern("a.java")}
 
         self.uut.run(self.misuse)
 
-        assert_equals(self.uut._compile.mock_calls, [call(["c"], self.build_path), call(["c"], self.build_path)])
         assert exists(join(self.pattern_classes_path, "a0.class"))
 
-    def test_builds_patterns_in_package(self):
+    def test_compiles_patterns_in_package(self):
         self.misuse._PATTERNS = {self.create_pattern(join("a", "b.java"))}
 
         self.uut.run(self.misuse)
 
         assert exists(join(self.pattern_classes_path, "a", "b0.class"))
+
+    def test_skips_compile_patterns_if_pattern_classes_exist(self):
+        makedirs(self.pattern_classes_path)
+        self.misuse._PATTERNS = {self.create_pattern("a.java")}
+
+        self.uut.run(self.misuse)
+
+        assert not exists(join(self.pattern_classes_path, "a0.class"))
+
+    def test_forces_compile_patterns(self):
+        makedirs(self.pattern_classes_path)
+        self.misuse._PATTERNS = {self.create_pattern("a.java")}
+        self.uut.force_compile = True
+
+        self.uut.run(self.misuse)
+
+        assert exists(join(self.pattern_classes_path, "a0.class"))
 
     def create_pattern(self, filename):
         pattern = Pattern(self.temp_dir, filename)

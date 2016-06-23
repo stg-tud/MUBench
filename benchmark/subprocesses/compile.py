@@ -67,30 +67,36 @@ class Compile(DataReaderSubprocess):
             logger.warn("Skipping compilation: not configured.")
             return DataReaderSubprocess.Answer.ok
 
-        try:
-            logger.info("Compiling project...")
-            self._compile(build_config.commands, build_path)
+        if isdir(compile.original_classes_path) and not self.force_compile:
+            logger.info("Already compiled project.")
+        else:
+            try:
+                logger.info("Compiling project...")
+                self._compile(build_config.commands, build_path)
 
-            logger.debug("Copying project classes...")
-            copy_tree(classes_path, compile.original_classes_path)
-        except CommandFailedError as e:
-            logger.error("Compilation failed: %s", e)
-            return DataReaderSubprocess.Answer.skip
+                logger.debug("Copying project classes...")
+                copy_tree(classes_path, compile.original_classes_path)
+            except CommandFailedError as e:
+                logger.error("Compilation failed: %s", e)
+                return DataReaderSubprocess.Answer.skip
 
         if not misuse.patterns:
             logger.info("Skipping pattern compilation: no patterns.")
             return DataReaderSubprocess.Answer.ok
 
-        try:
-            logger.debug("Copying patterns to source directory...")
-            duplicates = self.__duplicate(misuse.patterns, sources_path, self.pattern_frequency)
-            logger.info("Compiling patterns...")
-            self._compile(build_config.commands, build_path)
-            logger.debug("Copying pattern classes...")
-            self.__copy(duplicates, classes_path, compile.pattern_classes_path)
-        except CommandFailedError as e:
-            logger.error("Compilation failed: %s", e)
-            return DataReaderSubprocess.Answer.skip
+        if isdir(compile.pattern_classes_path) and not self.force_compile:
+            logger.info("Already compiled patterns.")
+        else:
+            try:
+                logger.debug("Copying patterns to source directory...")
+                duplicates = self.__duplicate(misuse.patterns, sources_path, self.pattern_frequency)
+                logger.info("Compiling patterns...")
+                self._compile(build_config.commands, build_path)
+                logger.debug("Copying pattern classes...")
+                self.__copy(duplicates, classes_path, compile.pattern_classes_path)
+            except CommandFailedError as e:
+                logger.error("Compilation failed: %s", e)
+                return DataReaderSubprocess.Answer.skip
 
         return DataReaderSubprocess.Answer.ok
 
