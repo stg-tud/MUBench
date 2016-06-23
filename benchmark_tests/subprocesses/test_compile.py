@@ -106,7 +106,7 @@ class TestCompile:
 
         self.uut.run(self.misuse)
 
-        assert exists(join(self.base_path, "pattern-src", "a0.java"))
+        assert exists(join(self.base_path, "patterns-src", "a0.java"))
 
     def test_runs_commands(self):
         misuse = create_misuse(self.misuse_path, {"build": {"src": "", "commands": ["a", "b"], "classes": ""}})

@@ -49,16 +49,16 @@ class Compile(DataReaderSubprocess):
                 logger.error("Failed to copy project sources: %s", e)
                 return DataReaderSubprocess.Answer.skip
 
+        try:
+            compile.copy_pattern_sources(self.pattern_frequency)
+        except IOError as e:
+            logger.error("Failed to copy pattern sources: %s", e)
+            return DataReaderSubprocess.Answer.skip
+
 
         project_dir = base_path
 
         build_config = misuse.build_config
-
-        try:
-            self.copy_pattern_src(project_dir, misuse)
-        except IOError as e:
-            subprocess_print("Failed to copy sources: {}".format(e))
-            return DataReaderSubprocess.Answer.skip
 
         if build_config is None:
             subprocess_print("No compilation configured for this misuse.")
@@ -114,10 +114,6 @@ class Compile(DataReaderSubprocess):
         additional_sources = misuse.additional_compile_sources
         if exists(additional_sources):
             copy_tree(additional_sources, checkout_dir)
-
-    def copy_pattern_src(self, project_dir, misuse):
-        for pattern in misuse.patterns:
-            pattern.duplicate(join(project_dir, self.src_patterns), self.pattern_frequency)
 
     def _compile(self, commands: List[str], project_dir: str) -> None:
         for command in commands:
