@@ -29,7 +29,8 @@ class Benchmark:
                  java_options: List[str],
                  force_detect: bool,
                  skip_compile: bool,
-                 force_checkout: bool
+                 force_checkout: bool,
+                 force_compile: bool
                  ):
         # command-line options
         self.detector = detector
@@ -40,6 +41,7 @@ class Benchmark:
         self.force_checkout = force_checkout
         self.force_detect = force_detect
         self.skip_compile = skip_compile
+        self.force_compile = force_compile
         self.pattern_frequency = 20  # TODO make configurable
 
         self.results_path = join(Benchmark.RESULTS_PATH, self.detector)
@@ -149,7 +151,6 @@ handler.setFormatter(logging.Formatter('%(asctime)s - %(name)s - %(levelname)s -
 handler.setLevel(logging.DEBUG)
 logger.addHandler(handler)
 
-
 detectors_path = realpath('detectors')
 available_detectors = [detector for detector in listdir(detectors_path) if isdir(join(detectors_path, detector))]
 config = command_line_util.parse_args(sys.argv, available_detectors)
@@ -170,10 +171,13 @@ if 'skip_compile' not in config:
     config.skip_compile = False
 if 'force_checkout' not in config:
     config.force_checkout = False
+if 'force_compile' not in config:
+    config.force_compile = False
 
 benchmark = Benchmark(detector=config.detector, white_list=config.white_list, black_list=config.black_list,
                       timeout=config.timeout, java_options=config.java_options, force_detect=config.force_detect,
-                      skip_compile=config.skip_compile, force_checkout=config.force_checkout)
+                      skip_compile=config.skip_compile, force_checkout=config.force_checkout,
+                      force_compile=config.force_compile)
 
 if config.subprocess == 'check':
     benchmark.run_check()
