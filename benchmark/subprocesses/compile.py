@@ -38,12 +38,19 @@ class Compile(DataReaderSubprocess):
 
         compile = ProjectCompile(base_path)
 
-        logger.debug("Copying to build directory...")
-        copy_tree(checkout_dir, build_path)
-        logger.debug("Copying additional resources...")
-        self.__copy_additional_compile_sources(misuse, build_path)
+        needs_copy_sources = not isdir(compile.original_sources_path) or self.force_compile
+        needs_copy_pattern_sources = not isdir(compile.pattern_sources_path) or self.force_compile
+        needs_compile = not isdir(compile.original_classes_path) or self.force_compile
+        needs_compile_patterns = not isdir(compile.pattern_classes_path) or self.force_compile
 
-        if isdir(compile.original_sources_path) and not self.force_compile:
+        if needs_copy_sources or needs_copy_pattern_sources or needs_compile or needs_compile_patterns:
+            remove_tree(build_path)
+            logger.debug("Copying to build directory...")
+            copy_tree(checkout_dir, build_path)
+            logger.debug("Copying additional resources...")
+            self.__copy_additional_compile_sources(misuse, build_path)
+
+        if not needs_copy_sources:
             logger.info("Already copied project source.")
         else:
             try:
@@ -53,7 +60,7 @@ class Compile(DataReaderSubprocess):
                 logger.error("Failed to copy project sources: %s", e)
                 return DataReaderSubprocess.Answer.skip
 
-        if isdir(compile.pattern_sources_path) and not self.force_compile:
+        if not needs_copy_pattern_sources:
             logger.info("Already copied pattern sources.")
         else:
             try:
@@ -67,7 +74,7 @@ class Compile(DataReaderSubprocess):
             logger.warn("Skipping compilation: not configured.")
             return DataReaderSubprocess.Answer.ok
 
-        if isdir(compile.original_classes_path) and not self.force_compile:
+        if not needs_compile:
             logger.info("Already compiled project.")
         else:
             try:
@@ -84,7 +91,7 @@ class Compile(DataReaderSubprocess):
             logger.info("Skipping pattern compilation: no patterns.")
             return DataReaderSubprocess.Answer.ok
 
-        if isdir(compile.pattern_classes_path) and not self.force_compile:
+        if not needs_compile_patterns:
             logger.info("Already compiled patterns.")
         else:
             try:
@@ -104,7 +111,6 @@ class Compile(DataReaderSubprocess):
     def __copy_original_sources(sources_path: str, destination: str):
         remove_tree(destination)
         makedirs(destination, exist_ok=True)
-        print("copy {}\n     {}".format(sources_path, destination))
         copy_tree(sources_path, destination)
 
     @staticmethod
