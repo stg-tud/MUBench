@@ -73,20 +73,10 @@ class Benchmark:
         self.run()
 
     def run_evaluate(self) -> None:
-        if self.force_detect or not exists(self.results_path):
-            if exists(self.results_path):
-                def print_error_and_exit(func, path, _):
-                    exit("Couldn't delete directory `{}`! ".format(path) +
-                         "Please make sure no other applications are using it or delete it manually.")
-
-                rmtree(self.results_path, onerror=print_error_and_exit)
-
-            self._setup_checkout()
-            self._setup_compile()
-            self._setup_detect()
-
+        self._setup_checkout()
+        self._setup_compile()
+        self._setup_detect()
         self._setup_eval()
-
         self.run()
 
     def run_visualize(self) -> None:
@@ -99,11 +89,13 @@ class Benchmark:
         self.datareader.add(checkout_handler)
 
     def _setup_compile(self):
-        compile_handler = Compile(Benchmark.CHECKOUTS_PATH, Benchmark.CHECKOUTS_PATH, self.pattern_frequency, self.force_compile)
+        compile_handler = Compile(Benchmark.CHECKOUTS_PATH, Benchmark.CHECKOUTS_PATH, self.pattern_frequency,
+                                  self.force_compile)
         self.datareader.add(compile_handler)
 
     def _setup_detect(self):
-        detector_runner = Detect(self.detector, self.detector_result_file, Benchmark.CHECKOUTS_PATH, self.results_path, self.timeout, self.java_options)
+        detector_runner = Detect(self.detector, self.detector_result_file, Benchmark.CHECKOUTS_PATH, self.results_path,
+                                 self.timeout, self.java_options, self.force_detect)
         self.datareader.add(detector_runner)
 
     def _setup_eval(self):

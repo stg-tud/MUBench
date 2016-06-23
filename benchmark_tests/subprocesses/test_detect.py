@@ -18,7 +18,7 @@ class TestDetect:
         self.findings_file = "findings.yml"
         self.results_path = join(self.temp_dir, "results")
 
-        self.uut = Detect("detector", self.findings_file, self.checkout_base, self.results_path, None, [])
+        self.uut = Detect("detector", self.findings_file, self.checkout_base, self.results_path, None, [], False)
 
         self.last_invoke = None
 
