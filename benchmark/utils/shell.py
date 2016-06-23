@@ -1,26 +1,26 @@
 import logging
 import os
-import subprocess
+from subprocess import check_output, STDOUT, CalledProcessError
+from typing import Optional
 
 
 class Shell:
     @staticmethod
-    def exec(command: str, cwd: str = os.getcwd(), logger=logging.getLogger(__name__)):
+    def exec(command: str, cwd: str = os.getcwd(), logger=logging.getLogger(__name__), timeout: Optional[int] = None):
         logger.debug("Execute '%s' in '%s'", command, cwd)
-        process = subprocess.Popen(command, cwd=cwd, bufsize=1, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
-                                   shell=True)
-        output, _ = process.communicate()
-        output = output.decode("utf-8")
-        logger.debug(output[:-1])
-        if process.wait():
-            raise CommandFailedError(command, output)
-        else:
+        try:
+            output = check_output(command, cwd=cwd, bufsize=1, stderr=STDOUT, shell=True, timeout=timeout)
+            output = output.decode("utf-8")
+            logger.debug(output[:-1])
             return output
+        except CalledProcessError as e:
+            raise CommandFailedError(e.cmd, e.output.decode("utf-8"))
 
     @staticmethod
-    def try_exec(command: str, cwd: str = os.getcwd(), logger=logging.getLogger(__name__)) -> bool:
+    def try_exec(command: str, cwd: str = os.getcwd(), logger=logging.getLogger(__name__),
+                 timeout: Optional[int] = None) -> bool:
         try:
-            Shell.exec(command, cwd=cwd, logger=logger)
+            Shell.exec(command, cwd=cwd, logger=logger, timeout=timeout)
             return True
         except CommandFailedError:
             return False
@@ -32,4 +32,4 @@ class CommandFailedError(Exception):
         self.output = output
 
     def __str__(self):
-        return "failed to execute {}: {}".format(self.command, self.output)
+        return "Failed to execute '{}': {}".format(self.command, self.output)
