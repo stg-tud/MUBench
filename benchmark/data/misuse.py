@@ -1,47 +1,36 @@
 import os
+import yaml
 from glob import glob
 from os.path import isdir, isfile, join, basename
 from typing import Set
 
-import yaml
-
-from benchmark.data.build_config import BuildConfig
 from benchmark.data.pattern import Pattern
 
+
 # noinspection PyAttributeOutsideInit
-from benchmark.data.project_checkout import LocalProjectCheckout, GitProjectCheckout, SVNProjectCheckout, \
-    ProjectCheckout
-from benchmark.data.project_compile import ProjectCompile
-
-
 class Misuse:
-    META_FILE = "meta.yml"
+    MISUSE_FILE = "misuse.yml"
 
     @staticmethod
     def ismisuse(path: str) -> bool:
-        return isdir(path) and isfile(join(path, Misuse.META_FILE))
+        return isdir(path) and isfile(join(path, Misuse.MISUSE_FILE))
 
     def __init__(self, path: str):
         self.path = path
+        self._path = path
         self.name = basename(path)
-        self.meta_file = join(path, Misuse.META_FILE)
+        self.misuse_file = join(path, Misuse.MISUSE_FILE)
 
     @property
-    def project_name(self) -> str:
-        project_name = self.name
-        if '.' in project_name:
-            project_name = project_name.split('.', 1)[0]
-        return project_name
+    def _yaml(self):
+        if getattr(self, '_YAML', None) is None:
+            with open(self.misuse_file, 'r') as stream:
+                self._YAML = yaml.load(stream)
+        return self._YAML
 
     @property
-    def project_version(self) -> str:
-        if getattr(self, '_PROJECT_VERSION', None) is None:
-            project_version = None
-            if '.' in self.name:
-                project_version = self.name.split('.', 1)[1]
-            self._PROJECT_VERSION = project_version
-
-        return self._PROJECT_VERSION
+    def id(self):
+        return basename(self._path)
 
     @property
     def patterns(self) -> Set[Pattern]:
@@ -49,59 +38,12 @@ class Misuse:
             pattern_path = join(self.path, "patterns")
             if isdir(pattern_path):
                 self._PATTERNS = set(
-                    [Pattern(pattern_path, y[len(pattern_path) + 1:]) for x in os.walk(pattern_path) for y in glob(os.path.join(x[0], '*.java'))])
+                    [Pattern(pattern_path, y[len(pattern_path) + 1:]) for x in os.walk(pattern_path) for y in
+                     glob(os.path.join(x[0], '*.java'))])
             else:
                 self._PATTERNS = set()
 
         return self._PATTERNS
-
-    @property
-    def meta(self):
-        if getattr(self, '_META', None) is None:
-            stream = open(self.meta_file, 'r')
-            try:
-                self._META = yaml.load(stream)
-            finally:
-                stream.close()
-
-        return self._META
-
-    def get_checkout(self, base_path: str) -> ProjectCheckout:
-        repository = self.meta["fix"]["repository"]
-        if repository["type"] == "git":
-            url = repository["url"]
-            revision = self.meta["fix"]["revision"] + "~1"
-            return GitProjectCheckout(url, base_path, self.project_name, self.project_version, revision)
-        elif repository["type"] == "svn":
-            url = repository["url"]
-            revision = str(int(self.meta["fix"]["revision"]) - 1 )
-            return SVNProjectCheckout(url, base_path, self.project_name, self.project_version, revision)
-        elif repository["type"] == "synthetic":
-            url = join(self.path, "compile")
-            return LocalProjectCheckout(url, base_path, self.name)
-        else:
-            raise ValueError("unknown repository type: {}".format(repository["type"]))
-
-    @property
-    def build_config(self) -> BuildConfig:
-        build = {"src": "", "commands": [], "classes": ""}
-        build.update(self.meta.get("build", {}))
-        src = build.get("src")
-        commands = build.get("commands")
-        classes = build.get("classes")
-
-        return BuildConfig(src, commands, classes)
-
-    def get_compile(self, base_path: str) -> ProjectCompile:
-        if self.project_version:
-            base_path = join(base_path, self.project_name, self.project_version)
-        else:
-            base_path = join(base_path, self.project_name)
-        return ProjectCompile(base_path)
-
-    @property
-    def additional_compile_sources(self):
-        return join(self.path, 'compile')
 
     def __str__(self):
         return self.name
