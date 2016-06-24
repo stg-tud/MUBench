@@ -114,12 +114,12 @@ class TestCompile:
         assert exists(join(self.pattern_sources_path, "b0.java"))
         assert not exists(join(self.pattern_sources_path, "a0.java"))
 
-    def test_continues_if_no_config(self):
+    def test_Skips_if_no_config(self):
         del self.misuse.meta["build"]
 
         answer = self.uut.run(self.misuse)
 
-        assert_equals(DataReaderSubprocess.Answer.ok, answer)
+        assert_equals(DataReaderSubprocess.Answer.skip, answer)
 
     def test_passes_compile_commands(self):
         self.misuse.meta["build"]["commands"] = ["a", "b"]

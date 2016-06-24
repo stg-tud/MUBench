@@ -67,7 +67,7 @@ class Compile(DataReaderSubprocess):
 
         if not build_config.commands:
             logger.warn("Skipping compilation: not configured.")
-            return DataReaderSubprocess.Answer.ok
+            return DataReaderSubprocess.Answer.skip
 
         if not needs_compile:
             logger.info("Already compiled project.")
