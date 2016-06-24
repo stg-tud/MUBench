@@ -5,6 +5,7 @@ characteristics:
 crash: true
 description: >
   ObjectType.getImplicitPrototype() may return null.
+file: src/com/google/javascript/jscomp/TypeCheck.java
 fix:
   commit: https://github.com/google/closure-compiler/commit/d1cfe67977d8f3aaa85ec20c262171da394d5977
   description: >

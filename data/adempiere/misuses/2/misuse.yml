@@ -5,8 +5,8 @@ characteristics:
 - wrong call
 crash: false
 description: >
-  A string is converted to bytes without specifying an explicit encoding.
-  The bytes are then passed to Cipher.doFinal(). The fix specifies the encoding "UTF-8".
+  An encrypted message is decrypted and then converted back to a string, without
+  specifying an explicit encoding. The fix specifies the encoding "UTF-8".
 file: src/org/compiere/util/Secure.java
 fix:
   commit: http://sourceforge.net/p/adempiere/svn/1312/

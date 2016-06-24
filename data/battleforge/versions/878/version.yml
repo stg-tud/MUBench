@@ -6,4 +6,7 @@ build:
   src: src/java/
 misuses:
 - '1'
+- '2'
+- '3'
+- '4'
 revision: 878

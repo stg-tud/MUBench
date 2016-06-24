@@ -1,0 +1,14 @@
+api:
+- java.String
+- javax.crypto.Cipher
+characteristics:
+- wrong call
+crash: false
+description: >
+  Decoded data is converted to String without explicitly specifying an encoding.
+file: src/java/de/battleforge/util/BFProperties.java
+internal: false
+pattern:
+- multiple objects
+source:
+  name: SourceForge

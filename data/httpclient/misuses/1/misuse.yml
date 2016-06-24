@@ -7,6 +7,7 @@ crash: false
 description: >
   Exception on HttpConnection.writeRequest() leaves the connection open.
   The fix introduces close() calls in respective catch blocks.
+file: src/java/org/apache/commons/httpclient/HttpMethodDirector.java
 fix:
   commit: http://svn.apache.org/viewvc?view=revision&revision=134494
   files:

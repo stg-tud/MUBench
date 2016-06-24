@@ -5,6 +5,7 @@ characteristics:
 crash: true
 description: >
   A call to Cipher.init() may throw an InvalidKeyException.
+file: src/main/java/com/alibaba/druid/filter/config/ConfigTools.java
 fix:
   commit: https://github.com/alibaba/druid/commit/e10f2849d046265bf17360ab4aa9eb60fd3ab8de
   files:

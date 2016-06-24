@@ -5,4 +5,5 @@ build:
   src: src/
 misuses:
 - '1'
+- '2'
 revision: 1312

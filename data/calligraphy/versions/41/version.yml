@@ -8,4 +8,5 @@ build:
   src: calligraphy/src/main/java/
 misuses:
 - '1'
+- '2'
 revision: 0f15e9199c02771408566071884b099db7f54b64

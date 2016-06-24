@@ -6,6 +6,7 @@ crash: false
 description: >
   When AuthState.isPreemptive(), both invalidate() and setAuthRequested(true)
   should be called. The latter was missing.
+file: src/java/org/apache/commons/httpclient/HttpMethodDirector.java
 fix:
   commit: http://svn.apache.org/viewvc?view=revision&revision=160490
   files:
