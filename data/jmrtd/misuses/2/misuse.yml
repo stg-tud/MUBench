@@ -13,13 +13,9 @@ fix:
   files:
   - diff: https://sourceforge.net/p/jmrtd/code/67/tree//passporthostapi/src/sos/mrtd/PassportAuthService.java?diff=5058d727fd48f84fd52d6740:66
     name: src/sos/mrtd/PassportAuthService.java
-  repository:
-    type: svn
-    url: http://svn.code.sf.net/p/jmrtd/code/passporthostapi/
   revision: 67
 internal: false
 pattern:
 - single object
-report: null
 source:
   name: SourceForge

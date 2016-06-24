@@ -17,9 +17,6 @@ fix:
   - name: src/org/wordpress/android/ui/comments/CommentsListFragment.java
   - name: src/org/wordpress/android/ui/media/MediaBrowserActivity.java
   - name: src/org/wordpress/android/ui/posts/PostsListFragment.java
-  repository:
-    type: git
-    url: https://github.com/wordpress-mobile/WordPress-Android.git
   revision: 7f5181f0d025d27332653a027528bdb28caaf161
 internal: false
 pattern:

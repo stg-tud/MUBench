@@ -11,11 +11,8 @@ fix:
     Pass OpenOption.CREATE to the write call.
   files:
   - name: src/NoFile.java
-  repository:
-    type: synthetic
 internal: false
 pattern:
 - single node
-report: null
 source:
   name: Survey

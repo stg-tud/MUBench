@@ -11,9 +11,6 @@ fix:
   files:
   - diff: http://svn.apache.org/viewvc/jackrabbit/trunk/jackrabbit-core/src/main/java/org/apache/jackrabbit/core/util/db/ConnectionHelper.java?r1=1178892&r2=1178891&pathrev=1178892
     name: jackrabbit-core/src/main/java/org/apache/jackrabbit/core/util/db/ConnectionHelper.java
-  repository:
-    type: svn
-    url: http://svn.apache.org/repos/asf/jackrabbit/trunk/
   revision: 1178892
 internal: false
 pattern:

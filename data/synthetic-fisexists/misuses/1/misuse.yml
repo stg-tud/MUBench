@@ -12,11 +12,8 @@ fix:
     Check File.exists() first.
   files:
   - name: src/FISExists.java
-  repository:
-    type: synthetic
 internal: false
 pattern:
 - multiple objects
-report: null
 source:
   name: Survey

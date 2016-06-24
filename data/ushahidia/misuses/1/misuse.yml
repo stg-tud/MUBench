@@ -11,9 +11,6 @@ fix:
     Call Cursor.close().
   files:
   - name: Core/src/com/ushahidi/android/app/database/OpenGeoSmsDao.java
-  repository:
-    type: git
-    url: https://github.com/ushahidi/Ushahidi_Android.git
   revision: 16adf0c3cfc9ebef01e7e9042b13d3b5b4da965f
 internal: false
 pattern:

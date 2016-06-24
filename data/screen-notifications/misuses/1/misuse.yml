@@ -12,9 +12,6 @@ fix:
     Catch exception and do fallback handling.
   files:
   - name: src/com/lukekorth/screennotifications/AppsActivity.java
-  repository:
-    type: git
-    url: https://github.com/lkorth/screen-notifications.git
   revision: afc542066ae1a3c57974dc180374407a7954124d
 internal: false
 pattern:

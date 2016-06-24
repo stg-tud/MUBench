@@ -14,11 +14,8 @@ fix:
     Add a call to ByteBuffer.flip()
   files:
   - name: src/ByteBufferFlip.java
-  repository:
-    type: synthetic
 internal: false
 pattern:
 - single object
-report: null
 source:
   name: Survey

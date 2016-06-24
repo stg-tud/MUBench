@@ -11,9 +11,6 @@ fix:
   commit: https://github.com/alibaba/druid/commit/e10f2849d046265bf17360ab4aa9eb60fd3ab8de
   files:
   - name: src/main/java/com/alibaba/druid/filter/config/ConfigTools.java
-  repository:
-    type: git
-    url: https://github.com/alibaba/druid.git
   revision: e10f2849d046265bf17360ab4aa9eb60fd3ab8de
 internal: false
 pattern:

@@ -12,11 +12,8 @@ fix:
     Use Map.containsKey() to check whether a key is set.
   files:
   - name: src/MapNull.java
-  repository:
-    type: synthetic
 internal: false
 pattern:
 - single object
-report: null
 source:
   name: Survey

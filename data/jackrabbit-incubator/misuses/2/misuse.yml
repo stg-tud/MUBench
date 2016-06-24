@@ -10,9 +10,6 @@ fix:
   files:
   - diff: http://svn.apache.org/viewvc/incubator/jackrabbit/trunk/contrib/bdb-persistence/src/java/org/apache/jackrabbit/core/state/bdb/BerkeleyDBPersistenceManager.java?r1=263892&r2=263891&pathrev=263892
     name: contrib/bdb-persistence/src/java/org/apache/jackrabbit/core/state/bdb/BerkeleyDBPersistenceManager.java
-  repository:
-    type: svn
-    url: http://svn.apache.org/repos/asf/incubator/jackrabbit/trunk/
   revision: 263892
 internal: false
 pattern:

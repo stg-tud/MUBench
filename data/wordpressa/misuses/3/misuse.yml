@@ -11,9 +11,6 @@ fix:
     Check for null before using it.
   files:
   - name: WordPress/src/main/java/org/wordpress/android/ui/posts/EditPostContentFragment.java
-  repository:
-    type: git
-    url: https://github.com/wordpress-mobile/WordPress-Android.git
   revision: c21e5969154d1cafb15fd0becf252e8e81760b98
 internal: true
 pattern:

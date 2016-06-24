@@ -12,11 +12,8 @@ fix:
     Add a call to FileChannel.force() or close the channel.
   files:
   - name: src/ChannelFlush.java
-  repository:
-    type: synthetic
 internal: false
 pattern:
 - single object
-report: null
 source:
   name: Survey

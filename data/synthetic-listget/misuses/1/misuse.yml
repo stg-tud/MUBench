@@ -11,11 +11,8 @@ fix:
     Check that index is between 0 and List.size() - 1.
   files:
   - name: src/ListGet.java
-  repository:
-    type: synthetic
 internal: false
 pattern:
 - single object
-report: null
 source:
   name: Survey

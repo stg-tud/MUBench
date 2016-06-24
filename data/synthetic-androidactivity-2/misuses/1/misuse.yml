@@ -11,11 +11,8 @@ fix:
     Call super.onCreate() before calling setContentView().
   files:
   - name: src/AndroidContentView.java
-  repository:
-    type: synthetic
 internal: false
 pattern:
 - single object
-report: null
 source:
   name: Survey

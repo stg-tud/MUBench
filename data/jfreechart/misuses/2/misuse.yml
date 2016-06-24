@@ -13,14 +13,10 @@ fix:
   files:
   - diff: https://sourceforge.net/p/jfreechart/code/103/tree/trunk/source/org/jfree/chart/axis/Axis.java?diff=50b53b485fcbc92b6542a639:102
     name: source/org/jfree/chart/axis/Axis.java
-  repository:
-    type: svn
-    url: http://svn.code.sf.net/p/jfreechart/code/trunk/
   revision: 103
 internal: true
 pattern:
 - multiple objects
-report: null
 source:
   name: Defects4J
   url: https://github.com/rjust/defects4j

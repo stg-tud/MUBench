@@ -16,9 +16,6 @@ fix:
   files:
   - diff: http://svn.apache.org/viewvc/tomcat/jasper/trunk/jasper2/src/share/org/apache/jasper/compiler/Compiler.java?r1=305982&r2=305981&pathrev=305982
     name: src/share/org/apache/jasper/compiler/Compiler.java
-  repository:
-    type: svn
-    url: http://svn.apache.org/repos/asf/tomcat/jasper/trunk/jasper2/
   revision: 305982
 internal: true
 pattern:

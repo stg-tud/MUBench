@@ -10,9 +10,6 @@ fix:
   commit: https://github.com/mozilla/rhino/commit/ed00a2e83de1e768918604a65def097895b71dd4
   files:
   - name: src/org/mozilla/javascript/Parser.java
-  repository:
-    type: git
-    url: https://github.com/mozilla/rhino.git
   revision: ed00a2e83de1e768918604a65def097895b71dd4
 internal: true
 pattern:

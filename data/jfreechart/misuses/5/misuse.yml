@@ -12,14 +12,10 @@ fix:
   files:
   - diff: https://sourceforge.net/p/jfreechart/code/2183/tree/trunk/source/org/jfree/chart/plot/XYPlot.java?diff=50b53b485fcbc92b6542a639:2182
     name: source/org/jfree/chart/plot/XYPlot.java
-  repository:
-    type: svn
-    url: http://svn.code.sf.net/p/jfreechart/code/trunk/
   revision: 2183
 internal: true
 pattern:
 - multiple objects
-report: null
 source:
   name: Defects4J
   url: https://github.com/rjust/defects4j

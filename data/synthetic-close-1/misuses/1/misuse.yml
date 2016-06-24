@@ -11,11 +11,8 @@ fix:
     Call close() after using the Closable.
   files:
   - name: src/Close.java
-  repository:
-    type: synthetic
 internal: false
 pattern:
 - single object
-report: null
 source:
   name: Survey

@@ -10,9 +10,6 @@ fix:
   files:
   - diff: http://svn.apache.org/viewvc/lucene/java/trunk/src/java/org/apache/lucene/store/FSDirectory.java?r1=642339&r2=642338&pathrev=642339
     name: src/java/org/apache/lucene/store/FSDirectory.java
-  repository:
-    type: git
-    url: https://git-wip-us.apache.org/repos/asf/lucene-solr
   revision: 09b3a56ae2ecc68b56a0142e48e12247ba160dbb
 internal: false
 pattern:

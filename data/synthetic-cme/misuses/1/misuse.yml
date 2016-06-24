@@ -45,11 +45,8 @@ fix:
     Modify the collection via the Iterator.
   files:
   - name: src/CME.java
-  repository:
-    type: synthetic
 internal: false
 pattern:
 - multiple objects
-report: null
 source:
   name: Survey

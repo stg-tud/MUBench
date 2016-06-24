@@ -11,11 +11,8 @@ fix:
     Call setContentView() before calling findViewById().
   files:
   - name: src/AndroidContentView.java
-  repository:
-    type: synthetic
 internal: false
 pattern:
 - single object
-report: null
 source:
   name: Survey

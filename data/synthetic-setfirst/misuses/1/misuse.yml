@@ -13,11 +13,8 @@ fix:
     Check that Set.isEmpty() is false.
   files:
   - name: src/SetFirst.java
-  repository:
-    type: synthetic
 internal: false
 pattern:
 - multiple objects
-report: null
 source:
   name: Survey

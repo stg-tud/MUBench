@@ -12,11 +12,8 @@ fix:
     Call JFrame.pack() after JFrame.setPreferredSize().
   files:
   - name: src/Pack1.java
-  repository:
-    type: synthetic
 internal: false
 pattern:
 - single object
-report: null
 source:
   name: Survey

@@ -10,9 +10,6 @@ fix:
   files:
   - diff: http://svn.apache.org/viewvc/jackrabbit/trunk/jackrabbit/src/test/java/org/apache/jackrabbit/test/api/nodetype/PredefinedNodeTypeTest.java?r1=430715&r2=430714&pathrev=430715
     name: jackrabbit/src/test/java/org/apache/jackrabbit/test/api/nodetype/PredefinedNodeTypeTest.java
-  repository:
-    type: svn
-    url: http://svn.apache.org/repos/asf/jackrabbit/trunk/
   revision: 430715
 internal: true
 pattern:

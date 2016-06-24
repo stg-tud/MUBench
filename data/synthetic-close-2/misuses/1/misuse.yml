@@ -12,11 +12,8 @@ fix:
     Call close() in finally block.
   files:
   - name: src/CloseFinally.java
-  repository:
-    type: synthetic
 internal: false
 pattern:
 - single object
-report: null
 source:
   name: Survey

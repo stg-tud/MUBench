@@ -14,15 +14,11 @@ fix:
     Check Node.isNoType() instead.
   files:
   - name: src/com/google/javascript/rhino/jstype/UnionType.java
-  repository:
-    type: git
-    url: https://github.com/google/closure-compiler.git
   revision: 67289ae4cbaba3ae70cd2e8fb92f3f2898039dfb
 internal: false
 method: meet(JSType)
 pattern:
 - multiple objects
-report: null
 source:
   name: Defects4J
   url: https://github.com/rjust/defects4j

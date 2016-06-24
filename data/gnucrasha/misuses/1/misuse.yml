@@ -14,9 +14,6 @@ fix:
   files:
   - name: app/src/org/gnucash/android/ui/passcode/PassLockActivity.java
   - name: app/src/org/gnucash/android/ui/passcode/PasscodeLockScreenActivity.java
-  repository:
-    type: git
-    url: https://github.com/fefe982/gnucash-android.git
   revision: ce50ee116f18a373f30cb135ee48b5ad6c187db0
 internal: true
 pattern:

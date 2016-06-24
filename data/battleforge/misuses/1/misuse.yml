@@ -13,13 +13,9 @@ fix:
   files:
   - diff: http://sourceforge.net/p/battleforge/code/878/tree/trunk/de.battleforge/src/java/de/battleforge/util/BFProperties.java?diff=50ee84dee88f3d24b3d975fe:877
     name: src/java/de/battleforge/util/BFProperties.java
-  repository:
-    type: svn
-    url: http://svn.code.sf.net/p/battleforge/code/trunk/de.battleforge/
   revision: 878
 internal: false
 pattern:
 - multiple objects
-report: null
 source:
   name: SourceForge

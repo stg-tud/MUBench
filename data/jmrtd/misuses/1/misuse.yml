@@ -12,13 +12,9 @@ fix:
   files:
   - diff: https://sourceforge.net/p/jmrtd/code/51/tree//passporthostapi/src/sos/mrtd/SecureMessagingWrapper.java?diff=5058d727fd48f84fd52d6740:50
     name: src/sos/mrtd/SecureMessagingWrapper.java
-  repository:
-    type: svn
-    url: http://svn.code.sf.net/p/jmrtd/code/passporthostapi/
   revision: 51
 internal: false
 pattern:
 - multiple objects
-report: null
 source:
   name: SourceForge

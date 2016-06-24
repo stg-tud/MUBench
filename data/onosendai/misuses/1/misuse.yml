@@ -14,9 +14,6 @@ fix:
     an register intent on it.
   files:
   - name: src/main/java/com/vaguehope/onosendai/update/AlarmReceiver.java
-  repository:
-    type: git
-    url: https://github.com/haku/Onosendai.git
   revision: 0e2a7570ab4491d0c4680ef52ee1008bef33fc02
 internal: false
 pattern:

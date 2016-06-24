@@ -16,14 +16,10 @@ fix:
   files:
   - diff: https://sourceforge.net/p/jfreechart/code/1025/tree/trunk/source/org/jfree/chart/util/ShapeUtilities.java?diff=50b53b485fcbc92b6542a639:1024
     name: source/org/jfree/chart/util/ShapeUtilities.java
-  repository:
-    type: svn
-    url: http://svn.code.sf.net/p/jfreechart/code/trunk/
   revision: 1025
 internal: false
 pattern:
 - multiple objects
-report: null
 source:
   name: Defects4J
   url: https://github.com/rjust/defects4j

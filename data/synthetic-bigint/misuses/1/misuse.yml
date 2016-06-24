@@ -12,11 +12,8 @@ fix:
     Continue to work on the new instance.
   files:
   - name: src/BigInt.java
-  repository:
-    type: synthetic
 internal: false
 pattern:
 - single object
-report: null
 source:
   name: Survey

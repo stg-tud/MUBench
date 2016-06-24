@@ -12,11 +12,8 @@ fix:
     Check iterator.hasNext() or ensure size of the collection.
   files:
   - name: src/HasNext.java
-  repository:
-    type: synthetic
 internal: false
 pattern:
 - multiple objects
-report: null
 source:
   name: Survey

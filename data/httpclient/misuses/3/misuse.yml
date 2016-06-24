@@ -10,9 +10,6 @@ fix:
   files:
   - diff: http://svn.apache.org/viewvc/jakarta/commons/proper/httpclient/trunk/src/java/org/apache/commons/httpclient/util/DateUtil.java?r1=190480&r2=190479&pathrev=190480
     name: src/java/org/apache/commons/httpclient/util/DateUtil.java
-  repository:
-    type: svn
-    url: http://svn.apache.org/repos/asf/jakarta/commons/proper/httpclient/trunk/
   revision: 190480
 internal: false
 pattern:

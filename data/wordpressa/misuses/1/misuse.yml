@@ -12,9 +12,6 @@ fix:
     Ensure that ListFragment.isAdded().
   files:
   - name: WordPress/src/main/java/org/wordpress/android/ui/notifications/NotificationsListFragment.java
-  repository:
-    type: git
-    url: https://github.com/wordpress-mobile/WordPress-Android.git
   revision: 7a1e5a505c8d56794bb43954b8ba48cab7757238
 internal: false
 pattern:
