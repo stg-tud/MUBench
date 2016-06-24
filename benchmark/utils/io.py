@@ -1,5 +1,5 @@
-from os import makedirs, chmod, remove, listdir
-from os.path import dirname, exists, isfile, join, isdir, basename
+from os import makedirs, chmod, remove, listdir, readlink, symlink
+from os.path import dirname, exists, isfile, join, isdir, basename, islink
 
 from shutil import rmtree, copy
 from stat import S_IWRITE
@@ -44,9 +44,15 @@ def copy_tree(src: str, dst: str) -> None:
     makedirs(dst, exist_ok=True)
 
     for content in [join(src, content) for content in listdir(src)]:
-        if isfile(content):
-            copy(content, dst)
+        if islink(content):
+            link_target = readlink(content)
+            link_name = basename(content)
+            symlink(link_target, join(dst, link_name))
         elif isdir(content):
             directory_name = join(dst, basename(content))
             makedirs(directory_name, exist_ok=True)
             copy_tree(content, directory_name)
+        elif isfile(content):
+            copy(content, dst)
+        else:
+            raise UserWarning("unknown file type: {}".format(content))
