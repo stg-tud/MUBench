@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 import logging
+import logging.handlers
 import sys
 from os import listdir
-from os.path import join, realpath, isdir
+from os.path import join, realpath, isdir, exists
 from typing import Optional, List
 
 from benchmark.subprocesses.result_processing.visualize_results import Visualizer
@@ -13,6 +14,8 @@ from benchmark.subprocesses.tasks.implementations.compile import Compile
 from benchmark.subprocesses.tasks.implementations.detect import Detect
 from benchmark.subprocesses.tasks.implementations.evaluate import Evaluation
 from benchmark.utils import command_line_util
+
+LOG_FILE_NAME = "out.log"
 
 
 class Benchmark:
@@ -122,17 +125,6 @@ class IndentFormatter(logging.Formatter):
         return out
 
 
-logger = logging.getLogger()
-logger.setLevel(logging.DEBUG)
-handler = logging.StreamHandler()
-handler.setFormatter(IndentFormatter("%(indent)s%(message)s"))
-handler.setLevel(logging.INFO)
-logger.addHandler(handler)
-handler = logging.FileHandler("out.log")
-handler.setFormatter(logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s'))
-handler.setLevel(logging.DEBUG)
-logger.addHandler(handler)
-
 detectors_path = realpath('detectors')
 available_detectors = [detector for detector in listdir(detectors_path) if isdir(join(detectors_path, detector))]
 config = command_line_util.parse_args(sys.argv, available_detectors)
@@ -153,6 +145,28 @@ if 'force_checkout' not in config:
     config.force_checkout = False
 if 'force_compile' not in config:
     config.force_compile = False
+
+
+logger = logging.getLogger()
+logger.setLevel(logging.DEBUG)
+handler = logging.StreamHandler()
+handler.setFormatter(IndentFormatter("%(indent)s%(message)s"))
+handler.setLevel(logging.INFO)
+logger.addHandler(handler)
+needs_new_logfile = exists(LOG_FILE_NAME)
+handler = logging.handlers.RotatingFileHandler(LOG_FILE_NAME, backupCount=50)
+handler.setFormatter(logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s'))
+handler.setLevel(logging.DEBUG)
+logger.addHandler(handler)
+if needs_new_logfile:
+    handler.doRollover()
+
+logger.info("Starting benchmark...")
+logger.debug("- Arguments           = %r", sys.argv)
+logger.debug("- Available Detectors = %r", available_detectors)
+logger.debug("- Configuration       :")
+for key in config.__dict__:
+    logger.debug("    - %s = %r", key.ljust(15), config.__dict__[key])
 
 benchmark = Benchmark(detector=config.detector, white_list=config.white_list, black_list=config.black_list,
                       timeout=config.timeout, java_options=config.java_options, force_detect=config.force_detect,

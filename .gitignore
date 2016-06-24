@@ -153,3 +153,4 @@ hs_err_pid*
 # Benchmark created folders
 checkouts/
 results/
+out.log*
