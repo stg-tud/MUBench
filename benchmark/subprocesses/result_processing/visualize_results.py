@@ -16,7 +16,7 @@ class Grouping:
     @staticmethod
     def get_available_groupings() -> Iterable[type]:
         # noinspection PyUnresolvedReferences
-        import benchmark.subprocesses.groupings.groupings
+        import benchmark.subprocesses.result_processing.groupings.groupings
         return Grouping.__subclasses__()
 
     @staticmethod

@@ -2,8 +2,7 @@
 import logging
 import sys
 from os import listdir
-from os.path import join, realpath, exists, isdir
-from shutil import rmtree
+from os.path import join, realpath, isdir
 from typing import Optional, List
 
 from benchmark.subprocesses.check import Check
@@ -12,7 +11,7 @@ from benchmark.subprocesses.compile import Compile
 from benchmark.subprocesses.datareader import DataReader
 from benchmark.subprocesses.detect import Detect
 from benchmark.subprocesses.evaluate import Evaluation
-from benchmark.subprocesses.visualize_results import Visualizer, Grouping
+from benchmark.subprocesses.result_processing.visualize_results import Visualizer
 from benchmark.utils import command_line_util
 
 

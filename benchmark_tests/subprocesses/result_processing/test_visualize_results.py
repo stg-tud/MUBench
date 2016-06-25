@@ -1,12 +1,12 @@
 # coding=utf-8
 from os.path import join, exists
 from tempfile import mkdtemp
-
-from nose.tools import assert_equals, assert_raises
 from typing import Iterable
 
+from nose.tools import assert_equals, assert_raises
+
 from benchmark.data.misuse import Misuse
-from benchmark.subprocesses.visualize_results import Visualizer, Grouping
+from benchmark.subprocesses.result_processing.visualize_results import Visualizer, Grouping
 from benchmark.utils.io import remove_tree, safe_write
 
 
