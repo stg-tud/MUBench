@@ -22,6 +22,10 @@ class ProjectVersion:
         return exists(join(path, ProjectVersion.VERSION_FILE))
 
     @property
+    def id(self):
+        return basename(self._path)
+
+    @property
     def _yaml(self) -> Dict[str, Any]:
         if getattr(self, '_YAML', None) is None:
             with open(self._version_file) as stream:
@@ -31,12 +35,14 @@ class ProjectVersion:
 
     @property
     def build_config(self) -> BuildConfig:
-        build = {"src": "", "commands": [], "classes": ""}
-        build.update(self._yaml.get("build", {}))
-        src = build.get("src")
-        commands = build.get("commands")
-        classes = build.get("classes")
-        return BuildConfig(src, commands, classes)
+        if getattr(self, "_BUILD_CONFIG", None) is None:
+            build = {"src": "", "commands": [], "classes": ""}
+            build.update(self._yaml.get("build", {}))
+            src = build.get("src")
+            commands = build.get("commands")
+            classes = build.get("classes")
+            self._BUILD_CONFIG = BuildConfig(src, commands, classes)
+        return self._BUILD_CONFIG
 
     @property
     def misuses(self) -> List[Misuse]:
@@ -61,11 +67,10 @@ class ProjectVersion:
 
     @property
     def revision(self) -> Optional[str]:
-        return self._yaml.get('revision')
+        if getattr(self, '_REVISION', None) is None:
+            self._REVISION = self._yaml.get('revision')
+        return self._REVISION
 
     @property
     def additional_compile_sources(self) -> str:
         return join(self._path, 'compile')
-
-    def __str__(self):
-        return basename(self._path)

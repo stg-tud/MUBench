@@ -2,7 +2,7 @@ import os
 import yaml
 from glob import glob
 from os.path import isdir, isfile, join, basename
-from typing import Set
+from typing import Set, List
 
 from benchmark.data.pattern import Pattern
 
@@ -44,6 +44,23 @@ class Misuse:
                 self._PATTERNS = set()
 
         return self._PATTERNS
+
+    @property
+    def usage(self) -> str:
+        if getattr(self, '_USAGE', None) is None:
+            self._USAGE = self._yaml.get('usage', '')
+        return self._USAGE
+
+    @property
+    def files(self) -> List[str]:
+        if getattr(self, '_FILES', None) is None:
+            fix = self._yaml.get('fix')
+            if fix is not None:
+                files = fix.get('files', [])
+                self._FILES = [file.get('name') for file in files if file.get('name', None) is not None]
+            else:
+                self._FILES = []
+        return self._FILES
 
     def __str__(self):
         return self.name

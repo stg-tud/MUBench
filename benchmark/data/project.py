@@ -45,14 +45,14 @@ class Project:
 
     @property
     def repository(self) -> Repository:
-        repository = self._yaml.get("repository", None)
-        if repository is None:
-            return None
-
-        repository_type = repository.get("type", None)
-        repository_url = repository.get("url", None)
-
-        return Project.Repository(repository_type, repository_url)
+        if getattr(self, '_REPOSITORY', None) is None:
+            repository = self._yaml.get("repository", None)
+            if repository is None:
+                raise ValueError("Repository not defined")
+            repository_type = repository.get("type", None)
+            repository_url = repository.get("url", None)
+            self._REPOSITORY = Project.Repository(repository_type, repository_url)
+        return self._REPOSITORY
 
     @property
     def versions(self) -> List[ProjectVersion]:
@@ -77,11 +77,11 @@ class Project:
         if repository.vcstype == "git":
             url = repository.url
             revision = version.revision + "~1"
-            return GitProjectCheckout(url, base_path, self.id, str(version), revision)
+            return GitProjectCheckout(url, base_path, self.id, version.id, revision)
         elif repository.vcstype == "svn":
             url = repository.url
             revision = str(int(version.revision) - 1)
-            return SVNProjectCheckout(url, base_path, self.id, str(version), revision)
+            return SVNProjectCheckout(url, base_path, self.id, version.id, revision)
         elif repository.vcstype == "synthetic":
             url = join(self._path, "versions", "0", "compile")
             return LocalProjectCheckout(url, base_path, self.id)
@@ -90,7 +90,7 @@ class Project:
 
     def get_compile(self, version: ProjectVersion, base_path: str) -> ProjectCompile:
         if version:
-            base_path = join(base_path, self.id, str(version))
+            base_path = join(base_path, self.id, version.id)
         else:
             base_path = join(base_path, self.id)
         return ProjectCompile(base_path)

@@ -81,8 +81,8 @@ class TestProjectVersion:
         assert_equals([], uut.build_config.commands)
         assert_equals("", uut.build_config.classes)
 
-    def test_str(self):
-        assert_equals("version_id", str(ProjectVersion("version_id")))
+    def test_id(self):
+        assert_equals("version_id", ProjectVersion("project/versions/version_id").id)
 
     def test_derives_additional_compile_sources_path(self):
         uut = ProjectVersion("version")

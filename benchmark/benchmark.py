@@ -6,6 +6,7 @@ from os.path import join, realpath, isdir
 from typing import Optional, List
 
 from benchmark.subprocesses.result_processing.visualize_results import Visualizer
+from benchmark.subprocesses.tasking import TaskRunner
 from benchmark.utils import command_line_util
 
 
@@ -42,7 +43,7 @@ class Benchmark:
         self.reviewed_eval_result_file = 'reviewed-result.csv'
         self.visualize_result_file = 'result.csv'
 
-        self.datareader = DataReader(Benchmark.DATA_PATH, self.white_list, self.black_list)
+        self.datareader = TaskRunner(Benchmark.DATA_PATH, self.white_list, self.black_list)
         self.datareader.add(Check())
 
     def run_check(self):
