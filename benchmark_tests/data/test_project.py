@@ -5,6 +5,7 @@ from tempfile import mkdtemp
 from nose.tools import assert_equals, assert_raises
 from os.path import join
 
+from benchmark.data import project
 from benchmark.data.project import Project
 from benchmark.data.project_checkout import LocalProjectCheckout, GitProjectCheckout, SVNProjectCheckout
 from benchmark.data.project_version import ProjectVersion
@@ -95,6 +96,21 @@ class TestProject:
         uut._YAML = {}
         project_compile = uut.get_compile(ProjectVersion("version"), "/base/path")
         assert_equals(join("/base/path", "project", "version"), project_compile.base_path)
+
+    def test_finds_all_projects(self):
+        create_file(join(self.temp_dir, "p1", "project.yml"))
+        create_file(join(self.temp_dir, "p2", "project.yml"))
+
+        actual = Project.get_projects(self.temp_dir)
+
+        assert_equals(2, len(actual))
+        assert_equals(join(self.temp_dir, "p1"), actual[0]._path)
+        assert_equals(join(self.temp_dir, "p2"), actual[1]._path)
+
+    def test_validates_projects(self):
+        create_file(join(self.temp_dir, "p1", "iamnotaproject.yml"))
+        actual = Project.get_projects(self.temp_dir)
+        assert_equals([], actual)
 
 
 class TestProjectCheckout:

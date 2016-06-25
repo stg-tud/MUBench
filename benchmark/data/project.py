@@ -95,4 +95,15 @@ class Project:
             base_path = join(base_path, self.id)
         return ProjectCompile(base_path)
 
+    @staticmethod
+    def get_projects(data_path: str) -> List['Project']:
+        if not exists(data_path):
+            return []
 
+        subfolders = [join(data_path, content) for content in listdir(data_path) if isdir(join(data_path, content))]
+        projects = []
+        for subfolder in subfolders:
+            if Project.validate(subfolder):
+                projects.append(Project(subfolder))
+
+        return projects
