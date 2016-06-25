@@ -40,21 +40,24 @@ class ProjectVersion:
 
     @property
     def misuses(self) -> List[Misuse]:
-        my_misuse_ids = self._yaml.get("misuses", None)
-        if my_misuse_ids is None:
-            return []
+        if getattr(self, "_MISUSES", None) is None:
+            my_misuse_ids = self._yaml.get("misuses", None)
+            if my_misuse_ids is None:
+                return []
 
-        misuses_dir = self._misuses_dir
-        if not exists(misuses_dir):
-            return []
+            misuses_dir = self._misuses_dir
+            if not exists(misuses_dir):
+                return []
 
-        my_misuses = []
-        misuses = [join(misuses_dir, misuse) for misuse in listdir(misuses_dir) if isdir(join(misuses_dir, misuse))]
-        for misuse in misuses:
-            if Misuse.ismisuse(misuse) and Misuse(misuse).id in my_misuse_ids:
-                my_misuses.append(Misuse(misuse))
+            my_misuses = []
+            misuses = [join(misuses_dir, misuse) for misuse in listdir(misuses_dir) if isdir(join(misuses_dir, misuse))]
+            for misuse in misuses:
+                if Misuse.ismisuse(misuse) and Misuse(misuse).id in my_misuse_ids:
+                    my_misuses.append(Misuse(misuse))
 
-        return my_misuses
+            self._MISUSES = my_misuses
+
+        return self._MISUSES
 
     @property
     def revision(self) -> Optional[str]:
