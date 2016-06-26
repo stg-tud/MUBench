@@ -12,7 +12,7 @@ def create_project(path: str, versions: List[ProjectVersion] = None, yaml: Dict[
     return project
 
 
-def create_version(path: str, misuses: List[Misuse] = None, yaml: Dict[str, Any] = None):
+def create_version(path: str, misuses: List[Misuse]=None, yaml: Dict[str, Any]=None):
     version = ProjectVersion(path)
     version._MISUSES = [] if misuses is None else misuses
     version._YAML = {} if yaml is None else yaml

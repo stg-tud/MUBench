@@ -85,7 +85,7 @@ class Detect(ProjectVersionMisuseTask):
         classes_patterns = []
         if misuse.patterns:
             src_patterns = [self.key_src_patterns, self.to_arg_path(project_compile.pattern_sources_path)]
-        if version.build_config.commands:
+        if version.compile_commands:
             classes_project = [self.key_classes_project, self.to_arg_path(project_compile.original_classes_path)]
             if misuse.patterns:
                 classes_patterns = [self.key_classes_patterns, self.to_arg_path(project_compile.pattern_classes_path)]

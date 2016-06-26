@@ -29,8 +29,7 @@ class TestCompile:
         self.checkout_base_path = join(self.temp_dir, "checkouts")
 
         self.source_dir = "src"
-        self.version = create_version(self.version_path)
-        self.version._BUILD_CONFIG = BuildConfig(self.source_dir, ["mkdir classes"], "classes")
+        self.version = create_version(self.version_path, yaml={"build": {"src": self.source_dir, "commands": ["mkdir classes"], "classes": "classes", "revision": "0"}})
         self.version._REVISION = '0'
 
         self.project = create_project(self.project_path, versions=[self.version])
@@ -126,14 +125,14 @@ class TestCompile:
         assert not exists(join(self.pattern_sources_path, "a0.java"))
 
     def test_skips_if_no_config(self):
-        del self.version._BUILD_CONFIG
+        del self.version._YAML["build"]
 
         response = self.uut.process_project_version(self.project, self.version)
 
         assert_equals(Response.skip, response)
 
     def test_passes_compile_commands(self):
-        self.version._BUILD_CONFIG.commands = ["a", "b"]
+        self.version._YAML["build"]["commands"] = ["a", "b"]
 
         self.uut.process_project_version(self.project, self.version)
 

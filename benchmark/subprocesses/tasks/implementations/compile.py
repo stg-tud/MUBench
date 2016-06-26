@@ -9,11 +9,12 @@ from benchmark.data.project import Project
 from benchmark.data.project_version import ProjectVersion
 from benchmark.subprocesses.tasks.base.project_task import Response
 from benchmark.subprocesses.tasks.base.project_version_misuse_task import ProjectVersionMisuseTask
+from benchmark.subprocesses.tasks.base.project_version_task import ProjectVersionTask
 from benchmark.utils.io import remove_tree, copy_tree
 from benchmark.utils.shell import Shell, CommandFailedError
 
 
-class Compile(ProjectVersionMisuseTask):
+class Compile(ProjectVersionTask):
     __BUILD_DIR = "build"
 
     def __init__(self, checkouts_base_path: str, compiles_base_path: str, pattern_frequency: int, force_compile):
@@ -22,7 +23,7 @@ class Compile(ProjectVersionMisuseTask):
         self.pattern_frequency = pattern_frequency
         self.force_compile = force_compile
 
-    def process_project_version_misuse(self, project: Project, version: ProjectVersion, misuse: Misuse):
+    def process_project_version(self, project: Project, version: ProjectVersion):
         logger = logging.getLogger("compile")
         logger.info("Compiling project version...")
         logger.debug("- Force compile     = %r", self.force_compile)
@@ -31,9 +32,8 @@ class Compile(ProjectVersionMisuseTask):
 
         project_compile = project.get_compile(version, self.compiles_base_path)
         build_path = join(project_compile.base_path, Compile.__BUILD_DIR)
-        build_config = version.build_config
-        sources_path = join(build_path, build_config.src)
-        classes_path = join(build_path, build_config.classes)
+        sources_path = join(build_path, version.source_dir)
+        classes_path = join(build_path, version.classes_dir)
 
         needs_copy_sources = not isdir(project_compile.original_sources_path) or self.force_compile
         needs_copy_pattern_sources = not isdir(project_compile.pattern_sources_path) or self.force_compile
@@ -63,13 +63,13 @@ class Compile(ProjectVersionMisuseTask):
         else:
             try:
                 logger.info("Copying pattern sources...")
-                self.__copy_pattern_sources(misuse.patterns, project_compile.pattern_sources_path,
+                self.__copy_pattern_sources(version.patterns, project_compile.pattern_sources_path,
                                             self.pattern_frequency)
             except IOError as e:
                 logger.error("Failed to copy pattern sources: %s", e)
                 return Response.skip
 
-        if not build_config.commands:
+        if not version.compile_commands:
             logger.warn("Skipping compilation: not configured.")
             return Response.skip
 
@@ -78,7 +78,7 @@ class Compile(ProjectVersionMisuseTask):
         else:
             try:
                 logger.info("Compiling project...")
-                self._compile(build_config.commands, build_path)
+                self._compile(version.compile_commands, build_path)
 
                 logger.debug("Copying project classes...")
                 copy_tree(classes_path, project_compile.original_classes_path)
@@ -89,7 +89,7 @@ class Compile(ProjectVersionMisuseTask):
                 logger.error("Failed to copy classes: %s", e)
                 return Response.skip
 
-        if not misuse.patterns:
+        if not version.patterns:
             logger.info("Skipping pattern compilation: no patterns.")
             return Response.ok
 
@@ -98,9 +98,9 @@ class Compile(ProjectVersionMisuseTask):
         else:
             try:
                 logger.debug("Copying patterns to source directory...")
-                duplicates = self.__duplicate(misuse.patterns, sources_path, self.pattern_frequency)
+                duplicates = self.__duplicate(version.patterns, sources_path, self.pattern_frequency)
                 logger.info("Compiling patterns...")
-                self._compile(build_config.commands, build_path)
+                self._compile(version.compile_commands, build_path)
                 logger.debug("Copying pattern classes...")
                 self.__copy(duplicates, classes_path, project_compile.pattern_classes_path)
             except CommandFailedError as e:

@@ -52,7 +52,7 @@ class Evaluation(ProjectVersionMisuseTask):
                 if exists(findings_file):
                     findings = yaml.load_all(safe_open(findings_file, 'r'))
 
-                    src_prefix = None if version.build_config is None else version.build_config.src
+                    src_prefix = version.source_dir
 
                     file_found = Evaluation.__is_file_found(findings, misuse,
                                                             join(self.checkout_base_dir, project.id),

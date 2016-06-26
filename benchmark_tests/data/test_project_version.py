@@ -69,17 +69,16 @@ class TestProjectVersion:
     def test_creates_build_config(self):
         uut = ProjectVersion("")
         uut._YAML = {"build": {"src": "src/java/", "commands": ["mvn compile"], "classes": "target/classes/"}}
-        actual_config = uut.build_config
-        assert_equals("src/java/", actual_config.src)
-        assert_equals(["mvn compile"], actual_config.commands)
-        assert_equals("target/classes/", actual_config.classes)
+        assert_equals("src/java/", uut.source_dir)
+        assert_equals(["mvn compile"], uut.compile_commands)
+        assert_equals("target/classes/", uut.classes_dir)
 
     def test_creates_build_config_with_defaults(self):
         uut = ProjectVersion("")
         uut._YAML = {}
-        assert_equals("", uut.build_config.src)
-        assert_equals([], uut.build_config.commands)
-        assert_equals("", uut.build_config.classes)
+        assert_equals("", uut.source_dir)
+        assert_equals([], uut.compile_commands)
+        assert_equals("", uut.classes_dir)
 
     def test_id(self):
         assert_equals("version_id", ProjectVersion("project/versions/version_id").id)
