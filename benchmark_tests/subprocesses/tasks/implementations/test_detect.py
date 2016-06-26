@@ -60,16 +60,15 @@ class TestDetect:
         version = create_version("0")
         misuse = create_misuse("id")
 
-        self.uut.process_project_version_misuse(project, version, misuse)
+        self.uut.process_project_version(project, version)
 
         assert_equals(self.last_invoke[0], "detector.jar")
 
     def test_passes_project_src(self):
         project = create_project("project")
         version = create_version("0")
-        misuse = create_misuse("id")
 
-        self.uut.process_project_version_misuse(project, version, misuse)
+        self.uut.process_project_version(project, version)
 
         self.assert_last_invoke_arg_value_equals(
             self.uut.key_src_project,
@@ -77,10 +76,9 @@ class TestDetect:
 
     def test_passes_project_classes_path(self):
         project = create_project("project")
-        version = create_version("0")
-        misuse = create_misuse("id")
+        version = create_version("0", yaml={"build": {"commands": [":any:"]}})
 
-        self.uut.process_project_version_misuse(project, version, misuse)
+        self.uut.process_project_version(project, version)
 
         self.assert_last_invoke_arg_value_equals(
             self.uut.key_classes_project,
@@ -89,9 +87,8 @@ class TestDetect:
     def test_passes_findings_files(self):
         project = create_project("project")
         version = create_version("0")
-        misuse = create_misuse("id")
 
-        self.uut.process_project_version_misuse(project, version, misuse)
+        self.uut.process_project_version(project, version)
 
         self.assert_last_invoke_arg_value_equals(self.uut.key_findings_file,
                                                  '"' + join(self.results_path, "project", self.findings_file) + '"')
@@ -99,20 +96,18 @@ class TestDetect:
     def test_invokes_detector_without_patterns_paths_without_patterns(self):
         project = create_project("project")
         version = create_version("0")
-        misuse = create_misuse("id")
 
-        self.uut.process_project_version_misuse(project, version, misuse)
+        self.uut.process_project_version(project, version)
 
         self.assert_arg_not_in_last_invoke(self.uut.key_src_patterns)
         self.assert_arg_not_in_last_invoke(self.uut.key_classes_patterns)
 
     def test_invokes_detector_with_patterns_src_path(self):
         project = create_project("project")
-        version = create_version("0")
-        misuse = create_misuse("id")
-        misuse._PATTERNS = [Pattern("", "a")]
+        version = create_version("0", yaml={"build": {"commands": [":any:"]}})
+        version._PATTERNS = [Pattern("", "a")]
 
-        self.uut.process_project_version_misuse(project, version, misuse)
+        self.uut.process_project_version(project, version)
 
         self.assert_last_invoke_arg_value_equals(
             self.uut.key_src_patterns,
@@ -120,11 +115,10 @@ class TestDetect:
 
     def test_invokes_detector_with_patterns_class_path(self):
         project = create_project("project")
-        version = create_version("0")
-        misuse = create_misuse("id")
-        misuse._PATTERNS = [Pattern("", "a")]
+        version = create_version("0", yaml={"build": {"commands": {":any:"}}})
+        version._PATTERNS = [Pattern("", "a")]
 
-        self.uut.process_project_version_misuse(project, version, misuse)
+        self.uut.process_project_version(project, version)
 
         self.assert_last_invoke_arg_value_equals(
             self.uut.key_classes_patterns,

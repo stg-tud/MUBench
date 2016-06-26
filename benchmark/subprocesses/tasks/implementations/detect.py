@@ -5,17 +5,16 @@ from os import makedirs
 from os.path import join, realpath, exists
 from typing import Optional, List
 
-from benchmark.data.misuse import Misuse
 from benchmark.data.project import Project
 from benchmark.data.project_version import ProjectVersion
 from benchmark.subprocesses.tasks.base.project_task import Response
-from benchmark.subprocesses.tasks.base.project_version_misuse_task import ProjectVersionMisuseTask
+from benchmark.subprocesses.tasks.base.project_version_task import ProjectVersionTask
 from benchmark.utils import web_util
 from benchmark.utils.io import remove_tree
 from benchmark.utils.shell import Shell, CommandFailedError
 
 
-class Detect(ProjectVersionMisuseTask):
+class Detect(ProjectVersionTask):
     def __init__(self,
                  detector: str,
                  detector_result_file: str,
@@ -42,14 +41,14 @@ class Detect(ProjectVersionMisuseTask):
         if not self._detector_available():
             self._download()
 
-    def process_project_version_misuse(self, project: Project, version: ProjectVersion, misuse: Misuse) -> Response:
+    def process_project_version(self, project: Project, version: ProjectVersion) -> Response:
         logger = logging.getLogger("detect")
 
         result_path = join(self.results_base_path, project.id)
 
         findings_file_path = join(result_path, self.detector_findings_file)
         detector_path = Detect.__get_misuse_detector_path(self.detector)
-        detector_args = self.get_detector_arguments(findings_file_path, project, version, misuse)
+        detector_args = self.get_detector_arguments(findings_file_path, project, version)
 
         if exists(findings_file_path) and not self.force_detect:
             logger.info("Detector findings already exists. Skipping detection.")
@@ -75,19 +74,18 @@ class Detect(ProjectVersionMisuseTask):
                 logger.error("Detector took longer than the maximum of %s seconds", self.timeout)
                 return Response.skip
 
-    def get_detector_arguments(self, findings_file_path: str, project: Project, version: ProjectVersion,
-                               misuse: Misuse) -> List[str]:
+    def get_detector_arguments(self, findings_file_path: str, project: Project, version: ProjectVersion) -> List[str]:
         project_compile = project.get_compile(version, self.compiles_base_path)
         findings_file = [self.key_findings_file, self.to_arg_path(findings_file_path)]
         src_project = [self.key_src_project, self.to_arg_path(project_compile.original_sources_path)]
         src_patterns = []
         classes_project = []
         classes_patterns = []
-        if misuse.patterns:
+        if version.patterns:
             src_patterns = [self.key_src_patterns, self.to_arg_path(project_compile.pattern_sources_path)]
         if version.compile_commands:
             classes_project = [self.key_classes_project, self.to_arg_path(project_compile.original_classes_path)]
-            if misuse.patterns:
+            if version.patterns:
                 classes_patterns = [self.key_classes_patterns, self.to_arg_path(project_compile.pattern_classes_path)]
         return findings_file + src_project + src_patterns + classes_project + classes_patterns
 
