@@ -40,7 +40,7 @@ class TestEvaluation:
 
         self.uut.process_project_version_misuse(project, version, misuse)
         actual_result = self.uut.results[0]
-        assert_equals(('project.version.misuse', 1), actual_result)
+        assert_equals(('project.misuse', 1), actual_result)
 
     def test_compares_graphs_correctly(self):
         self.create_result('project.version.misuse',
@@ -64,7 +64,7 @@ class TestEvaluation:
         self.uut.process_project_version_misuse(project, version, misuse)
 
         actual_result = self.uut.results[0]
-        assert_equals(('project.version.misuse', 1), actual_result)
+        assert_equals(('project.misuse', 1), actual_result)
 
     def test_handles_patterns(self):
         self.create_result('project.version.misuse', 'file: pattern0.java\n')
@@ -78,7 +78,7 @@ class TestEvaluation:
         self.uut.process_project_version_misuse(project, version, misuse)
 
         actual_result = self.uut.results[0]
-        assert_equals(('project.version.misuse', 1), actual_result)
+        assert_equals(('project.misuse', 1), actual_result)
 
     def test_writes_results_on_teardown(self):
         self.uut.results = {('NoHit', 0), ('PotentialHit', 1)}
