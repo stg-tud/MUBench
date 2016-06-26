@@ -7,6 +7,11 @@ from typing import Optional, List
 
 from benchmark.subprocesses.result_processing.visualize_results import Visualizer
 from benchmark.subprocesses.tasking import TaskRunner
+from benchmark.subprocesses.tasks.implementations.check import Check
+from benchmark.subprocesses.tasks.implementations.checkout import Checkout
+from benchmark.subprocesses.tasks.implementations.compile import Compile
+from benchmark.subprocesses.tasks.implementations.detect import Detect
+from benchmark.subprocesses.tasks.implementations.evaluate import Evaluation
 from benchmark.utils import command_line_util
 
 
