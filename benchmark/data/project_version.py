@@ -1,10 +1,10 @@
-import yaml
 from os import listdir
-from os.path import exists, pardir, isdir, realpath, basename
+from os.path import exists, isdir, basename, dirname
 from os.path import join
 from typing import List, Optional, Any, Dict, Set
 
-from benchmark.data.build_config import BuildConfig
+import yaml
+
 from benchmark.data.misuse import Misuse, Pattern
 
 
@@ -15,7 +15,7 @@ class ProjectVersion:
     def __init__(self, path: str):
         self._path = path  # type: str
         self._version_file = join(self._path, ProjectVersion.VERSION_FILE)  # type: str
-        self._misuses_dir = realpath(join(self._path, pardir, pardir, 'misuses'))  # type: str
+        self._misuses_dir = join(dirname(dirname(self._path)), 'misuses')  # type: str
         self._YAML = None
         self._MISUSES = None
         self._PATTERNS = None
