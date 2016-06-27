@@ -5,12 +5,12 @@ characteristics:
 crash: true
 description: >
   Fails to find view by id in onCreate().
+location:
+  file: AndroidContentView.java
+  method: onCreate(Bundle)
 fix:
-  commit: https://github.com/stg-tud/MUBench/blob/master/data/synthetic-androidactivity-1.java
   description: >
     Call setContentView() before calling findViewById().
-  files:
-  - name: src/AndroidContentView.java
 internal: false
 pattern:
 - single object

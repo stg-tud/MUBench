@@ -6,14 +6,12 @@ crash: true
 description: >
   The result of WPEditText.getText() may be null.
 location:
-  file: WordPress/src/main/java/org/wordpress/android/ui/posts/EditPostContentFragment.java
+  file: org/wordpress/android/ui/posts/EditPostContentFragment.java
   method: onClick(View)
 fix:
   commit: https://github.com/wordpress-mobile/WordPress-Android/commit/c21e5969154d1cafb15fd0becf252e8e81760b98
   description: >
     Check for null before using it.
-  files:
-  - name: WordPress/src/main/java/org/wordpress/android/ui/posts/EditPostContentFragment.java
   revision: c21e5969154d1cafb15fd0becf252e8e81760b98
 internal: true
 pattern:

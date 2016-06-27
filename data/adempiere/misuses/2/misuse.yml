@@ -8,13 +8,10 @@ description: >
   An encrypted message is decrypted and then converted back to a string, without
   specifying an explicit encoding. The fix specifies the encoding "UTF-8".
 location:
-  file: src/org/compiere/util/Secure.java
+  file: org/compiere/util/Secure.java
   method: decrypt(String)
 fix:
-  commit: http://sourceforge.net/p/adempiere/svn/1312/
-  files:
-  - diff: http://sourceforge.net/p/adempiere/svn/1312/tree/trunk/looks/src/org/compiere/util/Secure.java?diff=5139a2ef34309d2ec1827857:1311
-    name: src/org/compiere/util/Secure.java
+  commit: http://sourceforge.net/p/adempiere/svn/1312/tree/trunk/looks/src/org/compiere/util/Secure.java?diff=5139a2ef34309d2ec1827857:1311
   revision: 1312
 internal: false
 pattern:

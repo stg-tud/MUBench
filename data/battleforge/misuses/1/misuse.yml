@@ -8,13 +8,10 @@ description: >
   Encoded data is converted into a String for storing, without explicitely
   specifying an encoding. The fix introduces base64 encoding.
 location:
-  file: src/java/de/battleforge/util/BFProperties.java
+  file: de/battleforge/util/BFProperties.java
   method: "setProperty(BFProps, String, boolean)"
 fix:
-  commit: http://sourceforge.net/p/battleforge/code/878/
-  files:
-  - diff: http://sourceforge.net/p/battleforge/code/878/tree/trunk/de.battleforge/src/java/de/battleforge/util/BFProperties.java?diff=50ee84dee88f3d24b3d975fe:877
-    name: src/java/de/battleforge/util/BFProperties.java
+  commit: http://sourceforge.net/p/battleforge/code/878/tree/trunk/de.battleforge/src/java/de/battleforge/util/BFProperties.java?diff=50ee84dee88f3d24b3d975fe:877
   revision: 878
 internal: false
 pattern:

@@ -6,12 +6,13 @@ crash: false
 description: >
   Misses to flush FileChannel, such that the contents have not been written
   before the next attempt to read from the underlying resource.
+location:
+  file: ChannelFlush.java
+  method: misuse(ByteBuffer)
 fix:
   commit: https://github.com/stg-tud/MUBench/blob/master/data/synthetic-flush.java
   description: >
     Add a call to FileChannel.force() or close the channel.
-  files:
-  - name: src/ChannelFlush.java
 internal: false
 pattern:
 - single object

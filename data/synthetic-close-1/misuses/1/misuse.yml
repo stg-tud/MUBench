@@ -5,12 +5,13 @@ characteristics:
 crash: false
 description: >
   Misses to call Closeable.close().
+location:
+  file: Close.java
+  method: misuse(File)
 fix:
   commit: https://github.com/stg-tud/MUBench/blob/master/data/synthetic-close-1.java
   description: >
     Call close() after using the Closable.
-  files:
-  - name: src/Close.java
 internal: false
 pattern:
 - single object

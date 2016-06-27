@@ -6,14 +6,12 @@ crash: true
 description: >
   ObjectType.getImplicitPrototype() may return null.
 location:
-  file: src/com/google/javascript/jscomp/TypeCheck.java
+  file: com/google/javascript/jscomp/TypeCheck.java
   method: "checkInterfaceConflictProperties(NodeTraversal, Node, String, HashMap<String, ObjectType>, HashMap<String, ObjectType>, ObjectType)"
 fix:
   commit: https://github.com/google/closure-compiler/commit/d1cfe67977d8f3aaa85ec20c262171da394d5977
   description: >
     Check result for null before using.
-  files:
-  - name: src/com/google/javascript/jscomp/TypeCheck.java
   revision: d1cfe67977d8f3aaa85ec20c262171da394d5977
 internal: false
 pattern:

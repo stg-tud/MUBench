@@ -8,15 +8,13 @@ description: >
   Registers an IntentFilter to an arbitrary context, rather than the application
   context.
 location:
-  file: src/main/java/com/vaguehope/onosendai/update/AlarmReceiver.java
+  file: com/vaguehope/onosendai/update/AlarmReceiver.java
   method: "onReceive(Context, Intent)"
 fix:
   commit: https://github.com/haku/Onosendai/commit/0e2a7570ab4491d0c4680ef52ee1008bef33fc02
   description: >
     Retrieve the application context via Context.getApplicationContext()
     an register intent on it.
-  files:
-  - name: src/main/java/com/vaguehope/onosendai/update/AlarmReceiver.java
   revision: 0e2a7570ab4491d0c4680ef52ee1008bef33fc02
 internal: false
 pattern:

@@ -6,12 +6,13 @@ crash: false
 description: >
   Calls JFrame.setPreferredSize() after JFrame.pack(), such that the size
   is not respected when rendering the frame.
+location:
+  file: Pack1.java
+  method: "misuse(JFrame, Dimension)"
 fix:
   commit: https://github.com/stg-tud/MUBench/blob/master/data/synthetic-pack-1.java
   description: >
     Call JFrame.setPreferredSize() before JFrame.pack().
-  files:
-  - name: src/Pack1.java
 internal: false
 pattern:
 - single object

@@ -6,15 +6,12 @@ crash: true
 description: >
   Map.get() may return null.
 location:
-  file: source/org/jfree/chart/plot/CategoryPlot.java
+  file: org/jfree/chart/plot/CategoryPlot.java
   method: "removeDomainMarker(int, Marker, Layer, boolean)"
 fix:
-  commit: https://sourceforge.net/p/jfreechart/code/811/
+  commit: https://sourceforge.net/p/jfreechart/code/811/tree/trunk/source/org/jfree/chart/plot/CategoryPlot.java?diff=50b53b485fcbc92b6542a639:810
   description: >
     Check for null.
-  files:
-  - diff: https://sourceforge.net/p/jfreechart/code/811/tree/trunk/source/org/jfree/chart/plot/CategoryPlot.java?diff=50b53b485fcbc92b6542a639:810
-    name: source/org/jfree/chart/plot/CategoryPlot.java
   revision: 811
 internal: false
 pattern:

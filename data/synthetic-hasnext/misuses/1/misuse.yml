@@ -6,12 +6,13 @@ characteristics:
 crash: true
 description: >
   Misses to check that there is another element before calling Iterator.next().
+location:
+  file: HasNext.java
+  method: misuse(Collection<Object>)
 fix:
   commit: https://github.com/stg-tud/MUBench/blob/master/data/synthetic-hasnext.java
   description: >
     Check iterator.hasNext() or ensure size of the collection.
-  files:
-  - name: src/HasNext.java
 internal: false
 pattern:
 - multiple objects

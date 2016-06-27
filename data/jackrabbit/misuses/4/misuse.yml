@@ -7,13 +7,10 @@ description: >
   Check for BeanMap.get(key) == null may lead to wrong results. Fix uses
   BeanMap.containsKey(key) instead.
 location:
-  file: jackrabbit-core/src/main/java/org/apache/jackrabbit/core/config/BeanConfig.java
+  file: org/apache/jackrabbit/core/config/BeanConfig.java
   method: newInstance()
 fix:
-  commit: http://svn.apache.org/viewvc?view=revision&revision=696651
-  files:
-  - diff: http://svn.apache.org/viewvc/jackrabbit/trunk/jackrabbit-core/src/main/java/org/apache/jackrabbit/core/config/BeanConfig.java?r1=696651&r2=696650&pathrev=696651
-    name: jackrabbit-core/src/main/java/org/apache/jackrabbit/core/config/BeanConfig.java
+  commit: http://svn.apache.org/viewvc/jackrabbit/trunk/jackrabbit-core/src/main/java/org/apache/jackrabbit/core/config/BeanConfig.java?r1=696651&r2=696650&pathrev=696651
   revision: 696651
 internal: false
 pattern:

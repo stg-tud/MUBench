@@ -6,15 +6,12 @@ crash: false
 description: >
   DataOutputStream is left open.
 location:
-  file: src/sos/mrtd/SecureMessagingWrapper.java
+  file: sos/mrtd/SecureMessagingWrapper.java
   method: "readDO8E(DataInputStream, byte[])"
 fix:
-  commit: https://sourceforge.net/p/jmrtd/code/51/
+  commit: https://sourceforge.net/p/jmrtd/code/51/tree//passporthostapi/src/sos/mrtd/SecureMessagingWrapper.java?diff=5058d727fd48f84fd52d6740:50
   description: >
     Add a call to DataOutputStream.close()
-  files:
-  - diff: https://sourceforge.net/p/jmrtd/code/51/tree//passporthostapi/src/sos/mrtd/SecureMessagingWrapper.java?diff=5058d727fd48f84fd52d6740:50
-    name: src/sos/mrtd/SecureMessagingWrapper.java
   revision: 51
 internal: false
 pattern:

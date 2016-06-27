@@ -7,15 +7,12 @@ description: >
   Passes zero-bytes array to Cipher.doFinal(). (Problem specific to IBM
   JVM 6)
 location:
-  file: src/net/sourceforge/stripes/util/CryptoUtil.java
+  file: net/sourceforge/stripes/util/CryptoUtil.java
   method: encrypt(String)
 fix:
-  commit: https://sourceforge.net/p/stripes/code/900/
+  commit: https://sourceforge.net/p/stripes/code/900/tree/trunk/stripes/src/net/sourceforge/stripes/util/CryptoUtil.java?diff=51b8a06634309d64406bf084:899
   description: >
     Check array length and call other doFinal() variant, if it''s empty.
-  files:
-  - diff: https://sourceforge.net/p/stripes/code/900/tree/trunk/stripes/src/net/sourceforge/stripes/util/CryptoUtil.java?diff=51b8a06634309d64406bf084:899
-    name: src/net/sourceforge/stripes/util/CryptoUtil.java
   revision: 900
 internal: false
 pattern:

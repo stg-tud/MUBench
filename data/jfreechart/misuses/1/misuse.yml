@@ -9,16 +9,13 @@ description: >
   Iterates over two PathIterators from the same GeneralPath instead of
   one of the first path and one of the second.
 location:
-  file: source/org/jfree/chart/util/ShapeUtilities.java
+  file: org/jfree/chart/util/ShapeUtilities.java
   method: "equal(GeneralPath, GeneralPath)"
 fix:
-  commit: https://sourceforge.net/p/jfreechart/code/1025/
+  commit: https://sourceforge.net/p/jfreechart/code/1025/tree/trunk/source/org/jfree/chart/util/ShapeUtilities.java?diff=50b53b485fcbc92b6542a639:1024
   description: >
     Get second iterator from the second path object instead of both from
     the same.
-  files:
-  - diff: https://sourceforge.net/p/jfreechart/code/1025/tree/trunk/source/org/jfree/chart/util/ShapeUtilities.java?diff=50b53b485fcbc92b6542a639:1024
-    name: source/org/jfree/chart/util/ShapeUtilities.java
   revision: 1025
 internal: false
 pattern:

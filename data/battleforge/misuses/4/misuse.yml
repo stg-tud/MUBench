@@ -7,7 +7,7 @@ crash: false
 description: >
   Decoded data is converted to String without explicitly specifying an encoding.
 location:
-  file: src/java/de/battleforge/util/BFProperties.java
+  file: de/battleforge/util/BFProperties.java
   method: getProperty(BFProps)
 internal: false
 pattern:

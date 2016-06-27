@@ -8,13 +8,10 @@ description: >
   The particular stream is passed to QValueFactoryImpl.create() as a parameter, but
   should be closed by the method, as defined in its contract.
 location:
-  file: jackrabbit-spi-commons/src/main/java/org/apache/jackrabbit/spi/commons/value/QValueFactoryImpl.java
+  file: org/apache/jackrabbit/spi/commons/value/QValueFactoryImpl.java
   method: "BinaryQValue(InputStream, boolean)"
 fix:
-  commit: http://svn.apache.org/viewvc?view=revision&revision=698246
-  files:
-  - diff: http://svn.apache.org/viewvc/jackrabbit/trunk/jackrabbit-spi-commons/src/main/java/org/apache/jackrabbit/spi/commons/value/QValueFactoryImpl.java?r1=698246&r2=698245&pathrev=698246
-    name: jackrabbit-spi-commons/src/main/java/org/apache/jackrabbit/spi/commons/value/QValueFactoryImpl.java
+  commit: http://svn.apache.org/viewvc/jackrabbit/trunk/jackrabbit-spi-commons/src/main/java/org/apache/jackrabbit/spi/commons/value/QValueFactoryImpl.java?r1=698246&r2=698245&pathrev=698246
   revision: 698246
 internal: false
 pattern:

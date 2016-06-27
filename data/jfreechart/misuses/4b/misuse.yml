@@ -7,15 +7,12 @@ crash: true
 description: >
   StatisticalCategoryDataset.getStDevValue() may return null.
 location:
-  file: source/org/jfree/chart/renderer/category/StatisticalBarRenderer.java
+  file: org/jfree/chart/renderer/category/StatisticalBarRenderer.java
   method: "drawVerticalItem(Graphics2D, CategoryItemRendererState, Rectangle2D, CategoryPlot, CategoryAxis, ValueAxis, StatisticalCategoryDataset, int, int)"
 fix:
-  commit: https://sourceforge.net/p/jfreechart/code/164/
+  commit: https://sourceforge.net/p/jfreechart/code/164/tree/trunk/source/org/jfree/chart/renderer/category/StatisticalBarRenderer.java?diff=50b53b485fcbc92b6542a639:163
   description: >
     Check for null.
-  files:
-  - diff: https://sourceforge.net/p/jfreechart/code/164/tree/trunk/source/org/jfree/chart/renderer/category/StatisticalBarRenderer.java?diff=50b53b485fcbc92b6542a639:163
-    name: source/org/jfree/chart/renderer/category/StatisticalBarRenderer.java
   revision: 164
 internal: true
 pattern:

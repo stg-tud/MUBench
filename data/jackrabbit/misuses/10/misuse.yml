@@ -6,13 +6,10 @@ crash: true
 description: >
   HierarchyEntry.getParent() may return null.
 location:
-  file: jackrabbit-jcr2spi/src/main/java/org/apache/jackrabbit/jcr2spi/state/ItemState.java
+  file: org/apache/jackrabbit/jcr2spi/state/ItemState.java
   method: getParent()
 fix:
-  commit: http://svn.apache.org/viewvc?view=revision&revision=1240198
-  files:
-  - diff: http://svn.apache.org/viewvc/jackrabbit/trunk/jackrabbit-jcr2spi/src/main/java/org/apache/jackrabbit/jcr2spi/state/ItemState.java?r1=1240198&r2=1240197&pathrev=1240198
-    name: jackrabbit-jcr2spi/src/main/java/org/apache/jackrabbit/jcr2spi/state/ItemState.java
+  commit: http://svn.apache.org/viewvc/jackrabbit/trunk/jackrabbit-jcr2spi/src/main/java/org/apache/jackrabbit/jcr2spi/state/ItemState.java?r1=1240198&r2=1240197&pathrev=1240198
   revision: 1240198
 internal: true
 pattern:

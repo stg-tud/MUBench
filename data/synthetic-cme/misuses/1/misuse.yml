@@ -39,12 +39,13 @@ description: >
   Unknown cause:
    - http://stackoverflow.com/questions/9027413/java-concurrentmodificationexception
    - http://stackoverflow.com/questions/34062920/titan-concurrentmodificationexception
+location:
+  file: CME.java
+  method: misuse(Collection<Object>)
 fix:
   commit: https://github.com/stg-tud/MUBench/blob/master/data/synthetic-cme.java
   description: >
     Modify the collection via the Iterator.
-  files:
-  - name: src/CME.java
 internal: false
 pattern:
 - multiple objects

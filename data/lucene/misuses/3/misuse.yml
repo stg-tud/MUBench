@@ -7,13 +7,10 @@ crash: true
 description: >
   Misses to check File.exists()/File.mkdirs() before calling File.createNewFile().
 location:
-  file: src/java/org/apache/lucene/store/FSDirectory.java
+  file: org/apache/lucene/store/FSDirectory.java
   method: obtain()
 fix:
-  commit: https://git-wip-us.apache.org/repos/asf/lucene-solr/commit/1e2715d18d980e4f8c8cb5ac12abf3752851ee10
-  files:
-  - diff: http://svn.apache.org/viewvc/lucene/java/trunk/src/java/org/apache/lucene/store/FSDirectory.java?r1=150347&r2=150346&pathrev=150347
-    name: src/java/org/apache/lucene/store/FSDirectory.java
+  commit: http://svn.apache.org/viewvc/lucene/java/trunk/src/java/org/apache/lucene/store/FSDirectory.java?r1=150347&r2=150346&pathrev=150347
   revision: 1e2715d18d980e4f8c8cb5ac12abf3752851ee10
 internal: false
 pattern:

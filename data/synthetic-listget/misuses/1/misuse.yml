@@ -5,12 +5,13 @@ characteristics:
 crash: true
 description: >
   Call List.get() without checking if the index is valid.
+location:
+  file: ListGet.java
+  method: "misuse(List<Object>, int)"
 fix:
   commit: https://github.com/stg-tud/MUBench/blob/master/data/synthetic-listget.java
   description: >
     Check that index is between 0 and List.size() - 1.
-  files:
-  - name: src/ListGet.java
 internal: false
 pattern:
 - single object

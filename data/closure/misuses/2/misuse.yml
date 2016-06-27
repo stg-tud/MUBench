@@ -6,14 +6,12 @@ crash: true
 description: >
   Parameters.getParameter() may throw CmdLineException.
 location:
-  file: src/com/google/javascript/jscomp/CommandLineRunner.java
+  file: com/google/javascript/jscomp/CommandLineRunner.java
   method: parseArguments(Parameters)
 fix:
   commit: https://github.com/google/closure-compiler/commit/43c245f0ff8d409e81e25687e69d34666b7cf26a
   description: >
     Surround with try/catch.
-  files:
-  - name: src/com/google/javascript/jscomp/CommandLineRunner.java
   revision: 43c245f0ff8d409e81e25687e69d34666b7cf26a
 internal: false
 pattern:

@@ -8,13 +8,10 @@ description: >
   The results of ConfigurationParser.getAttribute() should be processed
   by ConfigurationParser.replaceVariables(). This step was missing.
 location:
-  file: jackrabbit-core/src/main/java/org/apache/jackrabbit/core/config/RepositoryConfigurationParser.java
+  file: org/apache/jackrabbit/core/config/RepositoryConfigurationParser.java
   method: parseClusterConfig(Element)
 fix:
-  commit: http://svn.apache.org/viewvc?view=revision&revision=695766
-  files:
-  - diff: http://svn.apache.org/viewvc/jackrabbit/trunk/jackrabbit-core/src/main/java/org/apache/jackrabbit/core/config/RepositoryConfigurationParser.java?r1=695766&r2=695765&pathrev=695766
-    name: jackrabbit-core/src/main/java/org/apache/jackrabbit/core/config/RepositoryConfigurationParser.java
+  commit: http://svn.apache.org/viewvc/jackrabbit/trunk/jackrabbit-core/src/main/java/org/apache/jackrabbit/core/config/RepositoryConfigurationParser.java?r1=695766&r2=695765&pathrev=695766
   revision: 695766
 internal: true
 pattern:

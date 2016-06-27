@@ -6,12 +6,13 @@ crash: false
 description: >
   Does not use the result of BigInteger.setScale(), which (despite its
   name) returns a new instance, instead of modifying the receiver.
+location:
+  file: BigInt.java
+  method: misuse()
 fix:
   commit: https://github.com/stg-tud/MUBench/blob/master/data/synthetic-bigint.java
   description: >
     Continue to work on the new instance.
-  files:
-  - name: src/BigInt.java
 internal: false
 pattern:
 - single object

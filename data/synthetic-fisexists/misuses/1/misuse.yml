@@ -6,12 +6,13 @@ characteristics:
 crash: true
 description: >
   Open a FileInputStream on a non-existing file throws.
+location:
+  file: FISExists.java
+  method: misuse(File)
 fix:
   commit: https://github.com/stg-tud/MUBench/blob/master/data/synthetic-fisexists.java
   description: >
     Check File.exists() first.
-  files:
-  - name: src/FISExists.java
 internal: false
 pattern:
 - multiple objects

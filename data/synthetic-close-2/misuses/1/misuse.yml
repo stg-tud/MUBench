@@ -6,12 +6,13 @@ crash: false
 description: >
   Calls Closeable.close() outside of finally block, which might fail to
   close the resource in case of an exception.
+location:
+  file: CloseFinally.java
+  method: misuse(File)
 fix:
   commit: https://github.com/stg-tud/MUBench/blob/master/data/synthetic-close-2.java
   description: >
     Call close() in finally block.
-  files:
-  - name: src/CloseFinally.java
 internal: false
 pattern:
 - single object

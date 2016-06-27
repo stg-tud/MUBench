@@ -6,13 +6,10 @@ crash: true
 description: >
   Map.get() may return null.
 location:
-  file: jackrabbit-jcr-server/src/main/java/org/apache/jackrabbit/webdav/jcr/JcrDavException.java
+  file: org/apache/jackrabbit/webdav/jcr/JcrDavException.java
   method: JcrDavException(RepositoryException)
 fix:
-  commit: http://svn.apache.org/viewvc?view=revision&revision=677893
-  files:
-  - diff: http://svn.apache.org/viewvc/jackrabbit/trunk/jackrabbit-jcr-server/src/main/java/org/apache/jackrabbit/webdav/jcr/JcrDavException.java?r1=677893&r2=677892&pathrev=677893
-    name: jackrabbit-jcr-server/src/main/java/org/apache/jackrabbit/webdav/jcr/JcrDavException.java
+  commit: http://svn.apache.org/viewvc/jackrabbit/trunk/jackrabbit-jcr-server/src/main/java/org/apache/jackrabbit/webdav/jcr/JcrDavException.java?r1=677893&r2=677892&pathrev=677893
   revision: 677893
 internal: false
 pattern:

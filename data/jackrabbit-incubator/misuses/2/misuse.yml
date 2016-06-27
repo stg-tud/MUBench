@@ -6,13 +6,10 @@ crash: true
 description: >
   Below !File.exists() File.mkdir() was called, instead of File.mkdirs().
 location:
-  file: contrib/bdb-persistence/src/java/org/apache/jackrabbit/core/state/bdb/BerkeleyDBPersistenceManager.java
+  file: org/apache/jackrabbit/core/state/bdb/BerkeleyDBPersistenceManager.java
   method: init(PMContext)
 fix:
-  commit: http://svn.apache.org/viewvc?view=revision&revision=263892
-  files:
-  - diff: http://svn.apache.org/viewvc/incubator/jackrabbit/trunk/contrib/bdb-persistence/src/java/org/apache/jackrabbit/core/state/bdb/BerkeleyDBPersistenceManager.java?r1=263892&r2=263891&pathrev=263892
-    name: contrib/bdb-persistence/src/java/org/apache/jackrabbit/core/state/bdb/BerkeleyDBPersistenceManager.java
+  commit: http://svn.apache.org/viewvc/incubator/jackrabbit/trunk/contrib/bdb-persistence/src/java/org/apache/jackrabbit/core/state/bdb/BerkeleyDBPersistenceManager.java?r1=263892&r2=263891&pathrev=263892
   revision: 263892
 internal: false
 pattern:

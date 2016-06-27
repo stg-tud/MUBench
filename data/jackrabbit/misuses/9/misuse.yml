@@ -8,13 +8,10 @@ description: >
   expects an URI, but was give a prefix instead. The fix resolves the prefix to
   a URI using the storage.
 location:
-  file: jackrabbit-jcr2spi/src/main/java/org/apache/jackrabbit/jcr2spi/NamespaceRegistryImpl.java
+  file: org/apache/jackrabbit/jcr2spi/NamespaceRegistryImpl.java
   method: unregisterNamespace(String)
 fix:
-  commit: http://svn.apache.org/viewvc?view=revision&revision=1133332
-  files:
-  - diff: http://svn.apache.org/viewvc/jackrabbit/trunk/jackrabbit-jcr2spi/src/main/java/org/apache/jackrabbit/jcr2spi/NamespaceRegistryImpl.java?r1=1133332&r2=1133331&pathrev=1133332
-    name: jackrabbit-jcr2spi/src/main/java/org/apache/jackrabbit/jcr2spi/NamespaceRegistryImpl.java
+  commit: http://svn.apache.org/viewvc/jackrabbit/trunk/jackrabbit-jcr2spi/src/main/java/org/apache/jackrabbit/jcr2spi/NamespaceRegistryImpl.java?r1=1133332&r2=1133331&pathrev=1133332
   revision: 1133332
 internal: true
 pattern:

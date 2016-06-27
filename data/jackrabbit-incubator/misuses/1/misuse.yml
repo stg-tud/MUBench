@@ -10,15 +10,18 @@ description: >
   (which delegates to FileSytem.fileExists()). FileSystem.deleteFile() throws, if
   the file does not exist. A refactoring was performed in the course of the fix, to
   remove duplication.
+location:
+  file: "?"
+  method: "?"
 fix:
   commit: http://svn.apache.org/viewvc?view=revision&revision=55854
   files:
   - diff: http://svn.apache.org/viewvc/incubator/jackrabbit/trunk/src/java/org/apache/jackrabbit/core/state/obj/ObjectPersistenceManager.java?r1=55854&r2=55853&pathrev=55854
-    name: src/java/org/apache/jackrabbit/core/state/obj/ObjectPersistenceManager.java
+    name: org/apache/jackrabbit/core/state/obj/ObjectPersistenceManager.java
   - diff: http://svn.apache.org/viewvc/incubator/jackrabbit/trunk/src/java/org/apache/jackrabbit/core/state/xml/XMLPersistenceManager.java?r1=55854&r2=55853&pathrev=55854
-    name: src/java/org/apache/jackrabbit/core/state/xml/XMLPersistenceManager.java
+    name: org/apache/jackrabbit/core/state/xml/XMLPersistenceManager.java
   - diff: http://svn.apache.org/viewvc/incubator/jackrabbit/trunk/src/java/org/apache/jackrabbit/core/fs/FileSystemResource.java?r1=55854&r2=55853&pathrev=55854
-    name: src/java/org/apache/jackrabbit/core/fs/FileSystemResource.java
+    name: org/apache/jackrabbit/core/fs/FileSystemResource.java
   revision: 55854
 internal: true
 pattern:

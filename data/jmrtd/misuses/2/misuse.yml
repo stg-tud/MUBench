@@ -7,15 +7,12 @@ description: >
   Passes Cipher.ENCRYPT_MODE to Cipher.init(), but uses the cipher for
   decryption.
 location:
-  file: src/sos/mrtd/PassportAuthService.java
+  file: sos/mrtd/PassportAuthService.java
   method: doAA(PublicKey)
 fix:
-  commit: https://sourceforge.net/p/jmrtd/code/67/
+  commit: https://sourceforge.net/p/jmrtd/code/67/tree//passporthostapi/src/sos/mrtd/PassportAuthService.java?diff=5058d727fd48f84fd52d6740:66
   description: >
     Pass Ciphter.DECRYPT_MODE instead.
-  files:
-  - diff: https://sourceforge.net/p/jmrtd/code/67/tree//passporthostapi/src/sos/mrtd/PassportAuthService.java?diff=5058d727fd48f84fd52d6740:66
-    name: src/sos/mrtd/PassportAuthService.java
   revision: 67
 internal: false
 pattern:

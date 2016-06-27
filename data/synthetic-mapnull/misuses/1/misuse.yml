@@ -6,12 +6,13 @@ crash: false
 description: >
   Checks the return value of Map.put() to check whether the key was set
   before. If the Map allows null values, this usage breaks.
+location:
+  file: MapNull.java
+  method: "misuse(Map<String, Object>)"
 fix:
   commit: https://github.com/stg-tud/MUBench/blob/master/data/synthetic-mapnull.java
   description: >
     Use Map.containsKey() to check whether a key is set.
-  files:
-  - name: src/MapNull.java
 internal: false
 pattern:
 - single object

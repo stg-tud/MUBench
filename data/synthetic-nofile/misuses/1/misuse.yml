@@ -5,12 +5,13 @@ characteristics:
 crash: true
 description: >
   Tries to write to a file that may not exist.
+location:
+  file: NoFile.java
+  method: "misuse(Path, byte[])"
 fix:
   commit: https://github.com/stg-tud/MUBench/blob/master/data/synthetic-nofile.java
   description: >
     Pass OpenOption.CREATE to the write call.
-  files:
-  - name: src/NoFile.java
 internal: false
 pattern:
 - single node

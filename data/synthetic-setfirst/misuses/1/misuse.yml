@@ -7,12 +7,13 @@ crash: true
 description: >
   To get one (arbitrary) value from a set you can call Set.iterator().next(),
   but this throws if the set is empty.
+location:
+  file: SetFirst.java
+  method: misuse(Set<Object>)
 fix:
   commit: https://github.com/stg-tud/MUBench/blob/master/data/synthetic-setfirst.java
   description: >
     Check that Set.isEmpty() is false.
-  files:
-  - name: src/SetFirst.java
 internal: false
 pattern:
 - multiple objects

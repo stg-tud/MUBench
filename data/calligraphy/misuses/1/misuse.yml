@@ -7,14 +7,12 @@ crash: true
 description: >
   Context.obtainStyledAttributes().getString() may throw on some platforms.
 location:
-  file: calligraphy/src/main/java/uk/co/chrisjenx/calligraphy/CalligraphyUtils.java
+  file: uk/co/chrisjenx/calligraphy/CalligraphyUtils.java
   method: "pullFontPathFromStyle(Context, AttributeSet, int)"
 fix:
   commit: https://github.com/chrisjenx/Calligraphy/commit/0f15e9199c02771408566071884b099db7f54b64
   description: >
     Catch the exception and do nothing.
-  files:
-  - name: calligraphy/src/main/java/uk/co/chrisjenx/calligraphy/CalligraphyUtils.java
   revision: 0f15e9199c02771408566071884b099db7f54b64
 internal: false
 pattern:

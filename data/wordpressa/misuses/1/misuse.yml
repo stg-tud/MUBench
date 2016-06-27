@@ -7,14 +7,12 @@ description: >
   Calls ListFragment.getListView() without checking that ListFragment.isAdded(),
   which might lead to crashes if the view is not yet initialized.
 location:
-  file: WordPress/src/main/java/org/wordpress/android/ui/notifications/NotificationsListFragment.java
+  file: org/wordpress/android/ui/notifications/NotificationsListFragment.java
   method: restoreListScrollPosition()
 fix:
   commit: https://github.com/wordpress-mobile/WordPress-Android/commit/7a1e5a505c8d56794bb43954b8ba48cab7757238
   description: >
     Ensure that ListFragment.isAdded().
-  files:
-  - name: WordPress/src/main/java/org/wordpress/android/ui/notifications/NotificationsListFragment.java
   revision: 7a1e5a505c8d56794bb43954b8ba48cab7757238
 internal: false
 pattern:
