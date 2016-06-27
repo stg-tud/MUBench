@@ -7,7 +7,9 @@ crash: false
 description: >
   A string is converted to bytes without specifying an explicit encoding.
   The bytes are then passed to Cipher.doFinal(). The fix specifies the encoding "UTF-8".
-file: src/org/compiere/util/Secure.java
+localtion:
+  file: src/org/compiere/util/Secure.java
+  method: encrypt(String)
 fix:
   commit: http://sourceforge.net/p/adempiere/svn/1312/
   files:

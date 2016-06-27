@@ -1,11 +1,15 @@
+import com.google.common.collect.ImmutableSet;
+import com.google.javascript.rhino.jstype.ObjectType;
 
 class CheckNull {
-  void pattern(ObjectType interfaceType) {
+  Set<String> pattern(ObjectType interfaceType) {
     ObjectType proto = interfaceType.getImplicitPrototype();
+    Set<String> currentPropertyNames;
     if (proto == null) {
-      // do fallback handling...
+      currentPropertyNames = ImmutableSet.of();
     } else {
-      // do you thing
+      currentPropertyNames = implicitProto.getOwnPropertyNames();
     }
+    return currentPropertyNames;
   }
 }

@@ -2,7 +2,7 @@ import java.security.Key;
 
 import javax.crypto.Cipher;
 
-class ExplicitEncoding {
+class SpecifyEncryptEncoding {
   byte[] pattern(Key key, String value) {
     Cipher c = Cipher.getInstance("AES");
     c.init(Cipher.ENCRYPT_MODE, key);

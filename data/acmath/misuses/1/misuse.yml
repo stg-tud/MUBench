@@ -5,7 +5,9 @@ characteristics:
 crash: true
 description: >
   SubLine.intersection() may return null.
-file: commons/proper/math/trunk/src/main/java/org/apache/commons/math3/geometry/euclidean/threed/SubLine.java
+location:
+  file: commons/proper/math/trunk/src/main/java/org/apache/commons/math3/geometry/euclidean/threed/SubLine.java
+  method: "intersection(SubLine subLine, boolean includeEndPoints)"
 fix:
   commit: https://git-wip-us.apache.org/repos/asf/commons-math.git/commit/d270055e874148a2742604be36ab977eec030fba
   description: >

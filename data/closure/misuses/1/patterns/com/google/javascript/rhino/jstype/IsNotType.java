@@ -4,8 +4,12 @@ import com.google.javascript.rhino.jstype.UnionTypeBuilder;
 import com.google.javascript.rhino.jstype.JSType;
 
 public class IsNotType {	
-	public boolean pattern(UnionTypeBuilder builder) {
+	public JSType pattern(UnionTypeBuilder builder) {
     JSType result = builder.build();
-    return result.isNoType();
+    if(!result.isNoType()) {
+      return result;
+    } else {
+      return null; // default value
+    }
 	}
 }

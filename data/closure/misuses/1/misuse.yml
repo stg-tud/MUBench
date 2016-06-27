@@ -7,7 +7,9 @@ crash: false
 description: >
   UnionTypeBuilder.build() returns a JSType that can never be null. Branching
   on a null check therefore results in dead code.
-file: src/com/google/javascript/rhino/jstype/UnionType.java
+location:
+  file: src/com/google/javascript/rhino/jstype/UnionType.java
+  metho: meet(JSType)
 fix:
   commit: https://github.com/google/closure-compiler/commit/67289ae4cbaba3ae70cd2e8fb92f3f2898039dfb
   description: >

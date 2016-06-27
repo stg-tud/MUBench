@@ -7,7 +7,9 @@ crash: false
 description: >
   Encoded data is converted into a String for storing, without explicitely
   specifying an encoding. The fix introduces base64 encoding.
-file: src/java/de/battleforge/util/BFProperties.java
+location:
+  file: src/java/de/battleforge/util/BFProperties.java
+  method: "setProperty(BFProps, String, boolean)"
 fix:
   commit: http://sourceforge.net/p/battleforge/code/878/
   files:

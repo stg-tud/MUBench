@@ -3,7 +3,7 @@ import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.util.TypedValue;
 
-class HandleException {
+class HandleNoThemeFontPath {
   String pattern(Context context, int styleId, int attributeId) {
     Resources.Theme theme = context.getTheme();
     TypedValue value = new TypedValue();
@@ -12,8 +12,9 @@ class HandleException {
     try {
       return typedArray.getString(0);
     } catch (Exception ignore) {
-      // Failed for some reason.
       return null;
+    } finally {
+      typedArray.recycle();
     }
   }
 }

@@ -6,7 +6,9 @@ characteristics:
 crash: true
 description: >
   Theme.obtainStyledAttributes().getString() may throw on some platforms.
-file: calligraphy/src/main/java/uk/co/chrisjenx/calligraphy/CalligraphyUtils.java
+location:
+  file: calligraphy/src/main/java/uk/co/chrisjenx/calligraphy/CalligraphyUtils.java
+  method: "pullFontPathFromTheme(Context, int, int)"
 fix:
   commit: https://github.com/chrisjenx/Calligraphy/commit/0f15e9199c02771408566071884b099db7f54b64
   description: >

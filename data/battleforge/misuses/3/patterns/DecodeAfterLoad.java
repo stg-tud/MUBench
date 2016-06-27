@@ -4,7 +4,7 @@ import javax.crypto.Cipher;
 
 import org.apache.axis.encoding.Base64;
 
-class ExplicitEncoding {
+class DecodeAfterLoad {
   String pattern(Key key, String value) {
     Cipher c = Cipher.getInstance("AES");
     c.init(Cipher.DECRYPT_MODE, key);
