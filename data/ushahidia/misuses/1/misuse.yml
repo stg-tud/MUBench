@@ -5,6 +5,9 @@ characteristics:
 crash: true
 description: >
   Fails to release Cursor.
+location:
+  file: Core/src/com/ushahidi/android/app/database/OpenGeoSmsDao.java
+  method: getReportState(long)
 fix:
   commit: https://github.com/ushahidi/Ushahidi_Android/commit/16adf0c3cfc9ebef01e7e9042b13d3b5b4da965f
   description: >

@@ -1,11 +1,14 @@
 api:
 - android.content.Intent
 characteristics:
-- missing precondition/parameter constraint
+- wrong parameter
 crash: true
 description: >
   Passes invalid mime-type to Intent.setDataAndType().
   http://stackoverflow.com/questions/6573541/no-intent-to-view-jpg-on-honeycomb
+location:
+  file: main/src/cgeo/geocaching/cgeoimages.java
+  method: viewImageInStandardApp(BitmapDrawable)
 fix:
   commit: https://github.com/cgeo/cgeo/commit/7bc931e7b5fcab1953b1fd5cb4535fff4e743591
   description: >

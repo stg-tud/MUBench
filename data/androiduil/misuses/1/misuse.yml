@@ -5,6 +5,9 @@ characteristics:
 crash: true
 description: >
   Environment.getExternalStorageState() may throw NullPointerException.
+location:
+  file: library/src/com/nostra13/universalimageloader/utils/StorageUtils.java
+  method: "getCacheDirectory(Context, boolean)"
 fix:
   commit: https://github.com/nostra13/Android-Universal-Image-Loader/commit/54a9038d7cc13fd46a922ce1c059610d0690115d
   description: >

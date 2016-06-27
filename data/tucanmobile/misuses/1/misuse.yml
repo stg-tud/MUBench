@@ -5,6 +5,9 @@ characteristics:
 crash: true
 description: >
   Calls Dialog.dismiss() on dialog that is not showing.
+location:
+  file: src/com/dalthed/tucan/Connection/SimpleSecureBrowser.java
+  method: onPostExecute(AnswerObject)
 fix:
   commit: https://github.com/Tyde/TuCanMobile/commit/02e046e5cc53ad218264dc28a4b96941f2902e38
   description: >

@@ -1,5 +1,0 @@
-name: Apache Tomcat 5
-repository:
-  type: svn
-  url: http://svn.apache.org/repos/asf/tomcat/jasper/trunk/jasper2/
-url: http://tomcat.apache.org/

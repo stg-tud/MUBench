@@ -5,6 +5,9 @@ characteristics:
 crash: false
 description: >
   Requests Cipher "Blowfish", which returns unsafe default configuration.
+location:
+  file: source/org/jSyncManager/Conduit/NSMobileMessenger/NSMobileMessenger.java
+  method: "writeMessageToServer(String, String, String, MessageRecord, HashMap, String, MessageOwnerRecord, String)"
 fix:
   commit: https://sourceforge.net/p/tap-apps/code/62/
   description: >
