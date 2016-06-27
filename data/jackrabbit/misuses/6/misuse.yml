@@ -5,6 +5,9 @@ characteristics:
 crash: true
 description: >
   IOManager.getDetector() may return null.
+location:
+  file: jackrabbit-jcr-server/src/main/java/org/apache/jackrabbit/server/io/DefaultHandler.java
+  method: detect(String)
 fix:
   commit: http://svn.apache.org/viewvc?view=revision&revision=880743
   files:

@@ -6,6 +6,9 @@ crash: false
 description: >
   Check for BeanMap.get(key) == null may lead to wrong results. Fix uses
   BeanMap.containsKey(key) instead.
+location:
+  file: jackrabbit-core/src/main/java/org/apache/jackrabbit/core/config/BeanConfig.java
+  method: newInstance()
 fix:
   commit: http://svn.apache.org/viewvc?view=revision&revision=696651
   files:

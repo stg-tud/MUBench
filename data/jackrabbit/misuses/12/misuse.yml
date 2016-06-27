@@ -7,6 +7,9 @@ crash: true
 description: >
   Map.get() may return null and RepositoryConfig.create() expects non-null
   parameter.
+location:
+  file: jackrabbit-jca/src/main/java/org/apache/jackrabbit/jca/JCARepositoryManager.java
+  method: "createNonTransientRepository(Map<String, String>)"
 fix:
   commit: http://svn.apache.org/viewvc?view=revision&revision=1232831
   files:

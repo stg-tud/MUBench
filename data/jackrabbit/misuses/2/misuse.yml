@@ -5,6 +5,9 @@ characteristics:
 crash: true
 description: >
   Map.get() may return null.
+location:
+  file: jackrabbit-jcr-server/src/main/java/org/apache/jackrabbit/webdav/jcr/JcrDavException.java
+  method: JcrDavException(RepositoryException)
 fix:
   commit: http://svn.apache.org/viewvc?view=revision&revision=677893
   files:

@@ -1,12 +1,15 @@
 api:
 - org.apache.jackrabbit.jcr2spi.NamespaceStorage
 characteristics:
-- missing call
+- wrong parameter
 crash: true
 description: >
-  NamespaceRegistryImpl.unregisterNamespace() passes its parameter 'prefix'
-  directly to NamespaceStorage.unregisterNamespace(uri). Fix passes it through NamespaceStorage.getURI()
-  first.
+  NamespaceStorage maps from prefixes to URIs. It's method unregisterNamespace
+  expects an URI, but was give a prefix instead. The fix resolves the prefix to
+  a URI using the storage.
+location:
+  file: jackrabbit-jcr2spi/src/main/java/org/apache/jackrabbit/jcr2spi/NamespaceRegistryImpl.java
+  method: unregisterNamespace(String)
 fix:
   commit: http://svn.apache.org/viewvc?view=revision&revision=1133332
   files:

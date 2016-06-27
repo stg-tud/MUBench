@@ -6,6 +6,9 @@ crash: true
 description: >
   PreparedStatement.setFetchSize(x) and PreparedStatement.setMaxRows(y)
   have the constraint x <= y iff y > 0.
+location:
+  file: jackrabbit-core/src/main/java/org/apache/jackrabbit/core/util/db/ConnectionHelper.java
+  method: "reallyExec(String, Object[], boolean, int)"
 fix:
   commit: http://svn.apache.org/viewvc?view=revision&revision=1178892
   files:

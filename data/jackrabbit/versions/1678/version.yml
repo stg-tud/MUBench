@@ -5,4 +5,5 @@ build:
   src: jackrabbit-jcr-server/src/main/java/
 misuses:
 - '3'
+- '3a'
 revision: 677893

@@ -5,6 +5,9 @@ characteristics:
 crash: true
 description: >
   ItemDate.getState() may be null.
+location:
+  file: jackrabbit-core/src/main/java/org/apache/jackrabbit/core/ItemManager.java
+  method: "canRead(ItemData, Path)"
 fix:
   commit: http://svn.apache.org/viewvc?view=revision&revision=656282
   files:

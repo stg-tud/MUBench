@@ -5,6 +5,9 @@ characteristics:
 crash: true
 description: >
   Cipher.init may throw InvalidKeyException.
+location:
+  file: src/main/java/com/itextpdf/text/pdf/PdfPublicKeySecurityHandler.java
+  method: 
 fix:
   commit: https://sourceforge.net/p/itext/code/5091/
   description: >

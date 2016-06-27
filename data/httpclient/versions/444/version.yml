@@ -6,4 +6,5 @@ build:
   src: src/java/
 misuses:
 - '2'
+- '3'
 revision: 160490
