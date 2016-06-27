@@ -8,6 +8,9 @@ crash: false
 description: >
   Iterates over two PathIterators from the same GeneralPath instead of
   one of the first path and one of the second.
+location:
+  file: source/org/jfree/chart/util/ShapeUtilities.java
+  method: "equal(GeneralPath, GeneralPath)"
 fix:
   commit: https://sourceforge.net/p/jfreechart/code/1025/
   description: >

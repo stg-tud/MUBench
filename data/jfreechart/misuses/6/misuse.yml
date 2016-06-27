@@ -6,6 +6,9 @@ characteristics:
 crash: true
 description: >
   CategoryPlot.getDataset() may return null. The check for null was flipped.
+location:
+  file: source/org/jfree/chart/renderer/category/AbstractCategoryItemRenderer.java
+  method: 
 fix:
   commit: https://sourceforge.net/p/jfreechart/code/2266/
   description: >

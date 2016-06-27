@@ -5,6 +5,9 @@ characteristics:
 crash: true
 description: >
   Map.get() may return null.
+location:
+  file: source/org/jfree/chart/plot/CategoryPlot.java
+  method: "removeRangeMarker(int, Marker, Layer, boolean)"
 fix:
   commit: https://sourceforge.net/p/jfreechart/code/811/
   description: >

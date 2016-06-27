@@ -6,6 +6,9 @@ characteristics:
 crash: true
 description: >
   PlotRenderingInfo.getOwner() may return null.
+location:
+  file: source/org/jfree/chart/axis/Axis.java
+  method: "drawLabel(String, Graphics2D, Rectangle2D, Rectangle2D, RectangleEdge, AxisState, PlotRenderingInfo)"
 fix:
   commit: https://sourceforge.net/p/jfreechart/code/103/
   description: >

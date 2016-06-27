@@ -5,6 +5,9 @@ characteristics:
 crash: true
 description: >
   XYPlot.getRendererForDataset() may return null.
+location:
+  file: source/org/jfree/chart/plot/XYPlot.java
+  method: getDataRange(ValueAxis)
 fix:
   commit: https://sourceforge.net/p/jfreechart/code/2183/
   description: >
