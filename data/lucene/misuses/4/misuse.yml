@@ -6,6 +6,9 @@ characteristics:
 crash: true
 description: >
   MultiFields.getDeletedDocs() may return null.
+location:
+  file: contrib/benchmark/src/java/org/apache/lucene/benchmark/byTask/tasks/DeleteByPercentTask.java
+  method: doLogic()
 fix:
   commit: https://git-wip-us.apache.org/repos/asf/lucene-solr/commit/f81a5d9bf6fdcdab23bff680dee8075209bae8cf
   files:

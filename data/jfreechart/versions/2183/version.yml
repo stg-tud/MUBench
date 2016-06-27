@@ -4,5 +4,5 @@ build:
   - gradle :compileJava
   src: source/
 misuses:
-- '7'
+- '5'
 revision: 2183

@@ -1,5 +1,0 @@
-build:
-  src: jackrabbit/src/test/java/
-misuses:
-- '1'
-revision: 430715

@@ -7,6 +7,9 @@ crash: false
 description: >
   PersistentDateTime.nullSafeGet() may return null, while constructor
   of Interval expects non-null parameters.
+location:
+  file: JodaTimeContrib/hibernate/src/java/org/joda/time/contrib/hibernate/PersistentInterval.java
+  method: "nullSafeGet(ResultSet, String[], SessionImplementor, Object)"
 fix:
   commit: https://github.com/JodaOrg/joda-time/commit/4f0fa2ece24061b8e47e793ada1cb1b6804df334
   files:

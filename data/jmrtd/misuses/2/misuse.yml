@@ -1,11 +1,14 @@
 api:
 - javax.crypto.Cipher
 characteristics:
-- missing precondition/parameter constraint
+- wrong parameter
 crash: false
 description: >
   Passes Cipher.ENCRYPT_MODE to Cipher.init(), but uses the cipher for
   decryption.
+location:
+  file: src/sos/mrtd/PassportAuthService.java
+  method: doAA(PublicKey)
 fix:
   commit: https://sourceforge.net/p/jmrtd/code/67/
   description: >

@@ -6,6 +6,9 @@ crash: true
 description: >
   On some platforms AppInfo.loadIcon() my throw an OutOfMemoryError.
   StackOverflow: http://stackoverflow.com/questions/20415367/android-async-loadicon-outofmemoryerror
+location:
+  file: src/com/lukekorth/screennotifications/AppsActivity.java
+  method: loadInBackground(int)
 fix:
   commit: https://github.com/lkorth/screen-notifications/commit/afc542066ae1a3c57974dc180374407a7954124d
   description: >

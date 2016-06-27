@@ -6,6 +6,9 @@ crash: true
 description: >
   Overrides SherlockActivity.onDestroy(), but does not call the super
   method. Leads to exception with unreleased resources.
+location:
+  file: LNReader/src/com/erakk/lnreader/activity/DisplayLightNovelContentActivity.java
+  method: onDestroy()
 fix:
   commit: https://github.com/calvinaquino/LNReader-Android/commit/2071b3cb8e977ba19fe51ca7cdb32ccc264563fa
   description: >

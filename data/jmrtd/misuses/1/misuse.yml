@@ -5,6 +5,9 @@ characteristics:
 crash: false
 description: >
   DataOutputStream is left open.
+location:
+  file: src/sos/mrtd/SecureMessagingWrapper.java
+  method: "readDO8E(DataInputStream, byte[])"
 fix:
   commit: https://sourceforge.net/p/jmrtd/code/51/
   description: >

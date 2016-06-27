@@ -6,6 +6,9 @@ crash: true
 description: >
   IRFactory.initFunction() is called twice along one possible execution
   path, which causes an infinite loop.
+location:
+  file: src/org/mozilla/javascript/Parser.java
+  method: function(int)
 fix:
   commit: https://github.com/mozilla/rhino/commit/ed00a2e83de1e768918604a65def097895b71dd4
   files:
