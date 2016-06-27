@@ -7,6 +7,19 @@ from typing import Set, List
 from benchmark.data.pattern import Pattern
 
 
+class Location:
+    def __init__(self, file: str, method: str):
+        self.file = file
+        self.method = method
+
+    def __str__(self):
+        return "Location({}, {})".format(self.file, self.method)
+
+    def __eq__(self, other):
+        return self.file == other.file and self.method == other.method
+
+
+
 # noinspection PyAttributeOutsideInit
 class Misuse:
     MISUSE_FILE = "misuse.yml"
@@ -52,15 +65,9 @@ class Misuse:
         return self._USAGE
 
     @property
-    def files(self) -> List[str]:
-        if getattr(self, '_FILES', None) is None:
-            fix = self._yaml.get('fix')
-            if fix is not None:
-                files = fix.get('files', [])
-                self._FILES = [file.get('name') for file in files if file.get('name', None) is not None]
-            else:
-                self._FILES = []
-        return self._FILES
+    def location(self) -> Location:
+        location = self._yaml["location"]
+        return Location(location["file"], location["method"])
 
     def __str__(self):
         return self.name

@@ -5,7 +5,7 @@ from tempfile import mkdtemp
 
 from nose.tools import assert_equals
 
-from benchmark.data.misuse import Misuse
+from benchmark.data.misuse import Misuse, Location
 from benchmark.data.pattern import Pattern
 from benchmark_tests.test_utils.data_util import create_misuse
 
@@ -46,9 +46,9 @@ class TestMisuse:
         uut = create_misuse('', yaml={"usage": "test-usage"})
         assert_equals("test-usage", uut.usage)
 
-    def test_reads_files(self):
-        uut = create_misuse('', yaml={"fix": {"files": [{"name": "file1"}, {"name": "file2"}]}})
-        assert_equals(["file1", "file2"], uut.files)
+    def test_reads_location(self):
+        uut = create_misuse('', yaml={"location": {"file": "file.name", "method": "foo()"}})
+        assert_equals(Location("file.name", "foo()"), uut.location)
 
     def test_equals_by_path(self):
         assert Misuse("foo/bar") == Misuse("foo/bar")

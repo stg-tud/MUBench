@@ -8,7 +8,7 @@ from benchmark.data.project import Project
 from benchmark.data.project_version import ProjectVersion
 from benchmark.subprocesses.tasks.base.project_task import Response
 from benchmark.subprocesses.tasks.base.project_version_misuse_task import ProjectVersionMisuseTask
-from benchmark.utils.data_util import normalize_result_misuse_path, normalize_data_misuse_path
+from benchmark.utils.data_util import normalize_result_misuse_path
 from benchmark.utils.dotgraph_util import get_labels
 from benchmark.utils.io import safe_open
 from benchmark.utils.printing import subprocess_print
@@ -34,16 +34,16 @@ class Evaluation(ProjectVersionMisuseTask):
 
         subprocess_print("Evaluation : running... ", end='')
 
-        dir_result = join(self.results_path, project.id, version.id)
+        result_path = join(self.results_path, project.id, version.id)
 
-        error_log = join(dir_result, "error.log")
+        error_log = join(result_path, "error.log")
         errors_occurred = exists(error_log) and isfile(error_log) and getsize(error_log) > 0
 
         if not errors_occurred:
-            with safe_open(join(dir_result, "evaluation.log"), 'a+') as log:
+            with safe_open(join(result_path, "evaluation.log"), 'a+') as log:
                 print("===========================================================", file=log)
 
-                findings_file = join(dir_result, self.detector_result_file)
+                findings_file = join(result_path, self.detector_result_file)
                 print("Evaluating result {}".format(findings_file), file=log)
 
                 file_found = False
@@ -101,17 +101,16 @@ class Evaluation(ProjectVersionMisuseTask):
                 if finding_file_name + finding_file_extension == pattern.file_name + pattern.file_extension:
                     return True
 
-            for misuse_file in misuse.files:
-                normed_misuse_file = normalize_data_misuse_path(misuse_file, src_prefix)
+            misuse_file = misuse.location.file
 
-                print("{}: Comparing found misuse {}".format(normed_misuse_file, normed_finding),
-                      file=log_stream)
+            print("{}: Comparing found misuse {}".format(misuse_file, normed_finding),
+                  file=log_stream)
 
-                if normed_finding == normed_misuse_file:
-                    print("Match found!", file=log_stream)
-                    return True
-                else:
-                    print("No match", file=log_stream)
+            if normed_finding == misuse_file:
+                print("Match found!", file=log_stream)
+                return True
+            else:
+                print("No match", file=log_stream)
 
         return False
 

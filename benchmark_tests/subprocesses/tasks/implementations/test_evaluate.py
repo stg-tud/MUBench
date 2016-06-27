@@ -32,18 +32,28 @@ class TestEvaluation:
     def teardown(self):
         rmtree(self.temp_dir, ignore_errors=True)
 
-    def test_compares_files_correctly(self):
-        self.create_result('project.version.misuse', 'file: some-class.java')
+    def test_matches_on_file(self):
+        self.create_result('project/version', 'file: some-class.java')
         project = create_project('project')
         version = create_version('version')
-        misuse = create_misuse('misuse')
+        misuse = create_misuse('misuse', yaml={"location": {"file": "some-class.java", "method": ""}})
 
         self.uut.process_project_version_misuse(project, version, misuse)
-        actual_result = self.uut.results[0]
-        assert_equals(('project.misuse', 1), actual_result)
+
+        self.assert_potential_hit("project.misuse")
+
+    def test_matches_on_file_absolute(self):
+        self.create_result('project/version', 'file: /a/b/some-class.java')
+        project = create_project('project')
+        version = create_version('version')
+        misuse = create_misuse('misuse', yaml={"location": {"file": "some-class.java", "method": ""}})
+
+        self.uut.process_project_version_misuse(project, version, misuse)
+
+        self.assert_potential_hit("project.misuse")
 
     def test_compares_graphs_correctly(self):
-        self.create_result('project.version.misuse',
+        self.create_result('project/version',
                            'file: some-class.java\n' +
                            'graph: >\n' +
                            '  digraph some-method {\n' +
@@ -63,11 +73,10 @@ class TestEvaluation:
 
         self.uut.process_project_version_misuse(project, version, misuse)
 
-        actual_result = self.uut.results[0]
-        assert_equals(('project.misuse', 1), actual_result)
+        self.assert_potential_hit("project.misuse")
 
     def test_handles_patterns(self):
-        self.create_result('project.version.misuse', 'file: pattern0.java\n')
+        self.create_result('project/version', 'file: pattern0.java\n')
 
         project = create_project('project')
         version = create_version('version')
@@ -77,8 +86,7 @@ class TestEvaluation:
 
         self.uut.process_project_version_misuse(project, version, misuse)
 
-        actual_result = self.uut.results[0]
-        assert_equals(('project.misuse', 1), actual_result)
+        self.assert_potential_hit("project.misuse")
 
     def test_writes_results_on_teardown(self):
         self.uut.results = {('NoHit', 0), ('PotentialHit', 1)}
@@ -106,3 +114,6 @@ class TestEvaluation:
     def create_result(self, misuse_name, content):
         safe_write(content, join(self.results_path, misuse_name, self.file_detector_result),
                    append=False)
+
+    def assert_potential_hit(self, name: str):
+        assert_equals([(name, 1)], self.uut.results)

@@ -21,5 +21,7 @@ def create_version(path: str, misuses: List[Misuse]=None, yaml: Dict[str, Any]=N
 
 def create_misuse(path: str, yaml: Dict[str, Any] = None):
     misuse = Misuse(path)
-    misuse._YAML = {} if yaml is None else yaml
+    misuse._YAML = {"location": {"file": "-dummy-/-file-", "method": "-method-()"}}
+    if yaml is not None:
+        misuse._YAML.update(yaml)
     return misuse
