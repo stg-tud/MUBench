@@ -10,7 +10,6 @@ location:
   file: MapNull.java
   method: "misuse(Map<String, Object>)"
 fix:
-  commit: https://github.com/stg-tud/MUBench/blob/master/data/synthetic-mapnull.java
   description: >
     Use Map.containsKey() to check whether a key is set.
 internal: false

@@ -10,7 +10,6 @@ location:
   file: MapKeyNull.java
   method: "misuse(HashMap<String, Object>, String)"
 fix:
-  commit: https://github.com/stg-tud/MUBench/blob/master/data/synthetic-mapkeynull.java
   description: >
     Check that the key is not null before calling Map.get().
 internal: false

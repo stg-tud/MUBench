@@ -12,7 +12,6 @@ location:
   file: ByteBufferFlip.java
   method: misuse(ByteBuffer)
 fix:
-  commit: https://github.com/stg-tud/MUBench/blob/master/data/synthetic-flip.java
   description: >
     Add a call to ByteBuffer.flip()
 internal: false

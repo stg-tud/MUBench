@@ -10,7 +10,6 @@ location:
   file: BigInt.java
   method: misuse()
 fix:
-  commit: https://github.com/stg-tud/MUBench/blob/master/data/synthetic-bigint.java
   description: >
     Continue to work on the new instance.
 internal: false

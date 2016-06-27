@@ -9,7 +9,6 @@ location:
   file: NoFile.java
   method: "misuse(Path, byte[])"
 fix:
-  commit: https://github.com/stg-tud/MUBench/blob/master/data/synthetic-nofile.java
   description: >
     Pass OpenOption.CREATE to the write call.
 internal: false

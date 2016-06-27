@@ -10,7 +10,6 @@ location:
   file: HasNext.java
   method: misuse(Collection<Object>)
 fix:
-  commit: https://github.com/stg-tud/MUBench/blob/master/data/synthetic-hasnext.java
   description: >
     Check iterator.hasNext() or ensure size of the collection.
 internal: false

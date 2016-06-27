@@ -10,7 +10,6 @@ location:
   file: ChannelFlush.java
   method: misuse(ByteBuffer)
 fix:
-  commit: https://github.com/stg-tud/MUBench/blob/master/data/synthetic-flush.java
   description: >
     Add a call to FileChannel.force() or close the channel.
 internal: false

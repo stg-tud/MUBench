@@ -9,7 +9,6 @@ location:
   file: Close.java
   method: misuse(File)
 fix:
-  commit: https://github.com/stg-tud/MUBench/blob/master/data/synthetic-close-1.java
   description: >
     Call close() after using the Closable.
 internal: false

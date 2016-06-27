@@ -11,7 +11,6 @@ location:
   file: SetFirst.java
   method: misuse(Set<Object>)
 fix:
-  commit: https://github.com/stg-tud/MUBench/blob/master/data/synthetic-setfirst.java
   description: >
     Check that Set.isEmpty() is false.
 internal: false
