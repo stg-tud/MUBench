@@ -4,15 +4,14 @@ from typing import List, Dict, Any, Optional
 
 import yaml
 
-from benchmark.data.project_compile import ProjectCompile
 from benchmark.data.project_version import ProjectVersion
-
 from benchmark.data.repository import Repository
 
 
 class Project:
     PROJECT_FILE = 'project.yml'
     VERSIONS_DIR = "versions"
+    MISUSES_DIR = "misuses"
 
     def __init__(self, base_path: str, id: str):
         self._base_path = base_path

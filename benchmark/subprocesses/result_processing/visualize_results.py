@@ -9,6 +9,7 @@ from typing import List
 from typing import Set
 
 from benchmark.data.misuse import Misuse
+from benchmark.data.project import Project
 from benchmark.utils import csv_util
 
 
@@ -107,12 +108,12 @@ class Visualizer:
             for misuse_name, result_as_str in results_per_misuse.items():
                 misuse_name = misuse_name.lstrip("'").rstrip("'")
                 misuse_path = join(self.data_path, misuse_name)
-                if not Misuse.ismisuse(misuse_path):
+                if not Misuse.is_misuse(misuse_path):
                     logger.error("Couldn't validate misuse %s", misuse_path)
                     continue
 
                 result = int(result_as_str)  # type: int
-                groups = grouping.get_groups(Misuse(misuse_path))
+                groups = grouping.get_groups(Misuse(self.data_path, Project.MISUSES_DIR, misuse_name))
 
                 for group in groups:
                     if group not in results_per_group:

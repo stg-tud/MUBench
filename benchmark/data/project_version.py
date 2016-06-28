@@ -13,9 +13,9 @@ from benchmark.data.project_compile import ProjectCompile
 
 class ProjectVersion:
     VERSION_FILE = 'version.yml'
-    MISUSES_DIR = "misuses"
 
     def __init__(self, base_path: str, project_id: str, version_id: str):
+        self._base_path = base_path
         self.version_id = version_id
         self.project_id = project_id
         self.id = "{}.{}".format(project_id, version_id)
@@ -25,7 +25,7 @@ class ProjectVersion:
 
         self.path = join(self.__project.path, Project.VERSIONS_DIR, version_id)
         self._version_file = join(self.path, ProjectVersion.VERSION_FILE)  # type: str
-        self._misuses_dir = join(self.__project.path, ProjectVersion.MISUSES_DIR)  # type: str
+        self._misuses_dir = join(self.__project.path, Project.MISUSES_DIR)  # type: str
         self._YAML = None
         self._MISUSES = None
         self._PATTERNS = None
@@ -91,13 +91,8 @@ class ProjectVersion:
             if not exists(misuses_dir):
                 return []
 
-            my_misuses = []
-            misuses = [join(misuses_dir, misuse) for misuse in listdir(misuses_dir) if isdir(join(misuses_dir, misuse))]
-            for misuse in misuses:
-                if Misuse.ismisuse(misuse) and Misuse(misuse).id in my_misuse_ids:
-                    my_misuses.append(Misuse(misuse))
-
-            self._MISUSES = my_misuses
+            self._MISUSES = [Misuse(self._base_path, self.__project.id, misuse) for misuse in listdir(misuses_dir)
+                             if Misuse.is_misuse(join(misuses_dir, misuse))]
 
         return self._MISUSES
 

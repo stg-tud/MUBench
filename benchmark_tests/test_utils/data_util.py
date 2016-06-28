@@ -24,9 +24,12 @@ def create_version(version_id: str, misuses: List[Misuse] = None, meta: Dict[str
     return version
 
 
-def create_misuse(path: str, yaml: Dict[str, Any] = None):
-    misuse = Misuse(path)
+def create_misuse(misuse_id: str, meta: Dict[str, Any] = None, project: Project=None):
+    if not project:
+        project = create_project("-project-")
+    misuse = Misuse(project._base_path, project.id, misuse_id)
+    misuse._Misuse__project = project
     misuse._YAML = {"location": {"file": "-dummy-/-file-", "method": "-method-()"}}
-    if yaml is not None:
-        misuse._YAML.update(yaml)
+    if meta is not None:
+        misuse._YAML.update(meta)
     return misuse

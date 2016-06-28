@@ -12,7 +12,7 @@ class project(Grouping):
 
 class synthetic(Grouping):
     def get_groups(self, misuse: Misuse) -> Iterable[str]:
-        return ["synthetic" if "synthetic" in misuse.name else "not synthetic"]
+        return ["synthetic" if "synthetic" in misuse.id else "not synthetic"]
 
 
 class characteristic(Grouping):

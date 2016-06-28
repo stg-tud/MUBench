@@ -25,14 +25,20 @@ class Misuse:
     MISUSE_FILE = "misuse.yml"
 
     @staticmethod
-    def ismisuse(path: str) -> bool:
-        return isdir(path) and isfile(join(path, Misuse.MISUSE_FILE))
+    def is_misuse(path: str) -> bool:
+        return isfile(join(path, Misuse.MISUSE_FILE))
 
-    def __init__(self, path: str):
-        self.path = path
-        self._path = path
-        self.name = basename(path)
-        self.misuse_file = join(path, Misuse.MISUSE_FILE)
+    def __init__(self, base_path: str, project_id: str, misuse_id: str):
+        self._base_path = base_path
+        self.project_id = project_id
+        self.misuse_id = misuse_id
+        self.id = "{}.{}".format(project_id, misuse_id)
+
+        from benchmark.data.project import Project
+        self.__project = Project(base_path, project_id)
+
+        self.path = join(self.__project.path, Project.MISUSES_DIR, misuse_id)
+        self.misuse_file = join(self.path, Misuse.MISUSE_FILE)
 
     @property
     def _yaml(self):
@@ -40,10 +46,6 @@ class Misuse:
             with open(self.misuse_file, 'r') as stream:
                 self._YAML = yaml.load(stream)
         return self._YAML
-
-    @property
-    def id(self):
-        return basename(self._path)
 
     @property
     def patterns(self) -> Set[Pattern]:
@@ -70,7 +72,7 @@ class Misuse:
         return Location(location["file"], location["method"])
 
     def __str__(self):
-        return "misuse '{}'".format(self.name)
+        return "misuse '{}'".format(self.id)
 
     def __eq__(self, other):
         return self.path == other.path

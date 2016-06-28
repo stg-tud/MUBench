@@ -11,7 +11,7 @@ from benchmark.data.project_version import ProjectVersion
 from benchmark.utils.io import remove_tree, create_file, safe_open
 
 
-from benchmark_tests.test_utils.data_util import create_project, create_version
+from benchmark_tests.test_utils.data_util import create_project, create_version, create_misuse
 
 
 class TestProjectVersion:
@@ -44,9 +44,9 @@ class TestProjectVersion:
         assert_equals(test_dict, self.uut._yaml)
 
     def test_finds_misuses(self):
-        misuse_dir = join(self.temp_dir, self.project_id, ProjectVersion.MISUSES_DIR, "1")
-        misuse = Misuse(misuse_dir)
+        misuse = create_misuse("1", project=create_project(self.project_id, base_path=self.temp_dir))
         create_file(misuse.misuse_file)
+        print(misuse.misuse_file)
         self.uut._YAML = {"misuses": ["1"]}
 
         actual_misuses = self.uut.misuses

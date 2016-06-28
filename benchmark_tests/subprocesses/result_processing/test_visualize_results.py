@@ -75,17 +75,17 @@ class TestVisualizer:
         # Det2      0.5     1.0
         expected = "Detector,Group1,Group2\nDet1,0.0,0.5\nDet2,0.5,1.0\n"
 
-        ismisuse_orig = Misuse.ismisuse
+        ismisuse_orig = Misuse.is_misuse
         try:
-            Misuse.ismisuse = lambda path: any(name in path for name in ["MU1", "MU2", "MU3", "MU4"])
+            Misuse.is_misuse = lambda path: any(name in path for name in ["MU1", "MU2", "MU3", "MU4"])
 
             class GroupingTestImpl(Grouping):
                 def get_groups(self, misuse: Misuse) -> Iterable[str]:
-                    return ["Group1" if misuse.name in ["MU1", "MU2"] else "Group2"]
+                    return ["Group1" if misuse.misuse_id in ["MU1", "MU2"] else "Group2"]
 
             self.uut.group('test-grouping.csv', GroupingTestImpl())
         finally:
-            Misuse.ismisuse = ismisuse_orig
+            Misuse.is_misuse = ismisuse_orig
 
         with open(join(self.results_base_dir, target_file)) as actual_file:
             actual = actual_file.read()

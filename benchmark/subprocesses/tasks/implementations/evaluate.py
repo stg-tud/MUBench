@@ -34,7 +34,7 @@ class Evaluation(ProjectVersionMisuseTask):
 
         subprocess_print("Evaluation : running... ", end='')
 
-        result_path = join(self.results_path, project.id, version.id)
+        result_path = join(self.results_path, project.id, version.version_id)
 
         error_log = join(result_path, "error.log")
         errors_occurred = exists(error_log) and isfile(error_log) and getsize(error_log) > 0
@@ -61,11 +61,11 @@ class Evaluation(ProjectVersionMisuseTask):
 
                 if file_found and label_found:
                     print("potential hit", flush=True)
-                    self.results.append((misuse.name, Evaluation.potential_hit))
+                    self.results.append((misuse.id, Evaluation.potential_hit))
                     return Response.ok
                 else:
                     print("no hit", flush=True)
-                    self.results.append((misuse.name, Evaluation.no_hit))
+                    self.results.append((misuse.id, Evaluation.no_hit))
                     return Response.ok
 
         print("ignored (no available findings)", flush=True)
@@ -106,7 +106,7 @@ class Evaluation(ProjectVersionMisuseTask):
             print("{}: Comparing found misuse {}".format(misuse_file, normed_finding),
                   file=log_stream)
 
-            if normed_finding == misuse_file:
+            if normed_finding.endswith(misuse_file):
                 print("Match found!", file=log_stream)
                 return True
             else:

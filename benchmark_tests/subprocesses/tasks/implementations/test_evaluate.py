@@ -35,8 +35,8 @@ class TestEvaluation:
     def test_matches_on_file(self):
         self.create_result('project/version', 'file: some-class.java')
         project = create_project('project')
-        version = create_version('version')
-        misuse = create_misuse('misuse', yaml={"location": {"file": "some-class.java", "method": ""}})
+        version = create_version('version', project=project)
+        misuse = create_misuse('misuse', meta={"location": {"file": "some-class.java", "method": ""}}, project=project)
 
         self.uut.process_project_version_misuse(project, version, misuse)
 
@@ -45,8 +45,8 @@ class TestEvaluation:
     def test_matches_on_file_absolute(self):
         self.create_result('project/version', 'file: /a/b/some-class.java')
         project = create_project('project')
-        version = create_version('version')
-        misuse = create_misuse('misuse', yaml={"location": {"file": "some-class.java", "method": ""}})
+        version = create_version('version', project=project)
+        misuse = create_misuse('misuse', meta={"location": {"file": "some-class.java", "method": ""}}, project=project)
 
         self.uut.process_project_version_misuse(project, version, misuse)
 
@@ -67,9 +67,10 @@ class TestEvaluation:
                            'graph: >\n' +
                            '  digraph graph {}\n')
         project = create_project('project')
-        version = create_version('version')
-        misuse = create_misuse('misuse')
-        misuse._USAGE = 'digraph some-method { 0 [label="StrBuilder#this#getNullText"] }'
+        version = create_version('version', project=project)
+        misuse = create_misuse('misuse', project=project,
+                               meta={"location": {"file": "some-class.java",
+                                                  "method": "digraph some-method { 0 [label=\"StrBuilder#this#getNullText\"] }"}})
 
         self.uut.process_project_version_misuse(project, version, misuse)
 
@@ -79,8 +80,8 @@ class TestEvaluation:
         self.create_result('project/version', 'file: pattern0.java\n')
 
         project = create_project('project')
-        version = create_version('version')
-        misuse = create_misuse('misuse')
+        version = create_version('version', project=project)
+        misuse = create_misuse('misuse', project=project)
         misuse._FILES = ['some-file.java']
         misuse._PATTERNS = {Pattern("", 'pattern.java')}
 
