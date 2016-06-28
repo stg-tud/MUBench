@@ -46,7 +46,7 @@ def test_detect_only():
 def test_detect_only_default():
     parser = get_command_line_parser(['valid-detector'])
     result = parser.parse_args(['detect', 'valid-detector'])
-    assert result.white_list == [""]
+    assert result.white_list == []
 
 
 def test_detect_ignore_empty_list_fails():
