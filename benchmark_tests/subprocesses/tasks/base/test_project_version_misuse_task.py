@@ -1,5 +1,6 @@
 from typing import List
 from typing import Tuple
+from unittest.mock import MagicMock, call
 
 from nose.tools import assert_equals
 
@@ -13,26 +14,17 @@ from benchmark_tests.test_utils.data_util import create_misuse, create_version, 
 
 class TestProjectVersionMisuseTask:
     def test_process_misuse(self):
-        uut = ProjectVersionMisuseTaskTestImpl()
+        uut = ProjectVersionMisuseTask()
+        uut.process_project_version_misuse = MagicMock()
 
-        test_misuses = [create_misuse("m1"), create_misuse("m2"), create_misuse("m3")]
-        test_versions = [create_version("v1", test_misuses[0:2]), create_version("v2", [test_misuses[2]])]
-        test_project = create_project("p1", test_versions)
+        m1 = create_misuse("m1")
+        m2 = create_misuse("m2")
+        m3 = create_misuse("m3")
+        v1 = create_version("v1", misuses=[m1, m2])
+        v2 = create_version("v2", misuses=[m3])
+        project = create_project("p1", versions=[v1, v2])
 
-        uut.process_project(test_project)
+        uut.process_project(project)
 
-        assert_equals(3, len(uut.args))
-        assert_equals((test_project, test_versions[0], test_misuses[0]), uut.args[0])
-        assert_equals((test_project, test_versions[0], test_misuses[1]), uut.args[1])
-        assert_equals((test_project, test_versions[1], test_misuses[2]), uut.args[2])
-
-
-class ProjectVersionMisuseTaskTestImpl(ProjectVersionMisuseTask):
-    def __init__(self):
-        self.start_was_called_correctly = False
-        self.end_was_called_correctly = False
-        self.args = list()  # type: List[Tuple[Project, ProjectVersion, Misuse]
-
-    def process_project_version_misuse(self, project: Project, version: ProjectVersion, misuse: Misuse) -> Response:
-        self.args.append((project, version, misuse))
-        return Response.ok
+        assert_equals([call(project, v1, m1), call(project, v1, m2), call(project, v2, m3)],
+                      uut.process_project_version_misuse.call_args_list)

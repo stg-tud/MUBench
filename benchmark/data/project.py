@@ -10,26 +10,31 @@ from benchmark.data.project_version import ProjectVersion
 
 
 # noinspection PyAttributeOutsideInit
+
+
 class Project:
     PROJECT_FILE = 'project.yml'
+    VERSIONS_DIR = "versions"
 
     class Repository:
         def __init__(self, vcstype: Optional[str], url: Optional[str]):
             self.vcstype = vcstype  # type: Optional[str]
             self.url = url  # type: Optional[str]
 
-    def __init__(self, path: str):
-        self._path = path  # type: str
-        self._versions_path = join(path, "versions")  # type: str
-        self._project_file = join(path, Project.PROJECT_FILE)  # type: str
+    def __init__(self, path: str, id: str):
+        self._path = join(path, id)
+        self._versions_path = join(self._path, Project.VERSIONS_DIR)  # type: str
+        self._project_file = join(self._path, Project.PROJECT_FILE)  # type: str
+        self._YAML = {}
+        self._VERSIONS = []
 
     @staticmethod
-    def validate(path: str) -> bool:
+    def is_project(path: str) -> bool:
         return exists(join(path, Project.PROJECT_FILE))
 
     @property
     def _yaml(self) -> Dict[str, Any]:
-        if getattr(self, '_YAML', None) is None:
+        if not self._YAML:
             with open(self._project_file) as project_file:
                 project_yml = yaml.load(project_file)
             self._YAML = project_yml
@@ -54,24 +59,6 @@ class Project:
             self._REPOSITORY = Project.Repository(repository_type, repository_url)
         return self._REPOSITORY
 
-    @property
-    def versions(self) -> List[ProjectVersion]:
-        if getattr(self, '_VERSIONS', None) is None:
-            versions = list()  # type: List[ProjectVersion]
-
-            versions_path = self._versions_path
-            if exists(versions_path):
-                version_dirs = [join(versions_path, subdir) for subdir in listdir(versions_path) if
-                                isdir(join(versions_path, subdir))]
-
-                for version_dir in version_dirs:
-                    if ProjectVersion.validate(version_dir):
-                        versions.append(ProjectVersion(version_dir))
-
-            self._VERSIONS = versions
-
-        return self._VERSIONS
-
     def get_checkout(self, version: ProjectVersion, base_path: str) -> ProjectCheckout:
         repository = self.repository
         if repository.vcstype == "git":
@@ -83,10 +70,19 @@ class Project:
             revision = str(int(version.revision) - 1)
             return SVNProjectCheckout(url, base_path, self.id, version.id, revision)
         elif repository.vcstype == "synthetic":
-            url = join(self._path, "versions", "0", "compile")
+            url = join(self._path, Project.VERSIONS_DIR, "0", "compile")
             return LocalProjectCheckout(url, base_path, self.id)
         else:
             raise ValueError("unknown repository type: {}".format(repository.vcstype))
+
+    @property
+    def versions(self) -> List[ProjectVersion]:
+        if not self._VERSIONS:
+            if exists(self._versions_path):
+                self._VERSIONS = [ProjectVersion(join(self._versions_path, subdir)) for subdir in
+                                  listdir(self._versions_path) if
+                                  ProjectVersion.is_project_version(join(self._versions_path, subdir))]
+        return self._VERSIONS
 
     def get_compile(self, version: ProjectVersion, base_path: str) -> ProjectCompile:
         if version:
@@ -95,18 +91,8 @@ class Project:
             base_path = join(base_path, self.id)
         return ProjectCompile(base_path)
 
-    @staticmethod
-    def get_projects(data_path: str) -> List['Project']:
-        if not exists(data_path):
-            return []
-
-        subfolders = [join(data_path, content) for content in listdir(data_path) if isdir(join(data_path, content))]
-        projects = []
-        for subfolder in subfolders:
-            if Project.validate(subfolder):
-                projects.append(Project(subfolder))
-
-        return projects
-
     def __str__(self):
         return "project '{}'".format(self.id)
+
+    def __eq__(self, other):
+        return isinstance(other, Project) and self._path == other._path

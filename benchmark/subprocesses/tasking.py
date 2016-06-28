@@ -1,5 +1,8 @@
 import logging
+from os import listdir
 from typing import List
+
+from os.path import exists, join
 
 from benchmark.data.project import Project
 from benchmark.subprocesses.tasks.base.project_task import ProjectTask, Response
@@ -33,7 +36,11 @@ class TaskRunner:
 
     @staticmethod
     def _get_projects(data_path: str) -> List[Project]:
-        return Project.get_projects(data_path)
+        if exists(data_path):
+            return [Project(data_path, project_id) for project_id in listdir(data_path) if
+                    Project.is_project(join(data_path, project_id))]
+        else:
+            return []
 
     def __skip(self, project: Project) -> bool:
         blacklisted = project.id in self.black_list

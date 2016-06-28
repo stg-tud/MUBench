@@ -19,7 +19,7 @@ class TestCheckout(unittest.TestCase):
 
         self.version = create_version("-version-")
 
-        self.project = create_project("-project-", versions=[self.version])
+        self.project = create_project("-project-")
         self.project.get_checkout = MagicMock(return_value=self.checkout)
 
         self.uut = Checkout("-checkouts-", force_checkout=False)

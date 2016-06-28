@@ -3,11 +3,12 @@ from typing import List
 from unittest.mock import MagicMock, call
 
 from nose.tools import assert_equals
+from os.path import join
 
 from benchmark.data.project import Project
 from benchmark.subprocesses.tasking import TaskRunner
 from benchmark.subprocesses.tasks.base.project_task import ProjectTask, Response
-from benchmark.utils.io import remove_tree
+from benchmark.utils.io import remove_tree, create_file
 from benchmark_tests.test_utils.data_util import create_project
 
 
@@ -15,13 +16,9 @@ from benchmark_tests.test_utils.data_util import create_project
 class TestTaskRunner:
     def setup(self):
         self.temp_dir = mkdtemp(prefix='mubench-datareader-test_')
-
-        self.uut = TaskRunner("", white_list=[], black_list=[])
-
-        self.test_projects = list()  # type: List[Project]
-        self.uut._get_projects = lambda path: self.test_projects
-
         self.test_task = MagicMock()  # type: ProjectTask
+
+        self.uut = TaskRunner(self.temp_dir, white_list=[], black_list=[])
         self.uut.add(self.test_task)
 
     def teardown(self):
@@ -29,7 +26,7 @@ class TestTaskRunner:
 
     def test_processes_project(self):
         project = create_project("p1")
-        self.test_projects.append(project)
+        self.uut._get_projects = MagicMock(return_value=[project])
 
         self.uut.run()
 
@@ -45,8 +42,25 @@ class TestTaskRunner:
 
         self.test_task.end.assert_called_with()
 
+    def test_finds_all_projects(self):
+        p1 = create_project("p1", base_path=self.temp_dir)
+        create_file(p1._project_file)
+        p2 = create_project("p2", base_path=self.temp_dir)
+        create_file(p2._project_file)
+
+        self.uut.run()
+
+        assert_equals([call(p1), call(p2)], self.test_task.process_project.call_args_list)
+
+    def test_ignores_non_project_directories(self):
+        create_file(join(self.temp_dir, "p1", "iamnotaproject.yml"))
+
+        self.uut.run()
+
+        self.test_task.process_project.assert_not_called()
+
     def test_skips_blacklisted_project(self):
-        self.test_projects.append(create_project("p1"))
+        self.uut._get_projects = MagicMock(return_value=[create_project("p1")])
         self.uut.black_list.append("p1")
 
         self.uut.run()
@@ -55,7 +69,7 @@ class TestTaskRunner:
 
     def test_runs_only_whitelisted_project(self):
         p2 = create_project("p2")
-        self.test_projects.extend([create_project("p1"), p2])
+        self.uut._get_projects = MagicMock(return_value=[create_project("p1"), p2])
         self.uut.white_list.append("p2")
 
         self.uut.run()
@@ -63,7 +77,7 @@ class TestTaskRunner:
         assert_equals([call(p2)], self.test_task.process_project.call_args_list)
 
     def test_adds_project_to_backlist_when_task_answers_skip(self):
-        self.test_projects.append(create_project("p1"))
+        self.uut._get_projects = MagicMock(return_value=[(create_project("p1"))])
         self.test_task.process_project = MagicMock(return_value=Response.skip)
 
         self.uut.run()

@@ -10,6 +10,9 @@ from benchmark.utils.io import remove_tree, create_file, safe_open
 
 
 # noinspection PyAttributeOutsideInit
+from benchmark_tests.test_utils.data_util import create_project
+
+
 class TestProjectVersion:
     def setup(self):
         self.temp_dir = mkdtemp(prefix="mubench-test-project-version_")
@@ -22,11 +25,11 @@ class TestProjectVersion:
         assert_equals("MUBench/data/project/versions/version", uut._path)
 
     def test_validate_false(self):
-        assert not ProjectVersion.validate(self.temp_dir)
+        assert not ProjectVersion.is_project_version(self.temp_dir)
 
     def test_validate_true(self):
         create_file(join(self.temp_dir, ProjectVersion.VERSION_FILE))
-        assert ProjectVersion.validate(self.temp_dir)
+        assert ProjectVersion.is_project_version(self.temp_dir)
 
     def test_finds_version_yml(self):
         uut = ProjectVersion("path")

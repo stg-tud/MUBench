@@ -21,7 +21,7 @@ class ProjectVersion:
         self._PATTERNS = None
 
     @staticmethod
-    def validate(path: str) -> bool:
+    def is_project_version(path: str) -> bool:
         return exists(join(path, ProjectVersion.VERSION_FILE))
 
     @property
@@ -96,3 +96,6 @@ class ProjectVersion:
 
     def __str__(self):
         return "project version '{}'".format(self.id)
+
+    def __eq__(self, other):
+        return isinstance(other, ProjectVersion) and self._version_file == other._version_file
