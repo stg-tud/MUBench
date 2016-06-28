@@ -70,7 +70,7 @@ class Misuse:
         return Location(location["file"], location["method"])
 
     def __str__(self):
-        return self.name
+        return "Misuse '{}'".format(self.name)
 
     def __eq__(self, other):
         return self.path == other.path

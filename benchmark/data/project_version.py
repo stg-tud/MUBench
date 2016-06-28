@@ -93,3 +93,6 @@ class ProjectVersion:
     @property
     def additional_compile_sources(self) -> str:
         return join(self._path, 'compile')
+
+    def __str__(self):
+        return "Project version '{}'".format(self.id)

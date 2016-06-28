@@ -107,3 +107,6 @@ class Project:
                 projects.append(Project(subfolder))
 
         return projects
+
+    def __str__(self):
+        return "Project '{}'".format(self.id)
