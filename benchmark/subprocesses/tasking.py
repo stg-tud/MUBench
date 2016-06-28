@@ -36,4 +36,6 @@ class TaskRunner:
         return Project.get_projects(data_path)
 
     def __skip(self, project: Project) -> bool:
-        return project.id in self.black_list or (self.white_list and project.id not in self.white_list)
+        blacklisted = project.id in self.black_list
+        whitelisted = project.id in self.white_list
+        return blacklisted or (self.white_list and not whitelisted)

@@ -126,7 +126,7 @@ config = command_line_util.parse_args(sys.argv, available_detectors)
 if 'detector' not in config:
     config.detector = ''
 if 'white_list' not in config:
-    config.white_list = [""]
+    config.white_list = []
 if 'black_list' not in config:
     config.black_list = []
 if 'timeout' not in config:

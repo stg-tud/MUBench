@@ -95,7 +95,7 @@ def __add_visualize_subprocess(subparsers) -> None:
 
 
 def __setup_misuse_filter_arguments(parser: ArgumentParser):
-    parser.add_argument('--only', metavar='X', nargs='+', dest='white_list', default=[""],
+    parser.add_argument('--only', metavar='X', nargs='+', dest='white_list', default=[],
                         help="process only misuses whose names contain any of the given strings")
     parser.add_argument('--skip', metavar='Y', nargs='+', dest='black_list', default=[],
                         help="skip all misuses whose names contain any of the given strings")
