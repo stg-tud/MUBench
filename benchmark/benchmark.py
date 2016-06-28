@@ -6,9 +6,9 @@ from os import listdir
 from os.path import join, realpath, isdir, exists
 from typing import Optional, List
 
+from benchmark.subprocesses.check import check_prerequisites
 from benchmark.subprocesses.result_processing.visualize_results import Visualizer
 from benchmark.subprocesses.tasking import TaskRunner
-from benchmark.subprocesses.tasks.implementations.check import Check
 from benchmark.subprocesses.tasks.implementations.checkout import Checkout
 from benchmark.subprocesses.tasks.implementations.compile import Compile
 from benchmark.subprocesses.tasks.implementations.detect import Detect
@@ -52,12 +52,6 @@ class Benchmark:
         self.visualize_result_file = 'result.csv'
 
         self.datareader = TaskRunner(Benchmark.DATA_PATH, self.white_list, self.black_list)
-        self.datareader.add(Check())
-
-    def run_check(self):
-        # check subprocess is always registered by __init__
-        self.datareader.black_list = [""]
-        self.run()
 
     def run_checkout(self) -> None:
         self._setup_checkout()
@@ -172,8 +166,10 @@ benchmark = Benchmark(detector=config.detector, white_list=config.white_list, bl
                       timeout=config.timeout, java_options=config.java_options, force_detect=config.force_detect,
                       force_checkout=config.force_checkout, force_compile=config.force_compile)
 
+check_prerequisites()
+
 if config.subprocess == 'check':
-    benchmark.run_check()
+    pass
 if config.subprocess == 'checkout':
     benchmark.run_checkout()
 if config.subprocess == 'compile':
