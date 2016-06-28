@@ -1,7 +1,4 @@
 build:
-  classes: classes/
-  commands:
-  - mvn compile
   src: src/
 misuses:
 - '1'

@@ -1,7 +1,5 @@
 build:
   classes: UNKNOWN
-  commands:
-  - UNKNOWN
   src: app/src/
 misuses:
 - '1'

@@ -1,8 +1,7 @@
 build:
   classes: JodaTimeContrib/hibernate/build/classes/main/
   commands:
-  - cd JodaTimeContrib/hibernate/src/java
-  - gradle :compileJava
+  - gradle :compileJava -p ./JodaTimeContrib/hibernate/
   src: JodaTimeContrib/hibernate/src/java/
 misuses:
 - '1'

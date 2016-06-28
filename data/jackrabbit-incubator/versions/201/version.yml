@@ -1,7 +1,4 @@
 build:
-  classes: UNKNOWN
-  commands:
-  - UNKNOWN
   src: contrib/bdb-persistence/src/java/
 misuses:
 - '2'
