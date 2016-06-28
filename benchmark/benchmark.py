@@ -51,7 +51,7 @@ class Benchmark:
         self.reviewed_eval_result_file = 'reviewed-result.csv'
         self.visualize_result_file = 'result.csv'
 
-        self.datareader = TaskRunner(Benchmark.DATA_PATH, self.white_list, self.black_list)
+        self.runner = TaskRunner(Benchmark.DATA_PATH, self.white_list, self.black_list)
 
     def run_checkout(self) -> None:
         self._setup_checkout()
@@ -82,25 +82,25 @@ class Benchmark:
 
     def _setup_checkout(self):
         checkout_handler = Checkout(Benchmark.CHECKOUTS_PATH, self.force_checkout)
-        self.datareader.add(checkout_handler)
+        self.runner.add(checkout_handler)
 
     def _setup_compile(self):
         compile_handler = Compile(Benchmark.CHECKOUTS_PATH, Benchmark.CHECKOUTS_PATH, self.pattern_frequency,
                                   self.force_compile)
-        self.datareader.add(compile_handler)
+        self.runner.add(compile_handler)
 
     def _setup_detect(self):
         detector_runner = Detect(self.detector, self.detector_result_file, Benchmark.CHECKOUTS_PATH, self.results_path,
                                  self.timeout, self.java_options, self.force_detect)
-        self.datareader.add(detector_runner)
+        self.runner.add(detector_runner)
 
     def _setup_eval(self):
         evaluation_handler = Evaluation(self.results_path, self.detector_result_file, Benchmark.CHECKOUTS_PATH,
                                         self.eval_result_file)
-        self.datareader.add(evaluation_handler)
+        self.runner.add(evaluation_handler)
 
     def run(self) -> None:
-        self.datareader.run()
+        self.runner.run()
 
 
 class IndentFormatter(logging.Formatter):

@@ -1,5 +1,6 @@
 from tempfile import mkdtemp
 from typing import List
+from unittest.mock import MagicMock, call
 
 from nose.tools import assert_equals
 
@@ -20,83 +21,51 @@ class TestTaskRunner:
         self.test_projects = list()  # type: List[Project]
         self.uut._get_projects = lambda path: self.test_projects
 
-        self.test_task = ProjectTaskTestImpl()
+        self.test_task = MagicMock()  # type: ProjectTask
+        self.uut.add(self.test_task)
 
     def teardown(self):
         remove_tree(self.temp_dir)
 
-    def test_process_project(self):
-        self.test_projects.append(create_project("p1"))
+    def test_processes_project(self):
+        project = create_project("p1")
+        self.test_projects.append(project)
 
-        self.uut.add(self.test_task)
         self.uut.run()
 
-        assert_equals(self.test_projects, self.test_task.projects)
+        self.test_task.process_project.assert_called_with(project)
 
-    def test_start_called_correctly(self):
-        self.test_projects.append(create_project("p1"))
-
-        self.uut.add(self.test_task)
+    def test_starts_task(self):
         self.uut.run()
 
-        assert self.test_task.start_was_called_correctly
+        self.test_task.start.assert_called_with()
 
-    def test_end_called_correctly(self):
-        self.test_projects.append(create_project("p1"))
-
-        self.uut.add(self.test_task)
+    def test_ends_task(self):
         self.uut.run()
 
-        assert self.test_task.end_was_called_correctly
+        self.test_task.end.assert_called_with()
 
-    def test_skip_project(self):
+    def test_skips_blacklisted_project(self):
         self.test_projects.append(create_project("p1"))
-
-        class SkipProjectTask(ProjectTask):
-            def process_project(self, project: Project) -> Response:
-                return Response.skip
-
-        self.uut.add(SkipProjectTask())
-        self.uut.add(self.test_task)
-        self.uut.run()
-
-        assert_equals(0, len(self.test_task.projects))
-
-    def test_black_list(self):
         self.uut.black_list.append("p1")
-        self.test_projects.append(create_project("p1"))
 
-        self.uut.add(self.test_task)
         self.uut.run()
 
-        assert_equals([], self.test_task.projects)
+        self.test_task.process_project.assert_not_called()
 
-    def test_white_list(self):
-        self.uut.white_list.append("p2")
-        self.test_projects.append(create_project("p1"))
+    def test_runs_only_whitelisted_project(self):
         p2 = create_project("p2")
-        self.test_projects.append(p2)
+        self.test_projects.extend([create_project("p1"), p2])
+        self.uut.white_list.append("p2")
 
-        self.uut.add(self.test_task)
         self.uut.run()
 
-        assert_equals([p2], self.test_task.projects)
+        assert_equals([call(p2)], self.test_task.process_project.call_args_list)
 
+    def test_adds_project_to_backlist_when_task_answers_skip(self):
+        self.test_projects.append(create_project("p1"))
+        self.test_task.process_project = MagicMock(return_value=Response.skip)
 
-class ProjectTaskTestImpl(ProjectTask):
-    def __init__(self):
-        self.start_was_called_correctly = False
-        self.end_was_called_correctly = False
-        self.projects = list()  # type: List[Project]
+        self.uut.run()
 
-    def start(self) -> None:
-        if not self.projects:
-            self.start_was_called_correctly = True
-
-    def process_project(self, project: Project) -> Response:
-        self.projects.append(project)
-        return Response.ok
-
-    def end(self) -> None:
-        if self.projects:
-            self.end_was_called_correctly = True
+        assert_equals(["p1"], self.uut.black_list)
