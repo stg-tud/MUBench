@@ -27,7 +27,7 @@ class TaskRunner:
                 else:
                     response = task.process_project(project)
                     if response == Response.skip:
-                        logger.info("Cannot proceed on project '%s'; skipping for subsequent tasks.")
+                        logger.info("Cannot proceed on %s; skipping for subsequent tasks.", project)
                         self.black_list.append(project.id)
             task.end()
 

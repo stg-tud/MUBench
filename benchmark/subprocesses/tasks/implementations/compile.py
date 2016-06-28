@@ -25,7 +25,7 @@ class Compile(ProjectVersionTask):
 
     def process_project_version(self, project: Project, version: ProjectVersion):
         logger = logging.getLogger("compile")
-        logger.info("Compiling project version...")
+        logger.info("Compiling %s...", version)
         logger.debug("- Force compile     = %r", self.force_compile)
         logger.debug("- Pattern frequency = %r", self.pattern_frequency)
         logger = logging.getLogger("compile.tasks")

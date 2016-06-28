@@ -109,4 +109,4 @@ class Project:
         return projects
 
     def __str__(self):
-        return "Project '{}'".format(self.id)
+        return "project '{}'".format(self.id)

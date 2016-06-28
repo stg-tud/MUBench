@@ -95,4 +95,4 @@ class ProjectVersion:
         return join(self._path, 'compile')
 
     def __str__(self):
-        return "Project version '{}'".format(self.id)
+        return "project version '{}'".format(self.id)
