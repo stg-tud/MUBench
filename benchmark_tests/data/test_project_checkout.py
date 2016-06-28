@@ -7,7 +7,7 @@ from os.path import join, exists
 from shutil import rmtree
 
 from benchmark.data.project_checkout import GitProjectCheckout, LocalProjectCheckout, SVNProjectCheckout
-from benchmark.utils.io import remove_tree
+from benchmark.utils.io import remove_tree, copy_tree
 from benchmark.utils.shell import Shell
 
 
@@ -98,9 +98,10 @@ class TestGitProjectCheckout:
         uut = GitProjectCheckout(self.git_url, self.checkouts_dir, "-project-", "-id-", "HEAD")
         assert not uut.exists()
 
-    def test_exists_after_create(self):
+    def test_exists(self):
         uut = GitProjectCheckout(self.git_url, self.checkouts_dir, "-project-", "-id-", "HEAD")
-        uut.create()
+        copy_tree(self.git_url, uut.checkout_dir)
+
         assert uut.exists()
 
     def test_not_exists_broken(self):

@@ -29,7 +29,7 @@ class TestCheckout(unittest.TestCase):
 
         response = self.uut.process_project_version(self.project, self.version)
 
-        self.checkout.delete.assert_called_with()
+        self.checkout.delete.assert_not_called()
         self.checkout.create.assert_called_with()
         assert_equals(Response.ok, response)
 

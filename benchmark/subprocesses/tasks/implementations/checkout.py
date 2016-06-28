@@ -28,7 +28,8 @@ class Checkout(ProjectVersionTask):
                 logger.info("Already checked out %s.", checkout)
             else:
                 logger.info("Fetching %s...", checkout)
-                checkout.delete()
+                if self.force_checkout:
+                    checkout.delete()
                 checkout.create()
 
             return Response.ok
