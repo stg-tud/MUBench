@@ -8,7 +8,7 @@ python:
 
 before_script:
   - mkdir -p shippable/codecoverage shippable/testresults
-  - sudo chmod +x MUBench
+  - sudo chmod +x mubench
 
 install:
   - sudo apt-get install git
@@ -25,7 +25,7 @@ install:
 script: 
   - nosetests --with-xunit --xunit-file=shippable/testresults/nosetests.xml
   - mvn test -f benchmark/mubench.cli/pom.xml
-  - ./MUBench eval dummy-detector --only synthetic
+  - ./mubench eval dummy-detector --only synthetic
   
 notifications:
   email:
