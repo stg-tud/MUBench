@@ -1,11 +1,11 @@
 package de.tu_darmstadt.stg.mubench.cli;
 
 public class ArgParser {
-	protected static final String keyFindingsFile = "target";
-	protected static final String keyProjectSrcPath = "src";
-	protected static final String keyProjectClassPath = "classpath";
-	protected static final String keyPatternsSrcPath = "src_patterns";
-	protected static final String keyPatternsClassPath = "classpath_patterns";
+	public static final String keyFindingsFile = "target";
+	public static final String keyProjectSrcPath = "src";
+	public static final String keyProjectClassPath = "classpath";
+	public static final String keyPatternsSrcPath = "src_patterns";
+	public static final String keyPatternsClassPath = "classpath_patterns";
 
 	public static DetectorArgs parse(String[] args) {
 		String findingsFile = null;

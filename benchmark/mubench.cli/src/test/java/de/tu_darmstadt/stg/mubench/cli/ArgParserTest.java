@@ -1,7 +1,8 @@
 package de.tu_darmstadt.stg.mubench.cli;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+
+import java.io.FileNotFoundException;
 
 import org.junit.Test;
 
@@ -12,76 +13,82 @@ public class ArgParserTest {
 	private static final String testPatternsSrcPath = "psrc";
 	private static final String testPatternsClassPath = "pclasspath";
 
-	String[] testArgs = new String[] { Keys.keyFindingsFile(), testFindingsFile, Keys.keyProjectSrc(),
-			testProjectSrcPath, Keys.keyProjectClassPath(), testProjectClassPath, Keys.keyPatternsSrc(),
-			testPatternsSrcPath, Keys.keyPatternsClassPath(), testPatternsClassPath };
+	String[] testArgs = new String[] { ArgParser.keyFindingsFile, testFindingsFile, ArgParser.keyProjectSrcPath,
+			testProjectSrcPath, ArgParser.keyProjectClassPath, testProjectClassPath, ArgParser.keyPatternsSrcPath,
+			testPatternsSrcPath, ArgParser.keyPatternsClassPath, testPatternsClassPath };
 	
-	@Test
-	public void defaultNull() {
+	@Test(expected=FileNotFoundException.class)
+	public void throwsOnNoFindingsFile() throws FileNotFoundException {
 		String[] empty_args = new String[0];
 		DetectorArgs actual = ArgParser.parse(empty_args);
-		assertNull(actual.findingsFile);
-		assertNull(actual.projectSrcPath);
-		assertNull(actual.projectClassPath);
-		assertNull(actual.patternsSrcPath);
-		assertNull(actual.patternsClassPath);		
+		
+		actual.getFindingsFile();	
+	}
+	
+	@Test(expected=FileNotFoundException.class)
+	public void throwsOnNoProjectSourcePath() throws FileNotFoundException {
+		String[] empty_args = new String[0];
+		DetectorArgs actual = ArgParser.parse(empty_args);
+		
+		actual.getProjectSrcPath();	
+	}
+	
+	@Test(expected=FileNotFoundException.class)
+	public void throwsOnNoProjectClassPath() throws FileNotFoundException {
+		String[] empty_args = new String[0];
+		DetectorArgs actual = ArgParser.parse(empty_args);
+		
+		actual.getProjectClassPath();	
+	}
+	
+	@Test(expected=FileNotFoundException.class)
+	public void throwsOnNoPatternSourcePath() throws FileNotFoundException {
+		String[] empty_args = new String[0];
+		DetectorArgs actual = ArgParser.parse(empty_args);
+		
+		actual.getPatternsSrcPath();
+	}
+	
+	@Test(expected=FileNotFoundException.class)
+	public void throwsOnNoPatternClassPath() throws FileNotFoundException {
+		String[] empty_args = new String[0];
+		DetectorArgs actual = ArgParser.parse(empty_args);
+		
+		actual.getPatternsClassPath();	
 	}
 
 	@Test
-	public void parseFindingsFile() {
+	public void parseFindingsFile() throws FileNotFoundException {
 		DetectorArgs actual = ArgParser.parse(testArgs);
-		assertEquals(testFindingsFile, actual.findingsFile);
+		assertEquals(testFindingsFile, actual.getFindingsFile());
 	}
 
 	@Test
-	public void parseProjectSrcPathTest() {
+	public void parseProjectSrcPathTest() throws FileNotFoundException {
 		DetectorArgs actual = ArgParser.parse(testArgs);
-		assertEquals(testProjectSrcPath, actual.projectSrcPath);
+		assertEquals(testProjectSrcPath, actual.getProjectSrcPath());
 	}
 
 	@Test
-	public void parseProjectClassPathTest() {
+	public void parseProjectClassPathTest() throws FileNotFoundException {
 		DetectorArgs actual = ArgParser.parse(testArgs);
-		assertEquals(testProjectClassPath, actual.projectClassPath);
+		assertEquals(testProjectClassPath, actual.getProjectClassPath());
 	}
 
 	@Test
-	public void parsePatternsSrcPathTest() {
+	public void parsePatternsSrcPathTest() throws FileNotFoundException {
 		DetectorArgs actual = ArgParser.parse(testArgs);
-		assertEquals(testPatternsSrcPath, actual.patternsSrcPath);
+		assertEquals(testPatternsSrcPath, actual.getPatternsSrcPath());
 	}
 
 	@Test
-	public void parsePatternsClassPathTest() {
+	public void parsePatternsClassPathTest() throws FileNotFoundException {
 		DetectorArgs actual = ArgParser.parse(testArgs);
-		assertEquals(testPatternsClassPath, actual.patternsClassPath);
+		assertEquals(testPatternsClassPath, actual.getPatternsClassPath());
 	}
 	
 	@Test(expected = IllegalArgumentException.class)
 	public void throwsOnIllegalArgument() {
 		ArgParser.parse(new String[]{"illegal arg", "value"});
-	}
-
-	private final static class Keys extends ArgParser {
-
-		public static String keyFindingsFile() {
-			return keyFindingsFile;
-		}
-
-		public static String keyProjectSrc() {
-			return keyProjectSrcPath;
-		}
-
-		public static String keyProjectClassPath() {
-			return keyProjectClassPath;
-		}
-
-		public static String keyPatternsSrc() {
-			return keyPatternsSrcPath;
-		}
-
-		public static String keyPatternsClassPath() {
-			return keyPatternsClassPath;
-		}
 	}
 }
