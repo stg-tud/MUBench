@@ -116,7 +116,7 @@ class ProjectVersion:
         return join(self.path, 'compile')
 
     def __str__(self):
-        return "project version '{}'".format(self.id)
+        return "project '{}' version {}".format(self.project_id, self.version_id)
 
     def __eq__(self, other):
         return isinstance(other, ProjectVersion) and self._version_file == other._version_file
