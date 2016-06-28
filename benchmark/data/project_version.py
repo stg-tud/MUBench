@@ -1,21 +1,31 @@
 from os import listdir
-from os.path import exists, isdir, basename, dirname
+from os.path import exists, isdir
 from os.path import join
 from typing import List, Optional, Any, Dict, Set
 
 import yaml
 
 from benchmark.data.misuse import Misuse, Pattern
+from benchmark.data.project_checkout import ProjectCheckout, GitProjectCheckout, SVNProjectCheckout, \
+    LocalProjectCheckout
+from benchmark.data.project_compile import ProjectCompile
 
 
-# noinspection PyAttributeOutsideInit
 class ProjectVersion:
     VERSION_FILE = 'version.yml'
+    MISUSES_DIR = "misuses"
 
-    def __init__(self, path: str):
-        self._path = path  # type: str
-        self._version_file = join(self._path, ProjectVersion.VERSION_FILE)  # type: str
-        self._misuses_dir = join(dirname(dirname(self._path)), 'misuses')  # type: str
+    def __init__(self, base_path: str, project_id: str, version_id: str):
+        self.version_id = version_id
+        self.project_id = project_id
+        self.id = "{}.{}".format(project_id, version_id)
+
+        from benchmark.data.project import Project
+        self.__project = Project(base_path, project_id)
+
+        self.path = join(self.__project.path, Project.VERSIONS_DIR, version_id)
+        self._version_file = join(self.path, ProjectVersion.VERSION_FILE)  # type: str
+        self._misuses_dir = join(self.__project.path, ProjectVersion.MISUSES_DIR)  # type: str
         self._YAML = None
         self._MISUSES = None
         self._PATTERNS = None
@@ -25,10 +35,6 @@ class ProjectVersion:
         return exists(join(path, ProjectVersion.VERSION_FILE))
 
     @property
-    def id(self):
-        return basename(self._path)
-
-    @property
     def _yaml(self) -> Dict[str, Any]:
         if self._YAML is None:
             with open(self._version_file) as stream:
@@ -36,23 +42,43 @@ class ProjectVersion:
             self._YAML = version_yml
         return self._YAML
 
+    def get_checkout(self, base_path: str) -> ProjectCheckout:
+        repository = self.__project.repository
+        if repository.vcstype == "git":
+            url = repository.url
+            revision = self.revision + "~1"
+            return GitProjectCheckout(url, base_path, self.__project.id, self.version_id, revision)
+        elif repository.vcstype == "svn":
+            url = repository.url
+            revision = str(int(self.revision) - 1)
+            return SVNProjectCheckout(url, base_path, self.__project.id, self.version_id, revision)
+        elif repository.vcstype == "synthetic":
+            from benchmark.data.project import Project
+            url = join(self.path, "compile")
+            return LocalProjectCheckout(url, base_path, self.__project.id)
+        else:
+            raise ValueError("unknown repository type: {}".format(repository.vcstype))
+
+    def get_compile(self, base_path: str) -> ProjectCompile:
+        return ProjectCompile(join(base_path, self.project_id, self.version_id))
+
     @property
-    def __compile(self):
+    def __compile_config(self):
         compile = {"src": "", "commands": [], "classes": ""}
         compile.update(self._yaml.get("build", {}))
         return compile
 
     @property
     def source_dir(self):
-        return self.__compile["src"]
+        return self.__compile_config["src"]
 
     @property
     def compile_commands(self):
-        return self.__compile["commands"]
+        return self.__compile_config["commands"]
 
     @property
     def classes_dir(self):
-        return self.__compile["classes"]
+        return self.__compile_config["classes"]
 
     @property
     def misuses(self) -> List[Misuse]:
@@ -92,7 +118,7 @@ class ProjectVersion:
 
     @property
     def additional_compile_sources(self) -> str:
-        return join(self._path, 'compile')
+        return join(self.path, 'compile')
 
     def __str__(self):
         return "project version '{}'".format(self.id)

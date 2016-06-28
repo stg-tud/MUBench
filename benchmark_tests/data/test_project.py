@@ -2,13 +2,11 @@ from os.path import join
 from tempfile import mkdtemp
 
 import yaml
-from nose.tools import assert_equals, assert_raises
+from nose.tools import assert_equals
 
 from benchmark.data.project import Project
-from benchmark.data.project_checkout import LocalProjectCheckout, GitProjectCheckout, SVNProjectCheckout
-from benchmark.data.project_version import ProjectVersion
 from benchmark.utils.io import remove_tree, create_file, safe_open
-from benchmark_tests.test_utils.data_util import create_project
+from benchmark_tests.test_utils.data_util import create_version
 
 
 class TestProject:
@@ -58,57 +56,10 @@ class TestProject:
 
         assert_equals("http://git.org/repo.git", self.uut.repository.url)
 
-    def test_derives_compile_base_path(self):
-        project_compile = self.uut.get_compile(ProjectVersion("version"), "/base/path")
-
-        assert_equals(join("/base/path", self.project_id, "version"), project_compile.base_path)
-
     def test_finds_versions(self):
-        version = ProjectVersion(join(self.uut._path, "versions", "v1"))
+        version = create_version("v1", project=self.uut)
         create_file(version._version_file)
 
         versions = self.uut.versions
 
         assert_equals([version], versions)
-
-
-class TestProjectCheckout:
-    def test_synthetic_project(self):
-        uut = create_project("-project-", yaml={"repository": {"type": "synthetic"}})
-        version = ProjectVersion("")
-
-        checkout = uut.get_checkout(version, ":base_path:")
-
-        assert isinstance(checkout, LocalProjectCheckout)
-        assert_equals(join(uut._path, "versions", "0", "compile"), checkout.url)
-        assert_equals("-project-", checkout.name)
-
-    def test_git_project(self):
-        uut = create_project("-project-", yaml={"repository": {"type": "git", "url": "ssh://foobar.git"}})
-        version = ProjectVersion("-version-")
-        version._YAML = {"revision": "-revision-"}
-
-        checkout = uut.get_checkout(version, "-base_path-")
-
-        assert isinstance(checkout, GitProjectCheckout)
-        assert_equals("ssh://foobar.git", checkout.url)
-        assert_equals("-project-", checkout.name)
-        assert_equals("-version-", checkout.version)
-        assert_equals("-revision-~1", checkout.revision)
-
-    def test_svn_project(self):
-        uut = create_project("-project-", yaml={"repository": {"type": "svn", "url": "http://url/svn"}})
-        version = ProjectVersion("-version-")
-        version._YAML = {"revision": "667"}
-
-        checkout = uut.get_checkout(version, "-base_path-")
-
-        assert isinstance(checkout, SVNProjectCheckout)
-        assert_equals("http://url/svn", checkout.url)
-        assert_equals("-project-", checkout.name)
-        assert_equals("-version-", checkout.version)
-        assert_equals("666", checkout.revision)
-
-    def test_unknown_type(self):
-        uut = create_project("", yaml={"repository": {"type": "unknown"}})
-        assert_raises(ValueError, uut.get_checkout, ProjectVersion(""), "-irrelevant-")

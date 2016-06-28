@@ -5,18 +5,22 @@ from benchmark.data.project import Project
 from benchmark.data.project_version import ProjectVersion
 
 
-def create_project(project_id: str, base_path: str = "-test-/-path-", yaml: Dict[str, Any] = None,
+def create_project(project_id: str, base_path: str = "-test-", meta: Dict[str, Any] = None,
                    versions: List[ProjectVersion] = None):
     project = Project(base_path, project_id)
     project._VERSIONS = [] if versions is None else versions
-    project._YAML = {} if yaml is None else yaml
+    project._YAML = {} if meta is None else meta
     return project
 
 
-def create_version(path: str, misuses: List[Misuse] = None, yaml: Dict[str, Any] = None):
-    version = ProjectVersion(path)
+def create_version(version_id: str, misuses: List[Misuse] = None, meta: Dict[str, Any] = None, project: Project=None):
+    if not project:
+        project = create_project("-project-")
+    version = ProjectVersion(project._base_path, project.id, version_id)
+    version._ProjectVersion__project = project
     version._MISUSES = [] if misuses is None else misuses
-    version._YAML = {} if yaml is None else yaml
+    version._YAML = {} if meta is None else meta
+    project._VERSIONS.append(version)
     return version
 
 

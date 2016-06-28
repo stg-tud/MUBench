@@ -11,6 +11,7 @@ from nose.tools import assert_equals
 from benchmark.data.build_config import BuildConfig
 from benchmark.data.pattern import Pattern
 from benchmark.data.project import Project
+from benchmark.data.repository import Repository
 from benchmark.subprocesses.tasks.base.project_task import Response
 from benchmark.subprocesses.tasks.implementations.compile import Compile
 from benchmark.utils.io import create_file
@@ -29,13 +30,14 @@ class TestCompile:
         self.checkout_base_path = join(self.temp_dir, "checkouts")
 
         self.source_dir = "src"
-        self.version = create_version(self.version_path, yaml={"build": {"src": self.source_dir, "commands": ["mkdir classes"], "classes": "classes", "revision": "0"}})
-        self.version._REVISION = '0'
+        self.project = create_project(self.project_path, meta={"repository": {"type": "git", "url": "-url-"}})
+        self.version = create_version(self.version_path, project=self.project,
+                                      meta={"build": {"src": self.source_dir,
+                                                      "commands": ["mkdir classes"],
+                                                      "classes": "classes"},
+                                            "revision": "0"})
 
-        self.project = create_project(self.project_path, versions=[self.version])
-        self.project._REPOSITORY = Project.Repository('git', 'url')
-
-        checkout = self.project.get_checkout(self.version, self.checkout_base_path)
+        checkout = self.version.get_checkout(self.checkout_base_path)
 
         self.checkout_path = checkout.checkout_dir
         self.source_path = join(self.checkout_path, self.source_dir)

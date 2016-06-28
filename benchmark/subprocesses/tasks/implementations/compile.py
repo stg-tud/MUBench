@@ -30,7 +30,7 @@ class Compile(ProjectVersionTask):
         logger.debug("- Pattern frequency = %r", self.pattern_frequency)
         logger = logging.getLogger("compile.tasks")
 
-        project_compile = project.get_compile(version, self.compiles_base_path)
+        project_compile = version.get_compile(self.compiles_base_path)
         build_path = join(project_compile.base_path, Compile.__BUILD_DIR)
         sources_path = join(build_path, version.source_dir)
         classes_path = join(build_path, version.classes_dir)
@@ -43,7 +43,7 @@ class Compile(ProjectVersionTask):
         if needs_copy_sources or needs_copy_pattern_sources or needs_compile or needs_compile_patterns:
             remove_tree(build_path)
             logger.debug("Copying to build directory...")
-            checkout_path = project.get_checkout(version, self.checkouts_base_path).checkout_dir
+            checkout_path = version.get_checkout(self.checkouts_base_path).checkout_dir
             copy_tree(checkout_path, build_path)
             logger.debug("Copying additional resources...")
             self.__copy_additional_compile_sources(version, build_path)

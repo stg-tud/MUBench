@@ -75,7 +75,7 @@ class Detect(ProjectVersionTask):
                 return Response.skip
 
     def get_detector_arguments(self, findings_file_path: str, project: Project, version: ProjectVersion) -> List[str]:
-        project_compile = project.get_compile(version, self.compiles_base_path)
+        project_compile = version.get_compile(self.compiles_base_path)
         findings_file = [self.key_findings_file, self.to_arg_path(findings_file_path)]
         src_project = [self.key_src_project, self.to_arg_path(project_compile.original_sources_path)]
         src_patterns = []

@@ -72,17 +72,17 @@ class TestDetect:
 
         self.assert_last_invoke_arg_value_equals(
             self.uut.key_src_project,
-            '"' + project.get_compile(version, self.checkout_base).original_sources_path + '"')
+            '"' + version.get_compile(self.checkout_base).original_sources_path + '"')
 
     def test_passes_project_classes_path(self):
         project = create_project("project")
-        version = create_version("0", yaml={"build": {"commands": [":any:"]}})
+        version = create_version("0", meta={"build": {"commands": [":any:"]}})
 
         self.uut.process_project_version(project, version)
 
         self.assert_last_invoke_arg_value_equals(
             self.uut.key_classes_project,
-            '"' + project.get_compile(version, self.checkout_base).original_classes_path + '"')
+            '"' + version.get_compile(self.checkout_base).original_classes_path + '"')
 
     def test_passes_findings_files(self):
         project = create_project("project")
@@ -104,25 +104,25 @@ class TestDetect:
 
     def test_invokes_detector_with_patterns_src_path(self):
         project = create_project("project")
-        version = create_version("0", yaml={"build": {"commands": [":any:"]}})
+        version = create_version("0", meta={"build": {"commands": [":any:"]}})
         version._PATTERNS = [Pattern("", "a")]
 
         self.uut.process_project_version(project, version)
 
         self.assert_last_invoke_arg_value_equals(
             self.uut.key_src_patterns,
-            '"' + project.get_compile(version, self.checkout_base).pattern_sources_path + '"')
+            '"' + version.get_compile(self.checkout_base).pattern_sources_path + '"')
 
     def test_invokes_detector_with_patterns_class_path(self):
         project = create_project("project")
-        version = create_version("0", yaml={"build": {"commands": {":any:"}}})
+        version = create_version("0", meta={"build": {"commands": {":any:"}}})
         version._PATTERNS = [Pattern("", "a")]
 
         self.uut.process_project_version(project, version)
 
         self.assert_last_invoke_arg_value_equals(
             self.uut.key_classes_patterns,
-            '"' + project.get_compile(version, self.checkout_base).pattern_classes_path + '"')
+            '"' + version.get_compile(self.checkout_base).pattern_classes_path + '"')
 
     def test_downloads_detector_if_not_available(self):
         self.detector_available = False

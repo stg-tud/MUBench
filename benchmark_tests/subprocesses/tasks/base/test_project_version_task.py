@@ -10,6 +10,7 @@ from benchmark.data.project_version import ProjectVersion
 from benchmark.subprocesses.tasks.base.project_task import Response
 from benchmark.subprocesses.tasks.base.project_version_task import ProjectVersionTask
 from benchmark_tests.subprocesses.test_taskrunner import create_project
+from benchmark_tests.test_utils.data_util import create_version
 
 
 class TestProjectVersionTask:
@@ -27,13 +28,6 @@ class TestProjectVersionTask:
 
         assert_equals([call(self.project, self.version1), call(self.project, self.version2)],
                       self.uut.process_project_version.call_args_list)
-
-
-def create_version(path: str, misuses: List[Misuse] = None):
-    version = ProjectVersion(path)
-    version._MISUSES = [] if misuses is None else misuses
-    version._YAML = {}
-    return version
 
 
 class ProjectVersionTaskTestImpl(ProjectVersionTask):
