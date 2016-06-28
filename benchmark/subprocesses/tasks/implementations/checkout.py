@@ -16,7 +16,7 @@ class Checkout(ProjectVersionTask):
         logger = logging.getLogger("checkout")
 
         try:
-            checkout = project.get_checkout(version, self.checkouts_path)
+            checkout = version.get_checkout(self.checkouts_path)
         except ValueError as e:
             logger.error("Checkout data corrupted: %s", e)
             return Response.skip
