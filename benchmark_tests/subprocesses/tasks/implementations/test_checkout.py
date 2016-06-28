@@ -17,10 +17,9 @@ class TestCheckout(unittest.TestCase):
         self.checkout.create = MagicMock()
         self.checkout.delete = MagicMock()
 
-        self.version = create_version("-version-")
-
         self.project = create_project("-project-")
-        self.project.get_checkout = MagicMock(return_value=self.checkout)
+        self.version = create_version("-version-", project=self.project)
+        self.version.get_checkout = MagicMock(return_value=self.checkout)
 
         self.uut = Checkout("-checkouts-", force_checkout=False)
 
@@ -43,7 +42,7 @@ class TestCheckout(unittest.TestCase):
         assert_equals(Response.ok, response)
 
     def test_error_get_checkout(self):
-        self.project.get_checkout = MagicMock(side_effect=ValueError)
+        self.version.get_checkout = MagicMock(side_effect=ValueError)
 
         response = self.uut.process_project_version(self.project, self.version)
 
