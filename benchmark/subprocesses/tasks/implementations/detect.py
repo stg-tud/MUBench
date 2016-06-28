@@ -51,13 +51,13 @@ class Detect(ProjectVersionTask):
         detector_args = self.get_detector_arguments(findings_file_path, project, version)
 
         if exists(findings_file_path) and not self.force_detect:
-            logger.info("Detector findings already exists. Skipping detection.")
+            logger.info("Detector findings for %s already exists. Skipping detection.", version)
             return Response.ok
         else:
             try:
                 remove_tree(result_path)
                 makedirs(result_path, exist_ok=True)
-                logger.info("Detecting misuses...")
+                logger.info("Detecting misuses in %s...", version)
                 logger.debug("- Detector path = %s", detector_path)
                 logger.debug("- Detector args = %s", detector_args)
                 logger = logging.getLogger("detect.run")
