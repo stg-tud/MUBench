@@ -1,5 +1,4 @@
 import org.apache.lucene.index.IndexReader;
-import org.apache.lucene.search.CreationPlaceholder;
 
 import java.io.IOException;
 
@@ -39,7 +38,9 @@ abstract class UseKeyForMapRetrieve {
     return value;
   }
   
-  Object createValue(IndexReader reader, Object key) throws IOException;
+  Object createValue(IndexReader reader, Object key) throws IOException {
+    return null; // stub
+  }
   
   static final class CreationPlaceholder {
     Object value;

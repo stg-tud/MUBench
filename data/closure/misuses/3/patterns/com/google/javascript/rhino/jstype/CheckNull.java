@@ -7,9 +7,9 @@ import java.util.Set;
 
 class CheckNull {
   Set<String> pattern(ObjectType interfaceType) {
-    ObjectType proto = interfaceType.getImplicitPrototype();
+    ObjectType implicitProto = interfaceType.getImplicitPrototype();
     Set<String> currentPropertyNames;
-    if (proto == null) {
+    if (implicitProto == null) {
       currentPropertyNames = ImmutableSet.of();
     } else {
       currentPropertyNames = implicitProto.getOwnPropertyNames();
