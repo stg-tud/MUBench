@@ -1,5 +1,8 @@
 import org.apache.jackrabbit.webdav.DavServletResponse;
 
+import java.util.Iterator;
+import java.util.Map;
+
 class CheckMapGetNotNull {
   int pattern(Map codeMap, Class exceptionClass) {
     Integer code = (Integer) codeMap.get(exceptionClass);

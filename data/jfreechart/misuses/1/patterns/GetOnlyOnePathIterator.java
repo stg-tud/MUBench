@@ -4,7 +4,7 @@ import java.awt.geom.PathIterator;
 import java.util.Arrays;
 
 class GetOnlyOnePathIterator {
-  boolean equal(GeneralPath p1) {
+  boolean equal(GeneralPath p1, GeneralPath p2) {
     if (p1 == null) {
       return (p2 == null);
     }

@@ -1,6 +1,10 @@
+import org.apache.commons.collections.BeanMap;
+
+import java.util.Iterator;
+import java.util.Properties;
 
 class UseContainsKeyOverGetNotNull {
-  Object newInstance(BeanMap map) {
+  Object pattern(BeanMap map, Properties properties) {
     Iterator iterator = map.keyIterator();
     while (iterator.hasNext()) {
        String name = (String) iterator.next();

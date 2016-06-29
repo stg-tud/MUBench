@@ -4,6 +4,8 @@ import java.security.PublicKey;
 
 import javax.crypto.Cipher;
 
+import sos.mrtd.Util;
+
 class UseDecryptForDecryption {
   byte[] pattern(Cipher cipher, PublicKey pubkey, MessageDigest digest, byte[] data) throws GeneralSecurityException {
     cipher.init(Cipher.DECRYPT_MODE, pubkey);

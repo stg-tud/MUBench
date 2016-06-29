@@ -1,4 +1,5 @@
 import org.apache.jackrabbit.core.ItemData;
+import org.apache.jackrabbit.core.ItemId;
 import org.apache.jackrabbit.core.SessionImpl;
 import org.apache.jackrabbit.core.state.ItemState;
 import org.apache.jackrabbit.spi.Path;
@@ -19,4 +20,6 @@ class CheckStateNotNull {
         return (path == null) ? canRead(data.getId()) : session.getAccessManager().canRead(path);
     }
   }
+  
+  private boolean canRead(ItemId id) { return true; }
 }

@@ -3,33 +3,30 @@ package org.apache.commons.httpclient;
 import java.io.IOException;
 
 class CloseConnection {
-  private void executeWithRetry(final HttpMethod method) throws IOException, HttpException {
+  void pattern(HttpConnection conn, HttpMethod method, HttpState state) throws IOException, HttpException {
     try {
         while (true) {
-            if (!this.conn.isOpen()) {
-                this.conn.open();
-                if (this.conn.isProxied() && this.conn.isSecure() 
-                && !(method instanceof ConnectMethod)) {
-                    if (!executeConnect()) {
-                        return;
-                    }
+            if (!conn.isOpen()) {
+                conn.open();
+                if (conn.isProxied() && conn.isSecure() && !(method instanceof ConnectMethod)) {
+                    // initialize connect method...
                 }
             }
             try {
-                method.execute(state, this.conn);
+                method.execute(state, conn);
                 break;
             } catch (HttpRecoverableException httpre) {
-                this.conn.close();
+                conn.close();
             }
         }
     } catch (IOException e) {
-        if (this.conn.isOpen()) {
-            this.conn.close();
+        if (conn.isOpen()) {
+            conn.close();
         }
         throw e;
     } catch (RuntimeException e) {
-        if (this.conn.isOpen()) {
-            this.conn.close();
+        if (conn.isOpen()) {
+            conn.close();
         }
         throw e;
     }

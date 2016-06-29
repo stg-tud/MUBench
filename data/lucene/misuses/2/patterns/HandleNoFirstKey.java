@@ -11,5 +11,6 @@ class HandleNoFirstKey {
     if (field != null) {
       return fieldToReader.get(field);
     }
+    return null;
   }
 }

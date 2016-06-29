@@ -5,7 +5,7 @@ class CheckDatasetForNull {
   int pattern(CategoryPlot plot, int index) {
     CategoryDataset dataset = plot.getDataset(index);
     if (dataset == null) {
-      return result;
+      return 0; // default value
     }
     return dataset.getRowCount();
   }

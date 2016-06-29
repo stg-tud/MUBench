@@ -1,3 +1,5 @@
+package org.mozilla.javascript;
+
 import java.io.IOException;
 
 import org.mozilla.javascript.FunctionNode;
