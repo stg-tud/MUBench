@@ -40,4 +40,8 @@ abstract class UseKeyForMapRetrieve {
   }
   
   Object createValue(IndexReader reader, Object key) throws IOException;
+  
+  static final class CreationPlaceholder {
+    Object value;
+  }
 }

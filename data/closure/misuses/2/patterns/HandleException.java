@@ -1,3 +1,4 @@
+import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.spi.Parameters;
 
 class HandleException {

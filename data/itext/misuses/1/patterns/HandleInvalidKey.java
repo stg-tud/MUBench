@@ -1,10 +1,12 @@
 import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.security.cert.X509Certificate;
 
 import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
 
 class HandleInvalidKey {
-  byte[] pattern(String algorithmId, X509Certificate x509certificate, byte[] abyte0) {
+  byte[] pattern(String algorithmId, X509Certificate x509certificate, byte[] abyte0) throws InvalidKeyException, NoSuchAlgorithmException, IllegalBlockSizeException {
     Cipher cipher = Cipher.getInstance(algorithmId);
     try {
       cipher.init(1, x509certificate);

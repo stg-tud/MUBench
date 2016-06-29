@@ -6,9 +6,10 @@ import org.mozilla.javascript.FunctionNode;
 import org.mozilla.javascript.IRFactory;
 import org.mozilla.javascript.Node;
 import org.mozilla.javascript.Token;
+import org.mozilla.javascript.TokenStream;
 
 class CallInitOnce {
-  Node pattern(IRFactory nf, int functionType, Node memberExprNode, int functionIndex, String name, Node body) throws IOException {
+  Node pattern(TokenStream ts, IRFactory nf, int functionType, Node memberExprNode, int functionIndex, String name, Node body) throws IOException {
     int baseLineno = ts.getLineno();
     
     FunctionNode fnNode = nf.createFunction(name);

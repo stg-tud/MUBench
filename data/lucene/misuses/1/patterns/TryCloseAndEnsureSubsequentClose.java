@@ -13,4 +13,12 @@ class TryCloseAndEnsureSubsequentClose extends BufferedIndexOutput {
       file.close();
     }
   }
+  
+  protected void flushBuffer(byte[] b, int offset, int len) throws IOException {
+    // stub
+  }
+  
+  public long length() throws IOException {
+    return 0; // stub
+  }
 }

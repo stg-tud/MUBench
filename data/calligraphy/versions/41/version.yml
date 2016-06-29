@@ -3,8 +3,8 @@ build:
   setup:
     - android update sdk -u -a --filter build-tools-19.0.3
   commands:
-  - echo "sonatypeUsername=foo" > gradle.properties
-  - echo "sonatypePassword=bar" > gradle.properties
+  - echo "sonatypeUsername=foo" >> gradle.properties
+  - echo "sonatypePassword=bar" >> gradle.properties
   - gradle :compileJava
   src: calligraphy/src/main/java/
 misuses:

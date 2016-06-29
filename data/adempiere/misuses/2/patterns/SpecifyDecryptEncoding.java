@@ -1,4 +1,5 @@
-import javax.crypto.AlgorithmParameters;
+import java.security.AlgorithmParameters;
+
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
 
