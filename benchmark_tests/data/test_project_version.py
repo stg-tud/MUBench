@@ -46,12 +46,24 @@ class TestProjectVersion:
     def test_finds_misuses(self):
         misuse = create_misuse("1", project=create_project(self.project_id, base_path=self.temp_dir))
         create_file(misuse.misuse_file)
-        print(misuse.misuse_file)
         self.uut._YAML = {"misuses": ["1"]}
 
         actual_misuses = self.uut.misuses
 
         assert_equals([misuse], actual_misuses)
+
+    def test_finds_only_own_misuses(self):
+        project = create_project(self.project_id, base_path=self.temp_dir)
+        misuse1 = create_misuse("1", project=project)
+        create_file(misuse1.misuse_file)
+        misuse2 = create_misuse("2", project=project)
+        create_file(misuse2.misuse_file)
+        self.uut._YAML = {"misuses": ["2"]}
+
+        misuses = self.uut.misuses
+
+        assert_equals([misuse2], misuses)
+
 
     def test_creates_build_config(self):
         self.uut._YAML = {"build": {"src": "src/java/", "commands": ["mvn compile"], "classes": "target/classes/"}}

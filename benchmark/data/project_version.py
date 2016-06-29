@@ -83,16 +83,9 @@ class ProjectVersion:
     @property
     def misuses(self) -> List[Misuse]:
         if not self._MISUSES:
-            my_misuse_ids = self._yaml.get("misuses", None)
-            if my_misuse_ids is None:
-                return []
-
-            misuses_dir = self._misuses_dir
-            if not exists(misuses_dir):
-                return []
-
-            self._MISUSES = [Misuse(self._base_path, self.__project.id, misuse) for misuse in listdir(misuses_dir)
-                             if Misuse.is_misuse(join(misuses_dir, misuse))]
+            misuse_ids = self._yaml.get("misuses", [])
+            self._MISUSES = [Misuse(self._base_path, self.__project.id, misuse_id) for misuse_id in misuse_ids
+                             if Misuse.is_misuse(join(self._misuses_dir, misuse_id))]
 
         return self._MISUSES
 
