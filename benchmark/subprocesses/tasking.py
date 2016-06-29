@@ -38,11 +38,12 @@ class TaskRunner:
 
     @staticmethod
     def _get_projects(data_path: str) -> List[Project]:
+        project_ids = []
         if exists(data_path):
-            return [Project(data_path, project_id) for project_id in listdir(data_path) if
-                    Project.is_project(join(data_path, project_id))]
-        else:
-            return []
+            project_ids.extend(sorted(listdir(data_path)))
+
+        return [Project(data_path, project_id) for project_id in project_ids if
+                Project.is_project(join(data_path, project_id))]
 
     def __skip(self, project: Project) -> bool:
         blacklisted = project.id in self.black_list
