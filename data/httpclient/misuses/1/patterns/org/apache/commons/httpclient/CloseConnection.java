@@ -1,3 +1,5 @@
+package org.apache.commons.httpclient;
+
 import java.io.IOException;
 
 class CloseConnection {
