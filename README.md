@@ -25,18 +25,15 @@ The MUBench dataset is an [MSR 2016 Data Showcase](http://2016.msrconf.org/#/dat
 * Java 8
 * git 2.x
 * svn 1.8+
+* Gradle 1.10+
+* Maven 3.3.x
 
 (Other version might work, but where not tested)
 
 ### Setup
 
-1. [Download PyYAML](http://pyyaml.org/wiki/PyYAML) to somewhere on your machine.
-2. Unzip the package and install with `python setup.py install`.
-3. Run `scripts/verify.py` to check correct setup.
-
-### Scripts
-
-Run any of the scripts in `scripts`. See script headers for details.
+1. `pip install pyyaml`
+3. Run `./mubench check` to check requirements.
 
 ### Benchmark
 
