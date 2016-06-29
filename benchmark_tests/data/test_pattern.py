@@ -67,7 +67,7 @@ class TestPattern:
             import java.math.BigInteger;
 
             public class UseResult0 {
-                public UseResult() {}
+                public UseResult0() {}
                 public void pattern(String value, int bit) {}
             }
         """
