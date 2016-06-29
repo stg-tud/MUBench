@@ -18,11 +18,8 @@ class Evaluation(ProjectVersionMisuseTask):
     no_hit = 0
     potential_hit = 1
 
-    def __init__(self,
-                 results_path: str,
-                 detector_result_file: str,
-                 checkout_base_dir: str,
-                 eval_result_file: str):
+    def __init__(self, results_path: str, detector_result_file: str, checkout_base_dir: str, eval_result_file: str):
+        super().__init__()
         self.results_path = results_path
         self.detector_result_file = detector_result_file
         self.checkout_base_dir = checkout_base_dir

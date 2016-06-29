@@ -15,14 +15,9 @@ from benchmark.utils.shell import Shell, CommandFailedError
 
 
 class Detect(ProjectVersionTask):
-    def __init__(self,
-                 detector: str,
-                 detector_result_file: str,
-                 compiles_base_path: str,
-                 results_base_path: str,
-                 timeout: Optional[int],
-                 java_options: List[str],
-                 force_detect: bool):
+    def __init__(self, detector: str, detector_result_file: str, compiles_base_path: str, results_base_path: str,
+                 timeout: Optional[int], java_options: List[str], force_detect: bool):
+        super().__init__()
         self.force_detect = force_detect
         self.detector = detector
         self.detector_findings_file = detector_result_file

@@ -1,12 +1,7 @@
-from typing import List
-from typing import Tuple
 from unittest.mock import MagicMock, call
 
 from nose.tools import assert_equals
 
-from benchmark.data.misuse import Misuse
-from benchmark.data.project import Project
-from benchmark.data.project_version import ProjectVersion
 from benchmark.subprocesses.tasks.base.project_task import Response
 from benchmark.subprocesses.tasks.base.project_version_task import ProjectVersionTask
 from benchmark_tests.subprocesses.test_taskrunner import create_project
@@ -20,7 +15,11 @@ class TestProjectVersionTask:
         self.version2 = create_version("v2")
         self.project = create_project("p1", versions=[self.version1, self.version2])
 
+        self.black_list = []
+        self.white_list = []
         self.uut = ProjectVersionTask()
+        self.uut.black_list = self.black_list
+        self.uut.white_list = self.white_list
         self.uut.process_project_version = MagicMock()
 
     def test_process_version(self):
@@ -29,11 +28,23 @@ class TestProjectVersionTask:
         assert_equals([call(self.project, self.version1), call(self.project, self.version2)],
                       self.uut.process_project_version.call_args_list)
 
+    def test_adds_version_to_blacklist_when_task_returns_skip(self):
+        self.uut.process_project_version = MagicMock(return_value=Response.skip)
 
-class ProjectVersionTaskTestImpl(ProjectVersionTask):
-    def __init__(self):
-        self.args = list()  # type: List[Tuple[Project, ProjectVersion]]
+        self.uut.process_project(self.project)
 
-    def process_project_version(self, project: Project, version: ProjectVersion) -> Response:
-        self.args.append((project, version))
-        return Response.ok
+        assert_equals([self.version1.id, self.version2.id], self.black_list)
+
+    def test_skips_version_on_blacklist(self):
+        self.black_list.append(self.version1.id)
+
+        self.uut.process_project(self.project)
+
+        assert_equals([call(self.project, self.version2)], self.uut.process_project_version.call_args_list)
+
+    def test_skips_versions_not_on_whitelist(self):
+        self.white_list.append(self.version1.id)
+
+        self.uut.process_project(self.project)
+
+        assert_equals([call(self.project, self.version1)], self.uut.process_project_version.call_args_list)

@@ -23,10 +23,12 @@ class TaskRunner:
             logger = logging.getLogger()
             logger.info("Starting %s...", type(task).__name__.lower())
             task.start()
+            task.back_list = self.black_list
+            task.white_list = self.white_list
             for project in self._get_projects(self.data_path):
                 logger = logging.getLogger("project")
                 if self.__skip(project):
-                    logger.debug("Skipping '%s'", project.id)
+                    logger.debug("Skipping %s", project)
                 else:
                     response = task.process_project(project)
                     if response == Response.skip:
@@ -44,5 +46,5 @@ class TaskRunner:
 
     def __skip(self, project: Project) -> bool:
         blacklisted = project.id in self.black_list
-        whitelisted = project.id in self.white_list
+        whitelisted = any(item.startswith(project.id) for item in self.white_list)
         return blacklisted or (self.white_list and not whitelisted)

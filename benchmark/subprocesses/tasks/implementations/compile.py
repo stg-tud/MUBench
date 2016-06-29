@@ -18,6 +18,7 @@ class Compile(ProjectVersionTask):
     __BUILD_DIR = "build"
 
     def __init__(self, checkouts_base_path: str, compiles_base_path: str, pattern_frequency: int, force_compile):
+        super().__init__()
         self.checkouts_base_path = checkouts_base_path
         self.compiles_base_path = compiles_base_path
         self.pattern_frequency = pattern_frequency

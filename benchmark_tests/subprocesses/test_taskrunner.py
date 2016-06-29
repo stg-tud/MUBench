@@ -76,6 +76,15 @@ class TestTaskRunner:
 
         assert_equals([call(p2)], self.test_task.process_project.call_args_list)
 
+    def test_runs_whitelisted_project_if_version_only_whitelist(self):
+        project = create_project("p")
+        self.uut._get_projects = MagicMock(return_value=[project])
+        self.uut.white_list.append("p.42")
+
+        self.uut.run()
+
+        self.test_task.process_project.assert_called_with(project)
+
     def test_adds_project_to_backlist_when_task_answers_skip(self):
         self.uut._get_projects = MagicMock(return_value=[(create_project("p1"))])
         self.test_task.process_project = MagicMock(return_value=Response.skip)
