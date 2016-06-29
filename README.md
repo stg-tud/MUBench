@@ -37,7 +37,7 @@ The MUBench dataset is an [MSR 2016 Data Showcase](http://2016.msrconf.org/#/dat
 
 ### Benchmark
 
-MUBench is a benchmark for API-misuse detectors. Run `python benchmark.py -h` for details about how to benchmark detectors.
+MUBench is a benchmark for API-misuse detectors. Run `./mubench -h` for details about how to benchmark detectors.
 
 MUBench uses the misuses specified in the `data` subfolder. The first time a misuse is used in benchmarking, the repository containing that misuse is cloned. Subsequently, the existing clone is used, such that benchmarking runs offline.
 
@@ -66,11 +66,11 @@ The dependency is not yet hosted in a public Maven repository. For the time bein
 
 Using `de.tu_darmstadt.stg.mubench.cli.ArgParser.parse(String[] args)` you will get an instance of `de.tu_darmstadt.stg.mubench.cli.DetectorArgs`. Always check arguments for null since some arguments may be optional.
 
-- DetectorArgs.findingsFile: The file MUBench expects you to write your findings to. This file is `results/<detector>/<misuse>/findings.yml`.
-- DetectorArgs.projectSrcPath: The path to the project sources containing the misuse. You may use this to mine usage patterns and find misuses.
-- DetectorArgs.projectClassPath: (Optional) The path to the compiled project classes containing the misuse. You may use this like `DetectorArgs.projectSrcPath` if your mining runs on compiled code.
-- DetectorArgs.patternsSrcPath: (Optional) The path to pattern files, which contain the fixed version of the usage MUBench expects your detector to find in the project. The files contain Java Source Code snippets. For examples, see the `pattern` folders in [`data`](https://github.com/stg-tud/MUBench/tree/master/data).
-- DetectorArgs.patternsClassPath: (Optional) The path to the compiled pattern files. You may use this like `DetectorArgs.patternsSrcPath` if your mining runs on compiled code.
+- `DetectorArgs.getFindingsFile()`: The file MUBench expects you to write your findings to. This file is `results/<detector>/<misuse>/findings.yml`.
+- `DetectorArgs.getProjectSrcPath()`: The path to the project sources containing the misuse. You may use this to mine usage patterns and find misuses.
+- `DetectorArgs.getProjectClassPath()`: (Optional) The path to the compiled project classes containing the misuse. You may use this like `DetectorArgs.projectSrcPath` if your mining runs on compiled code.
+- `DetectorArgs.getPatternsSrcPath()`: (Optional) The path to pattern files, which contain the fixed version of the usage MUBench expects your detector to find in the project. The files contain Java Source Code snippets. For examples, see the `pattern` folders in [`data`](https://github.com/stg-tud/MUBench/tree/master/data).
+- `DetectorArgs.getPatternsClassPath()`: (Optional) The path to the compiled pattern files. You may use this like `DetectorArgs.patternsSrcPath` if your mining runs on compiled code.
 
 *What Should My Output File Look Like?*
 
