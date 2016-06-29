@@ -113,6 +113,9 @@ class Compile(ProjectVersionTask):
                 self._compile(version.compile_commands, build_path)
                 logger.debug("Copying pattern classes...")
                 self.__copy(duplicates, classes_path, project_compile.pattern_classes_path)
+            except FileNotFoundError as e:
+                remove_tree(project_compile.pattern_classes_path)
+                logger.error("Compilation failed: %s", e)
             except CommandFailedError as e:
                 logger.error("Compilation failed: %s", e)
                 return Response.skip
