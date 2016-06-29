@@ -53,7 +53,6 @@ class ProjectVersion:
             revision = str(int(self.revision) - 1)
             return SVNProjectCheckout(url, base_path, self.__project.id, self.version_id, revision)
         elif repository.vcstype == "synthetic":
-            from benchmark.data.project import Project
             url = join(self.path, "compile")
             return LocalProjectCheckout(url, base_path, self.__project.id)
         else:
