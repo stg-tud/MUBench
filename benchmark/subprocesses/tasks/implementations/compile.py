@@ -37,11 +37,9 @@ class Compile(ProjectVersionTask):
         classes_path = join(build_path, version.classes_dir)
 
         needs_copy_sources = not isdir(project_compile.original_sources_path) or self.force_compile
-        needs_copy_pattern_sources = not isdir(project_compile.pattern_sources_path) or self.force_compile
         needs_compile = not isdir(project_compile.original_classes_path) or self.force_compile
-        needs_compile_patterns = not isdir(project_compile.pattern_classes_path) or self.force_compile
 
-        if needs_copy_sources or needs_copy_pattern_sources or needs_compile or needs_compile_patterns:
+        if needs_copy_sources or needs_compile:
             remove_tree(build_path)
             logger.debug("Copying to build directory...")
             checkout_path = version.get_checkout(self.checkouts_base_path).checkout_dir
@@ -57,17 +55,6 @@ class Compile(ProjectVersionTask):
                 self.__copy_original_sources(sources_path, project_compile.original_sources_path)
             except IOError as e:
                 logger.error("Failed to copy project sources: %s", e)
-                return Response.skip
-
-        if not needs_copy_pattern_sources:
-            logger.info("Already copied pattern sources.")
-        else:
-            try:
-                logger.info("Copying pattern sources...")
-                self.__copy_pattern_sources(version.patterns, project_compile.pattern_sources_path,
-                                            self.pattern_frequency)
-            except IOError as e:
-                logger.error("Failed to copy pattern sources: %s", e)
                 return Response.skip
 
         if not version.compile_commands:
@@ -93,6 +80,28 @@ class Compile(ProjectVersionTask):
         if not version.patterns:
             logger.info("Skipping pattern compilation: no patterns.")
             return Response.ok
+
+        needs_copy_pattern_sources = not isdir(project_compile.pattern_sources_path) or self.force_compile
+        needs_compile_patterns = not isdir(project_compile.pattern_classes_path) or self.force_compile
+
+        if needs_copy_pattern_sources or needs_compile_patterns:
+            remove_tree(build_path)
+            logger.debug("Copying to build directory...")
+            checkout_path = version.get_checkout(self.checkouts_base_path).checkout_dir
+            copy_tree(checkout_path, build_path)
+            logger.debug("Copying additional resources...")
+            self.__copy_additional_compile_sources(version, build_path)
+
+        if not needs_copy_pattern_sources:
+            logger.info("Already copied pattern sources.")
+        else:
+            try:
+                logger.info("Copying pattern sources...")
+                self.__copy_pattern_sources(version.patterns, project_compile.pattern_sources_path,
+                                            self.pattern_frequency)
+            except IOError as e:
+                logger.error("Failed to copy pattern sources: %s", e)
+                return Response.skip
 
         if not needs_compile_patterns:
             logger.info("Already compiled patterns.")
