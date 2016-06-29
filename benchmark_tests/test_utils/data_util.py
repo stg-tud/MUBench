@@ -5,10 +5,8 @@ from benchmark.data.project import Project
 from benchmark.data.project_version import ProjectVersion
 
 
-def create_project(project_id: str, base_path: str = "-test-", meta: Dict[str, Any] = None,
-                   versions: List[ProjectVersion] = None):
+def create_project(project_id: str, base_path: str = "-test-", meta: Dict[str, Any] = None):
     project = Project(base_path, project_id)
-    project._VERSIONS = [] if versions is None else versions
     project._YAML = {} if meta is None else meta
     return project
 

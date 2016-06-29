@@ -17,12 +17,12 @@ class TestProjectVersionMisuseTask:
         uut = ProjectVersionMisuseTask()
         uut.process_project_version_misuse = MagicMock()
 
+        project = create_project("p1")
         m1 = create_misuse("m1")
         m2 = create_misuse("m2")
         m3 = create_misuse("m3")
-        v1 = create_version("v1", misuses=[m1, m2])
-        v2 = create_version("v2", misuses=[m3])
-        project = create_project("p1", versions=[v1, v2])
+        v1 = create_version("v1", misuses=[m1, m2], project=project)
+        v2 = create_version("v2", misuses=[m3], project=project)
 
         uut.process_project(project)
 
