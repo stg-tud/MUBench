@@ -11,9 +11,9 @@ from benchmark_tests.test_utils.data_util import create_version
 class TestProjectVersionTask:
     # noinspection PyAttributeOutsideInit
     def setup(self):
-        self.version1 = create_version("v1")
-        self.version2 = create_version("v2")
-        self.project = create_project("p1", versions=[self.version1, self.version2])
+        self.project = create_project("p1")
+        self.version1 = create_version("v1", project=self.project)
+        self.version2 = create_version("v2", project=self.project)
 
         self.black_list = []
         self.white_list = []
@@ -48,3 +48,10 @@ class TestProjectVersionTask:
         self.uut.process_project(self.project)
 
         assert_equals([call(self.project, self.version1)], self.uut.process_project_version.call_args_list)
+
+    def test_processes_version_if_project_on_whitelist(self):
+        self.white_list.append(self.project.id)
+
+        self.uut.process_project(self.project)
+
+        assert_equals(2, len(self.uut.process_project_version.call_args_list))

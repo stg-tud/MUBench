@@ -21,7 +21,7 @@ class ProjectVersionTask(ProjectTask):
 
     def __skip(self, version: ProjectVersion):
         blacklisted = version.id in self.black_list
-        whitelisted = version.id in self.white_list
+        whitelisted = version.id in self.white_list or version.project_id in self.white_list
         return blacklisted or (self.white_list and not whitelisted)
 
     def process_project_version(self, project: Project, version: ProjectVersion) -> Response:
