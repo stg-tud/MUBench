@@ -1,22 +1,23 @@
 import inspect
 import logging
-import subprocess
 import sys
+
+from benchmark.utils.shell import Shell
 
 
 # noinspection PyPep8Naming
 class Prerequisites:
     @staticmethod
     def Git():
-        subprocess.check_output(['git', '--version'], stderr=subprocess.PIPE)
+        Shell.exec('git --version')
 
     @staticmethod
     def SVN():
-        subprocess.check_output(['svn', '--version', '--quiet'], stderr=subprocess.PIPE)
+        Shell.exec('svn --version')
 
     @staticmethod
     def Java():
-        subprocess.check_output(['java', '-version'], stderr=subprocess.PIPE)
+        Shell.exec('java -version')
 
     # noinspection PyUnresolvedReferences
     @staticmethod
@@ -30,11 +31,11 @@ class Prerequisites:
 
     @staticmethod
     def gradle():
-        subprocess.check_output(['gradle', '-version'], stderr=subprocess.PIPE)
+        Shell.exec('gradle -version')
 
     @staticmethod
     def maven():
-        subprocess.check_output(['mvn', '-v'])
+        Shell.exec('mvn -v')
 
 
 def check_prerequisites():
