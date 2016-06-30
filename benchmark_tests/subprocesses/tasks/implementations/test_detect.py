@@ -1,6 +1,7 @@
 from os.path import join, exists
 from shutil import rmtree
 from tempfile import mkdtemp
+from unittest.mock import MagicMock
 
 from nose.tools import assert_equals
 
@@ -25,22 +26,8 @@ class TestDetect:
         def mock_invoke_detector(detect, absolute_misuse_detector_path: str, detector_args: str):
             self.last_invoke = absolute_misuse_detector_path, detector_args
 
-        self.triggered_download = False
-        self.download_ok = True
-
-        def mock_download():
-            self.triggered_download = True
-            return self.download_ok
-
-        self.detector_available = True
-
-        def mock_detector_available():
-            return self.detector_available
-
         self.orig_invoke_detector = Detect._invoke_detector
         Detect._invoke_detector = mock_invoke_detector
-        self.uut._download = mock_download
-        self.uut._detector_available = mock_detector_available
 
         # mock path resolving
         def mock_get_misuse_detector_path(detector: str):
@@ -125,19 +112,11 @@ class TestDetect:
 
     def test_writes_results(self):
         project = create_project("project")
-        version = create_version("0", meta={"build": {"commands": {":any:"}}}, project=project)
+        version = create_version("0", project=project)
 
         self.uut.process_project_version(project, version)
 
         assert exists(join(self.results_path, version.project_id, version.version_id, "result.yml"))
-
-
-    def test_downloads_detector_if_not_available(self):
-        self.detector_available = False
-
-        self.uut.enter()
-
-        assert self.triggered_download
 
     def assert_last_invoke_arg_value_equals(self, key, value):
         self.assert_arg_value_equals(self.last_invoke[1], key, value)
@@ -151,3 +130,22 @@ class TestDetect:
         for i, arg in enumerate(args):
             if arg is key:
                 assert_equals(args[i + 1], value)
+
+
+class TestDetectDownload:
+    # noinspection PyAttributeOutsideInit
+    def setup(self):
+        self.temp_dir = mkdtemp(prefix='mubench-detect-test_')
+        self.checkout_base = join(self.temp_dir, "checkout")
+        self.findings_file = "findings.yml"
+        self.results_path = join(self.temp_dir, "results")
+
+        self.uut = Detect("detector", self.findings_file, self.checkout_base, self.results_path, None, [], False)
+        self.uut._download = MagicMock(return_value=True)
+
+    def test_downloads_detector_if_not_available(self):
+        self.uut._detector_available = MagicMock(return_value=False)
+
+        self.uut.enter()
+
+        self.uut._download.assert_called_with()
