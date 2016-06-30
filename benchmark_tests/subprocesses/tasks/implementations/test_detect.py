@@ -1,4 +1,4 @@
-from os.path import join
+from os.path import join, exists
 from shutil import rmtree
 from tempfile import mkdtemp
 
@@ -123,6 +123,15 @@ class TestDetect:
         self.assert_last_invoke_arg_value_equals(
             self.uut.key_classes_patterns,
             '"' + version.get_compile(self.checkout_base).pattern_classes_path + '"')
+
+    def test_writes_results(self):
+        project = create_project("project")
+        version = create_version("0", meta={"build": {"commands": {":any:"}}}, project=project)
+
+        self.uut.process_project_version(project, version)
+
+        assert exists(join(self.results_path, version.project_id, version.version_id, "result.yml"))
+
 
     def test_downloads_detector_if_not_available(self):
         self.detector_available = False

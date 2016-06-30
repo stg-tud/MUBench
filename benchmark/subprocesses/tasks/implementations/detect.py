@@ -1,9 +1,12 @@
 import logging
 import subprocess
 import time
+from enum import Enum
 from os import makedirs
 from os.path import join, realpath, exists
 from typing import Optional, List
+
+import yaml
 
 from benchmark.data.project import Project
 from benchmark.data.project_version import ProjectVersion
@@ -12,6 +15,12 @@ from benchmark.subprocesses.tasks.base.project_version_task import ProjectVersio
 from benchmark.utils import web_util
 from benchmark.utils.io import remove_tree
 from benchmark.utils.shell import Shell, CommandFailedError
+
+
+class Result(Enum):
+    error = 0
+    success = 1
+    timeout = 2
 
 
 class Detect(ProjectVersionTask):
@@ -48,34 +57,46 @@ class Detect(ProjectVersionTask):
         logger = logging.getLogger("detect")
 
         result_path = join(self.results_base_path, version.project_id, version.version_id)
-
         findings_file_path = join(result_path, self.detector_findings_file)
+        result_file_path = join(result_path, "result.yml")
+
         detector_path = Detect.__get_misuse_detector_path(self.detector)
         detector_args = self.get_detector_arguments(findings_file_path, project, version)
+        print(result_file_path)
 
-        if exists(findings_file_path) and not self.force_detect:
+        if exists(result_file_path) and not self.force_detect:
             logger.info("Detector findings for %s already exists. Skipping detection.", version)
             return Response.ok
         else:
+            remove_tree(result_path)
+            makedirs(result_path, exist_ok=True)
+            logger.info("Detecting misuses in %s...", version)
+            logger.debug("- Detector path = %s", detector_path)
+            logger.debug("- Detector args = %s", detector_args)
+            logger = logging.getLogger("detect.run")
+            start = time.time()
             try:
-                remove_tree(result_path)
-                makedirs(result_path, exist_ok=True)
-                logger.info("Detecting misuses in %s...", version)
-                logger.debug("- Detector path = %s", detector_path)
-                logger.debug("- Detector args = %s", detector_args)
-                logger = logging.getLogger("detect.run")
-                start = time.time()
                 self._invoke_detector(detector_path, detector_args)
-                end = time.time()
-                runtime = end - start
-                logger.info("Detection took {0:.2f} seconds.".format(runtime))
-                return Response.ok
+                detector_result = Result.success
             except CommandFailedError as e:
                 logger.error("Detector failed: %s", e)
-                return Response.skip
+                detector_result = Result.error
             except subprocess.TimeoutExpired:
                 logger.error("Detector took longer than the maximum of %s seconds", self.timeout)
-                return Response.skip
+                detector_result = Result.timeout
+            finally:
+                end = time.time()
+                runtime = end - start
+
+        detector_stats = {"result": detector_result.name, "runtime": runtime}
+        with open(result_file_path, "w") as result_file:
+            yaml.safe_dump(detector_stats, result_file, default_flow_style=False)
+
+        if detector_result == Result.success:
+            logger.info("Detection took {0:.2f} seconds.".format(runtime))
+            return Response.ok
+        else:
+            return Response.skip
 
     def get_detector_arguments(self, findings_file_path: str, project: Project, version: ProjectVersion) -> List[str]:
         project_compile = version.get_compile(self.compiles_base_path)
