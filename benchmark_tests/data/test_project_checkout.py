@@ -59,7 +59,7 @@ class TestLocalProjectCheckout:
     def test_to_string(self):
         uut = LocalProjectCheckout(self.local_url, self.checkouts_dir, "-project-")
 
-        assert_equals("synthetic:{}".format(self.local_url), str(uut))
+        assert_equals("local:{}".format(self.local_url), str(uut))
 
 
 class TestSyntheticCheckout:
@@ -83,6 +83,9 @@ class TestSyntheticCheckout:
         self.uut.delete()
 
         assert not exists(self.uut.checkout_dir)
+
+    def test_to_string(self):
+        assert_equals("synthetic:-project-.-id-", str(self.uut))
 
 
 class TestGitProjectCheckout:
