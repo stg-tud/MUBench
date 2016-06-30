@@ -57,8 +57,7 @@ class TestDetect:
 
     def test_invokes_detector(self):
         project = create_project("project")
-        version = create_version("0")
-        misuse = create_misuse("id")
+        version = create_version("0", project=project)
 
         self.uut.process_project_version(project, version)
 
@@ -76,7 +75,7 @@ class TestDetect:
 
     def test_passes_project_classes_path(self):
         project = create_project("project")
-        version = create_version("0", meta={"build": {"commands": [":any:"]}})
+        version = create_version("0", meta={"build": {"commands": [":any:"]}}, project=project)
 
         self.uut.process_project_version(project, version)
 
@@ -84,7 +83,7 @@ class TestDetect:
             self.uut.key_classes_project,
             '"' + version.get_compile(self.checkout_base).original_classes_path + '"')
 
-    def test_passes_findings_files(self):
+    def test_passes_findings_file(self):
         project = create_project("project")
         version = create_version("0", project=project)
 
@@ -104,7 +103,7 @@ class TestDetect:
 
     def test_invokes_detector_with_patterns_src_path(self):
         project = create_project("project")
-        version = create_version("0", meta={"build": {"commands": [":any:"]}})
+        version = create_version("0", meta={"build": {"commands": [":any:"]}}, project=project)
         version._PATTERNS = [Pattern("", "a")]
 
         self.uut.process_project_version(project, version)
@@ -115,7 +114,7 @@ class TestDetect:
 
     def test_invokes_detector_with_patterns_class_path(self):
         project = create_project("project")
-        version = create_version("0", meta={"build": {"commands": {":any:"}}})
+        version = create_version("0", meta={"build": {"commands": {":any:"}}}, project=project)
         version._PATTERNS = [Pattern("", "a")]
 
         self.uut.process_project_version(project, version)
