@@ -36,6 +36,14 @@ class Detect(ProjectVersionTask):
         if not self._detector_available():
             self._download()
 
+    def _detector_available(self) -> bool:
+        return exists(Detect.__get_misuse_detector_path(self.detector))
+
+    def _download(self) -> bool:
+        return web_util.load_detector(Detect.__get_misuse_detector_url(self.detector),
+                                      Detect.__get_misuse_detector_path(self.detector),
+                                      Detect.__get_misuse_detector_md5(self.detector))
+
     def process_project_version(self, project: Project, version: ProjectVersion) -> Response:
         logger = logging.getLogger("detect")
 
@@ -93,14 +101,6 @@ class Detect(ProjectVersionTask):
     @staticmethod
     def to_arg_path(absolute_misuse_detector_path):
         return "\"{}\"".format(absolute_misuse_detector_path)
-
-    def _detector_available(self) -> bool:
-        return exists(Detect.__get_misuse_detector_path(self.detector))
-
-    def _download(self) -> bool:
-        return web_util.load_detector(Detect.__get_misuse_detector_url(self.detector),
-                                      Detect.__get_misuse_detector_path(self.detector),
-                                      Detect.__get_misuse_detector_md5(self.detector))
 
     @staticmethod
     def __get_misuse_detector_dir(detector: str):
