@@ -3,6 +3,9 @@ from os.path import dirname, exists, isfile, join, isdir, basename, islink
 
 from shutil import rmtree, copy
 from stat import S_IWRITE
+from typing import Dict
+
+import yaml
 
 
 def safe_write(content: str, file_path: str, append: bool) -> None:
@@ -56,3 +59,14 @@ def copy_tree(src: str, dst: str) -> None:
             copy(content, dst)
         else:
             raise UserWarning("unknown file type: {}".format(content))
+
+
+def write_yaml(file: str, data: Dict):
+    create_file(file)
+    with open(file, "w") as stream:
+        yaml.safe_dump(data, stream, default_flow_style=False)
+
+
+def read_yaml(file: str):
+    with open(file, "r") as stream:
+        return yaml.load(stream)

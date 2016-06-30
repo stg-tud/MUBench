@@ -13,7 +13,7 @@ from benchmark.data.project_version import ProjectVersion
 from benchmark.subprocesses.tasks.base.project_task import Response
 from benchmark.subprocesses.tasks.base.project_version_task import ProjectVersionTask
 from benchmark.utils import web_util
-from benchmark.utils.io import remove_tree
+from benchmark.utils.io import remove_tree, write_yaml, read_yaml
 from benchmark.utils.shell import Shell, CommandFailedError
 
 
@@ -21,6 +21,29 @@ class Result(Enum):
     error = 0
     success = 1
     timeout = 2
+
+
+class Run:
+    def __init__(self, path: str):
+        self.path = path
+        self.__result = None  # type: Result
+        self.__runtime = None
+        if exists(path):
+            data = read_yaml(path)
+            self.__result = Result[data["result"]]
+            self.__runtime = data.get("runtime", -1)
+
+    def set_result(self, value: Result):
+        self.__result = value
+
+    def set_runtime(self, value):
+        self.__runtime = value
+
+    def is_success(self):
+        return self.__result == Result.success
+
+    def write(self):
+        write_yaml(self.path, {"result": self.__result.name, "runtime": self.__runtime})
 
 
 class Detect(ProjectVersionTask):
@@ -59,12 +82,12 @@ class Detect(ProjectVersionTask):
         result_path = join(self.results_base_path, version.project_id, version.version_id)
         findings_file_path = join(result_path, self.detector_findings_file)
         result_file_path = join(result_path, "result.yml")
+        run = Run(result_file_path)
 
         detector_path = Detect.__get_misuse_detector_path(self.detector)
         detector_args = self.get_detector_arguments(findings_file_path, project, version)
-        print(result_file_path)
 
-        if exists(result_file_path) and not self.force_detect:
+        if run.is_success() and not self.force_detect:
             logger.info("Detector findings for %s already exists. Skipping detection.", version)
             return Response.ok
         else:
@@ -77,22 +100,21 @@ class Detect(ProjectVersionTask):
             start = time.time()
             try:
                 self._invoke_detector(detector_path, detector_args)
-                detector_result = Result.success
+                run.set_result(Result.success)
             except CommandFailedError as e:
                 logger.error("Detector failed: %s", e)
-                detector_result = Result.error
+                run.set_result(Result.error)
             except subprocess.TimeoutExpired:
                 logger.error("Detector took longer than the maximum of %s seconds", self.timeout)
-                detector_result = Result.timeout
+                run.set_result(Result.timeout)
             finally:
                 end = time.time()
                 runtime = end - start
+                run.set_runtime(runtime)
 
-        detector_stats = {"result": detector_result.name, "runtime": runtime}
-        with open(result_file_path, "w") as result_file:
-            yaml.safe_dump(detector_stats, result_file, default_flow_style=False)
+        run.write()
 
-        if detector_result == Result.success:
+        if run.is_success():
             logger.info("Detection took {0:.2f} seconds.".format(runtime))
             return Response.ok
         else:

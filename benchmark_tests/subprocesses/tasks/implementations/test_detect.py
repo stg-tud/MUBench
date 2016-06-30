@@ -3,10 +3,11 @@ from shutil import rmtree
 from tempfile import mkdtemp
 from unittest.mock import MagicMock
 
-from nose.tools import assert_equals
+from nose.tools import assert_equals, assert_raises
 
 from benchmark.data.pattern import Pattern
 from benchmark.subprocesses.tasks.implementations.detect import Detect
+from benchmark.utils.io import write_yaml
 from benchmark_tests.test_utils.data_util import create_misuse, create_project, create_version
 
 
@@ -117,6 +118,24 @@ class TestDetect:
         self.uut.process_project_version(project, version)
 
         assert exists(join(self.results_path, version.project_id, version.version_id, "result.yml"))
+
+    def test_skips_detect_if_previous_run_succeeded(self):
+        project = create_project("project")
+        version = create_version("0", project=project)
+        write_yaml(join(self.results_path, version.project_id, version.version_id, "result.yml"),
+                   {"result": "success"})
+        self.uut._invoke_detector = MagicMock(side_effect=UserWarning)
+
+        self.uut.process_project_version(project, version)
+
+    def test_repeats_detection_if_previous_run_failed(self):
+        project = create_project("project")
+        version = create_version("0", project=project)
+        write_yaml(join(self.results_path, version.project_id, version.version_id, "result.yml"),
+                   {"result": "error"})
+        self.uut._invoke_detector = MagicMock(side_effect=UserWarning)
+
+        assert_raises(UserWarning, self.uut.process_project_version, project, version)
 
     def assert_last_invoke_arg_value_equals(self, key, value):
         self.assert_arg_value_equals(self.last_invoke[1], key, value)
