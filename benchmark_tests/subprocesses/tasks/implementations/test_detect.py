@@ -86,12 +86,12 @@ class TestDetect:
 
     def test_passes_findings_files(self):
         project = create_project("project")
-        version = create_version("0")
+        version = create_version("0", project=project)
 
         self.uut.process_project_version(project, version)
 
         self.assert_last_invoke_arg_value_equals(self.uut.key_findings_file,
-                                                 '"' + join(self.results_path, "project", self.findings_file) + '"')
+                                                 '"' + join(self.results_path, "project", "0", self.findings_file) + '"')
 
     def test_invokes_detector_without_patterns_paths_without_patterns(self):
         project = create_project("project")

@@ -39,7 +39,7 @@ class Detect(ProjectVersionTask):
     def process_project_version(self, project: Project, version: ProjectVersion) -> Response:
         logger = logging.getLogger("detect")
 
-        result_path = join(self.results_base_path, project.id)
+        result_path = join(self.results_base_path, version.project_id, version.version_id)
 
         findings_file_path = join(result_path, self.detector_findings_file)
         detector_path = Detect.__get_misuse_detector_path(self.detector)
