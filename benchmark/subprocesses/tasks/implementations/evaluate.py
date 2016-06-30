@@ -58,11 +58,11 @@ class Evaluate(ProjectVersionMisuseTask):
 
                 if file_found and label_found:
                     print("potential hit", flush=True)
-                    self.results.append((misuse.id, Evaluation.potential_hit))
+                    self.results.append((misuse.id, Evaluate.potential_hit))
                     return Response.ok
                 else:
                     print("no hit", flush=True)
-                    self.results.append((misuse.id, Evaluation.no_hit))
+                    self.results.append((misuse.id, Evaluate.no_hit))
                     return Response.ok
 
         print("ignored (no available findings)", flush=True)
