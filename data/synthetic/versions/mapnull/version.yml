@@ -1,0 +1,7 @@
+build:
+  classes: build/classes/main/
+  commands:
+  - gradle :compileJava
+  src: src/
+misuses:
+- 'mapnull'
