@@ -24,12 +24,16 @@ class Result(Enum):
 
 
 class Run:
+    RUN_FILE = "result.yml"
+    FINDINGS_FILE = "findings.yml"
+
     def __init__(self, path: str):
-        self.path = path
+        self.__findings_file_path = join(path, Run.FINDINGS_FILE)
+        self.__run_file_path = join(path, Run.RUN_FILE)
         self.__result = None  # type: Result
         self.__runtime = None
-        if exists(path):
-            data = read_yaml(path)
+        if exists(self.__run_file_path):
+            data = read_yaml(self.__run_file_path)
             self.__result = Result[data["result"]]
             self.__runtime = data.get("runtime", -1)
 
@@ -42,8 +46,16 @@ class Run:
     def is_success(self):
         return self.__result == Result.success
 
+    @property
+    def findings(self):
+        if not exists(self.__findings_file_path):
+            return []
+        else:
+            with open(self.__findings_file_path, "r") as stream:
+                return [finding for finding in yaml.load_all(stream) if finding]
+
     def write(self):
-        write_yaml(self.path, {"result": self.__result.name, "runtime": self.__runtime})
+        write_yaml(self.__run_file_path, {"result": self.__result.name, "runtime": self.__runtime})
 
 
 class Detect(ProjectVersionTask):
@@ -81,8 +93,7 @@ class Detect(ProjectVersionTask):
 
         result_path = join(self.results_base_path, version.project_id, version.version_id)
         findings_file_path = join(result_path, self.detector_findings_file)
-        result_file_path = join(result_path, "result.yml")
-        run = Run(result_file_path)
+        run = Run(result_path)
 
         detector_path = Detect.__get_misuse_detector_path(self.detector)
         detector_args = self.get_detector_arguments(findings_file_path, project, version)

@@ -6,6 +6,7 @@ from tempfile import mkdtemp
 
 from nose.tools import assert_equals, assert_in
 
+from benchmark.data.misuse import Misuse
 from benchmark.data.pattern import Pattern
 from benchmark.subprocesses.tasks.implementations.evaluate import Evaluate
 from benchmark.utils.io import safe_write
@@ -29,65 +30,44 @@ class TestEvaluation:
 
         self.uut = Evaluate(self.results_path, self.file_detector_result, self.checkout_dir, self.eval_result_file)
 
+        self.project = create_project('project')
+        self.version = create_version('version', project=self.project)
+        self.misuse = create_misuse('misuse', meta={"location": {"file": "?", "method": ""}}, project=self.project)
+
     def teardown(self):
         rmtree(self.temp_dir, ignore_errors=True)
 
     def test_matches_on_file(self):
-        self.create_result('project/version', 'file: some-class.java')
-        project = create_project('project')
-        version = create_version('version', project=project)
-        misuse = create_misuse('misuse', meta={"location": {"file": "some-class.java", "method": ""}}, project=project)
+        self.misuse.location.file = "some-class.java"
+        self.create_result('file: some-class.java')
 
-        self.uut.process_project_version_misuse(project, version, misuse)
+        self.uut.process_project_version_misuse(self.project, self.version, self.misuse)
 
-        self.assert_potential_hit("project.misuse")
+        self.assert_potential_hit(self.misuse)
 
     def test_matches_on_file_absolute(self):
-        self.create_result('project/version', 'file: /a/b/some-class.java')
-        project = create_project('project')
-        version = create_version('version', project=project)
-        misuse = create_misuse('misuse', meta={"location": {"file": "some-class.java", "method": ""}}, project=project)
+        self.misuse.location.file = "some-class.java"
+        self.create_result('file: /a/b/some-class.java')
 
-        self.uut.process_project_version_misuse(project, version, misuse)
+        self.uut.process_project_version_misuse(self.project, self.version, self.misuse)
 
-        self.assert_potential_hit("project.misuse")
+        self.assert_potential_hit(self.misuse)
 
-    def test_compares_graphs_correctly(self):
-        self.create_result('project/version',
-                           'file: some-class.java\n' +
-                           'graph: >\n' +
-                           '  digraph some-method {\n' +
-                           '    0 [label="StrBuilder#this#getNullText"]\n' +
-                           '    1 [label="String#str#length"]\n' +
-                           '    0 -> 1\n' +
-                           '  }\n' +
-                           '---\n' +
-                           'file: other-class.java\n' +
-                           '---\n' +
-                           'graph: >\n' +
-                           '  digraph graph {}\n')
-        project = create_project('project')
-        version = create_version('version', project=project)
-        misuse = create_misuse('misuse', project=project,
-                               meta={"location": {"file": "some-class.java",
-                                                  "method": "digraph some-method { 0 [label=\"StrBuilder#this#getNullText\"] }"}})
+    def test_matches_on_class(self):
+        self.misuse.location.file = "some-class.java"
+        self.create_result('file: some-class.class')
 
-        self.uut.process_project_version_misuse(project, version, misuse)
+        self.uut.process_project_version_misuse(self.project, self.version, self.misuse)
 
-        self.assert_potential_hit("project.misuse")
+        self.assert_potential_hit(self.misuse)
 
-    def test_handles_patterns(self):
-        self.create_result('project/version', 'file: pattern0.java\n')
+    def test_matches_on_inner_class(self):
+        self.misuse.location.file = "some-class.java"
+        self.create_result('file: some-class$inner-class.class')
 
-        project = create_project('project')
-        version = create_version('version', project=project)
-        misuse = create_misuse('misuse', project=project)
-        misuse._FILES = ['some-file.java']
-        misuse._PATTERNS = {Pattern("", 'pattern.java')}
+        self.uut.process_project_version_misuse(self.project, self.version, self.misuse)
 
-        self.uut.process_project_version_misuse(project, version, misuse)
-
-        self.assert_potential_hit("project.misuse")
+        self.assert_potential_hit(self.misuse)
 
     def test_writes_results_on_teardown(self):
         self.uut.results = {('NoHit', 0), ('PotentialHit', 1)}
@@ -112,9 +92,9 @@ class TestEvaluation:
 
         assert_equals(test_result, ast.literal_eval(actual))
 
-    def create_result(self, misuse_name, content):
-        safe_write(content, join(self.results_path, misuse_name, self.file_detector_result),
-                   append=False)
+    def create_result(self, content):
+        findings_file = join(self.results_path, self.project.id, self.version.version_id, self.file_detector_result)
+        safe_write(content, findings_file, append=False)
 
-    def assert_potential_hit(self, name: str):
-        assert_equals([(name, 1)], self.uut.results)
+    def assert_potential_hit(self, misuse: Misuse):
+        assert_equals([(misuse.id, 1)], self.uut.results)

@@ -40,6 +40,8 @@ class Misuse:
         self.path = join(self.__project.path, Project.MISUSES_DIR, misuse_id)
         self.misuse_file = join(self.path, Misuse.MISUSE_FILE)
 
+        self.__location = None
+
     @property
     def _yaml(self):
         if getattr(self, '_YAML', None) is None:
@@ -68,8 +70,10 @@ class Misuse:
 
     @property
     def location(self) -> Location:
-        location = self._yaml["location"]
-        return Location(location["file"], location["method"])
+        if not self.__location:
+            location = self._yaml["location"]
+            self.__location = Location(location["file"], location["method"])
+        return self.__location
 
     def __str__(self):
         return "misuse '{}'".format(self.id)
