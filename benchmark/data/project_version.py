@@ -7,7 +7,7 @@ import yaml
 
 from benchmark.data.misuse import Misuse, Pattern
 from benchmark.data.project_checkout import ProjectCheckout, GitProjectCheckout, SVNProjectCheckout, \
-    LocalProjectCheckout
+    LocalProjectCheckout, SyntheticProjectCheckout
 from benchmark.data.project_compile import ProjectCompile
 
 
@@ -53,8 +53,7 @@ class ProjectVersion:
             revision = str(int(self.revision) - 1)
             return SVNProjectCheckout(url, base_path, self.__project.id, self.version_id, revision)
         elif repository.vcstype == "synthetic":
-            url = join(self.path, "compile")
-            return LocalProjectCheckout(url, base_path, self.__project.id)
+            return SyntheticProjectCheckout(base_path, self.__project.id, self.version_id)
         else:
             raise ValueError("unknown repository type: {}".format(repository.vcstype))
 

@@ -6,7 +6,8 @@ from os.path import join, exists
 
 from shutil import rmtree
 
-from benchmark.data.project_checkout import GitProjectCheckout, LocalProjectCheckout, SVNProjectCheckout
+from benchmark.data.project_checkout import GitProjectCheckout, LocalProjectCheckout, SVNProjectCheckout, \
+    SyntheticProjectCheckout
 from benchmark.utils.io import remove_tree, copy_tree
 from benchmark.utils.shell import Shell
 
@@ -59,6 +60,29 @@ class TestLocalProjectCheckout:
         uut = LocalProjectCheckout(self.local_url, self.checkouts_dir, "-project-")
 
         assert_equals("synthetic:{}".format(self.local_url), str(uut))
+
+
+class TestSyntheticCheckout:
+    # noinspection PyAttributeOutsideInit
+    def setup(self):
+        self.checkouts_path = mkdtemp(prefix="mubench-checkout-local_")
+
+        self.uut = SyntheticProjectCheckout(self.checkouts_path, "-project-", "-id-")
+
+    def test_exists_always(self):
+        assert not self.uut.exists()
+
+    def test_create_passes(self):
+        self.uut.create()
+
+        assert exists(self.uut.checkout_dir)
+
+    def test_delete_passes(self):
+        os.makedirs(self.uut.checkout_dir)
+
+        self.uut.delete()
+
+        assert not exists(self.uut.checkout_dir)
 
 
 class TestGitProjectCheckout:

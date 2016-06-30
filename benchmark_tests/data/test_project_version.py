@@ -6,7 +6,8 @@ from nose.tools import assert_equals, assert_raises
 
 from benchmark.data.misuse import Misuse
 from benchmark.data.project import Project
-from benchmark.data.project_checkout import LocalProjectCheckout, GitProjectCheckout, SVNProjectCheckout
+from benchmark.data.project_checkout import LocalProjectCheckout, GitProjectCheckout, SVNProjectCheckout, \
+    SyntheticProjectCheckout
 from benchmark.data.project_version import ProjectVersion
 from benchmark.utils.io import remove_tree, create_file, safe_open
 
@@ -91,13 +92,13 @@ class TestProjectVersion:
 
 class TestProjectCheckout:
     def test_synthetic_project(self):
-        version = create_version("v1", project=create_project("-project-", meta={"repository": {"type": "synthetic"}}))
+        version = create_version("-version-", project=create_project("-project-", meta={"repository": {"type": "synthetic"}}))
 
         checkout = version.get_checkout("-base_path-")
 
-        assert isinstance(checkout, LocalProjectCheckout)
-        assert_equals(join(version.path, "compile"), checkout.url)
+        assert isinstance(checkout, SyntheticProjectCheckout)
         assert_equals("-project-", checkout.name)
+        assert_equals("-version-", checkout.version)
 
     def test_git_project(self):
         project = create_project("-project-", meta={"repository": {"type": "git", "url": "ssh://foobar.git"}})

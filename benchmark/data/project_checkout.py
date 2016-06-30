@@ -41,7 +41,29 @@ class LocalProjectCheckout(ProjectCheckout):
         remove_tree(self.checkout_dir)
 
     def __str__(self):
-        return "synthetic:{}".format(self.url)
+        return "local:{}".format(self.url)
+
+
+class SyntheticProjectCheckout(ProjectCheckout):
+    def __init__(self, base_path: str, name: str, version: str):
+        super().__init__("-synthetic-", join(base_path, name), version)
+        self.name = name
+        self.version = version
+
+    def exists(self) -> bool:
+        return False
+
+    def delete(self) -> None:
+        self._logger.debug("Delete %s", self.checkout_dir)
+        remove_tree(self.checkout_dir)
+
+    def create(self) -> None:
+        if not exists(self.checkout_dir):
+            self._logger.debug("Create checkout directory %s", self.checkout_dir)
+            makedirs(self.checkout_dir)
+
+    def __str__(self):
+        return "synthetic:{}.{}".format(self.name, self.version)
 
 
 class RepoProjectCheckout(ProjectCheckout):
