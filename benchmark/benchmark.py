@@ -12,7 +12,7 @@ from benchmark.subprocesses.tasking import TaskRunner
 from benchmark.subprocesses.tasks.implementations.checkout import Checkout
 from benchmark.subprocesses.tasks.implementations.compile import Compile
 from benchmark.subprocesses.tasks.implementations.detect import Detect
-from benchmark.subprocesses.tasks.implementations.evaluate import Evaluation
+from benchmark.subprocesses.tasks.implementations.evaluate import Evaluate
 from benchmark.utils import command_line_util
 
 LOG_FILE_NAME = "out.log"
@@ -95,8 +95,8 @@ class Benchmark:
         self.runner.add(detector_runner)
 
     def _setup_eval(self):
-        evaluation_handler = Evaluation(self.results_path, self.detector_result_file, Benchmark.CHECKOUTS_PATH,
-                                        self.eval_result_file)
+        evaluation_handler = Evaluate(self.results_path, self.detector_result_file, Benchmark.CHECKOUTS_PATH,
+                                      self.eval_result_file)
         self.runner.add(evaluation_handler)
 
     def run(self) -> None:

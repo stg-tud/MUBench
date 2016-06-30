@@ -7,7 +7,7 @@ from tempfile import mkdtemp
 from nose.tools import assert_equals, assert_in
 
 from benchmark.data.pattern import Pattern
-from benchmark.subprocesses.tasks.implementations.evaluate import Evaluation
+from benchmark.subprocesses.tasks.implementations.evaluate import Evaluate
 from benchmark.utils.io import safe_write
 from benchmark_tests.data.test_misuse import create_misuse
 from benchmark_tests.test_utils.data_util import create_project, create_version
@@ -27,7 +27,7 @@ class TestEvaluation:
         self.file_detector_result = 'findings.yml'
         self.eval_result_file = 'result.csv'
 
-        self.uut = Evaluation(self.results_path, self.file_detector_result, self.checkout_dir, self.eval_result_file)
+        self.uut = Evaluate(self.results_path, self.file_detector_result, self.checkout_dir, self.eval_result_file)
 
     def teardown(self):
         rmtree(self.temp_dir, ignore_errors=True)

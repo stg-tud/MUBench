@@ -14,7 +14,7 @@ from benchmark.utils.io import safe_open
 from benchmark.utils.printing import subprocess_print
 
 
-class Evaluation(ProjectVersionMisuseTask):
+class Evaluate(ProjectVersionMisuseTask):
     no_hit = 0
     potential_hit = 1
 
@@ -51,10 +51,10 @@ class Evaluation(ProjectVersionMisuseTask):
 
                     src_prefix = version.source_dir
 
-                    file_found = Evaluation.__is_file_found(findings, misuse,
-                                                            join(self.checkout_base_dir, project.id),
-                                                            src_prefix, log)
-                    label_found = Evaluation.__is_label_found(findings, misuse, log)
+                    file_found = Evaluate.__is_file_found(findings, misuse,
+                                                          join(self.checkout_base_dir, project.id),
+                                                          src_prefix, log)
+                    label_found = Evaluate.__is_label_found(findings, misuse, log)
 
                 if file_found and label_found:
                     print("potential hit", flush=True)
