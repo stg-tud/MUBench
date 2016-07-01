@@ -7,15 +7,14 @@ from tempfile import mkdtemp
 from nose.tools import assert_equals, assert_in
 
 from benchmark.data.misuse import Misuse
-from benchmark.data.pattern import Pattern
 from benchmark.subprocesses.tasks.implementations.evaluate import Evaluate
 from benchmark.utils.io import safe_write
 from benchmark_tests.data.test_misuse import create_misuse
 from benchmark_tests.test_utils.data_util import create_project, create_version
 
 
-# noinspection PyAttributeOutsideInit
 class TestEvaluation:
+    # noinspection PyAttributeOutsideInit
     def setup(self):
         self.temp_dir = mkdtemp(prefix='mubench-result-evaluation-test_')
 
