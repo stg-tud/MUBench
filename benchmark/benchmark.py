@@ -9,6 +9,7 @@ from typing import Optional, List
 from benchmark.subprocesses.check import check_prerequisites
 from benchmark.subprocesses.result_processing.visualize_results import Visualizer
 from benchmark.subprocesses.tasking import TaskRunner
+from benchmark.subprocesses.tasks.implementations import stats
 from benchmark.subprocesses.tasks.implementations.checkout import Checkout
 from benchmark.subprocesses.tasks.implementations.compile import Compile
 from benchmark.subprocesses.tasks.implementations.detect import Detect
@@ -31,8 +32,8 @@ class Benchmark:
                  java_options: List[str],
                  force_detect: bool,
                  force_checkout: bool,
-                 force_compile: bool
-                 ):
+                 force_compile: bool,
+                 stats_script: str):
         # command-line options
         self.detector = detector
         self.timeout = timeout
@@ -43,6 +44,7 @@ class Benchmark:
         self.force_detect = force_detect
         self.force_compile = force_compile
         self.pattern_frequency = 20  # TODO make configurable
+        self.stats_script = stats_script
 
         self.results_path = join(Benchmark.RESULTS_PATH, self.detector)
 
@@ -79,6 +81,11 @@ class Benchmark:
         visualizer = Visualizer(Benchmark.RESULTS_PATH, self.reviewed_eval_result_file, self.visualize_result_file,
                                 Benchmark.DATA_PATH)
         visualizer.create()
+
+    def run_stats(self) -> None:
+        stats_calculator = stats.get_calculator(self.stats_script)
+        self.runner.add(stats_calculator)
+        self.run()
 
     def _setup_checkout(self):
         checkout_handler = Checkout(Benchmark.CHECKOUTS_PATH, self.force_checkout)
@@ -121,7 +128,8 @@ class IndentFormatter(logging.Formatter):
 
 detectors_path = realpath('detectors')
 available_detectors = [detector for detector in listdir(detectors_path) if isdir(join(detectors_path, detector))]
-config = command_line_util.parse_args(sys.argv, available_detectors)
+available_scripts = stats.get_available_calculator_names()
+config = command_line_util.parse_args(sys.argv, available_detectors, available_scripts)
 
 if 'detector' not in config:
     config.detector = ''
@@ -139,6 +147,8 @@ if 'force_checkout' not in config:
     config.force_checkout = False
 if 'force_compile' not in config:
     config.force_compile = False
+if 'script' not in config:
+    config.script = ''
 
 
 logger = logging.getLogger()
@@ -164,7 +174,7 @@ for key in config.__dict__:
 
 benchmark = Benchmark(detector=config.detector, white_list=config.white_list, black_list=config.black_list,
                       timeout=config.timeout, java_options=config.java_options, force_detect=config.force_detect,
-                      force_checkout=config.force_checkout, force_compile=config.force_compile)
+                      force_checkout=config.force_checkout, force_compile=config.force_compile, stats_script=config.script)
 
 check_prerequisites()
 
@@ -180,3 +190,5 @@ if config.subprocess == 'eval':
     benchmark.run_evaluate()
 if config.subprocess == 'visualize':
     benchmark.run_visualize()
+if config.subprocess == 'stats':
+    benchmark.run_stats()

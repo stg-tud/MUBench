@@ -10,7 +10,18 @@ class SortingHelpFormatter(HelpFormatter):
         super(SortingHelpFormatter, self).add_arguments(actions)
 
 
-def get_command_line_parser(available_detectors: List[str]) -> ArgumentParser:
+class CaseInsensitiveChoices(list):
+    def __init__(self, iterable):
+        super().__init__(iterable)
+
+    def __contains__(self, other):
+        return any([element for element in self if element.lower() == other.lower()])
+
+
+def get_command_line_parser(available_detectors: List[str], available_scripts: List[str]) -> ArgumentParser:
+    available_detectors = CaseInsensitiveChoices(available_detectors)
+    available_scripts = CaseInsensitiveChoices(available_scripts)
+
     parser = ArgumentParser(
         description="Run MUBench, the benchmark for API-misuse detectors.",
         epilog="For details, check out https://github.com/stg-tud/MUBench.",
@@ -26,12 +37,13 @@ def get_command_line_parser(available_detectors: List[str]) -> ArgumentParser:
     __add_detect_subprocess(available_detectors, subparsers)
     __add_evaluate_subprocess(available_detectors, subparsers)
     __add_visualize_subprocess(subparsers)
+    __add_stats_subprocess(available_scripts, subparsers)
 
     return parser
 
 
-def parse_args(args: List[str], available_detectors) -> Any:
-    parser = get_command_line_parser(available_detectors)
+def parse_args(args: List[str], available_detectors: List[str], available_scripts: List[str]) -> Any:
+    parser = get_command_line_parser(available_detectors, available_scripts)
 
     # remove first arg which always contains the script name
     args = args[1:]
@@ -92,6 +104,14 @@ def __add_visualize_subprocess(subparsers) -> None:
     subparsers.add_parser('visualize', formatter_class=SortingHelpFormatter,
                           description="Collect all detect and manual review results and write them to `results/result.csv`",
                           help="Collect all detect and manual review results and write them to `results/result.csv`")  # type: ArgumentParser
+
+
+def __add_stats_subprocess(available_scripts: List[str], subparsers) -> None:
+    stats_parser = subparsers.add_parser('stats', formatter_class=SortingHelpFormatter,
+                                         description="Calculate statistics using the given script",
+                                         help="Calculate statistics using the given script")  # type: ArgumentParser
+    stats_parser.add_argument('script', help="the calculation strategy to use (case insensitive)", choices=available_scripts)
+    __setup_misuse_filter_arguments(stats_parser)
 
 
 def __setup_misuse_filter_arguments(parser: ArgumentParser):
