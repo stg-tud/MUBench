@@ -2,6 +2,8 @@
 #
 # Prints statistics about the API misuses in the entire dataset.
 #
+import logging
+
 from benchmark.data.misuse import Misuse
 from benchmark.data.project import Project
 from benchmark.data.project_version import ProjectVersion
@@ -15,6 +17,8 @@ class general(ProjectVersionMisuseTask):
         self.number_of_crashes = 0
         self.projects = set()
         self.sources = set()
+
+        self.logger = logging.getLogger('stats.general')
 
     def process_project_version_misuse(self, project: Project, version: ProjectVersion, misuse: Misuse):
         self.number_of_misuses += 1
@@ -30,10 +34,9 @@ class general(ProjectVersionMisuseTask):
             self.projects.add("survey")
 
     def end(self):
-        print()
-        print("MUBench contains:")
-        print("- %d misuses" % self.number_of_misuses)
-        print(
+        self.logger.info("MUBench contains:")
+        self.logger.info("- %d misuses" % self.number_of_misuses)
+        self.logger.info(
             "- %d crashes (%.1f%%)" % (self.number_of_crashes, (self.number_of_crashes / self.number_of_misuses * 100)))
-        print("- %d sources" % len(self.sources))
-        print("- %d projects" % len(self.projects))
+        self.logger.info("- %d sources" % len(self.sources))
+        self.logger.info("- %d projects" % len(self.projects))

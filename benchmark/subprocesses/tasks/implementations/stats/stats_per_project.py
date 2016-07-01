@@ -2,6 +2,7 @@
 #
 # Prints statistics about the API misuses per project.
 #
+import logging
 
 from benchmark.data.misuse import Misuse
 from benchmark.data.project import Project
@@ -14,6 +15,8 @@ class perproject(ProjectVersionMisuseTask):
         super().__init__()
         self.projects = {}
 
+        self.logger = logging.getLogger('stats.perproject')
+
     def process_project_version_misuse(self, project: Project, version: ProjectVersion, misuse: Misuse):
         projectname = project.name
         project = self.projects.get(projectname, {"misuses": 0, "crashes": 0})
@@ -23,9 +26,8 @@ class perproject(ProjectVersionMisuseTask):
         self.projects[projectname] = project
 
     def end(self):
-        print()
-        print("  %40s %10s %15s" % ("Project", "Misuses", "Crashes"))
+        self.logger.info("  %40s %10s %15s" % ("Project", "Misuses", "Crashes"))
         for projectname in self.projects:
             project = self.projects[projectname]
-            print("  %40s %10d %5d - % 6.1f%%" % (
+            self.logger.info("  %40s %10d %5d - % 6.1f%%" % (
                 projectname, project["misuses"], project["crashes"], (project["crashes"] / project["misuses"] * 100)))

@@ -2,6 +2,7 @@
 #
 # Prints statistics about the API misuses per characteristic.
 #
+import logging
 
 from benchmark.data.misuse import Misuse
 from benchmark.data.project import Project
@@ -14,6 +15,8 @@ class perchallenge(ProjectVersionMisuseTask):
         super().__init__()
         self.statistics = {}
 
+        self.logger = logging.getLogger('stats.perchallenge')
+
     def process_project_version_misuse(self, project: Project, version: ProjectVersion, misuse: Misuse):
         # TODO: does this still exist?
         if "challenges" in misuse:
@@ -24,7 +27,6 @@ class perchallenge(ProjectVersionMisuseTask):
                 self.statistics[chall] = stat
 
     def end(self):
-        print()
-        print("%25s %7s" % ("Challenge", "Misuses"))
+        self.logger.info("%25s %7s" % ("Challenge", "Misuses"))
         for statname in self.statistics:
-            print("%25s %7d" % (statname, self.statistics[statname]))
+            self.logger.info("%25s %7d" % (statname, self.statistics[statname]))

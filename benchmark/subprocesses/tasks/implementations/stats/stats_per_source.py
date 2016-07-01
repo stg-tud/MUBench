@@ -2,6 +2,8 @@
 #
 # Prints statistics about the API misuses per source.
 #
+import logging
+
 import yaml
 
 from benchmark.data.misuse import Misuse
@@ -14,6 +16,8 @@ class persource(ProjectVersionMisuseTask):
     def __init__(self):
         super().__init__()
         self.sources = {}
+
+        self.logger = logging.getLogger('stats.persource')
 
     def start(self):
         filename = "sources.yml"
@@ -32,11 +36,10 @@ class persource(ProjectVersionMisuseTask):
         self.sources[sourcename] = source
 
     def end(self):
-        print()
-        print("%20s %7s %9s %15s   %15s" % ("Source", "Size", "Reviewed", "Misuses", "Crashes"))
+        self.logger.info("%20s %7s %9s %15s   %15s" % ("Source", "Size", "Reviewed", "Misuses", "Crashes"))
         for sourcename in self.sources:
             source = self.sources[sourcename]
-            print("%20s %7d %9d %5d - % 6.1f%%   %5d - % 6.1f%%" % (
+            self.logger.info("%20s %7d %9d %5d - % 6.1f%%   %5d - % 6.1f%%" % (
                 sourcename, source["size"], source["reviewed"], source["misuses"],
                 (source["misuses"] / source["reviewed"] * 100), source["crashes"],
                 (source["crashes"] / source["misuses"] * 100)))
