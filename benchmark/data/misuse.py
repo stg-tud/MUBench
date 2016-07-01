@@ -19,8 +19,13 @@ class Location:
         return self.file == other.file and self.method == other.method
 
 
+class Fix:
+    def __init__(self, description: str, commit: str, revision: str):
+        self.description = description
+        self.commit = commit
+        self.revision = revision
 
-# noinspection PyAttributeOutsideInit
+
 class Misuse:
     MISUSE_FILE = "misuse.yml"
 
@@ -41,6 +46,7 @@ class Misuse:
         self.misuse_file = join(self.path, Misuse.MISUSE_FILE)
 
         self.__location = None
+        self.__fix = None
 
     @property
     def _yaml(self):
@@ -63,17 +69,22 @@ class Misuse:
         return self._PATTERNS
 
     @property
-    def usage(self) -> str:
-        if getattr(self, '_USAGE', None) is None:
-            self._USAGE = self._yaml.get('usage', '')
-        return self._USAGE
-
-    @property
     def location(self) -> Location:
         if not self.__location:
             location = self._yaml["location"]
             self.__location = Location(location["file"], location["method"])
         return self.__location
+
+    @property
+    def description(self) -> str:
+        return self._yaml.get("description", "")
+
+    @property
+    def fix(self) -> Fix:
+        if not self.__fix:
+            fix = self._yaml.get("fix", {})
+            self.__fix = Fix(fix.get("description", ""), fix.get("commit", ""), str(fix.get("revision", "")))
+        return self.__fix
 
     def __str__(self):
         return "misuse '{}'".format(self.id)

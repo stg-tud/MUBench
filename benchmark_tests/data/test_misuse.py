@@ -41,13 +41,20 @@ class TestMisuse:
         pattern = self.create_pattern_file(self.uut, join("mypackage", "Pattern.java"))
         assert_equals(self.uut.patterns, {pattern})
 
-    def test_reads_usage(self):
-        uut = create_misuse('', meta={"usage": "test-usage"})
-        assert_equals("test-usage", uut.usage)
-
     def test_reads_location(self):
         uut = create_misuse('', meta={"location": {"file": "file.name", "method": "foo()"}})
         assert_equals(Location("file.name", "foo()"), uut.location)
+
+    def test_reads_description(self):
+        misuse = create_misuse("", meta={"description": "bla bla bla"})
+        assert_equals("bla bla bla", misuse.description)
+
+    def test_reads_fix(self):
+        misuse = create_misuse("",
+                               meta={"fix": {"commit": "http://link.to/commit", "description": "blub", "revision": 42}})
+        assert_equals("http://link.to/commit", misuse.fix.commit)
+        assert_equals("blub", misuse.fix.description)
+        assert_equals("42", misuse.fix.revision)
 
     @staticmethod
     def create_pattern_file(misuse: Misuse, filename: str) -> Pattern:
