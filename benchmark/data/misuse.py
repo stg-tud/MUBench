@@ -86,6 +86,32 @@ class Misuse:
             self.__fix = Fix(fix.get("description", ""), fix.get("commit", ""), str(fix.get("revision", "")))
         return self.__fix
 
+    @property
+    def is_crash(self) -> bool:
+        if getattr(self, '_IS_CRASH', None) is None:
+            self._IS_CRASH = self._yaml["crash"]
+        return self._IS_CRASH
+
+    @property
+    def source(self):
+        if getattr(self, '_source', None) is None:
+            source_key = self._yaml.get('source', None)
+            if source_key is not None:
+                self._source = source_key.get('name', None)
+        return self._source
+
+    @property
+    def challenges(self):
+        if getattr(self, '_challenges', None) is None:
+            self._challenges = self._yaml.get('challenges', [])
+        return self._challenges
+
+    @property
+    def characteristics(self):
+        if getattr(self, '_characteristics', None) is None:
+            self._characteristics = self._yaml.get('characteristics', [])
+        return self._characteristics
+
     def __str__(self):
         return "misuse '{}'".format(self.id)
 
