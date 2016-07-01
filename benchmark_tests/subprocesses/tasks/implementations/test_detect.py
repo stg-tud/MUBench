@@ -122,8 +122,8 @@ class TestDetect:
     def test_skips_detect_if_previous_run_succeeded(self):
         project = create_project("project")
         version = create_version("0", project=project)
-        write_yaml(join(self.results_path, version.project_id, version.version_id, "result.yml"),
-                   {"result": "success"})
+        write_yaml({"result": "success"},
+                   file=join(self.results_path, version.project_id, version.version_id, "result.yml"))
         self.uut._invoke_detector = MagicMock(side_effect=UserWarning)
 
         self.uut.process_project_version(project, version)
@@ -131,8 +131,8 @@ class TestDetect:
     def test_repeats_detection_if_previous_run_failed(self):
         project = create_project("project")
         version = create_version("0", project=project)
-        write_yaml(join(self.results_path, version.project_id, version.version_id, "result.yml"),
-                   {"result": "error"})
+        write_yaml({"result": "error"},
+                   file=join(self.results_path, version.project_id, version.version_id, "result.yml"))
         self.uut._invoke_detector = MagicMock(side_effect=UserWarning)
 
         assert_raises(UserWarning, self.uut.process_project_version, project, version)

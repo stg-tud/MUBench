@@ -55,7 +55,7 @@ class Run:
                 return [finding for finding in yaml.load_all(stream) if finding]
 
     def write(self):
-        write_yaml(self.__run_file_path, {"result": self.__result.name, "runtime": self.__runtime})
+        write_yaml({"result": self.__result.name, "runtime": self.__runtime}, file=self.__run_file_path)
 
 
 class Detect(ProjectVersionTask):

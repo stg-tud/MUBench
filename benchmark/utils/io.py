@@ -1,6 +1,5 @@
 from os import makedirs, chmod, remove, listdir, readlink, symlink
 from os.path import dirname, exists, isfile, join, isdir, basename, islink
-
 from shutil import rmtree, copy
 from stat import S_IWRITE
 from typing import Dict
@@ -61,10 +60,40 @@ def copy_tree(src: str, dst: str) -> None:
             raise UserWarning("unknown file type: {}".format(content))
 
 
-def write_yaml(file: str, data: Dict):
-    create_file(file)
-    with open(file, "w") as stream:
-        yaml.safe_dump(data, stream, default_flow_style=False)
+class __MultilineString(str):
+    pass
+
+
+def __multiline_string_presenter(dumper, data):
+    return dumper.represent_scalar('tag:yaml.org,2002:str', data, style='|')
+yaml.add_representer(__MultilineString, __multiline_string_presenter)
+
+
+def write_yaml(data: Dict, file: str = None):
+    data = __escape_str(data)
+    if file:
+        create_file(file)
+        with open(file, "w") as stream:
+            return yaml.dump(data, stream, default_flow_style=False)
+    else:
+        return yaml.dump(data, default_flow_style=False)
+
+
+def __escape_str(data):
+    if isinstance(data, str):
+        if "\n" in data:
+            return __MultilineString(data)
+        else:
+            return data
+    elif isinstance(data, dict):
+        new = dict()
+        for key in data:
+            new[key] = __escape_str(data[key])
+        return new
+    elif isinstance(data, list):
+        return [__escape_str(item) for item in data]
+    else:
+        return data
 
 
 def read_yaml(file: str):

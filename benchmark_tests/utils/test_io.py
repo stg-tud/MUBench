@@ -3,13 +3,14 @@ from os.path import join, dirname, exists, isfile
 from shutil import rmtree
 from tempfile import mkdtemp
 
-from nose.tools import assert_raises
+import yaml
+from nose.tools import assert_raises, assert_equals
 
-from benchmark.utils.io import create_file, create_file_path, safe_open, safe_write, remove_tree, copy_tree
+from benchmark.utils.io import create_file, create_file_path, safe_open, safe_write, remove_tree, copy_tree, write_yaml
 
 
-# noinspection PyAttributeOutsideInit
 class TestIo:
+    # noinspection PyAttributeOutsideInit
     def setup(self):
         self.temp_dir = mkdtemp()
         self.test_file = join(self.temp_dir, 'some-subdirectory', 'some-file.txt')
@@ -81,3 +82,41 @@ class TestIo:
         src = join(self.temp_dir, "src")
         with assert_raises(FileNotFoundError):
             copy_tree(src, "-irrelevant-")
+
+
+class TestIOYaml:
+    def test_writes_single_line(self):
+        data = write_yaml({"foo": "oneliner"})
+        assert_equals("foo: oneliner\n", data)
+
+    def test_writes_multiline(self):
+        data = write_yaml({"foo": "a\nb\n"})
+        assert_equals("foo: |\n  a\n  b\n", data)
+
+    def test_writes_multiline_in_dict(self):
+        data = write_yaml({"foo": {"bar": "a\n"}})
+        assert_equals("foo:\n  bar: |\n    a\n", data)
+
+    def test_writes_multiline_in_list(self):
+        data = write_yaml({"foo": ["a\n"]})
+        assert_equals("foo:\n- |\n  a\n", data)
+
+    def test_writes_multiline_in_dict_in_list(self):
+        data = write_yaml({"foo": [{"a": "b\n"}]})
+        assert_equals("foo:\n- a: |\n    b\n", data)
+
+    def test_writes_object(self):
+        class T:
+            def __init__(self):
+                self.f = 42
+
+        data = write_yaml({"foo": T().__dict__})
+        assert_equals("foo:\n  f: 42\n", data)
+
+    def test_writes_dot_graph(self):
+        data = write_yaml({"graph": "digraph \"foo\" {\n 1 [label=\"A\"]\n}\n"})
+        assert_equals("graph: |\n  digraph \"foo\" {\n   1 [label=\"A\"]\n  }\n", data)
+
+    def test_reads_dot_graph(self):
+        data = yaml.load("graph: |\n  digraph \"foo\" {\n   1 [label=\"A\"]\n  }\n")
+        assert_equals({"graph": "digraph \"foo\" {\n 1 [label=\"A\"]\n}\n"}, data)
