@@ -1,5 +1,6 @@
 import logging
 from os.path import join
+from textwrap import wrap
 from typing import Dict, Iterable
 
 from benchmark.data.misuse import Misuse
@@ -8,7 +9,7 @@ from benchmark.data.project_version import ProjectVersion
 from benchmark.subprocesses.tasks.base.project_task import Response
 from benchmark.subprocesses.tasks.base.project_version_misuse_task import ProjectVersionMisuseTask
 from benchmark.subprocesses.tasks.implementations.detect import Run
-from benchmark.utils.io import safe_open
+from benchmark.utils.io import safe_open, write_yaml
 
 
 class Evaluate(ProjectVersionMisuseTask):
@@ -32,9 +33,15 @@ class Evaluate(ProjectVersionMisuseTask):
         detector_run = Run(result_path)
 
         findings = detector_run.findings
+        potential_hits = Evaluate.__find_potential_hits(findings, misuse)
 
-        if Evaluate.__is_file_found(findings, misuse):
+        if potential_hits:
             logger.info("Found potential hit for %s.", misuse)
+            write_yaml({"misuse": {"description": Evaluate.__multiline(misuse.description),
+                                   "location": {"file": misuse.location.file, "method": misuse.location.method}},
+                        "fix": {"description": Evaluate.__multiline(misuse.fix.description),
+                                "commit": misuse.fix.commit},
+                        "findings": potential_hits}, file=join(result_path, misuse.id + ".yml"))
             self.results.append((misuse.id, Evaluate.potential_hit))
         else:
             logger.info("No hit for %s.", misuse)
@@ -48,23 +55,29 @@ class Evaluate(ProjectVersionMisuseTask):
                 print(str(result).lstrip('(').rstrip(')'), file=file_result)
 
     @staticmethod
-    def __is_file_found(findings: Iterable[Dict[str, str]], misuse: Misuse) -> bool:
+    def __find_potential_hits(findings: Iterable[Dict[str, str]], misuse: Misuse) -> bool:
         logger = logging.getLogger("evaluate.compare")
-
+        potential_hits = []
         misuse_file = misuse.location.file
         for finding in findings:
             if "file" in finding:
-                finding_file = finding["file"]
-                # If file is an inner class "Outer$Inner.class", the source file is "Outer.java".
-                if "$" in finding_file:
-                    finding_file = finding_file.split("$", 1)[0] + ".java"
-                # If file is a class file "A.class", the source file is "A.java".
-                if finding_file.endswith(".class"):
-                    finding_file = finding_file[:-5] + "java"
-
-                if finding_file.endswith(misuse_file):
+                if Evaluate.__matches_file(finding, misuse_file):
                     logger.debug("Detector found something in '%s'.", misuse_file)
-                    return True
+                    potential_hits.append(finding)
 
-        logger.debug("Detector found nothing in '%s'.", misuse_file)
-        return False
+        return potential_hits
+
+    @staticmethod
+    def __matches_file(finding, misuse_file):
+        finding_file = finding["file"]
+        # If file is an inner class "Outer$Inner.class", the source file is "Outer.java".
+        if "$" in finding_file:
+            finding_file = finding_file.split("$", 1)[0] + ".java"
+        # If file is a class file "A.class", the source file is "A.java".
+        if finding_file.endswith(".class"):
+            finding_file = finding_file[:-5] + "java"
+        return finding_file.endswith(misuse_file)
+
+    @staticmethod
+    def __multiline(text: str):
+        return "\n".join(wrap(text, width=80)) + "\n"
