@@ -110,7 +110,8 @@ def __add_stats_subprocess(available_scripts: List[str], subparsers) -> None:
     stats_parser = subparsers.add_parser('stats', formatter_class=SortingHelpFormatter,
                                          description="Calculate statistics using the given script",
                                          help="Calculate statistics using the given script")  # type: ArgumentParser
-    stats_parser.add_argument('script', help="the calculation strategy to use (case insensitive)", choices=available_scripts)
+    stats_parser.add_argument('script', help="the calculation strategy to use (case insensitive)",
+                              choices=available_scripts)
     __setup_misuse_filter_arguments(stats_parser)
 
 
@@ -129,6 +130,8 @@ def __setup_checkout_arguments(parser: ArgumentParser):
 def __setup_compile_arguments(parser: ArgumentParser):
     parser.add_argument('--force-compile', dest='force_compile', action='store_true', default=False,
                         help="force a clean compilation")
+    parser.add_argument('--pattern-frequency', dest='pattern_frequency', default=20,
+                        help='the frequency of generated fix patterns')
 
 
 def __setup_detector_arguments(parser: ArgumentParser, available_detectors: List[str]) -> None:

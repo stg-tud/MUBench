@@ -28,6 +28,7 @@ class Benchmark:
         self.eval_result_file = 'result.csv'
         self.reviewed_eval_result_file = 'reviewed-result.csv'
         self.visualize_result_file = 'result.csv'
+        self.pattern_frequency = 20
 
         self.config = config
 
