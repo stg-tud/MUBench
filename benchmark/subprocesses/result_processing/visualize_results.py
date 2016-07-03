@@ -90,7 +90,6 @@ class Visualizer:
 
         merged_result_file = join(self.results_base_path, self.result_file)
 
-        # TODO: implicitly run visualize in this case?
         if not exists(merged_result_file):
             exit("No result file available! Please run `visualize` to generate it.")
 
