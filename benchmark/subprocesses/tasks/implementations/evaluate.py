@@ -41,7 +41,7 @@ class Evaluate(ProjectVersionMisuseTask):
                                    "location": {"file": misuse.location.file, "method": misuse.location.method}},
                         "fix": {"description": Evaluate.__multiline(misuse.fix.description),
                                 "commit": misuse.fix.commit},
-                        "findings": potential_hits}, file=join(result_path, misuse.id + ".yml"))
+                        "findings": potential_hits}, file=join(result_path, misuse.id, "finding.yml"))
             self.results.append((misuse.id, Evaluate.potential_hit))
         else:
             logger.info("No hit for %s.", misuse)
