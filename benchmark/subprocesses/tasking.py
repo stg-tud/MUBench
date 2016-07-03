@@ -23,7 +23,7 @@ class TaskRunner:
             logger = logging.getLogger()
             logger.info("Starting %s...", type(task).__name__.lower())
             task.start()
-            task.back_list = self.black_list
+            task.black_list = self.black_list
             task.white_list = self.white_list
             for project in self._get_projects(self.data_path):
                 logger = logging.getLogger("project")
