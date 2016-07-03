@@ -122,15 +122,26 @@ class GitProjectCheckout(RepoProjectCheckout):
         return "git:{}#{}".format(self.url, self.revision[:8])
 
 
-class SVNProjectCheckout(RepoProjectCheckout):
-    def _clone(self, url: str, revision: str, path: str):
-        Shell.exec("svn checkout {}@{} .".format(url, revision), cwd=path)
+class SVNProjectCheckout(ProjectCheckout):
+    def __init__(self, url: str, base_path: str, name: str, version: str, revision: str):
+        super().__init__(url, base_path, name)
+        self.version = version
+        self.revision = revision
+        self.__base_checkout_dir = self.checkout_dir
+        self.checkout_dir = join(self.base_path, name, version, "checkout")
 
-    def _update(self, url: str, revision: str, path: str):
-        Shell.exec("svn update -r {}".format(revision), cwd=path)
+    def create(self) -> None:
+        self._logger.debug("Create chackout directory %s", self.checkout_dir)
+        makedirs(self.checkout_dir, exist_ok=True)
+        self._logger.debug("Checkout from %s", self.url)
+        Shell.exec("svn checkout \"{}@{}\" .".format(self.url, self.revision), cwd=self.checkout_dir)
 
-    def _is_repo(self, path: str):
-        return exists(path) and Shell.try_exec("svn info", cwd=path)
+    def exists(self) -> bool:
+        return exists(self.checkout_dir) and Shell.try_exec("svn info", cwd=self.checkout_dir)
+
+    def delete(self) -> None:
+        self._logger.debug("Delete %s", self.__base_checkout_dir)
+        remove_tree(self.checkout_dir)
 
     def __str__(self):
         return "svn:{}@{}".format(self.url, self.revision)

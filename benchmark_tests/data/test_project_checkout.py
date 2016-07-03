@@ -2,7 +2,7 @@ import os
 from tempfile import mkdtemp
 
 from nose.tools import assert_equals
-from os.path import join, exists
+from os.path import join, exists, realpath
 
 from shutil import rmtree
 
@@ -152,9 +152,46 @@ class TestGitProjectCheckout:
 class TestSVNProjectCheckout:
     # noinspection PyAttributeOutsideInit
     def setup(self):
-        self.shell = Shell()
+        self.temp_dir = mkdtemp(prefix='mubench-checkout-svn_')
+        self.svn_url = "file://{}".format(realpath(join("data", "test_svn")))
+        self.checkouts_dir = join(self.temp_dir, "checkouts")
+
+        self.uut = SVNProjectCheckout(self.svn_url, self.checkouts_dir, "-project-", "-version-", "1")
+
+    def teardown(self):
+        remove_tree(self.temp_dir)
+
+    def test_not_exists(self):
+        assert not self.uut.exists()
+
+    def test_create_checks_repo_out(self):
+        self.uut.create()
+
+        assert exists(join(self.checkouts_dir, "-project-", "-version-", "checkout"))
+
+    def test_exists(self):
+        self.uut.create()
+
+        assert self.uut.exists()
+
+    def test_not_exists_no_svn_checkout(self):
+        os.makedirs(self.uut.checkout_dir)
+
+        assert not self.uut.exists()
+
+    def test_delete(self):
+        self.uut.create()
+        self.uut.delete()
+
+        assert not exists(self.uut.checkout_dir)
+
+    def test_multiple_versions(self):
+        checkout_version2 = SVNProjectCheckout(self.svn_url, self.checkouts_dir, self.uut.name, "other-version", "1")
+
+        self.uut.create()
+        checkout_version2.create()
+        
+        assert checkout_version2.exists()
 
     def test_to_string(self):
-        uut = SVNProjectCheckout("-url-", "-path-", "-project-", "-id-", "-revision-")
-
-        assert_equals("svn:-url-@-revision-", str(uut))
+        assert_equals("svn:{}@1".format(self.svn_url), str(self.uut))
