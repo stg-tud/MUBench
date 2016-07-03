@@ -2,6 +2,7 @@
 import logging
 import logging.handlers
 import sys
+from enum import Enum
 from os import listdir
 from os.path import join, realpath, isdir, exists
 
@@ -52,16 +53,11 @@ class Benchmark:
         self.runner.add(checkout_handler)
 
     def _setup_compile(self):
-        self._setup_checkout()
-
         compile_handler = Compile(Benchmark.CHECKOUTS_PATH, Benchmark.CHECKOUTS_PATH, self.config.pattern_frequency,
                                   self.config.force_compile)
         self.runner.add(compile_handler)
 
     def _setup_detect(self):
-        self._setup_checkout()
-        self._setup_compile()
-
         results_path = join(Benchmark.RESULTS_PATH, self.config.detector)
         detector_runner = Detect(self.config.detector, self.detector_result_file, Benchmark.CHECKOUTS_PATH,
                                  results_path,
@@ -69,10 +65,6 @@ class Benchmark:
         self.runner.add(detector_runner)
 
     def _setup_eval(self):
-        self._setup_checkout()
-        self._setup_compile()
-        self._setup_detect()
-
         results_path = join(Benchmark.RESULTS_PATH, self.config.detector)
         evaluation_handler = Evaluate(results_path, self.detector_result_file, Benchmark.CHECKOUTS_PATH,
                                       self.eval_result_file)
@@ -88,10 +80,16 @@ class Benchmark:
         elif config.subprocess == 'checkout':
             self._setup_checkout()
         elif config.subprocess == 'compile':
+            self._setup_checkout()
             self._setup_compile()
         elif config.subprocess == 'detect':
+            self._setup_checkout()
+            self._setup_compile()
             self._setup_detect()
         elif config.subprocess == 'eval':
+            self._setup_checkout()
+            self._setup_compile()
+            self._setup_detect()
             self._setup_eval()
         elif config.subprocess == 'stats':
             self._setup_stats()
