@@ -46,7 +46,6 @@ class Benchmark:
     def _setup_stats(self) -> None:
         stats_calculator = stats.get_calculator(self.config.script)
         self.runner.add(stats_calculator)
-        self.run()
 
     def _setup_checkout(self):
         checkout_handler = Checkout(Benchmark.CHECKOUTS_PATH, self.config.force_checkout)
