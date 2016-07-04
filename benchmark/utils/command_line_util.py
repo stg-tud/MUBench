@@ -130,7 +130,7 @@ def __setup_checkout_arguments(parser: ArgumentParser):
 def __setup_compile_arguments(parser: ArgumentParser):
     parser.add_argument('--force-compile', dest='force_compile', action='store_true', default=False,
                         help="force a clean compilation")
-    parser.add_argument('--pattern-frequency', dest='pattern_frequency', default=20,
+    parser.add_argument('--pattern-frequency', dest='pattern_frequency', default=1,
                         help='the frequency of generated fix patterns')
 
 

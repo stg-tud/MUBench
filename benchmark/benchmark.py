@@ -2,7 +2,6 @@
 import logging
 import logging.handlers
 import sys
-from enum import Enum
 from os import listdir
 from os.path import join, realpath, isdir, exists
 
@@ -29,7 +28,6 @@ class Benchmark:
         self.eval_result_file = 'result.csv'
         self.reviewed_eval_result_file = 'reviewed-result.csv'
         self.visualize_result_file = 'result.csv'
-        self.pattern_frequency = 1
 
         self.config = config
 
