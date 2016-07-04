@@ -52,6 +52,7 @@ class Compile(ProjectVersionTask):
         else:
             try:
                 logger.info("Copying project sources...")
+                remove_tree(project_compile.original_sources_path)
                 self.__copy_original_sources(sources_path, project_compile.original_sources_path)
             except IOError as e:
                 logger.error("Failed to copy project sources: %s", e)
@@ -67,8 +68,8 @@ class Compile(ProjectVersionTask):
             try:
                 logger.info("Compiling project...")
                 self._compile(version.compile_commands, build_path)
-
                 logger.debug("Copying project classes...")
+                remove_tree(project_compile.original_classes_path)
                 copy_tree(classes_path, project_compile.original_classes_path)
             except CommandFailedError as e:
                 logger.error("Compilation failed: %s", e)
@@ -97,6 +98,7 @@ class Compile(ProjectVersionTask):
         else:
             try:
                 logger.info("Copying pattern sources...")
+                remove_tree(project_compile.pattern_sources_path)
                 self.__copy_pattern_sources(version.patterns, project_compile.pattern_sources_path,
                                             self.pattern_frequency)
             except IOError as e:
@@ -112,6 +114,7 @@ class Compile(ProjectVersionTask):
                 logger.info("Compiling patterns...")
                 self._compile(version.compile_commands, build_path)
                 logger.debug("Copying pattern classes...")
+                remove_tree(project_compile.pattern_classes_path)
                 self.__copy(duplicates, classes_path, project_compile.pattern_classes_path)
             except FileNotFoundError as e:
                 remove_tree(project_compile.pattern_classes_path)
