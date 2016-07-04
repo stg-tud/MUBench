@@ -1,8 +1,5 @@
 # coding=utf-8
-import inspect
 import logging
-import sys
-
 import yaml
 from typing import Optional, List
 
@@ -34,7 +31,7 @@ def get_calculator(name: str) -> Optional[StatCalculator]:
             return calculator()
 
 
-class General(StatCalculator):
+class general(StatCalculator):
     def __init__(self):
         super().__init__()
         self.number_of_misuses = 0
@@ -66,7 +63,7 @@ class General(StatCalculator):
         self.logger.info("- %d projects" % len(self.projects))
 
 
-class Challenge(StatCalculator):
+class challenge(StatCalculator):
     def __init__(self):
         super().__init__()
         self.statistics = {}
@@ -75,7 +72,7 @@ class Challenge(StatCalculator):
 
     def process_project_version_misuse(self, project: Project, version: ProjectVersion, misuse: Misuse):
         # TODO: does this still exist?
-        if "challenges" in misuse:
+        if "challenges" in misuse._yaml:
             challs = misuse.challenges
             for chall in challs:
                 stat = self.statistics.get(chall, 0)
@@ -88,7 +85,7 @@ class Challenge(StatCalculator):
             self.logger.info("%25s %7d" % (statname, self.statistics[statname]))
 
 
-class Characteristic(StatCalculator):
+class characteristic(StatCalculator):
     def __init__(self):
         super().__init__()
         self.statistics = {}
@@ -123,12 +120,12 @@ class Characteristic(StatCalculator):
                     (stat[segstat]["crashes"] / stat[segstat]["misuses"] * 100)))
 
 
-class Project(StatCalculator):
+class project(StatCalculator):
     def __init__(self):
         super().__init__()
         self.projects = {}
 
-        self.logger = logging.getLogger('stats.perproject')
+        self.logger = logging.getLogger('stats.project')
 
     def process_project_version_misuse(self, project: Project, version: ProjectVersion, misuse: Misuse):
         projectname = project.name
@@ -146,7 +143,7 @@ class Project(StatCalculator):
                 projectname, project["misuses"], project["crashes"], (project["crashes"] / project["misuses"] * 100)))
 
 
-class Source(StatCalculator):
+class source(StatCalculator):
     def __init__(self):
         super().__init__()
         self.sources = {}
@@ -160,6 +157,7 @@ class Source(StatCalculator):
             for source in sources:
                 sources[source]["misuses"] = 0
                 sources[source]["crashes"] = 0
+        self.sources = sources
 
     def process_project_version_misuse(self, project: Project, version: ProjectVersion, misuse: Misuse):
         sourcename = misuse.source
