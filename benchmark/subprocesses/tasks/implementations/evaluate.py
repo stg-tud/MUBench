@@ -59,9 +59,12 @@ class Evaluate(ProjectVersionMisuseTask):
         logger = logging.getLogger("evaluate.compare")
         potential_hits = []
         misuse_file = misuse.location.file
+        misuse_method = misuse.location.method
         for finding in findings:
             if "file" in finding:
-                if Evaluate.__matches_file(finding, misuse_file):
+                matches_file = Evaluate.__matches_file(finding, misuse_file)
+                matches_method = Evaluate.__matches_method(finding, misuse_method)
+                if matches_file and matches_method:
                     logger.debug("Detector found something in '%s'.", misuse_file)
                     potential_hits.append(finding)
 
@@ -77,6 +80,15 @@ class Evaluate(ProjectVersionMisuseTask):
         if finding_file.endswith(".class"):
             finding_file = finding_file[:-5] + "java"
         return finding_file.endswith(misuse_file)
+
+    @staticmethod
+    def __matches_method(finding, misuse_method):
+        if "method" in finding:
+            finding_method = finding["method"]
+            return finding_method in misuse_method
+        else:
+            # If detector provides no method we match anything, to be on the safe side
+            return True
 
     @staticmethod
     def __multiline(text: str):

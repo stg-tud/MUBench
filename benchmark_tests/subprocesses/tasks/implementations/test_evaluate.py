@@ -13,7 +13,7 @@ from benchmark_tests.data.test_misuse import create_misuse
 from benchmark_tests.test_utils.data_util import create_project, create_version
 
 
-class TestEvaluation:
+class TestEvaluate:
     # noinspection PyAttributeOutsideInit
     def setup(self):
         self.temp_dir = mkdtemp(prefix='mubench-result-evaluation-test_')
@@ -68,6 +68,33 @@ class TestEvaluation:
 
         self.assert_potential_hit(self.misuse)
 
+    def test_differs_on_method(self):
+        self.misuse.location.file = "a"
+        self.misuse.location.method = "method()"
+        self.create_result("file: a\nmethod: other_method")
+
+        self.uut.process_project_version_misuse(self.project, self.version, self.misuse)
+
+        self.assert_no_hit(self.misuse)
+
+    def test_matches_on_method_name(self):
+        self.misuse.location.file = "a"
+        self.misuse.location.method = "method(A, B)"
+        self.create_result("file: a\nmethod: method")
+
+        self.uut.process_project_version_misuse(self.project, self.version, self.misuse)
+
+        self.assert_potential_hit(self.misuse)
+
+    def test_matches_on_method_signature(self):
+        self.misuse.location.file = "a"
+        self.misuse.location.method = "method(A, B)"
+        self.create_result("file: a\nmethod: method(A, B)")
+
+        self.uut.process_project_version_misuse(self.project, self.version, self.misuse)
+
+        self.assert_potential_hit(self.misuse)
+
     def test_writes_results_on_teardown(self):
         self.uut.results = {('NoHit', 0), ('PotentialHit', 1)}
 
@@ -97,3 +124,6 @@ class TestEvaluation:
 
     def assert_potential_hit(self, misuse: Misuse):
         assert_equals([(misuse.id, 1)], self.uut.results)
+
+    def assert_no_hit(self, misuse: Misuse):
+        assert_equals([(misuse.id, 0)], self.uut.results)
