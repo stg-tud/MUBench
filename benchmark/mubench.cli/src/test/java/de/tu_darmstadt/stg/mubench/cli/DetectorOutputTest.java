@@ -19,7 +19,7 @@ public class DetectorOutputTest {
 
 	@Test
 	public void writesFindings() throws IOException {
-		File findingsFile = new File("C:\\Users\\Mattis\\Desktop\\findings.yml");
+		File findingsFile = testFolder.newFile();
 
 		DetectorFinding finding1 = new DetectorFinding("file1", "method1");
 		DetectorFinding finding2 = new DetectorFinding("file1", "method2");
