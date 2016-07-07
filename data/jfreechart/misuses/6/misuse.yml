@@ -8,7 +8,7 @@ description: >
   CategoryPlot.getDataset() may return null. The check for null was flipped.
 location:
   file: org/jfree/chart/renderer/category/AbstractCategoryItemRenderer.java
-  method: 
+  method: getLegendItems()
 fix:
   commit: https://sourceforge.net/p/jfreechart/code/2266/tree/trunk/source/org/jfree/chart/renderer/category/AbstractCategoryItemRenderer.java?diff=50b53b485fcbc92b6542a639:2265
   description: >
