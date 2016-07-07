@@ -165,6 +165,6 @@ class TestDetectDownload:
     def test_downloads_detector_if_not_available(self):
         self.uut._detector_available = MagicMock(return_value=False)
 
-        self.uut.enter()
+        self.uut.start()
 
         self.uut._download.assert_called_with()

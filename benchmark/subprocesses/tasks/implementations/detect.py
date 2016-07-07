@@ -76,7 +76,7 @@ class Detect(ProjectVersionTask):
         self.key_classes_project = "classpath"
         self.key_classes_patterns = "classpath_patterns"
 
-    def enter(self):
+    def start(self):
         if not self._detector_available():
             self._download()
 
