@@ -23,9 +23,13 @@ def load_detector(url: str, file: str, md5_file: Optional[str] = None) -> None:
     if not exists(file):
         exit("error! Detector could not be loaded.")
 
-    if md5_file is not None and not _check_md5(file, md5_file):
-        remove(file)
-        exit("error! Detector corrupted (md5 mismatch).")
+    if md5_file is not None:
+        if not exists(md5_file):
+            remove(file)
+            exit("error! '{}' does not exist. Cannot verify download.".format(md5_file))
+        elif not _check_md5(file, md5_file):
+            remove(file)
+            exit("error! Detector corrupted (md5 mismatch).")
 
     print_ok()
 
