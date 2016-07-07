@@ -11,6 +11,7 @@ before_script:
   - sudo chmod +x mubench
 
 install:
+  - sudo apt-get update
   - sudo apt-get install git
   - git config --global user.email "bob@builder.com"
   - git config --global user.name "Bob the Builder"
