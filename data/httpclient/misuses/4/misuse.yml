@@ -5,7 +5,9 @@ characteristics:
 crash: false
 description: >
   Misses to pass Locale to constructor of SimpleDateFormat.
-file: org/apache/commons/httpclient/util/DateUtil.java
+location:
+  file: org/apache/commons/httpclient/util/DateUtil.java
+  method: "formatDate(Date, String)"
 fix:
   commit: http://svn.apache.org/viewvc/jakarta/commons/proper/httpclient/trunk/src/java/org/apache/commons/httpclient/util/DateUtil.java?r1=190480&r2=190479&pathrev=190480
   revision: 190480
