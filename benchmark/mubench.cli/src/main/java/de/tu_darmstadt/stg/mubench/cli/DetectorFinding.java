@@ -1,6 +1,7 @@
 package de.tu_darmstadt.stg.mubench.cli;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class DetectorFinding {
@@ -10,7 +11,7 @@ public class DetectorFinding {
 	private final HashMap<String, String> content;
 
 	public DetectorFinding(String file, String method) {
-		content = new HashMap<>();
+		content = new LinkedHashMap<>();
 		if (file != null) {
 			content.put(keyFile, file);
 		}

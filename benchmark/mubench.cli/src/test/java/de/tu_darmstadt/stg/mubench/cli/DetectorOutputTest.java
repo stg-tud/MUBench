@@ -5,6 +5,7 @@ import static org.junit.Assert.assertThat;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.List;
@@ -23,7 +24,7 @@ public class DetectorOutputTest {
 		DetectorOutput uut = new DetectorOutput(new DetectorArgs(findingsFile.toString(), "", "", "", ""));
 
 		DetectorFinding finding1 = new DetectorFinding("file1", "method1");
-		DetectorFinding finding2 = new DetectorFinding("file1", "method2");
+		DetectorFinding finding2 = new DetectorFinding("file2", "method2");
 		finding1.put("additional", "info");
 		finding2.put("other", "info");
 		List<DetectorFinding> findings = Arrays.asList(finding1, finding2);
@@ -31,8 +32,8 @@ public class DetectorOutputTest {
 		uut.addAll(findings);
 		uut.write();
 
-		List<String> actualLines = Files.readAllLines(findingsFile.toPath());
-		assertThat(actualLines, contains("file: file1", "method: method1", "additional: info", "---", "other: info",
-				"file: file1", "method: method2"));
+		List<String> actualLines = Files.readAllLines(findingsFile.toPath(), Charset.forName("UTF-8"));
+		assertThat(actualLines, contains("file: file1", "method: method1", "additional: info", "---",
+				"file: file2", "method: method2", "other: info"));
 	}
 }
