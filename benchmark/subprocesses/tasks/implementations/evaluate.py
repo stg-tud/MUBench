@@ -37,15 +37,16 @@ class Evaluate(ProjectVersionMisuseTask):
 
         if potential_hits:
             logger.info("Found potential hit for %s.", misuse)
-            write_yaml({"misuse": {"description": Evaluate.__multiline(misuse.description),
-                                   "location": {"file": misuse.location.file, "method": misuse.location.method}},
-                        "fix": {"description": Evaluate.__multiline(misuse.fix.description),
-                                "commit": misuse.fix.commit},
-                        "findings": potential_hits}, file=join(result_path, misuse.id, "finding.yml"))
             self.results.append((misuse.id, Evaluate.potential_hit))
         else:
             logger.info("No hit for %s.", misuse)
             self.results.append((misuse.id, Evaluate.no_hit))
+
+        write_yaml({"misuse": {"description": Evaluate.__multiline(misuse.description),
+                               "location": {"file": misuse.location.file, "method": misuse.location.method}},
+                    "fix": {"description": Evaluate.__multiline(misuse.fix.description),
+                            "commit": misuse.fix.commit},
+                    "findings": potential_hits}, file=join(result_path, misuse.id, "finding.yml"))
 
         return Response.ok
 
