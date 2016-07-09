@@ -2,7 +2,7 @@ api:
 - org.apache.jackrabbit.core.state.ItemStateManager
 - org.apache.jackrabbit.core.state.NodeState
 characteristics:
-- missing precondition/null
+- missing/condition/null_check
 crash: true
 description: >
   NodeState.getParentId() may return null and ItemStateManager.getItemState()

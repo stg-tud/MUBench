@@ -1,7 +1,7 @@
 api:
 - java.io.InputStream
 characteristics:
-- missing call
+- missing/call
 crash: false
 description: >
   InputStream.close() should be called after finished using the stream.

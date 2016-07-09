@@ -1,7 +1,7 @@
 api:
 - javax.crypto.Cipher
 characteristics:
-- wrong parameter
+- missing/condition/value_or_state
 crash: false
 description: >
   Passes Cipher.ENCRYPT_MODE to Cipher.init(), but uses the cipher for

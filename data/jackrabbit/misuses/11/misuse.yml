@@ -1,7 +1,7 @@
 api:
 - java.sql.PreparedStatement
 characteristics:
-- missing precondition/parameter constraint
+- missing/condition/value_or_state
 crash: true
 description: >
   PreparedStatement.setFetchSize(x) and PreparedStatement.setMaxRows(y)

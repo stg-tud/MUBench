@@ -1,7 +1,7 @@
 api:
 - org.wordpress.android.util.WPEditText
 characteristics:
-- missing precondition/null
+- missing/condition/null_check
 crash: true
 description: >
   The result of WPEditText.getText() may be null.

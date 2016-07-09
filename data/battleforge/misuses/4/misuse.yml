@@ -2,7 +2,7 @@ api:
 - java.String
 - javax.crypto.Cipher
 characteristics:
-- wrong call
+- wrong/call
 crash: false
 description: >
   Decoded data is converted to String without explicitly specifying an encoding.

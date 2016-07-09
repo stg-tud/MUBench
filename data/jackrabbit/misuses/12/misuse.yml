@@ -2,7 +2,7 @@ api:
 - java.util.Map
 - org.apache.jackrabbit.core.config.RepositoryConfig
 characteristics:
-- missing precondition/null
+- missing/condition/null_check
 crash: true
 description: >
   Map.get() may return null and RepositoryConfig.create() expects non-null

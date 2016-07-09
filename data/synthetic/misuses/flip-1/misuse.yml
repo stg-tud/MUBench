@@ -1,7 +1,7 @@
 api:
 - java.nio.ByteBuffer
 characteristics:
-- missing call
+- missing/condition/value_or_state
 crash: true
 description: >
   Misses to call ByteBuffer.flip() between writing to and reading from

@@ -2,7 +2,7 @@ api:
 - javax.crypto.Cipher
 - java.util.Base64
 characteristics:
-- missing call
+- missing/call
 crash: false
 description: >
   Encoded data is retrieved from a string (from storage) without explicitely

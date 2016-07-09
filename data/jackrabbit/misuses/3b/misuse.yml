@@ -2,7 +2,7 @@ api:
 - org.apache.jackrabbit.core.config.ConfigurationParser
 - org.apache.jackrabbit.core.config.ClusterConfig
 characteristics:
-- missing call
+- missing/call
 crash: false
 description: >
   The results of ConfigurationParser.getAttribute() should be processed

@@ -1,7 +1,7 @@
 api:
 - android.database.Cursor
 characteristics:
-- missing call
+- missing/call
 crash: true
 description: >
   Fails to release Cursor.

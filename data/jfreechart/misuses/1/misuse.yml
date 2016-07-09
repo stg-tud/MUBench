@@ -2,8 +2,7 @@ api:
 - java.awt.geom.GeneralPath
 - java.awt.geom.PathIterator
 characteristics:
-- superfluous call
-- missing call
+- missing/call
 crash: false
 description: >
   Iterates over two PathIterators from the same GeneralPath instead of

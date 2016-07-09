@@ -1,7 +1,7 @@
 api:
 - java.util.Map
 characteristics:
-- missing precondition/parameter constraint
+- missing/condition/value_or_state
 crash: false
 description: >
   Map.get() and Map.put() are called with different (types of) objects

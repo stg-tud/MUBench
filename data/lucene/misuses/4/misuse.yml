@@ -2,7 +2,7 @@ api:
 - org.apache.lucene.index.MultiFields
 - org.apache.lucene.util.Bits
 characteristics:
-- missing precondition/null
+- missing/condition/null_check
 crash: true
 description: >
   MultiFields.getDeletedDocs() may return null.

@@ -1,7 +1,7 @@
 api:
 - org.apache.jackrabbit.server.io.IOManager
 characteristics:
-- missing precondition/null
+- missing/condition/null_check
 crash: true
 description: >
   IOManager.getDetector() may return null.

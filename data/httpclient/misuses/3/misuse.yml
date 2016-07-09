@@ -1,7 +1,7 @@
 api:
 - org.apache.commons.httpclient.auth.AuthState
 characteristics:
-- missing call
+- missing/call
 crash: false
 description: >
   When AuthState.isPreemptive(), both invalidate() and setAuthRequested(true)

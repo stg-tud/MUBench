@@ -1,7 +1,7 @@
 api:
 - java.Boolean
 characteristics:
-- wrong call
+- wrong/call
 crash: false
 description: >
   Boolean.parseBoolean() turns a string to a boolean, while Boolean.getBoolean()

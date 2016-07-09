@@ -1,7 +1,7 @@
 api:
 - android.app.Activity
 characteristics:
-- wrong call order
+- misplaced/call
 crash: true
 description: >
   Fails to set content view on onCreate().

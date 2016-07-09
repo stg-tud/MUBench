@@ -1,7 +1,7 @@
 api:
 - org.apache.jackrabbit.core.ItemData
 characteristics:
-- missing precondition/null
+- missing/condition/null_check
 crash: true
 description: >
   ItemDate.getState() may be null.

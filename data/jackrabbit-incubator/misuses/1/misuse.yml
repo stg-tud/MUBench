@@ -2,7 +2,7 @@ api:
 - org.apache.jackrabbit.core.fs.FileSystem
 - org.apache.jackrabbit.core.fs.FileSystemResource
 characteristics:
-- missing precondition/predicate
+- missing/condition/value_or_state
 crash: true
 description: >
   ObjectPersistenceManager.destroy() calls FileSystemResource.delete()

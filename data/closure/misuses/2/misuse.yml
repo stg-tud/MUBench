@@ -1,7 +1,7 @@
 api:
 - org.kohsuke.args4j.spi.Parameters
 characteristics:
-- missing catch
+- missing/catch
 crash: true
 description: >
   Parameters.getParameter() may throw CmdLineException.

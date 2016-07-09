@@ -1,7 +1,7 @@
 api:
 - org.apache.commons.math3.geometry.euclidean.threed.Line
 characteristics:
-- missing precondition/null
+- missing/condition/null_check
 crash: true
 description: >
   SubLine.intersection() may return null.

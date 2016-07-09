@@ -1,7 +1,7 @@
 api:
 - java.nio.channels.FileChannel
 characteristics:
-- missing call
+- missing/call
 crash: false
 description: >
   Misses to flush FileChannel, such that the contents have not been written

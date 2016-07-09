@@ -1,8 +1,7 @@
 api:
 - org.apache.commons.httpclient.HttpConnection
 characteristics:
-- missing call
-- missing catch
+- missing/finally
 crash: false
 description: >
   Exception on HttpConnection.writeRequest() leaves the connection open.

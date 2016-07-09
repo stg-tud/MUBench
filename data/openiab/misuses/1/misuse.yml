@@ -1,7 +1,7 @@
 api:
 - com.unity3d.player.UnityPlayerActivity
 characteristics:
-- missing call
+- missing/call
 crash: true
 description: >
   Overrides UnityPlayerActivity.onDestroy(), but does not call the super

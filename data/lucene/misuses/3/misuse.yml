@@ -1,8 +1,7 @@
 api:
 - java.io.File
 characteristics:
-- missing precondition/predicate
-- missing call
+- missing/condition/value_or_state
 crash: true
 description: >
   Misses to check File.exists()/File.mkdirs() before calling File.createNewFile().

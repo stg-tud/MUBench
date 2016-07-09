@@ -1,7 +1,7 @@
 api:
 - android.app.Dialog
 characteristics:
-- missing precondition/predicate
+- missing/condition/value_or_state
 crash: true
 description: >
   Calls Dialog.dismiss() on dialog that is not showing.

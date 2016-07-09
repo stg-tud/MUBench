@@ -1,7 +1,7 @@
 api:
 - java.io.Closeable
 characteristics:
-- missing call
+- missing/call
 crash: false
 description: >
   Misses to call Closeable.close().

@@ -1,7 +1,7 @@
 api:
 - org.apache.jackrabbit.jcr2spi.NamespaceStorage
 characteristics:
-- wrong parameter
+- missing/condition/value_or_state
 crash: true
 description: >
   NamespaceStorage maps from prefixes to URIs. It's method unregisterNamespace

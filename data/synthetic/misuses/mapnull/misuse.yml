@@ -1,7 +1,7 @@
 api:
 - java.util.Map
 characteristics:
-- missing call
+- wrong/condition
 crash: false
 description: >
   Checks the return value of Map.put() to check whether the key was set

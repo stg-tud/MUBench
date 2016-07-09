@@ -1,7 +1,7 @@
 api:
 - java.util.Map
 characteristics:
-- missing precondition/null
+- missing/condition/null_check
 crash: true
 description: >
   Map.get() may return null.

@@ -2,7 +2,7 @@ api:
 - android.content.Context
 - android.content.IntentFilter
 characteristics:
-- missing call
+- missing/condition/value_or_state
 crash: true
 description: >
   Registers an IntentFilter to an arbitrary context, rather than the application

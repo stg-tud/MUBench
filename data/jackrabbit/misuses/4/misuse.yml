@@ -1,7 +1,7 @@
 api:
 - org.apache.commons.collections.BeanMap
 characteristics:
-- wrong call
+- wrong/condition
 crash: false
 description: >
   Check for BeanMap.get(key) == null may lead to wrong results. Fix uses

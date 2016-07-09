@@ -1,7 +1,7 @@
 api:
 - android.app.Activity
 characteristics:
-- missing call
+- missing/call
 crash: true
 description: >
   Fails to find view by id in onCreate().

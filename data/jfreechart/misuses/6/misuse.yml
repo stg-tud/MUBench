@@ -2,7 +2,7 @@ api:
 - org.jfree.chart.plot.CategoryPlot
 - org.jfree.data.category.CategoryDataset
 characteristics:
-- wrong guard
+- wrong/condition
 crash: true
 description: >
   CategoryPlot.getDataset() may return null. The check for null was flipped.

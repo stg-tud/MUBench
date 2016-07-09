@@ -1,7 +1,7 @@
 api:
 - java.nio.Files
 characteristics:
-- missing precondition/parameter constraint
+- missing/condition/value_or_state
 crash: true
 description: >
   Tries to write to a file that may not exist.

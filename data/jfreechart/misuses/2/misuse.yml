@@ -2,7 +2,7 @@ api:
 - org.jfree.chart.plot.PlotRenderingInfo
 - org.jfree.chart.ChartRenderingInfo
 characteristics:
-- missing precondition/null
+- missing/condition/null_check
 crash: true
 description: >
   PlotRenderingInfo.getOwner() may return null.

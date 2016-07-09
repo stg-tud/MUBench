@@ -2,7 +2,7 @@ api:
 - java.String
 - javax.crypto.Cipher
 characteristics:
-- wrong call
+- wrong/call
 crash: false
 description: >
   A string is converted to bytes without specifying an explicit encoding.

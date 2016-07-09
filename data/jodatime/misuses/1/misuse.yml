@@ -2,7 +2,7 @@ api:
 - org.joda.time.contrib.hibernate.PersistentDateTime
 - org.joda.time.Interval
 characteristics:
-- missing precondition/null
+- missing/condition/null_check
 crash: false
 description: >
   PersistentDateTime.nullSafeGet() may return null, while constructor

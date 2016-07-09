@@ -2,7 +2,7 @@ api:
 - java.util.Collection (and subtypes)
 - java.util.Iterator
 characteristics:
-- superfluous call
+- superfluous/other/call
 crash: true
 description: >
   Modifying a collection after an Iterator has been created and continue

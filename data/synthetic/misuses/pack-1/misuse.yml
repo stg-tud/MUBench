@@ -1,7 +1,7 @@
 api:
 - javax.swing.JFrame
 characteristics:
-- wrong call order
+- misplaced/call
 crash: false
 description: >
   Calls JFrame.setPreferredSize() after JFrame.pack(), such that the size

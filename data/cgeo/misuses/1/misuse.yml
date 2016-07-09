@@ -1,7 +1,7 @@
 api:
 - android.content.Intent
 characteristics:
-- wrong parameter
+- missing/condition/value_or_state
 crash: true
 description: >
   Passes invalid mime-type to Intent.setDataAndType().

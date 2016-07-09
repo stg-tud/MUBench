@@ -1,7 +1,7 @@
 api:
 - java.io.SortedMap
 characteristics:
-- missing catch
+- missing/catch
 crash: true
 description: >
   Should catch NoSuchElementException around SortedMap.firstKey()

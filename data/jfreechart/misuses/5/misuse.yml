@@ -1,7 +1,7 @@
 api:
 - org.jfree.chart.plot.XYPlot
 characteristics:
-- missing precondition/null
+- missing/condition/null_check
 crash: true
 description: >
   XYPlot.getRendererForDataset() may return null.

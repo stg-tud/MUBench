@@ -1,7 +1,7 @@
 api:
 - com.google.javascript.rhino.jstype.ObjectType
 characteristics:
-- missing precondition/null
+- missing/condition/null_check
 crash: true
 description: >
   ObjectType.getImplicitPrototype() may return null.

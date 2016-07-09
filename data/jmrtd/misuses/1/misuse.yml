@@ -1,7 +1,7 @@
 api:
 - java.io.DataOutputStream
 characteristics:
-- missing call
+- missing/call
 crash: false
 description: >
   DataOutputStream is left open.

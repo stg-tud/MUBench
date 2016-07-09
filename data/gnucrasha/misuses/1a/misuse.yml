@@ -2,7 +2,7 @@ api:
 - org.gnucash.android.ui.UxArgument
 - android.content.Intent
 characteristics:
-- wrong call
+- wrong/call
 crash: true
 description: >
   Call Intent.getLongExtra() with UxArgument.ORIGIN_ACCOUNT_UID parameter,

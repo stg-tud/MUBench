@@ -1,7 +1,7 @@
 api:
 - com.actionbarsherlock.app.SherlockActivity
 characteristics:
-- missing call
+- missing/call
 crash: true
 description: >
   Overrides SherlockActivity.onDestroy(), but does not call the super

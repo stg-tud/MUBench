@@ -96,25 +96,26 @@ class characteristic(StatCalculator):
         chars = misuse.characteristics
         for char in chars:
             seg = char.split('/')
-            stat = self.statistics.get(seg[0], {"total": {"misuses": 0, "crashes": 0}})
-            stat["total"]["misuses"] += 1
+            statname = seg[0] + "/" + seg[1]
+            stat = self.statistics.get(statname, {" total": {"misuses": 0, "crashes": 0}})
+            stat[" total"]["misuses"] += 1
             if misuse.is_crash:
-                stat["total"]["crashes"] += 1
+                stat[" total"]["crashes"] += 1
 
-            if len(seg) > 1:
-                segstat = stat.get(seg[1], {"misuses": 0, "crashes": 0})
+            if len(seg) > 2:
+                segstat = stat.get(seg[2], {"misuses": 0, "crashes": 0})
                 segstat["misuses"] += 1
                 if misuse.is_crash:
                     segstat["crashes"] += 1
-                stat[seg[1]] = segstat
+                stat[seg[2]] = segstat
 
-            self.statistics[seg[0]] = stat
+            self.statistics[statname] = stat
 
     def end(self):
         self.logger.info("%25s %25s %7s %14s" % ("Characteristic", "SubCharacteristic", "Misuses", "Crashes"))
-        for statname in self.statistics:
+        for statname in sorted(self.statistics):
             stat = self.statistics[statname]
-            for segstat in stat:
+            for segstat in sorted(stat):
                 self.logger.info("%25s %25s %7d %7d% 6.1f%%" % (
                     statname, segstat, stat[segstat]["misuses"], stat[segstat]["crashes"],
                     (stat[segstat]["crashes"] / stat[segstat]["misuses"] * 100)))

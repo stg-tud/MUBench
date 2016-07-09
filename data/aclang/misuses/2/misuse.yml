@@ -1,7 +1,7 @@
 api:
 - org.apache.commons.lang.text.StrBuilder
 characteristics:
-- missing precondition/null
+- missing/condition/null_check
 crash: true
 description: >
   StrBuilder.getNullText() may return null.

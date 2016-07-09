@@ -1,7 +1,7 @@
 api:
 - javax.crypto.Cipher
 characteristics:
-- missing catch
+- missing/catch
 crash: true
 description: >
   Cipher.init may throw InvalidKeyException.

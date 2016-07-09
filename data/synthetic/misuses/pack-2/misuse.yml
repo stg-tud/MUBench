@@ -1,7 +1,7 @@
 api:
 - javax.swing.JFrame
 characteristics:
-- missing call
+- missing/call
 crash: false
 description: >
   Calls JFrame.setPreferredSize() without calling JFrame.pack(), such

@@ -2,7 +2,7 @@ api:
 - com.google.javascript.rhino.jstype.UnionTypeBuilder
 - com.google.javascript.rhino.jstype.JSType
 characteristics:
-- missing precondition/predicate
+- wrong/condition
 crash: false
 description: >
   UnionTypeBuilder.build() returns a JSType that can never be null. Branching

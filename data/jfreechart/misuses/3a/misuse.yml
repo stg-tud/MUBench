@@ -2,7 +2,7 @@ api:
 - org.jfree.data.statistics.StatisticalCategoryDataset
 - java.Number
 characteristics:
-- missing precondition/null
+- missing/condition/null_check
 crash: true
 description: >
   StatisticalCategoryDataset.getMeanValue() may return null.

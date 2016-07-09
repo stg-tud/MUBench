@@ -1,7 +1,7 @@
 api:
 - org.apache.jackrabbit.jcr2spi.hierarchy.HierarchyEntry
 characteristics:
-- missing precondition/null
+- missing/condition/null_check
 crash: true
 description: >
   HierarchyEntry.getParent() may return null.
