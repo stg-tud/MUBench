@@ -63,28 +63,6 @@ class general(StatCalculator):
         self.logger.info("- %d projects" % len(self.projects))
 
 
-class challenge(StatCalculator):
-    def __init__(self):
-        super().__init__()
-        self.statistics = {}
-
-        self.logger = logging.getLogger('stats.challenge')
-
-    def process_project_version_misuse(self, project: Project, version: ProjectVersion, misuse: Misuse):
-        # TODO: does this still exist?
-        if "challenges" in misuse._yaml:
-            challs = misuse.challenges
-            for chall in challs:
-                stat = self.statistics.get(chall, 0)
-                stat += 1
-                self.statistics[chall] = stat
-
-    def end(self):
-        self.logger.info("%25s %7s" % ("Challenge", "Misuses"))
-        for statname in self.statistics:
-            self.logger.info("%25s %7d" % (statname, self.statistics[statname]))
-
-
 class characteristic(StatCalculator):
     def __init__(self):
         super().__init__()
