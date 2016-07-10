@@ -2,8 +2,9 @@
 import logging
 import logging.handlers
 import sys
+from datetime import datetime
 from os import listdir
-from os.path import join, realpath, isdir, exists
+from os.path import join, realpath, isdir
 
 from benchmark.subprocesses.check import check_prerequisites
 from benchmark.subprocesses.result_processing.visualize_results import Visualizer
@@ -14,8 +15,6 @@ from benchmark.subprocesses.tasks.implementations.compile import Compile
 from benchmark.subprocesses.tasks.implementations.detect import Detect
 from benchmark.subprocesses.tasks.implementations.evaluate import Evaluate
 from benchmark.utils import command_line_util
-
-LOG_FILE_NAME = "out.log"
 
 
 class Benchmark:
@@ -122,13 +121,11 @@ handler = logging.StreamHandler()
 handler.setFormatter(IndentFormatter("%(indent)s%(message)s"))
 handler.setLevel(logging.INFO)
 logger.addHandler(handler)
-needs_new_logfile = exists(LOG_FILE_NAME)
-handler = logging.handlers.RotatingFileHandler(LOG_FILE_NAME, backupCount=50)
+LOG_FILE_NAME = datetime.now().strftime("run_%Y%m%d_%H%M%S") + ".log"
+handler = logging.FileHandler(LOG_FILE_NAME)
 handler.setFormatter(logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s'))
 handler.setLevel(logging.DEBUG)
 logger.addHandler(handler)
-if needs_new_logfile:
-    handler.doRollover()
 
 logger.info("Starting benchmark...")
 logger.debug("- Arguments           = %r", sys.argv)
