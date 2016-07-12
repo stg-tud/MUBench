@@ -1,8 +1,10 @@
 package de.tu_darmstadt.stg.mubench.cli;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 public class DetectorFinding {
@@ -25,8 +27,8 @@ public class DetectorFinding {
 		return (String) content.put(key, value);
 	}
 	
-	public Collection<String> put(String key, Collection<String> values) {
-		return (Collection<String>) content.put(key, values);
+	public List<String> put(String key, Collection<String> values) {
+		return (List<String>) content.put(key, new ArrayList<String>(values));
 	}
 
 	public Map<String, Object> getContent() {
