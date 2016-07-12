@@ -119,6 +119,7 @@ class Compile(ProjectVersionTask):
             except FileNotFoundError as e:
                 remove_tree(project_compile.pattern_classes_path)
                 logger.error("Compilation failed: %s", e)
+                return Response.skip
             except CommandFailedError as e:
                 logger.error("Compilation failed: %s", e)
                 return Response.skip
