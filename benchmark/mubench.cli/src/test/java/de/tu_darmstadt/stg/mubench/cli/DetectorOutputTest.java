@@ -35,6 +35,6 @@ public class DetectorOutputTest {
 
 		List<String> actualLines = Files.readAllLines(findingsFile.toPath(), Charset.forName("UTF-8"));
 		assertThat(actualLines, contains("file: file1", "method: method1", "additional: info", "---",
-				"file: file2", "method: method2", "collection:", "- a", "- b", "- c"));
+				"file: file2", "method: method2", "other: info", "collection:", "- a", "- b", "- c"));
 	}
 }
