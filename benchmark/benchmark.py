@@ -3,8 +3,8 @@ import logging
 import logging.handlers
 import sys
 from datetime import datetime
-from os import listdir
-from os.path import join, realpath, isdir
+from os import listdir, makedirs
+from os.path import join, realpath, isdir, exists
 
 from benchmark.subprocesses.check import check_prerequisites
 from benchmark.subprocesses.result_processing.visualize_results import Visualizer
@@ -121,8 +121,11 @@ handler = logging.StreamHandler()
 handler.setFormatter(IndentFormatter("%(indent)s%(message)s"))
 handler.setLevel(logging.INFO)
 logger.addHandler(handler)
-LOG_FILE_NAME = datetime.now().strftime("run_%Y%m%d_%H%M%S") + ".log"
-handler = logging.FileHandler(LOG_FILE_NAME)
+LOG_DIR = "logs"
+if not exists(LOG_DIR):
+    makedirs(LOG_DIR)
+log_name = datetime.now().strftime("run_%Y%m%d_%H%M%S") + ".log"
+handler = logging.FileHandler(join(LOG_DIR, log_name))
 handler.setFormatter(logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s'))
 handler.setLevel(logging.DEBUG)
 logger.addHandler(handler)
