@@ -27,6 +27,7 @@ public class DetectorOutputTest {
 		DetectorFinding finding2 = new DetectorFinding("file2", "method2");
 		finding1.put("additional", "info");
 		finding2.put("other", "info");
+		finding2.put("collection", Arrays.asList("a", "b", "c"));
 		List<DetectorFinding> findings = Arrays.asList(finding1, finding2);
 
 		uut.addAll(findings);
@@ -34,6 +35,6 @@ public class DetectorOutputTest {
 
 		List<String> actualLines = Files.readAllLines(findingsFile.toPath(), Charset.forName("UTF-8"));
 		assertThat(actualLines, contains("file: file1", "method: method1", "additional: info", "---",
-				"file: file2", "method: method2", "other: info"));
+				"file: file2", "method: method2", "collection:", "- a", "- b", "- c"));
 	}
 }

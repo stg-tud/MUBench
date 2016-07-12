@@ -17,7 +17,7 @@ import org.yaml.snakeyaml.Yaml;
 
 public class DetectorOutput {
 	private final File findingsFile;
-	private final List<Map<String, String>> findings;
+	private final List<Map<String, Object>> findings;
 
 	public DetectorOutput(DetectorArgs args) throws FileNotFoundException {
 		findings = new LinkedList<>();
