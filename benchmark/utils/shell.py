@@ -1,10 +1,8 @@
 import locale
 import logging
 import os
-from subprocess import check_output, STDOUT, CalledProcessError
+from subprocess import PIPE, STDOUT, CalledProcessError, run
 from typing import Optional
-
-import sys
 
 
 class Shell:
@@ -13,8 +11,8 @@ class Shell:
         logger.debug("Execute '%s' in '%s'", command, cwd)
         encoding = Shell.__get_encoding()
         try:
-            output = check_output(command, cwd=cwd, bufsize=1, stderr=STDOUT, shell=True, timeout=timeout)
-            output = output.decode(encoding)
+            cmd = run(command, cwd=cwd, stdout=PIPE, stderr=STDOUT, shell=True, check=True, timeout=timeout)
+            output = cmd.stdout.decode(encoding)
             logger.debug(output[:-1])
             return output
         except CalledProcessError as e:
