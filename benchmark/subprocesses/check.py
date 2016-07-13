@@ -46,8 +46,8 @@ def check_prerequisites():
         try:
             prerequisite_check()
             logger.debug("Prerequisite '%s' satisfied", prerequisite_name)
-        except:
-            logger.error("Prerequisite '%s' not satisfied", prerequisite_name)
+        except Exception as e:
+            logger.error("Prerequisite '%s' not satisfied: %s", prerequisite_name, e)
             missing_prerequisites = True
 
     if missing_prerequisites:
