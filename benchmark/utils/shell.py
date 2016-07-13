@@ -1,7 +1,7 @@
 import locale
 import logging
 import os
-from subprocess import PIPE, STDOUT, CalledProcessError, run
+from subprocess import PIPE, STDOUT, CalledProcessError, run, TimeoutExpired
 from typing import Optional
 
 
@@ -17,6 +17,8 @@ class Shell:
             return output
         except CalledProcessError as e:
             raise CommandFailedError(e.cmd, e.output.decode(encoding))
+        except TimeoutExpired as e:
+            raise TimeoutError(e.cmd, e.output.decode(encoding))
 
     @staticmethod
     def __get_encoding():

@@ -1,5 +1,4 @@
 import logging
-import subprocess
 import time
 from enum import Enum
 from os import makedirs
@@ -115,7 +114,7 @@ class Detect(ProjectVersionTask):
             except CommandFailedError as e:
                 logger.error("Detector failed: %s", e)
                 run.set_result(Result.error)
-            except subprocess.TimeoutExpired:
+            except TimeoutError:
                 logger.error("Detector took longer than the maximum of %s seconds", self.timeout)
                 run.set_result(Result.timeout)
             finally:
