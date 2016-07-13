@@ -86,6 +86,15 @@ class TestEvaluate:
 
         self.assert_potential_hit(self.misuse)
 
+    def test_not_matches_on_method_name_prefix(self):
+        self.misuse.location.file = "a"
+        self.misuse.location.method = "appendX"
+        self.create_result("file: a\nmethod: append")
+
+        self.uut.process_project_version_misuse(self.project, self.version, self.misuse)
+
+        self.assert_no_hit(self.misuse)
+
     def test_matches_on_method_signature(self):
         self.misuse.location.file = "a"
         self.misuse.location.method = "method(A, B)"
