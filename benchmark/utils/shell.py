@@ -1,6 +1,7 @@
 import locale
 import logging
 import os
+from platform import platform
 from subprocess import PIPE, STDOUT, CalledProcessError, run, TimeoutExpired
 from typing import Optional
 
@@ -11,6 +12,12 @@ class Shell:
         logger.debug("Execute '%s' in '%s'", command, cwd)
         encoding = Shell.__get_encoding()
         try:
+            # On our Debian server subprocess does not return until after the process finished, but then correctly
+            # raises TimeoutExpired, if the process took to long. We use `timeout` to ensure that the process terminates
+            # eventually.
+            if "Linux" in platform() and timeout is not None:
+                command = "timeout {} {}".format(timeout + 60, command)
+
             cmd = run(command, cwd=cwd, stdout=PIPE, stderr=STDOUT, shell=True, check=True, timeout=timeout)
             output = cmd.stdout.decode(encoding)
             logger.debug(output[:-1])
