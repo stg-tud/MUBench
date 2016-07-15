@@ -42,11 +42,13 @@ class Evaluate(ProjectVersionMisuseTask):
             logger.info("No hit for %s.", misuse)
             self.results.append((misuse.id, Evaluate.no_hit))
 
+        misuse_finding_path = join(result_path, misuse.id)
+        remove_tree(misuse_finding_path)
         write_yaml({"misuse": {"description": Evaluate.__multiline(misuse.description),
                                "location": {"file": misuse.location.file, "method": misuse.location.method}},
                     "fix": {"description": Evaluate.__multiline(misuse.fix.description),
                             "commit": misuse.fix.commit},
-                    "findings": potential_hits}, file=join(result_path, misuse.id, "finding.yml"))
+                    "findings": potential_hits}, file=join(misuse_finding_path, "finding.yml"))
 
         return Response.ok
 
