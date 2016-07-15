@@ -13,14 +13,15 @@ from benchmark.subprocesses.tasks.implementations import stats
 from benchmark.subprocesses.tasks.implementations.checkout import Checkout
 from benchmark.subprocesses.tasks.implementations.compile import Compile
 from benchmark.subprocesses.tasks.implementations.detect import Detect
-from benchmark.subprocesses.tasks.implementations.evaluate import Evaluate
+from benchmark.subprocesses.tasks.implementations.review_prepare import ReviewPrepare
 from benchmark.utils import command_line_util
 
 
 class Benchmark:
     DATA_PATH = realpath("data")
     CHECKOUTS_PATH = realpath("checkouts")
-    RESULTS_PATH = realpath("results")
+    RESULTS_PATH = realpath("findings")
+    REVIEW_PATH = realpath("reviews")
 
     def __init__(self, config):
         self.detector_result_file = 'findings.yml'
@@ -61,11 +62,19 @@ class Benchmark:
                                  self.config.timeout, self.config.java_options, self.config.force_detect)
         self.runner.add(detector_runner)
 
-    def _setup_eval(self):
-        results_path = join(Benchmark.RESULTS_PATH, self.config.detector)
-        evaluation_handler = Evaluate(results_path, Benchmark.CHECKOUTS_PATH,
-                                      self.eval_result_file)
-        self.runner.add(evaluation_handler)
+    def _setup_review_prepare(self):
+        if exists(Benchmark.RESULTS_PATH):
+            detectors_with_available_result = [detector for detector in listdir(Benchmark.RESULTS_PATH) if
+                                               detector in available_detectors]
+        else:
+            detectors_with_available_result = []
+
+        for detector in detectors_with_available_result:
+            results_path = join(Benchmark.RESULTS_PATH, detector)
+            review_path = join(Benchmark.REVIEW_PATH, detector)
+            review_preparer = ReviewPrepare(results_path, review_path, Benchmark.CHECKOUTS_PATH,
+                                            self.eval_result_file, self.config.force_prepare)
+            self.runner.add(review_preparer)
 
     def run(self) -> None:
         check_prerequisites()
@@ -83,11 +92,8 @@ class Benchmark:
             self._setup_checkout()
             self._setup_compile()
             self._setup_detect()
-        elif config.subprocess == 'eval':
-            self._setup_checkout()
-            self._setup_compile()
-            self._setup_detect()
-            self._setup_eval()
+        elif config.subprocess == 'review:prepare':
+            self._setup_review_prepare()
         elif config.subprocess == 'stats':
             self._setup_stats()
 

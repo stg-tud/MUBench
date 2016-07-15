@@ -7,13 +7,13 @@ from tempfile import mkdtemp
 from nose.tools import assert_equals, assert_in
 
 from benchmark.data.misuse import Misuse
-from benchmark.subprocesses.tasks.implementations.evaluate import Evaluate
+from benchmark.subprocesses.tasks.implementations.review_prepare import ReviewPrepare
 from benchmark.utils.io import safe_write
 from benchmark_tests.data.test_misuse import create_misuse
 from benchmark_tests.test_utils.data_util import create_project, create_version
 
 
-class TestEvaluate:
+class TestReviewPrepare:
     # noinspection PyAttributeOutsideInit
     def setup(self):
         self.temp_dir = mkdtemp(prefix='mubench-result-evaluation-test_')
@@ -23,10 +23,11 @@ class TestEvaluate:
         self.data_path = join(self.temp_dir, 'data')
         self.checkout_dir = join(self.temp_dir, 'checkouts')
         self.results_path = join(self.temp_dir, 'results', 'test-detector')
+        self.review_path = join(self.temp_dir, 'review', 'test-detector')
         self.detector = 'test-detector'
         self.eval_result_file = 'result.csv'
 
-        self.uut = Evaluate(self.results_path, self.checkout_dir, self.eval_result_file)
+        self.uut = ReviewPrepare(self.results_path, self.review_path, self.checkout_dir, self.eval_result_file, False)
 
         self.project = create_project('project')
         self.version = create_version('version', project=self.project)

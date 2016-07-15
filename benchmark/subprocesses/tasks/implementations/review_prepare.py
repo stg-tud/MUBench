@@ -1,5 +1,5 @@
 import logging
-from os.path import join
+from os.path import join, exists
 from textwrap import wrap
 from typing import Dict, Iterable
 
@@ -12,20 +12,28 @@ from benchmark.subprocesses.tasks.implementations.detect import Run
 from benchmark.utils.io import safe_open, write_yaml, remove_tree
 
 
-class Evaluate(ProjectVersionMisuseTask):
+class ReviewPrepare(ProjectVersionMisuseTask):
     no_hit = 0
     potential_hit = 1
 
-    def __init__(self, results_path: str, checkout_base_dir: str, eval_result_file: str):
+    def __init__(self, results_path: str, review_path: str, checkout_base_dir: str, eval_result_file: str,
+                 force_prepare: bool):
         super().__init__()
         self.results_path = results_path
+        self.review_path = review_path
         self.checkout_base_dir = checkout_base_dir
         self.eval_result_file = eval_result_file
+        self.force_prepare = force_prepare
 
         self.results = []
 
     def process_project_version_misuse(self, project: Project, version: ProjectVersion, misuse: Misuse) -> Response:
-        logger = logging.getLogger("evaluate")
+        logger = logging.getLogger("review_prepare")
+
+        review_folder = join(self.review_path, project.id, version.version_id, misuse.id)
+        if exists(review_folder) and not self.force_prepare:
+            logger.info("%s in %s is already prepared.", misuse, version)
+            return Response.ok
 
         result_path = join(self.results_path, project.id, version.version_id)
         detector_run = Run(result_path)
@@ -37,22 +45,23 @@ class Evaluate(ProjectVersionMisuseTask):
         logger.debug("Checking hit for %s in %s...", misuse, version)
 
         findings = detector_run.findings
-        potential_hits = Evaluate.__find_potential_hits(findings, misuse)
+        potential_hits = ReviewPrepare.__find_potential_hits(findings, misuse)
 
         if potential_hits:
             logger.info("Found potential hit for %s.", misuse)
-            self.results.append((misuse.id, Evaluate.potential_hit))
+            self.results.append((misuse.id, ReviewPrepare.potential_hit))
         else:
             logger.info("No hit for %s.", misuse)
-            self.results.append((misuse.id, Evaluate.no_hit))
+            self.results.append((misuse.id, ReviewPrepare.no_hit))
 
-        misuse_finding_path = join(result_path, misuse.id)
-        remove_tree(misuse_finding_path)
-        write_yaml({"misuse": {"description": Evaluate.__multiline(misuse.description),
+        remove_tree(review_folder)
+        logger.debug("Generating new review files for %s in %s...", misuse, version)
+
+        write_yaml({"misuse": {"description": ReviewPrepare.__multiline(misuse.description),
                                "location": {"file": misuse.location.file, "method": misuse.location.method}},
-                    "fix": {"description": Evaluate.__multiline(misuse.fix.description),
+                    "fix": {"description": ReviewPrepare.__multiline(misuse.fix.description),
                             "commit": misuse.fix.commit},
-                    "findings": potential_hits}, file=join(misuse_finding_path, "finding.yml"))
+                    "findings": potential_hits}, file=join(review_folder, "finding.yml"))
 
         return Response.ok
 
@@ -69,8 +78,8 @@ class Evaluate(ProjectVersionMisuseTask):
         misuse_method = misuse.location.method
         for finding in findings:
             if "file" in finding:
-                matches_file = Evaluate.__matches_file(finding, misuse_file)
-                matches_method = Evaluate.__matches_method(finding, misuse_method)
+                matches_file = ReviewPrepare.__matches_file(finding, misuse_file)
+                matches_method = ReviewPrepare.__matches_method(finding, misuse_method)
                 if matches_file and matches_method:
                     logger.debug("Detector found something in '%s'.", misuse_file)
                     potential_hits.append(finding)
