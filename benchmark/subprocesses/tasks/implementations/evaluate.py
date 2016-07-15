@@ -87,9 +87,14 @@ class Evaluate(ProjectVersionMisuseTask):
     def __matches_method(finding, misuse_method):
         if "method" in finding:
             finding_method = finding["method"]
-            if "(" not in finding_method:
-                finding_method += "("
-            return finding_method in misuse_method
+            if "(" in finding_method:
+                if finding_method in misuse_method:
+                    return True
+                else:
+                    # fall back to match without the signature
+                    finding_method = finding_method.split("(")[0]
+
+            return (finding_method + "(") in misuse_method
         else:
             # If detector provides no method we match anything, to be on the safe side
             return True

@@ -103,6 +103,15 @@ class TestEvaluate:
 
         self.assert_potential_hit(self.misuse)
 
+    def test_falls_back_to_method_name_if_signature_does_not_match(self):
+        self.misuse.location.file = "a"
+        self.misuse.location.method = "method(A)"
+        self.create_result("file: a\nmethod: method(p.A)")
+
+        self.uut.process_project_version_misuse(self.project, self.version, self.misuse)
+
+        self.assert_potential_hit(self.misuse)
+
     def test_writes_results_on_teardown(self):
         self.uut.results = {('NoHit', 0), ('PotentialHit', 1)}
 
