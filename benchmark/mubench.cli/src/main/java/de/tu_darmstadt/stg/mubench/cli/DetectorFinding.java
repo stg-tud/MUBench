@@ -24,11 +24,21 @@ public class DetectorFinding {
 	}
 
 	public String put(String key, String value) {
-		return (String) content.put(key, value);
+		return (String) content.put(key, clean(value));
 	}
 	
+	@SuppressWarnings("unchecked")
 	public List<String> put(String key, Collection<String> values) {
-		return (List<String>) content.put(key, new ArrayList<String>(values));
+		List<String> cleanValues = new ArrayList<>();
+		for (String value : values) {
+			cleanValues.add(clean(value));
+		}
+		return (List<String>) content.put(key, cleanValues);
+	}
+
+	private String clean(String value) {
+		// SnakeYaml gets confused by CR
+		return value.replaceAll("\r", "");
 	}
 
 	public Map<String, Object> getContent() {
