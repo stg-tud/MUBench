@@ -9,7 +9,7 @@ from benchmark.data.project_version import ProjectVersion
 from benchmark.subprocesses.tasks.base.project_task import Response
 from benchmark.subprocesses.tasks.base.project_version_misuse_task import ProjectVersionMisuseTask
 from benchmark.subprocesses.tasks.implementations.detect import Run
-from benchmark.utils.io import safe_open, write_yaml
+from benchmark.utils.io import safe_open, write_yaml, remove_tree
 
 
 class Evaluate(ProjectVersionMisuseTask):
