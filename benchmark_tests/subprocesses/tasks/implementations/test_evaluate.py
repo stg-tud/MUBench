@@ -24,10 +24,9 @@ class TestEvaluate:
         self.checkout_dir = join(self.temp_dir, 'checkouts')
         self.results_path = join(self.temp_dir, 'results', 'test-detector')
         self.detector = 'test-detector'
-        self.file_detector_result = 'findings.yml'
         self.eval_result_file = 'result.csv'
 
-        self.uut = Evaluate(self.results_path, self.file_detector_result, self.checkout_dir, self.eval_result_file)
+        self.uut = Evaluate(self.results_path, self.checkout_dir, self.eval_result_file)
 
         self.project = create_project('project')
         self.version = create_version('version', project=self.project)
@@ -128,8 +127,8 @@ class TestEvaluate:
         assert_equals(test_result, ast.literal_eval(actual))
 
     def create_result(self, content):
-        findings_file = join(self.results_path, self.project.id, self.version.version_id, self.file_detector_result)
-        safe_write(content, findings_file, append=False)
+        result_path = join(self.results_path, self.project.id, self.version.version_id)
+        safe_write(content, join(result_path, "findings.yml"), append=False)
 
     def assert_potential_hit(self, misuse: Misuse):
         assert_equals([(misuse.id, 1)], self.uut.results)

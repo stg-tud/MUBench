@@ -63,7 +63,7 @@ class Benchmark:
 
     def _setup_eval(self):
         results_path = join(Benchmark.RESULTS_PATH, self.config.detector)
-        evaluation_handler = Evaluate(results_path, self.detector_result_file, Benchmark.CHECKOUTS_PATH,
+        evaluation_handler = Evaluate(results_path, Benchmark.CHECKOUTS_PATH,
                                       self.eval_result_file)
         self.runner.add(evaluation_handler)
 
