@@ -137,6 +137,7 @@ class TestEvaluate:
 
     def create_result(self, content):
         result_path = join(self.results_path, self.project.id, self.version.version_id)
+        safe_write("result: success", join(result_path, "result.yml"), append=False)
         safe_write(content, join(result_path, "findings.yml"), append=False)
 
     def assert_potential_hit(self, misuse: Misuse):

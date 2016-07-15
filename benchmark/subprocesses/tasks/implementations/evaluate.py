@@ -26,10 +26,15 @@ class Evaluate(ProjectVersionMisuseTask):
 
     def process_project_version_misuse(self, project: Project, version: ProjectVersion, misuse: Misuse) -> Response:
         logger = logging.getLogger("evaluate")
-        logger.debug("Checking hit for %s in %s...", misuse, version)
 
         result_path = join(self.results_path, project.id, version.version_id)
         detector_run = Run(result_path)
+
+        if not detector_run.is_success():
+            logger.info("Skipping %s in %s: no result.", misuse, version)
+            return Response.skip
+
+        logger.debug("Checking hit for %s in %s...", misuse, version)
 
         findings = detector_run.findings
         potential_hits = Evaluate.__find_potential_hits(findings, misuse)
