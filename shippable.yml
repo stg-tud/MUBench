@@ -26,7 +26,8 @@ install:
 script: 
   - nosetests --with-xunit --xunit-file=shippable/testresults/nosetests.xml
   - mvn test -f benchmark/mubench.cli/pom.xml
-  - ./mubench eval dummy --only synthetic
+  - ./mubench detect dummy --only synthetic
+  - ./mubench review:prepare
   
 notifications:
   email:
