@@ -1,7 +1,7 @@
 api:
 - java.io.File
 characteristics:
-- wrong/call
+- missing/condition/value_or_state
 crash: true
 description: >
   Below !File.exists() File.mkdir() was called, instead of File.mkdirs().

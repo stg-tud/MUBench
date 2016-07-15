@@ -2,7 +2,7 @@ api:
 - android.content.res.Resources.Theme
 - android.content.res.TypedArray
 characteristics:
-- missing/catch
+- missing/exception handling
 crash: true
 description: >
   Theme.obtainStyledAttributes().getString() may throw on some platforms.

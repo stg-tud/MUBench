@@ -63,7 +63,7 @@ class general(StatCalculator):
         self.logger.info("- %d projects" % len(self.projects))
 
 
-class characteristic(StatCalculator):
+class misuseelement(StatCalculator):
     def __init__(self):
         super().__init__()
         self.statistics = {}
@@ -74,7 +74,7 @@ class characteristic(StatCalculator):
         chars = misuse.characteristics
         for char in chars:
             seg = char.split('/')
-            statname = seg[0] + "/" + seg[1]
+            statname = seg[0] + " " + seg[1]
             stat = self.statistics.get(statname, {" total": {"misuses": 0, "crashes": 0}})
             stat[" total"]["misuses"] += 1
             if misuse.is_crash:
@@ -91,12 +91,14 @@ class characteristic(StatCalculator):
 
     def end(self):
         self.logger.info("%25s %25s %7s %14s" % ("Characteristic", "SubCharacteristic", "Misuses", "Crashes"))
-        for statname in sorted(self.statistics):
-            stat = self.statistics[statname]
-            for segstat in sorted(stat):
+
+        for statistic in sorted(self.statistics.items(), key=lambda s: s[1][" total"]["misuses"], reverse=True):
+            statistic_name = statistic[0]
+            statistic_values = statistic[1]
+            for segstat in sorted(statistic_values):
                 self.logger.info("%25s %25s %7d %7d% 6.1f%%" % (
-                    statname, segstat, stat[segstat]["misuses"], stat[segstat]["crashes"],
-                    (stat[segstat]["crashes"] / stat[segstat]["misuses"] * 100)))
+                    statistic_name, segstat, statistic_values[segstat]["misuses"], statistic_values[segstat]["crashes"],
+                    (statistic_values[segstat]["crashes"] / statistic_values[segstat]["misuses"] * 100)))
 
 
 class project(StatCalculator):

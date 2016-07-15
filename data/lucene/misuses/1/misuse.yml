@@ -1,7 +1,7 @@
 api:
 - java.io.RandomAccessFile
 characteristics:
-- missing/finally
+- missing/guarantee
 crash: false
 description: >
   RandomAccessFile.close() maybe skipped if previous call throws.

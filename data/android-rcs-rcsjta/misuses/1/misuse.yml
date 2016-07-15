@@ -2,7 +2,8 @@ api:
 - javax.crypto.Mac
 - java.String
 characteristics:
-- wrong/call
+- missing/call
+- superfluous/call
 crash: false
 description: >
   Exports bytes for Mac.doFinal() without specifying the encoding.

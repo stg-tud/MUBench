@@ -2,7 +2,8 @@ api:
 - java.String
 - javax.crypto.Cipher
 characteristics:
-- wrong/call
+- missing/call
+- superfluous/call
 crash: false
 description: >
   Text is converted to bytes for encoding without an explicit encoding.

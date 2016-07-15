@@ -1,7 +1,7 @@
 api:
 - javax.crypto.Cipher
 characteristics:
-- superfluous/duplicated/call
+- superfluous/call/duplicate
 crash: true
 description: >
   An instance of Cipher is used twice (the init() method is called again),

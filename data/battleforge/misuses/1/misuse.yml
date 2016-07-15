@@ -3,6 +3,7 @@ api:
 - java.util.Base64
 characteristics:
 - missing/call
+- superfluous/call
 crash: false
 description: >
   Encoded data is converted into a String for storing, without explicitely

@@ -2,7 +2,8 @@ api:
 - java.String
 - javax.crypto.Cipher
 characteristics:
-- wrong/call
+- missing/call
+- superfluous/call
 crash: false
 description: >
   An encrypted message is decrypted and then converted back to a string, without

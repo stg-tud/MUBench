@@ -1,7 +1,7 @@
 api:
 - android.os.Environment
 characteristics:
-- missing/catch
+- missing/exception handling
 crash: true
 description: >
   Environment.getExternalStorageState() may throw NullPointerException.
