@@ -36,4 +36,4 @@ class TestProjectIndexGenerator:
                             '<p><a href="version2/index.html">version2</a></p>\n',
                             '<p><a href="version3/index.html">version3</a></p>\n']
 
-        assert_equals(expected_content, actual_content)
+        assert_equals(sorted(expected_content), sorted(actual_content))

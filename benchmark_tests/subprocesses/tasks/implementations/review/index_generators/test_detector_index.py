@@ -35,4 +35,4 @@ class TestDetectorIndexGenerator:
                             '<p><a href="project2/index.html">project2</a></p>\n',
                             '<p><a href="project3/index.html">project3</a></p>\n']
 
-        assert_equals(expected_content, actual_content)
+        assert_equals(sorted(expected_content), sorted(actual_content))
