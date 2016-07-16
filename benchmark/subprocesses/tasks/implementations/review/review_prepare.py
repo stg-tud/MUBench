@@ -1,5 +1,5 @@
 import logging
-from os.path import join, exists
+from os.path import join, exists, pardir
 from textwrap import wrap
 from typing import Dict, Iterable
 
@@ -9,6 +9,8 @@ from benchmark.data.project_version import ProjectVersion
 from benchmark.subprocesses.tasks.base.project_task import Response
 from benchmark.subprocesses.tasks.base.project_version_misuse_task import ProjectVersionMisuseTask
 from benchmark.subprocesses.tasks.implementations.detect import Run
+from benchmark.subprocesses.tasks.implementations.review.index_generators import main_index, detector_index, \
+    project_index, version_index
 from benchmark.utils.io import safe_open, write_yaml, remove_tree
 
 
@@ -26,6 +28,17 @@ class ReviewPrepare(ProjectVersionMisuseTask):
         self.force_prepare = force_prepare
 
         self.results = []
+
+    def start(self):
+        detector_index.generate(self.review_path)
+
+    def new_project(self, project: Project):
+        if exists(join(self.results_path, project.id)):
+            project_index.generate(join(self.review_path, project.id), project)
+
+    def new_version(self, project: Project, version: ProjectVersion):
+        if exists(join(self.results_path, project.id, version.version_id)):
+            version_index.generate(join(self.review_path, project.id, version.version_id), project, version)
 
     def process_project_version_misuse(self, project: Project, version: ProjectVersion, misuse: Misuse) -> Response:
         logger = logging.getLogger("review_prepare")
@@ -65,7 +78,9 @@ class ReviewPrepare(ProjectVersionMisuseTask):
 
         return Response.ok
 
-    def teardown(self):
+    def end(self):
+        main_index.generate(join(self.review_path, pardir))
+
         with safe_open(join(self.results_path, self.eval_result_file), 'w+') as file_result:
             for result in self.results:
                 print(str(result).lstrip('(').rstrip(')'), file=file_result)

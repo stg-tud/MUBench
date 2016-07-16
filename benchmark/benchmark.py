@@ -13,6 +13,7 @@ from benchmark.subprocesses.tasks.implementations import stats
 from benchmark.subprocesses.tasks.implementations.checkout import Checkout
 from benchmark.subprocesses.tasks.implementations.compile import Compile
 from benchmark.subprocesses.tasks.implementations.detect import Detect
+from benchmark.subprocesses.tasks.implementations.review.index_generators import main_index
 from benchmark.subprocesses.tasks.implementations.review.review_prepare import ReviewPrepare
 from benchmark.utils import command_line_util
 
@@ -63,11 +64,11 @@ class Benchmark:
         self.runner.add(detector_runner)
 
     def _setup_review_prepare(self):
-        if exists(Benchmark.RESULTS_PATH):
-            detectors_with_available_result = [detector for detector in listdir(Benchmark.RESULTS_PATH) if
-                                               detector in available_detectors]
-        else:
-            detectors_with_available_result = []
+        if not exists(Benchmark.RESULTS_PATH):
+            return
+
+        detectors_with_available_result = [detector for detector in listdir(Benchmark.RESULTS_PATH) if
+                                           detector in available_detectors]
 
         for detector in detectors_with_available_result:
             results_path = join(Benchmark.RESULTS_PATH, detector)
