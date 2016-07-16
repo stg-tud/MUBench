@@ -17,15 +17,15 @@ class TestDetectorIndexGenerator:
         remove_tree(self.temp_dir)
 
     def test_creates_links_to_projects(self):
-        detector_folder = join(self.temp_dir, 'detector')
+        detector_findings_folder = join(self.temp_dir, 'detector')
 
-        makedirs(join(detector_folder, 'project1'))
-        makedirs(join(detector_folder, 'project2'))
-        makedirs(join(detector_folder, 'project3'))
+        makedirs(join(detector_findings_folder, 'project1'))
+        makedirs(join(detector_findings_folder, 'project2'))
+        makedirs(join(detector_findings_folder, 'project3'))
 
-        detector_index.generate(detector_folder)
+        detector_index.generate(self.temp_dir, detector_findings_folder)
 
-        index_file = join(detector_folder, 'index.html')
+        index_file = join(self.temp_dir, 'index.html')
         assert exists(index_file)
 
         with open(index_file) as file:

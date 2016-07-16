@@ -18,15 +18,16 @@ class TestIndexGenerator:
         remove_tree(self.temp_dir)
 
     def test_creates_links_to_review_files(self):
-        version_folder = join(self.temp_dir, 'version')
+        version_findings_folder = join(self.temp_dir, 'version')
 
-        makedirs(join(version_folder, 'project.1'))
-        makedirs(join(version_folder, 'project.2'))
-        makedirs(join(version_folder, 'project.3'))
+        makedirs(join(version_findings_folder, 'project.1'))
+        makedirs(join(version_findings_folder, 'project.2'))
+        makedirs(join(version_findings_folder, 'project.3'))
 
-        version_index.generate(version_folder, create_project('project'), create_version('version'))
+        version_index.generate(self.temp_dir, version_findings_folder, create_project('project'),
+                               create_version('version'))
 
-        index_file = join(version_folder, 'index.html')
+        index_file = join(self.temp_dir, 'index.html')
         assert exists(index_file)
 
         with open(index_file) as file:

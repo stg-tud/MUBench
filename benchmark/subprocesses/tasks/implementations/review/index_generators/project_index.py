@@ -6,10 +6,11 @@ from benchmark.data.project import Project
 from benchmark.utils.io import safe_write
 
 
-def generate(project_folder: str, project: Project):
+def generate(project_folder: str, project_findings_folder: str, project: Project):
     lines = []
 
-    versions = [version for version in listdir(project_folder) if isdir(join(project_folder, version))]
+    versions = [version for version in listdir(project_findings_folder) if
+                isdir(join(project_findings_folder, version))]
     for version in versions:
         detector_link_paragraph = '<p><a href="{0}/index.html">{0}</a></p>'.format(version)
         lines.append(detector_link_paragraph)

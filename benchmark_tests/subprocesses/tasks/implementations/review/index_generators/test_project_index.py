@@ -18,15 +18,15 @@ class TestProjectIndexGenerator:
         remove_tree(self.temp_dir)
 
     def test_creates_links_to_versions(self):
-        project_folder = join(self.temp_dir, 'project')
+        project_findings_folder = join(self.temp_dir, 'project')
 
-        makedirs(join(project_folder, 'version1'))
-        makedirs(join(project_folder, 'version2'))
-        makedirs(join(project_folder, 'version3'))
+        makedirs(join(project_findings_folder, 'version1'))
+        makedirs(join(project_findings_folder, 'version2'))
+        makedirs(join(project_findings_folder, 'version3'))
 
-        project_index.generate(project_folder, create_project('project'))
+        project_index.generate(self.temp_dir, project_findings_folder, create_project('project'))
 
-        index_file = join(project_folder, 'index.html')
+        index_file = join(self.temp_dir, 'index.html')
         assert exists(index_file)
 
         with open(index_file) as file:

@@ -31,15 +31,16 @@ class ReviewPrepare(ProjectVersionMisuseTask):
         self.results = []
 
     def start(self):
-        detector_index.generate(self.review_path)
+        detector_index.generate(self.review_path, self.results_path)
 
     def new_project(self, project: Project):
         if exists(join(self.results_path, project.id)):
-            project_index.generate(join(self.review_path, project.id), project)
+            project_index.generate(join(self.review_path, project.id), join(self.results_path, project.id), project)
 
     def new_version(self, project: Project, version: ProjectVersion):
         if exists(join(self.results_path, project.id, version.version_id)):
-            version_index.generate(join(self.review_path, project.id, version.version_id), project, version)
+            version_index.generate(join(self.review_path, project.id, version.version_id),
+                                   join(self.results_path, project.id, version.version_id), project, version)
 
     def process_project_version_misuse(self, project: Project, version: ProjectVersion, misuse: Misuse) -> Response:
         logger = logging.getLogger("review_prepare")
@@ -81,8 +82,9 @@ class ReviewPrepare(ProjectVersionMisuseTask):
 
     def end(self):
         main_review_dir = join(self.review_path, pardir)
-        makedirs(main_review_dir, exist_ok=True)
-        main_index.generate(main_review_dir)
+        main_findings_dir = join(self.results_path, pardir)
+        if exists(main_findings_dir):
+            main_index.generate(main_review_dir, main_findings_dir)
 
         with safe_open(join(self.results_path, self.eval_result_file), 'w+') as file_result:
             for result in self.results:
