@@ -113,10 +113,10 @@ class TestReviewPrepare:
 
         self.assert_potential_hit(self.misuse)
 
-    def test_writes_results_on_teardown(self):
+    def test_writes_results_on_end(self):
         self.uut.results = {('NoHit', 0), ('PotentialHit', 1)}
 
-        self.uut.teardown()
+        self.uut.end()
 
         with open(join(self.results_path, self.eval_result_file), 'r') as actual_result_file:
             actual_content = actual_result_file.read().splitlines()
@@ -129,7 +129,7 @@ class TestReviewPrepare:
         test_result = ('Misuse', 0)
         self.uut.results = {test_result}
 
-        self.uut.teardown()
+        self.uut.end()
 
         with open(join(self.results_path, self.eval_result_file), 'r') as actual_result_file:
             actual = actual_result_file.read().splitlines()[0]

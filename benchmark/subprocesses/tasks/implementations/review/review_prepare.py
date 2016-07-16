@@ -1,4 +1,5 @@
 import logging
+from os import makedirs
 from os.path import join, exists, pardir
 from textwrap import wrap
 from typing import Dict, Iterable
@@ -79,7 +80,9 @@ class ReviewPrepare(ProjectVersionMisuseTask):
         return Response.ok
 
     def end(self):
-        main_index.generate(join(self.review_path, pardir))
+        main_review_dir = join(self.review_path, pardir)
+        makedirs(main_review_dir, exist_ok=True)
+        main_index.generate(main_review_dir)
 
         with safe_open(join(self.results_path, self.eval_result_file), 'w+') as file_result:
             for result in self.results:
