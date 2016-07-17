@@ -72,7 +72,7 @@ class Misuse:
     def location(self) -> Location:
         if not self.__location:
             location = self._yaml["location"]
-            self.__location = Location(location["file"], location["method"])
+            self.__location = Location(location.get("file", ""), location.get("method", ""))
         return self.__location
 
     @property
