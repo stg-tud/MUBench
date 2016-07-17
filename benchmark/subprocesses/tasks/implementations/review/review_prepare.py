@@ -1,7 +1,7 @@
 import logging
 from os.path import join, exists, pardir
 from textwrap import wrap
-from typing import Dict, Iterable
+from typing import Dict, Iterable, List
 
 from benchmark.data.misuse import Misuse
 from benchmark.data.project import Project
@@ -61,15 +61,11 @@ class ReviewPrepare(ProjectVersionMisuseTask):
         findings = detector_run.findings
         potential_hits = ReviewPrepare.__find_potential_hits(findings, misuse)
 
-        if potential_hits:
-            logger.info("Found potential hit for %s.", misuse)
-            self.results.append((misuse.id, ReviewPrepare.potential_hit))
-        else:
-            logger.info("No hit for %s.", misuse)
-            self.results.append((misuse.id, ReviewPrepare.no_hit))
+        logger.info("Found %s potential hits for %s.", len(potential_hits), misuse)
+        self.results.append((misuse.id, len(potential_hits)))
 
         remove_tree(review_folder)
-        logger.debug("Generating new review files for %s in %s...", misuse, version)
+        logger.debug("Generating review files for %s in %s...", misuse, version)
 
         write_yaml({"misuse": {"description": ReviewPrepare.__multiline(misuse.description),
                                "location": {"file": misuse.location.file, "method": misuse.location.method}},
@@ -90,24 +86,20 @@ class ReviewPrepare(ProjectVersionMisuseTask):
                 print(str(result).lstrip('(').rstrip(')'), file=file_result)
 
     @staticmethod
-    def __find_potential_hits(findings: Iterable[Dict[str, str]], misuse: Misuse) -> bool:
-        logger = logging.getLogger("evaluate.compare")
-        potential_hits = []
-        misuse_file = misuse.location.file
-        misuse_method = misuse.location.method
-        for finding in findings:
-            if "file" in finding:
-                matches_file = ReviewPrepare.__matches_file(finding, misuse_file)
-                matches_method = ReviewPrepare.__matches_method(finding, misuse_method)
-                if matches_file and matches_method:
-                    logger.debug("Detector found something in '%s'.", misuse_file)
-                    potential_hits.append(finding)
-
-        return potential_hits
+    def __find_potential_hits(findings: Iterable[Dict[str, str]], misuse: Misuse) -> List[Dict[str, str]]:
+        candidates = ReviewPrepare.__filter_by_file(findings, misuse.location.file)
+        return ReviewPrepare.__filter_by_method(candidates, misuse.location.method)
 
     @staticmethod
-    def __matches_file(finding, misuse_file):
-        finding_file = finding["file"]
+    def __filter_by_file(findings, misuse_file):
+        matches = []
+        for finding in findings:
+            if ReviewPrepare.__matches_file(finding["file"], misuse_file):
+                matches.append(finding)
+        return matches
+
+    @staticmethod
+    def __matches_file(finding_file, misuse_file):
         # If file is an inner class "Outer$Inner.class", the source file is "Outer.java".
         if "$" in finding_file:
             finding_file = finding_file.split("$", 1)[0] + ".java"
@@ -117,20 +109,25 @@ class ReviewPrepare(ProjectVersionMisuseTask):
         return finding_file.endswith(misuse_file)
 
     @staticmethod
-    def __matches_method(finding, misuse_method):
-        if "method" in finding:
-            finding_method = finding["method"]
-            if "(" in finding_method:
-                if finding_method in misuse_method:
-                    return True
-                else:
-                    # fall back to match without the signature
-                    finding_method = finding_method.split("(")[0]
+    def __filter_by_method(findings, misuse_method):
+        matches = []
 
-            return (finding_method + "(") in misuse_method
-        else:
-            # If detector provides no method we match anything, to be on the safe side
-            return True
+        for finding in findings:
+            method = finding["method"]
+            # if detector reports only method names, this ensures we don't match prefixes of method names
+            if "(" not in method:
+                method += "("
+            if method in misuse_method:
+                matches.append(finding)
+
+        if not matches:
+            # fall back to match without the signature
+            for finding in findings:
+                method = finding["method"].split("(")[0] + "("
+                if method in misuse_method:
+                    matches.append(finding)
+
+        return matches
 
     @staticmethod
     def __multiline(text: str):
