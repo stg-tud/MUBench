@@ -4,7 +4,7 @@ from tempfile import mkdtemp
 
 from nose.tools import assert_equals
 
-from benchmark.subprocesses.tasks.implementations.review.index_generators import project_index
+from benchmark.subprocesses.tasks.implementations.review.html_generators import project_index
 from benchmark.utils.io import remove_tree
 from benchmark_tests.test_utils.data_util import create_project
 

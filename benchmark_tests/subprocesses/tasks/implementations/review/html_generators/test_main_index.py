@@ -5,7 +5,7 @@ from os.path import join, exists
 
 from nose.tools import assert_equals
 
-from benchmark.subprocesses.tasks.implementations.review.index_generators import main_index
+from benchmark.subprocesses.tasks.implementations.review.html_generators import main_index
 from benchmark.utils.io import remove_tree
 
 
