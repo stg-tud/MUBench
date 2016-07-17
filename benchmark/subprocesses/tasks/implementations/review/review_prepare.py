@@ -111,17 +111,15 @@ class ReviewPrepare(ProjectVersionMisuseTask):
         matches = []
 
         for finding in findings:
-            method = finding.get("method", None)
-
-            # don't filter if the detector did not have a method output
-            if not method:
-                matches.append(finding)
-                continue
-
-            # if detector reports only method names, this ensures we don't match prefixes of method names
-            if "(" not in method:
-                method += "("
-            if method in misuse_method:
+            if "method" in finding:
+                method = finding["method"]
+                # if detector reports only method names, this ensures we don't match prefixes of method names
+                if "(" not in method:
+                    method += "("
+                if method in misuse_method:
+                    matches.append(finding)
+            else:
+                # don't filter if the detector reports no method
                 matches.append(finding)
 
         if not matches:
