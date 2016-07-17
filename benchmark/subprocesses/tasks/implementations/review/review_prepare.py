@@ -112,6 +112,11 @@ class ReviewPrepare(ProjectVersionMisuseTask):
 
         for finding in findings:
             method = finding["method"]
+
+            # don't filter if the detector did not have a method output
+            if not method:
+                matches.append(finding)
+
             # if detector reports only method names, this ensures we don't match prefixes of method names
             if "(" not in method:
                 method += "("
