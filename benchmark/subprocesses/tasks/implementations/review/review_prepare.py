@@ -1,8 +1,7 @@
 import logging
-from os import makedirs
 from os.path import join, exists, pardir, basename
-from typing import Dict, Iterable, List
 from typing import Dict, Iterable
+from typing import List
 
 from benchmark.data.misuse import Misuse
 from benchmark.data.project import Project
