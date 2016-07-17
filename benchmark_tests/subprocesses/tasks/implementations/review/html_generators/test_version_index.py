@@ -9,7 +9,7 @@ from benchmark.utils.io import remove_tree
 from benchmark_tests.test_utils.data_util import create_project, create_version
 
 
-class TestIndexGenerator:
+class TestVersionIndexGenerator:
     # noinspection PyAttributeOutsideInit
     def setup(self):
         self.temp_dir = mkdtemp(prefix='mubench-test-index-generator_')
@@ -38,3 +38,19 @@ class TestIndexGenerator:
                             '<p><a href="project.3/review.html">project.3</a></p>\n']
 
         assert_equals(sorted(expected_content), sorted(actual_content))
+
+    def test_creates_links_only_for_actual_project_related_folders(self):
+        version_findings_folder = join(self.temp_dir, 'version')
+
+        makedirs(join(version_findings_folder, 'other_folder'))
+
+        version_index.generate(self.temp_dir, version_findings_folder, create_project('project'),
+                               create_version('version'))
+
+        index_file = join(self.temp_dir, 'index.html')
+        assert exists(index_file)
+
+        with open(index_file) as file:
+            actual_content = file.readlines()
+
+        assert_equals(['\n'], actual_content)
