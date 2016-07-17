@@ -1,7 +1,8 @@
 import logging
-from os.path import join, exists, pardir
-from textwrap import wrap
+from os import makedirs
+from os.path import join, exists, pardir, basename
 from typing import Dict, Iterable, List
+from typing import Dict, Iterable
 
 from benchmark.data.misuse import Misuse
 from benchmark.data.project import Project
@@ -9,9 +10,9 @@ from benchmark.data.project_version import ProjectVersion
 from benchmark.subprocesses.tasks.base.project_task import Response
 from benchmark.subprocesses.tasks.base.project_version_misuse_task import ProjectVersionMisuseTask
 from benchmark.subprocesses.tasks.implementations.detect import Run
-from benchmark.subprocesses.tasks.implementations.review.index_generators import main_index, detector_index, \
-    project_index, version_index
-from benchmark.utils.io import safe_open, write_yaml, remove_tree
+from benchmark.subprocesses.tasks.implementations.review.html_generators import main_index, detector_index, \
+    project_index, version_index, review_page
+from benchmark.utils.io import safe_open, remove_tree
 
 
 class ReviewPrepare(ProjectVersionMisuseTask):
@@ -26,6 +27,8 @@ class ReviewPrepare(ProjectVersionMisuseTask):
         self.checkout_base_dir = checkout_base_dir
         self.eval_result_file = eval_result_file
         self.force_prepare = force_prepare
+
+        self.detector = basename(self.results_path)
 
         self.results = []
 
@@ -49,8 +52,8 @@ class ReviewPrepare(ProjectVersionMisuseTask):
             logger.info("%s in %s is already prepared.", misuse, version)
             return Response.ok
 
-        result_path = join(self.results_path, project.id, version.version_id)
-        detector_run = Run(result_path)
+        findings_path = join(self.results_path, project.id, version.version_id)
+        detector_run = Run(findings_path)
 
         if not detector_run.is_success():
             logger.info("Skipping %s in %s: no result.", misuse, version)
@@ -67,11 +70,7 @@ class ReviewPrepare(ProjectVersionMisuseTask):
         remove_tree(review_folder)
         logger.debug("Generating review files for %s in %s...", misuse, version)
 
-        write_yaml({"misuse": {"description": ReviewPrepare.__multiline(misuse.description),
-                               "location": {"file": misuse.location.file, "method": misuse.location.method}},
-                    "fix": {"description": ReviewPrepare.__multiline(misuse.fix.description),
-                            "commit": misuse.fix.commit},
-                    "findings": potential_hits}, file=join(review_folder, "finding.yml"))
+        review_page.generate(review_folder, findings_path, self.detector, project, version, misuse, potential_hits)
 
         return Response.ok
 
@@ -128,7 +127,3 @@ class ReviewPrepare(ProjectVersionMisuseTask):
                     matches.append(finding)
 
         return matches
-
-    @staticmethod
-    def __multiline(text: str):
-        return "\n".join(wrap(text, width=80)) + "\n"

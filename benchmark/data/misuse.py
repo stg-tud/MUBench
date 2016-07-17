@@ -77,7 +77,10 @@ class Misuse:
 
     @property
     def description(self) -> str:
-        return self._yaml.get("description", "")
+        if getattr(self, '_DESCRIPTION', None) is None:
+            description = self._yaml.get("description", "")
+            self._DESCRIPTION = description
+        return self._DESCRIPTION
 
     @property
     def fix(self) -> Fix:
