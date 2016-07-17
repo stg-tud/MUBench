@@ -1,5 +1,4 @@
 import logging
-from os import makedirs
 from os.path import join, exists, pardir
 from textwrap import wrap
 from typing import Dict, Iterable
