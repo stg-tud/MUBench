@@ -61,6 +61,16 @@ class TestDetect:
             self.uut.key_src_project,
             '"' + version.get_compile(self.checkout_base).original_sources_path + '"')
 
+    def test_passes_misuse_src(self):
+        project = create_project("project")
+        version = create_version("0")
+
+        self.uut.process_project_version(project, version)
+
+        self.assert_last_invoke_arg_value_equals(
+            self.uut.key_src_misuse,
+            '"' + version.get_compile(self.checkout_base).misuse_source_path + '"')
+
     def test_passes_project_classes_path(self):
         project = create_project("project")
         version = create_version("0", meta={"build": {"commands": [":any:"]}}, project=project)
@@ -70,6 +80,16 @@ class TestDetect:
         self.assert_last_invoke_arg_value_equals(
             self.uut.key_classes_project,
             '"' + version.get_compile(self.checkout_base).original_classes_path + '"')
+
+    def test_passes_misuse_classes_path(self):
+        project = create_project("project")
+        version = create_version("0", meta={"build": {"commands": [":any:"]}}, project=project)
+
+        self.uut.process_project_version(project, version)
+
+        self.assert_last_invoke_arg_value_equals(
+            self.uut.key_classes_misuse,
+            '"' + version.get_compile(self.checkout_base).misuse_classes_path + '"')
 
     def test_passes_findings_file(self):
         project = create_project("project")

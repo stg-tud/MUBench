@@ -75,8 +75,10 @@ class Detect(ProjectVersionTask):
 
         self.key_findings_file = "target"
         self.key_src_project = "src"
+        self.key_src_misuse = "src_misuse"
         self.key_src_patterns = "src_patterns"
         self.key_classes_project = "classpath"
+        self.key_classes_misuse = "classpath_misuse"
         self.key_classes_patterns = "classpath_patterns"
 
     def start(self):
@@ -138,16 +140,21 @@ class Detect(ProjectVersionTask):
         project_compile = version.get_compile(self.compiles_base_path)
         findings_file = [self.key_findings_file, self.to_arg_path(findings_file_path)]
         src_project = [self.key_src_project, self.to_arg_path(project_compile.original_sources_path)]
+        src_misuse = [self.key_src_misuse, self.to_arg_path(project_compile.misuse_source_path)]
         src_patterns = []
         classes_project = []
+        classes_misuse = []
         classes_patterns = []
         if version.patterns:
             src_patterns = [self.key_src_patterns, self.to_arg_path(project_compile.pattern_sources_path)]
         if version.compile_commands:
             classes_project = [self.key_classes_project, self.to_arg_path(project_compile.original_classes_path)]
+            classes_misuse = [self.key_classes_misuse, self.to_arg_path(project_compile.misuse_classes_path)]
             if version.patterns:
                 classes_patterns = [self.key_classes_patterns, self.to_arg_path(project_compile.pattern_classes_path)]
-        return findings_file + src_project + src_patterns + classes_project + classes_patterns
+        return findings_file +\
+               src_project + src_misuse + src_patterns +\
+               classes_project + classes_misuse + classes_patterns
 
     def _invoke_detector(self, absolute_misuse_detector_path: str, detector_args: List[str]):
         command = ["java"] + self.java_options + ["-jar",
