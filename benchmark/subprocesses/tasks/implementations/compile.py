@@ -70,6 +70,7 @@ class Compile(ProjectVersionTask):
                 logger.debug("Copying project classes...")
                 remove_tree(project_compile.original_classes_path)
                 copy_tree(classes_path, project_compile.original_classes_path)
+                self.__copy_misuse_classes(classes_path, version.misuses, project_compile.misuse_classes_path)
             except CommandFailedError as e:
                 logger.error("Compilation failed: %s", e)
                 return Response.skip
@@ -153,6 +154,15 @@ class Compile(ProjectVersionTask):
         logger = logging.getLogger("compile.tasks.exec")
         for command in commands:
             Shell.exec(command, cwd=project_dir, logger=logger)
+
+    @staticmethod
+    def __copy_misuse_classes(classes_path, misuses, destination):
+        remove_tree(destination)
+        for misuse in misuses:
+            file = misuse.location.file.replace(".java", ".class")
+            dst = join(destination, file)
+            makedirs(dirname(dst), exist_ok=True)
+            shutil.copy(join(classes_path, file), dst)
 
     @staticmethod
     def __duplicate(patterns, destination, pattern_frequency: int):

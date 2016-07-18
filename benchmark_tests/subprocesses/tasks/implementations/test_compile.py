@@ -48,6 +48,7 @@ class TestCompile:
         self.original_sources_path = join(self.base_path, "original-src")
         self.original_classes_path = join(self.base_path, "original-classes")
         self.misuse_source_path = join(self.base_path, "misuse-src")
+        self.misuse_classes_path = join(self.base_path, "misuse-classes")
         self.pattern_sources_path = join(self.base_path, "patterns-src")
         self.pattern_classes_path = join(self.base_path, "patterns-classes")
 
@@ -179,6 +180,14 @@ class TestCompile:
         response = self.uut.process_project_version(self.project, self.version)
 
         assert_equals(Response.skip, response)
+
+    def test_copies_misuse_classes(self):
+        create_file(join(self.source_path, "mu.java"))
+        self.version.misuses.append(create_misuse("1", meta={"location": {"file": "mu.java"}}, project=self.project))
+
+        self.uut.process_project_version(self.project, self.version)
+
+        assert exists(join(self.misuse_classes_path, "mu.class"))
 
     def test_compiles_patterns(self):
         self.version._PATTERNS = {self.create_pattern("a.java")}
