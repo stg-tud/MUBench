@@ -1,4 +1,5 @@
 import logging
+from os import makedirs
 from os.path import join, exists, pardir, basename
 from typing import Dict, Iterable
 from typing import List
@@ -9,9 +10,8 @@ from benchmark.data.project_version import ProjectVersion
 from benchmark.subprocesses.tasks.base.project_task import Response
 from benchmark.subprocesses.tasks.base.project_version_misuse_task import ProjectVersionMisuseTask
 from benchmark.subprocesses.tasks.implementations.detect import Run
-from benchmark.subprocesses.tasks.implementations.review.html_generators import main_index, detector_index, \
-    project_index, version_index, review_page
-from benchmark.utils.io import safe_open, remove_tree
+from benchmark.subprocesses.tasks.implementations.review import main_index, review_page
+from benchmark.utils.io import safe_open, remove_tree, safe_write
 
 
 class ReviewPrepare(ProjectVersionMisuseTask):
@@ -31,32 +31,66 @@ class ReviewPrepare(ProjectVersionMisuseTask):
 
         self.results = []
 
+        self.projects_to_review = []
+        self.versions_to_review = []
+        self.misuses_to_review = []
+
     def start(self):
-        detector_index.generate(self.review_path, self.results_path)
-
-    def new_project(self, project: Project):
-        if exists(join(self.results_path, project.id)):
-            project_index.generate(join(self.review_path, project.id), join(self.results_path, project.id), project)
-
-    def new_version(self, project: Project, version: ProjectVersion):
-        if exists(join(self.results_path, project.id, version.version_id)):
-            version_index.generate(join(self.review_path, project.id, version.version_id),
-                                   join(self.results_path, project.id, version.version_id), project, version)
-
-    def process_project_version_misuse(self, project: Project, version: ProjectVersion, misuse: Misuse) -> Response:
         logger = logging.getLogger("review_prepare")
+        logger.info("Preparing review for results of %s...", self.detector)
 
-        review_folder = join(self.review_path, project.id, version.version_id, misuse.id)
-        if exists(review_folder) and not self.force_prepare:
-            logger.info("%s in %s is already prepared.", misuse, version)
-            return Response.ok
+    def process_project(self, project: Project):
+        self.versions_to_review.clear()
+
+        super().process_project(project)
+
+        project_to_review = "<h2>Project: {}</h2>\n<table>\n".format(project.id)
+        for version_to_review in self.versions_to_review:
+            project_to_review += version_to_review
+        project_to_review += "</table>\n"
+
+        self.projects_to_review.append(project_to_review)
+
+    def process_project_version(self, project: Project, version: ProjectVersion):
+        self.misuses_to_review.clear()
+
+        super().process_project_version(project, version)
 
         findings_path = join(self.results_path, project.id, version.version_id)
         detector_run = Run(findings_path)
 
+        version_to_review = "<tr><td>Version:</td><td>{} ({} findings in total)</td></tr>\n" \
+                            "<tr><td></td><td><table>\n".format(version.version_id, len(detector_run.findings))
+        for misuse_to_review in self.misuses_to_review:
+            version_to_review += misuse_to_review
+        version_to_review += "</table></td></tr>\n"
+
+        self.versions_to_review.append(version_to_review)
+
+    def process_project_version_misuse(self, project: Project, version: ProjectVersion, misuse: Misuse) -> Response:
+        logger = logging.getLogger("review_prepare.misuse")
+
+        findings_path = join(self.results_path, project.id, version.version_id)
+        detector_run = Run(findings_path)
+
+        misuse_to_review = "<tr><td>Misuse:</td><td>{}</td>\n<td>[{}]</td></tr>\n".format(misuse.misuse_id, "{}")
+
         if not detector_run.is_success():
             logger.info("Skipping %s in %s: no result.", misuse, version)
+            self.__append_misuse_to_review(misuse, "run: {}".format(detector_run.result))
             return Response.skip
+
+        review_dir = join(project.id, version.version_id, misuse.id)
+        review_site = join(review_dir, "review.html")
+        review_path = join(self.review_path, review_dir)
+        if exists(review_path) and not self.force_prepare:
+            if exists(join(self.review_path, review_site)):
+                self.__append_misuse_review(misuse, review_site)
+            else:
+                self.__append_misuse_no_hits(misuse)
+
+            logger.info("%s in %s is already prepared.", misuse, version)
+            return Response.ok
 
         logger.debug("Checking hit for %s in %s...", misuse, version)
 
@@ -66,14 +100,34 @@ class ReviewPrepare(ProjectVersionMisuseTask):
         logger.info("Found %s potential hits for %s.", len(potential_hits), misuse)
         self.results.append((misuse.id, len(potential_hits)))
 
-        remove_tree(review_folder)
+        remove_tree(review_path)
         logger.debug("Generating review files for %s in %s...", misuse, version)
 
-        review_page.generate(review_folder, findings_path, self.detector, project, version, misuse, potential_hits)
+        if potential_hits:
+            review_page.generate(review_path, self.detector, project, version, misuse, potential_hits)
+            self.__append_misuse_review(misuse, review_site)
+        else:
+            makedirs(review_path)
+            self.__append_misuse_no_hits(misuse)
 
         return Response.ok
 
+    def __append_misuse_review(self, misuse: Misuse, review_site: str):
+        self.__append_misuse_to_review(misuse, "<a href=\"{}\">review</a>".format(review_site))
+
+    def __append_misuse_no_hits(self, misuse: Misuse):
+        self.__append_misuse_to_review(misuse, "no potential hits")
+
+    def __append_misuse_to_review(self, misuse: Misuse, result: str):
+        misuse_to_review = "<tr><td>Misuse:</td><td>{}</td>\n<td>[{}]</td></tr>\n".format(misuse.misuse_id, result)
+        self.misuses_to_review.append(misuse_to_review)
+
     def end(self):
+        detector_to_review = "<h1>Detector: {}</h1>\n".format(self.detector)
+        for project_to_review in self.projects_to_review:
+            detector_to_review += project_to_review
+        safe_write(detector_to_review, join(self.review_path, "index.html"), append=False)
+
         main_review_dir = join(self.review_path, pardir)
         main_findings_dir = join(self.results_path, pardir)
         if exists(main_findings_dir):

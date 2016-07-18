@@ -1,11 +1,10 @@
 from os import makedirs
-from tempfile import mkdtemp
-
 from os.path import join, exists
+from tempfile import mkdtemp
 
 from nose.tools import assert_equals
 
-from benchmark.subprocesses.tasks.implementations.review.html_generators import main_index
+from benchmark.subprocesses.tasks.implementations.review import main_index
 from benchmark.utils.io import remove_tree
 
 

@@ -1,5 +1,4 @@
 import os
-from io import StringIO
 
 from nose.tools import assert_equals, assert_raises
 

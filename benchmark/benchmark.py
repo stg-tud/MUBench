@@ -13,8 +13,7 @@ from benchmark.subprocesses.tasks.implementations import stats
 from benchmark.subprocesses.tasks.implementations.checkout import Checkout
 from benchmark.subprocesses.tasks.implementations.compile import Compile
 from benchmark.subprocesses.tasks.implementations.detect import Detect
-from benchmark.subprocesses.tasks.implementations.review.html_generators import main_index
-from benchmark.subprocesses.tasks.implementations.review.review_prepare import ReviewPrepare
+from benchmark.subprocesses.tasks.implementations.review_prepare import ReviewPrepare
 from benchmark.utils import command_line_util
 
 

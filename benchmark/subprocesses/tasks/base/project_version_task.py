@@ -8,7 +8,6 @@ from benchmark.subprocesses.tasks.base.project_task import ProjectTask, Response
 class ProjectVersionTask(ProjectTask):
     def process_project(self, project: Project) -> Response:
         logger = logging.getLogger("versions")
-        self.new_project(project)
         for version in project.versions:
             if self.__skip(version):
                 logger.debug("Skipping %s", version)
@@ -27,6 +26,3 @@ class ProjectVersionTask(ProjectTask):
 
     def process_project_version(self, project: Project, version: ProjectVersion) -> Response:
         raise NotImplementedError
-
-    def new_project(self, project: Project):
-        pass

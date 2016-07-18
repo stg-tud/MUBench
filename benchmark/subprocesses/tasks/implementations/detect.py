@@ -46,6 +46,10 @@ class Run:
         return self.__result == Result.success
 
     @property
+    def result(self):
+        return self.__result
+
+    @property
     def findings(self):
         if not exists(self.__findings_file_path):
             return []

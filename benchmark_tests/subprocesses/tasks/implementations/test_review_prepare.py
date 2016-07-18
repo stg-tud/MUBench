@@ -3,16 +3,16 @@ from os import chdir
 from os.path import join
 from shutil import rmtree
 from tempfile import mkdtemp
+from typing import Dict, List
 
 import yaml
 from nose.tools import assert_equals, assert_in
 
 from benchmark.data.misuse import Misuse
-from benchmark.subprocesses.tasks.implementations.review.review_prepare import ReviewPrepare
+from benchmark.subprocesses.tasks.implementations.review_prepare import ReviewPrepare
 from benchmark.utils.io import safe_write, create_file
 from benchmark_tests.data.test_misuse import create_misuse
 from benchmark_tests.test_utils.data_util import create_project, create_version
-from typing import Dict, List
 
 
 class TestReviewPrepare:

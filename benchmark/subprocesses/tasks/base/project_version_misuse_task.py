@@ -7,11 +7,7 @@ from benchmark.subprocesses.tasks.base.project_version_task import ProjectVersio
 class ProjectVersionMisuseTask(ProjectVersionTask):
     def process_project_version(self, project: Project, version: ProjectVersion):
         for misuse in version.misuses:
-            self.new_version(project, version)
             self.process_project_version_misuse(project, version, misuse)
 
     def process_project_version_misuse(self, project: Project, version: ProjectVersion, misuse: Misuse):
         raise NotImplementedError
-
-    def new_version(self, project: Project, version: ProjectVersion):
-        pass
