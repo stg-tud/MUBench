@@ -6,7 +6,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
-import java.util.Collection;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -16,29 +16,17 @@ import org.yaml.snakeyaml.Yaml;
 
 public class DetectorOutput {
 	private final File findingsFile;
-	private final List<Map<String, Object>> findings;
+	private final List<DetectorFinding> findings;
 
-	@Deprecated
-	public DetectorOutput(DetectorArgs args) throws FileNotFoundException {
-		this (args.getFindingsFile());
-	}
-	
 	public DetectorOutput(String findingsFilePath) throws FileNotFoundException {
 		findings = new LinkedList<>();
 		findingsFile = new File(findingsFilePath);
 	}
 
-	public boolean add(DetectorFinding finding) {
-		return findings.add(finding.getContent());
-	}
-
-	public boolean addAll(Collection<DetectorFinding> findings) {
-		boolean changed = false;
-		for (DetectorFinding finding : findings) {
-			boolean added = add(finding);
-			changed = changed || added;
-		}
-		return changed;
+	public DetectorFinding add(String file, String method) {
+		DetectorFinding finding = new DetectorFinding(findings.size(), file, method);
+		findings.add(finding);
+		return finding;
 	}
 
 	public void write() throws IOException {
@@ -46,7 +34,11 @@ public class DetectorOutput {
 			DumperOptions options = new DumperOptions();
 			options.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
 			Yaml yaml = new Yaml(options);
-			yaml.dumpAll(findings.iterator(), writer);
+			yaml.dumpAll(getContent(), writer);
 		}
+	}
+	
+	private Iterator<Map<String, Object>> getContent() {
+		return findings.stream().map(finding -> finding.getContent()).iterator();
 	}
 }

@@ -31,53 +31,49 @@ public class DetectorOutputTest {
 	
 	@Test
 	public void writesFinding() throws IOException {
-		uut.add(new DetectorFinding("file1", "method1"));
+		uut.add("file1", "method1");
 		
-		assertOutput(uut, lines("file: file1", "method: method1"));
+		assertOutput(uut, lines("id: 0", "file: file1", "method: method1"));
 	}
 	
 	@Test
 	public void writesAdditionalData() throws IOException {
-		DetectorFinding finding = new DetectorFinding("file", "method");
+		DetectorFinding finding = uut.add("file", "method");
 		finding.put("additional", "info");
-		uut.add(finding);
 		
-		assertOutput(uut, lines("file: file", "method: method", "additional: info"));
+		assertOutput(uut, lines("id: 0", "file: file", "method: method", "additional: info"));
 	}
 	
 	@Test
 	public void writesListData() throws IOException {
-		DetectorFinding finding = new DetectorFinding("f", "m");
+		DetectorFinding finding = uut.add("f", "m");
 		finding.put("list", Arrays.asList("a", "b", "c"));
-		uut.add(finding);
 		
-		assertOutput(uut, lines("file: f", "method: m", "list:", "- a", "- b", "- c"));
+		assertOutput(uut, lines("id: 0", "file: f", "method: m", "list:", "- a", "- b", "- c"));
 	}
 	
 	@Test
 	public void writesMultipleFindings() throws IOException {
-		uut.add(new DetectorFinding("f1", "m1"));
-		uut.add(new DetectorFinding("f2", "m2"));
+		uut.add("f1", "m1");
+		uut.add("f2", "m2");
 
-		assertOutput(uut, lines("file: f1", "method: m1", "---", "file: f2", "method: m2"));
+		assertOutput(uut, lines("id: 0", "file: f1", "method: m1", "---", "id: 1", "file: f2", "method: m2"));
 	}
 	
 	@Test
 	public void writesMultilineData() throws IOException {
-		DetectorFinding finding = new DetectorFinding("f", "m");
+		DetectorFinding finding = uut.add("f", "m");
 		finding.put("multiline", "line1\nline2\n");
-		uut.add(finding);
 		
-		assertOutput(uut, lines("file: f", "method: m", "multiline: |", "  line1", "  line2"));
+		assertOutput(uut, lines("id: 0", "file: f", "method: m", "multiline: |", "  line1", "  line2"));
 	}
 	
 	@Test
 	public void writesMultilineDataWithCR() throws IOException {
-		DetectorFinding finding = new DetectorFinding("f", "m");
+		DetectorFinding finding = uut.add("f", "m");
 		finding.put("multiline", "line1\r\nline2\n\r");
-		uut.add(finding);
 		
-		assertOutput(uut, lines("file: f", "method: m", "multiline: |", "  line1", "  line2"));
+		assertOutput(uut, lines("id: 0", "file: f", "method: m", "multiline: |", "  line1", "  line2"));
 	}
 	
 	private List<String> lines(String...lines) {

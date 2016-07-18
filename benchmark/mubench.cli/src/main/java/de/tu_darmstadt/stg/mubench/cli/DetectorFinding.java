@@ -8,13 +8,15 @@ import java.util.List;
 import java.util.Map;
 
 public class DetectorFinding {
+	private static final String keyId = "id";
 	private static final String keyFile = "file";
 	private static final String keyMethod = "method";
 
 	private final HashMap<String, Object> content;
 
-	public DetectorFinding(String file, String method) {
+	DetectorFinding(int id, String file, String method) {
 		content = new LinkedHashMap<>();
+		content.put(keyId, id);
 		if (file != null) {
 			content.put(keyFile, file);
 		}
@@ -41,7 +43,7 @@ public class DetectorFinding {
 		return value.replaceAll("\r", "");
 	}
 
-	public Map<String, Object> getContent() {
+	Map<String, Object> getContent() {
 		return content;
 	}
 }
