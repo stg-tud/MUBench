@@ -40,10 +40,9 @@ class Compile(ProjectVersionTask):
         needs_compile = not isdir(project_compile.original_classes_path) or self.force_compile
 
         if needs_copy_sources or needs_compile:
-            remove_tree(build_path)
             logger.debug("Copying to build directory...")
             checkout_path = version.get_checkout(self.checkouts_base_path).checkout_dir
-            copy_tree(checkout_path, build_path)
+            self.__clean_copy(checkout_path, build_path)
             logger.debug("Copying additional resources...")
             self.__copy_additional_compile_sources(version, build_path)
 
@@ -52,8 +51,7 @@ class Compile(ProjectVersionTask):
         else:
             try:
                 logger.info("Copying project sources...")
-                remove_tree(project_compile.original_sources_path)
-                self.__copy_original_sources(sources_path, project_compile.original_sources_path)
+                self.__clean_copy(sources_path, project_compile.original_sources_path)
             except IOError as e:
                 logger.error("Failed to copy project sources: %s", e)
                 return Response.skip
@@ -86,10 +84,9 @@ class Compile(ProjectVersionTask):
         needs_compile_patterns = not isdir(project_compile.pattern_classes_path) or self.force_compile
 
         if needs_copy_pattern_sources or needs_compile_patterns:
-            remove_tree(build_path)
             logger.debug("Copying to build directory...")
             checkout_path = version.get_checkout(self.checkouts_base_path).checkout_dir
-            copy_tree(checkout_path, build_path)
+            self.__clean_copy(checkout_path, build_path)
             logger.debug("Copying additional resources...")
             self.__copy_additional_compile_sources(version, build_path)
 
@@ -98,7 +95,6 @@ class Compile(ProjectVersionTask):
         else:
             try:
                 logger.info("Copying pattern sources...")
-                remove_tree(project_compile.pattern_sources_path)
                 self.__copy_pattern_sources(version.patterns, project_compile.pattern_sources_path,
                                             self.pattern_frequency)
             except IOError as e:
@@ -114,8 +110,7 @@ class Compile(ProjectVersionTask):
                 logger.info("Compiling patterns...")
                 self._compile(version.compile_commands, build_path)
                 logger.debug("Copying pattern classes...")
-                remove_tree(project_compile.pattern_classes_path)
-                self.__copy(duplicates, classes_path, project_compile.pattern_classes_path)
+                self.__copy_pattern_classes(duplicates, classes_path, project_compile.pattern_classes_path)
             except FileNotFoundError as e:
                 remove_tree(project_compile.pattern_classes_path)
                 logger.error("Compilation failed: %s", e)
@@ -127,9 +122,8 @@ class Compile(ProjectVersionTask):
         return Response.ok
 
     @staticmethod
-    def __copy_original_sources(sources_path: str, destination: str):
+    def __clean_copy(sources_path: str, destination: str):
         remove_tree(destination)
-        makedirs(destination, exist_ok=True)
         copy_tree(sources_path, destination)
 
     @staticmethod
@@ -158,46 +152,8 @@ class Compile(ProjectVersionTask):
         return duplicates
 
     @staticmethod
-    def __copy(patterns, classes_path, destination):
-        for pattern in patterns:
-            pattern_class_file_name = pattern.file_name + ".class"
-            new_name = join(destination, pattern_class_file_name)
-            makedirs(dirname(new_name), exist_ok=True)
-            shutil.copy(join(classes_path, pattern_class_file_name), new_name)
-
-    @staticmethod
-    def __copy_original_sources(sources_path: str, destination: str):
+    def __copy_pattern_classes(patterns, classes_path, destination):
         remove_tree(destination)
-        makedirs(destination, exist_ok=True)
-        copy_tree(sources_path, destination)
-
-    @staticmethod
-    def __copy_pattern_sources(patterns: Set[Pattern], destination: str, pattern_frequency: int):
-        remove_tree(destination)
-        for pattern in patterns:
-            pattern.duplicate(destination, pattern_frequency)
-
-    @staticmethod
-    def __copy_additional_compile_sources(version: ProjectVersion, checkout_dir: str):
-        additional_sources = version.additional_compile_sources
-        if exists(additional_sources):
-            copy_tree(additional_sources, checkout_dir)
-
-    @staticmethod
-    def _compile(commands: List[str], project_dir: str) -> None:
-        logger = logging.getLogger("compile.tasks.exec")
-        for command in commands:
-            Shell.exec(command, cwd=project_dir, logger=logger)
-
-    @staticmethod
-    def __duplicate(patterns, destination, pattern_frequency: int):
-        duplicates = set()
-        for pattern in patterns:
-            duplicates.update(pattern.duplicate(destination, pattern_frequency))
-        return duplicates
-
-    @staticmethod
-    def __copy(patterns, classes_path, destination):
         for pattern in patterns:
             pattern_class_file_name = pattern.file_name + ".class"
             new_name = join(destination, pattern_class_file_name)
