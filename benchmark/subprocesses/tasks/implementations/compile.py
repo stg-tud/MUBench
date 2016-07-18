@@ -68,8 +68,7 @@ class Compile(ProjectVersionTask):
                 logger.info("Compiling project...")
                 self._compile(version.compile_commands, build_path)
                 logger.debug("Copying project classes...")
-                remove_tree(project_compile.original_classes_path)
-                copy_tree(classes_path, project_compile.original_classes_path)
+                self.__clean_copy(classes_path, project_compile.original_classes_path)
                 self.__copy_misuse_classes(classes_path, version.misuses, project_compile.misuse_classes_path)
             except CommandFailedError as e:
                 logger.error("Compilation failed: %s", e)
