@@ -46,60 +46,59 @@ MUBench uses the misuses specified in the `data` subfolder. The first time a mis
 To benchmark your own detector the following steps are necessary:   
 
 1. Create a new subfolder `my-detector` in the [detectors](https://github.com/stg-tud/MUBench/tree/master/detectors) folder. `my-detector` will be the Id used to refer to your detector when running the benchmark.
-2. Add an executable JAR with your detector as `my-detector/my-detector.jar`. When running MUBench, this JAR will be invoked with the arguments and is expected to write the outputs described below.
+2. Add an executable JAR with your detector as `my-detector/my-detector.jar`.<sup>[1](#mubenchcli)</sup>
 3. Run MUBench
 4. Manually review the results.
+5. Let MUBench summarize the results.
 
-*Which Inputs Will I Get?*
+<a name="mubenchcli">1</a>: Your detector jar's entry point is expected to be what we call a MUBench Runner. It receives input and is expected to write output that the benchmark understands. We provide you some utilities to do so via `mubench.cli`, which comes as a Maven dependency `de.tu-darmstadt.stg:mubench.cli:0.0.3-SNAPSHOT` (Attention: `mubench.cli` is currently not hosted in a public Maven repository. Please find the project [in this repository](https://github.com/stg-tud/MUBench/tree/master/benchmark/mubench.cli) and build it yourself).
 
-To parse the input, you may use `mubench.cli`. You may use the Maven dependency:
+### Which Inputs Will I Get?
+
+Use `de.tu_darmstadt.stg.mubench.cli.ArgParser.parse(String[] args)` to parse the command-line arguments to an instance of `de.tu_darmstadt.stg.mubench.cli.DetectorArgs`. This gives you access to the following paths:
+
+- `getFindingsFile()`: The file MUBench expects you to write your findings to.
+- `getProjectSrcPath()`: The path to the project sources containing the misuse. You may use this to mine usage patterns and find misuses.
+- `getProjectClassPath()`: The class files corresponding to the project sources.
+- `getPatternsSrcPath()`: The path to the pattern files. Pattern files are regular java files containing a class with one or more methods, each containing a correct usage for the misuses in the project.
+- `getPatternsClassPath()`: The class files corresponding to the pattern sources.
+
+Note that the getters check that the provided values are valid and throw if otherwise. This way, MUBench can report a meaningful error, should one of the parameters somehow be wrong.
+
+### What Output Should I Produce?
+
+Use `de.tu_darmstadt.stg.mubench.cli.DetectorOutput` to collect and write your output. Add one or more instances of `de.tu_darmstadt.stg.mubench.cli.DetectorFinding` to the output. Each finding corresponds to one misuse your detector finds in a project. For each you must provide two properties that MUBench uses to identify potential hits for the known misuses:
+
+- `file`: The full path to either source or class file your detector found the misuse in.
+- `method`: either the method's simple name (e.g., `method`) or a full signature (e.g., `method(Object, List, int)`) of the method your detector found the misuse in. If you provide a full signature and MUBench is unable to identify a potential hit, it automatically falls back to using only the method name. This way it ensures that a difference in the signature notation does not make us miss a potential hit.
+
+You may provide the finding with additional properties that help reviewing your detector's findings. These properties will be included in the review information.
+
+### How do I review?
+
+MUBench prepares a review website for you, which lists the potential hits for all misuses in its dataset. After running the review preparation, you can open this site from `reviews/index.html`. Follow the links to the review-details pages to review the potential hits of your detector. The pages list for every misuse the potential hits, with an `Id` and all the metadata your detector provides in the output.
+
+To report an actual hit of your detector, create `reviews/<detector>/<project>/<version>/<misuse>/reviewX.yml` with `X` being 1 or 2, depending on whether you are the first or second reviewer. The files content should look like follows:
+
 ```
-<dependencies>
-		<dependency>
-			<groupId>de.tu-darmstadt.stg</groupId>
-			<artifactId>mubench.cli</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
-		</dependency>
-</dependencies>
-```
-The dependency is not yet hosted in a public Maven repository. For the time being, you have to build it yourself. You find the project [in this repository](https://github.com/stg-tud/MUBench/tree/master/benchmark/mubench.cli).
-
-Using `de.tu_darmstadt.stg.mubench.cli.ArgParser.parse(String[] args)` you will get an instance of `de.tu_darmstadt.stg.mubench.cli.DetectorArgs`. Always check arguments for null since some arguments may be optional.
-
-- `DetectorArgs.getFindingsFile()`: The file MUBench expects you to write your findings to. This file is `results/<detector>/<misuse>/findings.yml`.
-- `DetectorArgs.getProjectSrcPath()`: The path to the project sources containing the misuse. You may use this to mine usage patterns and find misuses.
-- `DetectorArgs.getProjectClassPath()`: (Optional) The path to the compiled project classes containing the misuse. You may use this like `DetectorArgs.projectSrcPath` if your mining runs on compiled code.
-- `DetectorArgs.getPatternsSrcPath()`: (Optional) The path to pattern files, which contain the fixed version of the usage MUBench expects your detector to find in the project. The files contain Java Source Code snippets. For examples, see the `pattern` folders in [`data`](https://github.com/stg-tud/MUBench/tree/master/data).
-- `DetectorArgs.getPatternsClassPath()`: (Optional) The path to the compiled pattern files. You may use this like `DetectorArgs.patternsSrcPath` if your mining runs on compiled code.
-
-*What Should My Output File Look Like?*
-
-MUBench expects you findings in the [YAML](http://yaml.org/) format. The benchmark reads the two keys `file` (the path to a file your detector found a misuse in) and `graph` (a DOT graph describing the misuse your detector found in that file). You can provide both or only one of the keys per finding. Providing a DOT graph helps MUBench filter false positives and, thereby, reduce the review effort you have to invest later.
-
-Example output file:
-```
-file: commons/proper/lang/trunk/src/java/org/apache/commons/lang/text/StrBuilder.java
-graph: >
-	digraph {
-	  0 [label="StrBuilder#this#getNullText"]
-	  1 [label="String#str#length"]
-	  0 -> 1
-	}
----
-file: src/com/google/javascript/rhino/jstype/UnionType.java
-graph: >
-	digraph {
-	  0 [label="UnionTypeBuilder#builder#build"]
-	  1 [label="IF#IF#CONTROL"]
-	  0 -> 1
-	}
+reviewer: Sven
+hits:
+  - id: <potential-hit-id>
+    elements:
+      - missing/call
+  - id: <other-potential-hit-id>
+    elements:
+      - missing/condition/null_check
+      - superfluous/call
+comment: >
+  This is especially interesting, because...
 ```
 
-## Contribute
+When you're done reviewing all potential hits, tell MUBench to summarize the results for you.
 
-To contribute to MUBench, simply use our meta-data template below to describe the API misuse you discovered and [create a new file in the `data` folder](https://github.com/stg-tud/MUBench/new/master/data) named `<project>.<issue>.yml`, where <project> must be unique for the repository. You can also create a file locally and submit it via GitHub's drag&drop feature or fork this repository and send a pull request after you committed new misuses.
+## Contribute Misuses
 
-To make it even easier, you can also simply [fill our online survey](http://goo.gl/forms/3hua7LOFVJ) to submit your finding.
+To contribute to MUBench, simply use our meta-data template below to describe the API misuse you discovered and send it to [Sven Amann](http://www.stg.tu-darmstadt.de/staff/sven_amann).
 
 ```
 source:
@@ -108,39 +107,43 @@ source:
 project:
   name: A
   url:  http://a.com
+  repository: http://a.com/repo/a.git
 report: http://a.com/issues/42
 description: >
   Client uses T1.foo() before T2.bar().
+location:
+  revision: 4710
+  file: a/Client.java
+  method: m(Foo, int)
 crash:    yes|no
 internal: yes|no
 api:
   - qualified.library.identifier.T1
   - qualified.library.identifier.T2
 characteristics:
-  - superfluous call
-  - missing call
-  - wrong call
-  - wrong call order
-  - missing precondition/predicate
-  - missing precondition/null
-  - missing precondition/parameter constraint
-  - missing catch
-  - missing finally
-  - ignored result
-pattern:
-  - single node
-  - single object
-  - multiple objects
-challenges:
-  - multi-method
-  - multiple usages
-  - path dependent
+  - missing/call
+  - misplaced/call
+  - superfluous/call
+  - missing/condition/null_check
+  - missing/condition/value_or_state
+  - missing/condition/threading
+  - missing/condition/environment
+  - superfluous/condition
+  - missing/exception_handling
+  - superfluous/exception_handling
+  - missing/guarantee
+build:
+  src: src/main/java
+  commands:
+    - mvn compile
+  classes: target/classes
 fix:
   description: >
     Fix like so...
   commit: http://a.com/repo/commits/4711
+  revision: 4711
   files:
-    - name: src/main/java/a/Client.java
+    - name: a/Client.java
       diff: http://a.com/repo/commits/4711/Client.java
 ```
 
