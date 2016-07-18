@@ -18,7 +18,7 @@ from benchmark.utils.io import create_file
 from benchmark.utils.shell import CommandFailedError
 
 # noinspection PyAttributeOutsideInit
-from benchmark_tests.test_utils.data_util import create_version, create_project
+from benchmark_tests.test_utils.data_util import create_version, create_project, create_misuse
 
 
 class TestCompile:
@@ -47,6 +47,7 @@ class TestCompile:
         self.build_path = join(self.base_path, "build")
         self.original_sources_path = join(self.base_path, "original-src")
         self.original_classes_path = join(self.base_path, "original-classes")
+        self.misuse_source_path = join(self.base_path, "misuse-src")
         self.pattern_sources_path = join(self.base_path, "patterns-src")
         self.pattern_classes_path = join(self.base_path, "patterns-classes")
 
@@ -73,6 +74,14 @@ class TestCompile:
         self.uut.process_project_version(self.project, self.version)
 
         assert exists(join(self.original_sources_path, "a.file"))
+
+    def test_copies_misuse_sources(self):
+        create_file(join(self.source_path, "mu.file"))
+        self.version.misuses.append(create_misuse("1", meta={"location": {"file": "mu.file"}}, project=self.project))
+
+        self.uut.process_project_version(self.project, self.version)
+
+        assert exists(join(self.misuse_source_path, "mu.file"))
 
     def test_skips_copy_of_original_sources_if_copy_exists(self):
         makedirs(join(self.base_path, "original-src"))

@@ -52,6 +52,7 @@ class Compile(ProjectVersionTask):
             try:
                 logger.info("Copying project sources...")
                 self.__clean_copy(sources_path, project_compile.original_sources_path)
+                self.__copy_misuse_sources(sources_path, version.misuses, project_compile.misuse_source_path)
             except IOError as e:
                 logger.error("Failed to copy project sources: %s", e)
                 return Response.skip
@@ -125,6 +126,15 @@ class Compile(ProjectVersionTask):
     def __clean_copy(sources_path: str, destination: str):
         remove_tree(destination)
         copy_tree(sources_path, destination)
+
+    @staticmethod
+    def __copy_misuse_sources(sources_path, misuses, destination):
+        remove_tree(destination)
+        for misuse in misuses:
+            file = misuse.location.file
+            dst = join(destination, file)
+            makedirs(dirname(dst), exist_ok=True)
+            shutil.copy(join(sources_path, file), dst)
 
     @staticmethod
     def __copy_pattern_sources(patterns: Set[Pattern], destination: str, pattern_frequency: int):
