@@ -6,14 +6,18 @@ public class DetectorArgs {
 	private final String findingsFile;
 	private final String projectSrcPath;
 	private final String projectClassPath;
+	private final String misuseSrcPath;
+	private final String misuseClassPath;
 	private final String patternsSrcPath;
 	private final String patternsClassPath;
 
-	public DetectorArgs(String findingsFile, String projectSrc, String projectClasses, String patternsSrc,
+	public DetectorArgs(String findingsFile, String projectSrc, String projectClasses, String misuseSrc, String misuseClasses, String patternsSrc,
 			String patternsClasses) {
 		this.findingsFile = findingsFile;
 		this.projectSrcPath = projectSrc;
 		this.projectClassPath = projectClasses;
+		this.misuseSrcPath = misuseSrc;
+		this.misuseClassPath = misuseClasses;
 		this.patternsSrcPath = patternsSrc;
 		this.patternsClassPath = patternsClasses;
 	}
@@ -34,6 +38,18 @@ public class DetectorArgs {
 		if (projectClassPath == null)
 			throw new FileNotFoundException("project classpath not provided");
 		return projectClassPath;
+	}
+	
+	public String getMisuseSrcPath() throws FileNotFoundException {
+		if (misuseSrcPath == null)
+			throw new FileNotFoundException("misuse source path not provided");
+		return misuseSrcPath;
+	}
+	
+	public String getMisuseClassPath() throws FileNotFoundException {
+		if (misuseClassPath == null)
+			throw new FileNotFoundException("misuse classpath not provided");
+		return misuseClassPath;
 	}
 	
 	public String getPatternsSrcPath() throws FileNotFoundException {

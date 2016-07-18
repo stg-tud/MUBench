@@ -10,51 +10,70 @@ public class ArgParserTest {
 	private static final String testFindingsFile = "findings.yml";
 	private static final String testProjectSrcPath = "src";
 	private static final String testProjectClassPath = "classpath";
+	private static final String testMisuseSrcPath = "msrc";
+	private static final String testMisuseClassPath = "mclasspath";
 	private static final String testPatternsSrcPath = "psrc";
 	private static final String testPatternsClassPath = "pclasspath";
 
 	String[] testArgs = new String[] { ArgParser.keyFindingsFile, testFindingsFile, ArgParser.keyProjectSrcPath,
-			testProjectSrcPath, ArgParser.keyProjectClassPath, testProjectClassPath, ArgParser.keyPatternsSrcPath,
+			testProjectSrcPath, ArgParser.keyProjectClassPath, testProjectClassPath, ArgParser.keyMisuseSrcPath,
+			testMisuseSrcPath, ArgParser.keyMisuseClassPath, testMisuseClassPath, ArgParser.keyPatternsSrcPath,
 			testPatternsSrcPath, ArgParser.keyPatternsClassPath, testPatternsClassPath };
-	
-	@Test(expected=FileNotFoundException.class)
+
+	@Test(expected = FileNotFoundException.class)
 	public void throwsOnNoFindingsFile() throws FileNotFoundException {
 		String[] empty_args = new String[0];
 		DetectorArgs actual = ArgParser.parse(empty_args);
-		
-		actual.getFindingsFile();	
+
+		actual.getFindingsFile();
 	}
-	
-	@Test(expected=FileNotFoundException.class)
+
+	@Test(expected = FileNotFoundException.class)
 	public void throwsOnNoProjectSourcePath() throws FileNotFoundException {
 		String[] empty_args = new String[0];
 		DetectorArgs actual = ArgParser.parse(empty_args);
-		
-		actual.getProjectSrcPath();	
+
+		actual.getProjectSrcPath();
 	}
-	
-	@Test(expected=FileNotFoundException.class)
+
+	@Test(expected = FileNotFoundException.class)
 	public void throwsOnNoProjectClassPath() throws FileNotFoundException {
 		String[] empty_args = new String[0];
 		DetectorArgs actual = ArgParser.parse(empty_args);
-		
-		actual.getProjectClassPath();	
+
+		actual.getProjectClassPath();
 	}
-	
-	@Test(expected=FileNotFoundException.class)
+
+	@Test(expected = FileNotFoundException.class)
+	public void throwsOnNoMisuseSourcePath() throws FileNotFoundException {
+		String[] empty_args = new String[0];
+		DetectorArgs actual = ArgParser.parse(empty_args);
+
+		actual.getMisuseSrcPath();
+	}
+
+	@Test(expected = FileNotFoundException.class)
+	public void throwsOnNoMisuseClassPath() throws FileNotFoundException {
+		String[] empty_args = new String[0];
+		DetectorArgs actual = ArgParser.parse(empty_args);
+
+		actual.getMisuseClassPath();
+	}
+
+	@Test(expected = FileNotFoundException.class)
 	public void throwsOnNoPatternSourcePath() throws FileNotFoundException {
 		String[] empty_args = new String[0];
 		DetectorArgs actual = ArgParser.parse(empty_args);
-		
+
 		actual.getPatternsSrcPath();
 	}
-	
-	@Test(expected=FileNotFoundException.class)
+
+	@Test(expected = FileNotFoundException.class)
 	public void throwsOnNoPatternClassPath() throws FileNotFoundException {
 		String[] empty_args = new String[0];
 		DetectorArgs actual = ArgParser.parse(empty_args);
-		
-		actual.getPatternsClassPath();	
+
+		actual.getPatternsClassPath();
 	}
 
 	@Test
@@ -76,6 +95,18 @@ public class ArgParserTest {
 	}
 
 	@Test
+	public void parseMisuseSrcPathTest() throws FileNotFoundException {
+		DetectorArgs actual = ArgParser.parse(testArgs);
+		assertEquals(testMisuseSrcPath, actual.getMisuseSrcPath());
+	}
+
+	@Test
+	public void parseMisuseClassPathTest() throws FileNotFoundException {
+		DetectorArgs actual = ArgParser.parse(testArgs);
+		assertEquals(testMisuseClassPath, actual.getMisuseClassPath());
+	}
+
+	@Test
 	public void parsePatternsSrcPathTest() throws FileNotFoundException {
 		DetectorArgs actual = ArgParser.parse(testArgs);
 		assertEquals(testPatternsSrcPath, actual.getPatternsSrcPath());
@@ -86,9 +117,9 @@ public class ArgParserTest {
 		DetectorArgs actual = ArgParser.parse(testArgs);
 		assertEquals(testPatternsClassPath, actual.getPatternsClassPath());
 	}
-	
+
 	@Test(expected = IllegalArgumentException.class)
 	public void throwsOnIllegalArgument() {
-		ArgParser.parse(new String[]{"illegal arg", "value"});
+		ArgParser.parse(new String[] { "illegal arg", "value" });
 	}
 }
