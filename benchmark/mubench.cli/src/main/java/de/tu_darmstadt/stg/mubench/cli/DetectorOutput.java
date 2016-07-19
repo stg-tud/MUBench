@@ -6,6 +6,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -39,6 +40,10 @@ public class DetectorOutput {
 	}
 	
 	private Iterator<Map<String, Object>> getContent() {
-		return findings.stream().map(finding -> finding.getContent()).iterator();
+		List<Map<String, Object>> content = new ArrayList<>();
+		for (DetectorFinding finding : findings) {
+			content.add(finding.getContent());
+		}
+		return content.iterator();
 	}
 }
