@@ -1,5 +1,5 @@
 import logging
-from os import makedirs
+from os import makedirs, listdir
 from os.path import join, exists, pardir, basename
 from typing import Dict, Iterable
 from typing import List
@@ -11,7 +11,7 @@ from benchmark.subprocesses.tasks.base.project_task import Response
 from benchmark.subprocesses.tasks.base.project_version_misuse_task import ProjectVersionMisuseTask
 from benchmark.subprocesses.tasks.implementations.detect import Run
 from benchmark.subprocesses.tasks.implementations.review import main_index, review_page
-from benchmark.utils.io import safe_open, remove_tree, safe_write
+from benchmark.utils.io import safe_open, remove_tree, safe_write, read_yaml
 
 
 class ReviewPrepare(ProjectVersionMisuseTask):
@@ -73,11 +73,9 @@ class ReviewPrepare(ProjectVersionMisuseTask):
         findings_path = join(self.results_path, project.id, version.version_id)
         detector_run = Run(findings_path)
 
-        misuse_to_review = "<tr><td>Misuse:</td><td>{}</td>\n<td>[{}]</td></tr>\n".format(misuse.misuse_id, "{}")
-
         if not detector_run.is_success():
             logger.info("Skipping %s in %s: no result.", misuse, version)
-            self.__append_misuse_to_review(misuse, "run: {}".format(detector_run.result))
+            self.__append_misuse_to_review(misuse, "run: {}".format(detector_run.result), [])
             return Response.skip
 
         review_dir = join(project.id, version.version_id, misuse.id)
@@ -85,7 +83,8 @@ class ReviewPrepare(ProjectVersionMisuseTask):
         review_path = join(self.review_path, review_dir)
         if exists(review_path) and not self.force_prepare:
             if exists(join(self.review_path, review_site)):
-                self.__append_misuse_review(misuse, review_site)
+                existing_reviews = self.__get_existing_reviews(review_path)
+                self.__append_misuse_review(misuse, review_site, existing_reviews)
             else:
                 self.__append_misuse_no_hits(misuse)
 
@@ -105,22 +104,35 @@ class ReviewPrepare(ProjectVersionMisuseTask):
 
         if potential_hits:
             review_page.generate(review_path, self.detector, project, version, misuse, potential_hits)
-            self.__append_misuse_review(misuse, review_site)
+            self.__append_misuse_review(misuse, review_site, [])
         else:
             makedirs(review_path)
             self.__append_misuse_no_hits(misuse)
 
         return Response.ok
 
-    def __append_misuse_review(self, misuse: Misuse, review_site: str):
-        self.__append_misuse_to_review(misuse, "<a href=\"{}\">review</a>".format(review_site))
+    def __append_misuse_review(self, misuse: Misuse, review_site: str, existing_reviews: List[Dict[str, str]]):
+        self.__append_misuse_to_review(misuse, "<a href=\"{}\">review</a>".format(review_site), existing_reviews)
 
     def __append_misuse_no_hits(self, misuse: Misuse):
-        self.__append_misuse_to_review(misuse, "no potential hits")
+        self.__append_misuse_to_review(misuse, "no potential hits", [])
 
-    def __append_misuse_to_review(self, misuse: Misuse, result: str):
-        misuse_to_review = "<tr><td>Misuse:</td><td>{}</td>\n<td>[{}]</td></tr>\n".format(misuse.misuse_id, result)
+    def __append_misuse_to_review(self, misuse: Misuse, result: str, existing_reviews: List[Dict[str, str]]):
+        reviewers = [review['reviewer'] for review in existing_reviews if review.get('reviewer', None) is not None]
+        reviewed_by = 'reviewed by ' + ', '.join(reviewers) if reviewers else ''
+
+        misuse_to_review = "<tr><td>Misuse:</td><td>{}</td>\n<td>[{}] {}</td></tr>\n".format(misuse.misuse_id, result,
+                                                                                             reviewed_by)
         self.misuses_to_review.append(misuse_to_review)
+
+    @staticmethod
+    def __get_existing_reviews(review_path: str) -> List[Dict[str, str]]:
+        existing_review_files = [join(review_path, file) for file in listdir(review_path) if
+                                 file.startswith('review') and file.endswith('.yml')]
+        existing_reviews = []
+        for existing_review_file in existing_review_files:
+            existing_reviews.append(read_yaml(existing_review_file))
+        return existing_reviews
 
     def end(self):
         detector_to_review = "<h1>Detector: {}</h1>\n".format(self.detector)
