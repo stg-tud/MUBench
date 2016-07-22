@@ -1,4 +1,5 @@
 import logging
+import yaml
 from os import makedirs, listdir
 from os.path import join, exists, pardir, basename
 from typing import Dict, Iterable
@@ -104,6 +105,7 @@ class ReviewPrepare(ProjectVersionMisuseTask):
 
         if potential_hits:
             review_page.generate(review_path, self.detector, project, version, misuse, potential_hits)
+            self.__generate_potential_hits_yaml(potential_hits, review_path)
             self.__append_misuse_review(misuse, review_site, [])
         else:
             makedirs(review_path)
@@ -133,6 +135,15 @@ class ReviewPrepare(ProjectVersionMisuseTask):
         for existing_review_file in existing_review_files:
             existing_reviews.append(read_yaml(existing_review_file))
         return existing_reviews
+
+    @staticmethod
+    def __generate_potential_hits_yaml(potential_hits: List[Dict[str, str]], review_path: str):
+        potential_hits_yamls = []
+        for i, potential_hits in enumerate(potential_hits):
+            potential_hits_yaml = {'id': i}
+            potential_hits_yamls.append(potential_hits_yaml)
+        with safe_open(join(review_path, 'potentialhits.yml'), 'w+') as file:
+            yaml.dump_all(potential_hits_yamls, file)
 
     def end(self):
         detector_to_review = "<h1>Detector: {}</h1>\n".format(self.detector)
