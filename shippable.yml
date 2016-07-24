@@ -27,7 +27,8 @@ script:
   - nosetests --with-xunit --xunit-file=shippable/testresults/nosetests.xml
   - mvn test -f benchmark/mubench.cli/pom.xml
   - ./mubench detect dummy --only synthetic
-  - ./mubench review:prepare
+  - "./mubench review:prepare"
+  - "./mubench review:check"
   
 notifications:
   email:

@@ -36,6 +36,7 @@ def get_command_line_parser(available_detectors: List[str], available_scripts: L
     __add_compile_subprocess(subparsers)
     __add_detect_subprocess(available_detectors, subparsers)
     __add_review_prepare_subprocess(subparsers)
+    __add_review_check_subprocess(subparsers)
     __add_visualize_subprocess(subparsers)
     __add_stats_subprocess(available_scripts, subparsers)
 
@@ -95,6 +96,11 @@ def __add_review_prepare_subprocess(subparsers) -> None:
                                                   help="Prepare findings for reviewing.")  # type: ArgumentParser
     review_prepare_parser.add_argument('--force-prepare', dest='force_prepare', action='store_true', default=False,
                                        help="force generating new review files")
+
+
+def __add_review_check_subprocess(subparsers) -> None:
+    review_check_parser = subparsers.add_parser('review:check',
+                                                formatter_class=SortingHelpFormatter)  # TODO: add description and help texts
 
 
 def __add_visualize_subprocess(subparsers) -> None:

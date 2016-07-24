@@ -13,6 +13,7 @@ from benchmark.subprocesses.tasks.implementations import stats
 from benchmark.subprocesses.tasks.implementations.checkout import Checkout
 from benchmark.subprocesses.tasks.implementations.compile import Compile
 from benchmark.subprocesses.tasks.implementations.detect import Detect
+from benchmark.subprocesses.tasks.implementations.review_check import ReviewCheck
 from benchmark.subprocesses.tasks.implementations.review_prepare import ReviewPrepare
 from benchmark.utils import command_line_util
 
@@ -76,6 +77,16 @@ class Benchmark:
                                             self.eval_result_file, self.config.force_prepare)
             self.runner.add(review_preparer)
 
+    def _setup_review_check(self):
+        if not exists(Benchmark.REVIEW_PATH):
+            return
+
+        detectors_with_available_review = [detector for detector in listdir(Benchmark.REVIEW_PATH) if
+                                           detector in available_detectors]
+
+        review_checker = ReviewCheck(Benchmark.REVIEW_PATH, detectors_with_available_review)
+        self.runner.add(review_checker)
+
     def run(self) -> None:
         check_prerequisites()
         if config.subprocess == 'visualize':
@@ -94,6 +105,8 @@ class Benchmark:
             self._setup_detect()
         elif config.subprocess == 'review:prepare':
             self._setup_review_prepare()
+        elif config.subprocess == 'review:check':
+            self._setup_review_check()
         elif config.subprocess == 'stats':
             self._setup_stats()
 
