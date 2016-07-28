@@ -57,6 +57,8 @@ def __generate_table(potential_hits):
             value = potential_hit.get(key, "")
             if type(value) is str:
                 table_lines.append("<td>{}</td>".format(html.escape(value)))
+            elif type(value) is int:
+                table_lines.append("<td>{}</td>".format(html.escape(str(value))))
             elif type(value) is list:
                 table_lines.append("<td><ul>")
                 for elm in value:

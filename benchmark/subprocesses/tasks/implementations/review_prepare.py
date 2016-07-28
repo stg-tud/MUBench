@@ -138,12 +138,8 @@ class ReviewPrepare(ProjectVersionMisuseTask):
 
     @staticmethod
     def __generate_potential_hits_yaml(potential_hits: List[Dict[str, str]], review_path: str):
-        potential_hits_yamls = []
-        for i, potential_hits in enumerate(potential_hits):
-            potential_hits_yaml = {'id': i}
-            potential_hits_yamls.append(potential_hits_yaml)
         with safe_open(join(review_path, 'potentialhits.yml'), 'w+') as file:
-            yaml.dump_all(potential_hits_yamls, file)
+            yaml.dump_all(potential_hits, file)
 
     def end(self):
         detector_to_review = "<h1>Detector: {}</h1>\n".format(self.detector)
@@ -163,7 +159,10 @@ class ReviewPrepare(ProjectVersionMisuseTask):
     @staticmethod
     def __find_potential_hits(findings: Iterable[Dict[str, str]], misuse: Misuse) -> List[Dict[str, str]]:
         candidates = ReviewPrepare.__filter_by_file(findings, misuse.location.file)
-        return ReviewPrepare.__filter_by_method(candidates, misuse.location.method)
+        candidates = ReviewPrepare.__filter_by_method(candidates, misuse.location.method)
+        for i, candidate in enumerate(candidates):
+            candidate.update({'id': i})
+        return candidates
 
     @staticmethod
     def __filter_by_file(findings, misuse_file):

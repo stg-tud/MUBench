@@ -75,6 +75,7 @@ class ReviewCheck(ProjectVersionMisuseTask):
                 reviews_per_id[hit_id].append(reviewed_hit)
             else:
                 problems.append('{}: unknown hit id {}'.format(reviewed_hit.review_file, hit_id))
+
         ReviewCheck.__check_enough_reviews_per_hit(reviews_per_id, detector, project, version, misuse)
         ReviewCheck.__check_same_characteristics(reviews_per_id, detector, project, version, misuse)
 
@@ -129,7 +130,7 @@ class ReviewCheck(ProjectVersionMisuseTask):
     @staticmethod
     def __get_hit_ids(hits_file: str) -> List[int]:
         with open(hits_file) as file:
-            return [hit['id'] for hit in yaml.load_all(file)]
+            return [hit['id'] for hit in yaml.load_all(file) if hit is not None]
 
     @staticmethod
     def __get_ids_with_missing_reviews(reviews_per_id: Dict[int, List[ReviewedHit]]) -> Dict[int, int]:
