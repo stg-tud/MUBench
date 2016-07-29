@@ -82,6 +82,20 @@ class TestReviewPageGenerator:
                   "<tr>\n<td>additional information</td>\n<td></td>\n</tr>\n"
                   "</table>\n", content)
 
+    def test_uses_detector_specific_potential_hits_generator(self):
+        potential_hits = [{"missingcalls": ["getAngle()"]}, {"additionalkey": "additional information"}]
+
+        def non_default_generator(potential_hits):
+            return ['-whatever-']
+
+        review_page.potential_hits_section_generators['detector'] = non_default_generator
+
+        review_page.generate(self.review_folder, 'detector', self.test_project, self.test_version,
+                             self.test_misuse, potential_hits)
+
+        content = self.read_review_file()
+        assert_in('-whatever-', content)
+
     def read_review_file(self):
         review_file = join(self.review_folder, 'review.html')
         assert exists(review_file)

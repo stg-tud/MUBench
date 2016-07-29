@@ -1,6 +1,6 @@
 import html
 from textwrap import wrap
-from typing import Dict
+from typing import Dict, Callable
 from typing import List
 
 from os.path import join
@@ -10,24 +10,23 @@ from benchmark.data.project import Project
 from benchmark.data.project_version import ProjectVersion
 from benchmark.utils.io import safe_write
 
+potential_hits_section_generators = {}  # type: Dict[str, Callable[[List[Dict[str, str]]], List[str]]]
 
-def generate(review_folder: str, detector: str, project: Project, version: ProjectVersion,
-             misuse: Misuse, potential_hits: List[Dict[str, str]]):
+
+def generate(review_folder: str, detector: str, project: Project, version: ProjectVersion, misuse: Misuse,
+             potential_hits: List[Dict[str, str]]):
     lines = ["<h1>Review: {}/{}/{}/{}</h1>".format(detector, project.id, version.version_id, misuse.id),
              "<h2>Misuse Details</h2>",
              "<p><b>Description:</b> {}</p>".format(__multiline(misuse.description)),
              "<p><b>Fix Description:</b> {}</p>".format(__multiline(misuse.fix.description)),
-             "<p><b>Misuse Elements:</b><ul>".format(misuse.characteristics)]
-
-    for characteristic in misuse.characteristics:
-        lines.append("<li>{}</li>".format(characteristic))
-    lines.append("</ul></p>")
-
-    lines.append("<p><b>In File:</b> <a href=\"{}\">{}</a>, <b>Method:</b> {}</p>"
-                 .format(misuse.fix.commit, misuse.location.file, misuse.location.method))
-
-    lines.append("<h2>Potential Hits</h2>")
-    lines.extend(__generate_table(potential_hits))
+             "<p><b>Misuse Elements:</b><ul>"] + \
+            ["<li>{}</li>".format(characteristic) for characteristic in misuse.characteristics] + \
+            ["</ul></p>",
+             "<p><b>In File:</b> <a href=\"{}\">{}</a>, <b>Method:</b> {}</p>".format(
+                 misuse.fix.commit,
+                 misuse.location.file,
+                 misuse.location.method),
+             "<h2>Potential Hits</h2>"] + __generate_potential_hits_section(detector, potential_hits)
 
     safe_write('\n'.join(lines), join(review_folder, 'review.html'), False)
 
@@ -36,7 +35,13 @@ def __multiline(text: str):
     return "<br/>".join(wrap(text, width=120))
 
 
-def __generate_table(potential_hits):
+
+def __generate_potential_hits_section(detector: str, potential_hits: List[Dict[str, str]]) -> List[str]:
+    generate_section = potential_hits_section_generators.get(detector) or __default_generate_potential_hits_section
+    return generate_section(potential_hits)
+
+
+def __default_generate_potential_hits_section(potential_hits: List[Dict[str, str]]) -> List[str]:
     table_lines = ["<table border=\"1\" cellpadding=\"5\">"]
 
     keys = set()
