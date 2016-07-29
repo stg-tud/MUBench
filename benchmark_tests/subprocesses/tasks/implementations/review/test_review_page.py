@@ -1,10 +1,11 @@
+import os
 from os.path import join, exists
 from tempfile import mkdtemp
 
 from nose.tools import assert_in
 
 from benchmark.subprocesses.tasks.implementations.review import review_page
-from benchmark.utils.io import remove_tree
+from benchmark.utils.io import remove_tree, safe_open
 from benchmark_tests.test_utils.data_util import create_project, create_version, create_misuse
 
 
@@ -12,10 +13,21 @@ class TestReviewPageGenerator:
     # noinspection PyAttributeOutsideInit
     def setup(self):
         self.temp_dir = mkdtemp(prefix='mubench-test-review-page-generator_')
+        os.chdir(self.temp_dir)
 
         self.test_project = create_project('project')
         self.test_misuse = create_misuse('misuse', project=self.test_project)
         self.test_version = create_version('version', project=self.test_project, misuses=[self.test_misuse])
+
+        original_src_file = 'foo.java'
+        original_src_folder = join(self.temp_dir, 'checkouts', 'project', 'version', 'original-src')
+        self.original_src = join(original_src_folder, original_src_file)
+
+        with safe_open(self.original_src, 'w+') as src:
+            src.write('bar(){}')
+
+        self.test_misuse.location.file = original_src_file
+        self.test_misuse.location.method = 'bar'
 
         self.findings_folder = join(self.temp_dir, 'findings', 'detector', 'project', 'version')
         self.review_folder = join(self.temp_dir, 'reviews', 'detector', 'project', 'version')
@@ -58,7 +70,7 @@ class TestReviewPageGenerator:
         assert_in("<b>Misuse Elements:</b><ul>\n<li>missing/condition/null_check</li>\n</ul>", content)
 
     def test_adds_location(self):
-        self.test_misuse.location.file = "org.apache...SubLine"
+        self.test_misuse.location.file = "foo.java"
         self.test_misuse.location.method = "intersection(SubLine subLine)"
         self.test_misuse.fix.commit = "http://commit.url"
 
@@ -66,7 +78,7 @@ class TestReviewPageGenerator:
                              self.test_misuse, [])
 
         content = self.read_review_file()
-        assert_in("<b>In File:</b> <a href=\"http://commit.url\">org.apache...SubLine</a>,"
+        assert_in("<b>In File:</b> <a href=\"http://commit.url\">foo.java</a>,"
                   " <b>Method:</b> intersection(SubLine subLine)", content)
 
     def test_adds_potential_hit_information(self):
@@ -95,6 +107,15 @@ class TestReviewPageGenerator:
 
         content = self.read_review_file()
         assert_in('-whatever-', content)
+
+    def test_adds_target_code(self):
+        with open(self.original_src, 'w+') as target:
+            target.write('class foo {\n\tbar() {\n\t\tint i = 0;\n\t}\n}')
+
+        review_page.generate(self.review_folder, 'detector', self.test_project, self.test_version, self.test_misuse, [])
+
+        content = self.read_review_file()
+        assert_in("<p><code>class foo {\n\tbar() {\n\t\tint i = 0;\n\t}\n}</code></p>", content)
 
     def read_review_file(self):
         review_file = join(self.review_folder, 'review.html')
