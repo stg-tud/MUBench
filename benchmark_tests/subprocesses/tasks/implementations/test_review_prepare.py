@@ -1,11 +1,11 @@
 import ast
+import yaml
 from os import chdir
 from os.path import join
 from shutil import rmtree
 from tempfile import mkdtemp
 from typing import Dict, List
 
-import yaml
 from nose.tools import assert_equals, assert_in
 
 from benchmark.data.misuse import Misuse
@@ -35,10 +35,13 @@ class TestReviewPrepare:
         self.version = create_version('version', project=self.project)
         self.misuse = create_misuse('misuse', meta={"location": {"file": "a", "method": "m()"}}, project=self.project)
 
+        create_file('checkouts/project/version/original-src/a')
+
     def teardown(self):
         rmtree(self.temp_dir, ignore_errors=True)
 
     def test_matches_on_file(self):
+        create_file("checkouts/project/version/original-src/some-class.java")
         self.misuse.location.file = "some-class.java"
         self.create_result([{"file": "some-class.java"}])
 
@@ -47,6 +50,7 @@ class TestReviewPrepare:
         self.assert_potential_hit(self.misuse)
 
     def test_matches_on_file_absolute(self):
+        create_file("checkouts/project/version/original-src/a/b/some-class.java", truncate=True)
         self.misuse.location.file = "some-class.java"
         self.create_result([{"file": "/a/b/some-class.java"}])
 
@@ -55,6 +59,7 @@ class TestReviewPrepare:
         self.assert_potential_hit(self.misuse)
 
     def test_matches_on_class(self):
+        create_file("checkouts/project/version/original-src/some-class.java")
         self.misuse.location.file = "some-class.java"
         self.create_result([{"file": "some-class.class"}])
 
@@ -63,6 +68,7 @@ class TestReviewPrepare:
         self.assert_potential_hit(self.misuse)
 
     def test_matches_on_inner_class(self):
+        create_file("checkouts/project/version/original-src/some-class.java")
         self.misuse.location.file = "some-class.java"
         self.create_result([{"file": "some-class$inner-class.class"}])
 
