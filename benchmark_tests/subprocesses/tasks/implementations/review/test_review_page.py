@@ -4,6 +4,7 @@ from tempfile import mkdtemp
 
 from nose.tools import assert_in
 
+from benchmark.subprocesses.tasks.implementations.review import potential_hits_section
 from benchmark.subprocesses.tasks.implementations.review import review_page
 from benchmark.utils.io import remove_tree, safe_open
 from benchmark_tests.test_utils.data_util import create_project, create_version, create_misuse
@@ -97,10 +98,9 @@ class TestReviewPageGenerator:
     def test_uses_detector_specific_potential_hits_generator(self):
         potential_hits = [{"missingcalls": ["getAngle()"]}, {"additionalkey": "additional information"}]
 
-        def non_default_generator(potential_hits):
+        def detector(potential_hits):
             return ['-whatever-']
-
-        review_page.potential_hits_section_generators['detector'] = non_default_generator
+        setattr(potential_hits_section, 'detector', detector)
 
         review_page.generate(self.review_folder, 'detector', self.test_project, self.test_version,
                              self.test_misuse, potential_hits)

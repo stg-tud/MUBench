@@ -4,7 +4,7 @@ from typing import List
 
 
 def generate(detector: str, potential_hits: List[Dict[str, str]]) -> List[str]:
-    generate = locals().get(detector, default)
+    generate = globals().get(detector, globals()['default'])
     return generate(potential_hits)
 
 
