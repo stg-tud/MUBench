@@ -71,7 +71,7 @@ class TestReviewPageGenerator:
 
     def test_adds_location(self):
         self.test_misuse.location.file = "foo.java"
-        self.test_misuse.location.method = "intersection(SubLine subLine)"
+        self.test_misuse.location.method = "bar()"
         self.test_misuse.fix.commit = "http://commit.url"
 
         review_page.generate(self.review_folder, 'detector', self.test_project, self.test_version,
@@ -79,7 +79,7 @@ class TestReviewPageGenerator:
 
         content = self.read_review_file()
         assert_in("<b>In File:</b> <a href=\"http://commit.url\">foo.java</a>,"
-                  " <b>Method:</b> intersection(SubLine subLine)", content)
+                  " <b>Method:</b> bar()", content)
 
     def test_adds_potential_hit_information(self):
         potential_hits = [{"missingcalls": ["getAngle()"]}, {"additionalkey": "additional information"}]
@@ -110,12 +110,12 @@ class TestReviewPageGenerator:
 
     def test_adds_target_code(self):
         with open(self.original_src, 'w+') as target:
-            target.write('class foo {\n\tbar() {\n\t\tint i = 0;\n\t}\n}')
+            target.write('bar() {int i = 0;}')
 
         review_page.generate(self.review_folder, 'detector', self.test_project, self.test_version, self.test_misuse, [])
 
         content = self.read_review_file()
-        assert_in("<p><code>class foo {\n\tbar() {\n\t\tint i = 0;\n\t}\n}</code></p>", content)
+        assert_in("bar() {int i = 0;}", content)
 
     def read_review_file(self):
         review_file = join(self.review_folder, 'review.html')
