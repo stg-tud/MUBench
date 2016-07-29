@@ -32,7 +32,7 @@ def generate(review_folder: str, detector: str, project: Project, version: Proje
 
 def __get_target_code(project: Project, version: ProjectVersion, misuse: Misuse) -> str:
     misuse_file = join('checkouts', project.id, version.version_id,
-                       'original-src', misuse.location.file)  # TODO: pass hardcoded parts as arguments?
+                       'original-src', misuse.location.file.lstrip('/'))  # TODO: pass hardcoded parts as arguments?
     with open(misuse_file) as file:
         code = file.read()
     method = __get_method_code(misuse, code)

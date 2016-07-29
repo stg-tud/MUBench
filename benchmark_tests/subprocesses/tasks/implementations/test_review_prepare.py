@@ -1,6 +1,6 @@
 import ast
 import yaml
-from os import chdir
+from os import chdir, remove
 from os.path import join
 from shutil import rmtree
 from tempfile import mkdtemp
@@ -50,9 +50,9 @@ class TestReviewPrepare:
         self.assert_potential_hit(self.misuse)
 
     def test_matches_on_file_absolute(self):
-        create_file("checkouts/project/version/original-src/a/b/some-class.java", truncate=True)
-        self.misuse.location.file = "some-class.java"
-        self.create_result([{"file": "/a/b/some-class.java"}])
+        create_file("checkouts/project/version/original-src/java/main/some-class.java", truncate=True)
+        self.misuse.location.file = "/java/main/some-class.java"
+        self.create_result([{"file": "/java/main/some-class.java"}])
 
         self.uut.process_project_version_misuse(self.project, self.version, self.misuse)
 
