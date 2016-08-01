@@ -28,10 +28,11 @@ def get_command_line_parser(available_detectors: List[str], available_scripts: L
         formatter_class=SortingHelpFormatter)
 
     subparsers = parser.add_subparsers(
-        help="MUBench provides several subprocesses. Run `benchmark.py <subprocess> -h` for details.",
+        help="MUBench provides several tasks. Run `mubench <task> -h` for details.",
         dest='subprocess')
 
     __add_check_subprocess(subparsers)
+    __add_info_subprocess(subparsers)
     __add_checkout_subprocess(subparsers)
     __add_compile_subprocess(subparsers)
     __add_detect_subprocess(available_detectors, subparsers)
@@ -59,6 +60,12 @@ def parse_args(args: List[str], available_detectors: List[str], available_script
 def __add_check_subprocess(subparsers) -> None:
     subparsers.add_parser('check', formatter_class=SortingHelpFormatter,
                           help="Validate whether the environment meets the prerequisites to run MUBench.")  # type: ArgumentParser
+
+
+def __add_info_subprocess(subparsers) -> None:
+    parser = subparsers.add_parser('info', formatter_class=SortingHelpFormatter,
+                          help="Show info about projects, project versions, and misuses in MUBench.")
+    __setup_misuse_filter_arguments(parser)
 
 
 def __add_checkout_subprocess(subparsers) -> None:

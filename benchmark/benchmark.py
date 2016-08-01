@@ -13,6 +13,7 @@ from benchmark.subprocesses.tasks.implementations import stats
 from benchmark.subprocesses.tasks.implementations.checkout import Checkout
 from benchmark.subprocesses.tasks.implementations.compile import Compile
 from benchmark.subprocesses.tasks.implementations.detect import Detect
+from benchmark.subprocesses.tasks.implementations.info import Info
 from benchmark.subprocesses.tasks.implementations.review_check import ReviewCheck
 from benchmark.subprocesses.tasks.implementations.review_prepare import ReviewPrepare
 from benchmark.utils import command_line_util
@@ -46,6 +47,9 @@ class Benchmark:
     def _setup_stats(self) -> None:
         stats_calculator = stats.get_calculator(self.config.script)
         self.runner.add(stats_calculator)
+
+    def _setup_info(self):
+        self.runner.add(Info(Benchmark.CHECKOUTS_PATH, Benchmark.CHECKOUTS_PATH))
 
     def _setup_checkout(self):
         checkout_handler = Checkout(Benchmark.CHECKOUTS_PATH, self.config.force_checkout)
@@ -94,6 +98,8 @@ class Benchmark:
             return
         elif config.subprocess == 'check':
             pass
+        elif config.subprocess == 'info':
+            self._setup_info()
         elif config.subprocess == 'checkout':
             self._setup_checkout()
         elif config.subprocess == 'compile':
