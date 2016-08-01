@@ -51,7 +51,7 @@ class SyntheticProjectCheckout(ProjectCheckout):
         self.version = version
 
     def exists(self) -> bool:
-        return False
+        return exists(self.checkout_dir)
 
     def delete(self) -> None:
         self._logger.debug("Delete %s", self.checkout_dir)
