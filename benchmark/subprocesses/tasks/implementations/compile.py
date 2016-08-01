@@ -36,8 +36,8 @@ class Compile(ProjectVersionTask):
         sources_path = join(build_path, version.source_dir)
         classes_path = join(build_path, version.classes_dir)
 
-        needs_copy_sources = not isdir(project_compile.original_sources_path) or self.force_compile
-        needs_compile = not isdir(project_compile.original_classes_path) or self.force_compile
+        needs_copy_sources = project_compile.needs_copy_sources() or self.force_compile
+        needs_compile = project_compile.needs_compile() or self.force_compile
 
         if needs_copy_sources or needs_compile:
             logger.debug("Copying to build directory...")
@@ -81,8 +81,8 @@ class Compile(ProjectVersionTask):
             logger.info("Skipping pattern compilation: no patterns.")
             return Response.ok
 
-        needs_copy_pattern_sources = not isdir(project_compile.pattern_sources_path) or self.force_compile
-        needs_compile_patterns = not isdir(project_compile.pattern_classes_path) or self.force_compile
+        needs_copy_pattern_sources = project_compile.needs_copy_pattern_sources() or self.force_compile
+        needs_compile_patterns = project_compile.needs_compile_patterns() or self.force_compile
 
         if needs_copy_pattern_sources or needs_compile_patterns:
             logger.debug("Copying to build directory...")

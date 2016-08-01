@@ -1,4 +1,4 @@
-from os.path import join
+from os.path import join, isdir
 
 
 class ProjectCompile:
@@ -17,3 +17,15 @@ class ProjectCompile:
         self.misuse_classes_path = join(self.base_path, ProjectCompile.MISUSE_CLASSES_DIR)
         self.pattern_sources_path = join(self.base_path, ProjectCompile.PATTERN_SOURCE_DIR)
         self.pattern_classes_path = join(self.base_path, ProjectCompile.PATTERN_CLASSES_DIR)
+
+    def needs_copy_sources(self):
+        return not isdir(self.original_sources_path)
+
+    def needs_copy_pattern_sources(self):
+        return not isdir(self.pattern_sources_path)
+
+    def needs_compile(self):
+        return not isdir(self.original_classes_path)
+
+    def needs_compile_patterns(self):
+        return not isdir(self.pattern_classes_path)
