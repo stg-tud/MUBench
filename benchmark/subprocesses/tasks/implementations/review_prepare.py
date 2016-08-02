@@ -19,9 +19,10 @@ class ReviewPrepare(ProjectVersionMisuseTask):
     no_hit = 0
     potential_hit = 1
 
-    def __init__(self, results_path: str, review_path: str, checkout_base_dir: str, eval_result_file: str,
-                 force_prepare: bool):
+    def __init__(self, results_path: str, review_path: str, checkout_base_dir: str, compiles_path: str,
+                 eval_result_file: str, force_prepare: bool):
         super().__init__()
+        self.compiles_path = compiles_path
         self.results_path = results_path
         self.review_path = review_path
         self.checkout_base_dir = checkout_base_dir
@@ -104,7 +105,8 @@ class ReviewPrepare(ProjectVersionMisuseTask):
         logger.debug("Generating review files for %s in %s...", misuse, version)
 
         if potential_hits:
-            review_page.generate(review_path, self.detector, project, version, misuse, potential_hits)
+            review_page.generate(review_path, self.detector, self.compiles_path, project, version, misuse,
+                                 potential_hits)
             self.__generate_potential_hits_yaml(potential_hits, review_path)
             self.__append_misuse_review(misuse, review_site, [])
         else:

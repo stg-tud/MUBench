@@ -77,7 +77,7 @@ class Benchmark:
         for detector in detectors_with_available_result:
             results_path = join(Benchmark.RESULTS_PATH, detector)
             review_path = join(Benchmark.REVIEW_PATH, detector)
-            review_preparer = ReviewPrepare(results_path, review_path, Benchmark.CHECKOUTS_PATH,
+            review_preparer = ReviewPrepare(results_path, review_path, Benchmark.CHECKOUTS_PATH, Benchmark.CHECKOUTS_PATH,
                                             self.eval_result_file, self.config.force_prepare)
             self.runner.add(review_preparer)
 

@@ -20,8 +20,6 @@ class TestReviewPrepare:
     def setup(self):
         self.temp_dir = mkdtemp(prefix='mubench-result-evaluation-test_')
 
-        chdir(self.temp_dir)
-
         self.data_path = join(self.temp_dir, 'data')
         self.checkout_dir = join(self.temp_dir, 'checkouts')
         self.results_path = join(self.temp_dir, 'results', 'test-detector')
@@ -29,19 +27,22 @@ class TestReviewPrepare:
         self.detector = 'test-detector'
         self.eval_result_file = 'result.csv'
 
-        self.uut = ReviewPrepare(self.results_path, self.review_path, self.checkout_dir, self.eval_result_file, False)
+        self.uut = ReviewPrepare(self.results_path, self.review_path, self.checkout_dir, self.checkout_dir,
+                                 self.eval_result_file, False)
 
         self.project = create_project('project')
         self.version = create_version('version', project=self.project)
         self.misuse = create_misuse('misuse', meta={"location": {"file": "a", "method": "m()"}}, project=self.project)
 
-        create_file('checkouts/project/version/original-src/a')
+        self.compile = self.version.get_compile(self.checkout_dir)
+
+        create_file(join(self.compile.original_sources_path, "a"))
 
     def teardown(self):
         rmtree(self.temp_dir, ignore_errors=True)
 
     def test_matches_on_file(self):
-        create_file("checkouts/project/version/original-src/some-class.java")
+        create_file(join(self.compile.original_sources_path, "some-class.java"))
         self.misuse.location.file = "some-class.java"
         self.create_result([{"file": "some-class.java"}])
 
@@ -50,16 +51,17 @@ class TestReviewPrepare:
         self.assert_potential_hit(self.misuse)
 
     def test_matches_on_file_absolute(self):
-        create_file("checkouts/project/version/original-src/java/main/some-class.java", truncate=True)
-        self.misuse.location.file = "/java/main/some-class.java"
-        self.create_result([{"file": "/java/main/some-class.java"}])
+        absolute_file_name = join(self.compile.original_sources_path, "java/main/some-class.java")
+        create_file(absolute_file_name, truncate=True)
+        self.misuse.location.file = "java/main/some-class.java"
+        self.create_result([{"file": absolute_file_name}])
 
         self.uut.process_project_version_misuse(self.project, self.version, self.misuse)
 
         self.assert_potential_hit(self.misuse)
 
     def test_matches_on_class(self):
-        create_file("checkouts/project/version/original-src/some-class.java")
+        create_file(join(self.compile.original_sources_path, "some-class.java"))
         self.misuse.location.file = "some-class.java"
         self.create_result([{"file": "some-class.class"}])
 
@@ -68,7 +70,7 @@ class TestReviewPrepare:
         self.assert_potential_hit(self.misuse)
 
     def test_matches_on_inner_class(self):
-        create_file("checkouts/project/version/original-src/some-class.java")
+        create_file(join(self.compile.original_sources_path, "some-class.java"))
         self.misuse.location.file = "some-class.java"
         self.create_result([{"file": "some-class$inner-class.class"}])
 
