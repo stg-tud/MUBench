@@ -162,8 +162,6 @@ class ReviewPrepare(ProjectVersionMisuseTask):
     def __find_potential_hits(findings: Iterable[Dict[str, str]], misuse: Misuse) -> List[Dict[str, str]]:
         candidates = ReviewPrepare.__filter_by_file(findings, misuse.location.file)
         candidates = ReviewPrepare.__filter_by_method(candidates, misuse.location.method)
-        for i, candidate in enumerate(candidates):
-            candidate.update({'id': i})
         return candidates
 
     @staticmethod
