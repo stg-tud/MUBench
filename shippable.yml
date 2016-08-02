@@ -6,12 +6,9 @@ language: python
 python:
   - 3.5
 
-before_script:
-  - mkdir -p shippable/codecoverage shippable/testresults
-  - sudo chmod +x mubench
-
 install:
   - sudo apt-get update
+  - apt-get install -y oracle-java8-installer
   - sudo apt-get install git
   - git config --global user.email "bob@builder.com"
   - git config --global user.name "Bob the Builder"
@@ -23,9 +20,20 @@ install:
   - sudo apt-get install maven
   - sudo apt-get install gradle
 
+before_script:
+  - export JAVA_HOME="/usr/lib/jvm/java-8-oracle"
+  - export PATH="$PATH:$JAVA_HOME/bin"
+  - update-alternatives --set java "$JAVA_HOME/jre/bin/java"
+  - update-alternatives --set javac "$JAVA_HOME/bin/javac"
+  - update-alternatives --set javaws "$JAVA_HOME/jre/bin/javaws"
+  - java -version
+  - mkdir -p shippable/codecoverage shippable/testresults
+  - sudo chmod +x mubench
+
 script: 
   - nosetests --with-xunit --xunit-file=shippable/testresults/nosetests.xml
   - mvn test -f benchmark/mubench.cli/pom.xml
+  - mvn test -f benchmark/mubench.utils/pom.xml
   - ./mubench detect dummy --only synthetic
   - "./mubench review:prepare"
   - "./mubench review:check"
