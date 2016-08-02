@@ -71,7 +71,7 @@ def __check_md5(file, md5_checksum):
 
     file_checksum = __compute_md5(file)
     if not md5_checksum == file_checksum:
-        raise ValueError("invalid MD5 checksum '{}', should be '{}'".format(file_checksum, md5_checksum))
+        raise ValueError("invalid MD5 checksum '{}', expected '{}'".format(file_checksum, md5_checksum))
     else:
         return True
 
