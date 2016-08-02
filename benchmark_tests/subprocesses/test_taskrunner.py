@@ -1,13 +1,11 @@
+from os.path import join
 from tempfile import mkdtemp
-from typing import List
 from unittest.mock import MagicMock, call
 
-from nose.tools import assert_equals
-from os.path import join
+from nose.tools import assert_equals, assert_raises
 
-from benchmark.data.project import Project
 from benchmark.subprocesses.tasking import TaskRunner
-from benchmark.subprocesses.tasks.base.project_task import ProjectTask, Response
+from benchmark.subprocesses.tasks.base.project_task import ProjectTask, Response, Requirement
 from benchmark.utils.io import remove_tree, create_file
 from benchmark_tests.test_utils.data_util import create_project
 
@@ -31,6 +29,26 @@ class TestTaskRunner:
         self.uut.run()
 
         self.test_task.process_project.assert_called_with(project)
+
+    def test_checks_requirements(self):
+        requirement = Requirement("test requirement")
+        requirement.check = MagicMock()
+        self.test_task.get_requirements = MagicMock(return_value=[requirement])
+
+        self.uut.run()
+
+        requirement.check.assert_called_with()
+
+    def test_stops_on_unsatisfied_requirement(self):
+        requirement = Requirement("test requirement")
+        requirement.check = MagicMock(side_effect=ValueError("not satisfied"))
+        self.test_task.get_requirements = MagicMock(return_value=[requirement])
+
+        with assert_raises(SystemExit):
+            self.uut.run()
+
+        # assert that exit comes before task is started
+        self.test_task.start.assert_not_called()
 
     def test_starts_task(self):
         self.uut.run()

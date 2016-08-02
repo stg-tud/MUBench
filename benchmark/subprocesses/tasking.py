@@ -10,7 +10,7 @@ from benchmark.subprocesses.tasks.base.project_task import ProjectTask, Response
 
 class TaskRunner:
     def __init__(self, data_path: str, white_list: List[str], black_list: List[str]):
-        self.tasks = []
+        self.tasks = [] # type: List[ProjectTask]
         self.data_path = data_path
         self.white_list = white_list
         self.black_list = black_list
@@ -21,7 +21,9 @@ class TaskRunner:
     def run(self) -> None:
         for task in self.tasks:
             logger = logging.getLogger()
-            logger.info("Starting %s...", type(task).__name__.lower())
+            logger.info("Checking requirements for %s...", task.name)
+            self.__check_requirements(task, logger)
+            logger.info("Starting %s...", task.name)
             task.start()
             task.black_list = self.black_list
             task.white_list = self.white_list
@@ -35,6 +37,27 @@ class TaskRunner:
                         logger.info("Cannot proceed on %s; skipping for subsequent tasks.", project)
                         self.black_list.append(project.id)
             task.end()
+
+    def check(self) -> None:
+        for task in self.tasks:
+            logger = logging.getLogger()
+            logger.info("Checking requirements for %s...", task.name)
+            self.__check_requirements(task, logger)
+
+    @staticmethod
+    def __check_requirements(task, logger):
+        missing_prerequisites = False
+        for requirement in task.get_requirements():
+            try:
+                requirement.check()
+                logger.debug("Requirement '%s' satisfied", requirement.description)
+            except Exception as e:
+                logger.error("Requirement '%s' not satisfied: %s", requirement.description, e)
+                missing_prerequisites = True
+
+        if missing_prerequisites:
+            logger.error("Cannot run '%s'. Please ensure requirements.", task.name)
+            exit(1)
 
     @staticmethod
     def _get_projects(data_path: str) -> List[Project]:

@@ -1,14 +1,14 @@
 import logging
 import shutil
 from os import makedirs
-from os.path import join, exists, isdir, dirname
+from os.path import join, exists, dirname
 from typing import List, Set
 
-from benchmark.data.misuse import Misuse, Pattern
+from benchmark.data.misuse import Pattern
 from benchmark.data.project import Project
 from benchmark.data.project_version import ProjectVersion
+from benchmark.subprocesses.requirements import JavaRequirement, UrlLibRequirement, MavenRequirement, GradleRequirement
 from benchmark.subprocesses.tasks.base.project_task import Response
-from benchmark.subprocesses.tasks.base.project_version_misuse_task import ProjectVersionMisuseTask
 from benchmark.subprocesses.tasks.base.project_version_task import ProjectVersionTask
 from benchmark.utils.io import remove_tree, copy_tree
 from benchmark.utils.shell import Shell, CommandFailedError
@@ -23,6 +23,9 @@ class Compile(ProjectVersionTask):
         self.compiles_base_path = compiles_base_path
         self.pattern_frequency = pattern_frequency
         self.force_compile = force_compile
+
+    def get_requirements(self):
+        return [JavaRequirement(), UrlLibRequirement(), MavenRequirement(), GradleRequirement()]
 
     def process_project_version(self, project: Project, version: ProjectVersion):
         logger = logging.getLogger("compile")

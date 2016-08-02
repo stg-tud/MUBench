@@ -10,9 +10,9 @@ import yaml
 
 from benchmark.data.project import Project
 from benchmark.data.project_version import ProjectVersion
+from benchmark.subprocesses.requirements import JavaRequirement, UrlLibRequirement
 from benchmark.subprocesses.tasks.base.project_task import Response
 from benchmark.subprocesses.tasks.base.project_version_task import ProjectVersionTask
-from benchmark.utils import web_util
 from benchmark.utils.io import remove_tree, write_yaml, read_yaml
 from benchmark.utils.shell import Shell, CommandFailedError
 from benchmark.utils.web_util import download_file
@@ -59,6 +59,10 @@ class Run:
             with open(self.__findings_file_path, "r") as stream:
                 return [finding for finding in yaml.load_all(stream) if finding]
 
+    @property
+    def runtime(self):
+        return self.__runtime
+
     def write(self):
         write_yaml({"result": self.__result.name, "runtime": self.__runtime}, file=self.__run_file_path)
 
@@ -82,6 +86,9 @@ class Detect(ProjectVersionTask):
         self.key_classes_project = "classpath"
         self.key_classes_misuse = "classpath_misuse"
         self.key_classes_patterns = "classpath_patterns"
+
+    def get_requirements(self):
+        return [JavaRequirement(), UrlLibRequirement()]
 
     def start(self):
         if not self._detector_available():

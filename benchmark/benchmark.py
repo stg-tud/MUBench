@@ -6,7 +6,6 @@ from datetime import datetime
 from os import listdir, makedirs
 from os.path import join, realpath, isdir, exists
 
-from benchmark.subprocesses.check import check_prerequisites
 from benchmark.subprocesses.result_processing.visualize_results import Visualizer
 from benchmark.subprocesses.tasking import TaskRunner
 from benchmark.subprocesses.tasks.implementations import stats
@@ -15,7 +14,7 @@ from benchmark.subprocesses.tasks.implementations.compile import Compile
 from benchmark.subprocesses.tasks.implementations.detect import Detect
 from benchmark.subprocesses.tasks.implementations.info import Info
 from benchmark.subprocesses.tasks.implementations.review_check import ReviewCheck
-from benchmark.subprocesses.tasks.implementations.review_prepare import ReviewPrepare
+from benchmark.subprocesses.tasks.implementations.review_prepare import ReviewPrepare, ReviewPrepareAll
 from benchmark.utils import command_line_util
 
 
@@ -27,7 +26,6 @@ class Benchmark:
 
     def __init__(self, config):
         self.detector_result_file = 'findings.yml'
-        self.eval_result_file = 'result.csv'
         self.reviewed_eval_result_file = 'reviewed-result.csv'
         self.visualize_result_file = 'result.csv'
 
@@ -38,6 +36,15 @@ class Benchmark:
         if 'black_list' not in config:
             config.black_list = []
         self.runner = TaskRunner(Benchmark.DATA_PATH, config.white_list, config.black_list)
+
+    def _run_check(self) -> None:
+        self.runner.add(Info("", ""))
+        self.runner.add(Checkout("", False))
+        self.runner.add(Compile("", "", 0, False))
+        self.runner.add(Detect("dummy", "", "", "", None, [], False))
+        self.runner.add(ReviewPrepare("", "", "", "", "", False))
+        self.runner.add(ReviewCheck("", []))
+        self.runner.check()
 
     def _run_visualize(self) -> None:
         visualizer = Visualizer(Benchmark.RESULTS_PATH, self.reviewed_eval_result_file, self.visualize_result_file,
@@ -61,6 +68,7 @@ class Benchmark:
         self.runner.add(compile_handler)
 
     def _setup_detect(self):
+        # TODO make task append the detector name to the results path
         results_path = join(Benchmark.RESULTS_PATH, self.config.detector)
         detector_runner = Detect(self.config.detector, self.detector_result_file, Benchmark.CHECKOUTS_PATH,
                                  results_path,
@@ -68,18 +76,18 @@ class Benchmark:
         self.runner.add(detector_runner)
 
     def _setup_review_prepare(self):
-        if not exists(Benchmark.RESULTS_PATH):
-            return
-
-        detectors_with_available_result = [detector for detector in listdir(Benchmark.RESULTS_PATH) if
-                                           detector in available_detectors]
-
-        for detector in detectors_with_available_result:
+        for detector in available_detectors:
             results_path = join(Benchmark.RESULTS_PATH, detector)
-            review_path = join(Benchmark.REVIEW_PATH, detector)
-            review_preparer = ReviewPrepare(results_path, review_path, Benchmark.CHECKOUTS_PATH, Benchmark.CHECKOUTS_PATH,
-                                            self.eval_result_file, self.config.force_prepare)
-            self.runner.add(review_preparer)
+            if detector.endswith("-do"):
+                review_path = join(Benchmark.REVIEW_PATH, "ex1_detect-only", detector[:-3])
+            else:
+                review_path = join(Benchmark.REVIEW_PATH, "ex2_mine-and-detect", detector)
+                review_all_path = join(Benchmark.REVIEW_PATH, "ex3_all-findings", detector)
+                self.runner.add(ReviewPrepareAll(detector, results_path, review_all_path, Benchmark.CHECKOUTS_PATH,
+                                                 Benchmark.CHECKOUTS_PATH, self.config.force_prepare))
+
+            self.runner.add(ReviewPrepare(detector, results_path, review_path, Benchmark.CHECKOUTS_PATH,
+                                          Benchmark.CHECKOUTS_PATH, self.config.force_prepare))
 
     def _setup_review_check(self):
         if not exists(Benchmark.REVIEW_PATH):
@@ -92,12 +100,12 @@ class Benchmark:
         self.runner.add(review_checker)
 
     def run(self) -> None:
-        check_prerequisites()
         if config.subprocess == 'visualize':
             self._run_visualize()
             return
         elif config.subprocess == 'check':
-            pass
+            self._run_check()
+            return
         elif config.subprocess == 'info':
             self._setup_info()
         elif config.subprocess == 'checkout':
