@@ -3,7 +3,7 @@ from shutil import copy
 
 import yaml
 from os import makedirs, listdir
-from os.path import join, exists, pardir, basename
+from os.path import join, exists, pardir, basename, dirname
 from typing import Dict, Iterable
 from typing import List
 
@@ -304,6 +304,7 @@ class ReviewPrepareAll(ProjectVersionTask):
 
         if self.detector.startswith("jadet") or self.detector.startswith("tikanga"):
             url = join(project.id, version.version_id, "violations.xml")
+            makedirs(dirname(join(self.review_path, url)), exist_ok=True)
             copy(join(self.findings_path, url), join(self.review_path, url))
             self.__review.append_finding_review("all findings",
                                                 "<a href=\"{}\">download violations.xml</a>".format(url), [])
