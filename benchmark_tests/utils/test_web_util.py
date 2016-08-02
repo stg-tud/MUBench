@@ -6,7 +6,7 @@ from urllib.error import URLError
 from nose.tools import assert_raises
 
 from benchmark.utils.io import create_file, safe_write
-from benchmark.utils.web_util import validate_file, download_file
+from benchmark.utils.web_util import validate_file, download_file, is_valid_file
 
 EMPTY_FILE_MD5 = "d41d8cd98f00b204e9800998ecf8427e"
 
@@ -43,6 +43,14 @@ class TestValidateFile:
         safe_write(EMPTY_FILE_MD5, md5_file, append=False)
 
         validate_file(self.file, md5_file)
+
+    def test_is_invalid(self):
+        assert not is_valid_file(self.file)
+
+    def test_is_valid(self):
+        create_file(self.file)
+
+        assert is_valid_file(self.file)
 
 
 class TestDownloadFile:
