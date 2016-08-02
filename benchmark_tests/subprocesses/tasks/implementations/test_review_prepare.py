@@ -1,11 +1,10 @@
 import ast
-import yaml
-from os import chdir, remove
 from os.path import join
 from shutil import rmtree
 from tempfile import mkdtemp
 from typing import Dict, List
 
+import yaml
 from nose.tools import assert_equals, assert_in
 
 from benchmark.data.misuse import Misuse
