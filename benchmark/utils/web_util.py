@@ -24,7 +24,8 @@ def download_file(url: str, file: str, md5_checksum: str = None):
 
 def validate_file(file_path: str, md5_checksum: str = None):
     """
-    Checks if the file exists and, if a checksum or checksum file is provided, whether the files checksum matches.
+    Checks if the file exists and, if a checksum is provided, whether the file's checksum matches. Raises an exception,
+    if the file is invalid.
     :param file_path: the file to validate
     :param md5_checksum: the MD5 checksum or MD5 checksum file
     """
