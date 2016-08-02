@@ -57,7 +57,16 @@ public class MethodExtractorTest {
 				"void m(A a, B b) {\n}");
 	}
 	
-	
+	@Test
+	public void findsConstructor() throws ParseException {
+		test("class C{\n"
+				+ "  C() {}\n"
+				+ "}",
+				
+				"<init>()",
+				
+				"C() {\n}");
+	}
 
 	@Test
 	public void includesBody() throws ParseException {

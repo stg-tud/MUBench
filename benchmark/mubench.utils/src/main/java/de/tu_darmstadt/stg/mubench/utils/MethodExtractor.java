@@ -9,6 +9,7 @@ import java.util.List;
 import com.github.javaparser.JavaParser;
 import com.github.javaparser.ParseException;
 import com.github.javaparser.ast.CompilationUnit;
+import com.github.javaparser.ast.body.ConstructorDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.body.Parameter;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
@@ -37,10 +38,23 @@ public class MethodExtractor {
 		public MethodRetriever(String methodSignature) {
 			this.methodSignature = methodSignature;
 		}
+		
+		@Override
+		public void visit(ConstructorDeclaration constructor, List<String> matchingMethodsCode) {
+			String signature = getSignature("<init>", constructor.getParameters());
+			if (methodSignature.equals(signature)) {
+				StringBuilder constructor_code = new StringBuilder();
+				if (constructor.hasComment()) {
+					constructor_code.append(constructor.getComment());
+				}
+				constructor_code.append(constructor.getDeclarationAsString()).append(" ").append(constructor.getBlock());
+				matchingMethodsCode.add(constructor_code.toString());
+			}
+		}
 
 		@Override
 		public void visit(MethodDeclaration method, List<String> matchingMethodsCode) {
-			String signature = getSignature(method);
+			String signature = getSignature(method.getName(), method.getParameters());
 			if (methodSignature.equals(signature)) {
 				StringBuilder method_code = new StringBuilder();
 				if (method.hasComment()) {
@@ -51,10 +65,10 @@ public class MethodExtractor {
 			}
 		}
 
-		private String getSignature(MethodDeclaration method) {
-			StringBuilder signature = new StringBuilder(method.getName()).append("(");
+		private String getSignature(String methodName, List<Parameter> parameters) {
+			StringBuilder signature = new StringBuilder(methodName).append("(");
 			boolean first = true;
-			for (Parameter parameter : method.getParameters()) {
+			for (Parameter parameter : parameters) {
 				if (!first) {
 					signature.append(", ");
 				}
