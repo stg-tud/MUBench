@@ -10,6 +10,7 @@ from benchmark.data.project_version import ProjectVersion
 from benchmark.subprocesses.tasks.implementations.review import potential_hits_section
 from benchmark.utils.io import safe_write
 from benchmark.utils.java_utils import exec_util
+from benchmark.utils.shell import CommandFailedError
 
 
 def generate(review_folder: str, detector: str, compiles_path: str, project: Project, version: ProjectVersion,
@@ -25,17 +26,39 @@ def generate(review_folder: str, detector: str, compiles_path: str, project: Pro
                  misuse.fix.commit,
                  misuse.location.file,
                  misuse.location.method),
-             '<p>{}</p>'.format(__get_target_code(compiles_path, project, version, misuse)),
+             '<p>{}</p>'.format(__get_target_code(compiles_path, version, misuse.location.file, misuse.location.method)),
              '<h2>Potential Hits</h2>'] + potential_hits_section.generate(detector, potential_hits)
 
     safe_write('\n'.join(lines), join(review_folder, 'review.html'), False)
 
 
-def __get_target_code(compiles_path: str, project: Project, version: ProjectVersion, misuse: Misuse) -> str:
-    version_compile = version.get_compile(compiles_path)
-    misuse_file = join(version_compile.original_sources_path, misuse.location.file)
+def generate2(review_file: str, detector: str, compiles_path: str, version: ProjectVersion, finding: Dict[str,str]):
+    review = """
+        <h1>Review</h1>
+        <table>
+            <tr><td><b>Detector:</b></td><td>{}</td></tr>
+            <tr><td><b>Target:</b></td><td>{}</td></tr>
+            <tr><td><b>Finding:</b></td><td>{}</td></tr>
+            <tr><td><b>In File:</b></td><td>{}</td></tr>
+            <tr><td><b>In Method:</b></td><td>{}</td></tr>
+        </table>
+        <p>{}</p>
+        {}
+        """.format(detector, version, finding["id"], join(version.source_dir, finding["file"]), finding["method"],
+                   __get_target_code(compiles_path, version, finding["file"], finding["method"]),
+                   "\n".join(potential_hits_section.generate(detector, [finding])))
 
-    method = exec_util("MethodExtractor", "\"{}\" \"{}\"".format(misuse_file, misuse.location.method))
+    safe_write(review, review_file, False)
+
+
+def __get_target_code(compiles_path: str, version: ProjectVersion, file: str, method: str) -> str:
+    version_compile = version.get_compile(compiles_path)
+    misuse_file = join(version_compile.original_sources_path, file)
+
+    try:
+        method = exec_util("MethodExtractor", "\"{}\" \"{}\"".format(misuse_file, method))
+    except CommandFailedError as e:
+        method = str(e)
 
     return '<script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js' \
            '?autoload=true&amp;skin=sunburst"></script>\n' \

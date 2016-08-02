@@ -1,4 +1,6 @@
 import logging
+from shutil import copy
+
 import yaml
 from os import makedirs, listdir
 from os.path import join, exists, pardir, basename
@@ -8,71 +10,148 @@ from typing import List
 from benchmark.data.misuse import Misuse
 from benchmark.data.project import Project
 from benchmark.data.project_version import ProjectVersion
-from benchmark.subprocesses.tasks.base.project_task import Response
+from benchmark.subprocesses.requirements import JavaRequirement, UrlLibRequirement
+from benchmark.subprocesses.tasks.base.project_task import Response, Requirement
 from benchmark.subprocesses.tasks.base.project_version_misuse_task import ProjectVersionMisuseTask
+from benchmark.subprocesses.tasks.base.project_version_task import ProjectVersionTask
 from benchmark.subprocesses.tasks.implementations.detect import Run
 from benchmark.subprocesses.tasks.implementations.review import main_index, review_page
 from benchmark.utils.io import safe_open, remove_tree, safe_write, read_yaml
+from benchmark.utils.shell import Shell
+
+
+class Review:
+    def __init__(self, detector: str):
+        self.detector = detector
+        self.project_reviews = []  # type: List[ProjectReview]
+        self.__current_project_review = None  # type: ProjectReview
+
+    def start_project_review(self, project_id: str):
+        self.__current_project_review = ProjectReview(project_id)
+        self.project_reviews.append(self.__current_project_review)
+
+    def start_run_review(self, name: str, run: Run):
+        self.__current_project_review.start_run_review(name, run)
+
+    def append_finding_review(self, name: str, result: str, reviewers: List[str]):
+        self.__current_project_review.append_finding_review(name, result, reviewers)
+
+    def to_html(self):
+        review = "<h1>Detector: {}</h1>".format(self.detector)
+        for project_review in self.project_reviews:
+            review += project_review.to_html()
+        return review
+
+
+class ProjectReview:
+    def __init__(self, project_id):
+        self.project_id = project_id
+        self.run_reviews = []  # type: List[RunReview]
+        self.__current_run_review = None  # type: RunReview
+
+    def start_run_review(self, name: str, run: Run):
+        self.run_reviews.append(RunReview(name, run))
+
+    def append_finding_review(self, name: str, result: str, reviewers: List[str]):
+        self.run_reviews[len(self.run_reviews) - 1].append_finding_review(name, result, reviewers)
+
+    def to_html(self):
+        review = """
+            <h2>Project: {}</h2>
+            <table>
+            """.format(self.project_id)
+        for version_review in self.run_reviews:
+            review += version_review.to_html()
+        review += """
+            </table>
+            """
+        return review
+
+
+class RunReview:
+    def __init__(self, name: str, run: Run):
+        self.version_id = name
+        self.run = run
+        self.finding_reviews = []
+
+    def append_finding_review(self, name: str, result: str, reviewers: List[str]):
+        self.finding_reviews.append(FindingReview(name, result, reviewers))
+
+    def to_html(self):
+        review = """
+            <tr>
+                <td>Version:</td>
+                <td>{} (result: {}, findings: {}, duration: {}s)</td>
+            </tr>
+            <tr>
+                <td></td>
+                <td>
+                    <table>
+            """.format(self.version_id, self.run.result, len(self.run.findings), self.run.runtime)
+        for misuse_review in self.finding_reviews:
+            review += misuse_review.to_html()
+        review += """
+                    </table>
+                </td>
+            </tr>
+            """
+        return review
+
+
+class FindingReview:
+    def __init__(self, name: str, result: str, reviewers: List[str]):
+        self.name = name
+        self.result = result
+        self.reviewers = reviewers
+
+    def to_html(self):
+        reviewed_by = "reviewed by " + ", ".join(self.reviewers) if self.reviewers else "none"
+        return """
+            <tr>
+                <td>Misuse:</td>
+                <td>{}</td>
+                <td>[{}]</td>
+                <td>{}</td>
+            </tr>
+            """.format(self.name, self.result, reviewed_by)
 
 
 class ReviewPrepare(ProjectVersionMisuseTask):
     no_hit = 0
     potential_hit = 1
 
-    def __init__(self, results_path: str, review_path: str, checkout_base_dir: str, compiles_path: str,
-                 eval_result_file: str, force_prepare: bool):
+    def __init__(self, detector: str, findings_path: str, review_path: str, checkout_base_dir: str, compiles_path: str,
+                 force_prepare: bool):
         super().__init__()
         self.compiles_path = compiles_path
-        self.results_path = results_path
+        self.findings_path = findings_path
         self.review_path = review_path
         self.checkout_base_dir = checkout_base_dir
-        self.eval_result_file = eval_result_file
         self.force_prepare = force_prepare
+        self.detector = detector
 
-        self.detector = basename(self.results_path)
+        self.__review = Review(self.detector)
 
-        self.results = []
-
-        self.projects_to_review = []
-        self.versions_to_review = []
-        self.misuses_to_review = []
+    def get_requirements(self):
+        return [JavaRequirement(), UrlLibRequirement()]
 
     def start(self):
         logger = logging.getLogger("review_prepare")
         logger.info("Preparing review for results of %s...", self.detector)
 
     def process_project(self, project: Project):
-        self.versions_to_review.clear()
-
+        self.__review.start_project_review(project.id)
         super().process_project(project)
 
-        project_to_review = "<h2>Project: {}</h2>\n<table>\n".format(project.id)
-        for version_to_review in self.versions_to_review:
-            project_to_review += version_to_review
-        project_to_review += "</table>\n"
-
-        self.projects_to_review.append(project_to_review)
-
     def process_project_version(self, project: Project, version: ProjectVersion):
-        self.misuses_to_review.clear()
-
+        findings_path = join(self.findings_path, project.id, version.version_id)
+        self.__review.start_run_review(version.version_id, Run(findings_path))
         super().process_project_version(project, version)
-
-        findings_path = join(self.results_path, project.id, version.version_id)
-        detector_run = Run(findings_path)
-
-        version_to_review = "<tr><td>Version:</td><td>{} ({} findings in total)</td></tr>\n" \
-                            "<tr><td></td><td><table>\n".format(version.version_id, len(detector_run.findings))
-        for misuse_to_review in self.misuses_to_review:
-            version_to_review += misuse_to_review
-        version_to_review += "</table></td></tr>\n"
-
-        self.versions_to_review.append(version_to_review)
 
     def process_project_version_misuse(self, project: Project, version: ProjectVersion, misuse: Misuse) -> Response:
         logger = logging.getLogger("review_prepare.misuse")
 
-        findings_path = join(self.results_path, project.id, version.version_id)
+        findings_path = join(self.findings_path, project.id, version.version_id)
         detector_run = Run(findings_path)
 
         if not detector_run.is_success():
@@ -96,11 +175,8 @@ class ReviewPrepare(ProjectVersionMisuseTask):
         logger.debug("Checking hit for %s in %s...", misuse, version)
 
         findings = detector_run.findings
-        potential_hits = ReviewPrepare.__find_potential_hits(findings, misuse)
-
+        potential_hits = ReviewPrepare.find_potential_hits(findings, misuse)
         logger.info("Found %s potential hits for %s.", len(potential_hits), misuse)
-        self.results.append((misuse.id, len(potential_hits)))
-
         remove_tree(review_path)
         logger.debug("Generating review files for %s in %s...", misuse, version)
 
@@ -122,12 +198,8 @@ class ReviewPrepare(ProjectVersionMisuseTask):
         self.__append_misuse_to_review(misuse, "no potential hits", [])
 
     def __append_misuse_to_review(self, misuse: Misuse, result: str, existing_reviews: List[Dict[str, str]]):
-        reviewers = [review['reviewer'] for review in existing_reviews if review.get('reviewer', None) is not None]
-        reviewed_by = 'reviewed by ' + ', '.join(reviewers) if reviewers else ''
-
-        misuse_to_review = "<tr><td>Misuse:</td><td>{}</td>\n<td>[{}] {}</td></tr>\n".format(misuse.misuse_id, result,
-                                                                                             reviewed_by)
-        self.misuses_to_review.append(misuse_to_review)
+        reviewers = [review['reviewer'] for review in existing_reviews if review.get('reviewer', None)]
+        self.__review.append_finding_review(str(misuse), result, reviewers)
 
     @staticmethod
     def __get_existing_reviews(review_path: str) -> List[Dict[str, str]]:
@@ -144,22 +216,15 @@ class ReviewPrepare(ProjectVersionMisuseTask):
             yaml.dump_all(potential_hits, file)
 
     def end(self):
-        detector_to_review = "<h1>Detector: {}</h1>\n".format(self.detector)
-        for project_to_review in self.projects_to_review:
-            detector_to_review += project_to_review
-        safe_write(detector_to_review, join(self.review_path, "index.html"), append=False)
+        safe_write(self.__review.to_html(), join(self.review_path, "index.html"), append=False)
 
         main_review_dir = join(self.review_path, pardir)
-        main_findings_dir = join(self.results_path, pardir)
+        main_findings_dir = join(self.findings_path, pardir)
         if exists(main_findings_dir):
             main_index.generate(main_review_dir, main_findings_dir)
 
-        with safe_open(join(self.results_path, self.eval_result_file), 'w+') as file_result:
-            for result in self.results:
-                print(str(result).lstrip('(').rstrip(')'), file=file_result)
-
     @staticmethod
-    def __find_potential_hits(findings: Iterable[Dict[str, str]], misuse: Misuse) -> List[Dict[str, str]]:
+    def find_potential_hits(findings: Iterable[Dict[str, str]], misuse: Misuse) -> List[Dict[str, str]]:
         candidates = ReviewPrepare.__filter_by_file(findings, misuse.location.file)
         candidates = ReviewPrepare.__filter_by_method(candidates, misuse.location.method)
         return candidates
@@ -206,3 +271,48 @@ class ReviewPrepare(ProjectVersionMisuseTask):
                     matches.append(finding)
 
         return matches
+
+
+class ReviewPrepareAll(ProjectVersionTask):
+    def __init__(self, detector: str, findings_path: str, review_path: str, checkouts_path: str, compiles_path: str,
+                 force_prepare: bool):
+        super().__init__()
+        self.compiles_path = compiles_path
+        self.findings_path = findings_path
+        self.review_path = review_path
+        self.checkouts_path = checkouts_path
+        self.force_prepare = force_prepare
+        self.detector = detector
+
+        self.__review = Review(self.detector)
+
+    def get_requirements(self):
+        return [JavaRequirement(), UrlLibRequirement()]
+
+    def start(self):
+        logger = logging.getLogger("review_prepare")
+        logger.info("Preparing review of all findings of %s...", self.detector)
+
+    def process_project(self, project: Project):
+        self.__review.start_project_review(project.id)
+        super().process_project(project)
+
+    def process_project_version(self, project: Project, version: ProjectVersion):
+        findings_path = join(self.findings_path, project.id, version.version_id)
+        detector_run = Run(findings_path)
+        self.__review.start_run_review(version.version_id, detector_run)
+
+        if self.detector.startswith("jadet") or self.detector.startswith("tikanga"):
+            url = join(project.id, version.version_id, "violations.xml")
+            copy(join(self.findings_path, url), join(self.review_path, url))
+            self.__review.append_finding_review("all findings",
+                                                "<a href=\"{}\">download violations.xml</a>".format(url), [])
+        else:
+            for finding in detector_run.findings:
+                url = join(project.id, version.version_id, "finding-{}.html".format(finding["id"]))
+                review_page.generate2(join(self.review_path, url), self.detector, self.compiles_path, version, finding)
+                self.__review.append_finding_review("Finding {}".format(finding["id"]),
+                                                    "<a href=\"{}\">review</a>".format(url), [])
+
+    def end(self):
+        safe_write(self.__review.to_html(), join(self.review_path, "index.html"), append=False)
