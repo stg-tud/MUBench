@@ -4,6 +4,7 @@ from enum import Enum
 from os import makedirs
 from os.path import join, realpath, exists
 from typing import Optional, List
+from urllib.error import URLError
 
 import yaml
 
@@ -14,6 +15,7 @@ from benchmark.subprocesses.tasks.base.project_version_task import ProjectVersio
 from benchmark.utils import web_util
 from benchmark.utils.io import remove_tree, write_yaml, read_yaml
 from benchmark.utils.shell import Shell, CommandFailedError
+from benchmark.utils.web_util import download_file
 
 
 class Result(Enum):
@@ -88,10 +90,21 @@ class Detect(ProjectVersionTask):
     def _detector_available(self) -> bool:
         return exists(Detect.__get_misuse_detector_path(self.detector))
 
-    def _download(self) -> bool:
-        return web_util.load_detector(Detect.__get_misuse_detector_url(self.detector),
-                                      Detect.__get_misuse_detector_path(self.detector),
-                                      Detect.__get_misuse_detector_md5(self.detector))
+    def _download(self):
+        logger = logging.getLogger("detect")
+        url = Detect.__get_misuse_detector_url(self.detector)
+        logger.info("Loading detector from '%s'...", url)
+        file = Detect.__get_misuse_detector_path(self.detector)
+        md5_file = Detect.__get_misuse_detector_md5(self.detector)
+
+        try:
+            if not exists(md5_file):
+                raise FileNotFoundError("Cannot validate download, MD5-checksum file '{}' missing".format(md5_file))
+
+            download_file(url, file, md5_file)
+        except (FileNotFoundError, ValueError, URLError) as e:
+            logger.error("Download failed: %s", e)
+            exit(1)
 
     def process_project_version(self, project: Project, version: ProjectVersion) -> Response:
         logger = logging.getLogger("detect")
