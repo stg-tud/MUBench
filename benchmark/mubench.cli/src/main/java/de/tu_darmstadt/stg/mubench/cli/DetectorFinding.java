@@ -14,6 +14,14 @@ public class DetectorFinding {
 
 	private final HashMap<String, Object> content;
 
+	public static String convertFQNtoFileName(String fqn) {
+		int endOfOuterTypeName = fqn.indexOf('$');
+		if (endOfOuterTypeName > -1) {
+			fqn = fqn.substring(0, endOfOuterTypeName);
+		}
+		return fqn.replace('.', '/') + ".java";
+	}
+	
 	DetectorFinding(int id, String file, String method) {
 		content = new LinkedHashMap<>();
 		content.put(keyId, id);
