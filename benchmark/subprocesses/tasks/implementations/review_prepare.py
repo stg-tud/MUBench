@@ -302,6 +302,9 @@ class ReviewPrepareAll(ProjectVersionTask):
         detector_run = Run(findings_path)
         self.__review.start_run_review(version.version_id, detector_run)
 
+        if not detector_run.is_success():
+            return
+
         if self.detector.startswith("jadet") or self.detector.startswith("tikanga"):
             url = join(project.id, version.version_id, "violations.xml")
             makedirs(dirname(join(self.review_path, url)), exist_ok=True)
