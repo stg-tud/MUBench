@@ -27,22 +27,40 @@ def load_detector(url: str, file: str, md5_file: Optional[str] = None) -> None:
         if not exists(md5_file):
             remove(file)
             exit("error! '{}' does not exist. Cannot verify download.".format(md5_file))
-        elif not _check_md5(file, md5_file):
+        elif not __check_md5(file, md5_file):
             remove(file)
             exit("error! Detector corrupted (md5 mismatch).")
 
     print_ok()
 
 
-def _check_md5(file, reference_file):
-    actual_md5 = _md5(file)
-    with open(reference_file, 'r') as reference_md5_file:
-        reference_md5 = reference_md5_file.read().rstrip("\n")
-    return reference_md5 == actual_md5
+def validate_file(file_path: str, md5_checksum: str = None):
+    """
+    Checks if the file exists and, if a checksum or checksum file is provided, whether the files checksum matches.
+    :param file_path: the file to validate
+    :param md5_checksum: the MD5 checksum or MD5 checksum file
+    """
+    if not exists(file_path):
+        raise FileNotFoundError("file not found '{}'".format(file_path))
+    if md5_checksum:
+        __check_md5(file_path, md5_checksum)
+
+
+def __check_md5(file, md5_checksum):
+    if exists(md5_checksum):
+        # assume we are provided an md5 file
+        with open(md5_checksum, 'r') as md5_file:
+            md5_checksum = md5_file.read().rstrip("\n")
+
+    file_checksum = __compute_md5(file)
+    if not md5_checksum == file_checksum:
+        raise ValueError("invalid MD5 checksum '{}', should be '{}'".format(file_checksum, md5_checksum))
+    else:
+        return True
 
 
 # source: http://stackoverflow.com/a/3431838
-def _md5(file: str):
+def __compute_md5(file: str):
     hash_md5 = hashlib.md5()
     with open(file, "rb") as f:
         for chunk in iter(lambda: f.read(4096), b""):
