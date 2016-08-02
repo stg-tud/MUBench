@@ -34,6 +34,23 @@ def load_detector(url: str, file: str, md5_file: Optional[str] = None) -> None:
     print_ok()
 
 
+def download_file(url: str, file: str, md5_checksum: str = None):
+    """
+    Downloads a file from a give URL.
+    :param url: the URL to download from, must yield a file
+    :param file: the destination to save the file to
+    :param md5_checksum: a checksum to validate the file with
+    """
+    with urllib.request.urlopen(url) as response, open(file, 'wb') as out_file:
+        shutil.copyfileobj(response, out_file)
+
+    try:
+        validate_file(file, md5_checksum)
+    except:
+        remove(file)
+        raise
+
+
 def validate_file(file_path: str, md5_checksum: str = None):
     """
     Checks if the file exists and, if a checksum or checksum file is provided, whether the files checksum matches.
