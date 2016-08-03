@@ -105,12 +105,12 @@ def __get_target_code(compiles_path: str, version: ProjectVersion, file: str, me
         if output:
             methods = output.split("\n===\n")
             for method in methods:
-                # comes as "<first-line number>:<code>
-                info = method.split(":", 1)
+                # comes as "<first-line number>:<declaring type>:<code>
+                info = method.split(":", 2)
                 target_code += """<pre class="prettyprint linenums:{}">
-                        <code class="language-java">{}</code>
+                        <code class="language-java">class {} {{\n{}\n}}</code>
                     </pre>
-                    """.format(info[0], html.escape(info[1].strip("\n")))
+                    """.format(int(info[0]) - 1, info[1], html.escape(info[2].strip("\n")))
     except CommandFailedError as e:
         target_code += """<pre class="prettyprint linenums:{}">
             <code class="language-java">{}</code>

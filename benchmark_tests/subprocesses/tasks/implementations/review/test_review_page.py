@@ -114,11 +114,11 @@ class TestReviewPageGenerator:
 
     def test_adds_target_code_method_only(self):
         with open(self.original_src_file_path, 'w+') as target:
-            target.write("class C { void bar() {} }")
+            target.write("class C {\n  void bar() {}\n}")
         review_page.generate(self.review_folder, 'detector', self.compiles_path, self.test_project, self.test_version,
                              self.test_misuse, [])
         content = self.read_review_file()
-        assert_in("<code class=\"language-java\">// declaring class: C\nvoid bar() {\n}</code>", content)
+        assert_in("<code class=\"language-java\">class C {\n  void bar() {}\n}</code>", content)
 
     def read_review_file(self):
         review_file = join(self.review_folder, 'review.html')
