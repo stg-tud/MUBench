@@ -5,6 +5,7 @@ from typing import List
 from os.path import exists, join
 
 from benchmark.data.project import Project
+from benchmark.subprocesses.requirements import are_satisfied
 from benchmark.subprocesses.tasks.base.project_task import ProjectTask, Response
 
 
@@ -46,16 +47,7 @@ class TaskRunner:
 
     @staticmethod
     def __check_requirements(task, logger):
-        missing_prerequisites = False
-        for requirement in task.get_requirements():
-            try:
-                requirement.check()
-                logger.debug("Requirement '%s' satisfied", requirement.description)
-            except Exception as e:
-                logger.error("Requirement '%s' not satisfied: %s", requirement.description, e)
-                missing_prerequisites = True
-
-        if missing_prerequisites:
+        if not are_satisfied(task.get_requirements(), logger):
             logger.error("Cannot run '%s'. Please ensure requirements.", task.name)
             exit(1)
 

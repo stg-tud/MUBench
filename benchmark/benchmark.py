@@ -6,6 +6,7 @@ from datetime import datetime
 from os import listdir, makedirs
 from os.path import join, realpath, isdir, exists
 
+from benchmark.subprocesses.requirements import check_all_requirements
 from benchmark.subprocesses.result_processing.visualize_results import Visualizer
 from benchmark.subprocesses.tasking import TaskRunner
 from benchmark.subprocesses.tasks.implementations import stats
@@ -36,15 +37,6 @@ class Benchmark:
         if 'black_list' not in config:
             config.black_list = []
         self.runner = TaskRunner(Benchmark.DATA_PATH, config.white_list, config.black_list)
-
-    def _run_check(self) -> None:
-        self.runner.add(Info("", ""))
-        self.runner.add(Checkout("", False))
-        self.runner.add(Compile("", "", 0, False))
-        self.runner.add(Detect("dummy", "", "", "", None, [], False))
-        self.runner.add(ReviewPrepare("", "", "", "", "", False))
-        self.runner.add(ReviewCheck("", []))
-        self.runner.check()
 
     def _run_visualize(self) -> None:
         visualizer = Visualizer(Benchmark.RESULTS_PATH, self.reviewed_eval_result_file, self.visualize_result_file,
@@ -104,7 +96,7 @@ class Benchmark:
             self._run_visualize()
             return
         elif config.subprocess == 'check':
-            self._run_check()
+            check_all_requirements()
             return
         elif config.subprocess == 'info':
             self._setup_info()
