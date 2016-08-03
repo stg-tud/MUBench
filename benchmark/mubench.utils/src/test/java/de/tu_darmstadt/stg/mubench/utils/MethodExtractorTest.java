@@ -72,6 +72,20 @@ public class MethodExtractorTest {
 				"// declaring class: C\n"
 				+ "C() {\n}");
 	}
+	
+	@Test
+	public void findsMethodInInnerClass() throws ParseException {
+		testFindsMethod("class C {\n"
+				+ "  class I {\n"
+				+ "    void m() {}\n"
+				+ "  }\n"
+				+ "}",
+				
+				"m()",
+				
+				"// declaring class: C.I\n"
+				+ "void m() {\n}");
+	}
 
 	@Test
 	public void includesBody() throws ParseException {

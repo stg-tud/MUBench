@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Stack;
 import java.util.function.Function;
 
 import com.github.javaparser.JavaParser;
@@ -41,15 +42,16 @@ public class MethodExtractor {
 
 	private static class MethodRetriever extends VoidVisitorAdapter<List<String>> {
 		private String methodSignature;
-		private String currentEnclosingType;
+		private Stack<String> currentEnclosingType;
 
 		public MethodRetriever(String methodSignature) {
 			this.methodSignature = methodSignature;
+			this.currentEnclosingType = new Stack<>();
 		}
 		
 		@Override
 		public void visit(ClassOrInterfaceDeclaration type, List<String> arg) {
-			currentEnclosingType = type.getName();
+			currentEnclosingType.push(type.getName());
 			super.visit(type, arg);
 		}
 		
@@ -75,9 +77,13 @@ public class MethodExtractor {
 			if (node.hasComment()) {
 				method_code.append(node.getComment());
 			}
-			method_code.append("// declaring class: ").append(currentEnclosingType).append("\n");
+			method_code.append("// declaring class: ").append(getEnclodingTypeName()).append("\n");
 			method_code.append(getDeclarationAsString.apply(node)).append(" ").append(getBody.apply(node));
 			return method_code.toString();
+		}
+		
+		private String getEnclodingTypeName() {
+			return Joiner.on(".").join(currentEnclosingType);
 		}
 
 		private String getSignature(String methodName, List<Parameter> parameters) {
