@@ -7,7 +7,7 @@ from nose.tools import assert_equals, assert_raises
 from benchmark.data.misuse import Misuse
 from benchmark.data.project import Project
 from benchmark.data.project_checkout import LocalProjectCheckout, GitProjectCheckout, SVNProjectCheckout, \
-    SyntheticProjectCheckout
+    SyntheticProjectCheckout, ZipProjectCheckout
 from benchmark.data.project_version import ProjectVersion
 from benchmark.utils.io import remove_tree, create_file, safe_open
 
@@ -123,6 +123,18 @@ class TestProjectCheckout:
         assert_equals("-project-", checkout.name)
         assert_equals("-version-", checkout.version)
         assert_equals("666", checkout.revision)
+
+    def test_zip_project(self):
+        project = create_project("-project-", meta={"repository": {"type": "zip"}})
+        version = create_version("-version-", meta={"revision": "http://to.zip", "md5": "-checksum-"}, project=project)
+
+        checkout = version.get_checkout("-base_path-")
+
+        assert isinstance(checkout, ZipProjectCheckout)
+        assert_equals("http://to.zip", checkout.url)
+        assert_equals("-project-", checkout.name)
+        assert_equals("-version-", checkout.version)
+        assert_equals("-checksum-", checkout.md5_checksum)
 
     def test_unknown_type(self):
         version = create_version("-v-", project=create_project("-p-", meta={"repository": {"type": "unknown"}}))

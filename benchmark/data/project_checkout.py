@@ -1,9 +1,11 @@
 import logging
 from os import listdir, makedirs
 from os.path import join, exists
+from zipfile import ZipFile
 
 from benchmark.utils.io import copy_tree, remove_tree
 from benchmark.utils.shell import Shell
+from benchmark.utils.web_util import download_file
 
 
 class ProjectCheckout:
@@ -64,6 +66,32 @@ class SyntheticProjectCheckout(ProjectCheckout):
 
     def __str__(self):
         return "synthetic:{}.{}".format(self.name, self.version)
+
+
+class ZipProjectCheckout(ProjectCheckout):
+    def __init__(self, revision_url: str, md5_checksum: str, base_path: str, name: str, version: str):
+        super().__init__(revision_url, base_path, name)
+        self.md5_checksum = md5_checksum
+        self.version = version
+        self.__base_checkout_dir = self.checkout_dir
+        self.__child = LocalProjectCheckout(self.checkout_dir, join(self.base_path, self.name), self.version)
+        self.checkout_dir = self.__child.checkout_dir
+
+    def delete(self) -> None:
+        remove_tree(self.checkout_dir)
+
+    def create(self) -> None:
+        makedirs(self.checkout_dir, exist_ok=True)
+        bundle_file = join(self.checkout_dir, "bundle.zip")
+        download_file(self.url, bundle_file, self.md5_checksum)
+        with ZipFile(bundle_file) as zip_file:
+            zip_file.extractall(self.checkout_dir)
+
+    def exists(self) -> bool:
+        return exists(self.checkout_dir) and len(listdir(self.checkout_dir)) > 1
+
+    def __str__(self):
+        return "zip:{}:{}".format(self.name, self.url)
 
 
 class RepoProjectCheckout(ProjectCheckout):

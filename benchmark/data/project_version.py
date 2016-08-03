@@ -7,7 +7,7 @@ import yaml
 
 from benchmark.data.misuse import Misuse, Pattern
 from benchmark.data.project_checkout import ProjectCheckout, GitProjectCheckout, SVNProjectCheckout, \
-    LocalProjectCheckout, SyntheticProjectCheckout
+    LocalProjectCheckout, SyntheticProjectCheckout, ZipProjectCheckout
 from benchmark.data.project_compile import ProjectCompile
 
 
@@ -54,6 +54,8 @@ class ProjectVersion:
             return SVNProjectCheckout(url, base_path, self.__project.id, self.version_id, revision)
         elif repository.vcstype == "synthetic":
             return SyntheticProjectCheckout(base_path, self.__project.id, self.version_id)
+        elif repository.vcstype == "zip":
+            return ZipProjectCheckout(self.revision, self._yaml["md5"], base_path, self.__project.id, self.version_id)
         else:
             raise ValueError("unknown repository type: {}".format(repository.vcstype))
 

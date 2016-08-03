@@ -6,8 +6,8 @@ from tempfile import mkdtemp
 from nose.tools import assert_equals
 
 from benchmark.data.project_checkout import GitProjectCheckout, LocalProjectCheckout, SVNProjectCheckout, \
-    SyntheticProjectCheckout
-from benchmark.utils.io import remove_tree, copy_tree
+    SyntheticProjectCheckout, ZipProjectCheckout
+from benchmark.utils.io import remove_tree, copy_tree, create_file
 from benchmark.utils.shell import Shell
 
 
@@ -85,6 +85,45 @@ class TestSyntheticCheckout:
 
     def test_to_string(self):
         assert_equals("synthetic:-project-.-id-", str(self.uut))
+
+
+class TestZipProjectCheckout:
+    # noinspection PyAttributeOutsideInit
+    def setup(self):
+        self.temp_dir = mkdtemp(prefix='mubench-checkout-zip_')
+        self.checkouts_dir = join(self.temp_dir, "checkouts")
+        self.url = "file://" + join(dirname(__file__), "test_project_checkout_bundle.zip")
+
+        revision_md5 = "d2046c17a1ea90a45eb4d20429cd46c8"
+
+        self.uut = ZipProjectCheckout(self.url, revision_md5, self.checkouts_dir, "-project-", "-version-")
+
+    def test_create_download_and_unzips(self):
+        self.uut.create()
+
+        assert exists(join(self.checkouts_dir, "-project-", "-version-", "checkout", "foo"))
+
+    def test_not_exists(self):
+        assert not self.uut.exists()
+
+    def test_exists(self):
+        checkout_path = join(self.checkouts_dir, "-project-", "-version-", "checkout")
+        create_file(join(checkout_path, "bundle.zip"))
+        create_file(join(checkout_path, "foo"))
+
+        assert self.uut.exists()
+
+    def test_delete(self):
+        checkout_path = join(self.checkouts_dir, "-project-", "-version-", "checkout")
+        create_file(join(checkout_path, "bundle.zip"))
+        create_file(join(checkout_path, "foo"))
+
+        self.uut.delete()
+
+        assert not exists(checkout_path)
+
+    def test_to_string(self):
+        assert_equals("zip:-project-:{}".format(self.url), str(self.uut))
 
 
 class TestGitProjectCheckout:
