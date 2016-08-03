@@ -98,7 +98,8 @@ def __get_target_code(compiles_path: str, version: ProjectVersion, file: str, me
     version_compile = version.get_compile(compiles_path)
     misuse_file = join(version_compile.original_sources_path, file)
 
-    target_code = """<script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js?autoload=true&amp;skin=sunburst"></script>"""
+    code = """<script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js?autoload=true&amp;skin=sunburst"></script>"""
+    snippet = """<pre class="prettyprint linenums:{}"><code class="language-java">{}</code></pre>"""
 
     try:
         output = exec_util("MethodExtractor", "\"{}\" \"{}\"".format(misuse_file, method)).strip("\n")
@@ -107,17 +108,12 @@ def __get_target_code(compiles_path: str, version: ProjectVersion, file: str, me
             for method in methods:
                 # comes as "<first-line number>:<declaring type>:<code>
                 info = method.split(":", 2)
-                target_code += """<pre class="prettyprint linenums:{}">
-                        <code class="language-java">class {} {{\n{}\n}}</code>
-                    </pre>
-                    """.format(int(info[0]) - 1, info[1], html.escape(info[2].strip("\n")))
+                code += snippet.format(int(info[0]) - 1,
+                                       """class {} {{\n{}\n}}""".format(info[1], html.escape(info[2].strip("\n"))))
     except CommandFailedError as e:
-        target_code += """<pre class="prettyprint linenums:{}">
-            <code class="language-java">{}</code>
-        </pre>
-        """.format(1, html.escape(str(e)))
+        code += snippet.format(1, html.escape(str(e)))
 
-    return target_code
+    return code
 
 
 def __multiline(text: str):
