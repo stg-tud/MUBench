@@ -6,12 +6,10 @@ import java.io.ByteArrayInputStream;
 
 import org.junit.Test;
 
-import com.github.javaparser.ParseException;
-
 public class MethodExtractorTest {
 
 	@Test
-	public void findsMethodByName() throws ParseException {
+	public void findsMethodByName() throws Exception {
 		testFindsMethod("class C {\n"
 				+ "  public void m() {\n"
 				+ "  }\n"
@@ -19,12 +17,12 @@ public class MethodExtractorTest {
 				
 				"m()",
 				
-				"// declaring class: C\n"
-				+ "public void m() {\n}");
+				"  public void m() {\n"
+				+ "  }");
 	}
 	
 	@Test
-	public void findsMethodBySignature() throws ParseException {
+	public void findsMethodBySignature() throws Exception {
 		testFindsMethod("class C{\n"
 				+ "  void m(int i) {}\n"
 				+ "  void m(Object o) {}\n"
@@ -32,12 +30,11 @@ public class MethodExtractorTest {
 				
 				"m(int)",
 				
-				"// declaring class: C\n"
-				+ "void m(int i) {\n}");
+				"  void m(int i) {}");
 	}
 	
 	@Test
-	public void findsMethodBySignatureSimpleTypeName() throws ParseException {
+	public void findsMethodBySignatureSimpleTypeName() throws Exception {
 		testFindsMethod("class C{\n"
 				+ "  void m(java.lang.List l) {}\n"
 				+ "  void m(Object o) {}\n"
@@ -45,36 +42,33 @@ public class MethodExtractorTest {
 				
 				"m(List)",
 				
-				"// declaring class: C\n"
-				+ "void m(java.lang.List l) {\n}");
+				"  void m(java.lang.List l) {}");
 	}
 	
 	@Test
-	public void findsMethodByMultipleParameterSignature() throws ParseException {
+	public void findsMethodByMultipleParameterSignature() throws Exception {
 		testFindsMethod("class C{\n"
 				+ "  void m(A a, B b) {}\n"
 				+ "}",
 				
 				"m(A, B)",
 				
-				"// declaring class: C\n"
-				+ "void m(A a, B b) {\n}");
+				"  void m(A a, B b) {}");
 	}
 	
 	@Test
-	public void findsConstructor() throws ParseException {
+	public void findsConstructor() throws Exception {
 		testFindsMethod("class C{\n"
 				+ "  C() {}\n"
 				+ "}",
 				
 				"<init>()",
 				
-				"// declaring class: C\n"
-				+ "C() {\n}");
+				"  C() {}");
 	}
 	
 	@Test
-	public void findsMethodInInnerClass() throws ParseException {
+	public void findsMethodInInnerClass() throws Exception {
 		testFindsMethod("class C {\n"
 				+ "  class I {\n"
 				+ "    void m() {}\n"
@@ -83,25 +77,47 @@ public class MethodExtractorTest {
 				
 				"m()",
 				
-				"// declaring class: C.I\n"
-				+ "void m() {\n}");
+				"    void m() {}");
 	}
 	
 	@Test
-	public void findsMethodAfterInnerClass() throws ParseException {
-		testFindsMethod("class C {\n"
+	public void returnsDeclaringType() throws Exception {
+		testFindsDeclaringType("class C {\n"
+				+ "  void m() {}\n"
+				+ "}",
+				
+				"m()",
+				
+				"C");
+	}
+	
+	@Test
+	public void returnsDeclaringTypeInInnerType() throws Exception {
+		testFindsDeclaringType("class C {\n"
+				+ "  class I {\n"
+				+ "    void m() {}\n"
+				+ "  }\n"
+				+ "}",
+				
+				"m()",
+				
+				"C.I");
+	}
+	
+	@Test
+	public void returnsDeclaringTypeAfterInnerType() throws Exception {
+		testFindsDeclaringType("class C {\n"
 				+ "  class I {}\n"
 				+ "  void m() {}\n"
 				+ "}",
 				
 				"m()",
 				
-				"// declaring class: C\n"
-				+ "void m() {\n}");
+				"C");
 	}
 
 	@Test
-	public void includesBody() throws ParseException {
+	public void includesBody() throws Exception {
 		testFindsMethod("class C {\n"
 				+ "  public void m() {\n"
 				+ "    if (true) {\n"
@@ -112,52 +128,45 @@ public class MethodExtractorTest {
 				
 				"m()",
 				
-				"// declaring class: C\n"
-				+ "public void m() {\n"
+				"  public void m() {\n"
 				+ "    if (true) {\n"
-				+ "        m();\n"
+				+ "      m();\n"
 				+ "    }\n"
-				+ "}");
+				+ "  }");
 	}
 
 	@Test
-	public void includesComment() throws ParseException {
+	public void includesComment() throws Exception {
 		testFindsMethod("class C {\n"
 				+ "  /* comment */\n"
-				+ "  public void m() {\n"
-				+ "  }\n"
+				+ "  public void m() {}\n"
 				+ "}",
 				
 				"m()",
 				
-				"/* comment */\n"
-				+ "// declaring class: C\n"
-				+ "public void m() {\n"
-				+ "}");
+				"  /* comment */\n"
+				+ "  public void m() {}");
 	}
 
 	@Test
-	public void includesJavaDocComment() throws ParseException {
+	public void includesJavaDocComment() throws Exception {
 		testFindsMethod("class C {\n"
 				+ "  /**\n"
 				+ "   * comment\n"
 				+ "   */\n"
-				+ "  public void m() {\n"
-				+ "  }\n"
+				+ "  public void m() {}\n"
 				+ "}",
 				
 				"m()",
 				
-				"/**\n"
+				"  /**\n"
 				+ "   * comment\n"
 				+ "   */\n"
-				+ "// declaring class: C\n"
-				+ "public void m() {\n"
-				+ "}");
+				+ "  public void m() {}");
 	}
 	
 	@Test
-	public void returnsLineNumber() throws ParseException {
+	public void returnsLineNumber() throws Exception {
 		testFindsLineNumber("class C {\n"
 				+ "  void m() {}\n"
 				+ "}",
@@ -168,7 +177,7 @@ public class MethodExtractorTest {
 	}
 	
 	@Test
-	public void returnsLineNumberOfComment() throws ParseException {
+	public void returnsLineNumberOfComment() throws Exception {
 		testFindsLineNumber("class C {\n"
 				+ "  /* comment */\n"
 				+ "  void m() {}\n"
@@ -180,7 +189,7 @@ public class MethodExtractorTest {
 	}
 	
 	@Test
-	public void returnsAllCandidates() throws ParseException {
+	public void returnsAllCandidates() throws Exception {
 		String output = runUUT("class C {\n"
 				+ "  void m(){}\n"
 				+ "  class I {\n"
@@ -193,19 +202,25 @@ public class MethodExtractorTest {
 		assertEquals(2, candidates.length);
 	}
 
-	public void testFindsMethod(String input, String methodSignature, String expectedOutput) throws ParseException {
+	public void testFindsMethod(String input, String methodSignature, String expectedOutput) throws Exception {
 		String output = runUUT(input, methodSignature);
-		String method_code = output.split(":", 2)[1];
-		assertEquals(expectedOutput, method_code);
+		String methodCode = output.split(":", 3)[2];
+		assertEquals(expectedOutput, methodCode);
 	}
 	
-	private void testFindsLineNumber(String input, String methodSignature, String expectedLineNumber) throws ParseException {
+	public void testFindsDeclaringType(String input, String methodSignature, String expectedDeclaringType) throws Exception {
 		String output = runUUT(input, methodSignature);
-		String line_number = output.split(":")[0];
-		assertEquals(expectedLineNumber, line_number);
+		String declaringType = output.split(":", 3)[1];
+		assertEquals(expectedDeclaringType, declaringType);
+	}
+	
+	private void testFindsLineNumber(String input, String methodSignature, String expectedLineNumber) throws Exception {
+		String output = runUUT(input, methodSignature);
+		String lineNumber = output.split(":", 3)[0];
+		assertEquals(expectedLineNumber, lineNumber);
 	}
 
-	public String runUUT(String input, String methodSignature) throws ParseException {
+	public String runUUT(String input, String methodSignature) throws Exception {
 		MethodExtractor methodExtractor = new MethodExtractor();
 		ByteArrayInputStream inputStream = new ByteArrayInputStream(input.getBytes());
 		return methodExtractor.extract(inputStream, methodSignature);
