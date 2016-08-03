@@ -158,13 +158,25 @@ public class MethodExtractorTest {
 	
 	@Test
 	public void returnsLineNumber() throws ParseException {
-		String output = runUUT("class C {\n"
+		testFindsLineNumber("class C {\n"
 				+ "  void m() {}\n"
 				+ "}",
 				
-				"m()");
-		String line_number = output.split(":")[0];
-		assertEquals("2", line_number);
+				"m()",
+				
+				"2");
+	}
+	
+	@Test
+	public void returnsLineNumberOfComment() throws ParseException {
+		testFindsLineNumber("class C {\n"
+				+ "  /* comment */\n"
+				+ "  void m() {}\n"
+				+ "}",
+				
+				"m()",
+				
+				"2");
 	}
 	
 	@Test
@@ -185,6 +197,12 @@ public class MethodExtractorTest {
 		String output = runUUT(input, methodSignature);
 		String method_code = output.split(":", 2)[1];
 		assertEquals(expectedOutput, method_code);
+	}
+	
+	private void testFindsLineNumber(String input, String methodSignature, String expectedLineNumber) throws ParseException {
+		String output = runUUT(input, methodSignature);
+		String line_number = output.split(":")[0];
+		assertEquals(expectedLineNumber, line_number);
 	}
 
 	public String runUUT(String input, String methodSignature) throws ParseException {

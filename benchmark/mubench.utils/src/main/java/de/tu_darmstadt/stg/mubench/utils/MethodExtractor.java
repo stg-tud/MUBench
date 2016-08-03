@@ -16,6 +16,7 @@ import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.ConstructorDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.body.Parameter;
+import com.github.javaparser.ast.comments.Comment;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 import com.google.common.base.Joiner;
@@ -71,9 +72,12 @@ public class MethodExtractor {
 		
 		private <T extends Node> String getCode(T node, Function<T, String> getDeclarationAsString, Function<T, BlockStmt> getBody) {
 			StringBuilder method_code = new StringBuilder();
-			method_code.append(node.getRange().begin.line).append(":");
 			if (node.hasComment()) {
-				method_code.append(node.getComment());
+				Comment comment = node.getComment();
+				method_code.append(comment.getRange().begin.line).append(":");
+				method_code.append(comment);
+			} else {
+				method_code.append(node.getRange().begin.line).append(":");
 			}
 			method_code.append("// declaring class: ").append(getEnclodingTypeName()).append("\n");
 			method_code.append(getDeclarationAsString.apply(node)).append(" ").append(getBody.apply(node));
