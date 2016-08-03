@@ -3,6 +3,7 @@ import time
 from enum import Enum
 from os import makedirs
 from os.path import join, realpath, exists
+from typing import Dict
 from typing import Optional, List
 from urllib.error import URLError
 
@@ -33,6 +34,7 @@ class Run:
         self.__run_file_path = join(path, Run.RUN_FILE)
         self.__result = None  # type: Result
         self.__runtime = None
+        self.__findings = []  # type: List[Dict[str,str]]
         if exists(self.__run_file_path):
             data = read_yaml(self.__run_file_path)
             self.__result = Result[data["result"]]
@@ -53,11 +55,11 @@ class Run:
 
     @property
     def findings(self):
-        if not exists(self.__findings_file_path):
-            return []
-        else:
-            with open(self.__findings_file_path, "r") as stream:
-                return [finding for finding in yaml.load_all(stream) if finding]
+        if not self.__findings:
+            if exists(self.__findings_file_path):
+                with open(self.__findings_file_path, "r") as stream:
+                    self.__findings = [finding for finding in yaml.load_all(stream) if finding]
+        return self.__findings
 
     @property
     def runtime(self):
