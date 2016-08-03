@@ -14,14 +14,6 @@ class PyYamlRequirement(Requirement):
         import yaml
 
 
-class UrlLibRequirement(Requirement):
-    def __init__(self):
-        super().__init__("urllib")
-
-    def check(self):
-        import urllib.request
-
-
 class GitRequirement(Requirement):
     def __init__(self):
         super().__init__("git 2.0+")

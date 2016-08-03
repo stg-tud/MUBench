@@ -10,7 +10,7 @@ import yaml
 from benchmark.data.misuse import Misuse
 from benchmark.data.project import Project
 from benchmark.data.project_version import ProjectVersion
-from benchmark.subprocesses.requirements import JavaRequirement, UrlLibRequirement
+from benchmark.subprocesses.requirements import JavaRequirement
 from benchmark.subprocesses.tasks.base.project_task import Response
 from benchmark.subprocesses.tasks.base.project_version_misuse_task import ProjectVersionMisuseTask
 from benchmark.subprocesses.tasks.base.project_version_task import ProjectVersionTask
@@ -135,7 +135,7 @@ class ReviewPrepare(ProjectVersionMisuseTask):
         self.__review = Review(self.detector)
 
     def get_requirements(self):
-        return [JavaRequirement(), UrlLibRequirement()]
+        return [JavaRequirement()]
 
     def start(self):
         logger = logging.getLogger("review_prepare")
@@ -285,7 +285,7 @@ class ReviewPrepareAll(ProjectVersionTask):
         self.__review = Review(self.detector)
 
     def get_requirements(self):
-        return [JavaRequirement(), UrlLibRequirement()]
+        return [JavaRequirement()]
 
     def start(self):
         logger = logging.getLogger("review_prepare")

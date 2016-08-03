@@ -11,7 +11,7 @@ import yaml
 
 from benchmark.data.project import Project
 from benchmark.data.project_version import ProjectVersion
-from benchmark.subprocesses.requirements import JavaRequirement, UrlLibRequirement
+from benchmark.subprocesses.requirements import JavaRequirement
 from benchmark.subprocesses.tasks.base.project_task import Response
 from benchmark.subprocesses.tasks.base.project_version_task import ProjectVersionTask
 from benchmark.utils.io import remove_tree, write_yaml, read_yaml
@@ -90,7 +90,7 @@ class Detect(ProjectVersionTask):
         self.key_classes_patterns = "classpath_patterns"
 
     def get_requirements(self):
-        return [JavaRequirement(), UrlLibRequirement()]
+        return [JavaRequirement()]
 
     def start(self):
         if not self._detector_available():

@@ -2,7 +2,7 @@ import logging
 
 from benchmark.data.project import Project
 from benchmark.data.project_version import ProjectVersion
-from benchmark.subprocesses.requirements import GitRequirement, SVNRequirement, UrlLibRequirement
+from benchmark.subprocesses.requirements import GitRequirement, SVNRequirement
 from benchmark.subprocesses.tasks.base.project_task import Response
 from benchmark.subprocesses.tasks.base.project_version_task import ProjectVersionTask
 from benchmark.utils.shell import CommandFailedError, Shell
@@ -15,7 +15,7 @@ class Checkout(ProjectVersionTask):
         self.force_checkout = force_checkout
 
     def get_requirements(self):
-        return [GitRequirement(), SVNRequirement(), UrlLibRequirement()]
+        return [GitRequirement(), SVNRequirement()]
 
     def process_project_version(self, project: Project, version: ProjectVersion) -> Response:
         logger = logging.getLogger("checkout")
