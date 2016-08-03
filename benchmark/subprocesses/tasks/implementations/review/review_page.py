@@ -24,13 +24,13 @@ def generate(review_folder: str, detector: str, compiles_path: str, project: Pro
         </table>
         <h2>Misuse Details</h2>
         <p>Details about the known misuse from the MUBench dataset.</p>
-        <table>
+        <table class="fw">
             <tr><td><b>Description:</b></td><td>{}</td></tr>
             <tr><td><b>Fix Description:</b></td><td>{} (<a href="{}">see diff</a>)</td></tr>
             <tr><td><b>Misuse Elements:</b></td><td>{}</td></tr>
             <tr><td><b>In File:</b></td><td>{}</td></tr>
             <tr><td><b>In Method:</b></td><td>{}</td></tr>
-            <tr><td><b>Code with Misuse:</b></td><td>{}</td></tr>
+            <tr><td class="vtop"><b>Code with Misuse:</b></td><td>{}</td></tr>
         </table>
         <h2>Potential Hits</h2>
         <p>Findings of the detector that identify an anomaly in the same file and method as the known misuse.
@@ -45,7 +45,7 @@ def generate(review_folder: str, detector: str, compiles_path: str, project: Pro
                    __get_target_code(compiles_path, version, misuse.location.file, misuse.location.method),
                    "\n".join(potential_hits_section.generate(detector, potential_hits)))
 
-    safe_write(review, join(review_folder, 'review.html'), False)
+    safe_write(__get_page(review), join(review_folder, 'review.html'), False)
 
 
 def generate2(review_file: str, detector: str, compiles_path: str, version: ProjectVersion, finding: Dict[str,str]):
@@ -58,19 +58,40 @@ def generate2(review_file: str, detector: str, compiles_path: str, version: Proj
         <h2>Potential Misuse</h2>
         <p>Anomaly identified by the detector.
             Please review whether this anomaly corresponds to a misuse.</p>
-        <table>
+        <table class="fw">
             <tr><td><b>Finding:</b></td><td>{}</td></tr>
             <tr><td><b>In File:</b></td><td>{}</td></tr>
             <tr><td><b>In Method:</b></td><td>{}</td></tr>
-            <tr><td><b>Code with Finding:</b></td><td>{}</td></tr>
-            <tr><td><b>Metadata:</b></td><td>{}</td></tr>
+            <tr><td class="vtop"><b>Code with Finding:</b></td><td>{}</td></tr>
+            <tr><td class="vtop"><b>Metadata:</b></td><td>{}</td></tr>
         </table>
         """.format(detector, version,
                    finding["id"], join(version.source_dir, finding["file"]), finding["method"],
                    __get_target_code(compiles_path, version, finding["file"], finding["method"]),
                    "\n".join(potential_hits_section.generate(detector, [finding])))
 
-    safe_write(review, review_file, False)
+    safe_write(__get_page(review), review_file, False)
+
+
+def __get_page(content: str):
+    return """
+        <html>
+            <head>
+                <style>{}</style>
+            </head>
+            <body>
+            {}
+            </body>
+        </html>
+    """.format(__get_css(), content)
+
+
+def __get_css():
+    return """
+        table.fw {width:100%;}
+        .vtop {vertical-align:top}
+        .prettyprint ol.linenums > li { list-style-type: decimal; }
+        """
 
 
 def __get_target_code(compiles_path: str, version: ProjectVersion, file: str, method: str) -> str:
