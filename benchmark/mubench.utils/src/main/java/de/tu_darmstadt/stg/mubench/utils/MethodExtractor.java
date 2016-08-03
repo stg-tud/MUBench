@@ -12,14 +12,11 @@ import com.github.javaparser.JavaParser;
 import com.github.javaparser.ParseException;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Node;
-import com.github.javaparser.ast.TypeParameter;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.ConstructorDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.body.Parameter;
-import com.github.javaparser.ast.body.TypeDeclaration;
 import com.github.javaparser.ast.stmt.BlockStmt;
-import com.github.javaparser.ast.stmt.TypeDeclarationStmt;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 import com.google.common.base.Joiner;
 
@@ -53,6 +50,7 @@ public class MethodExtractor {
 		public void visit(ClassOrInterfaceDeclaration type, List<String> arg) {
 			currentEnclosingType.push(type.getName());
 			super.visit(type, arg);
+			currentEnclosingType.pop();
 		}
 		
 		@Override
