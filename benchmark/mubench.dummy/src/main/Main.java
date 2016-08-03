@@ -6,6 +6,7 @@ import java.util.LinkedList;
 
 import de.tu_darmstadt.stg.mubench.cli.ArgParser;
 import de.tu_darmstadt.stg.mubench.cli.DetectorArgs;
+import de.tu_darmstadt.stg.mubench.cli.DetectorOutput;
 
 public class Main {
 	/**
@@ -14,19 +15,14 @@ public class Main {
 	public static void main(String[] args) throws Exception {
 		DetectorArgs myArgs = ArgParser.parse(args);
 		
-		String dirPath = myArgs.projectSrcPath;
-		String resultFilePath = myArgs.findingsFile;
+		String dirPath = myArgs.getProjectSrcPath();
+		String findingsFile = myArgs.getFindingsFile();
 		
-		System.out.println("Running on: " + dirPath);
-		System.out.println("Result  in: " + resultFilePath);
-
-		File resultFile = new File(resultFilePath);
-		try (PrintStream writer = new PrintStream(resultFile)) {
-			for (File file : listFiles(dirPath)) {
-				writer.println("file: " + file.getAbsolutePath());
-				writer.println("---");
-			}
+		DetectorOutput output = new DetectorOutput(findingsFile);
+		for (File file : listFiles(dirPath)) {
+			output.add(file.getPath(), "<init>()");
 		}
+		output.write();
 	}
 
 	public static LinkedList<File> listFiles(String directoryName) {
