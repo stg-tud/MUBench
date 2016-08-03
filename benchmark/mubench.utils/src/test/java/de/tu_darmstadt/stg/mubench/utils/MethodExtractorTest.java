@@ -131,6 +131,20 @@ public class MethodExtractorTest {
 		String line_number = output.split(":")[0];
 		assertEquals("2", line_number);
 	}
+	
+	@Test
+	public void returnsAllCandidates() throws ParseException {
+		String output = runUUT("class C {\n"
+				+ "  void m(){}\n"
+				+ "  class I {\n"
+				+ "    void m(){}\n"
+				+ "  }\n"
+				+ "}",
+				
+				"m()");
+		String[] candidates = output.split("===");
+		assertEquals(2, candidates.length);
+	}
 
 	public void testFindsMethod(String input, String methodSignature, String expectedOutput) throws ParseException {
 		String output = runUUT(input, methodSignature);

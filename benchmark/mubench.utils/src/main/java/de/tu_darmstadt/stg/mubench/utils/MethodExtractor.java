@@ -32,7 +32,7 @@ public class MethodExtractor {
 		List<String> methods = new ArrayList<>();
 		new MethodRetriever(methodSignature).visit(cu, methods);
 
-		return Joiner.on("\n\n").join(methods);
+		return Joiner.on("\n===\n").join(methods);
 	}
 
 	private static class MethodRetriever extends VoidVisitorAdapter<List<String>> {
