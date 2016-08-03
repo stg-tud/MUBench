@@ -19,7 +19,8 @@ public class MethodExtractorTest {
 				
 				"m()",
 				
-				"public void m() {\n}");
+				"// declaring class: C\n"
+				+ "public void m() {\n}");
 	}
 	
 	@Test
@@ -31,7 +32,8 @@ public class MethodExtractorTest {
 				
 				"m(int)",
 				
-				"void m(int i) {\n}");
+				"// declaring class: C\n"
+				+ "void m(int i) {\n}");
 	}
 	
 	@Test
@@ -43,7 +45,8 @@ public class MethodExtractorTest {
 				
 				"m(List)",
 				
-				"void m(java.lang.List l) {\n}");
+				"// declaring class: C\n"
+				+ "void m(java.lang.List l) {\n}");
 	}
 	
 	@Test
@@ -54,7 +57,8 @@ public class MethodExtractorTest {
 				
 				"m(A, B)",
 				
-				"void m(A a, B b) {\n}");
+				"// declaring class: C\n"
+				+ "void m(A a, B b) {\n}");
 	}
 	
 	@Test
@@ -65,7 +69,8 @@ public class MethodExtractorTest {
 				
 				"<init>()",
 				
-				"C() {\n}");
+				"// declaring class: C\n"
+				+ "C() {\n}");
 	}
 
 	@Test
@@ -80,7 +85,8 @@ public class MethodExtractorTest {
 				
 				"m()",
 				
-				"public void m() {\n"
+				"// declaring class: C\n"
+				+ "public void m() {\n"
 				+ "    if (true) {\n"
 				+ "        m();\n"
 				+ "    }\n"
@@ -98,6 +104,7 @@ public class MethodExtractorTest {
 				"m()",
 				
 				"/* comment */\n"
+				+ "// declaring class: C\n"
 				+ "public void m() {\n"
 				+ "}");
 	}
@@ -117,6 +124,7 @@ public class MethodExtractorTest {
 				"/**\n"
 				+ "   * comment\n"
 				+ "   */\n"
+				+ "// declaring class: C\n"
 				+ "public void m() {\n"
 				+ "}");
 	}
@@ -148,7 +156,7 @@ public class MethodExtractorTest {
 
 	public void testFindsMethod(String input, String methodSignature, String expectedOutput) throws ParseException {
 		String output = runUUT(input, methodSignature);
-		String method_code = output.split(":")[1];
+		String method_code = output.split(":", 2)[1];
 		assertEquals(expectedOutput, method_code);
 	}
 

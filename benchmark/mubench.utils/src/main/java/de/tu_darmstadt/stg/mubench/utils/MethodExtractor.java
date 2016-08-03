@@ -11,10 +11,14 @@ import com.github.javaparser.JavaParser;
 import com.github.javaparser.ParseException;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Node;
+import com.github.javaparser.ast.TypeParameter;
+import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.ConstructorDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.body.Parameter;
+import com.github.javaparser.ast.body.TypeDeclaration;
 import com.github.javaparser.ast.stmt.BlockStmt;
+import com.github.javaparser.ast.stmt.TypeDeclarationStmt;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 import com.google.common.base.Joiner;
 
@@ -37,9 +41,16 @@ public class MethodExtractor {
 
 	private static class MethodRetriever extends VoidVisitorAdapter<List<String>> {
 		private String methodSignature;
+		private String currentEnclosingType;
 
 		public MethodRetriever(String methodSignature) {
 			this.methodSignature = methodSignature;
+		}
+		
+		@Override
+		public void visit(ClassOrInterfaceDeclaration type, List<String> arg) {
+			currentEnclosingType = type.getName();
+			super.visit(type, arg);
 		}
 		
 		@Override
@@ -64,6 +75,7 @@ public class MethodExtractor {
 			if (node.hasComment()) {
 				method_code.append(node.getComment());
 			}
+			method_code.append("// declaring class: ").append(currentEnclosingType).append("\n");
 			method_code.append(getDeclarationAsString.apply(node)).append(" ").append(getBody.apply(node));
 			return method_code.toString();
 		}
