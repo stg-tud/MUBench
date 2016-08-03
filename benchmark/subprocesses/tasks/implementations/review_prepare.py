@@ -1,6 +1,7 @@
 import logging
+from copy import deepcopy
 from os import makedirs, listdir
-from os.path import join, exists, pardir, dirname
+from os.path import join, exists, dirname
 from shutil import copy
 from typing import Dict, Iterable
 from typing import List
@@ -10,13 +11,14 @@ import yaml
 from benchmark.data.misuse import Misuse
 from benchmark.data.project import Project
 from benchmark.data.project_version import ProjectVersion
-from benchmark.subprocesses.requirements import JavaRequirement
+from benchmark.subprocesses.requirements import JavaRequirement, DotRequirement
 from benchmark.subprocesses.tasks.base.project_task import Response
 from benchmark.subprocesses.tasks.base.project_version_misuse_task import ProjectVersionMisuseTask
 from benchmark.subprocesses.tasks.base.project_version_task import ProjectVersionTask
 from benchmark.subprocesses.tasks.implementations.detect import Run
 from benchmark.subprocesses.tasks.implementations.review import review_page
 from benchmark.utils.io import safe_open, remove_tree, safe_write, read_yaml
+from benchmark.utils.shell import Shell
 
 
 class Review:
@@ -184,7 +186,7 @@ class ReviewPrepare(ProjectVersionMisuseTask):
 
         if potential_hits:
             review_page.generate(review_path, self.detector, self.compiles_path, project, version, misuse,
-                                 potential_hits)
+                                 _specialize_findings(self.detector, potential_hits, review_path))
             self.__generate_potential_hits_yaml(potential_hits, review_path)
             self.__append_misuse_review(misuse, review_site, [])
         else:
@@ -285,7 +287,7 @@ class ReviewPrepareAll(ProjectVersionTask):
         self.__review = Review(self.detector)
 
     def get_requirements(self):
-        return [JavaRequirement()]
+        return [JavaRequirement(), DotRequirement()]
 
     def start(self):
         logger = logging.getLogger("review_prepare")
@@ -310,7 +312,8 @@ class ReviewPrepareAll(ProjectVersionTask):
             self.__review.append_finding_review("all findings",
                                                 "<a href=\"{}\">violations.xml</a>".format(url), [])
         else:
-            findings = detector_run.findings
+            findings = _specialize_findings(self.detector, detector_run.findings, join(self.review_path, project.id, version.version_id))
+
             if self.detector.startswith("dmmc"):
                 findings.sort(key=lambda f: float(f["strangeness"]), reverse=True)
             elif self.detector.startswith("grouminer"):
@@ -324,3 +327,28 @@ class ReviewPrepareAll(ProjectVersionTask):
 
     def end(self):
         safe_write(self.__review.to_html(), join(self.review_path, "index.html"), append=False)
+
+
+# TODO move this to detector-specific review-page generators
+def _specialize_findings(detector: str, findings: List[Dict[str,str]], base_path) -> List[Dict[str,str]]:
+    findings = deepcopy(findings)
+    if detector.startswith("grouminer"):
+        for finding in findings:
+            __replace_dot_graph_with_image(finding, "overlap", base_path)
+            __replace_dot_graph_with_image(finding, "pattern", base_path)
+    elif detector.startswith("mudetect"):
+        for finding in findings:
+            __replace_dot_graph_with_image(finding, "overlap", base_path)
+            __replace_dot_graph_with_image(finding, "pattern", base_path)
+    return findings
+
+
+def __replace_dot_graph_with_image(finding, key, base_path):
+    image_name = "f{}-{}.png".format(finding["id"], key)
+    __create_image(finding[key], join(base_path, image_name))
+    finding[key] = """<img src="./{}" />""".format(image_name)
+
+
+def __create_image(dot_graph, file):
+    makedirs(dirname(file), exist_ok=True)
+    Shell.exec("""echo "{}" | dot -Tpng -o"{}" """.format(dot_graph.replace("\"", "\\\""), file))

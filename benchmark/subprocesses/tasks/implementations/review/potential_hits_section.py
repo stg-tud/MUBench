@@ -28,7 +28,10 @@ def default(potential_hits: List[Dict[str, str]]):
         for key in keys:
             value = potential_hit.get(key, "")
             if type(value) is str:
-                table_lines.append("<td>{}</td>".format(html.escape(value)))
+                if value.startswith("<img"):
+                    table_lines.append("<td>{}</td>".format(value))
+                else:
+                    table_lines.append("<td>{}</td>".format(html.escape(value)))
             elif type(value) is int:
                 table_lines.append("<td>{}</td>".format(html.escape(str(value))))
             elif type(value) is list:

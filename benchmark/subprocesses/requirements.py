@@ -52,3 +52,11 @@ class GradleRequirement(Requirement):
 
     def check(self):
         Shell.exec("gradle -version")
+
+
+class DotRequirement(Requirement):
+    def __init__(self):
+        super().__init__("Dot 2.38+")
+
+    def check(self):
+        Shell.exec("dot -V")
