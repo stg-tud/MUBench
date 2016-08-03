@@ -8,17 +8,17 @@ python:
 
 install:
   - sudo apt-get update
-  - apt-get install -y oracle-java8-installer
+  - sudo apt-get install -y oracle-java8-installer
   - sudo apt-get install git
   - git config --global user.email "bob@builder.com"
   - git config --global user.name "Bob the Builder"
   - sudo apt-get install subversion
-  - sudo apt-get install default-jre
   - sudo pip install nose
   - pip install pyyaml
   - pip install request
   - sudo apt-get install maven
   - sudo apt-get install gradle
+  - sudo apt-get install graphviz
 
 before_script:
   - export JAVA_HOME="/usr/lib/jvm/java-8-oracle"
