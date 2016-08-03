@@ -98,14 +98,26 @@ def __get_target_code(compiles_path: str, version: ProjectVersion, file: str, me
     version_compile = version.get_compile(compiles_path)
     misuse_file = join(version_compile.original_sources_path, file)
 
-    try:
-        method = exec_util("MethodExtractor", "\"{}\" \"{}\"".format(misuse_file, method))
-    except CommandFailedError as e:
-        method = str(e)
+    target_code = """<script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js?autoload=true&amp;skin=sunburst"></script>"""
 
-    return '<script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js' \
-           '?autoload=true&amp;skin=sunburst"></script>\n' \
-           '<pre class="prettyprint"><code class="language-java">{}</code></pre>'.format(html.escape(method))
+    try:
+        output = exec_util("MethodExtractor", "\"{}\" \"{}\"".format(misuse_file, method)).strip("\n")
+        if output:
+            methods = output.split("\n===\n")
+            for method in methods:
+                # comes as "<first-line number>:<code>
+                info = method.split(":", 1)
+                target_code += """<pre class="prettyprint linenums:{}">
+                        <code class="language-java">{}</code>
+                    </pre>
+                    """.format(info[0], html.escape(info[1].strip("\n")))
+    except CommandFailedError as e:
+        target_code += """<pre class="prettyprint linenums:{}">
+            <code class="language-java">{}</code>
+        </pre>
+        """.format(1, html.escape(str(e)))
+
+    return target_code
 
 
 def __multiline(text: str):

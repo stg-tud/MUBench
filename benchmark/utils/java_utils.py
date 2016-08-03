@@ -8,7 +8,7 @@ from benchmark.utils.web_util import is_valid_file, download_file
 
 UTILS_JAR_NAME = "mubench.utils.jar"
 UTILS_JAR_URL = "http://www.st.informatik.tu-darmstadt.de/artifacts/mubench/{}".format(UTILS_JAR_NAME)
-UTILS_MD5 = "a0797d571ba23cac9b7a3437fd0e54a4"
+UTILS_MD5 = "b2968a4c0d5df550e0e2f11e61bf435a"
 
 
 def exec_util(main: str, args: str = ""):

@@ -118,7 +118,7 @@ class TestReviewPageGenerator:
         review_page.generate(self.review_folder, 'detector', self.compiles_path, self.test_project, self.test_version,
                              self.test_misuse, [])
         content = self.read_review_file()
-        assert_in("<code class=\"language-java\">void bar() {\n}\n</code>", content)
+        assert_in("<code class=\"language-java\">// declaring class: C\nvoid bar() {\n}</code>", content)
 
     def read_review_file(self):
         review_file = join(self.review_folder, 'review.html')
