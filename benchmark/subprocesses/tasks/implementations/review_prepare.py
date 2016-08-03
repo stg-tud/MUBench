@@ -1,23 +1,22 @@
 import logging
-from shutil import copy
-
-import yaml
 from os import makedirs, listdir
-from os.path import join, exists, pardir, basename, dirname
+from os.path import join, exists, pardir, dirname
+from shutil import copy
 from typing import Dict, Iterable
 from typing import List
+
+import yaml
 
 from benchmark.data.misuse import Misuse
 from benchmark.data.project import Project
 from benchmark.data.project_version import ProjectVersion
 from benchmark.subprocesses.requirements import JavaRequirement, UrlLibRequirement
-from benchmark.subprocesses.tasks.base.project_task import Response, Requirement
+from benchmark.subprocesses.tasks.base.project_task import Response
 from benchmark.subprocesses.tasks.base.project_version_misuse_task import ProjectVersionMisuseTask
 from benchmark.subprocesses.tasks.base.project_version_task import ProjectVersionTask
 from benchmark.subprocesses.tasks.implementations.detect import Run
-from benchmark.subprocesses.tasks.implementations.review import main_index, review_page
+from benchmark.subprocesses.tasks.implementations.review import review_page
 from benchmark.utils.io import safe_open, remove_tree, safe_write, read_yaml
-from benchmark.utils.shell import Shell
 
 
 class Review:
@@ -81,13 +80,17 @@ class RunReview:
         review = """
             <tr>
                 <td>Version:</td>
-                <td>{} (result: {}, findings: {}, duration: {}s)</td>
+                <td>{} (result: {}, findings: {}, runtime: {}s)</td>
             </tr>
             <tr>
                 <td></td>
                 <td>
-                    <table>
-            """.format(self.version_id, self.run.result, len(self.run.findings), self.run.runtime)
+                    <table border=\"1\" cellpadding=\"5\">
+                        <tr><th>Misuse</th><th>Result</th><th>Reviewed By</th></tr>
+            """.format(self.version_id,
+                       self.run.result.name if self.run.result else "not run",
+                       len(self.run.findings) if self.run.result else "none",
+                       round(self.run.runtime, 1) if self.run.result else "unknown")
         for misuse_review in self.finding_reviews:
             review += misuse_review.to_html()
         review += """
@@ -105,12 +108,11 @@ class FindingReview:
         self.reviewers = reviewers
 
     def to_html(self):
-        reviewed_by = "reviewed by " + ", ".join(self.reviewers) if self.reviewers else "none"
+        reviewed_by = ", ".join(self.reviewers) if self.reviewers else "not reviewed"
         return """
             <tr>
-                <td>Misuse:</td>
                 <td>{}</td>
-                <td>[{}]</td>
+                <td>{}</td>
                 <td>{}</td>
             </tr>
             """.format(self.name, self.result, reviewed_by)
@@ -192,14 +194,15 @@ class ReviewPrepare(ProjectVersionMisuseTask):
         return Response.ok
 
     def __append_misuse_review(self, misuse: Misuse, review_site: str, existing_reviews: List[Dict[str, str]]):
-        self.__append_misuse_to_review(misuse, "<a href=\"{}\">review</a>".format(review_site), existing_reviews)
+        review_potential_hits = "<a href=\"{}\">potential hits</a>".format(review_site)
+        self.__append_misuse_to_review(misuse, review_potential_hits, existing_reviews)
 
     def __append_misuse_no_hits(self, misuse: Misuse):
         self.__append_misuse_to_review(misuse, "no potential hits", [])
 
     def __append_misuse_to_review(self, misuse: Misuse, result: str, existing_reviews: List[Dict[str, str]]):
         reviewers = [review['reviewer'] for review in existing_reviews if review.get('reviewer', None)]
-        self.__review.append_finding_review(str(misuse), result, reviewers)
+        self.__review.append_finding_review(misuse.id, result, reviewers)
 
     @staticmethod
     def __get_existing_reviews(review_path: str) -> List[Dict[str, str]]:
@@ -217,11 +220,6 @@ class ReviewPrepare(ProjectVersionMisuseTask):
 
     def end(self):
         safe_write(self.__review.to_html(), join(self.review_path, "index.html"), append=False)
-
-        main_review_dir = join(self.review_path, pardir)
-        main_findings_dir = join(self.findings_path, pardir)
-        if exists(main_findings_dir):
-            main_index.generate(main_review_dir, main_findings_dir)
 
     @staticmethod
     def find_potential_hits(findings: Iterable[Dict[str, str]], misuse: Misuse) -> List[Dict[str, str]]:
@@ -310,9 +308,15 @@ class ReviewPrepareAll(ProjectVersionTask):
             makedirs(dirname(join(self.review_path, url)), exist_ok=True)
             copy(join(self.findings_path, url), join(self.review_path, url))
             self.__review.append_finding_review("all findings",
-                                                "<a href=\"{}\">download violations.xml</a>".format(url), [])
+                                                "<a href=\"{}\">violations.xml</a>".format(url), [])
         else:
-            for finding in detector_run.findings:
+            findings = detector_run.findings
+            if self.detector.startswith("dmmc"):
+                findings.sort(key=lambda f: float(f["strangeness"]), reverse=True)
+            elif self.detector.startswith("grouminer"):
+                findings.sort(key=lambda f: float(f["rareness"]), reverse=True)
+
+            for finding in findings:
                 url = join(project.id, version.version_id, "finding-{}.html".format(finding["id"]))
                 review_page.generate2(join(self.review_path, url), self.detector, self.compiles_path, version, finding)
                 self.__review.append_finding_review("Finding {}".format(finding["id"]),

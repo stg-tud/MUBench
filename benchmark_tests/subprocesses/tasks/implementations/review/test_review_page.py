@@ -40,7 +40,7 @@ class TestReviewPageGenerator:
                              self.test_misuse, [])
 
         content = self.read_review_file()
-        assert_in("<h1>Review: detector/project/version/project.misuse</h1>", content)
+        assert_in("<h1>Review</h1>", content)
 
     def test_adds_misuse_description(self):
         self.test_misuse._DESCRIPTION = "SubLine.intersection() may return null."
@@ -49,16 +49,18 @@ class TestReviewPageGenerator:
                              self.test_misuse, [])
 
         content = self.read_review_file()
-        assert_in("<b>Description:</b> SubLine.intersection() may return null.", content)
+        assert_in("<tr><td><b>Description:</b></td><td>SubLine.intersection() may return null.</td></tr>", content)
 
     def test_adds_fix_description(self):
         self.test_misuse.fix.description = "Check result before using."
+        self.test_misuse.fix.commit = "http://diff.webview"
 
         review_page.generate(self.review_folder, 'detector', self.compiles_path, self.test_project, self.test_version,
                              self.test_misuse, [])
 
         content = self.read_review_file()
-        assert_in("<b>Fix Description:</b> Check result before using.", content)
+        assert_in("<tr><td><b>Fix Description:</b></td><td>Check result before using. "
+                  "(<a href=\"http://diff.webview\">see diff</a>)</td></tr>", content)
 
     def test_adds_misuse_characteristics(self):
         self.test_misuse._characteristics = ["missing/condition/null_check"]
@@ -67,19 +69,22 @@ class TestReviewPageGenerator:
                              self.test_misuse, [])
 
         content = self.read_review_file()
-        assert_in("<b>Misuse Elements:</b><ul>\n<li>missing/condition/null_check</li>\n</ul>", content)
+        assert_in("""<tr><td><b>Misuse Elements:</b></td><td>
+        <ul>
+            <li>missing/condition/null_check</li>
+        </ul>
+        </td></tr>""", content)
 
     def test_adds_location(self):
         self.test_misuse.location.file = "foo.java"
         self.test_misuse.location.method = "bar()"
-        self.test_misuse.fix.commit = "http://commit.url"
 
         review_page.generate(self.review_folder, 'detector', self.compiles_path, self.test_project, self.test_version,
                              self.test_misuse, [])
 
         content = self.read_review_file()
-        assert_in("<b>In File:</b> <a href=\"http://commit.url\">foo.java</a>,"
-                  " <b>Method:</b> bar()", content)
+        assert_in("<tr><td><b>In File:</b></td><td>foo.java</td></tr>", content)
+        assert_in("<tr><td><b>In Method:</b></td><td>bar()</td></tr>", content)
 
     def test_adds_potential_hit_information(self):
         potential_hits = [{"missingcalls": ["getAngle()"]}, {"additionalkey": "additional information"}]
@@ -88,11 +93,10 @@ class TestReviewPageGenerator:
                              self.test_misuse, potential_hits)
 
         content = self.read_review_file()
-        assert_in("<h2>Potential Hits</h2>\n<table border=\"1\" cellpadding=\"5\">\n"
-                  "<tr>\n<th>additionalkey</th>\n<th>missingcalls</th>\n</tr>\n"
-                  "<tr>\n<td></td>\n<td><ul>\n<li>getAngle()</li>\n</ul></td>\n</tr>\n"
-                  "<tr>\n<td>additional information</td>\n<td></td>\n</tr>\n"
-                  "</table>\n", content)
+        assert_in("<tr>\n<th>additionalkey</th>\n<th>missingcalls</th>\n</tr>", content)
+        assert_in("<tr>\n"
+                  "<td></td>\n<td><ul>\n<li>getAngle()</li>\n</ul></td>\n"
+                  "</tr>\n<tr>\n<td>additional information</td>\n<td></td>\n</tr>", content)
 
     def test_uses_detector_specific_potential_hits_generator(self):
         potential_hits = [{"missingcalls": ["getAngle()"]}, {"additionalkey": "additional information"}]

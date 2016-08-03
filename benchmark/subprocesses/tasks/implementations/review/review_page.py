@@ -15,21 +15,37 @@ from benchmark.utils.shell import CommandFailedError
 
 def generate(review_folder: str, detector: str, compiles_path: str, project: Project, version: ProjectVersion,
              misuse: Misuse, potential_hits: List[Dict[str, str]]):
-    lines = ['<h1>Review: {}/{}/{}/{}</h1>'.format(detector, project.id, version.version_id, misuse.id),
-             '<h2>Misuse Details</h2>',
-             '<p><b>Description:</b> {}</p>'.format(__multiline(misuse.description)),
-             '<p><b>Fix Description:</b> {}</p>'.format(__multiline(misuse.fix.description)),
-             '<p><b>Misuse Elements:</b><ul>'] + \
-            ['<li>{}</li>'.format(characteristic) for characteristic in misuse.characteristics] + \
-            ['</ul></p>',
-             '<p><b>In File:</b> <a href="{}">{}</a>, <b>Method:</b> {}</p>'.format(
-                 misuse.fix.commit,
-                 misuse.location.file,
-                 misuse.location.method),
-             '<p>{}</p>'.format(__get_target_code(compiles_path, version, misuse.location.file, misuse.location.method)),
-             '<h2>Potential Hits</h2>'] + potential_hits_section.generate(detector, potential_hits)
+    review = """
+        <h1>Review</h1>
+        <table>
+            <tr><td><b>Detector:</b></td><td>{}</td></tr>
+            <tr><td><b>Target:</b></td><td>{}</td></tr>
+            <tr><td><b>Misuse:</b></td><td>{}</td></tr>
+        </table>
+        <h2>Misuse Details</h2>
+        <p>Details about the known misuse from the MUBench dataset.</p>
+        <table>
+            <tr><td><b>Description:</b></td><td>{}</td></tr>
+            <tr><td><b>Fix Description:</b></td><td>{} (<a href="{}">see diff</a>)</td></tr>
+            <tr><td><b>Misuse Elements:</b></td><td>{}</td></tr>
+            <tr><td><b>In File:</b></td><td>{}</td></tr>
+            <tr><td><b>In Method:</b></td><td>{}</td></tr>
+            <tr><td><b>Code with Misuse:</b></td><td>{}</td></tr>
+        </table>
+        <h2>Potential Hits</h2>
+        <p>Findings of the detector that identify an anomaly in the same file and method as the known misuse.
+            Please reviews whether any of these findings actually correspond to the kown misuse.</p>
+        {}
+        """.format(detector, version, misuse,
+                   __multiline(misuse.description),
+                   __multiline(misuse.fix.description),
+                   misuse.fix.commit,
+                   __list(misuse.characteristics),
+                   misuse.location.file, misuse.location.method,
+                   __get_target_code(compiles_path, version, misuse.location.file, misuse.location.method),
+                   "\n".join(potential_hits_section.generate(detector, potential_hits)))
 
-    safe_write('\n'.join(lines), join(review_folder, 'review.html'), False)
+    safe_write(review, join(review_folder, 'review.html'), False)
 
 
 def generate2(review_file: str, detector: str, compiles_path: str, version: ProjectVersion, finding: Dict[str,str]):
@@ -38,13 +54,19 @@ def generate2(review_file: str, detector: str, compiles_path: str, version: Proj
         <table>
             <tr><td><b>Detector:</b></td><td>{}</td></tr>
             <tr><td><b>Target:</b></td><td>{}</td></tr>
+        </table>
+        <h2>Potential Misuse</h2>
+        <p>Anomaly identified by the detector.
+            Please review whether this anomaly corresponds to a misuse.</p>
+        <table>
             <tr><td><b>Finding:</b></td><td>{}</td></tr>
             <tr><td><b>In File:</b></td><td>{}</td></tr>
             <tr><td><b>In Method:</b></td><td>{}</td></tr>
+            <tr><td><b>Code with Finding:</b></td><td>{}</td></tr>
+            <tr><td><b>Metadata:</b></td><td>{}</td></tr>
         </table>
-        <p>{}</p>
-        {}
-        """.format(detector, version, finding["id"], join(version.source_dir, finding["file"]), finding["method"],
+        """.format(detector, version,
+                   finding["id"], join(version.source_dir, finding["file"]), finding["method"],
                    __get_target_code(compiles_path, version, finding["file"], finding["method"]),
                    "\n".join(potential_hits_section.generate(detector, [finding])))
 
@@ -67,3 +89,11 @@ def __get_target_code(compiles_path: str, version: ProjectVersion, file: str, me
 
 def __multiline(text: str):
     return "<br/>".join(wrap(text, width=120))
+
+
+def __list(l: List):
+    return """
+        <ul>
+            <li>{}</li>
+        </ul>
+        """.format("</li>\n            <li>".join(l))
