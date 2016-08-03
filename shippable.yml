@@ -7,18 +7,15 @@ python:
   - 3.5
 
 install:
-  - sudo apt-get update
-  - sudo apt-get install -y oracle-java8-installer
-  - sudo apt-get install git
-  - git config --global user.email "bob@builder.com"
-  - git config --global user.name "Bob the Builder"
-  - sudo apt-get install subversion
-  - sudo pip install nose
+  - apt-get update
+  - apt-get install -y oracle-java8-installer
+  - apt-get install git
+  - apt-get install subversion
+  - apt-get install maven
+  - apt-get install gradle
+  - apt-get install graphviz
+  - pip install nose
   - pip install pyyaml
-  - pip install request
-  - sudo apt-get install maven
-  - sudo apt-get install gradle
-  - sudo apt-get install graphviz
 
 before_script:
   - export JAVA_HOME="/usr/lib/jvm/java-8-oracle"
@@ -27,6 +24,8 @@ before_script:
   - update-alternatives --set javac "$JAVA_HOME/bin/javac"
   - update-alternatives --set javaws "$JAVA_HOME/jre/bin/javaws"
   - java -version
+  - git config --global user.email "bob@builder.com"
+  - git config --global user.name "Bob the Builder"
   - mkdir -p shippable/codecoverage shippable/testresults
   - sudo chmod +x mubench
 
@@ -34,7 +33,7 @@ script:
   - nosetests --with-xunit --xunit-file=shippable/testresults/nosetests.xml
   - mvn test -f benchmark/mubench.cli/pom.xml
   - mvn test -f benchmark/mubench.utils/pom.xml
-  - ./mubench detect dummy --only synthetic
+  - "./mubench detect dummy --only synthetic"
   - "./mubench review:prepare"
   - "./mubench review:check"
   
