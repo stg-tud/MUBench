@@ -5,13 +5,16 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
 
 import com.github.javaparser.JavaParser;
 import com.github.javaparser.ParseException;
 import com.github.javaparser.ast.CompilationUnit;
+import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.body.ConstructorDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.body.Parameter;
+import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 import com.google.common.base.Joiner;
 
@@ -43,12 +46,7 @@ public class MethodExtractor {
 		public void visit(ConstructorDeclaration constructor, List<String> matchingMethodsCode) {
 			String signature = getSignature("<init>", constructor.getParameters());
 			if (methodSignature.equals(signature)) {
-				StringBuilder constructor_code = new StringBuilder();
-				if (constructor.hasComment()) {
-					constructor_code.append(constructor.getComment());
-				}
-				constructor_code.append(constructor.getDeclarationAsString()).append(" ").append(constructor.getBlock());
-				matchingMethodsCode.add(constructor_code.toString());
+				matchingMethodsCode.add(getCode(constructor, c -> c.getDeclarationAsString(), c -> c.getBlock()));
 			}
 		}
 
@@ -56,13 +54,18 @@ public class MethodExtractor {
 		public void visit(MethodDeclaration method, List<String> matchingMethodsCode) {
 			String signature = getSignature(method.getName(), method.getParameters());
 			if (methodSignature.equals(signature)) {
-				StringBuilder method_code = new StringBuilder();
-				if (method.hasComment()) {
-					method_code.append(method.getComment());
-				}
-				method_code.append(method.getDeclarationAsString()).append(" ").append(method.getBody());
-				matchingMethodsCode.add(method_code.toString());
+				matchingMethodsCode.add(getCode(method, m -> m.getDeclarationAsString(), m -> m.getBody()));
 			}
+		}
+		
+		private <T extends Node> String getCode(T node, Function<T, String> getDeclarationAsString, Function<T, BlockStmt> getBody) {
+			StringBuilder method_code = new StringBuilder();
+			method_code.append(node.getRange().begin.line).append(":");
+			if (node.hasComment()) {
+				method_code.append(node.getComment());
+			}
+			method_code.append(getDeclarationAsString.apply(node)).append(" ").append(getBody.apply(node));
+			return method_code.toString();
 		}
 
 		private String getSignature(String methodName, List<Parameter> parameters) {

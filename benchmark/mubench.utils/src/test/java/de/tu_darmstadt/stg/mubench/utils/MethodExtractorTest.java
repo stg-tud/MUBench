@@ -120,11 +120,27 @@ public class MethodExtractorTest {
 				+ "public void m() {\n"
 				+ "}");
 	}
+	
+	@Test
+	public void returnsLineNumber() throws ParseException {
+		String output = runUUT("class C {\n"
+				+ "  void m() {}\n"
+				+ "}",
+				
+				"m()");
+		String line_number = output.split(":")[0];
+		assertEquals("2", line_number);
+	}
 
 	public void testFindsMethod(String input, String methodSignature, String expectedOutput) throws ParseException {
+		String output = runUUT(input, methodSignature);
+		String method_code = output.split(":")[1];
+		assertEquals(expectedOutput, method_code);
+	}
+
+	public String runUUT(String input, String methodSignature) throws ParseException {
 		MethodExtractor methodExtractor = new MethodExtractor();
 		ByteArrayInputStream inputStream = new ByteArrayInputStream(input.getBytes());
-		String method_code = methodExtractor.extract(inputStream, methodSignature);
-		assertEquals(expectedOutput, method_code);
+		return methodExtractor.extract(inputStream, methodSignature);
 	}
 }
