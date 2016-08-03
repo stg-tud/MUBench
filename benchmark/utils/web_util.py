@@ -1,6 +1,6 @@
 import hashlib
 import shutil
-import urllib
+from urllib.request import urlopen
 from os import remove
 from os.path import exists
 
@@ -12,7 +12,7 @@ def download_file(url: str, file: str, md5_checksum: str = None):
     :param file: the destination to save the file to
     :param md5_checksum: a checksum to validate the file with
     """
-    with urllib.request.urlopen(url) as response, open(file, 'wb') as out_file:
+    with urlopen(url) as response, open(file, 'wb') as out_file:
         shutil.copyfileobj(response, out_file)
 
     try:
