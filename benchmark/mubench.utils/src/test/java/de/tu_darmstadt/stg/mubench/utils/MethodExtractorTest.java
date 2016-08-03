@@ -12,7 +12,7 @@ public class MethodExtractorTest {
 
 	@Test
 	public void findsMethodByName() throws ParseException {
-		test("class C {\n"
+		testFindsMethod("class C {\n"
 				+ "  public void m() {\n"
 				+ "  }\n"
 				+ "}",
@@ -24,7 +24,7 @@ public class MethodExtractorTest {
 	
 	@Test
 	public void findsMethodBySignature() throws ParseException {
-		test("class C{\n"
+		testFindsMethod("class C{\n"
 				+ "  void m(int i) {}\n"
 				+ "  void m(Object o) {}\n"
 				+ "}",
@@ -36,7 +36,7 @@ public class MethodExtractorTest {
 	
 	@Test
 	public void findsMethodBySignatureSimpleTypeName() throws ParseException {
-		test("class C{\n"
+		testFindsMethod("class C{\n"
 				+ "  void m(java.lang.List l) {}\n"
 				+ "  void m(Object o) {}\n"
 				+ "}",
@@ -48,7 +48,7 @@ public class MethodExtractorTest {
 	
 	@Test
 	public void findsMethodByMultipleParameterSignature() throws ParseException {
-		test("class C{\n"
+		testFindsMethod("class C{\n"
 				+ "  void m(A a, B b) {}\n"
 				+ "}",
 				
@@ -59,7 +59,7 @@ public class MethodExtractorTest {
 	
 	@Test
 	public void findsConstructor() throws ParseException {
-		test("class C{\n"
+		testFindsMethod("class C{\n"
 				+ "  C() {}\n"
 				+ "}",
 				
@@ -70,7 +70,7 @@ public class MethodExtractorTest {
 
 	@Test
 	public void includesBody() throws ParseException {
-		test("class C {\n"
+		testFindsMethod("class C {\n"
 				+ "  public void m() {\n"
 				+ "    if (true) {\n"
 				+ "      m();\n"
@@ -89,7 +89,7 @@ public class MethodExtractorTest {
 
 	@Test
 	public void includesComment() throws ParseException {
-		test("class C {\n"
+		testFindsMethod("class C {\n"
 				+ "  /* comment */\n"
 				+ "  public void m() {\n"
 				+ "  }\n"
@@ -104,7 +104,7 @@ public class MethodExtractorTest {
 
 	@Test
 	public void includesJavaDocComment() throws ParseException {
-		test("class C {\n"
+		testFindsMethod("class C {\n"
 				+ "  /**\n"
 				+ "   * comment\n"
 				+ "   */\n"
@@ -121,7 +121,7 @@ public class MethodExtractorTest {
 				+ "}");
 	}
 
-	public void test(String input, String methodSignature, String expectedOutput) throws ParseException {
+	public void testFindsMethod(String input, String methodSignature, String expectedOutput) throws ParseException {
 		MethodExtractor methodExtractor = new MethodExtractor();
 		ByteArrayInputStream inputStream = new ByteArrayInputStream(input.getBytes());
 		String method_code = methodExtractor.extract(inputStream, methodSignature);
