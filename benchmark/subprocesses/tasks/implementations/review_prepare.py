@@ -79,23 +79,26 @@ class RunReview:
         self.finding_reviews.append(FindingReview(name, result, reviewers))
 
     def to_html(self):
+        result_name = self.run.result.name if self.run.result else "not run"
         review = """
             <tr>
                 <td>Version:</td>
                 <td>{} (result: {}, findings: {}, runtime: {}s)</td>
             </tr>
+            """.format(self.version_id,
+                       result_name,
+                       len(self.run.findings) if self.run.result else "none",
+                       round(self.run.runtime, 1) if self.run.result else "unknown")
+        if self.finding_reviews:
+            review += """
             <tr>
                 <td></td>
                 <td>
                     <table border=\"1\" cellpadding=\"5\">
-                        <tr><th>Misuse</th><th>Result</th><th>Reviewed By</th></tr>
-            """.format(self.version_id,
-                       self.run.result.name if self.run.result else "not run",
-                       len(self.run.findings) if self.run.result else "none",
-                       round(self.run.runtime, 1) if self.run.result else "unknown")
-        for misuse_review in self.finding_reviews:
-            review += misuse_review.to_html()
-        review += """
+                        <tr><th>Misuse</th><th>Result</th><th>Reviewed By</th></tr>"""
+            for misuse_review in self.finding_reviews:
+                review += misuse_review.to_html()
+            review += """
                     </table>
                 </td>
             </tr>
