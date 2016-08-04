@@ -1,7 +1,6 @@
 package main;
 
 import java.io.File;
-import java.io.PrintStream;
 import java.util.LinkedList;
 
 import de.tu_darmstadt.stg.mubench.cli.ArgParser;
