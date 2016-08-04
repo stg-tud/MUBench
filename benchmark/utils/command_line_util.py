@@ -101,6 +101,9 @@ def __add_review_prepare_subprocess(subparsers) -> None:
     review_prepare_parser = subparsers.add_parser('review:prepare', formatter_class=SortingHelpFormatter,
                                                   description="Prepare findings for reviewing.",  # TODO: more detail?
                                                   help="Prepare findings for reviewing.")  # type: ArgumentParser
+    __setup_misuse_filter_arguments(review_prepare_parser)
+    review_prepare_parser.add_argument('--only-detectors', metavar='D', nargs='+', dest="detector_white_list",
+                                       default=[], help="prepare only for the detectors whose names are given")
     review_prepare_parser.add_argument('--force-prepare', dest='force_prepare', action='store_true', default=False,
                                        help="force generating new review files")
 

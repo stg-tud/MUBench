@@ -68,7 +68,11 @@ class Benchmark:
         self.runner.add(detector_runner)
 
     def _setup_review_prepare(self):
-        for detector in available_detectors:
+        detectors = available_detectors
+        if config.detector_white_list:
+            detectors = set(detectors).intersection(config.detector_white_list)
+
+        for detector in detectors:
             results_path = join(Benchmark.RESULTS_PATH, detector)
             if detector.endswith("-do"):
                 review_path = join(Benchmark.REVIEW_PATH, "ex1_detect-only", detector[:-3])
