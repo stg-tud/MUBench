@@ -49,6 +49,9 @@ class Run:
     def is_success(self):
         return self.__result == Result.success
 
+    def is_failure(self):
+        return self.__result == Result.error or self.__result == Result.timeout
+
     @property
     def result(self):
         return self.__result

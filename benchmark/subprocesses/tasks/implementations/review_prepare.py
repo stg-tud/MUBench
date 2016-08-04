@@ -15,7 +15,7 @@ from benchmark.subprocesses.requirements import JavaRequirement, DotRequirement
 from benchmark.subprocesses.tasks.base.project_task import Response
 from benchmark.subprocesses.tasks.base.project_version_misuse_task import ProjectVersionMisuseTask
 from benchmark.subprocesses.tasks.base.project_version_task import ProjectVersionTask
-from benchmark.subprocesses.tasks.implementations.detect import Run
+from benchmark.subprocesses.tasks.implementations.detect import Run, Result
 from benchmark.subprocesses.tasks.implementations.review import review_page
 from benchmark.utils.io import safe_open, remove_tree, safe_write, read_yaml
 from benchmark.utils.shell import Shell
@@ -80,6 +80,9 @@ class RunReview:
 
     def to_html(self):
         result_name = self.run.result.name if self.run.result else "not run"
+        if self.run.is_failure():
+            result_name = """<b style="color:red">{}</b>""".format(result_name)
+
         review = """
             <tr>
                 <td>Version:</td>
