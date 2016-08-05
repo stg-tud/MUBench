@@ -75,15 +75,17 @@ class Benchmark:
         for detector in detectors:
             results_path = join(Benchmark.RESULTS_PATH, detector)
             if detector.endswith("-do"):
-                review_path = join(Benchmark.REVIEW_PATH, "ex1_detect-only", detector[:-3])
+                experiment = "ex1_detect-only"
             else:
-                review_path = join(Benchmark.REVIEW_PATH, "ex2_mine-and-detect", detector)
-                review_all_path = join(Benchmark.REVIEW_PATH, "ex3_all-findings", detector)
-                self.runner.add(ReviewPrepareAll(detector, results_path, review_all_path, Benchmark.CHECKOUTS_PATH,
-                                                 Benchmark.CHECKOUTS_PATH, self.config.force_prepare))
+                experiment = "ex2_mine-and-detect"
 
-            self.runner.add(ReviewPrepare(detector, results_path, review_path, Benchmark.CHECKOUTS_PATH,
-                                          Benchmark.CHECKOUTS_PATH, self.config.force_prepare))
+                self.runner.add(ReviewPrepareAll("ex3_all-findings", detector, results_path, Benchmark.REVIEW_PATH,
+                                                 Benchmark.CHECKOUTS_PATH, Benchmark.CHECKOUTS_PATH,
+                                                 self.config.force_prepare))
+
+            self.runner.add(ReviewPrepare(experiment, detector, results_path, Benchmark.REVIEW_PATH,
+                                          Benchmark.CHECKOUTS_PATH, Benchmark.CHECKOUTS_PATH,
+                                          self.config.force_prepare))
 
     def _setup_review_check(self):
         if not exists(Benchmark.REVIEW_PATH):

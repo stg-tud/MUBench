@@ -15,10 +15,15 @@ from benchmark.subprocesses.requirements import JavaRequirement, DotRequirement
 from benchmark.subprocesses.tasks.base.project_task import Response
 from benchmark.subprocesses.tasks.base.project_version_misuse_task import ProjectVersionMisuseTask
 from benchmark.subprocesses.tasks.base.project_version_task import ProjectVersionTask
-from benchmark.subprocesses.tasks.implementations.detect import Run, Result
+from benchmark.subprocesses.tasks.implementations.detect import Run
 from benchmark.subprocesses.tasks.implementations.review import review_page
+from benchmark.subprocesses.tasks.implementations.review.review_page import REVIEW_RECEIVER_FILE
 from benchmark.utils.io import safe_open, remove_tree, safe_write, read_yaml
 from benchmark.utils.shell import Shell
+
+
+def _copy_review_receiver_file(dest: str):
+    copy(join(dirname(__file__), "review", REVIEW_RECEIVER_FILE), join(dest, REVIEW_RECEIVER_FILE))
 
 
 class Review:
@@ -130,12 +135,14 @@ class ReviewPrepare(ProjectVersionMisuseTask):
     no_hit = 0
     potential_hit = 1
 
-    def __init__(self, detector: str, findings_path: str, review_path: str, checkout_base_dir: str, compiles_path: str,
-                 force_prepare: bool):
+    def __init__(self, experiment: str, detector: str, findings_path: str, reviews_path: str, checkout_base_dir: str,
+                 compiles_path: str, force_prepare: bool):
         super().__init__()
+        self.experiment = experiment
         self.compiles_path = compiles_path
         self.findings_path = findings_path
-        self.review_path = review_path
+        self.reviews_path = reviews_path
+        self.review_path = join(reviews_path, experiment, detector)
         self.checkout_base_dir = checkout_base_dir
         self.force_prepare = force_prepare
         self.detector = detector
@@ -148,6 +155,7 @@ class ReviewPrepare(ProjectVersionMisuseTask):
     def start(self):
         logger = logging.getLogger("review_prepare")
         logger.info("Preparing review for results of %s...", self.detector)
+        _copy_review_receiver_file(self.reviews_path)
 
     def process_project(self, project: Project):
         self.__review.start_project_review(project.id)
@@ -194,7 +202,7 @@ class ReviewPrepare(ProjectVersionMisuseTask):
 
         if potential_hits:
             potential_hits = _specialize_findings(self.detector, potential_hits, review_path)
-            review_page.generate(review_path, self.detector, self.compiles_path, project, version, misuse,
+            review_page.generate(self.experiment, review_path, self.detector, self.compiles_path, version, misuse,
                                  potential_hits)
             self.__generate_potential_hits_yaml(potential_hits, review_path)
             self.__append_misuse_review(misuse, review_site, [])
@@ -283,12 +291,14 @@ class ReviewPrepare(ProjectVersionMisuseTask):
 
 
 class ReviewPrepareAll(ProjectVersionTask):
-    def __init__(self, detector: str, findings_path: str, review_path: str, checkouts_path: str, compiles_path: str,
-                 force_prepare: bool):
+    def __init__(self, experiment: str, detector: str, findings_path: str, reviews_path: str, checkouts_path: str,
+                 compiles_path: str, force_prepare: bool):
         super().__init__()
+        self.experiment = experiment
         self.compiles_path = compiles_path
         self.findings_path = findings_path
-        self.review_path = review_path
+        self.reviews_path = reviews_path
+        self.review_path = join(reviews_path, experiment, detector)
         self.checkouts_path = checkouts_path
         self.force_prepare = force_prepare
         self.detector = detector
@@ -301,18 +311,24 @@ class ReviewPrepareAll(ProjectVersionTask):
     def start(self):
         logger = logging.getLogger("review_prepare")
         logger.info("Preparing review of all findings of %s...", self.detector)
+        _copy_review_receiver_file(self.reviews_path)
 
     def process_project(self, project: Project):
         self.__review.start_project_review(project.id)
         super().process_project(project)
 
     def process_project_version(self, project: Project, version: ProjectVersion):
+        logger = logging.getLogger("review_prepare.version")
+
         findings_path = join(self.findings_path, project.id, version.version_id)
         detector_run = Run(findings_path)
         self.__review.start_run_review(version.version_id, detector_run)
 
         if not detector_run.is_success():
+            logger.info("Skipping %s: no result.", version)
             return
+
+        logger.info("Generating review files for %s...", version)
 
         if self.detector.startswith("jadet") or self.detector.startswith("tikanga"):
             url = join(project.id, version.version_id, "violations.xml")
@@ -326,7 +342,8 @@ class ReviewPrepareAll(ProjectVersionTask):
 
             for finding in findings:
                 url = join(project.id, version.version_id, "finding-{}.html".format(finding["id"]))
-                review_page.generate2(join(self.review_path, url), self.detector, self.compiles_path, version, finding)
+                review_page.generate2(self.experiment, join(self.review_path, url), self.detector, self.compiles_path,
+                                      version, finding)
                 self.__review.append_finding_review("Finding {}".format(finding["id"]),
                                                     "<a href=\"{}\">review</a>".format(url), [])
 
