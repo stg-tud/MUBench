@@ -349,7 +349,9 @@ def _specialize_findings(detector: str, findings: List[Dict[str, str]], base_pat
             __replace_dot_graph_with_image(finding, "overlap", base_path)
             __replace_dot_graph_with_image(finding, "pattern", base_path)
         elif detector.startswith("mudetect"):
+            finding["overlap"] = finding["overlap"].replace(":0:0", "")
             __replace_dot_graph_with_image(finding, "overlap", base_path)
+            finding["pattern"] = finding["pattern"].replace(":0:0", "")
             __replace_dot_graph_with_image(finding, "pattern", base_path)
     return findings
 
