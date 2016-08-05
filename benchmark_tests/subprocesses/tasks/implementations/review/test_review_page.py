@@ -49,7 +49,7 @@ class TestReviewPageGenerator:
                              self.test_misuse, [])
 
         content = self.read_review_file()
-        assert_in("<tr><td><b>Description:</b></td><td>SubLine.intersection() may return null.</td></tr>", content)
+        assert_in("<tr><td class=\"vtop\"><b>Description:</b></td><td>SubLine.intersection() may return null.</td></tr>", content)
 
     def test_adds_fix_description(self):
         self.test_misuse.fix.description = "Check result before using."
@@ -59,7 +59,7 @@ class TestReviewPageGenerator:
                              self.test_misuse, [])
 
         content = self.read_review_file()
-        assert_in("<tr><td><b>Fix Description:</b></td><td>Check result before using. "
+        assert_in("<tr><td class=\"vtop\"><b>Fix Description:</b></td><td>Check result before using. "
                   "(<a href=\"http://diff.webview\">see diff</a>)</td></tr>", content)
 
     def test_adds_misuse_characteristics(self):
@@ -69,7 +69,7 @@ class TestReviewPageGenerator:
                              self.test_misuse, [])
 
         content = self.read_review_file()
-        assert_in("""<tr><td><b>Violation Types:</b></td><td>
+        assert_in("""<tr><td class="vtop"><b>Violation Types:</b></td><td>
         <ul>
             <li>missing/condition/null_check</li>
         </ul>
