@@ -16,7 +16,8 @@ def default(potential_hits: List[Dict[str, str]]):
         keys.update(potential_hit.keys())
     keys.discard("file")
     keys.discard("method")
-    keys = sorted(keys)
+    keys.discard("id")
+    keys = ["id"] + sorted(keys)
 
     table_lines.append("<tr>")
     for key in keys:

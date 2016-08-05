@@ -87,27 +87,54 @@ class TestReviewPageGenerator:
         assert_in("<tr><td><b>In Method:</b></td><td>bar()</td></tr>", content)
 
     def test_adds_potential_hit_information(self):
-        potential_hits = [{"missingcalls": ["getAngle()"]}, {"additionalkey": "additional information"}]
+        potential_hits = [{"id": 42, "info1": "x"}]
 
         review_page.generate(self.review_folder, 'detector', self.compiles_path, self.test_project, self.test_version,
                              self.test_misuse, potential_hits)
 
         content = self.read_review_file()
-        assert_in("<tr>\n<th>additionalkey</th>\n<th>missingcalls</th>\n</tr>", content)
-        assert_in("<tr>\n"
-                  "<td></td>\n<td><ul>\n<li>getAngle()</li>\n</ul></td>\n"
-                  "</tr>\n<tr>\n<td>additional information</td>\n<td></td>\n</tr>", content)
+        assert_in("<tr>\n<th>id</th>\n<th>info1</th>\n</tr>", content)
+        assert_in("<tr>\n<td>42</td>\n<td>x</td>\n", content)
+
+    def test_orders_potential_hit_information(self):
+        potential_hits = [{"id": 666, "info_z": "x", "info_a": "y"}]
+
+        review_page.generate(self.review_folder, 'detector', self.compiles_path, self.test_project, self.test_version,
+                             self.test_misuse, potential_hits)
+
+        content = self.read_review_file()
+        assert_in("<tr>\n<th>id</th>\n<th>info_a</th>\n<th>info_z</th>\n</tr>", content)
+        assert_in("<tr>\n<td>666</td>\n<td>y</td>\n<td>x</td>\n", content)
+
+    def test_formats_potential_hit_list_information(self):
+        potential_hits = [{"missingcalls": ["a", "b"]}]
+
+        # noinspection PyTypeChecker
+        review_page.generate(self.review_folder, 'detector', self.compiles_path, self.test_project, self.test_version,
+                             self.test_misuse, potential_hits)
+
+        content = self.read_review_file()
+        assert_in("<td><ul>\n<li>a</li>\n<li>b</li>\n</ul></td>\n", content)
+
+    def test_adds_potential_hit_information_of_all_hits(self):
+        potential_hits = [{"id": 1, "a": "x"}, {"id": 2, "b": "y"}]
+
+        review_page.generate(self.review_folder, 'detector', self.compiles_path, self.test_project, self.test_version,
+                             self.test_misuse, potential_hits)
+
+        content = self.read_review_file()
+        assert_in("<tr>\n<th>id</th>\n<th>a</th>\n<th>b</th>\n</tr>", content)
+        assert_in("<tr>\n<td>1</td>\n<td>x</td>\n<td></td>\n</tr>", content)
+        assert_in("<tr>\n<td>2</td>\n<td></td>\n<td>y</td>\n</tr>", content)
 
     def test_uses_detector_specific_potential_hits_generator(self):
-        potential_hits = [{"missingcalls": ["getAngle()"]}, {"additionalkey": "additional information"}]
-
         def detector(potential_hits):
             return ['-whatever-']
 
         setattr(potential_hits_section, 'detector', detector)
 
         review_page.generate(self.review_folder, 'detector', self.compiles_path, self.test_project, self.test_version,
-                             self.test_misuse, potential_hits)
+                             self.test_misuse, [{"id": "1"}])
 
         content = self.read_review_file()
         assert_in('-whatever-', content)
