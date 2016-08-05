@@ -9,7 +9,7 @@ location:
   file: org/apache/jackrabbit/server/io/DefaultHandler.java
   method: detect(String)
 fix:
-  commit: http://svn.apache.org/viewvc/jackrabbit/trunk/jackrabbit-jcr-server/src/main/java/org/apache/jackrabbit/server/io/DefaultHandler.java?r1=880743&r2=880742&pathrev=880743
+  commit: http://svn.apache.org/viewvc/jackrabbit/trunk/jackrabbit-jcr-server/src/main/java/org/apache/jackrabbit/server/io/DefaultHandler.java?r1=880743&r2=880742&pathrev=880743&diff_format=h
   revision: 880743
 internal: true
 pattern:

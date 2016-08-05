@@ -9,7 +9,7 @@ location:
   file: org/apache/lucene/index/ParallelReader.java
   method: ParallelTermEnum()
 fix:
-  commit: http://svn.apache.org/viewvc/lucene/java/trunk/src/java/org/apache/lucene/index/ParallelReader.java?r1=816602&r2=816601&pathrev=816602
+  commit: http://svn.apache.org/viewvc/lucene/java/trunk/src/java/org/apache/lucene/index/ParallelReader.java?r1=816602&r2=816601&pathrev=816602&diff_format=h
   revision: 0cb96adf12063c1ec2d586d0cec6a209abe9a2dd
 internal: false
 pattern:

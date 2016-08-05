@@ -16,11 +16,11 @@ location:
 fix:
   commit: http://svn.apache.org/viewvc?view=revision&revision=55854
   files:
-  - diff: http://svn.apache.org/viewvc/incubator/jackrabbit/trunk/src/java/org/apache/jackrabbit/core/state/obj/ObjectPersistenceManager.java?r1=55854&r2=55853&pathrev=55854
+  - diff: http://svn.apache.org/viewvc/incubator/jackrabbit/trunk/src/java/org/apache/jackrabbit/core/state/obj/ObjectPersistenceManager.java?r1=55854&r2=55853&pathrev=55854&diff_format=h
     name: org/apache/jackrabbit/core/state/obj/ObjectPersistenceManager.java
-  - diff: http://svn.apache.org/viewvc/incubator/jackrabbit/trunk/src/java/org/apache/jackrabbit/core/state/xml/XMLPersistenceManager.java?r1=55854&r2=55853&pathrev=55854
+  - diff: http://svn.apache.org/viewvc/incubator/jackrabbit/trunk/src/java/org/apache/jackrabbit/core/state/xml/XMLPersistenceManager.java?r1=55854&r2=55853&pathrev=55854&diff_format=h
     name: org/apache/jackrabbit/core/state/xml/XMLPersistenceManager.java
-  - diff: http://svn.apache.org/viewvc/incubator/jackrabbit/trunk/src/java/org/apache/jackrabbit/core/fs/FileSystemResource.java?r1=55854&r2=55853&pathrev=55854
+  - diff: http://svn.apache.org/viewvc/incubator/jackrabbit/trunk/src/java/org/apache/jackrabbit/core/fs/FileSystemResource.java?r1=55854&r2=55853&pathrev=55854&diff_format=h
     name: org/apache/jackrabbit/core/fs/FileSystemResource.java
   revision: 55854
 internal: true

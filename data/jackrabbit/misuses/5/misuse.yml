@@ -11,7 +11,7 @@ location:
   file: org/apache/jackrabbit/spi/commons/value/QValueFactoryImpl.java
   method: "BinaryQValue(InputStream, boolean)"
 fix:
-  commit: http://svn.apache.org/viewvc/jackrabbit/trunk/jackrabbit-spi-commons/src/main/java/org/apache/jackrabbit/spi/commons/value/QValueFactoryImpl.java?r1=698246&r2=698245&pathrev=698246
+  commit: http://svn.apache.org/viewvc/jackrabbit/trunk/jackrabbit-spi-commons/src/main/java/org/apache/jackrabbit/spi/commons/value/QValueFactoryImpl.java?r1=698246&r2=698245&pathrev=698246&diff_format=h
   revision: 698246
 internal: false
 pattern:

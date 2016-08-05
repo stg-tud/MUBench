@@ -11,7 +11,7 @@ location:
   file: org/apache/jackrabbit/jca/JCARepositoryManager.java
   method: "createNonTransientRepository(Map<String, String>)"
 fix:
-  commit: http://svn.apache.org/viewvc/jackrabbit/trunk/jackrabbit-jca/src/main/java/org/apache/jackrabbit/jca/JCARepositoryManager.java?r1=1232831&r2=1232830&pathrev=1232831
+  commit: http://svn.apache.org/viewvc/jackrabbit/trunk/jackrabbit-jca/src/main/java/org/apache/jackrabbit/jca/JCARepositoryManager.java?r1=1232831&r2=1232830&pathrev=1232831&diff_format=h
   revision: 1232831
 internal: true
 pattern:

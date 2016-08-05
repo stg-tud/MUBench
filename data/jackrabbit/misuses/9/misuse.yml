@@ -11,7 +11,7 @@ location:
   file: org/apache/jackrabbit/jcr2spi/NamespaceRegistryImpl.java
   method: unregisterNamespace(String)
 fix:
-  commit: http://svn.apache.org/viewvc/jackrabbit/trunk/jackrabbit-jcr2spi/src/main/java/org/apache/jackrabbit/jcr2spi/NamespaceRegistryImpl.java?r1=1133332&r2=1133331&pathrev=1133332
+  commit: http://svn.apache.org/viewvc/jackrabbit/trunk/jackrabbit-jcr2spi/src/main/java/org/apache/jackrabbit/jcr2spi/NamespaceRegistryImpl.java?r1=1133332&r2=1133331&pathrev=1133332&diff_format=h
   revision: 1133332
 internal: true
 pattern:

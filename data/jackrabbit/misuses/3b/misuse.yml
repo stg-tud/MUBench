@@ -11,7 +11,7 @@ location:
   file: org/apache/jackrabbit/core/config/RepositoryConfigurationParser.java
   method: parseClusterConfig(Element)
 fix:
-  commit: http://svn.apache.org/viewvc/jackrabbit/trunk/jackrabbit-core/src/main/java/org/apache/jackrabbit/core/config/RepositoryConfigurationParser.java?r1=695766&r2=695765&pathrev=695766
+  commit: http://svn.apache.org/viewvc/jackrabbit/trunk/jackrabbit-core/src/main/java/org/apache/jackrabbit/core/config/RepositoryConfigurationParser.java?r1=695766&r2=695765&pathrev=695766&diff_format=h
   revision: 695766
 internal: true
 pattern:

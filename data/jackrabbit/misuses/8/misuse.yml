@@ -11,7 +11,7 @@ location:
   file: org/apache/jackrabbit/core/persistence/xml/XMLPersistenceManager.java
   method: "readState(DOMWalker, PropertyState)"
 fix:
-  commit: http://svn.apache.org/viewvc/jackrabbit/trunk/jackrabbit-core/src/main/java/org/apache/jackrabbit/core/persistence/xml/XMLPersistenceManager.java?r1=965539&r2=965538&pathrev=965539
+  commit: http://svn.apache.org/viewvc/jackrabbit/trunk/jackrabbit-core/src/main/java/org/apache/jackrabbit/core/persistence/xml/XMLPersistenceManager.java?r1=965539&r2=965538&pathrev=965539&diff_format=h
   revision: 965539
 internal: false
 pattern:

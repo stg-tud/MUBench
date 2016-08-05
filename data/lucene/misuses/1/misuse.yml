@@ -9,7 +9,7 @@ location:
   file: org/apache/lucene/store/FSDirectory.java
   method: close()
 fix:
-  commit: http://svn.apache.org/viewvc/lucene/java/trunk/src/java/org/apache/lucene/store/FSDirectory.java?r1=642339&r2=642338&pathrev=642339
+  commit: http://svn.apache.org/viewvc/lucene/java/trunk/src/java/org/apache/lucene/store/FSDirectory.java?r1=642339&r2=642338&pathrev=642339&diff_format=h
   revision: 09b3a56ae2ecc68b56a0142e48e12247ba160dbb
 internal: false
 pattern:

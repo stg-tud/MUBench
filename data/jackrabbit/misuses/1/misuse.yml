@@ -9,7 +9,7 @@ location:
   file: org/apache/jackrabbit/core/ItemManager.java
   method: "canRead(ItemData, Path)"
 fix:
-  commit: http://svn.apache.org/viewvc/jackrabbit/trunk/jackrabbit-core/src/main/java/org/apache/jackrabbit/core/ItemManager.java?r1=656282&r2=656281&pathrev=656282
+  commit: http://svn.apache.org/viewvc/jackrabbit/trunk/jackrabbit-core/src/main/java/org/apache/jackrabbit/core/ItemManager.java?r1=656282&r2=656281&pathrev=656282&diff_format=h
   revision: 656282
 internal: true
 pattern:

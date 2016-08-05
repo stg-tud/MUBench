@@ -9,7 +9,7 @@ location:
   file: org/apache/commons/lang/text/StrBuilder.java
   method: "appendFixedWidthLeftPadding(Object, int, char)"
 fix:
-  commit: http://svn.apache.org/viewvc/commons/proper/lang/trunk/src/java/org/apache/commons/lang/text/StrBuilder.java?r1=627248&r2=627247&pathrev=627248
+  commit: http://svn.apache.org/viewvc/commons/proper/lang/trunk/src/java/org/apache/commons/lang/text/StrBuilder.java?r1=627248&r2=627247&pathrev=627248&diff_format=h
   description: >
     Check for null before using.
   revision: 1fe5439baf32af2114958e3cfc3512bd72c84773

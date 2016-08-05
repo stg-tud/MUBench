@@ -11,7 +11,7 @@ location:
   file: org/apache/commons/httpclient/HttpMethodDirector.java
   method: executeWithRetry(HttpMethod)
 fix:
-  commit: http://svn.apache.org/viewvc/jakarta/commons/proper/httpclient/trunk/src/java/org/apache/commons/httpclient/HttpMethodDirector.java?r1=134493&r2=134494&pathrev=134494
+  commit: http://svn.apache.org/viewvc/jakarta/commons/proper/httpclient/trunk/src/java/org/apache/commons/httpclient/HttpMethodDirector.java?r1=134493&r2=134494&pathrev=134494&diff_format=h
   revision: 134494
 internal: true
 pattern:

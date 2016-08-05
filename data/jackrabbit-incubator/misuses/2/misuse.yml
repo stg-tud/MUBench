@@ -9,7 +9,7 @@ location:
   file: org/apache/jackrabbit/core/state/bdb/BerkeleyDBPersistenceManager.java
   method: init(PMContext)
 fix:
-  commit: http://svn.apache.org/viewvc/incubator/jackrabbit/trunk/contrib/bdb-persistence/src/java/org/apache/jackrabbit/core/state/bdb/BerkeleyDBPersistenceManager.java?r1=263892&r2=263891&pathrev=263892
+  commit: http://svn.apache.org/viewvc/incubator/jackrabbit/trunk/contrib/bdb-persistence/src/java/org/apache/jackrabbit/core/state/bdb/BerkeleyDBPersistenceManager.java?r1=263892&r2=263891&pathrev=263892&diff_format=h
   revision: 263892
 internal: false
 pattern:

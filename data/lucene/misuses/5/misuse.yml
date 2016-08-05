@@ -11,7 +11,7 @@ location:
   file: org/apache/lucene/search/FieldCacheImpl.java
   method: "get(IndexReader, Object)"
 fix:
-  commit: http://svn.apache.org/viewvc/lucene/java/trunk/src/java/org/apache/lucene/search/FieldCacheImpl.java?r1=488908&r2=488907&pathrev=488908
+  commit: http://svn.apache.org/viewvc/lucene/java/trunk/src/java/org/apache/lucene/search/FieldCacheImpl.java?r1=488908&r2=488907&pathrev=488908&diff_format=h
   revision: f4b3239092b2a5588d512b337e461bc5078aeba4
 internal: false
 pattern:

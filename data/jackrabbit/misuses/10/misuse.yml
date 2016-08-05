@@ -9,7 +9,7 @@ location:
   file: org/apache/jackrabbit/jcr2spi/state/ItemState.java
   method: getParent()
 fix:
-  commit: http://svn.apache.org/viewvc/jackrabbit/trunk/jackrabbit-jcr2spi/src/main/java/org/apache/jackrabbit/jcr2spi/state/ItemState.java?r1=1240198&r2=1240197&pathrev=1240198
+  commit: http://svn.apache.org/viewvc/jackrabbit/trunk/jackrabbit-jcr2spi/src/main/java/org/apache/jackrabbit/jcr2spi/state/ItemState.java?r1=1240198&r2=1240197&pathrev=1240198&diff_format=h
   revision: 1240198
 internal: true
 pattern:

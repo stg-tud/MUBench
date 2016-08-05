@@ -9,7 +9,7 @@ location:
   file: org/apache/jackrabbit/webdav/jcr/JcrDavException.java
   method: JcrDavException(RepositoryException)
 fix:
-  commit: http://svn.apache.org/viewvc/jackrabbit/trunk/jackrabbit-jcr-server/src/main/java/org/apache/jackrabbit/webdav/jcr/JcrDavException.java?r1=677893&r2=677892&pathrev=677893
+  commit: http://svn.apache.org/viewvc/jackrabbit/trunk/jackrabbit-jcr-server/src/main/java/org/apache/jackrabbit/webdav/jcr/JcrDavException.java?r1=677893&r2=677892&pathrev=677893&diff_format=h
   revision: 677893
 internal: false
 pattern:

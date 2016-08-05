@@ -10,7 +10,7 @@ location:
   file: org/apache/jackrabbit/core/config/BeanConfig.java
   method: newInstance()
 fix:
-  commit: http://svn.apache.org/viewvc/jackrabbit/trunk/jackrabbit-core/src/main/java/org/apache/jackrabbit/core/config/BeanConfig.java?r1=696651&r2=696650&pathrev=696651
+  commit: http://svn.apache.org/viewvc/jackrabbit/trunk/jackrabbit-core/src/main/java/org/apache/jackrabbit/core/config/BeanConfig.java?r1=696651&r2=696650&pathrev=696651&diff_format=h
   revision: 696651
 internal: false
 pattern:

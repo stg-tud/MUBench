@@ -10,7 +10,7 @@ location:
   file: org/apache/commons/httpclient/util/DateUtil.java
   method: "formatDate(Date, String)"
 fix:
-  commit: http://svn.apache.org/viewvc/jakarta/commons/proper/httpclient/trunk/src/java/org/apache/commons/httpclient/util/DateUtil.java?r1=190480&r2=190479&pathrev=190480
+  commit: http://svn.apache.org/viewvc/jakarta/commons/proper/httpclient/trunk/src/java/org/apache/commons/httpclient/util/DateUtil.java?r1=190480&r2=190479&pathrev=190480&diff_format=h
   revision: 190480
 internal: false
 pattern:
