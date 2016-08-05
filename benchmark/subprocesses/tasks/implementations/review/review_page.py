@@ -27,7 +27,7 @@ def generate(review_folder: str, detector: str, compiles_path: str, project: Pro
         <table class="fw">
             <tr><td><b>Description:</b></td><td>{}</td></tr>
             <tr><td><b>Fix Description:</b></td><td>{} (<a href="{}">see diff</a>)</td></tr>
-            <tr><td><b>Misuse Elements:</b></td><td>{}</td></tr>
+            <tr><td><b>Violation Types:</b></td><td>{}</td></tr>
             <tr><td><b>In File:</b></td><td>{}</td></tr>
             <tr><td><b>In Method:</b></td><td>{}</td></tr>
             <tr><td class="vtop"><b>Code with Misuse:</b></td><td>{}</td></tr>

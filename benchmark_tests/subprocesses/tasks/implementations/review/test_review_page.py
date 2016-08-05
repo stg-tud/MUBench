@@ -69,7 +69,7 @@ class TestReviewPageGenerator:
                              self.test_misuse, [])
 
         content = self.read_review_file()
-        assert_in("""<tr><td><b>Misuse Elements:</b></td><td>
+        assert_in("""<tr><td><b>Violation Types:</b></td><td>
         <ul>
             <li>missing/condition/null_check</li>
         </ul>
