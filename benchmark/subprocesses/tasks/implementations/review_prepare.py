@@ -338,15 +338,33 @@ class ReviewPrepareAll(ProjectVersionTask):
 def _specialize_findings(detector: str, findings: List[Dict[str, str]], base_path) -> List[Dict[str, str]]:
     findings = deepcopy(findings)
     __sort_findings(detector, findings)
-    if detector.startswith("grouminer"):
-        for finding in findings:
+    for finding in findings:
+        if detector.startswith("dmmc"):
+            __format_float_value(finding, "strangeness")
+        elif detector.startswith("jadet") or detector.startswith("tikanga"):
+            __format_float_value(finding, "confidence")
+            __format_float_value(finding, "defect_indicator")
+        elif detector.startswith("grouminer"):
+            __format_float_value(finding, "rareness")
             __replace_dot_graph_with_image(finding, "overlap", base_path)
             __replace_dot_graph_with_image(finding, "pattern", base_path)
-    elif detector.startswith("mudetect"):
-        for finding in findings:
+        elif detector.startswith("mudetect"):
             __replace_dot_graph_with_image(finding, "overlap", base_path)
             __replace_dot_graph_with_image(finding, "pattern", base_path)
     return findings
+
+
+def __sort_findings(detector: str, findings: List[Dict[str, str]]):
+    if detector.startswith("dmmc"):
+        findings.sort(key=lambda f: float(f["strangeness"]), reverse=True)
+    elif detector.startswith("jadet") or detector.startswith("tikanga"):
+        findings.sort(key=lambda f: float(f["defect_indicator"]))
+    elif detector.startswith("grouminer"):
+        findings.sort(key=lambda f: float(f["rareness"]), reverse=True)
+
+
+def __format_float_value(finding, float_key):
+    finding[float_key] = str(round(float(finding[float_key]), 3))
 
 
 def __replace_dot_graph_with_image(finding, key, base_path):
@@ -358,12 +376,3 @@ def __replace_dot_graph_with_image(finding, key, base_path):
 def __create_image(dot_graph, file):
     makedirs(dirname(file), exist_ok=True)
     Shell.exec("""echo "{}" | dot -Tpng -o"{}" """.format(dot_graph.replace("\"", "\\\""), file))
-
-
-def __sort_findings(detector: str, findings: List[Dict[str, str]]):
-    if detector.startswith("dmmc"):
-        findings.sort(key=lambda f: float(f["strangeness"]), reverse=True)
-    elif detector.startswith("grouminer"):
-        findings.sort(key=lambda f: float(f["rareness"]), reverse=True)
-    elif detector.startswith("jadet") or detector.startswith("tikanga"):
-        findings.sort(key=lambda f: float(f["defect_indicator"]))
