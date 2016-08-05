@@ -32,29 +32,21 @@ class Run:
     def __init__(self, path: str):
         self.__findings_file_path = join(path, Run.FINDINGS_FILE)
         self.__run_file_path = join(path, Run.RUN_FILE)
-        self.__result = None  # type: Result
-        self.__runtime = None
+        self.result = None  # type: Result
+        self.runtime = None  # type: float
+        self.message = ""
         self.__findings = []  # type: List[Dict[str,str]]
         if exists(self.__run_file_path):
             data = read_yaml(self.__run_file_path)
-            self.__result = Result[data["result"]]
-            self.__runtime = data.get("runtime", -1)
-
-    def set_result(self, value: Result):
-        self.__result = value
-
-    def set_runtime(self, value):
-        self.__runtime = value
+            self.result = Result[data["result"]]
+            self.runtime = data.get("runtime", -1)
+            self.message = data.get("message", "")
 
     def is_success(self):
-        return self.__result == Result.success
+        return self.result == Result.success
 
     def is_failure(self):
-        return self.__result == Result.error or self.__result == Result.timeout
-
-    @property
-    def result(self):
-        return self.__result
+        return self.result == Result.error or self.result == Result.timeout
 
     @property
     def findings(self):
@@ -64,12 +56,9 @@ class Run:
                     self.__findings = [finding for finding in yaml.load_all(stream) if finding]
         return self.__findings
 
-    @property
-    def runtime(self):
-        return self.__runtime
-
     def write(self):
-        write_yaml({"result": self.__result.name, "runtime": self.__runtime}, file=self.__run_file_path)
+        run_data = {"result": self.result.name, "runtime": self.runtime, "message": self.message}
+        write_yaml(run_data, file=self.__run_file_path)
 
 
 class Detect(ProjectVersionTask):
@@ -141,17 +130,18 @@ class Detect(ProjectVersionTask):
             start = time.time()
             try:
                 self._invoke_detector(detector_path, detector_args)
-                run.set_result(Result.success)
+                run.result = Result.success
             except CommandFailedError as e:
                 logger.error("Detector failed: %s", e)
-                run.set_result(Result.error)
+                run.result = Result.error
+                run.message = str(e)
             except TimeoutError:
                 logger.error("Detector took longer than the maximum of %s seconds", self.timeout)
-                run.set_result(Result.timeout)
+                run.result = Result.timeout
             finally:
                 end = time.time()
                 runtime = end - start
-                run.set_runtime(runtime)
+                run.runtime = runtime
 
         run.write()
 
