@@ -1,6 +1,6 @@
 import logging
 from copy import deepcopy
-from os import makedirs, listdir
+from os import makedirs
 from os.path import join, exists, dirname
 from shutil import copy
 from typing import Dict, Iterable
@@ -18,12 +18,14 @@ from benchmark.subprocesses.tasks.base.project_version_task import ProjectVersio
 from benchmark.subprocesses.tasks.implementations.detect import Run
 from benchmark.subprocesses.tasks.implementations.review import review_page
 from benchmark.subprocesses.tasks.implementations.review.review_page import REVIEW_RECEIVER_FILE
-from benchmark.utils.io import safe_open, remove_tree, safe_write, read_yaml
+from benchmark.utils.io import safe_open, remove_tree, safe_write
 from benchmark.utils.shell import Shell
 
+REVIEW_UTILS_FILE = "review_utils.php"
 
-def _copy_review_receiver_file(dest: str):
-    copy(join(dirname(__file__), "review", REVIEW_RECEIVER_FILE), join(dest, REVIEW_RECEIVER_FILE))
+
+def _copy_review_resource_file(resource_name: str, destination_path: str):
+    copy(join(dirname(__file__), "review", resource_name), join(destination_path, resource_name))
 
 
 class Review:
@@ -39,11 +41,13 @@ class Review:
     def start_run_review(self, name: str, run: Run):
         self.__current_project_review.start_run_review(name, run)
 
-    def append_finding_review(self, name: str, result: str, reviewers: List[str]):
-        self.__current_project_review.append_finding_review(name, result, reviewers)
+    def append_finding_review(self, name: str, result: str, details_path: str, details_prefix: str):
+        self.__current_project_review.append_finding_review(name, result, details_path, details_prefix)
 
     def to_html(self):
-        review = "<h1>Detector: {}</h1>".format(self.detector)
+        review = """<?php include "../../{}"; ?>
+                <h1>Detector: {}</h1>
+            """.format(REVIEW_UTILS_FILE, self.detector)
         for project_review in self.project_reviews:
             review += project_review.to_html()
         return review
@@ -58,8 +62,8 @@ class ProjectReview:
     def start_run_review(self, name: str, run: Run):
         self.run_reviews.append(RunReview(name, run))
 
-    def append_finding_review(self, name: str, result: str, reviewers: List[str]):
-        self.run_reviews[len(self.run_reviews) - 1].append_finding_review(name, result, reviewers)
+    def append_finding_review(self, name: str, result: str, details_path: str, details_prefix: str):
+        self.run_reviews[len(self.run_reviews) - 1].append_finding_review(name, result, details_path, details_prefix)
 
     def to_html(self):
         review = """
@@ -80,8 +84,8 @@ class RunReview:
         self.run = run
         self.finding_reviews = []
 
-    def append_finding_review(self, name: str, result: str, reviewers: List[str]):
-        self.finding_reviews.append(FindingReview(name, result, reviewers))
+    def append_finding_review(self, name: str, result: str, details_path: str, details_prefix: str):
+        self.finding_reviews.append(FindingReview(name, result, details_path, details_prefix))
 
     def to_html(self):
         result_name = self.run.result.name if self.run.result else "not run"
@@ -115,13 +119,16 @@ class RunReview:
 
 
 class FindingReview:
-    def __init__(self, name: str, result: str, reviewers: List[str]):
+    def __init__(self, name: str, result: str, details_path: str, details_prefix: str):
         self.name = name
         self.result = result
-        self.reviewers = reviewers
+        self.details_path = details_path
+        self.details_prefix = details_prefix
 
     def to_html(self):
-        reviewed_by = ", ".join(self.reviewers) if self.reviewers else "not reviewed"
+        reviewed_by = """<?php echo join(", ", get_reviewer_names("{}", "{}")); ?>""".format(self.details_path,
+                                                                                             self.details_prefix)
+
         return """
             <tr>
                 <td>{}</td>
@@ -155,7 +162,6 @@ class ReviewPrepare(ProjectVersionMisuseTask):
     def start(self):
         logger = logging.getLogger("review_prepare")
         logger.info("Preparing review for results of %s...", self.detector)
-        _copy_review_receiver_file(self.reviews_path)
 
     def process_project(self, project: Project):
         self.__review.start_project_review(project.id)
@@ -176,7 +182,7 @@ class ReviewPrepare(ProjectVersionMisuseTask):
 
         if not detector_run.is_success():
             logger.info("Skipping %s in %s: no result.", misuse, version)
-            self.__append_misuse_to_review(misuse, "run: {}".format(detector_run.result), [])
+            self.__append_misuse_to_review(version, misuse, "run: {}".format(detector_run.result))
             return Response.skip
 
         review_dir = join(project.id, version.version_id, misuse.id)
@@ -184,10 +190,9 @@ class ReviewPrepare(ProjectVersionMisuseTask):
         review_path = join(self.review_path, review_dir)
         if exists(review_path) and not self.force_prepare:
             if exists(join(self.review_path, review_site)):
-                existing_reviews = self.__get_existing_reviews(review_path)
-                self.__append_misuse_review(misuse, review_site, existing_reviews)
+                self.__append_misuse_review(version, misuse, review_site)
             else:
-                self.__append_misuse_no_hits(misuse)
+                self.__append_misuse_no_hits(version, misuse)
 
             logger.info("%s in %s is already prepared.", misuse, version)
             return Response.ok
@@ -202,35 +207,26 @@ class ReviewPrepare(ProjectVersionMisuseTask):
 
         if potential_hits:
             potential_hits = _specialize_findings(self.detector, potential_hits, review_path)
-            review_page.generate(self.experiment, review_path, self.detector, self.compiles_path, version, misuse,
-                                 potential_hits)
+            review_page.generate(self.experiment, join(self.review_path, review_site), self.detector,
+                                 self.compiles_path, version, misuse, potential_hits)
             self.__generate_potential_hits_yaml(potential_hits, review_path)
-            self.__append_misuse_review(misuse, review_site, [])
+            self.__append_misuse_review(version, misuse, review_site)
         else:
             makedirs(review_path)
-            self.__append_misuse_no_hits(misuse)
+            self.__append_misuse_no_hits(version, misuse)
 
         return Response.ok
 
-    def __append_misuse_review(self, misuse: Misuse, review_site: str, existing_reviews: List[Dict[str, str]]):
+    def __append_misuse_review(self, version: ProjectVersion, misuse: Misuse, review_site: str):
         review_potential_hits = "<a href=\"{}\">potential hits</a>".format(review_site)
-        self.__append_misuse_to_review(misuse, review_potential_hits, existing_reviews)
+        self.__append_misuse_to_review(version, misuse, review_potential_hits)
 
-    def __append_misuse_no_hits(self, misuse: Misuse):
-        self.__append_misuse_to_review(misuse, "no potential hits", [])
+    def __append_misuse_no_hits(self, version: ProjectVersion, misuse: Misuse):
+        self.__append_misuse_to_review(version, misuse, "no potential hits")
 
-    def __append_misuse_to_review(self, misuse: Misuse, result: str, existing_reviews: List[Dict[str, str]]):
-        reviewers = [review['reviewer'] for review in existing_reviews if review.get('reviewer', None)]
-        self.__review.append_finding_review(misuse.id, result, reviewers)
-
-    @staticmethod
-    def __get_existing_reviews(review_path: str) -> List[Dict[str, str]]:
-        existing_review_files = [join(review_path, file) for file in listdir(review_path) if
-                                 file.startswith('review') and file.endswith('.yml')]
-        existing_reviews = []
-        for existing_review_file in existing_review_files:
-            existing_reviews.append(read_yaml(existing_review_file))
-        return existing_reviews
+    def __append_misuse_to_review(self, version: ProjectVersion, misuse: Misuse, result: str):
+        review_details_path = join(version.project_id, version.version_id, misuse.id)
+        self.__review.append_finding_review(misuse.id, result, review_details_path, "review")
 
     @staticmethod
     def __generate_potential_hits_yaml(potential_hits: List[Dict[str, str]], review_path: str):
@@ -238,7 +234,9 @@ class ReviewPrepare(ProjectVersionMisuseTask):
             yaml.dump_all(potential_hits, file)
 
     def end(self):
-        safe_write(self.__review.to_html(), join(self.review_path, "index.html"), append=False)
+        safe_write(self.__review.to_html(), join(self.review_path, "index.php"), append=False)
+        _copy_review_resource_file(REVIEW_RECEIVER_FILE, self.reviews_path)
+        _copy_review_resource_file(REVIEW_UTILS_FILE, self.reviews_path)
 
     @staticmethod
     def find_potential_hits(findings: Iterable[Dict[str, str]], misuse: Misuse) -> List[Dict[str, str]]:
@@ -311,7 +309,6 @@ class ReviewPrepareAll(ProjectVersionTask):
     def start(self):
         logger = logging.getLogger("review_prepare")
         logger.info("Preparing review of all findings of %s...", self.detector)
-        _copy_review_receiver_file(self.reviews_path)
 
     def process_project(self, project: Project):
         self.__review.start_project_review(project.id)
@@ -320,7 +317,8 @@ class ReviewPrepareAll(ProjectVersionTask):
     def process_project_version(self, project: Project, version: ProjectVersion):
         logger = logging.getLogger("review_prepare.version")
 
-        findings_path = join(self.findings_path, project.id, version.version_id)
+        run_dir = join(project.id, version.version_id)
+        findings_path = join(self.findings_path, run_dir)
         detector_run = Run(findings_path)
         self.__review.start_run_review(version.version_id, detector_run)
 
@@ -330,25 +328,21 @@ class ReviewPrepareAll(ProjectVersionTask):
 
         logger.info("Generating review files for %s...", version)
 
-        if self.detector.startswith("jadet") or self.detector.startswith("tikanga"):
-            url = join(project.id, version.version_id, "violations.xml")
-            makedirs(dirname(join(self.review_path, url)), exist_ok=True)
-            copy(join(self.findings_path, url), join(self.review_path, url))
-            self.__review.append_finding_review("all findings",
-                                                "<a href=\"{}\">violations.xml</a>".format(url), [])
-        else:
-            findings = _specialize_findings(self.detector, detector_run.findings,
-                                            join(self.review_path, project.id, version.version_id))
+        findings = _specialize_findings(self.detector, detector_run.findings,
+                                        join(self.review_path, project.id, version.version_id))
 
-            for finding in findings:
-                url = join(project.id, version.version_id, "finding-{}.html".format(finding["id"]))
-                review_page.generate2(self.experiment, join(self.review_path, url), self.detector, self.compiles_path,
-                                      version, finding)
-                self.__review.append_finding_review("Finding {}".format(finding["id"]),
-                                                    "<a href=\"{}\">review</a>".format(url), [])
+        for finding in findings:
+            finding_name = "finding-{}".format(finding["id"])
+            url = join(project.id, version.version_id, finding_name + ".html")
+            review_page.generate2(self.experiment, join(self.review_path, url), self.detector, self.compiles_path,
+                                  version, finding)
+            self.__review.append_finding_review("Finding {}".format(finding["id"]),
+                                                "<a href=\"{}\">review</a>".format(url), run_dir, finding_name)
 
     def end(self):
-        safe_write(self.__review.to_html(), join(self.review_path, "index.html"), append=False)
+        safe_write(self.__review.to_html(), join(self.review_path, "index.php"), append=False)
+        _copy_review_resource_file(REVIEW_RECEIVER_FILE, self.reviews_path)
+        _copy_review_resource_file(REVIEW_UTILS_FILE, self.reviews_path)
 
 
 # TODO move this to detector-specific review-page generators

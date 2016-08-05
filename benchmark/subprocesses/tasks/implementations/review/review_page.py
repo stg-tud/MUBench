@@ -26,7 +26,7 @@ ALL_VIOLATION_TYPES = [
 ]
 
 
-def generate(experiment: str, review_folder: str, detector: str, compiles_path: str, version: ProjectVersion, misuse: Misuse,
+def generate(experiment: str, review_file: str, detector: str, compiles_path: str, version: ProjectVersion, misuse: Misuse,
              potential_hits: List[Dict[str, str]]):
     review = """
         <h1>Review</h1>
@@ -78,7 +78,7 @@ def generate(experiment: str, review_folder: str, detector: str, compiles_path: 
                    __get_findings_table(potential_hits, misuse.characteristics),
                    experiment, detector, version.project_id, version.version_id, misuse.id)
 
-    safe_write(__get_page(review), join(review_folder, 'review.html'), False)
+    safe_write(__get_page(review), review_file, False)
 
 
 def generate2(experiment: str, review_file: str, detector: str, compiles_path: str, version: ProjectVersion,
