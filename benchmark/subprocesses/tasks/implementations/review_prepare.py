@@ -193,8 +193,9 @@ class ReviewPrepare(ProjectVersionMisuseTask):
         logger.debug("Generating review files for %s in %s...", misuse, version)
 
         if potential_hits:
+            potential_hits = _specialize_findings(self.detector, potential_hits, review_path)
             review_page.generate(review_path, self.detector, self.compiles_path, project, version, misuse,
-                                 _specialize_findings(self.detector, potential_hits, review_path))
+                                 potential_hits)
             self.__generate_potential_hits_yaml(potential_hits, review_path)
             self.__append_misuse_review(misuse, review_site, [])
         else:
@@ -320,12 +321,8 @@ class ReviewPrepareAll(ProjectVersionTask):
             self.__review.append_finding_review("all findings",
                                                 "<a href=\"{}\">violations.xml</a>".format(url), [])
         else:
-            findings = _specialize_findings(self.detector, detector_run.findings, join(self.review_path, project.id, version.version_id))
-
-            if self.detector.startswith("dmmc"):
-                findings.sort(key=lambda f: float(f["strangeness"]), reverse=True)
-            elif self.detector.startswith("grouminer"):
-                findings.sort(key=lambda f: float(f["rareness"]), reverse=True)
+            findings = _specialize_findings(self.detector, detector_run.findings,
+                                            join(self.review_path, project.id, version.version_id))
 
             for finding in findings:
                 url = join(project.id, version.version_id, "finding-{}.html".format(finding["id"]))
@@ -338,8 +335,9 @@ class ReviewPrepareAll(ProjectVersionTask):
 
 
 # TODO move this to detector-specific review-page generators
-def _specialize_findings(detector: str, findings: List[Dict[str,str]], base_path) -> List[Dict[str,str]]:
+def _specialize_findings(detector: str, findings: List[Dict[str, str]], base_path) -> List[Dict[str, str]]:
     findings = deepcopy(findings)
+    __sort_findings(detector, findings)
     if detector.startswith("grouminer"):
         for finding in findings:
             __replace_dot_graph_with_image(finding, "overlap", base_path)
@@ -360,3 +358,12 @@ def __replace_dot_graph_with_image(finding, key, base_path):
 def __create_image(dot_graph, file):
     makedirs(dirname(file), exist_ok=True)
     Shell.exec("""echo "{}" | dot -Tpng -o"{}" """.format(dot_graph.replace("\"", "\\\""), file))
+
+
+def __sort_findings(detector: str, findings: List[Dict[str, str]]):
+    if detector.startswith("dmmc"):
+        findings.sort(key=lambda f: float(f["strangeness"]), reverse=True)
+    elif detector.startswith("grouminer"):
+        findings.sort(key=lambda f: float(f["rareness"]), reverse=True)
+    elif detector.startswith("jadet") or detector.startswith("tikanga"):
+        findings.sort(key=lambda f: float(f["defect_indicator"]))
