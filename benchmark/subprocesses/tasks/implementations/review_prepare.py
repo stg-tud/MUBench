@@ -69,16 +69,19 @@ class ProjectReview:
                                                                           details_prefix)
 
     def to_html(self):
-        review = """
-            <h2>Project: {}</h2>
-            <table>
-            """.format(self.project_id)
-        for version_review in self.run_reviews:
-            review += version_review.to_html()
-        review += """
-            </table>
-            """
-        return review
+        if self.run_reviews:
+            review = """
+                <h2>Project: {}</h2>
+                <table>
+                """.format(self.project_id)
+            for version_review in self.run_reviews:
+                review += version_review.to_html()
+            review += """
+                </table>
+                """
+            return review
+        else:
+            return ""
 
 
 class RunReview:
