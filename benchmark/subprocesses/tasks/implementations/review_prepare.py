@@ -339,7 +339,7 @@ class ReviewPrepareAll(ProjectVersionTask):
 
         if self.force_prepare:
             logger.debug("Removing old review files for %s...", version)
-            remove_tree(self.review_path)
+            remove_tree(join(self.review_path, project.id, version.version_id))
 
         logger.info("Generating review files for %s...", version)
         findings = _sort_findings(self.detector, detector_run.findings)
