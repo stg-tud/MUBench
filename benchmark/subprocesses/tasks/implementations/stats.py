@@ -177,7 +177,7 @@ class misusesbytype(StatCalculator):
     def end(self):
         logger = logging.getLogger('stats.misusesbytype')
         logger.info("%35s %s", "Violation Type", "Misuse")
-        for characteristic, misuses in self.index.items():
+        for characteristic in sorted(self.index):
             logger.info("%35s ----------------------------", characteristic)
-            for misuse in misuses:
+            for misuse in self.index[characteristic]:
                 logger.info("%35s %s", "", misuse.id)
