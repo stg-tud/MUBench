@@ -226,9 +226,12 @@ def __multiline(text: str):
 
 
 def __list(l: List):
-    return """<ul>
-            <li>{}</li>
-        </ul>""".format("</li>\n            <li>".join(map(html.escape, l)))
+    if not list:
+        return ""
+    else:
+        return """<ul>
+                <li>{}</li>
+            </ul>""".format("</li>\n            <li>".join(map(html.escape, l)))
 
 
 def __select(name: str, l: List):
