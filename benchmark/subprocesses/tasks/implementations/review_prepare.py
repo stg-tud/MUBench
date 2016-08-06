@@ -41,8 +41,9 @@ class Review:
     def start_run_review(self, name: str, run: Run):
         self.__current_project_review.start_run_review(name, run)
 
-    def append_finding_review(self, name: str, result: str, details_path: str, details_prefix: str):
-        self.__current_project_review.append_finding_review(name, result, details_path, details_prefix)
+    def append_finding_review(self, name: str, violation_types: List[str], result: str, details_path: str,
+                              details_prefix: str):
+        self.__current_project_review.append_finding_review(name, violation_types, result, details_path, details_prefix)
 
     def to_html(self):
         review = """<?php include "../../{}"; ?>
@@ -62,8 +63,10 @@ class ProjectReview:
     def start_run_review(self, name: str, run: Run):
         self.run_reviews.append(RunReview(name, run))
 
-    def append_finding_review(self, name: str, result: str, details_path: str, details_prefix: str):
-        self.run_reviews[len(self.run_reviews) - 1].append_finding_review(name, result, details_path, details_prefix)
+    def append_finding_review(self, name: str, violation_types: List[str], result: str, details_path: str,
+                              details_prefix: str):
+        self.run_reviews[len(self.run_reviews) - 1].append_finding_review(name, violation_types, result, details_path,
+                                                                          details_prefix)
 
     def to_html(self):
         review = """
@@ -84,8 +87,9 @@ class RunReview:
         self.run = run
         self.finding_reviews = []
 
-    def append_finding_review(self, name: str, result: str, details_path: str, details_prefix: str):
-        self.finding_reviews.append(FindingReview(name, result, details_path, details_prefix))
+    def append_finding_review(self, name: str, violation_types: List[str], result: str, details_path: str,
+                              details_prefix: str):
+        self.finding_reviews.append(FindingReview(name, violation_types, result, details_path, details_prefix))
 
     def to_html(self):
         result_name = self.run.result.name if self.run.result else "not run"
@@ -107,7 +111,7 @@ class RunReview:
                 <td></td>
                 <td>
                     <table border=\"1\" cellpadding=\"5\">
-                        <tr><th>Misuse</th><th>Result</th><th>Reviewed By</th></tr>"""
+                        <tr><th>Misuse</th><th>Violation Types</th><th>Result</th><th>Reviewed By</th></tr>"""
             for misuse_review in self.finding_reviews:
                 review += misuse_review.to_html()
             review += """
@@ -119,8 +123,9 @@ class RunReview:
 
 
 class FindingReview:
-    def __init__(self, name: str, result: str, details_path: str, details_prefix: str):
+    def __init__(self, name: str, violation_types: List[str], result: str, details_path: str, details_prefix: str):
         self.name = name
+        self.violation_types = violation_types
         self.result = result
         self.details_path = details_path
         self.details_prefix = details_prefix
@@ -134,8 +139,9 @@ class FindingReview:
                 <td>{}</td>
                 <td>{}</td>
                 <td>{}</td>
+                <td>{}</td>
             </tr>
-            """.format(self.name, self.result, reviewed_by)
+            """.format(self.name, "<br/>".join(self.violation_types), self.result, reviewed_by)
 
 
 class ReviewPrepare(ProjectVersionMisuseTask):
@@ -226,7 +232,7 @@ class ReviewPrepare(ProjectVersionMisuseTask):
 
     def __append_misuse_to_review(self, version: ProjectVersion, misuse: Misuse, result: str):
         review_details_path = join(version.project_id, version.version_id, misuse.id)
-        self.__review.append_finding_review(misuse.id, result, review_details_path, "review")
+        self.__review.append_finding_review(misuse.id, misuse.characteristics, result, review_details_path, "review")
 
     @staticmethod
     def __generate_potential_hits_yaml(potential_hits: List[Dict[str, str]], review_path: str):
@@ -336,7 +342,7 @@ class ReviewPrepareAll(ProjectVersionTask):
             url = join(project.id, version.version_id, finding_name + ".html")
             review_page.generate2(self.experiment, join(self.review_path, url), self.detector, self.compiles_path,
                                   version, finding)
-            self.__review.append_finding_review("Finding {}".format(finding["id"]),
+            self.__review.append_finding_review("Finding {}".format(finding["id"]), ["<i>unknown</i>"],
                                                 "<a href=\"{}\">review</a>".format(url), run_dir, finding_name)
 
     def end(self):
