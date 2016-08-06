@@ -65,8 +65,8 @@ class TestReviewPageGenerator:
 
         content = self.read_review_file()
         assert_in("""<tr><td class="vtop"><b>Violation Types:</b></td><td><ul>
-            <li>missing/condition/null_check</li>
-        </ul></td></tr>""", content)
+                <li>missing/condition/null_check</li>
+            </ul></td></tr>""", content)
 
     def test_adds_location(self):
         self.test_misuse.location.file = "foo.java"
@@ -104,9 +104,9 @@ class TestReviewPageGenerator:
 
         content = self.read_review_file()
         assert_in("""<td><ul>
-            <li>a</li>
-            <li>b</li>
-        </ul></td>""", content)
+                <li>a</li>
+                <li>b</li>
+            </ul></td>""", content)
 
     def test_adds_potential_hit_information_of_all_hits(self):
         potential_hits = [{"id": 1, "a": "x"}, {"id": 2, "b": "y"}]

@@ -231,7 +231,8 @@ def __list(l: List):
     else:
         return """<ul>
                 <li>{}</li>
-            </ul>""".format("</li>\n            <li>".join(map(html.escape, l)))
+            </ul>""".format("""</li>
+                <li>""".join(map(html.escape, l)))
 
 
 def __select(name: str, l: List):
