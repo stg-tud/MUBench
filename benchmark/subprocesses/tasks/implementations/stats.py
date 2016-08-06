@@ -1,7 +1,8 @@
 # coding=utf-8
 import logging
 import yaml
-from typing import Optional, List
+
+from typing import Optional, List, Dict
 
 from benchmark.data.misuse import Misuse
 from benchmark.data.project import Project
@@ -156,3 +157,27 @@ class source(StatCalculator):
                 sourcename, source["size"], source["reviewed"], source["misuses"],
                 (source["misuses"] / source["reviewed"] * 100), source["crashes"],
                 (source["crashes"] / source["misuses"] * 100)))
+
+
+class misusesbytype(StatCalculator):
+    def __init__(self):
+        super().__init__()
+        self.index = {}  # type: Dict[str, List[Misuse]]
+
+    def start(self):
+        self.index.clear()
+
+    def process_project_version_misuse(self, project: Project, version: ProjectVersion, misuse: Misuse):
+        for characteristic in misuse.characteristics:
+            if characteristic not in self.index:
+                self.index[characteristic] = []
+
+            self.index[characteristic].append(misuse)
+
+    def end(self):
+        logger = logging.getLogger('stats.misusesbytype')
+        logger.info("%35s %s", "Violation Type", "Misuse")
+        for characteristic, misuses in self.index.items():
+            logger.info("%35s ----------------------------", characteristic)
+            for misuse in misuses:
+                logger.info("%35s %s", "", misuse.id)
