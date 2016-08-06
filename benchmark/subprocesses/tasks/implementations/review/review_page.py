@@ -209,8 +209,9 @@ def __get_finding_row(keys: List[str], check_type: str, violation_types: List[st
 
 
 def __get_value_cell(value):
-    if type(value) is str and not value.startswith("<img"):
-        value = html.escape(value)
+    if type(value) is str:
+        if not value.startswith("<img"):
+            value = html.escape(value)
     elif type(value) is int:
         value = str(value)
     elif type(value) is list:
