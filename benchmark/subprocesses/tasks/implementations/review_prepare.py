@@ -194,7 +194,12 @@ class ReviewPrepare(ProjectVersionMisuseTask):
         review_dir = join(project.id, version.version_id, misuse.id)
         review_site = join(review_dir, "review.html")
         review_path = join(self.review_path, review_dir)
-        if exists(review_path) and not self.force_prepare:
+
+        if self.force_prepare:
+            logger.debug("Removing old review files for %s in %s...", misuse, version)
+            remove_tree(review_path)
+
+        if exists(review_path):
             if exists(join(self.review_path, review_site)):
                 self.__append_misuse_review(version, misuse, review_site)
             else:
@@ -332,18 +337,27 @@ class ReviewPrepareAll(ProjectVersionTask):
             logger.info("Skipping %s: no result.", version)
             return
 
-        logger.info("Generating review files for %s...", version)
+        if self.force_prepare:
+            logger.debug("Removing old review files for %s...", version)
+            remove_tree(self.review_path)
 
-        findings = _specialize_findings(self.detector, detector_run.findings,
-                                        join(self.review_path, project.id, version.version_id))
+        logger.info("Generating review files for %s...", version)
+        findings = _sort_findings(self.detector, detector_run.findings)
 
         for finding in findings:
             finding_name = "finding-{}".format(finding["id"])
-            url = join(project.id, version.version_id, finding_name + ".html")
-            review_page.generate2(self.experiment, join(self.review_path, url), self.detector, self.compiles_path,
-                                  version, finding)
+            details_url = join(project.id, version.version_id, finding_name + ".html")
+            details_path = join(self.review_path, details_url)
+
+            if exists(details_path) and not self.force_prepare:
+                logger.info("    %s in %s is already prepared.", finding_name, version)
+            else:
+                logger.info("    Generating review file for %s in %s...", finding_name, version)
+                review_page.generate2(self.experiment, details_path, self.detector, self.compiles_path, version,
+                                      _specialize_finding(finding, self.detector, dirname(details_path)))
+
             self.__review.append_finding_review("Finding {}".format(finding["id"]), ["<i>unknown</i>"],
-                                                "<a href=\"{}\">review</a>".format(url), run_dir, finding_name)
+                                                "<a href=\"{}\">review</a>".format(details_url), run_dir, finding_name)
 
     def end(self):
         safe_write(self.__review.to_html(), join(self.review_path, "index.php"), append=False)
@@ -352,34 +366,40 @@ class ReviewPrepareAll(ProjectVersionTask):
 
 
 # TODO move this to detector-specific review-page generators
-def _specialize_findings(detector: str, findings: List[Dict[str, str]], base_path) -> List[Dict[str, str]]:
-    findings = deepcopy(findings)
-    __sort_findings(detector, findings)
+def _specialize_findings(detector: str, findings: List[Dict[str, str]], base_path):
+    findings = _sort_findings(detector, findings)
     for finding in findings:
-        if detector.startswith("dmmc"):
-            __format_float_value(finding, "strangeness")
-        elif detector.startswith("jadet") or detector.startswith("tikanga"):
-            __format_float_value(finding, "confidence")
-            __format_float_value(finding, "defect_indicator")
-        elif detector.startswith("grouminer"):
-            __format_float_value(finding, "rareness")
-            __replace_dot_graph_with_image(finding, "overlap", base_path)
-            __replace_dot_graph_with_image(finding, "pattern", base_path)
-        elif detector.startswith("mudetect"):
-            finding["overlap"] = finding["overlap"].replace(":0:0", "")
-            __replace_dot_graph_with_image(finding, "overlap", base_path)
-            finding["pattern"] = finding["pattern"].replace(":0:0", "")
-            __replace_dot_graph_with_image(finding, "pattern", base_path)
+        _specialize_finding(finding, detector, base_path)
     return findings
 
 
-def __sort_findings(detector: str, findings: List[Dict[str, str]]):
+def _specialize_finding(finding, detector, base_path):
+    if detector.startswith("dmmc"):
+        __format_float_value(finding, "strangeness")
+    elif detector.startswith("jadet") or detector.startswith("tikanga"):
+        __format_float_value(finding, "confidence")
+        __format_float_value(finding, "defect_indicator")
+    elif detector.startswith("grouminer"):
+        __format_float_value(finding, "rareness")
+        __replace_dot_graph_with_image(finding, "overlap", base_path)
+        __replace_dot_graph_with_image(finding, "pattern", base_path)
+    elif detector.startswith("mudetect"):
+        finding["overlap"] = finding["overlap"].replace(":0:0", "")
+        __replace_dot_graph_with_image(finding, "overlap", base_path)
+        finding["pattern"] = finding["pattern"].replace(":0:0", "")
+        __replace_dot_graph_with_image(finding, "pattern", base_path)
+    return finding
+
+
+def _sort_findings(detector: str, findings: List[Dict[str, str]]):
+    findings = deepcopy(findings)
     if detector.startswith("dmmc"):
         findings.sort(key=lambda f: float(f["strangeness"]), reverse=True)
     elif detector.startswith("jadet") or detector.startswith("tikanga"):
         findings.sort(key=lambda f: float(f["defect_indicator"]))
     elif detector.startswith("grouminer"):
         findings.sort(key=lambda f: float(f["rareness"]), reverse=True)
+    return findings
 
 
 def __format_float_value(finding, float_key):
