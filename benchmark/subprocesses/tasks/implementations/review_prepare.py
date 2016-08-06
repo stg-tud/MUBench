@@ -176,8 +176,8 @@ class ReviewPrepare(ProjectVersionMisuseTask):
     def process_project_version(self, project: Project, version: ProjectVersion):
         findings_path = join(self.findings_path, project.id, version.version_id)
         detector_run = Run(findings_path)
-        self.__review.start_run_review(version.version_id, detector_run)
-        if detector_run.is_success():
+        if detector_run.result:
+            self.__review.start_run_review(version.version_id, detector_run)
             super().process_project_version(project, version)
 
     def process_project_version_misuse(self, project: Project, version: ProjectVersion, misuse: Misuse) -> Response:
