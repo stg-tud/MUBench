@@ -1,15 +1,15 @@
 api:
 - org.apache.commons.collections.BeanMap
 characteristics:
-- missing/condition
+- missing/condition/value_or_state
 crash: false
 description: >
-  Check for BeanMap.get(key) == null may lead to wrong results. Fix uses
-  BeanMap.containsKey(key) instead.
+  Check for BeanMap.get(key) == null may lead to wrong results, if the map contains null as the value.
 location:
   file: org/apache/jackrabbit/core/config/BeanConfig.java
   method: newInstance()
 fix:
+  description: Use BeanMap.containsKey(key) to check if key is set.
   commit: http://svn.apache.org/viewvc/jackrabbit/trunk/jackrabbit-core/src/main/java/org/apache/jackrabbit/core/config/BeanConfig.java?r1=696651&r2=696650&pathrev=696651&diff_format=h
   revision: 696651
 internal: false
