@@ -1,6 +1,6 @@
 import logging
 from copy import deepcopy
-from os import makedirs
+from os import makedirs, remove
 from os.path import join, exists, dirname
 from shutil import copy
 from typing import Dict, Iterable
@@ -216,7 +216,6 @@ class ReviewPrepare(ProjectVersionMisuseTask):
         findings = detector_run.findings
         potential_hits = ReviewPrepare.find_potential_hits(findings, misuse)
         logger.info("Found %s potential hits for %s.", len(potential_hits), misuse)
-        remove_tree(review_path)
         logger.debug("Generating review files for %s in %s...", misuse, version)
 
         if potential_hits:
@@ -346,16 +345,20 @@ class ReviewPrepareAll(ProjectVersionTask):
 
         logger.info("Generating review files for %s...", version)
         findings = _sort_findings(self.detector, detector_run.findings)
+        logger.info("    Preparing files for %d findings...", len(findings))
 
         for finding in findings:
             finding_name = "finding-{}".format(finding["id"])
             details_url = join(project.id, version.version_id, finding_name + ".html")
             details_path = join(self.review_path, details_url)
 
-            if exists(details_path) and not self.force_prepare:
-                logger.info("    %s in %s is already prepared.", finding_name, version)
+            if self.force_prepare:
+                remove(details_path)
+
+            if exists(details_path):
+                logger.debug("    %s in %s is already prepared.", finding_name, version)
             else:
-                logger.info("    Generating review file for %s in %s...", finding_name, version)
+                logger.debug("    Generating review file for %s in %s...", finding_name, version)
                 review_page.generate2(self.experiment, details_path, self.detector, self.compiles_path, version,
                                       _specialize_finding(finding, self.detector, dirname(details_path)))
 
