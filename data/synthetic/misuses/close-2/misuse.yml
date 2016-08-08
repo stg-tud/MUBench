@@ -1,7 +1,7 @@
 api:
 - java.io.Closeable
 characteristics:
-- missing/guarantee
+- missing/exception handling
 crash: false
 description: >
   Calls Closeable.close() outside of finally block, which might fail to
