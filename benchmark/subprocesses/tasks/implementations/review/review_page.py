@@ -138,21 +138,17 @@ def __get_page(content: str):
     return """
         <html>
             <head>
-                <style>{}</style>
+                <style>
+                    table.fw {{width:100%;}}
+                    .vtop {{vertical-align:top}}
+                    .prettyprint ol.linenums > li {{ list-style-type: decimal; }}
+                </style>
             </head>
             <body>
             {}
             </body>
         </html>
-    """.format(__get_css(), content)
-
-
-def __get_css():
-    return """
-        table.fw {width:100%;}
-        .vtop {vertical-align:top}
-        .prettyprint ol.linenums > li { list-style-type: decimal; }
-        """
+    """.format(content)
 
 
 def __get_target_code(compiles_path: str, version: ProjectVersion, file: str, method: str) -> str:
