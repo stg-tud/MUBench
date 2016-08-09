@@ -81,7 +81,7 @@ def generate(experiment: str, review_file: str, detector: str, compiles_path: st
                    misuse.location.file, misuse.location.method,
                    __get_target_code(compiles_path, version, misuse.location.file, misuse.location.method),
                    REVIEW_RECEIVER_FILE,
-                   __get_findings_table(potential_hits, misuse.characteristics),
+                   __get_findings_table(potential_hits, misuse.characteristics, multi_select=True),
                    experiment, detector, version.project_id, version.version_id, misuse.id)
 
     safe_write(__get_page(review), review_file, False)
