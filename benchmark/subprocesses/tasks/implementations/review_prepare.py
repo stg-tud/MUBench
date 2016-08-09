@@ -195,7 +195,7 @@ class ReviewPrepare(ProjectVersionMisuseTask):
             return Response.skip
 
         review_dir = join(project.id, version.version_id, misuse.id)
-        review_site = join(review_dir, "review.html")
+        review_site = join(review_dir, "review.php")
         review_path = join(self.review_path, review_dir)
 
         if self.force_prepare:
@@ -349,7 +349,7 @@ class ReviewPrepareAll(ProjectVersionTask):
 
         for finding in findings:
             finding_name = "finding-{}".format(finding["id"])
-            details_url = join(project.id, version.version_id, finding_name + ".html")
+            details_url = join(project.id, version.version_id, finding_name + ".php")
             details_path = join(self.review_path, details_url)
 
             if self.force_prepare:

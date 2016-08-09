@@ -48,15 +48,21 @@ def generate(experiment: str, review_file: str, detector: str, compiles_path: st
         <h2>Potential Hits</h2>
         <p>Findings of the detector that identify an anomaly in the same file and method as the known misuse.
             Please reviews whether any of these findings actually correspond to the kown misuse.</p>
-
+        <?php
+            include_once "../../../../../review_utils.php";
+            $review_file_name = "review_" . $_REQUEST["name"] . ".yml";
+            if (file_exists($review_file_name)) {
+                $review = parse_review_yml(file_get_contents($review_file_name));
+            }
+        ?>
         <form action="../../../../../{}" method="post" target="review_submission_target">
             {}
             <br/>
             <table>
                 <tr><td><b>Reviewer Name:</b><br/>(lower case, no spaces)</td>
-                    <td><input type="text" name="reviewer_name" pattern="[a-z]+" size="30" /></td></tr>
+                    <td><input type="text" name="reviewer_name" pattern="[a-z]+" size="30" value="<?php echo $review["name"]; ?>" /></td></tr>
                 <tr><td class="vtop"><b>Comment:</b></td>
-                    <td><textarea name="reviewer_comment" cols="120" rows="8"></textarea></td></tr>
+                    <td><textarea name="reviewer_comment" cols="120" rows="8"><?php echo $review["comment"]; ?></textarea></td></tr>
             </table>
             <iframe name="review_submission_target" width="100%" height="100px" style="border-style:none"></iframe>
             <input type="hidden" name="review_name[]" value="{}"/>
@@ -92,7 +98,13 @@ def generate2(experiment: str, review_file: str, detector: str, compiles_path: s
         <h2>Potential Misuse</h2>
         <p>Anomaly identified by the detector.
             Please review whether this anomaly corresponds to a misuse.</p>
-
+        <?php
+            include_once "../../../../review_utils.php";
+            $review_file_name = "review_" . $_REQUEST["name"] . ".yml";
+            if (file_exists($review_file_name)) {
+                $review = parse_review_yml(file_get_contents($review_file_name));
+            }
+        ?>
         <form action="../../../../{}" method="post" target="review_submission_target">
             <table class="fw">
                 <tr><td><b>Finding:</b></td><td>{}</td></tr>
@@ -101,9 +113,9 @@ def generate2(experiment: str, review_file: str, detector: str, compiles_path: s
                 <tr><td class="vtop"><b>Code with Finding:</b></td><td>{}</td></tr>
                 <tr><td class="vtop"><b>Metadata:</b></td><td>{}</td></tr>
                 <tr><td><b>Reviewer Name:</b><br/>(lower case, no spaces)</td>
-                    <td><input type="text" name="reviewer_name" pattern="[a-z]+" size="20" /></td></tr>
+                    <td><input type="text" name="reviewer_name" pattern="[a-z]+" size="20" value="<?php echo $review["name"]; ?>" /></td></tr>
                 <tr><td class="vtop"><b>Comment:</b></td>
-                    <td><textarea name="reviewer_comment" cols="80" rows="5"></textarea></td></tr>
+                    <td><textarea name="reviewer_comment" cols="80" rows="5"><?php echo $review["comment"]; ?></textarea></td></tr>
             </table>
             <iframe name="review_submission_target" width="100%" height="100px" style="border-style:none"></iframe>
             <input type="hidden" name="review_name[]" value="{}"/>
@@ -180,7 +192,7 @@ def __get_findings_table(potential_hits: List[Dict[str, str]], violation_types: 
     else:
         check_type = "radio"
         default_selection = """<tr>
-            <td><input type="radio" name="finding_ids[]" value="-1" checked /></td>
+            <td><input type="radio" name="finding_ids[]" value="-1" <?php if(empty($review["hits"])) echo "checked"; ?>/></td>
             <td colspan="{}">none of these findings matches the known misuse</td>
         </tr>""".format(len(keys) + 1)
 
@@ -199,12 +211,12 @@ def __get_finding_row(keys: List[str], check_type: str, violation_types: List[st
     values = map(lambda key: potential_hit.get(key, ""), keys)
     finding_id = potential_hit["id"]
     finding_row = """<tr>
-            <td><input type="{}" name="finding_ids[]" value="{}" /></td>
+            <td><input type="{}" name="finding_ids[]" value="{}" <?php if($review["hits"][{}]) echo "checked"; ?>/></td>
             {}
             <td>{}</td>
-        </tr>""".format(check_type, finding_id,
+        </tr>""".format(check_type, finding_id, finding_id,
                         "".join(map(__get_value_cell, values)),
-                        __select("violation_types[{}]".format(finding_id), violation_types))
+                        __select("violation_types", finding_id, violation_types))
     return finding_row
 
 
@@ -235,10 +247,12 @@ def __list(l: List):
                 <li>""".join(map(html.escape, l)))
 
 
-def __select(name: str, l: List):
-    return """<select name="{}[]" size="{}" multiple>{}</select>"""\
-        .format(name, len(l), "".join(map(__select_option, l)))
+def __select(name: str, finding_id: str, l: List):
+    return """<select name="{}[{}][]" size="{}" multiple>{}</select>"""\
+        .format(name, finding_id, len(l), "".join(map(lambda option: __select_option(option, finding_id), l)))
 
 
-def __select_option(option: str):
-    return """<option value="{}">{}</option>""".format(option, option)
+def __select_option(option: str, finding_id: str):
+    return """<option value="{}" """\
+           """<?php if($review["hits"][{}] && in_array("{}",$review["hits"][{}])) echo "selected"; ?>>{}"""\
+           """</option>\n""".format(option, option, finding_id, finding_id, option)

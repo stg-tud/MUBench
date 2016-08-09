@@ -41,38 +41,13 @@ if (empty($finding_ids)) {
 $comment = str_replace("\r", "", $_POST["reviewer_comment"]);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
-// generate review yaml
+// generate review yml
 
-$review = "reviewer: $name\n";
-if (!empty($comment)) {
-    $review .= "comment: |\n";
-    $review .= "  " . str_replace("\n", "\n  ", $comment) . "\n";
-}
-if (empty($finding_ids)) {
-    $review .= "hits: []\n";
-} else {
-    $review .= "hits:\n";
-    foreach($finding_ids as $finding_id) {
-        $review .= "- id: $finding_id\n";
-        if (!empty($findings_vtypes[$finding_id])) {
-            $review .= "  vts:\n";
-            foreach ($findings_vtypes[$finding_id] as $finding_vtype) {
-                $review .= "  - $finding_vtype\n";
-            }
-        }
-    }
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////
-// write review file
-
+include_once "review_utils.php";
+$review_yml = to_review_yml($name, $comment, $finding_ids, $findings_vtypes);
 $review_file = fopen($review_name, "w") or die("<span style=\"color:red\">Failed to write review file!</span>");
 fwrite($review_file, mb_convert_encoding($review, 'UTF-8', 'auto'));
 fclose($review_file);
-
-////////////////////////////////////////////////////////////////////////////////////////////////
-// return success
-
 echo "<span style=\"color:green\">Review successfully saved.</span>";
 
 ?>
