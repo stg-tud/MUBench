@@ -3,7 +3,7 @@ from copy import deepcopy
 from os import makedirs, remove
 from os.path import join, exists, dirname
 from shutil import copy
-from typing import Dict, Iterable
+from typing import Dict, Iterable, Optional
 from typing import List
 
 import yaml
@@ -41,9 +41,10 @@ class Review:
     def start_run_review(self, name: str, run: Run):
         self.__current_project_review.start_run_review(name, run)
 
-    def append_finding_review(self, name: str, violation_types: List[str], result: str, details_path: str,
-                              details_prefix: str):
-        self.__current_project_review.append_finding_review(name, violation_types, result, details_path, details_prefix)
+    def append_finding_review(self, name: str, violation_types: List[str],
+                              details_url: str, details_path: str, details_prefix: str):
+        self.__current_project_review.append_finding_review(name, violation_types,
+                                                            details_url, details_path, details_prefix)
 
     def to_html(self):
         review = """<?php include "../../{}"; ?>
@@ -63,10 +64,10 @@ class ProjectReview:
     def start_run_review(self, name: str, run: Run):
         self.run_reviews.append(RunReview(name, run))
 
-    def append_finding_review(self, name: str, violation_types: List[str], result: str, details_path: str,
-                              details_prefix: str):
-        self.run_reviews[len(self.run_reviews) - 1].append_finding_review(name, violation_types, result, details_path,
-                                                                          details_prefix)
+    def append_finding_review(self, name: str, violation_types: List[str],
+                              details_url: str, details_path: str, details_prefix: str):
+        self.run_reviews[len(self.run_reviews) - 1].append_finding_review(name, violation_types,
+                                                                          details_url, details_path, details_prefix)
 
     def to_html(self):
         if self.run_reviews:
@@ -90,9 +91,9 @@ class RunReview:
         self.run = run
         self.finding_reviews = []
 
-    def append_finding_review(self, name: str, violation_types: List[str], result: str, details_path: str,
-                              details_prefix: str):
-        self.finding_reviews.append(FindingReview(name, violation_types, result, details_path, details_prefix))
+    def append_finding_review(self, name: str, violation_types: List[str],
+                              details_url: str, details_path: str, details_prefix: str):
+        self.finding_reviews.append(FindingReview(name, violation_types, details_url, details_path, details_prefix))
 
     def to_html(self):
         result_name = self.run.result.name if self.run.result else "not run"
@@ -126,16 +127,22 @@ class RunReview:
 
 
 class FindingReview:
-    def __init__(self, name: str, violation_types: List[str], result: str, details_path: str, details_prefix: str):
+    def __init__(self, name: str, violation_types: List[str], details_url: str, details_path: str, details_prefix: str):
         self.name = name
         self.violation_types = violation_types
-        self.result = result
+        self.details_url = details_url
         self.details_path = details_path
         self.details_prefix = details_prefix
 
     def to_html(self):
-        reviewed_by = """<?php echo join(", ", get_reviewer_names("{}", "{}")); ?>""".format(self.details_path,
-                                                                                             self.details_prefix)
+        if self.details_url:
+            result = "<a href=\"{}\">review</a>"
+        else:
+            result = "no findings"
+
+        reviewed_by = """<?php echo join(", ", get_reviewer_links("{}", "{}", "{}")); ?>""".format(self.details_url,
+                                                                                                   self.details_path,
+                                                                                                   self.details_prefix)
 
         return """
             <tr>
@@ -144,7 +151,7 @@ class FindingReview:
                 <td>{}</td>
                 <td>{}</td>
             </tr>
-            """.format(self.name, "<br/>".join(self.violation_types), self.result, reviewed_by)
+            """.format(self.name, "<br/>".join(self.violation_types), result, reviewed_by)
 
 
 class ReviewPrepare(ProjectVersionMisuseTask):
@@ -231,15 +238,15 @@ class ReviewPrepare(ProjectVersionMisuseTask):
         return Response.ok
 
     def __append_misuse_review(self, version: ProjectVersion, misuse: Misuse, review_site: str):
-        review_potential_hits = "<a href=\"{}\">potential hits</a>".format(review_site)
-        self.__append_misuse_to_review(version, misuse, review_potential_hits)
+        self.__append_misuse_to_review(version, misuse, review_site)
 
     def __append_misuse_no_hits(self, version: ProjectVersion, misuse: Misuse):
-        self.__append_misuse_to_review(version, misuse, "no potential hits")
+        self.__append_misuse_to_review(version, misuse, None)
 
-    def __append_misuse_to_review(self, version: ProjectVersion, misuse: Misuse, result: str):
+    def __append_misuse_to_review(self, version: ProjectVersion, misuse: Misuse, review_details_url: Optional[str]):
         review_details_path = join(version.project_id, version.version_id, misuse.id)
-        self.__review.append_finding_review(misuse.id, misuse.characteristics, result, review_details_path, "review")
+        self.__review.append_finding_review(misuse.id, misuse.characteristics,
+                                            review_details_url, review_details_path, "review")
 
     @staticmethod
     def __generate_potential_hits_yaml(potential_hits: List[Dict[str, str]], review_path: str):
@@ -363,7 +370,7 @@ class ReviewPrepareAll(ProjectVersionTask):
                                       _specialize_finding(finding, self.detector, dirname(details_path)))
 
             self.__review.append_finding_review("Finding {}".format(finding["id"]), ["<i>unknown</i>"],
-                                                "<a href=\"{}\">review</a>".format(details_url), run_dir, finding_name)
+                                                details_url, run_dir, finding_name)
 
     def end(self):
         safe_write(self.__review.to_html(), join(self.review_path, "index.php"), append=False)

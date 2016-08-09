@@ -12,6 +12,14 @@ function get_reviewer_names($dir, $prefix) {
     return $reviewer_names;
 }
 
+function get_reviewer_links($url, $dir, $prefix) {
+    $reviewer_names = get_reviewer_names($dir, $prefix);
+    foreach ($reviewer_names as $index => $name) {
+        $reviewer_names[$index] = "<a href=\"$url?name=$name\">$name</a>";
+    }
+    return $reviewer_names;
+}
+
 function to_review_yml($name, $comment, $finding_ids, $findings_vtypes) {
     $review = "reviewer: $name\n";
     if (!empty($comment)) {
