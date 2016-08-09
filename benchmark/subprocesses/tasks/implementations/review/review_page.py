@@ -143,6 +143,7 @@ def __get_page(content: str):
                     .vtop {{vertical-align:top}}
                     .prettyprint ol.linenums > li {{ list-style-type: decimal; }}
                 </style>
+                <script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js?autoload=true&amp;skin=sunburst"></script>
             </head>
             <body>
             {}
@@ -155,9 +156,7 @@ def __get_target_code(compiles_path: str, version: ProjectVersion, file: str, me
     version_compile = version.get_compile(compiles_path)
     misuse_file = join(version_compile.original_sources_path, file)
 
-    code = """<script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js?autoload=true&amp;skin=sunburst"></script>"""
-    snippet = """<pre class="prettyprint linenums:{}"><code class="language-java">{}</code></pre>"""
-
+    code = ""
     try:
         output = exec_util("MethodExtractor", "\"{}\" \"{}\"".format(misuse_file, method)).strip("\n")
         if output:
@@ -165,12 +164,17 @@ def __get_target_code(compiles_path: str, version: ProjectVersion, file: str, me
             for method in methods:
                 # comes as "<first-line number>:<declaring type>:<code>
                 info = method.split(":", 2)
-                code += snippet.format(int(info[0]) - 1,
-                                       """class {} {{\n{}\n}}""".format(info[1], html.escape(info[2].strip("\n"))))
+                code += __get_snippet(int(info[0]) - 1,
+                                      """class {} {{\n{}\n}}""".format(info[1], html.escape(info[2].strip("\n"))))
     except CommandFailedError as e:
-        code += snippet.format(1, html.escape(str(e)))
+        code += __get_snippet(1, html.escape(str(e)))
 
     return code
+
+
+def __get_snippet(first_line: int, code: str):
+    return """<pre class="prettyprint linenums:{}"><code class="language-java">{}</code></pre>""".format(first_line,
+                                                                                                         code)
 
 
 def __get_findings_table(potential_hits: List[Dict[str, str]], violation_types: List[str], multi_select: bool=False):
