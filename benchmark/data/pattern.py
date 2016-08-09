@@ -2,7 +2,6 @@ from distutils.file_util import copy_file
 from fileinput import FileInput
 from os import makedirs
 from os.path import exists, join, splitext, dirname, basename
-from typing import Set
 
 
 class Pattern:
