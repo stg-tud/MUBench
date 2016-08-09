@@ -51,9 +51,9 @@ def generate(experiment: str, review_file: str, detector: str, compiles_path: st
         <?php
             include_once "../../../../../review_utils.php";
             $review_file_name = "review_" . $_REQUEST["name"] . ".yml";
-            if (file_exists($review_file_name)) {
+            if (file_exists($review_file_name)) {{
                 $review = parse_review_yml(file_get_contents($review_file_name));
-            }
+            }}
         ?>
         <form action="../../../../../{}" method="post" target="review_submission_target">
             {}
@@ -101,9 +101,9 @@ def generate2(experiment: str, review_file: str, detector: str, compiles_path: s
         <?php
             include_once "../../../../review_utils.php";
             $review_file_name = "review_" . $_REQUEST["name"] . ".yml";
-            if (file_exists($review_file_name)) {
+            if (file_exists($review_file_name)) {{
                 $review = parse_review_yml(file_get_contents($review_file_name));
-            }
+            }}
         ?>
         <form action="../../../../{}" method="post" target="review_submission_target">
             <table class="fw">
