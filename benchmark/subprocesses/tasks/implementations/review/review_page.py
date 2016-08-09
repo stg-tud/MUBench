@@ -44,6 +44,7 @@ def generate_ex1(experiment: str, review_file: str, detector: str, compiles_path
             <tr><td><b>In File:</b></td><td>{}</td></tr>
             <tr><td><b>In Method:</b></td><td>{}</td></tr>
             <tr><td class="vtop"><b>Code with Misuse:</b></td><td>{}</td></tr>
+            <tr><td class="vtop"><b>Pattern Code:</b></td><td>{}</td></tr>
         </table>
         <h2>Potential Hits</h2>
         <p>Findings of the detector that identify an anomaly in the same file and method as the known misuse.
@@ -80,6 +81,7 @@ def generate_ex1(experiment: str, review_file: str, detector: str, compiles_path
                    __list(misuse.characteristics),
                    misuse.location.file, misuse.location.method,
                    __get_target_code(compiles_path, version, misuse.location.file, misuse.location.method),
+                   __get_patterns_code(misuse),
                    REVIEW_RECEIVER_FILE,
                    __get_findings_table(potential_hits, misuse.characteristics, multi_select=True),
                    experiment, detector, version.project_id, version.version_id, misuse.id)
@@ -231,6 +233,20 @@ def __get_target_code(compiles_path: str, version: ProjectVersion, file: str, me
         code += __get_snippet(1, html.escape(str(e)))
 
     return code
+
+
+def __get_patterns_code(misuse: Misuse):
+    snippets = []
+    for pattern in misuse.patterns:
+        with open(pattern.path, 'r') as pattern_file:
+            pattern_code_lines = pattern_file.readline()
+        pattern_code_lines = [line for line in pattern_code_lines if not __is_preamble_line(line)]
+        snippets.append(__get_snippet(1, "\n".join(pattern_code_lines)))
+    return "\n".join(snippets)
+
+
+def __is_preamble_line(line: str):
+    return line.startswith("import") or line.startswith("package") or not line
 
 
 def __get_snippet(first_line: int, code: str):
