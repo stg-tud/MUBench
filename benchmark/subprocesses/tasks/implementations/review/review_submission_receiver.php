@@ -17,10 +17,10 @@ function sanitize_path_name($name) {
 
 
 $finding_ids = $_POST["finding_ids"] or array();
-if(($key = in_array(-1, $finding_ids)) !== false) {
+if($finding_ids && ($key = in_array(-1, $finding_ids)) !== false) {
     unset($finding_ids[$key]);
 }
-if (empty($finding_ids)) {
+if (!$finding_ids) {
     echo "<span style=\"color:red\">You did not select any hits. Are you sure?</span><br>";
 } else {
     $hits = $_POST["violation_types"] or array();

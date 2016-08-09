@@ -239,7 +239,7 @@ def __get_patterns_code(misuse: Misuse):
     snippets = []
     for pattern in misuse.patterns:
         with open(pattern.path, 'r') as pattern_file:
-            pattern_code_lines = pattern_file.readlines()
+            pattern_code_lines = pattern_file.read().splitlines()
         pattern_code_lines = [line for line in pattern_code_lines if not __is_preamble_line(line)]
         snippets.append(__get_snippet(1, "\n".join(pattern_code_lines)))
     return "\n".join(snippets)
@@ -288,7 +288,7 @@ def __get_finding_row(keys: List[str], check_type: str, violation_types: List[st
     values = map(lambda key: potential_hit.get(key, ""), keys)
     finding_id = potential_hit["id"]
     finding_row = """<tr>
-            <td><input type="{}" name="finding_ids[]" value="{}" <?php if(array_key_exists({}, $review["hits"])) echo "checked"; ?>/></td>
+            <td><input type="{}" name="finding_ids[]" value="{}" <?php if($review["hits"] && array_key_exists({}, $review["hits"])) echo "checked"; ?>/></td>
             {}
             <td>{}</td>
         </tr>""".format(check_type, finding_id, finding_id,
