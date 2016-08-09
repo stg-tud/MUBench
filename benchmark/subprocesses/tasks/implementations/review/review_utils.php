@@ -20,22 +20,22 @@ function get_reviewer_links($url, $dir, $prefix) {
     return $reviewer_names;
 }
 
-function to_review_yml($name, $comment, $finding_ids, $findings_vtypes) {
+function to_review_yml($name, $comment, $hits) {
     $review = "reviewer: $name\n";
     if (!empty($comment)) {
         $review .= "comment: |\n";
         $review .= "  " . str_replace("\n", "\n  ", $comment) . "\n";
     }
-    if (empty($finding_ids)) {
+    if (empty($hits)) {
         $review .= "hits: []\n";
     } else {
         $review .= "hits:\n";
-        foreach($finding_ids as $finding_id) {
+        foreach($hits as $finding_id => $violation_types) {
             $review .= "- id: $finding_id\n";
-            if (!empty($findings_vtypes[$finding_id])) {
+            if ($violation_types) {
                 $review .= "  vts:\n";
-                foreach ($findings_vtypes[$finding_id] as $finding_vtype) {
-                    $review .= "  - $finding_vtype\n";
+                foreach ($violation_types as $violation_type) {
+                    $review .= "  - $violation_type\n";
                 }
             }
         }
@@ -68,7 +68,8 @@ function parse_review_yml($yml) {
         if (substr($line, 0, 5) == "- id:") {
             $last_id = (int) substr($line, 5);
             $review["hits"][$last_id] = array();
-            $line_index++; // skip line with "  vts:\n"
+        } else if (substr($line, 0, 6) == "  vts:") {
+            // skip
         } else if (!empty($line)) {
             $violation_type = substr($line, 4);
             $review["hits"][$last_id][] = $violation_type;

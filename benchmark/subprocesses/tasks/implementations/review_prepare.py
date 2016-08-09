@@ -136,7 +136,7 @@ class FindingReview:
 
     def to_html(self):
         if self.details_url:
-            result = "<a href=\"{}\">review</a>"
+            result = "<a href=\"{}\">review</a>".format(self.details_url)
         else:
             result = "no findings"
 

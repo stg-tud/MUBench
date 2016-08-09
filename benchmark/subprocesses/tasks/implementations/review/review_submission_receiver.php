@@ -16,23 +16,18 @@ function sanitize_path_name($name) {
 }
 
 
-$finding_ids = $_POST["finding_ids"];
+$finding_ids = $_POST["finding_ids"] or array();
+if(($key = in_array(-1, $finding_ids)) !== false) {
+    unset($finding_ids[$key]);
+}
 if (empty($finding_ids)) {
     echo "<span style=\"color:red\">You did not select any hits. Are you sure?</span><br>";
 } else {
-    if(($key = array_search(-1, $finding_ids)) !== false) {
-        unset($finding_ids[$key]);
-    }
-
-    if (array_key_exists("violation_types", $_POST)) {
-        $findings_vtypes = $_POST["violation_types"];
-    } else {
-        $findings_vtypes = array();
-    }
+    $hits = $_POST["violation_types"] or array();
 
     foreach ($finding_ids as $finding_id) {
-        if (!array_key_exists($finding_id, $findings_vtypes)) {
-            $findings_vtypes[$finding_id] = array();
+        if (!$hits[$finding_id]) {
+            $hits[$finding_id] = array();
         }
     }
 }
@@ -44,9 +39,9 @@ $comment = str_replace("\r", "", $_POST["reviewer_comment"]);
 // generate review yml
 
 include_once "review_utils.php";
-$review_yml = to_review_yml($name, $comment, $finding_ids, $findings_vtypes);
+$review_yml = to_review_yml($name, $comment, $hits);
 $review_file = fopen($review_name, "w") or die("<span style=\"color:red\">Failed to write review file!</span>");
-fwrite($review_file, mb_convert_encoding($review, 'UTF-8', 'auto'));
+fwrite($review_file, mb_convert_encoding($review_yml, 'UTF-8', 'auto'));
 fclose($review_file);
 echo "<span style=\"color:green\">Review successfully saved.</span>";
 
