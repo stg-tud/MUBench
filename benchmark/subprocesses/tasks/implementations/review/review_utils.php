@@ -1,11 +1,12 @@
 <?php
 
 function get_reviewer_names($dir, $prefix) {
+    $prefix .= "_";
     $reviewer_names = array();
     if (is_dir($dir)) {
         foreach (scandir($dir) as $file) {
             if (strpos($file, $prefix) === 0 && substr($file, -4) == ".yml") {
-                $reviewer_names[] = basename(substr($file, strlen($prefix) + 1), ".yml");
+                $reviewer_names[] = basename(substr($file, strlen($prefix)), ".yml");
             }
         }
     }

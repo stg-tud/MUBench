@@ -152,6 +152,7 @@ def generate_ex2(experiment: str, review_file: str, detector: str, compiles_path
 
 def generate_ex3(experiment: str, review_file: str, detector: str, compiles_path: str, version: ProjectVersion,
                  finding: Dict[str, str]):
+    finding_name = splitext(basename(review_file))[0]
     review = """
         <h1>Review</h1>
         <table>
@@ -163,7 +164,7 @@ def generate_ex3(experiment: str, review_file: str, detector: str, compiles_path
             Please review whether this anomaly corresponds to a misuse.</p>
         <?php
             include_once "../../../../review_utils.php";
-            $review_file_name = "review_" . $_REQUEST["name"] . ".yml";
+            $review_file_name = "{}_" . $_REQUEST["name"] . ".yml";
             if (file_exists($review_file_name)) {{
                 $review = parse_review_yml(file_get_contents($review_file_name));
             }}
@@ -188,11 +189,11 @@ def generate_ex3(experiment: str, review_file: str, detector: str, compiles_path
             <input type="hidden" name="review_name[]" value="{}"/>
             <input type="submit" value="Save Review" />
         </form>
-        """.format(detector, version, REVIEW_RECEIVER_FILE,
+        """.format(detector, version, finding_name, REVIEW_RECEIVER_FILE,
                    finding["id"], join(version.source_dir, finding["file"]), finding["method"],
                    __get_target_code(compiles_path, version, finding["file"], finding["method"]),
                    __get_findings_table([finding], ALL_VIOLATION_TYPES, multi_select=True),
-                   experiment, detector, version.project_id, version.version_id, splitext(basename(review_file))[0])
+                   experiment, detector, version.project_id, version.version_id, finding_name)
 
     safe_write(__get_page(review), review_file, False)
 
