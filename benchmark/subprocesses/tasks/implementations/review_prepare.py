@@ -159,16 +159,17 @@ class ReviewPrepare(ProjectVersionMisuseTask):
     potential_hit = 1
 
     def __init__(self, experiment: str, detector: str, findings_path: str, reviews_path: str, checkout_base_dir: str,
-                 compiles_path: str, force_prepare: bool):
+                 compiles_path: str, force_prepare: bool, details_page_generator):
         super().__init__()
         self.experiment = experiment
+        self.detector = detector
         self.compiles_path = compiles_path
         self.findings_path = findings_path
         self.reviews_path = reviews_path
         self.review_path = join(reviews_path, experiment, detector)
         self.checkout_base_dir = checkout_base_dir
         self.force_prepare = force_prepare
-        self.detector = detector
+        self.details_page_generator = details_page_generator
 
         self.__review = Review(self.detector)
 
@@ -227,8 +228,8 @@ class ReviewPrepare(ProjectVersionMisuseTask):
 
         if potential_hits:
             potential_hits = _specialize_findings(self.detector, potential_hits, review_path)
-            review_page.generate(self.experiment, join(self.review_path, review_site), self.detector,
-                                 self.compiles_path, version, misuse, potential_hits)
+            self.details_page_generator(self.experiment, join(self.review_path, review_site), self.detector,
+                                        self.compiles_path, version, misuse, potential_hits)
             self.__generate_potential_hits_yaml(potential_hits, review_path)
             self.__append_misuse_review(version, misuse, review_site)
         else:
@@ -308,7 +309,21 @@ class ReviewPrepare(ProjectVersionMisuseTask):
         return matches
 
 
-class ReviewPrepareAll(ProjectVersionTask):
+class ReviewPrepareEx1(ReviewPrepare):
+    def __init__(self, experiment: str, detector: str, findings_path: str, reviews_path: str, checkout_base_dir: str,
+                 compiles_path: str, force_prepare: bool):
+        super().__init__(experiment, detector, findings_path, reviews_path, checkout_base_dir, compiles_path,
+                         force_prepare, review_page.generate_ex1)
+
+
+class ReviewPrepareEx2(ReviewPrepare):
+    def __init__(self, experiment: str, detector: str, findings_path: str, reviews_path: str, checkout_base_dir: str,
+                 compiles_path: str, force_prepare: bool):
+        super().__init__(experiment, detector, findings_path, reviews_path, checkout_base_dir, compiles_path,
+                         force_prepare, review_page.generate_ex2)
+
+
+class ReviewPrepareEx3(ProjectVersionTask):
     def __init__(self, experiment: str, detector: str, findings_path: str, reviews_path: str, checkouts_path: str,
                  compiles_path: str, force_prepare: bool):
         super().__init__()
@@ -366,8 +381,8 @@ class ReviewPrepareAll(ProjectVersionTask):
                 logger.debug("    %s in %s is already prepared.", finding_name, version)
             else:
                 logger.debug("    Generating review file for %s in %s...", finding_name, version)
-                review_page.generate2(self.experiment, details_path, self.detector, self.compiles_path, version,
-                                      _specialize_finding(finding, self.detector, dirname(details_path)))
+                review_page.generate_ex3(self.experiment, details_path, self.detector, self.compiles_path, version,
+                                         _specialize_finding(finding, self.detector, dirname(details_path)))
 
             self.__review.append_finding_review("Finding {}".format(finding["id"]), ["<i>unknown</i>"],
                                                 details_url, run_dir, finding_name)

@@ -119,7 +119,8 @@ class TestReviewPageGenerator:
         assert_in("<td>2</td><td></td><td>y</td>", content)
 
     def generate_review_page(self, potential_hits):
-        review_page.generate("test-ex", self.review_file, 'detector', self.compiles_path, self.test_version,
+        # TODO need testing strategy for all generators
+        review_page.generate_ex1("test-ex", self.review_file, 'detector', self.compiles_path, self.test_version,
                              self.test_misuse, potential_hits)
 
     def test_adds_target_code_method_only(self):

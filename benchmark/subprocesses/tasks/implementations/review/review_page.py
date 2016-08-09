@@ -26,8 +26,8 @@ ALL_VIOLATION_TYPES = [
 ]
 
 
-def generate(experiment: str, review_file: str, detector: str, compiles_path: str, version: ProjectVersion, misuse: Misuse,
-             potential_hits: List[Dict[str, str]]):
+def generate_ex1(experiment: str, review_file: str, detector: str, compiles_path: str, version: ProjectVersion, misuse: Misuse,
+                 potential_hits: List[Dict[str, str]]):
     review = """
         <h1>Review</h1>
         <table>
@@ -87,8 +87,69 @@ def generate(experiment: str, review_file: str, detector: str, compiles_path: st
     safe_write(__get_page(review), review_file, False)
 
 
-def generate2(experiment: str, review_file: str, detector: str, compiles_path: str, version: ProjectVersion,
-              finding: Dict[str, str]):
+def generate_ex2(experiment: str, review_file: str, detector: str, compiles_path: str, version: ProjectVersion,
+                 misuse: Misuse, potential_hits: List[Dict[str, str]]):
+    review = """
+        <h1>Review</h1>
+        <table>
+            <tr><td><b>Detector:</b></td><td>{}</td></tr>
+            <tr><td><b>Target:</b></td><td>{}</td></tr>
+            <tr><td><b>Misuse:</b></td><td>{}</td></tr>
+        </table>
+        <h2>Misuse Details</h2>
+        <p>Details about the known misuse from the MUBench dataset.</p>
+        <table class="fw">
+            <tr><td class="vtop"><b>Description:</b></td><td>{}</td></tr>
+            <tr><td class="vtop"><b>Fix Description:</b></td><td>{} (<a href="{}">see diff</a>)</td></tr>
+            <tr><td class="vtop"><b>Violation Types:</b></td><td>{}</td></tr>
+            <tr><td><b>In File:</b></td><td>{}</td></tr>
+            <tr><td><b>In Method:</b></td><td>{}</td></tr>
+            <tr><td class="vtop"><b>Code with Misuse:</b></td><td>{}</td></tr>
+        </table>
+        <h2>Potential Hits</h2>
+        <p>Findings of the detector that identify an anomaly in the same file and method as the known misuse.
+            Please reviews whether any of these findings actually correspond to the kown misuse.</p>
+        <?php
+            include_once "../../../../../review_utils.php";
+            $review_file_name = "review_" . $_REQUEST["name"] . ".yml";
+            if (file_exists($review_file_name)) {{
+                $review = parse_review_yml(file_get_contents($review_file_name));
+            }}
+        ?>
+        <form action="../../../../../{}" method="post" target="review_submission_target">
+            {}
+            <br/>
+            <table>
+                <tr><td><b>Reviewer Name:</b><br/>(lower case, no spaces)</td>
+                    <td><input type="text" name="reviewer_name" pattern="[a-z]+" size="30" value="<?php echo $review["name"]; ?>" /></td></tr>
+                <tr><td class="vtop"><b>Comment:</b></td>
+                    <td><textarea name="reviewer_comment" cols="120" rows="8"><?php echo $review["comment"]; ?></textarea></td></tr>
+            </table>
+            <iframe name="review_submission_target" width="100%" height="100px" style="border-style:none"></iframe>
+            <input type="hidden" name="review_name[]" value="{}"/>
+            <input type="hidden" name="review_name[]" value="{}"/>
+            <input type="hidden" name="review_name[]" value="{}"/>
+            <input type="hidden" name="review_name[]" value="{}"/>
+            <input type="hidden" name="review_name[]" value="{}"/>
+            <input type="hidden" name="review_name[]" value="review"/>
+            <input type="submit" value="Save Review"/>
+        </form>
+        """.format(detector, version, misuse,
+                   __multiline(misuse.description),
+                   __multiline(misuse.fix.description),
+                   misuse.fix.commit,
+                   __list(misuse.characteristics),
+                   misuse.location.file, misuse.location.method,
+                   __get_target_code(compiles_path, version, misuse.location.file, misuse.location.method),
+                   REVIEW_RECEIVER_FILE,
+                   __get_findings_table(potential_hits, misuse.characteristics, multi_select=True),
+                   experiment, detector, version.project_id, version.version_id, misuse.id)
+
+    safe_write(__get_page(review), review_file, False)
+
+
+def generate_ex3(experiment: str, review_file: str, detector: str, compiles_path: str, version: ProjectVersion,
+                 finding: Dict[str, str]):
     review = """
         <h1>Review</h1>
         <table>
