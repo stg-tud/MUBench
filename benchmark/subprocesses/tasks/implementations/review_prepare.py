@@ -426,9 +426,12 @@ def _sort_findings(detector: str, findings: List[Dict[str, str]]):
         sort_by = "defect_indicator"
     elif detector.startswith("grouminer"):
         sort_by = "rareness"
+    else:
+        sort_by = None
 
     findings = deepcopy(findings)
-    findings.sort(key=lambda f: float(f[sort_by]), reverse=True)
+    if sort_by:
+        findings.sort(key=lambda f: float(f[sort_by]), reverse=True)
     return findings
 
 
