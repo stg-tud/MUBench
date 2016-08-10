@@ -366,7 +366,7 @@ class ReviewPrepareEx3(ProjectVersionTask):
             remove_tree(join(self.review_path, project.id, version.version_id))
 
         logger.info("Generating review files for %s...", version)
-        findings = _sort_findings(self.detector, detector_run.findings)
+        findings = _sort_findings(self.detector, detector_run.findings)[:10]
         logger.info("    Preparing files for %d findings...", len(findings))
 
         for finding in findings:
