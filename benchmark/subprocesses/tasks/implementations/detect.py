@@ -85,6 +85,16 @@ class Detect(ProjectVersionTask):
         return [JavaRequirement()]
 
     def start(self):
+        logger = logging.getLogger("detect")
+        msg = "Running '{}' detector".format(self.detector)
+        if self.force_detect:
+            msg += " with forced detection and"
+        if self.timeout:
+            msg += " a timeout of {}s".format(self.timeout)
+        else:
+            msg += " without timeout."
+        logger.info(msg)
+
         if not self._detector_available():
             self._download()
 
