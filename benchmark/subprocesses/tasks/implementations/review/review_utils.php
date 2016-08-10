@@ -21,27 +21,28 @@ function get_reviewer_links($url, $dir, $prefix) {
     return $reviewer_names;
 }
 
-function to_review_yml($name, $comment, $hits) {
-    $review = "reviewer: $name\n";
-    if (!empty($comment)) {
-        $review .= "comment: |\n";
-        $review .= "  " . str_replace("\n", "\n  ", $comment) . "\n";
+function to_review_yml($review) {
+    $review_yml = "reviewer: " . $review["name"] . "\n";
+    if (!empty($review["comment"])) {
+        $review_yml .= "comment: |\n";
+        $review_yml .= "  " . str_replace("\n", "\n  ", $review["comment"]) . "\n";
     }
-    if (empty($hits)) {
-        $review .= "hits: []\n";
+    if (empty($review["findings"])) {
+        $review_yml .= "findings: []\n";
     } else {
-        $review .= "hits:\n";
-        foreach($hits as $finding_id => $violation_types) {
-            $review .= "- id: $finding_id\n";
-            if ($violation_types) {
-                $review .= "  vts:\n";
-                foreach ($violation_types as $violation_type) {
-                    $review .= "  - $violation_type\n";
+        $review_yml .= "findings:\n";
+        foreach($review["findings"] as $finding_id => $values) {
+            $review_yml .= "- id: $finding_id\n";
+            $review_yml .= "  assessment: " . $values["assessment"] . "\n";
+            if ($values["violations"]) {
+                $review_yml .= "  violations:\n";
+                foreach ($values["violations"] as $violation) {
+                    $review_yml .= "  - $violation\n";
                 }
             }
         }
     }
-    return $review;
+    return $review_yml;
 }
 
 function parse_review_yml($yml) {
@@ -60,20 +61,46 @@ function parse_review_yml($yml) {
         }
     }
 
-    $line_index++; // skip line with "hits:\n" or "hits: []\n"
-    $review["hits"] = array();
+    $review["findings"] = array();
 
-    $last_id = -1;
-    for (; $line_index < sizeof($lines); $line_index++) {
-        $line = $lines[$line_index];
-        if (substr($line, 0, 5) == "- id:") {
-            $last_id = (int) substr($line, 5);
-            $review["hits"][$last_id] = array();
-        } else if (substr($line, 0, 6) == "  vts:") {
-            // skip
-        } else if (!empty($line)) {
-            $violation_type = substr($line, 4);
-            $review["hits"][$last_id][] = $violation_type;
+    if (substr($lines[$line_index], 0, 5) == "hits:") {
+        // read old format
+        $line_index++; // skip line with "hits:\n" or "hits: []\n"
+
+        $last_id = -1;
+        for (; $line_index < sizeof($lines); $line_index++) {
+            $line = $lines[$line_index];
+            if (substr($line, 0, 5) == "- id:") {
+                $last_id = (int) substr($line, 5);
+                $review["findings"][$last_id] = array();
+                $review["findings"][$last_id]["assessment"] = "Yes";
+                $review["findings"][$last_id]["violations"] = array();
+            } else if (substr($line, 0, 6) == "  vts:") {
+                // skip
+            } else if (!empty($line)) {
+                $violation = substr($line, 4);
+                $review["findings"][$last_id]["violations"][] = $violation;
+            }
+        }
+    } else {
+        // read new format
+        $line_index++; // skip line with "findings:\n" or "findings: []\n"
+
+        $last_id = -1;
+        for (; $line_index < sizeof($lines); $line_index++) {
+            $line = $lines[$line_index];
+            if (substr($line, 0, 5) == "- id:") {
+                $last_id = (int) substr($line, 5);
+                $review["findings"][$last_id] = array();
+                $review["findings"][$last_id]["violations"] = array();
+            } else if (substr($line, 0, 13) == "  assessment:") {
+                $review["findings"][$last_id]["assessment"] = substr($line, 14);
+            } else if (substr($line, 0, 13) == "  violations:") {
+                // skip
+            } else if (!empty($line)) {
+                $violation = substr($line, 4); // strip "  - " prefix
+                $review["findings"][$last_id]["violations"][] = $violation;
+            }
         }
     }
 

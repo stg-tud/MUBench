@@ -83,7 +83,7 @@ def generate_ex1(experiment: str, review_file: str, detector: str, compiles_path
                    __get_target_code(compiles_path, version, misuse.location.file, misuse.location.method),
                    __get_patterns_code(misuse),
                    REVIEW_RECEIVER_FILE,
-                   __get_findings_table(potential_hits, misuse.characteristics, multi_select=True),
+                   __get_findings_table(potential_hits, misuse.characteristics),
                    experiment, detector, version.project_id, version.version_id, misuse.id)
 
     safe_write(__get_page(review), review_file, False)
@@ -144,7 +144,7 @@ def generate_ex2(experiment: str, review_file: str, detector: str, compiles_path
                    misuse.location.file, misuse.location.method,
                    __get_target_code(compiles_path, version, misuse.location.file, misuse.location.method),
                    REVIEW_RECEIVER_FILE,
-                   __get_findings_table(potential_hits, misuse.characteristics, multi_select=True),
+                   __get_findings_table(potential_hits, misuse.characteristics),
                    experiment, detector, version.project_id, version.version_id, misuse.id)
 
     safe_write(__get_page(review), review_file, False)
@@ -192,7 +192,7 @@ def generate_ex3(experiment: str, review_file: str, detector: str, compiles_path
         """.format(detector, version, finding_name, REVIEW_RECEIVER_FILE,
                    finding["id"], join(version.source_dir, finding["file"]), finding["method"],
                    __get_target_code(compiles_path, version, finding["file"], finding["method"]),
-                   __get_findings_table([finding], ALL_VIOLATION_TYPES, multi_select=True),
+                   __get_findings_table([finding], ALL_VIOLATION_TYPES),
                    experiment, detector, version.project_id, version.version_id, finding_name)
 
     safe_write(__get_page(review), review_file, False)
@@ -255,7 +255,7 @@ def __get_snippet(first_line: int, code: str):
                                                                                                          code)
 
 
-def __get_findings_table(potential_hits: List[Dict[str, str]], violation_types: List[str], multi_select: bool=False):
+def __get_findings_table(potential_hits: List[Dict[str, str]], violation_types: List[str]):
     keys = set()
     for potential_hit in potential_hits:
         keys.update(potential_hit.keys())
@@ -264,15 +264,7 @@ def __get_findings_table(potential_hits: List[Dict[str, str]], violation_types: 
     keys.discard("id")
     keys = ["id"] + sorted(keys)
 
-    if multi_select:
-        check_type = "checkbox"
-        default_selection = ""
-    else:
-        check_type = "radio"
-        default_selection = """<tr>
-            <td><input type="radio" name="finding_ids[]" value="-1" <?php if(empty($review["hits"])) echo "checked"; ?>/></td>
-            <td colspan="{}">none of these findings matches the known misuse</td>
-        </tr>""".format(len(keys) + 1)
+    check_type = "checkbox"
 
     def get_finding_row(finding):
         return __get_finding_row(keys, check_type, violation_types, finding)
@@ -280,21 +272,22 @@ def __get_findings_table(potential_hits: List[Dict[str, str]], violation_types: 
     return """<table border="1" cellpadding="5">
         <tr><th>Hit</th><th>{}</th><th>Violation Type</tr>
         {}
-        {}
         </table>
-        """.format("</th><th>".join(keys), "\n".join(map(get_finding_row, potential_hits)), default_selection)
+        """.format("</th><th>".join(keys), "\n".join(map(get_finding_row, potential_hits)))
 
 
 def __get_finding_row(keys: List[str], check_type: str, violation_types: List[str], potential_hit: Dict[str,str]):
     values = map(lambda key: potential_hit.get(key, ""), keys)
     finding_id = potential_hit["id"]
+
+    assessment_select = __select("assessment", finding_id, ["No", "Yes", "?"], False)
+    violation_select = __select("violations", finding_id, violation_types, True)
+
     finding_row = """<tr>
-            <td><input type="{}" name="finding_ids[]" value="{}" <?php if($review["hits"] && array_key_exists({}, $review["hits"])) echo "checked"; ?>/></td>
+            <td>{}</td>
             {}
             <td>{}</td>
-        </tr>""".format(check_type, finding_id, finding_id,
-                        "".join(map(__get_value_cell, values)),
-                        __select("violation_types", finding_id, violation_types))
+        </tr>""".format(assessment_select,  "".join(map(__get_value_cell, values)), violation_select)
     return finding_row
 
 
@@ -325,12 +318,27 @@ def __list(l: List):
                 <li>""".join(map(html.escape, l)))
 
 
-def __select(name: str, finding_id: str, l: List):
-    return """<select name="{}[{}][]" size="{}" multiple>{}</select>"""\
-        .format(name, finding_id, len(l), "".join(map(lambda option: __select_option(option, finding_id), l)))
+def __select(name: str, finding_id: str, l: List, multi_select: bool):
+    select_name = "findings[{}][{}]".format(finding_id, name)
+
+    if multi_select:
+        attributes = """size="{}" multiple""".format(len(l))
+        select_name += "[]"
+    else:
+        attributes = """size="1" """
+
+    def select_option(option: str):
+        return __select_option(name, finding_id, option, multi_select)
+
+    return """<select name="{}" {}>{}</select>"""\
+        .format(select_name, attributes, "".join(map(select_option, l)))
 
 
-def __select_option(option: str, finding_id: str):
-    return """<option value="{}" """\
-           """<?php if($review["hits"][{}] && in_array("{}",$review["hits"][{}])) echo "selected"; ?>>{}"""\
-           """</option>\n""".format(option, finding_id, option, finding_id, option)
+def __select_option(name: str, finding_id: str, option: str, multi_select: bool):
+    check_variable = """$review["findings"][{}]["{}"]""".format(finding_id, name)
+    if multi_select:
+        check = """{} && in_array("{}", {})""".format(check_variable, option, check_variable)
+    else:
+        check = """{} == "{}" """.format(check_variable, option)
+
+    return """<option value="{}" <?php if({}) echo "selected"; ?>>{}</option>\n""".format(option, check, option)
