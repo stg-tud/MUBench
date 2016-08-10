@@ -420,13 +420,15 @@ def _specialize_finding(finding, detector, base_path):
 
 
 def _sort_findings(detector: str, findings: List[Dict[str, str]]):
-    findings = deepcopy(findings)
     if detector.startswith("dmmc"):
-        findings.sort(key=lambda f: float(f["strangeness"]), reverse=True)
+        sort_by = "strangeness"
     elif detector.startswith("jadet") or detector.startswith("tikanga"):
-        findings.sort(key=lambda f: float(f["defect_indicator"]))
+        sort_by = "defect_indicator"
     elif detector.startswith("grouminer"):
-        findings.sort(key=lambda f: float(f["rareness"]), reverse=True)
+        sort_by = "rareness"
+
+    findings = deepcopy(findings)
+    findings.sort(key=lambda f: float(f[sort_by]), reverse=True)
     return findings
 
 
