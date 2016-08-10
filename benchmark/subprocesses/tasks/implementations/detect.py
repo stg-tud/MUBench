@@ -90,7 +90,7 @@ class Detect(ProjectVersionTask):
         if self.force_detect:
             msg += " with forced detection and"
         if self.timeout:
-            msg += " a timeout of {}s".format(self.timeout)
+            msg += " with a timeout of {}s".format(self.timeout)
         else:
             msg += " without timeout."
         logger.info(msg)
