@@ -374,7 +374,7 @@ class ReviewPrepareEx3(ProjectVersionTask):
             details_url = join(project.id, version.version_id, finding_name + ".php")
             details_path = join(self.review_path, details_url)
 
-            if self.force_prepare:
+            if self.force_prepare and exists(details_path):
                 remove(details_path)
 
             if exists(details_path):
