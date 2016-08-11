@@ -34,7 +34,9 @@ script:
   - mvn test -f benchmark/mubench.cli/pom.xml
   - mvn test -f benchmark/mubench.utils/pom.xml
   - "./mubench detect dummy --only synthetic"
-  - "./mubench review:prepare"
+  - "./mubench review:prepare 1"
+  - "./mubench review:prepare 2"
+  - "./mubench review:prepare 3"
   - "./mubench review:check"
   
 notifications:

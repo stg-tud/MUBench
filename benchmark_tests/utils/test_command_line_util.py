@@ -93,13 +93,13 @@ def test_detect_fails_for_invalid_detector():
 
 def test_review_prepare_without_force():
     parser = get_command_line_parser([], [])
-    result = parser.parse_args(['review:prepare'])
+    result = parser.parse_args(['review:prepare', '1'])
     assert not result.force_prepare
 
 
 def test_review_prepare_with_force():
     parser = get_command_line_parser([], [])
-    result = parser.parse_args(['review:prepare', '--force-prepare'])
+    result = parser.parse_args(['review:prepare', '1', '--force-prepare'])
     assert result.force_prepare
 
 
