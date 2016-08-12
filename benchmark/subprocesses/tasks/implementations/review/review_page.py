@@ -79,7 +79,7 @@ def generate_ex1(experiment: str, review_file: str, detector: str, compiles_path
                    __multiline(misuse.fix.description),
                    misuse.fix.commit,
                    __list(misuse.characteristics),
-                   misuse.location.file, misuse.location.method,
+                   misuse.location.file, html.escape(misuse.location.method),
                    __get_target_code(compiles_path, version, misuse.location.file, misuse.location.method),
                    __get_patterns_code(misuse),
                    REVIEW_RECEIVER_FILE,
@@ -141,7 +141,7 @@ def generate_ex2(experiment: str, review_file: str, detector: str, compiles_path
                    __multiline(misuse.fix.description),
                    misuse.fix.commit,
                    __list(misuse.characteristics),
-                   misuse.location.file, misuse.location.method,
+                   misuse.location.file, html.escape(misuse.location.method),
                    __get_target_code(compiles_path, version, misuse.location.file, misuse.location.method),
                    REVIEW_RECEIVER_FILE,
                    __get_findings_table(potential_hits, misuse.characteristics),
@@ -190,8 +190,8 @@ def generate_ex3(experiment: str, review_file: str, detector: str, compiles_path
             <input type="submit" value="Save Review" />
         </form>
         """.format(detector, version, finding_name, REVIEW_RECEIVER_FILE,
-                   finding["id"], join(version.source_dir, finding["file"]), finding["method"],
-                   __get_target_code(compiles_path, version, finding["file"], finding["method"]),
+                   finding["id"], join(version.source_dir, finding["file"]), html.escape(finding["method"]),
+                   __get_target_code(compiles_path, version, finding["file"], html.escape(finding["method"])),
                    __get_findings_table([finding], ALL_VIOLATION_TYPES),
                    experiment, detector, version.project_id, version.version_id, finding_name)
 
