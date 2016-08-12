@@ -34,6 +34,7 @@ $review_yml = to_review_yml($review);
 $review_file = fopen($review_file_name, "w") or die("<span style=\"color:red\">Failed to write review file!</span>");
 fwrite($review_file, mb_convert_encoding($review_yml, 'UTF-8', 'auto'));
 fclose($review_file);
+chmod($review_name, 0666);
 echo "<span style=\"color:green\">Review successfully saved.</span>";
 
 ?>
