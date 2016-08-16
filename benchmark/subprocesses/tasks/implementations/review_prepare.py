@@ -235,7 +235,6 @@ class ReviewPrepare(ProjectVersionMisuseTask):
             potential_hits = _specialize_findings(self.detector, potential_hits, review_path)
             self.details_page_generator(self.experiment, join(self.review_path, review_site), self.detector,
                                         self.compiles_path, version, misuse, potential_hits)
-            self.__generate_potential_hits_yaml(potential_hits, review_path)
             self.__append_misuse_review(version, misuse, review_site)
         else:
             makedirs(review_path)
@@ -253,11 +252,6 @@ class ReviewPrepare(ProjectVersionMisuseTask):
         review_details_path = join(version.project_id, version.version_id, misuse.id)
         self.__review.append_finding_review(misuse.id, misuse.characteristics,
                                             review_details_url, review_details_path, "review")
-
-    @staticmethod
-    def __generate_potential_hits_yaml(potential_hits: List[Dict[str, str]], review_path: str):
-        with safe_open(join(review_path, 'potentialhits.yml'), 'w+') as file:
-            yaml.dump_all(potential_hits, file)
 
     def end(self):
         safe_write(self.__review.to_html(), join(self.review_path, "index.php"), append=False)
