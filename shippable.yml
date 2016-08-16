@@ -37,7 +37,9 @@ script:
   - "./mubench review:prepare 1"
   - "./mubench review:prepare 2"
   - "./mubench review:prepare 3"
-  - "./mubench review:check"
+  - "./mubench review:check 1"
+  - "./mubench review:check 2"
+  - "./mubench review:check 3"
   
 notifications:
   email:
