@@ -14,7 +14,7 @@ from benchmark.subprocesses.tasks.implementations.checkout import Checkout
 from benchmark.subprocesses.tasks.implementations.compile import Compile
 from benchmark.subprocesses.tasks.implementations.detect import Detect
 from benchmark.subprocesses.tasks.implementations.info import Info
-from benchmark.subprocesses.tasks.implementations.review_check import ReviewCheck
+from benchmark.subprocesses.tasks.implementations.review_check import ReviewCheck, ReviewCheckEx3
 from benchmark.subprocesses.tasks.implementations.review_prepare import ReviewPrepareEx1, ReviewPrepareEx2,\
     ReviewPrepareEx3
 from benchmark.utils import command_line_util
@@ -93,11 +93,12 @@ class Benchmark:
         if not exists(Benchmark.REVIEW_PATH):
             return
 
-        detectors_with_available_review = [detector for detector in listdir(Benchmark.REVIEW_PATH) if
-                                           detector in available_detectors]
-
-        review_checker = ReviewCheck(Benchmark.REVIEW_PATH, detectors_with_available_review)
-        self.runner.add(review_checker)
+        if config.experiment == "1":
+            self.runner.add(ReviewCheck("ex1_detect-only", Benchmark.REVIEW_PATH, available_detectors))
+        elif config.experiment == "2":
+            self.runner.add(ReviewCheck("ex2_mine-and-detect", Benchmark.REVIEW_PATH, available_detectors))
+        elif config.experiment == "3":
+            self.runner.add(ReviewCheckEx3("ex3_all-findings", Benchmark.REVIEW_PATH, available_detectors))
 
     def run(self) -> None:
         if config.subprocess == 'visualize':

@@ -17,7 +17,7 @@ class TestReviewCheck:
         self.detector = '-detector-'
         self.temp_dir = mkdtemp(prefix='mubench-test-review-check_')
         self.review_dir = join(self.temp_dir, 'reviews')
-        self.uut = ReviewCheck(self.review_dir, [self.detector])
+        self.uut = ReviewCheck("1", self.review_dir, [self.detector])
 
         self.project = create_project('-project-')
         self.misuse = create_misuse('-misuse-', project=self.project)

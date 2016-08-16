@@ -113,7 +113,8 @@ def __add_review_prepare_subprocess(subparsers) -> None:
 def __add_review_check_subprocess(subparsers) -> None:
     review_check_parser = subparsers.add_parser('review:check',
                                                 formatter_class=SortingHelpFormatter)  # TODO: add description and help texts
-
+    review_check_parser.add_argument('experiment', help="the experiment to check reviews for",
+                                     choices=["1", "2", "3"])
 
 def __add_visualize_subprocess(subparsers) -> None:
     subparsers.add_parser('visualize', formatter_class=SortingHelpFormatter,
