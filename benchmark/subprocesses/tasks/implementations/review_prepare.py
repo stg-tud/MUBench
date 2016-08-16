@@ -421,6 +421,9 @@ def _specialize_finding(finding, detector, base_path):
         __replace_dot_graph_with_image(finding, "overlap", base_path)
         finding["pattern"] = finding["pattern"].replace(":0:0", "")
         __replace_dot_graph_with_image(finding, "pattern", base_path)
+        if "reduced_target" in finding:
+            finding["reduced_target"] = finding["reduced_target"].replace(":0:0", "")
+            __replace_dot_graph_with_image(finding, "reduced_target", base_path)
     return finding
 
 
