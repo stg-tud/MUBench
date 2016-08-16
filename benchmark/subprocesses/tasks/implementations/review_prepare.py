@@ -431,6 +431,8 @@ def _sort_findings(detector: str, findings: List[Dict[str, str]]):
         sort_by = "defect_indicator"
     elif detector.startswith("grouminer"):
         sort_by = "rareness"
+    elif detector.startswith("mudetect"):
+        sort_by = "confidence"
     else:
         sort_by = None
 
