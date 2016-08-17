@@ -48,7 +48,14 @@ public class DetectorFinding {
 
 	private String clean(String value) {
 		// SnakeYaml gets confused by CR
-		return value.replaceAll("\r", "");
+		value = value.replaceAll("\r", "");
+		
+		// SnakeYaml doesn't escape '=', but PyYaml cannot read it
+		if (value.equals("=")) {
+			value = "'" + value + "'";
+		}
+		
+		return value;
 	}
 
 	Map<String, Object> getContent() {
