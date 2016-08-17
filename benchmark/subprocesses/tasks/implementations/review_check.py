@@ -1,3 +1,4 @@
+import logging
 from os import listdir
 from os.path import join, exists
 from typing import List, Dict
@@ -13,9 +14,10 @@ from benchmark.utils.io import read_yaml, safe_write
 
 
 class FindingReview:
-    def __init__(self, finding_id: int, reviewer: str, assessment: str, violations: Set[str]):
+    def __init__(self, finding_id: int, reviewer: str, comment: str, assessment: str, violations: Set[str]):
         self.finding_id = finding_id
         self.reviewer = reviewer
+        self.comment = comment
         self.assessment = assessment
         self.violations = violations
 
@@ -30,11 +32,13 @@ class Review:
 
             if "hits" in data:
                 for hit in data["hits"]:
-                    self.findings.append(FindingReview(hit["id"], self.reviewer, "Yes", hit.get("vts", [])))
+                    review = FindingReview(hit["id"], self.reviewer, self.comment, "Yes", hit.get("vts", []))
+                    self.findings.append(review)
             else:
                 for finding in data["findings"]:
-                    self.findings.append(
-                        FindingReview(finding["id"], self.reviewer, finding["assessment"], finding["violations"]))
+                    review = FindingReview(finding["id"], self.reviewer, self.comment, finding["assessment"],
+                                           finding["violations"])
+                    self.findings.append(review)
 
 
 class ReviewCheck(ProjectVersionMisuseTask):
@@ -53,30 +57,8 @@ class ReviewCheck(ProjectVersionMisuseTask):
     def process_detector_project_version_misuse(self, detector: str, project: Project, version: ProjectVersion,
                                                 misuse: Misuse):
         review_path = join(self.review_path, detector, project.id, version.version_id, misuse.id)
-
-        if not exists(join(review_path, "review.php")):
-            return
-
-        reviews = self.__get_reviews(review_path)
-
-        output_header = [detector, project.id, version.version_id, misuse.id]
-        finding_reviews_by_id = {}  # type: Dict[int,List[FindingReview]]
-        for review in reviews:
-            output_header += [review.reviewer, review.comment.replace("\n", ""), "", ""]
-
-            for finding_review in review.findings:
-                if finding_review.finding_id not in finding_reviews_by_id:
-                    finding_reviews_by_id[finding_review.finding_id] = []
-                finding_reviews_by_id[finding_review.finding_id].append(finding_review)
-        self.output.append(output_header)
-
-        for finding_id, finding_reviews in finding_reviews_by_id.items():
-            output_entry = [detector, project.id, version.version_id, misuse.id]
-            for finding_review in finding_reviews:
-                output_entry += [finding_review.reviewer, "finding-" + str(finding_id), finding_review.assessment,
-                                 ", ".join(finding_review.violations)]
-
-            self.output.append(output_entry)
+        self.output += _generate_output(review_path, detector, project.id, version.version_id, misuse.id,
+                                        self.__get_reviews)
 
     @staticmethod
     def __get_reviews(review_path: str) -> List[Review]:
@@ -102,30 +84,7 @@ class ReviewCheckEx3(ProjectVersionTask):
 
     def process_detector_project_version(self, detector: str, project: Project, version: ProjectVersion):
         review_path = join(self.review_path, detector, project.id, version.version_id)
-
-        if not exists(review_path) or not listdir(review_path):
-            return
-
-        reviews = self.__get_reviews(review_path)
-
-        output_header = [detector, project.id, version.version_id]
-        finding_reviews_by_id = {}  # type: Dict[int,List[FindingReview]]
-        for review in reviews:
-            output_header += [review.reviewer, review.comment.replace("\n", ""), "", ""]
-
-            for finding_review in review.findings:
-                if finding_review.finding_id not in finding_reviews_by_id:
-                    finding_reviews_by_id[finding_review.finding_id] = []
-                finding_reviews_by_id[finding_review.finding_id].append(finding_review)
-        self.output.append(output_header)
-
-        for finding_id, finding_reviews in finding_reviews_by_id.items():
-            output_entry = [detector, project.id, version.version_id]
-            for finding_review in finding_reviews:
-                output_entry += [finding_review.reviewer, "finding-" + str(finding_id), finding_review.assessment,
-                                 ", ".join(finding_review.violations)]
-
-            self.output.append(output_entry)
+        self.output += _generate_output(review_path, detector, project.id, version.version_id, "", self.__get_reviews)
 
     @staticmethod
     def __get_reviews(review_path: str) -> List[Review]:
@@ -134,6 +93,43 @@ class ReviewCheckEx3(ProjectVersionTask):
 
     def end(self):
         _write_tsv(join(self.review_path, self.experiment + "-summary.csv"), self.output)
+
+
+def _generate_output(review_path: str, detector: str, project_id: str, version_id: str, misuse_id: str, get_reviews):
+    logger = logging.getLogger("review.check")
+    output = []  # type: List[List[str]]
+
+    if not exists(review_path) or not listdir(review_path):
+        logger.info("No results for %s on %s version %s.", detector, project_id, version_id)
+    else:
+        reviews = get_reviews(review_path)
+        logger.info("Adding output for %s on %s version %s (%s reviews)", detector, project_id, version_id, len(reviews))
+
+        if not reviews:
+            output.append([detector, project_id, version_id, misuse_id])
+
+        finding_reviews_by_id = {}  # type: Dict[int,List[FindingReview]]
+        for review in reviews:
+            if review.findings:
+                for finding_review in review.findings:
+                    if finding_review.finding_id not in finding_reviews_by_id:
+                        finding_reviews_by_id[finding_review.finding_id] = []
+                    finding_reviews_by_id[finding_review.finding_id].append(finding_review)
+            else:
+                if -1 not in finding_reviews_by_id:
+                    finding_reviews_by_id[-1] = []
+                finding_reviews_by_id[-1].append(FindingReview(-1, review.reviewer, review.comment, "No", set()))
+
+        for finding_id, finding_reviews in finding_reviews_by_id.items():
+            output_entry = [detector, project_id, version_id, misuse_id]
+            for finding_review in finding_reviews:
+                comment = finding_review.comment.replace("\n", "").replace("\t", "")
+                finding_name = "finding-" + str(finding_id)
+                violations = ", ".join(finding_review.violations)
+                output_entry += [finding_review.reviewer, comment, finding_name, finding_review.assessment, violations]
+            output.append(output_entry)
+
+    return output
 
 
 def _write_tsv(file_path, output):
