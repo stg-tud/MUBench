@@ -227,7 +227,7 @@ class ReviewPrepare(ProjectVersionMisuseTask):
         logger.debug("Checking hit for %s in %s...", misuse, version)
 
         findings = detector_run.findings
-        potential_hits = ReviewPrepare.find_potential_hits(findings, misuse)
+        potential_hits = self.find_potential_hits(findings, misuse)
         logger.info("Found %s potential hits for %s.", len(potential_hits), misuse)
         logger.debug("Generating review files for %s in %s...", misuse, version)
 
@@ -258,10 +258,19 @@ class ReviewPrepare(ProjectVersionMisuseTask):
         _copy_review_resource_file(REVIEW_RECEIVER_FILE, self.reviews_path)
         _copy_review_resource_file(REVIEW_UTILS_FILE, self.reviews_path)
 
-    @staticmethod
-    def find_potential_hits(findings: Iterable[Dict[str, str]], misuse: Misuse) -> List[Dict[str, str]]:
+    def find_potential_hits(self, findings: Iterable[Dict[str, str]], misuse: Misuse) -> List[Dict[str, str]]:
         candidates = ReviewPrepare.__filter_by_file(findings, misuse.location.file)
         candidates = ReviewPrepare.__filter_by_method(candidates, misuse.location.method)
+
+        if self.detector == "mudetect-do":
+            matches = []
+            for finding in candidates:
+                for pattern in misuse.patterns:
+                    if pattern.class_name in finding["pattern"]:
+                        matches.append(finding)
+                        break
+            candidates = matches
+
         return candidates
 
     @staticmethod
