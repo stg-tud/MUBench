@@ -1,0 +1,21 @@
+api:
+- java.util.Iterator
+characteristics:
+- missing/missing_call
+crash: false
+description: >
+  Iterator.next() is not preceded by a Iterator.hasNext()
+location:
+  file: org/aspectj/weaver/patterns/PointcutRewriter.java
+  method: "simplifyAnd(AndPointcut apc)"
+fix:
+  commit: 
+  description: 
+  revision: 
+internal: true
+pattern:
+- 
+report: 
+source:
+  name: 
+  url: 

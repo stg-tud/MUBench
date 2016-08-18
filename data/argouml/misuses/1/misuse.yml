@@ -1,0 +1,21 @@
+api:
+- org.argouml.persistence.ZargoFilePersister
+characteristics:
+- missing/exception_handling
+crash: true
+description: >
+  If the file to be loaded is a zip with an extension zargo, but there is no zargo file inside, this method will cause an exception to be thrown instead of handling the situation.
+location:
+  file: org/argouml/persistence/ZargoFilePersister.java
+  method: "loadFromZargo(File file, ProgressMgr progressMgr)"
+fix:
+  commit: 
+  description: 
+  revision: 
+internal: true
+pattern:
+- 
+report: 
+source:
+  name: 
+  url: 

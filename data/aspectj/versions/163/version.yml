@@ -1,0 +1,16 @@
+build:
+  classes: classes/
+  commands:
+  - ant compile
+  - mkdir tmp_classes
+  - mkdir classes
+  - cd tmp_classes && jar xf ../aj-build/dist/aspectj-DEVELOPMENT.jar
+  - cd tmp_classes/lib && jar xf aspectjrt.jar
+  - cd tmp_classes/lib && jar xf aspectjtools.jar
+  - cd tmp_classes/lib && jar xf aspectjweaver.jar
+  - cd tmp_classes/lib && jar xf org.aspectj.matcher.jar
+  - mv tmp_classes/lib/org classes/
+  src: org.aspectj.matcher/src/
+misuses:
+- '1'
+revision: 2b43e636bb8929430e75b1c90ddf2c2f6ba86093

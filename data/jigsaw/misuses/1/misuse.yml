@@ -1,0 +1,20 @@
+api:
+- java.util.StringTokenizer
+characteristics:
+- missing/call
+crash: false
+description: >
+  nextToken() on StringTokenizer without hasNext() call.
+location:
+  file: "org/w3c/jigsaw/map/MapEntry.java"
+  method: "parseRestNCSA(string line)"
+fix:
+  commit:
+  files:
+  revision:
+internal: true
+pattern:
+report:
+source:
+  name:
+  url:

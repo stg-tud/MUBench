@@ -1,0 +1,5 @@
+name: AspectJ
+repository:
+  type: git
+  url: http://git.eclipse.org/gitroot/aspectj/org.aspectj.git
+url: https://eclipse.org/aspectj/

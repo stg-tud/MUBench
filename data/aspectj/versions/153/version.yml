@@ -1,0 +1,5 @@
+build:
+  src: org.aspectj.matcher/src/
+misuses:
+- '2'
+revision: f8d70447e82ccc6f6ca5d6c06a6eaab702e59a3e

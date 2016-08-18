@@ -1,0 +1,8 @@
+build:
+  classes: src/argouml-app/build/classes
+  commands:
+    - ant
+  src: src/argouml-app/src/
+misuses:
+- '1'
+revision: 15810

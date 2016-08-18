@@ -1,0 +1,23 @@
+api:
+- java.util.Iterator
+- org.aspectj.weaver.patterns.DeclareParents
+characteristics:
+- missing/call
+crash: true
+description: >
+  The verifyNoInheritedAlternateParameterization method in org.aspectj.weaver.patterns.DeclareParents class
+  only checks one superclass of any given class instead of checking all of them.
+location:
+  file: org/aspectj/weaver/patterns/DeclareParents.java
+  method: "verifyNoInheritedAlternateParameterization(ResolvedType typeToVerify,ResolvedType newParent,World world)"
+fix:
+  commit: http://git.eclipse.org/c/aspectj/org.aspectj.git/commit/?id=09e2b1bc62beb82dbaf746b996ebc8d7049380bc
+  description: Dont allow multiple parameterizations in a hierarchy
+  revision: 09e2b1bc62beb82dbaf746b996ebc8d7049380bc
+internal: true
+pattern:
+- 
+report: https://bugs.eclipse.org/bugs/show_bug.cgi?id=165631
+source:
+  name: 
+  url: 

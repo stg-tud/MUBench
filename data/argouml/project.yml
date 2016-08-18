@@ -1,0 +1,5 @@
+name: Argouml
+repository:
+  type: svn
+  url: http://argouml.tigris.org/svn/argouml/trunk
+url: http://argouml.tigris.org/

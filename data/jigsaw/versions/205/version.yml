@@ -1,0 +1,10 @@
+build:
+  classes: classes
+  commands:
+    - mkdir classes
+    - cd classes && jar xf ../Jigsaw/classes/jigadmin.jar && jar xf ../Jigsaw/classes/jigedit.jar && jar xf ../Jigsaw/classes/jigsaw.zip && jar xf ../Jigsaw/classes/servlet.jar
+  src: Jigsaw/src/classes
+misuses:
+- '1'
+revision: http://jigsaw.w3.org/Devel/Mirror/jigsaw_2.0.5.zip
+md5: e15460a3716c97e342ea7f44e36b2afc
