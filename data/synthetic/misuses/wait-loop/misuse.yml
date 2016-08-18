@@ -1,0 +1,17 @@
+api:
+- java.Object
+characteristics:
+- missing/iteration
+crash: false
+description: >
+  Object.wait() should be called in a loop that iteratively checks the
+  condition waited for.
+location:
+  file: WaitLoop.java
+  method: misuse(Object)
+fix:
+  description: >
+    Check condition in a loop.
+internal: false
+source:
+  name: Survey
