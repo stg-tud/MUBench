@@ -36,8 +36,9 @@ class Review:
                     self.findings.append(review)
             else:
                 for finding in data["findings"]:
+                    violations = finding["violations"] if "violations" in finding else []
                     review = FindingReview(finding["id"], self.reviewer, self.comment, finding["assessment"],
-                                           finding["violations"])
+                                           violations)
                     self.findings.append(review)
 
 
