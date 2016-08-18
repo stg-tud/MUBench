@@ -33,7 +33,7 @@ function to_review_yml($review) {
         $review_yml .= "findings:\n";
         foreach($review["findings"] as $finding_id => $values) {
             $review_yml .= "- id: $finding_id\n";
-            $review_yml .= "  assessment: " . $values["assessment"] . "\n";
+            $review_yml .= "  assessment: \"" . $values["assessment"] . "\"\n";
             if ($values["violations"]) {
                 $review_yml .= "  violations:\n";
                 foreach ($values["violations"] as $violation) {
