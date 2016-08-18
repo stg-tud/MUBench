@@ -1,6 +1,6 @@
 import logging
 from os import listdir
-from os.path import join, exists
+from os.path import join, exists, basename
 from typing import List, Dict
 from typing import Set
 
@@ -40,6 +40,12 @@ class Review:
                     review = FindingReview(finding["id"], self.reviewer, self.comment, finding["assessment"],
                                            violations)
                     self.findings.append(review)
+
+            if not self.findings:
+                file_name = basename(review_file)
+                if file_name.startswith("finding-"):
+                    finding_id = int(file_name.split("_")[0][8:])
+                    self.findings.append(FindingReview(finding_id, self.reviewer, self.comment, "No", set()))
 
 
 class ReviewCheck(ProjectVersionMisuseTask):
