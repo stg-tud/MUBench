@@ -7,7 +7,7 @@ description: >
   StrBuilder.getNullText() may return null.
 location:
   file: org/apache/commons/lang/text/StrBuilder.java
-  method: "appendFixedWidthLeftPadding(Object, int, char)"
+  method: "appendFixedWidthPadLeft(Object, int, char)"
 fix:
   commit: http://svn.apache.org/viewvc/commons/proper/lang/trunk/src/java/org/apache/commons/lang/text/StrBuilder.java?r1=627248&r2=627247&pathrev=627248&diff_format=h
   description: >
