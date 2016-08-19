@@ -264,10 +264,8 @@ def __get_findings_table(potential_hits: List[Dict[str, str]], violation_types: 
     keys.discard("id")
     keys = ["id"] + sorted(keys)
 
-    check_type = "checkbox"
-
     def get_finding_row(finding):
-        return __get_finding_row(keys, check_type, violation_types, finding)
+        return __get_finding_row(keys, violation_types, finding)
 
     return """<table border="1" cellpadding="5">
         <tr><th>Hit</th><th>{}</th><th>Violation Type</tr>
@@ -276,7 +274,7 @@ def __get_findings_table(potential_hits: List[Dict[str, str]], violation_types: 
         """.format("</th><th>".join(keys), "\n".join(map(get_finding_row, potential_hits)))
 
 
-def __get_finding_row(keys: List[str], check_type: str, violation_types: List[str], potential_hit: Dict[str,str]):
+def __get_finding_row(keys: List[str], violation_types: List[str], potential_hit: Dict[str, str]):
     values = map(lambda key: potential_hit.get(key, ""), keys)
     finding_id = potential_hit["id"]
 
@@ -339,6 +337,6 @@ def __select_option(name: str, finding_id: str, option: str, multi_select: bool)
     if multi_select:
         check = """{} && in_array("{}", {})""".format(check_variable, option, check_variable)
     else:
-        check = """{} == "{}" """.format(check_variable, option)
+        check = """strcmp({}, "{}")""".format(check_variable, option)
 
     return """<option value="{}" <?php if({}) echo "selected"; ?>>{}</option>\n""".format(option, check, option)
