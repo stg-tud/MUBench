@@ -3,10 +3,8 @@ from copy import deepcopy
 from os import makedirs, remove
 from os.path import join, exists, dirname
 from shutil import copy
-from typing import Dict, Iterable, Optional
+from typing import Dict, Iterable
 from typing import List
-
-import yaml
 
 from benchmark.data.misuse import Misuse
 from benchmark.data.project import Project
@@ -18,7 +16,7 @@ from benchmark.subprocesses.tasks.base.project_version_task import ProjectVersio
 from benchmark.subprocesses.tasks.implementations.detect import Run
 from benchmark.subprocesses.tasks.implementations.review import review_page
 from benchmark.subprocesses.tasks.implementations.review.review_page import REVIEW_RECEIVER_FILE
-from benchmark.utils.io import safe_open, remove_tree, safe_write
+from benchmark.utils.io import remove_tree, safe_write
 from benchmark.utils.shell import Shell
 
 REVIEW_UTILS_FILE = "review_utils.php"
@@ -41,9 +39,9 @@ class Review:
     def start_run_review(self, name: str, run: Run):
         self.__current_project_review.start_run_review(name, run)
 
-    def append_finding_review(self, name: str, violation_types: List[str],
+    def append_finding_review(self, name: str, violation_types: List[str], has_findings: bool,
                               details_url: str, details_path: str, details_prefix: str):
-        self.__current_project_review.append_finding_review(name, violation_types,
+        self.__current_project_review.append_finding_review(name, violation_types, has_findings,
                                                             details_url, details_path, details_prefix)
 
     def to_html(self):
@@ -64,9 +62,9 @@ class ProjectReview:
     def start_run_review(self, name: str, run: Run):
         self.run_reviews.append(RunReview(name, run))
 
-    def append_finding_review(self, name: str, violation_types: List[str],
+    def append_finding_review(self, name: str, violation_types: List[str], has_findings: bool,
                               details_url: str, details_path: str, details_prefix: str):
-        self.run_reviews[len(self.run_reviews) - 1].append_finding_review(name, violation_types,
+        self.run_reviews[len(self.run_reviews) - 1].append_finding_review(name, violation_types, has_findings,
                                                                           details_url, details_path, details_prefix)
 
     def to_html(self):
@@ -91,9 +89,10 @@ class RunReview:
         self.run = run
         self.finding_reviews = []
 
-    def append_finding_review(self, name: str, violation_types: List[str],
+    def append_finding_review(self, name: str, violation_types: List[str], has_findings: bool,
                               details_url: str, details_path: str, details_prefix: str):
-        self.finding_reviews.append(FindingReview(name, violation_types, details_url, details_path, details_prefix))
+        self.finding_reviews.append(FindingReview(name, violation_types, has_findings, details_url, details_path,
+                                                  details_prefix))
 
     def to_html(self):
         result_name = self.run.result.name if self.run.result else "not run"
@@ -127,18 +126,20 @@ class RunReview:
 
 
 class FindingReview:
-    def __init__(self, name: str, violation_types: List[str], details_url: str, details_path: str, details_prefix: str):
+    def __init__(self, name: str, violation_types: List[str], has_findings: bool, details_url: str,
+                 details_path: str, details_prefix: str):
         self.name = name
         self.violation_types = violation_types
+        self.has_findings = has_findings
         self.details_url = details_url
         self.details_path = details_path
         self.details_prefix = details_prefix
 
     def to_html(self):
-        if self.details_url:
+        if self.has_findings:
             result = "<a href=\"{}\">review</a>".format(self.details_url)
         else:
-            result = "no findings"
+            result = "<a href=\"{}\">no findings</a>".format(self.details_url)
 
         reviewed_by = """<?php echo join(", ", get_reviewer_links("{}", "{}", "{}")); ?>""".format(self.details_url,
                                                                                                    self.details_path,
@@ -204,22 +205,26 @@ class ReviewPrepare(ProjectVersionMisuseTask):
 
         if not detector_run.is_success():
             logger.info("Skipping %s in %s: no result.", misuse, version)
-            self.__append_misuse_to_review(version, misuse, "run: {}".format(detector_run.result))
+            self.__append_misuse_no_hits(version, misuse, "run: {}".format(detector_run.result))
             return Response.skip
 
         review_dir = join(project.id, version.version_id, misuse.id)
-        review_site = join(review_dir, "review.php")
+        review_url = join(review_dir, "review.php")
+        review_url_no_findings = join(review_dir, "no_findings.php")
         review_path = join(self.review_path, review_dir)
 
         if self.force_prepare:
             logger.debug("Removing old review files for %s in %s...", misuse, version)
             remove_tree(review_path)
 
+        review_details_file = join(self.review_path, review_url)
+        review_details_file_no_finding = join(self.review_path, review_url_no_findings)
+
         if exists(review_path):
-            if exists(join(self.review_path, review_site)):
-                self.__append_misuse_review(version, misuse, review_site)
+            if exists(review_details_file):
+                self.__append_misuse_review(version, misuse, review_url)
             else:
-                self.__append_misuse_no_hits(version, misuse)
+                self.__append_misuse_no_hits(version, misuse, review_url_no_findings)
 
             logger.info("%s in %s is already prepared.", misuse, version)
             return Response.ok
@@ -237,30 +242,32 @@ class ReviewPrepare(ProjectVersionMisuseTask):
                         matches.append(finding)
                         break
             potential_hits = matches
-        
+
         logger.info("Found %s potential hits for %s.", len(potential_hits), misuse)
         logger.debug("Generating review files for %s in %s...", misuse, version)
 
         if potential_hits:
             potential_hits = _specialize_findings(self.detector, potential_hits, review_path)
-            self.details_page_generator(self.experiment, join(self.review_path, review_site), self.detector,
+            self.details_page_generator(self.experiment, review_details_file, self.detector,
                                         self.compiles_path, version, misuse, potential_hits)
-            self.__append_misuse_review(version, misuse, review_site)
+            self.__append_misuse_review(version, misuse, review_url)
         else:
-            makedirs(review_path)
-            self.__append_misuse_no_hits(version, misuse)
+            self.details_page_generator(self.experiment, review_details_file_no_finding, self.detector,
+                                        self.compiles_path, version, misuse, [])
+            self.__append_misuse_no_hits(version, misuse, review_url_no_findings)
 
         return Response.ok
 
     def __append_misuse_review(self, version: ProjectVersion, misuse: Misuse, review_site: str):
-        self.__append_misuse_to_review(version, misuse, review_site)
+        self.__append_misuse_to_review(version, misuse, review_site, True)
 
-    def __append_misuse_no_hits(self, version: ProjectVersion, misuse: Misuse):
-        self.__append_misuse_to_review(version, misuse, None)
+    def __append_misuse_no_hits(self, version: ProjectVersion, misuse: Misuse, review_site: str):
+        self.__append_misuse_to_review(version, misuse, review_site, False)
 
-    def __append_misuse_to_review(self, version: ProjectVersion, misuse: Misuse, review_details_url: Optional[str]):
+    def __append_misuse_to_review(self, version: ProjectVersion, misuse: Misuse, review_details_url: str,
+                                  has_findings: bool):
         review_details_path = join(version.project_id, version.version_id, misuse.id)
-        self.__review.append_finding_review(misuse.id, misuse.characteristics,
+        self.__review.append_finding_review(misuse.id, misuse.characteristics, has_findings,
                                             review_details_url, review_details_path, "review")
 
     def end(self):
@@ -394,7 +401,7 @@ class ReviewPrepareEx3(ProjectVersionTask):
                                          _specialize_finding(finding, self.detector, dirname(details_path)))
 
             self.__review.append_finding_review("Finding {}".format(finding["id"]), ["<i>unknown</i>"],
-                                                details_url, run_dir, finding_name)
+                                                True, details_url, run_dir, finding_name)
 
     def end(self):
         safe_write(self.__review.to_html(), join(self.review_path, "index.php"), append=False)
