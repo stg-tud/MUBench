@@ -112,7 +112,7 @@ def _generate_output(review_path: str, detector: str, project_id: str, version_i
     logger = logging.getLogger("review.check")
     output = []  # type: List[List[str]]
 
-    if not exists(review_path) or not listdir(review_path):
+    if not __has_results(review_path):
         logger.info("No results for %s on %s version %s.", detector, project_id, version_id)
     else:
         reviews = get_reviews(review_path)
@@ -146,6 +146,14 @@ def _generate_output(review_path: str, detector: str, project_id: str, version_i
             output.append(output_entry)
 
     return output
+
+
+def __has_results(review_path: str):
+    if exists(review_path):
+        for file in listdir(review_path):
+            if file.startswith("finding") or file.startswith("review"):
+                return True
+    return False
 
 
 def _write_tsv(file_path, output):
