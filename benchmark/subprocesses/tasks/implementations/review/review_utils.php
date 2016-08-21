@@ -94,7 +94,12 @@ function parse_review_yml($yml) {
                 $review["findings"][$last_id] = array();
                 $review["findings"][$last_id]["violations"] = array();
             } else if (substr($line, 0, 13) == "  assessment:") {
-                $review["findings"][$last_id]["assessment"] = substr($line, 14);
+                $assessment = substr($line, 14);
+                if (substr($assessment, 0, 1) === "\"") {
+                    $assessment = substr($assessment, 1, -1);
+                }
+                $review["findings"][$last_id]["assessment"] = $assessment;
+
             } else if (substr($line, 0, 13) == "  violations:") {
                 // skip
             } else if (!empty($line)) {

@@ -337,6 +337,6 @@ def __select_option(name: str, finding_id: str, option: str, multi_select: bool)
     if multi_select:
         check = """{} && in_array("{}", {})""".format(check_variable, option, check_variable)
     else:
-        check = """strcmp({}, "{}")""".format(check_variable, option)
+        check = "{} === \"{}\"".format(check_variable, option)
 
     return """<option value="{}" <?php if({}) echo "selected"; ?>>{}</option>\n""".format(option, check, option)
