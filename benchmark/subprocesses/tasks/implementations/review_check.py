@@ -37,7 +37,13 @@ class Review:
             else:
                 for finding in data["findings"]:
                     violations = finding["violations"] if "violations" in finding else []
-                    review = FindingReview(finding["id"], self.reviewer, self.comment, finding["assessment"],
+                    assessment = finding["assessment"]
+                    if type(assessment) == bool:
+                        if finding["assessment"]:
+                            assessment = "Yes"
+                        else:
+                            assessment = "No"
+                    review = FindingReview(finding["id"], self.reviewer, self.comment, assessment,
                                            violations)
                     self.findings.append(review)
 
