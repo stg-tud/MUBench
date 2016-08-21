@@ -150,7 +150,7 @@ def _generate_output(review_path: str, detector: str, project_id: str, version_i
             for finding_review in finding_reviews:
                 comment = finding_review.comment.replace("\n", "").replace("\t", "")
                 if finding_id == -1:
-                    finding_name = "-"
+                    finding_name = "all"
                 else:
                     finding_name = "finding-" + str(finding_id)
                 violations = ", ".join(finding_review.violations)
