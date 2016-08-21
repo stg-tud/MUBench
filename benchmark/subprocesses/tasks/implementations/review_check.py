@@ -122,16 +122,28 @@ def _generate_output(review_path: str, detector: str, project_id: str, version_i
             output.append([detector, project_id, version_id, misuse_id])
 
         finding_reviews_by_id = {}  # type: Dict[int,List[FindingReview]]
+        reviewers = set()
         for review in reviews:
-            if review.findings:
-                for finding_review in review.findings:
-                    if finding_review.finding_id not in finding_reviews_by_id:
-                        finding_reviews_by_id[finding_review.finding_id] = []
-                    finding_reviews_by_id[finding_review.finding_id].append(finding_review)
-            else:
-                if -1 not in finding_reviews_by_id:
-                    finding_reviews_by_id[-1] = []
-                finding_reviews_by_id[-1].append(FindingReview(-1, review.reviewer, review.comment, "No", set()))
+            reviewers.add(review.reviewer)
+            for finding_review in review.findings:
+                if finding_review.finding_id not in finding_reviews_by_id:
+                    finding_reviews_by_id[finding_review.finding_id] = []
+                finding_reviews_by_id[finding_review.finding_id].append(finding_review)
+
+        # normalize legacy review format that did not explicit include "No" assessments
+        if len(reviews) >= 2:
+            # if both reviewer assessed all findings as "No", there's no entry at all
+            if not finding_reviews_by_id:
+                finding_reviews_by_id[-1] = []
+            # fill in "No" assessments for any finding that an other reviewer assessed differently
+            for finding_id, finding_reviews in finding_reviews_by_id.items():
+                if len(finding_reviews) < len(reviews):
+                    finding_reviewers = set()
+                    for finding_review in finding_reviews:
+                        finding_reviewers.add(finding_review.reviewer)
+                    for review in reviews:
+                        if review.reviewer not in finding_reviewers:
+                            finding_reviews.append(FindingReview(finding_id, review.reviewer, review.comment, "No", set()))
 
         for finding_id, finding_reviews in finding_reviews_by_id.items():
             output_entry = [detector, project_id, version_id, misuse_id]
