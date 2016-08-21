@@ -251,6 +251,7 @@ def __is_preamble_line(line: str):
 
 
 def __get_snippet(first_line: int, code: str):
+    code = html.escape(code)
     return """<pre class="prettyprint linenums:{}"><code class="language-java">{}</code></pre>""".format(first_line,
                                                                                                          code)
 
