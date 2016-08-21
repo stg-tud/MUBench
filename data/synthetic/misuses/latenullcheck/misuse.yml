@@ -1,0 +1,16 @@
+api:
+- java.Object
+characteristics:
+- misplaced/condition/null_check
+crash: true
+description: >
+  Calls a method on an object and later checks it for null.
+location:
+  file: LateNullCheck.java
+  method: "misuse(Object)"
+fix:
+  description: >
+    Move null-check to before first call.
+internal: false
+source:
+  name: Survey

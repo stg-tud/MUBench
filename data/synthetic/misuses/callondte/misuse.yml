@@ -1,0 +1,16 @@
+api:
+- javax.swing.JFrame
+characteristics:
+- missing/condition/threading
+crash: false
+description: >
+  Creates swing UI component on the main thread.
+location:
+  file: CreateUI.java
+  method: main(String[])
+fix:
+  description: >
+    Use invokeLater() to displatch UI creation to the EDT.
+internal: false
+source:
+  name: Survey

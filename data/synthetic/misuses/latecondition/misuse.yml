@@ -1,0 +1,18 @@
+api:
+- java.util.Map
+characteristics:
+- misplaced/condition/value_or_state
+crash: true
+description: >
+  Translates a list into a map that groups the list's elements by some
+  property. Initializes the collection inside the map only after trying
+  to add an element.
+location:
+  file: LateCondition.java
+  method: "misuse(List)"
+fix:
+  description: >
+    Initialize before add elements.
+internal: false
+source:
+  name: Survey

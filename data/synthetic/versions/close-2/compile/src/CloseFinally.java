@@ -6,7 +6,7 @@ import java.io.Writer;
 
 public class CloseFinally {
 	public void misuse(File file) throws IOException {
-		PrintWriter writer = new PrintWriter(new FileOutputStream(file));
+		Writer writer = new PrintWriter(new FileOutputStream(file));
 		writer.write("foo");
     writer.close();
 	}

@@ -1,0 +1,16 @@
+api:
+- java.util.List
+characteristics:
+- superfluous/condition/value_or_state
+crash: true
+description: >
+  Iterates until i < l.size(), but starts at i = 1. Therefore, skips the last element.
+location:
+  file: TooRestrictive.java
+  method: "misuse(List)"
+fix:
+  description: >
+    Change the condition to i <= l.size().
+internal: false
+source:
+  name: Survey

@@ -8,7 +8,7 @@ description: >
   Modifying a collection after an Iterator has been created and continue
   to use the Iterator afterwards. Often happens with foreach loops.
   
-  Found 2584 threads for 'ConcurrentModificationException' on StackOverflow. Top 10% by relevance:
+  Found 2584 threads for 'ConcurrentModificationException' on StackOverflow. Top 1% by relevance:
   Modifying the collection after creating the iterator:
    - http://stackoverflow.com/questions/20818637/concurrentmodificationexception
    - http://stackoverflow.com/questions/223918/iterating-through-a-list-avoiding-concurrentmodificationexception-when-removing

@@ -1,0 +1,17 @@
+apply plugin: 'java'
+
+sourceSets {
+  main {
+    java {
+      srcDir 'src'
+    }
+  }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile group: 'commons-io', name: 'commons-io', version: '2.5'
+}

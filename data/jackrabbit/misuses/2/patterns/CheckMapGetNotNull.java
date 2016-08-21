@@ -1,10 +1,10 @@
 import org.apache.jackrabbit.webdav.DavServletResponse;
 
 import java.util.Iterator;
-import java.util.Map;
+import java.util.HashMap;
 
 class CheckMapGetNotNull {
-  int pattern(Map codeMap, Class exceptionClass) {
+  int pattern(HashMap codeMap, Class exceptionClass) {
     Integer code = (Integer) codeMap.get(exceptionClass);
     if (code == null) {
       for (Iterator it = codeMap.keySet().iterator(); it.hasNext();) {

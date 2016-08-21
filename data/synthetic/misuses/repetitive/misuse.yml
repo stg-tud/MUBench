@@ -1,0 +1,17 @@
+api:
+- java.util.List
+characteristics:
+- superfluous/iteration
+crash: true
+description: >
+  Loops over a collection, only to ensure it is not empty (every subsequent
+  iteration performs the exact same computation).
+location:
+  file: Repetitive.java
+  method: "misuse(Collection)"
+fix:
+  description: >
+    Replace the loop with a check.
+internal: false
+source:
+  name: Survey
