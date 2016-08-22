@@ -7,7 +7,7 @@ description: >
   Object.wait() should be called in a loop that iteratively checks the
   condition waited for.
 location:
-  file: WaitLoop.java
+  file: WaitMisuse.java
   method: misuse(Object)
 fix:
   description: >
