@@ -229,7 +229,7 @@ def __get_target_code(compiles_path: str, version: ProjectVersion, file: str, me
                 # comes as "<first-line number>:<declaring type>:<code>
                 info = method.split(":", 2)
                 code += __get_snippet(int(info[0]) - 1,
-                                      """class {} {{\n{}\n}}""".format(info[1], html.escape(info[2].strip("\n"))))
+                                      """class {} {{\n{}\n}}""".format(info[1], info[2].strip("\n")))
     except CommandFailedError as e:
         code += __get_snippet(1, html.escape(str(e)))
 
