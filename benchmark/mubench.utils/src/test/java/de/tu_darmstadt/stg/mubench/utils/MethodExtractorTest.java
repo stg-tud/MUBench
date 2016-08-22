@@ -57,7 +57,29 @@ public class MethodExtractorTest {
 	}
 	
 	@Test
-	public void findsConstructor() throws Exception {
+	public void findsMethodWithGenericParameter() throws Exception {
+		testFindsMethod("class C{\n"
+				+ "  void m(A<B> a) {}\n"
+				+ "}",
+				
+				"m(A)",
+				
+				"  void m(A<B> a) {}");
+	}
+	
+	@Test
+	public void findsConstructorByClassName() throws Exception {
+		testFindsMethod("class C{\n"
+				+ "  C() {}\n"
+				+ "}",
+				
+				"C()",
+				
+				"  C() {}");
+	}
+	
+	@Test
+	public void findsConstructorByInitIdentifier() throws Exception {
 		testFindsMethod("class C{\n"
 				+ "  C() {}\n"
 				+ "}",
@@ -78,6 +100,21 @@ public class MethodExtractorTest {
 				"m()",
 				
 				"    void m() {}");
+	}
+	
+	@Test
+	public void findsMethodInAnonymousClass() throws Exception {
+		testFindsMethod("class C {\n"
+				+ "  void m() {\n"
+				+ "    new Object() {\n"
+				+ "      void n() {}\n"
+				+ "    };\n"
+				+ "  }\n"
+				+ "}",
+				
+				"n()",
+				
+				"      void n() {}");
 	}
 	
 	@Test

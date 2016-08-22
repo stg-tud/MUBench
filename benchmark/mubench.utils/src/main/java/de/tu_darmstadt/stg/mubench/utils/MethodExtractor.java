@@ -94,7 +94,8 @@ public class MethodExtractor {
 		@Override
 		public void visit(ConstructorDeclaration constructor, List<MethodCodeFragment> matchingMethodsCode) {
 			String signature = getSignature("<init>", constructor.getParameters());
-			if (methodSignature.equals(signature)) {
+			String altSignature = getSignature(constructor.getName(), constructor.getParameters());
+			if (methodSignature.equals(signature) || methodSignature.equals(altSignature)) {
 				matchingMethodsCode.add(getCode(constructor, c -> c.getDeclarationAsString(), c -> c.getBlock()));
 			}
 		}
@@ -105,6 +106,7 @@ public class MethodExtractor {
 			if (methodSignature.equals(signature)) {
 				matchingMethodsCode.add(getCode(method, m -> m.getDeclarationAsString(), m -> m.getBody()));
 			}
+			super.visit(method, matchingMethodsCode);
 		}
 		
 		private <T extends Node> MethodCodeFragment getCode(T node, Function<T, String> getDeclarationAsString, Function<T, BlockStmt> getBody) {
@@ -134,6 +136,10 @@ public class MethodExtractor {
 				int endOfQualifier = typeName.lastIndexOf('.');
 				if (endOfQualifier > -1) {
 					typeName = typeName.substring(endOfQualifier + 1);
+				}
+				int startOfTypeParameters = typeName.indexOf('<');
+				if (startOfTypeParameters > -1) {
+					typeName = typeName.substring(0, startOfTypeParameters);
 				}
 				signature.append(typeName);
 				first = false;
