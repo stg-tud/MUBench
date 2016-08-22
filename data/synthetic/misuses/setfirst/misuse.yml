@@ -9,7 +9,7 @@ description: >
   but this throws if the set is empty.
 location:
   file: SetFirst.java
-  method: misuse(Set<Object>)
+  method: misuse(Set)
 fix:
   description: >
     Check that Set.isEmpty() is false.
