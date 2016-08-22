@@ -30,7 +30,7 @@ class Checkout(ProjectVersionTask):
             checkout_exists = checkout.exists()
             logger.debug("Checkout exists = %r", checkout_exists)
             if checkout_exists and not self.force_checkout:
-                logger.info("Already checked out %s.", version)
+                logger.debug("Already checked out %s.", version)
             else:
                 logger.info("Fetching %s from %s...", version, checkout)
                 if self.force_checkout:

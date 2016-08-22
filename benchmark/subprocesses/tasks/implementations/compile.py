@@ -50,7 +50,7 @@ class Compile(ProjectVersionTask):
             self.__copy_additional_compile_sources(version, build_path)
 
         if not needs_copy_sources:
-            logger.info("Already copied project source.")
+            logger.debug("Already copied project source.")
         else:
             try:
                 logger.info("Copying project sources...")
@@ -95,7 +95,7 @@ class Compile(ProjectVersionTask):
             self.__copy_additional_compile_sources(version, build_path)
 
         if not needs_copy_pattern_sources:
-            logger.info("Already copied pattern sources.")
+            logger.debug("Already copied pattern sources.")
         else:
             try:
                 logger.info("Copying pattern sources...")
