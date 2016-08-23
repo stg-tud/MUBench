@@ -8,37 +8,164 @@ description: >
   Modifying a collection after an Iterator has been created and continue
   to use the Iterator afterwards. Often happens with foreach loops.
   
-  Found 2584 threads for 'ConcurrentModificationException' on StackOverflow. Top 1% by relevance:
-  Modifying the collection after creating the iterator:
-   - http://stackoverflow.com/questions/20818637/concurrentmodificationexception
-   - http://stackoverflow.com/questions/223918/iterating-through-a-list-avoiding-concurrentmodificationexception-when-removing
-   - http://stackoverflow.com/questions/14994277/java-concurrentmodificationexception
-   - http://stackoverflow.com/questions/6790856/concurrentmodificationexception
-   - http://stackoverflow.com/questions/15444391/concurrentmodificationexception
-   - http://stackoverflow.com/questions/12793199/why-concurrentmodificationexception-in-arraylist
-   - http://stackoverflow.com/questions/17740858/concurrentmodificationexception-minigame
-   - http://stackoverflow.com/questions/27350034/hashmap-concurrentmodificationexception
-   - http://stackoverflow.com/questions/28088085/arraylist-addall-concurrentmodificationexception
-   - http://stackoverflow.com/questions/23918707/understanding-concurrentmodificationexception
-   - http://stackoverflow.com/questions/24085674/spurious-concurrentmodificationexception
-   - http://stackoverflow.com/questions/34070915/java-concurrentmodificationexception
-   - http://stackoverflow.com/questions/25832790/odd-concurrentmodificationexception
-   - http://stackoverflow.com/questions/15811799/concurrentmodificationexception-woes
-   - http://stackoverflow.com/questions/1655362/concurrentmodificationexception-despite-using-synchronized
-   - http://stackoverflow.com/questions/2826380/concurrentmodificationexception-hashmap-in-java
-   - http://stackoverflow.com/questions/18773734/concurrentmodificationexception-when-using-iterators
-   - http://stackoverflow.com/questions/30892727/java-set-concurrentmodificationexception
-   - http://stackoverflow.com/questions/19726337/concurrentmodificationexception-in-unmodifiable-collection
-  Asks for best practice on iterating collections while modifying them:
-   - http://stackoverflow.com/questions/1066589/iterate-through-a-hashmap/1066603#1066603
-  Threading issues:
-   - http://stackoverflow.com/questions/17567743/concurrentmodificationexception
-   - http://stackoverflow.com/questions/3132970/mapview-concurrentmodificationexception
-   - http://stackoverflow.com/questions/34950553/concurrentmodificationexception-error
-   - http://stackoverflow.com/questions/6901093/concurrentmodificationexception-thrown-on-iterator-remove
-  Unknown cause:
-   - http://stackoverflow.com/questions/9027413/java-concurrentmodificationexception
-   - http://stackoverflow.com/questions/34062920/titan-concurrentmodificationexception
+  Found 2854 results  2016 for 'ConcurrentModificationException' on StackOverflow. Top 5% by relevance: - 18.August - 147 results
+  Modifying the collection after creating the iterator
+  http://stackoverflow.com/questions/223918/iterating-through-a-collection-avoiding-concurrentmodificationexception-when-re
+  http://stackoverflow.com/questions/20818637/concurrentmodificationexception
+  http://stackoverflow.com/questions/14994277/java-concurrentmodificationexception
+  http://stackoverflow.com/questions/6790856/concurrentmodificationexception
+  http://stackoverflow.com/questions/15444391/concurrentmodificationexception
+  http://stackoverflow.com/questions/12793199/why-concurrentmodificationexception-in-arraylist
+  http://stackoverflow.com/questions/17740858/concurrentmodificationexception-minigame
+  http://stackoverflow.com/questions/1884889/iterating-over-and-removing-from-a-map
+  http://stackoverflow.com/questions/23918707/understanding-concurrentmodificationexception
+  http://stackoverflow.com/questions/28088085/arraylist-addall-concurrentmodificationexception
+  http://stackoverflow.com/questions/24085674/spurious-concurrentmodificationexception
+  http://stackoverflow.com/questions/34070915/java-concurrentmodificationexception
+  http://stackoverflow.com/questions/25832790/odd-concurrentmodificationexception
+  http://stackoverflow.com/questions/15811799/concurrentmodificationexception-woes
+  http://stackoverflow.com/questions/1655362/concurrentmodificationexception-despite-using-synchronized
+  http://stackoverflow.com/questions/2826380/concurrentmodificationexception-hashmap-in-java
+  http://stackoverflow.com/questions/30892727/java-set-concurrentmodificationexception
+  http://stackoverflow.com/questions/18773734/concurrentmodificationexception-when-using-iterators
+  http://stackoverflow.com/questions/19726337/concurrentmodificationexception-in-unmodifiable-collection
+  http://stackoverflow.com/questions/16245587/concurrentmodificationexception-on-iterator-next
+  http://stackoverflow.com/questions/18069750/concurrentmodificationexception-with-weakhashmap
+  http://stackoverflow.com/questions/8817608/concurrentmodificationexception-thrown-by-sublist
+  http://stackoverflow.com/questions/1572178/guava-multimap-and-concurrentmodificationexception
+  http://stackoverflow.com/questions/28009389/concurrentmodificationexception-using-iterator
+  http://stackoverflow.com/questions/25842837/java-app-throws-concurrentmodificationexception
+  http://stackoverflow.com/questions/32790162/iterator-but-still-concurrentmodificationexception
+  http://stackoverflow.com/questions/24000285/concurrentmodificationexception-in-a-runnable
+  http://stackoverflow.com/questions/25127203/concurrentmodificationexception-after-modifying-arraylist
+  http://stackoverflow.com/questions/38408799/concurrentmodificationexception-when-getting-strings
+  http://stackoverflow.com/questions/18344254/concurrentmodificationexception-in-hashset
+  http://stackoverflow.com/questions/17527386/concurrentmodificationexception-in-playframework
+  http://stackoverflow.com/questions/28806128/concurrentmodificationexception-not-happening
+  http://stackoverflow.com/questions/23844906/concurrentmodificationexception-with-for-loop
+  http://stackoverflow.com/questions/17582159/concurrentmodificationexception-when-invoking-putall
+  http://stackoverflow.com/questions/6154448/iteration-over-a-list-concurrentmodificationexception
+  http://stackoverflow.com/questions/9977658/concurrentmodificationexception-help-in-iterator
+  http://stackoverflow.com/questions/4102850/another-concurrentmodificationexception-question
+  http://stackoverflow.com/questions/15091937/list-throws-concurrentmodificationexception-but-set-does-not-throws-concurrentmo
+  http://stackoverflow.com/questions/12474251/concurrentmodificationexception-for-java-linkedlist
+  http://stackoverflow.com/questions/6090888/concurrentmodificationexception-in-android
+  http://stackoverflow.com/questions/26133363/concurrentmodificationexception-but-no-modification
+  http://stackoverflow.com/questions/21955506/concurrentmodificationexception-cannot-fix
+  http://stackoverflow.com/questions/602636/concurrentmodificationexception-and-a-hashmap
+  http://stackoverflow.com/questions/26955041/concurrentmodificationexception-in-arraylist
+  http://stackoverflow.com/questions/27262602/possible-reason-for-concurrentmodificationexception
+  http://stackoverflow.com/questions/23772782/getting-a-concurrentmodificationexception-chat-program
+  http://stackoverflow.com/questions/6060913/is-throwing-concurrentmodificationexception-system-dependent
+  http://stackoverflow.com/questions/10398579/concurrentmodificationexception-when-drawing-on-surfaceview
+  http://stackoverflow.com/questions/12791190/concurrentmodificationexception-when-iterating-on-linkedlist
+  http://stackoverflow.com/questions/32726074/concurrentmodificationexception-and-no-idea-why
+  http://stackoverflow.com/questions/13001651/url-harvester-concurrency-issue-concurrentmodificationexception
+  http://stackoverflow.com/questions/13602204/iterating-priority-queue-throws-concurrentmodificationexception
+  http://stackoverflow.com/questions/38971688/how-to-avoid-concurrentmodificationexception-in-arraylist
+  http://stackoverflow.com/questions/18314277/a-concurrentmodificationexception-thrown-without-a-modification
+  http://stackoverflow.com/questions/6045229/concurrentmodificationexception-with-vector-and-clear
+  http://stackoverflow.com/questions/18553556/collections-concurrentmodificationexception
+  http://stackoverflow.com/questions/11094268/how-to-deal-with-concurrentmodificationexception
+  http://stackoverflow.com/questions/3184883/concurrentmodificationexception-for-arraylist
+  http://stackoverflow.com/questions/12216045/why-concurrentmodificationexception-is-not-thrown
+  http://stackoverflow.com/questions/23170579/concurrentmodificationexception-when-deleting-an-element-from-arraylist
+  http://stackoverflow.com/questions/27132013/concurrentmodificationexception-need-help-understanding-synchronized
+  http://stackoverflow.com/questions/21430553/concurrentmodificationexception-in-arrayadapter-add-method
+  http://stackoverflow.com/questions/23945433/unexpected-concurrentmodificationexception
+  http://stackoverflow.com/questions/8812850/another-concurrentmodificationexception
+  http://stackoverflow.com/questions/16722162/java-sibling-removal-throws-concurrentmodificationexception
+  http://stackoverflow.com/questions/29723458/why-doesnt-this-code-throw-a-concurrentmodificationexception
+  http://stackoverflow.com/questions/5795011/concurrentmodificationexception-java
+  http://stackoverflow.com/questions/30724272/concurrentmodificationexception-persisting-even-with-listiterator
+  http://stackoverflow.com/questions/20337622/concurrentmodificationexception-error
+  http://stackoverflow.com/questions/17899738/java-concurrentmodificationexception-when-clearing-list-and-arraylist
+  http://stackoverflow.com/questions/6614805/concurrentmodificationexception-on-single-threaded-code
+  http://stackoverflow.com/questions/6596673/java-concurrentmodificationexception-while-iterating-over-list
+  http://stackoverflow.com/questions/24043894/i-get-concurrentmodificationexception-when-adding-an-item
+  http://stackoverflow.com/questions/29176838/concurrentmodificationexception-in-spite-of-using-iterator
+  http://stackoverflow.com/questions/35618062/concurrentmodificationexception-when-using-hashmap-and-iterators
+  http://stackoverflow.com/questions/36375944/concurrentmodificationexception-while-using-iterating-a-set
+  http://stackoverflow.com/questions/16361056/i-got-concurrentmodificationexception-while-dealing-with-arraylists
+  http://stackoverflow.com/questions/34655164/how-to-handle-concurrentmodificationexception-in-jsonarray-android
+  http://stackoverflow.com/questions/24377001/is-this-solution-to-concurrentmodificationexception-safe
+  http://stackoverflow.com/questions/10999388/why-iterator-throws-concurrentmodificationexception-on-add
+  http://stackoverflow.com/questions/14673653/why-isnt-this-code-causing-a-concurrentmodificationexception
+  http://stackoverflow.com/questions/24485348/reason-for-concurrentmodificationexception-on-arraylists-iterator-next
+  http://stackoverflow.com/questions/24362210/concurrentmodificationexception-on-for-loop-on-java-util-set
+  http://stackoverflow.com/questions/10542355/concurrentmodificationexception-on-removing-overlay-from-mapviews-overlaylist
+
+  Asks for best practice on iterating collections while modifying them
+  http://stackoverflow.com/questions/1066589/iterate-through-a-hashmap/1066603#1066603
+  http://stackoverflow.com/questions/2513509/how-to-remove-concurrentmodificationexception
+  http://stackoverflow.com/questions/22223673/clarification-concurrentmodificationexception-in-hashmap
+  http://stackoverflow.com/questions/22827865/no-concurrentmodificationexception-for-chm-why
+  http://stackoverflow.com/questions/15703639/how-to-simulate-concurrentmodificationexception-in-own-class
+
+  Threading issues
+  http://stackoverflow.com/questions/17567743/concurrentmodificationexception
+  http://stackoverflow.com/questions/3132970/mapview-concurrentmodificationexception
+  http://stackoverflow.com/questions/34950553/concurrentmodificationexception-error
+  http://stackoverflow.com/questions/6901093/concurrentmodificationexception-thrown-on-iterator-remove
+  http://stackoverflow.com/questions/37977599/concurrentmodificationexception-android-asynctask
+  http://stackoverflow.com/questions/840165/how-to-debug-concurrentmodificationexception
+  http://stackoverflow.com/questions/30062570/concurrentmodificationexception-in-iterator-next
+  http://stackoverflow.com/questions/38171389/parseobject-collectfetchedobjects-throws-concurrentmodificationexception
+  http://stackoverflow.com/questions/22529945/concurrentmodificationexception-without-modifying-object
+  http://stackoverflow.com/questions/16269402/concurrentmodificationexception-overlapping-two-activities
+  http://stackoverflow.com/questions/38449225/concurrentmodificationexception-in-handler
+  http://stackoverflow.com/questions/6293813/yet-another-concurrentmodificationexception-question
+  http://stackoverflow.com/questions/13798028/concurrentmodificationexception-in-achartengine-android
+  http://stackoverflow.com/questions/15324310/concurrentmodificationexception-in-a-loop
+  http://stackoverflow.com/questions/30474037/concurrentmodificationexception-error-in-threadpooltaskexecutor
+  http://stackoverflow.com/questions/12410093/concurrentmodificationexception-in-linkedlist
+  http://stackoverflow.com/questions/6270110/concurrentmodificationexception-over-list
+  http://stackoverflow.com/questions/13515214/concurrentmodificationexception-in-simple-game
+  http://stackoverflow.com/questions/9224821/solving-a-concurrentmodificationexception
+  http://stackoverflow.com/questions/7174844/concurrentmodificationexception-fix-problem
+  http://stackoverflow.com/questions/20503627/concurrentmodificationexception-on-synchronized-method
+  http://stackoverflow.com/questions/38095360/android-concurrentmodificationexception-persisting
+  http://stackoverflow.com/questions/36499920/concurrentmodificationexception-in-android-asynctask
+  http://stackoverflow.com/questions/30683070/java-threads-with-concurrentmodificationexception
+  http://stackoverflow.com/questions/19101751/concurrentmodificationexception-on-androids-apache-basiccookiestore
+  http://stackoverflow.com/questions/36362882/concurrentmodificationexception-objectoutputstream-writeobject
+  http://stackoverflow.com/questions/19346140/already-synchronized-but-got-concurrentmodificationexception
+  http://stackoverflow.com/questions/15229424/seeing-concurrentmodificationexception-in-mule-3-3-0
+  http://stackoverflow.com/questions/19164796/java-concurrentmodificationexception-even-with-synchronized
+  http://stackoverflow.com/questions/13917264/ways-to-avoid-iterator-concurrentmodificationexception
+  http://stackoverflow.com/questions/9251761/mapview-concurrentmodificationexception-when-updating-overlays
+  http://stackoverflow.com/questions/36487053/java-concurrentmodificationexception-problems-with-classes
+  http://stackoverflow.com/questions/19622773/list-concurrentmodificationexception
+  http://stackoverflow.com/questions/13907747/resolving-concurrentmodificationexception-from-modifying-overlays
+  http://stackoverflow.com/questions/23017332/multithread-concurrentmodificationexception
+  http://stackoverflow.com/questions/7809800/do-we-need-to-solve-concurrentmodificationexception
+  http://stackoverflow.com/questions/34581174/java-example-code-for-generating-a-concurrentmodificationexception
+  http://stackoverflow.com/questions/10399033/concurrentmodificationexception-with-android-and-opengl-es-1-1
+  http://stackoverflow.com/questions/6854635/concurrentmodificationexception-when-iterating-keys-of-a-hashmap
+
+  Unknown cause
+  http://stackoverflow.com/questions/34062920/titan-concurrentmodificationexception
+  http://stackoverflow.com/questions/9027413/java-concurrentmodificationexception
+  http://stackoverflow.com/questions/28571909/concurrentmodificationexception-with-arraylist-iterator
+  http://stackoverflow.com/questions/25104982/parseobject-mergerest-raise-concurrentmodificationexception
+  http://stackoverflow.com/questions/25826669/nested-cforeach-gives-concurrentmodificationexception
+  http://stackoverflow.com/questions/13057239/gae-concurrentmodificationexception-while-commiting
+  http://stackoverflow.com/questions/31188209/jena-concurrentmodificationexception-on-datasetgraph-clear
+  http://stackoverflow.com/questions/36428491/concurrentmodificationexception-in-postupdatelistener
+  http://stackoverflow.com/questions/15067607/concurrentmodificationexception-although-locklocktype-read-annotation
+  http://stackoverflow.com/questions/23118728/android-listiterator-concurrentmodificationexception-only-reading
+  http://stackoverflow.com/questions/8099960/concurrentmodificationexception-thrown-by-java-code
+  http://stackoverflow.com/questions/16862206/paintcomponent-concurrentmodificationexception
+  http://stackoverflow.com/questions/27571239/concurrentmodificationexception-in-a-java-game
+
+  Third Party Library
+  http://stackoverflow.com/questions/11534424/hibernate-throwing-a-concurrentmodificationexception
+  http://stackoverflow.com/questions/9076207/concurrentmodificationexception-using-richfaces-extendeddatatable
+  http://stackoverflow.com/questions/29569532/singleconnectionfactory-raises-concurrentmodificationexception
+  http://stackoverflow.com/questions/9661407/transactions-and-concurrentmodificationexception-documentation-ambiguity
+  http://stackoverflow.com/questions/30486827/grails-concurrentmodificationexception-in-custom-eventlistener
+  http://stackoverflow.com/questions/18933253/spring-security-inserting-acls-concurrentmodificationexception
+
 location:
   file: CME.java
   method: misuse(Collection)
