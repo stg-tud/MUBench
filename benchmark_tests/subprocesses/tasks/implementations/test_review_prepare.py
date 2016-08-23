@@ -55,6 +55,10 @@ class TestFindPotentialMatches:
         self.misuse.location.method = "method(A)"
         self.assert_potential_hit([{"method": "method(A)"}, {"method": "method(B)"}])
 
+    def test_matches_constructor(self):
+        self.misuse.location.method = "A()"
+        self.assert_potential_hit([{"method": "<init>()"}])
+
     def create_findings(self, findings: List[Dict[str, str]]):
         for finding in findings:
             if "file" not in finding:

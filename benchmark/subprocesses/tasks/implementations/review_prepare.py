@@ -301,6 +301,7 @@ class ReviewPrepare(ProjectVersionMisuseTask):
 
     @staticmethod
     def __filter_by_method(findings, misuse_method):
+        misuse_constructor = misuse_method.replace(misuse_method.split("(", 1)[0], "<init>")
         matches = []
 
         for finding in findings:
@@ -309,7 +310,7 @@ class ReviewPrepare(ProjectVersionMisuseTask):
                 # if detector reports only method names, this ensures we don't match prefixes of method names
                 if "(" not in method:
                     method += "("
-                if method in misuse_method:
+                if method in misuse_method or method in misuse_constructor:
                     matches.append(finding)
             else:
                 # don't filter if the detector reports no method
