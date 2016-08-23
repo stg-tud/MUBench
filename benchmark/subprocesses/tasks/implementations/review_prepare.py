@@ -342,7 +342,7 @@ class ReviewPrepareEx2(ReviewPrepare):
 
 class ReviewPrepareEx3(ProjectVersionTask):
     def __init__(self, experiment: str, detector: str, findings_path: str, reviews_path: str, checkouts_path: str,
-                 compiles_path: str, force_prepare: bool):
+                 compiles_path: str, top_n_findings: int, force_prepare: bool):
         super().__init__()
         self.experiment = experiment
         self.compiles_path = compiles_path
@@ -350,6 +350,7 @@ class ReviewPrepareEx3(ProjectVersionTask):
         self.reviews_path = reviews_path
         self.review_path = join(reviews_path, experiment, detector)
         self.checkouts_path = checkouts_path
+        self.top_n_findings = top_n_findings
         self.force_prepare = force_prepare
         self.detector = detector
 
@@ -383,7 +384,7 @@ class ReviewPrepareEx3(ProjectVersionTask):
             remove_tree(join(self.review_path, project.id, version.version_id))
 
         logger.info("Generating review files for %s...", version)
-        findings = _sort_findings(self.detector, detector_run.findings)[:10]
+        findings = _sort_findings(self.detector, detector_run.findings)[:self.top_n_findings]
         logger.info("    Preparing files for %d findings...", len(findings))
 
         for finding in findings:

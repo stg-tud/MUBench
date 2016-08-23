@@ -15,7 +15,7 @@ from benchmark.subprocesses.tasks.implementations.compile import Compile
 from benchmark.subprocesses.tasks.implementations.detect import Detect
 from benchmark.subprocesses.tasks.implementations.info import Info
 from benchmark.subprocesses.tasks.implementations.review_check import ReviewCheck, ReviewCheckEx3
-from benchmark.subprocesses.tasks.implementations.review_prepare import ReviewPrepareEx1, ReviewPrepareEx2,\
+from benchmark.subprocesses.tasks.implementations.review_prepare import ReviewPrepareEx1, ReviewPrepareEx2, \
     ReviewPrepareEx3
 from benchmark.utils import command_line_util
 
@@ -87,7 +87,7 @@ class Benchmark:
             elif not is_ex1_detector and config.experiment == "3":
                 self.runner.add(ReviewPrepareEx3("ex3_all-findings", detector, results_path, Benchmark.REVIEW_PATH,
                                                  Benchmark.CHECKOUTS_PATH, Benchmark.CHECKOUTS_PATH,
-                                                 self.config.force_prepare))
+                                                 self.config.top_n_findings, self.config.force_prepare))
 
     def _setup_review_check(self):
         if not exists(Benchmark.REVIEW_PATH):
