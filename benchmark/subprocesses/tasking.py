@@ -1,4 +1,5 @@
 import logging
+from datetime import datetime
 from os import listdir
 from typing import List
 
@@ -24,7 +25,7 @@ class TaskRunner:
             logger = logging.getLogger()
             logger.info("Checking requirements for %s...", task.name)
             self.__check_requirements(task, logger)
-            logger.info("Starting %s...", task.name)
+            logger.info("Starting %s %s...", task.name, datetime.now().strftime("at %H:%M:%S"))
             task.start()
             task.black_list = self.black_list
             task.white_list = self.white_list
