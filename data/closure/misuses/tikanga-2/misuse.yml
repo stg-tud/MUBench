@@ -1,0 +1,14 @@
+api:
+- java.util.Iterator
+characteristics:
+- missing/condition/value_or_state
+crash: true
+description: >
+  Iterator.next() is invoked without prior check of hasNext().
+location:
+  file: com/google/javascript/jscomp/JSModuleGraph.java
+  method: "getDeepestCommonDependencyInclusive(Collection)"
+internal: false
+source:
+  name: Tikanga
+  url: https://www.st.cs.uni-saarland.de/models/tikanga/

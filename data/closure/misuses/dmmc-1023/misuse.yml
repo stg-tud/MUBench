@@ -1,0 +1,14 @@
+api:
+- java.util.Iterator
+characteristics:
+- missing/condition/value_or_state
+crash: true
+description: >
+  Iterator.next() is invoked without prior check of hasNext().
+location:
+  file: com/google/javascript/jscomp/deps/SortedDependencies.java
+  method: "cycleToString(List)"
+internal: false
+source:
+  name: DMMC
+  url: http://www.monperrus.net/martin/dmmc

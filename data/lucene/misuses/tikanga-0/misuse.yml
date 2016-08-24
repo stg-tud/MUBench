@@ -1,0 +1,14 @@
+api:
+- java.util.Iterator
+characteristics:
+- missing/condition/value_or_state
+crash: true
+description: >
+  Iterator.next() is invoked without prior check of hasNext().
+location:
+  file: org/apache/lucene/util/AttributeSource.java
+  method: "computeCurrentState()"
+internal: false
+source:
+  name: Tikanga
+  url: https://www.st.cs.uni-saarland.de/models/tikanga/

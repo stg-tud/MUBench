@@ -1,0 +1,15 @@
+api:
+- com.itextpdf.text.pdf.PdfArray
+characteristics:
+- missing/condition/value_or_state
+crash: true
+description: >
+  PdfArray.getPdfObject() is invoked without checking that the contains
+  sufficiently many objects.
+location:
+  file: com/itextpdf/text/pdf/fonts/cmaps/AbstractCMap.java
+  method: "addRange(PdfString, PdfString, PdfObject)"
+internal: true
+source:
+  name: Jadet
+  url: https://www.st.cs.uni-saarland.de/models/jadet/

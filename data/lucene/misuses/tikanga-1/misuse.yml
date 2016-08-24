@@ -1,0 +1,15 @@
+api:
+- org.apache.lucene.index.SegmentInfos
+characteristics:
+- missing/condition/value_or_state
+crash: true
+description: >
+  SegmentInfos.info(0) is called without prior check that there is at least one
+  element in the SegmentInfos instance.
+location:
+  file: org/apache/lucene/index/MergeDocIDRemapper.java
+  method: "MergeDocIDRemapper(SegmentInfos, int[][], int[], MergePolicy$OneMerge, int)"
+internal: true
+source:
+  name: Tikanga & Jadet
+  url: https://www.st.cs.uni-saarland.de/models/

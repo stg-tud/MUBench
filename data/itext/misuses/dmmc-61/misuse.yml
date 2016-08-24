@@ -1,0 +1,14 @@
+api:
+- java.util.Iterator
+characteristics:
+- missing/condition/value_or_state
+crash: true
+description: >
+  Iterator.next() is invoked without prior check of hasNext().
+location:
+  file: com/itextpdf/awt/PdfGraphics2D.java
+  method: "drawImage(Image, Image, AffineTransform, Color, ImageObserver)"
+internal: false
+source:
+  name: DMMC
+  url: http://www.monperrus.net/martin/dmmc
