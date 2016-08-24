@@ -41,7 +41,7 @@ description: >
    - http://stackoverflow.com/questions/34062920/titan-concurrentmodificationexception
 location:
   file: CME.java
-  method: misuse(Collection<Object>)
+  method: misuse(Collection)
 fix:
   description: >
     Modify the collection via the Iterator.

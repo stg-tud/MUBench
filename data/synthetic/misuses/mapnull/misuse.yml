@@ -8,7 +8,7 @@ description: >
   before. If the Map allows null values, this usage breaks.
 location:
   file: MapNull.java
-  method: "misuse(Map<String, Object>)"
+  method: "misuse(Map)"
 fix:
   description: >
     Use Map.containsKey() to check whether a key is set.

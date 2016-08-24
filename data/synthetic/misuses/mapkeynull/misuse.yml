@@ -8,7 +8,7 @@ description: >
   implementation of Map you get, you should always guard against this.
 location:
   file: MapKeyNull.java
-  method: "misuse(HashMap<String, Object>, String)"
+  method: "misuse(HashMap, String)"
 fix:
   description: >
     Check that the key is not null before calling Map.get().

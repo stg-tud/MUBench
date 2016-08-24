@@ -8,7 +8,7 @@ description: >
   Misses to check that there is another element before calling Iterator.next().
 location:
   file: HasNext.java
-  method: misuse(Collection<Object>)
+  method: misuse(Collection)
 fix:
   description: >
     Check iterator.hasNext() or ensure size of the collection (check size(), isEmpty() or add() an element).
