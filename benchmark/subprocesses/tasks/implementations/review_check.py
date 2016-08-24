@@ -154,7 +154,8 @@ def _generate_output(review_path: str, detector: str, project_id: str, version_i
                 else:
                     finding_name = "finding-" + str(finding_id)
                 violations = ", ".join(finding_review.violations)
-                output_entry += [finding_review.reviewer, comment, finding_name, finding_review.assessment, violations]
+                output_entry += [finding_review.reviewer, comment, finding_name, finding_review.assessment,
+                                 finding_review.assessment, violations]
             output.append(output_entry)
 
     return output
