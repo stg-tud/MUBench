@@ -22,10 +22,4 @@ pattern:
 source:
   name: Defects4J
   url: https://github.com/rjust/defects4j
-type: com.google.javascript.rhino.jstype.UnionTypeBuilder
-usage: >
-  digraph {
-    0 [label="UnionTypeBuilder#builder#build"]
-    1 [label="IF#IF#CONTROL"]
-    0 -> 1
-  }
+

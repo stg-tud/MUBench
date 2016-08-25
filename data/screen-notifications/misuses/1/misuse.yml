@@ -4,7 +4,7 @@ characteristics:
 - missing/exception handling
 crash: true
 description: >
-  On some platforms AppInfo.loadIcon() my throw an OutOfMemoryError.
+  On some platforms AppInfo.loadIcon() may throw an OutOfMemoryError.
   StackOverflow: http://stackoverflow.com/questions/20415367/android-async-loadicon-outofmemoryerror
 location:
   file: com/lukekorth/screennotifications/AppsActivity.java

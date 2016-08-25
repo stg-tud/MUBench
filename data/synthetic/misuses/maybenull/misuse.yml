@@ -1,6 +1,7 @@
 api:
 - java.Object
 characteristics:
+- missing/condition/null_check
 - superfluous/condition/null_check
 crash: true
 description: >

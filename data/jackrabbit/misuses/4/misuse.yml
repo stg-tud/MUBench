@@ -2,6 +2,7 @@ api:
 - org.apache.commons.collections.BeanMap
 characteristics:
 - missing/condition/value_or_state
+- superfluous/condition/value_or_state
 crash: false
 description: >
   Check for BeanMap.get(key) == null may lead to wrong results, if the map contains null as the value.
