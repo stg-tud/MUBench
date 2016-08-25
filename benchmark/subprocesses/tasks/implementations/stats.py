@@ -48,12 +48,7 @@ class general(StatCalculator):
             self.number_of_crashes += 1
 
         self.sources.add(misuse.source)
-
-        if project.name is not None:
-            self.projects.add(project.name)
-        else:
-            # TODO: is this correct?
-            self.projects.add("survey")
+        self.projects.add(project.name)
 
     def end(self):
         self.logger.info("MUBench contains:")
