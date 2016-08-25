@@ -71,7 +71,7 @@ class ReviewCheck(ProjectVersionMisuseTask):
                                                 misuse: Misuse):
         review_path = join(self.review_path, detector, project.id, version.version_id, misuse.id)
         self.output += _generate_output(review_path, detector, project.id, version.version_id, misuse.id,
-                                        self.__get_reviews)
+                                        misuse.characteristics, self.__get_reviews)
 
     @staticmethod
     def __get_reviews(review_path: str) -> List[Review]:
@@ -97,7 +97,7 @@ class ReviewCheckEx3(ProjectVersionTask):
 
     def process_detector_project_version(self, detector: str, project: Project, version: ProjectVersion):
         review_path = join(self.review_path, detector, project.id, version.version_id)
-        self.output += _generate_output(review_path, detector, project.id, version.version_id, "", self.__get_reviews)
+        self.output += _generate_output(review_path, detector, project.id, version.version_id, "", [], self.__get_reviews)
 
     @staticmethod
     def __get_reviews(review_path: str) -> List[Review]:
@@ -108,7 +108,8 @@ class ReviewCheckEx3(ProjectVersionTask):
         _write_tsv(join(self.review_path, self.experiment + "-summary.csv"), self.output)
 
 
-def _generate_output(review_path: str, detector: str, project_id: str, version_id: str, misuse_id: str, get_reviews):
+def _generate_output(review_path: str, detector: str, project_id: str, version_id: str, misuse_id: str,
+                     misuse_violations: List[str], get_reviews):
     logger = logging.getLogger("review.check")
     output = []  # type: List[List[str]]
 
@@ -146,7 +147,7 @@ def _generate_output(review_path: str, detector: str, project_id: str, version_i
                             finding_reviews.append(FindingReview(finding_id, review.reviewer, review.comment, "No", set()))
 
         for finding_id, finding_reviews in finding_reviews_by_id.items():
-            output_entry = [detector, project_id, version_id, misuse_id]
+            output_entry = [detector, project_id, version_id, misuse_id, ", ".join(misuse_violations)]
             for finding_review in finding_reviews:
                 comment = finding_review.comment.replace("\n", "").replace("\t", "")
                 if finding_id == -1:
