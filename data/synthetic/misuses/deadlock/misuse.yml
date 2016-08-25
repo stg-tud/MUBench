@@ -1,0 +1,18 @@
+api:
+- java.Object
+characteristics:
+- superfluous/condition/threading
+crash: true
+description: >
+  Synchronizes on an object and then again on the same object within the
+  synchroized bock, thereby, producing a deadlock.
+location:
+  file: Deadlock.java
+  method: misuse(Object)
+fix:
+  description: >
+    synchronize only once.
+internal: false
+source:
+  name: What should developers be aware of? An empirical study on the directives of API documentation
+  url: http://link.springer.com/article/10.1007/s10664-011-9186-4
