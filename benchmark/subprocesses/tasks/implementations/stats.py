@@ -64,7 +64,7 @@ class general(StatCalculator):
         self.logger.info("- %d projects" % len(self.projects))
 
 
-class misuseelement(StatCalculator):
+class violation(StatCalculator):
     def __init__(self):
         super().__init__()
         self.statistics = {}
@@ -91,13 +91,13 @@ class misuseelement(StatCalculator):
             self.statistics[statname] = stat
 
     def end(self):
-        self.logger.info("%25s %25s %7s %14s" % ("Characteristic", "SubCharacteristic", "Misuses", "Crashes"))
+        self.logger.info("%30s %25s %7s %14s" % ("Characteristic", "SubCharacteristic", "Misuses", "Crashes"))
 
         for statistic in sorted(self.statistics.items(), key=lambda s: s[1][" total"]["misuses"], reverse=True):
             statistic_name = statistic[0]
             statistic_values = statistic[1]
             for segstat in sorted(statistic_values):
-                self.logger.info("%25s %25s %7d %7d% 6.1f%%" % (
+                self.logger.info("%30s %25s %7d %7d% 6.1f%%" % (
                     statistic_name, segstat, statistic_values[segstat]["misuses"], statistic_values[segstat]["crashes"],
                     (statistic_values[segstat]["crashes"] / statistic_values[segstat]["misuses"] * 100)))
 
