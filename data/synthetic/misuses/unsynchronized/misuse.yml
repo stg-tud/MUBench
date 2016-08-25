@@ -6,7 +6,7 @@ crash: false
 description: >
   Updates a HashMap concurrently without ensuring synchonziation.
 location:
-  file: Unsynchonized.java
+  file: Unsynchronized.java
   method: onEvent(String, String)
 fix:
   description: >
