@@ -470,4 +470,4 @@ def __replace_dot_graph_with_image(finding, key, base_path):
 
 def __create_image(dot_graph, file):
     makedirs(dirname(file), exist_ok=True)
-    Shell.exec("""echo "{}" | dot -Tpng -o"{}" """.format(dot_graph.replace("\"", "\\\""), file))
+    Shell.exec("""echo "{}" | dot -Tpng -o"{}" """.format(dot_graph.replace("\\", "\\\\").replace("\"", "\\\""), file))
