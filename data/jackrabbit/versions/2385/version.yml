@@ -5,4 +5,4 @@ build:
   src: jackrabbit-jcr-server/src/main/java/
 misuses:
 - '6'
-revision: 880743
+revision: 880742

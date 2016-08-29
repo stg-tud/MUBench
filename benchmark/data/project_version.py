@@ -46,12 +46,10 @@ class ProjectVersion:
         repository = self.__project.repository
         if repository.vcstype == "git":
             url = repository.url
-            revision = self.revision + "~1"
-            return GitProjectCheckout(url, base_path, self.__project.id, self.version_id, revision)
+            return GitProjectCheckout(url, base_path, self.__project.id, self.version_id, self.revision)
         elif repository.vcstype == "svn":
             url = repository.url
-            revision = str(int(self.revision) - 1)
-            return SVNProjectCheckout(url, base_path, self.__project.id, self.version_id, revision)
+            return SVNProjectCheckout(url, base_path, self.__project.id, self.version_id, self.revision)
         elif repository.vcstype == "synthetic":
             return SyntheticProjectCheckout(base_path, self.__project.id, self.version_id)
         elif repository.vcstype == "zip":

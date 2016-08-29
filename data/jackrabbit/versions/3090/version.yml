@@ -2,4 +2,4 @@ build:
   src: jackrabbit-core/src/main/java/
 misuses:
 - '11'
-revision: 1178892
+revision: 1178891

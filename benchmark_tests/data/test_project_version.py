@@ -110,7 +110,7 @@ class TestProjectCheckout:
         assert_equals("ssh://foobar.git", checkout.url)
         assert_equals("-project-", checkout.name)
         assert_equals("-version-", checkout.version)
-        assert_equals("-revision-~1", checkout.revision)
+        assert_equals("-revision-", checkout.revision)
 
     def test_svn_project(self):
         project = create_project("-project-", meta={"repository": {"type": "svn", "url": "http://url/svn"}})
@@ -122,7 +122,7 @@ class TestProjectCheckout:
         assert_equals("http://url/svn", checkout.url)
         assert_equals("-project-", checkout.name)
         assert_equals("-version-", checkout.version)
-        assert_equals("666", checkout.revision)
+        assert_equals("667", checkout.revision)
 
     def test_zip_project(self):
         project = create_project("-project-", meta={"repository": {"type": "zip"}})

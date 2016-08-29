@@ -5,4 +5,4 @@ build:
   src: source/
 misuses:
 - '6'
-revision: 2266
+revision: 2265

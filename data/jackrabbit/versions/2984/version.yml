@@ -5,4 +5,4 @@ build:
   src: jackrabbit-jcr2spi/src/main/java/
 misuses:
 - '9'
-revision: 1133332
+revision: 1133331

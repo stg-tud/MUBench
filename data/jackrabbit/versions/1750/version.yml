@@ -5,4 +5,4 @@ build:
   src: jackrabbit-spi-commons/src/main/java/
 misuses:
 - '5'
-revision: 698246
+revision: 698245
