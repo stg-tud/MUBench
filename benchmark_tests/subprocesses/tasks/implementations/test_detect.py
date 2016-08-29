@@ -1,3 +1,4 @@
+import os
 from os.path import join, exists
 from shutil import rmtree
 from tempfile import mkdtemp
@@ -18,6 +19,8 @@ class TestDetect:
         self.checkout_base = join(self.temp_dir, "checkout")
         self.findings_file = "findings.yml"
         self.results_path = join(self.temp_dir, "results")
+
+        os.chdir(self.temp_dir)
 
         self.uut = Detect("detector", self.findings_file, self.checkout_base, self.results_path, None, [], False)
 
@@ -153,6 +156,16 @@ class TestDetect:
         version = create_version("0", project=project)
         write_yaml({"result": "error"},
                    file=join(self.results_path, version.project_id, version.version_id, "result.yml"))
+        self.uut._invoke_detector = MagicMock(side_effect=UserWarning)
+
+        assert_raises(UserWarning, self.uut.process_project_version, project, version)
+
+    def test_force_detect_on_new_detector(self):
+        project = create_project("project")
+        version = create_version("0", project=project)
+        write_yaml({"result": "success"},
+                   file=join(self.results_path, version.project_id, version.version_id, "result.yml"))
+        self.uut._new_detector_available = lambda x: True
         self.uut._invoke_detector = MagicMock(side_effect=UserWarning)
 
         assert_raises(UserWarning, self.uut.process_project_version, project, version)

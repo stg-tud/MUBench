@@ -34,12 +34,14 @@ class Run:
         self.__run_file_path = join(path, Run.RUN_FILE)
         self.result = None  # type: Result
         self.runtime = None  # type: float
+        self.detector_md5 = None  # type: Optional[str]
         self.message = ""
         self.__findings = []  # type: List[Dict[str,str]]
         if exists(self.__run_file_path):
             data = read_yaml(self.__run_file_path)
             self.result = Result[data["result"]]
             self.runtime = data.get("runtime", -1)
+            self.detector_md5 = data.get("md5", None)
             self.message = data.get("message", "")
 
     def is_success(self):
@@ -56,8 +58,8 @@ class Run:
                     self.__findings = [finding for finding in yaml.load_all(stream) if finding]
         return self.__findings
 
-    def write(self):
-        run_data = {"result": self.result.name, "runtime": self.runtime, "message": self.message}
+    def write(self, detector_md5: str):
+        run_data = {"result": self.result.name, "runtime": self.runtime, "message": self.message, "md5": detector_md5}
         write_yaml(run_data, file=self.__run_file_path)
 
 
@@ -106,7 +108,7 @@ class Detect(ProjectVersionTask):
         url = Detect.__get_misuse_detector_url(self.detector)
         logger.info("Loading detector from '%s'...", url)
         file = Detect.__get_misuse_detector_path(self.detector)
-        md5_file = Detect.__get_misuse_detector_md5(self.detector)
+        md5_file = Detect.__get_misuse_detector_md5_file(self.detector)
 
         try:
             if not exists(md5_file):
@@ -127,7 +129,7 @@ class Detect(ProjectVersionTask):
         detector_path = Detect.__get_misuse_detector_path(self.detector)
         detector_args = self.get_detector_arguments(findings_file_path, project, version)
 
-        if run.is_success() and not self.force_detect:
+        if run.is_success() and not self.force_detect and not self._new_detector_available(run):
             logger.info("Detector findings for %s already exists. Skipping detection.", version)
             return Response.ok
         else:
@@ -153,7 +155,7 @@ class Detect(ProjectVersionTask):
                 runtime = end - start
                 run.runtime = runtime
 
-        run.write()
+        run.write(Detect.__get_misuse_detector_md5(self.detector))
 
         if run.is_success():
             logger.info("Detection took {0:.2f} seconds.".format(runtime))
@@ -177,8 +179,8 @@ class Detect(ProjectVersionTask):
             classes_misuse = [self.key_classes_misuse, self.to_arg_path(project_compile.misuse_classes_path)]
             if version.patterns:
                 classes_patterns = [self.key_classes_patterns, self.to_arg_path(project_compile.pattern_classes_path)]
-        return findings_file +\
-               src_project + src_misuse + src_patterns +\
+        return findings_file + \
+               src_project + src_misuse + src_patterns + \
                classes_project + classes_misuse + classes_patterns
 
     def _invoke_detector(self, absolute_misuse_detector_path: str, detector_args: List[str]):
@@ -186,6 +188,9 @@ class Detect(ProjectVersionTask):
                                                   self.to_arg_path(absolute_misuse_detector_path)] + detector_args
         command = " ".join(command)
         return Shell.exec(command, logger=logging.getLogger("detect.run"), timeout=self.timeout)
+
+    def _new_detector_available(self, run: Run) -> bool:
+        return not Detect.__get_misuse_detector_md5(self.detector) == run.detector_md5
 
     @staticmethod
     def to_arg_path(absolute_misuse_detector_path):
@@ -204,5 +209,16 @@ class Detect(ProjectVersionTask):
         return "http://www.st.informatik.tu-darmstadt.de/artifacts/mubench/{}.jar".format(detector)
 
     @staticmethod
-    def __get_misuse_detector_md5(detector: str):
+    def __get_misuse_detector_md5_file(detector: str):
         return join(Detect.__get_misuse_detector_dir(detector), detector + ".md5")
+
+    @staticmethod
+    def __get_misuse_detector_md5(detector: str) -> Optional[str]:
+        md5_file = Detect.__get_misuse_detector_md5_file(detector)
+        md5 = None
+
+        if exists(md5_file):
+            with open(md5_file) as file:
+                md5 = file.read()
+
+        return md5
