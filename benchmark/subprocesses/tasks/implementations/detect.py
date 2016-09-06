@@ -175,7 +175,7 @@ class Detect(ProjectVersionTask):
         findings_file = [self.key_findings_file, self.to_arg_path(findings_file_path)]
         src_project = [self.key_src_project, self.to_arg_path(project_compile.original_sources_path)]
         src_misuse = [self.key_src_misuse, self.to_arg_path(project_compile.misuse_source_path)]
-        detector_mode = [self.key_detector_mode, int(self.detector_mode)]
+        detector_mode = [self.key_detector_mode, str(int(self.detector_mode))]
         src_patterns = []
         classes_project = []
         classes_misuse = []
