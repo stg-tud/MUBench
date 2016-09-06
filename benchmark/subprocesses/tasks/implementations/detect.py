@@ -72,22 +72,22 @@ class Detect(ProjectVersionTask):
     def __init__(self, detector: str, detector_result_file: str, compiles_base_path: str, results_base_path: str,
                  experiment: int, timeout: Optional[int], java_options: List[str], force_detect: bool):
         super().__init__()
-        self.force_detect = force_detect
-        self.detector = detector
-        self.detector_findings_file = detector_result_file
-        self.compiles_base_path = compiles_base_path
-        self.results_base_path = results_base_path
-        self.timeout = timeout
-        self.java_options = ['-' + option for option in java_options]
-
-        self.key_findings_file = "target"
-        self.key_src_project = "src"
-        self.key_src_misuse = "src_misuse"
-        self.key_src_patterns = "src_patterns"
-        self.key_classes_project = "classpath"
-        self.key_classes_misuse = "classpath_misuse"
-        self.key_classes_patterns = "classpath_patterns"
+        self.force_detect = force_detect  # type: bool
+        self.detector = detector  # type: str
+        self.detector_findings_file = detector_result_file  # type: str
+        self.compiles_base_path = compiles_base_path  # type: str
+        self.results_base_path = results_base_path  # type: str
         self.detector_mode = Detect._get_detector_mode(experiment)  # type: DetectorMode
+        self.timeout = timeout  # type: Optional[int]
+        self.java_options = ['-' + option for option in java_options]  # type: List[str]
+
+        self.key_findings_file = "target"  # type: str
+        self.key_src_project = "src"  # type: str
+        self.key_src_misuse = "src_misuse"  # type: str
+        self.key_src_patterns = "src_patterns"  # type: str
+        self.key_classes_project = "classpath"  # type: str
+        self.key_classes_misuse = "classpath_misuse"  # type: str
+        self.key_classes_patterns = "classpath_patterns"  # type: str
         self.key_detector_mode = "detector_mode"  # type: str
 
     def get_requirements(self):
