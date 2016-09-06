@@ -76,15 +76,15 @@ class Benchmark:
         for detector in detectors:
             results_path = join(Benchmark.RESULTS_PATH, detector)
             is_ex1_detector = detector.endswith("-do")
-            if is_ex1_detector and config.experiment == "1":
+            if is_ex1_detector and config.experiment == 1:
                 self.runner.add(ReviewPrepareEx1("ex1_detect-only", detector, results_path, Benchmark.REVIEW_PATH,
                                                  Benchmark.CHECKOUTS_PATH, Benchmark.CHECKOUTS_PATH,
                                                  self.config.force_prepare))
-            elif not is_ex1_detector and config.experiment == "2":
+            elif not is_ex1_detector and config.experiment == 2:
                 self.runner.add(ReviewPrepareEx2("ex2_mine-and-detect", detector, results_path, Benchmark.REVIEW_PATH,
                                                  Benchmark.CHECKOUTS_PATH, Benchmark.CHECKOUTS_PATH,
                                                  self.config.force_prepare))
-            elif not is_ex1_detector and config.experiment == "3":
+            elif not is_ex1_detector and config.experiment == 3:
                 self.runner.add(ReviewPrepareEx3("ex3_all-findings", detector, results_path, Benchmark.REVIEW_PATH,
                                                  Benchmark.CHECKOUTS_PATH, Benchmark.CHECKOUTS_PATH,
                                                  self.config.top_n_findings, self.config.force_prepare))
@@ -93,11 +93,11 @@ class Benchmark:
         if not exists(Benchmark.REVIEW_PATH):
             return
 
-        if config.experiment == "1":
+        if config.experiment == 1:
             self.runner.add(ReviewCheck("ex1_detect-only", Benchmark.REVIEW_PATH, available_detectors))
-        elif config.experiment == "2":
+        elif config.experiment == 2:
             self.runner.add(ReviewCheck("ex2_mine-and-detect", Benchmark.REVIEW_PATH, available_detectors))
-        elif config.experiment == "3":
+        elif config.experiment == 3:
             self.runner.add(ReviewCheckEx3("ex3_all-findings", Benchmark.REVIEW_PATH, available_detectors))
 
     def run(self) -> None:

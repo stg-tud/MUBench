@@ -142,7 +142,7 @@ class TestDetect:
 
         self.uut.process_project_version(project, version)
 
-        self.assert_last_invoke_arg_value_equals(self.uut.key_detector_mode, 0)
+        self.assert_last_invoke_arg_value_equals(self.uut.key_detector_mode, '0')
 
     def test_writes_results(self):
         project = create_project("project")
