@@ -7,7 +7,7 @@ from unittest.mock import MagicMock
 from nose.tools import assert_equals, assert_raises
 
 from benchmark.data.pattern import Pattern
-from benchmark.subprocesses.tasks.implementations.detect import Detect
+from benchmark.subprocesses.tasks.implementations.detect import Detect, DetectorMode
 from benchmark.utils.io import write_yaml
 from benchmark_tests.test_utils.data_util import create_misuse, create_project, create_version
 
@@ -22,7 +22,7 @@ class TestDetect:
 
         os.chdir(self.temp_dir)
 
-        self.uut = Detect("detector", self.findings_file, self.checkout_base, self.results_path, None, [], False)
+        self.uut = Detect("detector", self.findings_file, self.checkout_base, self.results_path, 1, None, [], False)
 
         self.last_invoke = None
 
@@ -101,7 +101,8 @@ class TestDetect:
         self.uut.process_project_version(project, version)
 
         self.assert_last_invoke_arg_value_equals(self.uut.key_findings_file,
-                                                 '"' + join(self.results_path, "project", "0", self.findings_file) + '"')
+                                                 '"' + join(self.results_path, "project", "0",
+                                                            self.findings_file) + '"')
 
     def test_invokes_detector_without_patterns_paths_without_patterns(self):
         project = create_project("project")
@@ -133,6 +134,15 @@ class TestDetect:
         self.assert_last_invoke_arg_value_equals(
             self.uut.key_classes_patterns,
             '"' + version.get_compile(self.checkout_base).pattern_classes_path + '"')
+
+    def test_invokes_detector_with_mode(self):
+        project = create_project("project")
+        version = create_version("0", project=project)
+        self.uut.detector_mode = DetectorMode.mine_and_detect
+
+        self.uut.process_project_version(project, version)
+
+        self.assert_last_invoke_arg_value_equals(self.uut.key_detector_mode, DetectorMode.mine_and_detect)
 
     def test_writes_results(self):
         project = create_project("project")
@@ -184,6 +194,17 @@ class TestDetect:
                 assert_equals(args[i + 1], value)
 
 
+class TestDetectGetDetectorMode:
+    def test_detect_only_for_1(self):
+        assert_equals(DetectorMode.detect_only, Detect._get_detector_mode(1))
+
+    def test_mine_and_detect_for_2(self):
+        assert_equals(DetectorMode.mine_and_detect, Detect._get_detector_mode(2))
+
+    def test_mine_and_detect_for_3(self):
+        assert_equals(DetectorMode.mine_and_detect, Detect._get_detector_mode(3))
+
+
 class TestDetectDownload:
     # noinspection PyAttributeOutsideInit
     def setup(self):
@@ -192,7 +213,7 @@ class TestDetectDownload:
         self.findings_file = "findings.yml"
         self.results_path = join(self.temp_dir, "results")
 
-        self.uut = Detect("detector", self.findings_file, self.checkout_base, self.results_path, None, [], False)
+        self.uut = Detect("detector", self.findings_file, self.checkout_base, self.results_path, 1, None, [], False)
         self.uut._download = MagicMock(return_value=True)
 
     def test_downloads_detector_if_not_available(self):

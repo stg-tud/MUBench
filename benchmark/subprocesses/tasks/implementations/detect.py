@@ -63,9 +63,14 @@ class Run:
         write_yaml(run_data, file=self.__run_file_path)
 
 
+class DetectorMode(Enum):
+    mine_and_detect = 0
+    detect_only = 1
+
+
 class Detect(ProjectVersionTask):
     def __init__(self, detector: str, detector_result_file: str, compiles_base_path: str, results_base_path: str,
-                 timeout: Optional[int], java_options: List[str], force_detect: bool):
+                 experiment: int, timeout: Optional[int], java_options: List[str], force_detect: bool):
         super().__init__()
         self.force_detect = force_detect
         self.detector = detector
@@ -82,6 +87,8 @@ class Detect(ProjectVersionTask):
         self.key_classes_project = "classpath"
         self.key_classes_misuse = "classpath_misuse"
         self.key_classes_patterns = "classpath_patterns"
+        self.detector_mode = Detect._get_detector_mode(experiment)  # type: DetectorMode
+        self.key_detector_mode = "detector_mode"  # type: str
 
     def get_requirements(self):
         return [JavaRequirement()]
@@ -168,6 +175,7 @@ class Detect(ProjectVersionTask):
         findings_file = [self.key_findings_file, self.to_arg_path(findings_file_path)]
         src_project = [self.key_src_project, self.to_arg_path(project_compile.original_sources_path)]
         src_misuse = [self.key_src_misuse, self.to_arg_path(project_compile.misuse_source_path)]
+        detector_mode = [self.key_detector_mode, self.detector_mode]
         src_patterns = []
         classes_project = []
         classes_misuse = []
@@ -181,7 +189,7 @@ class Detect(ProjectVersionTask):
                 classes_patterns = [self.key_classes_patterns, self.to_arg_path(project_compile.pattern_classes_path)]
         return findings_file + \
                src_project + src_misuse + src_patterns + \
-               classes_project + classes_misuse + classes_patterns
+               classes_project + classes_misuse + classes_patterns + detector_mode
 
     def _invoke_detector(self, absolute_misuse_detector_path: str, detector_args: List[str]):
         command = ["java"] + self.java_options + ["-jar",
@@ -222,3 +230,14 @@ class Detect(ProjectVersionTask):
                 md5 = file.read()
 
         return md5
+
+    @staticmethod
+    def _get_detector_mode(experiment: int) -> DetectorMode:
+        if experiment == 1:
+            return DetectorMode.detect_only
+        elif experiment == 2:
+            return DetectorMode.mine_and_detect
+        elif experiment == 3:
+            return DetectorMode.mine_and_detect
+        else:
+            raise ValueError("Invalid experiment {}".format(experiment))
