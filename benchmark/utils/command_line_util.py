@@ -155,9 +155,12 @@ def __setup_compile_arguments(parser: ArgumentParser):
 def __setup_detector_arguments(parser: ArgumentParser, available_detectors: List[str]) -> None:
     parser.add_argument('detector', help="the detector whose findings to evaluate",
                         choices=available_detectors)
+    parser.add_argument('experiment', help="configures the detector for the experiment", type=int,
+                        choices=[1, 2, 3])
     parser.add_argument('--force-detect', dest='force_detect', action='store_true', default=False,
                         help="force a new `detect` run, deleting the previous result")
     parser.add_argument('--timeout', type=int, default=None, metavar='s',
                         help="abort detection of a misuse after the provided number of seconds (if it needs to be run) and skip the misuse")
     parser.add_argument('--java-options', metavar='option', nargs='+', dest='java_options', default=[],
                         help="will be passed to the java subprocess running the detector (example: `--java-options Xmx6144M` will run `java -Xmx6144M`)")
+

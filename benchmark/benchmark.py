@@ -64,7 +64,7 @@ class Benchmark:
         # TODO make task append the detector name to the results path
         results_path = join(Benchmark.RESULTS_PATH, self.config.detector)
         detector_runner = Detect(self.config.detector, self.detector_result_file, Benchmark.CHECKOUTS_PATH,
-                                 results_path,
+                                 results_path, self.config.experiment,
                                  self.config.timeout, self.config.java_options, self.config.force_detect)
         self.runner.add(detector_runner)
 
