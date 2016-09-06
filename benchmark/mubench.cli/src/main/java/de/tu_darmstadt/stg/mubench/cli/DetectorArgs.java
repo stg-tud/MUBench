@@ -10,9 +10,10 @@ public class DetectorArgs {
 	private final String misuseClassPath;
 	private final String patternsSrcPath;
 	private final String patternsClassPath;
+	private final DetectorMode detectorMode;
 
 	public DetectorArgs(String findingsFile, String projectSrc, String projectClasses, String misuseSrc, String misuseClasses, String patternsSrc,
-			String patternsClasses) {
+			String patternsClasses, DetectorMode detectorMode) {
 		this.findingsFile = findingsFile;
 		this.projectSrcPath = projectSrc;
 		this.projectClassPath = projectClasses;
@@ -20,6 +21,7 @@ public class DetectorArgs {
 		this.misuseClassPath = misuseClasses;
 		this.patternsSrcPath = patternsSrc;
 		this.patternsClassPath = patternsClasses;
+		this.detectorMode = detectorMode;
 	}
 
 	public String getFindingsFile() throws FileNotFoundException {
@@ -63,5 +65,10 @@ public class DetectorArgs {
 			throw new FileNotFoundException("patterns classpath not provided");
 		return patternsClassPath;
 	}
-
+	
+	public DetectorMode getDetectorMode() throws FileNotFoundException {
+		if (detectorMode == null)
+			throw new FileNotFoundException("detector mode not provided");
+		return detectorMode;
+	}
 }

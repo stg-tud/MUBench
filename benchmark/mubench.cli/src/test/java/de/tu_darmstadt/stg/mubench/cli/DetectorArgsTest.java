@@ -13,7 +13,7 @@ public class DetectorArgsTest {
 
 	@Before
 	public void setup() {
-		uut = new DetectorArgs("findings.yml", "src", "classes", "msrc", "mclasses", "psrc", "pclasses");
+		uut = new DetectorArgs("findings.yml", "src", "classes", "msrc", "mclasses", "psrc", "pclasses", DetectorMode.detectOnly);
 	}
 	
 	@Test
@@ -49,5 +49,10 @@ public class DetectorArgsTest {
 	@Test
 	public void getFindingsFileTest() throws FileNotFoundException {
 		assertEquals("findings.yml", uut.getFindingsFile());
+	}
+	
+	@Test
+	public void getDetectorModeTest() throws FileNotFoundException {
+		assertEquals(DetectorMode.detectOnly, uut.getDetectorMode());
 	}
 }
