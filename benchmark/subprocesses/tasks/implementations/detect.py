@@ -1,6 +1,6 @@
 import logging
 import time
-from enum import Enum
+from enum import Enum, IntEnum
 from os import makedirs
 from os.path import join, realpath, exists
 from typing import Dict
@@ -63,7 +63,7 @@ class Run:
         write_yaml(run_data, file=self.__run_file_path)
 
 
-class DetectorMode(Enum):
+class DetectorMode(IntEnum):
     mine_and_detect = 0
     detect_only = 1
 
@@ -175,7 +175,7 @@ class Detect(ProjectVersionTask):
         findings_file = [self.key_findings_file, self.to_arg_path(findings_file_path)]
         src_project = [self.key_src_project, self.to_arg_path(project_compile.original_sources_path)]
         src_misuse = [self.key_src_misuse, self.to_arg_path(project_compile.misuse_source_path)]
-        detector_mode = [self.key_detector_mode, self.detector_mode]
+        detector_mode = [self.key_detector_mode, int(self.detector_mode)]
         src_patterns = []
         classes_project = []
         classes_misuse = []
