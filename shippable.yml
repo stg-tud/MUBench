@@ -14,7 +14,7 @@ script:
   - nosetests --with-xunit --xunit-file=shippable/testresults/nosetests.xml
   - mvn test -f benchmark/mubench.cli/pom.xml
   - mvn test -f benchmark/mubench.utils/pom.xml
-  - "./mubench detect dummy --only synthetic"
+  - "./mubench detect dummy 1 --only synthetic"
   - "./mubench review:prepare 1"
   - "./mubench review:prepare 2"
   - "./mubench review:prepare 3"
