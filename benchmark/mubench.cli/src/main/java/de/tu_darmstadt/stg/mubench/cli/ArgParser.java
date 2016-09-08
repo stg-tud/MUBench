@@ -2,23 +2,19 @@ package de.tu_darmstadt.stg.mubench.cli;
 
 public class ArgParser {
 	public static final String keyFindingsFile = "target";
-	public static final String keyProjectSrcPath = "src";
-	public static final String keyProjectClassPath = "classpath";
-	public static final String keyMisuseSrcPath = "src_misuse";
-	public static final String keyMisuseClassPath = "classpath_misuse";
-	public static final String keyPatternsSrcPath = "src_patterns";
-	public static final String keyPatternsClassPath = "classpath_patterns";
 	public static final String keyDetectorMode = "detector_mode";
+	public static final String keyTrainingSrcPath = "training_src_path";
+	public static final String keyTrainingClassPath = "training_classpath";
+	public static final String keyTargetSrcPath = "target_src_path";
+	public static final String keyTargetClassPath = "target_classpath";
 
 	public static DetectorArgs parse(String[] args) {
 		String findingsFile = null;
-		String projectSrcPath = null;
-		String projectClassPath = null;
-		String misuseSrcPath = null;
-		String misuseClassPath = null;
-		String patternsSrcPath = null;
-		String patternsClassPath = null;
 		DetectorMode detectorMode = null;
+		String trainingSrcPath = null;
+		String trainingClassPath = null;
+		String targetSrcPath = null;
+		String targetClassPath = null;
 
 		for (int i = 0; i < args.length; i += 2) {
 			String arg = args[i];
@@ -28,29 +24,23 @@ public class ArgParser {
 			case keyFindingsFile:
 				findingsFile = next_arg;
 				break;
-			case keyProjectSrcPath:
-				projectSrcPath = next_arg;
+			case keyTrainingSrcPath:
+				trainingSrcPath = next_arg;
 				break;
-			case keyProjectClassPath:
-				projectClassPath = next_arg;
+			case keyTrainingClassPath:
+				trainingClassPath = next_arg;
 				break;
-			case keyMisuseSrcPath:
-				misuseSrcPath = next_arg;
+			case keyTargetSrcPath:
+				targetSrcPath = next_arg;
 				break;
-			case keyMisuseClassPath:
-				misuseClassPath = next_arg;
-				break;
-			case keyPatternsSrcPath:
-				patternsSrcPath = next_arg;
-				break;
-			case keyPatternsClassPath:
-				patternsClassPath = next_arg;
+			case keyTargetClassPath:
+				targetClassPath = next_arg;
 				break;
 			case keyDetectorMode:
 				if (next_arg == "0") {
-					detectorMode = DetectorMode.mineAndDetect;
+					detectorMode = DetectorMode.MINE_AND_DETECT;
 				} else if (next_arg == "1") {
-					detectorMode = DetectorMode.detectOnly;
+					detectorMode = DetectorMode.DETECT_ONLY;
 				}
 				break;
 			default:
@@ -59,15 +49,13 @@ public class ArgParser {
 		}
 
 		System.out.println("FindingsFile : " + findingsFile);
-		System.out.println("ProjectSrcPath : " + projectSrcPath);
-		System.out.println("ProjectClassPath : " + projectClassPath);
-		System.out.println("MisuseSrcPath : " + misuseSrcPath);
-		System.out.println("MisuseClassPath : " + misuseClassPath);
-		System.out.println("PatternsSrcPath : " + patternsSrcPath);
-		System.out.println("PatternsClassPath : " + patternsClassPath);
 		System.out.println("DetectorMode : " + detectorMode);
+		System.out.println("TrainingSrcPath : " + trainingSrcPath);
+		System.out.println("TrainingClassPath : " + trainingClassPath);
+		System.out.println("TargetSrcPath : " + targetSrcPath);
+		System.out.println("TargetClassPath : " + targetClassPath);
 
-		return new DetectorArgs(findingsFile, projectSrcPath, projectClassPath, misuseSrcPath, misuseClassPath,
-				patternsSrcPath, patternsClassPath, detectorMode);
+		return new DetectorArgs(findingsFile, detectorMode, trainingSrcPath, trainingClassPath, targetSrcPath,
+				targetClassPath);
 	}
 }

@@ -1,58 +1,82 @@
 package de.tu_darmstadt.stg.mubench.cli;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.io.FileNotFoundException;
 
-import org.junit.Before;
 import org.junit.Test;
 
 public class DetectorArgsTest {
 	
-	private DetectorArgs uut;
+	@Test
+	public void getTrainingSrcPath() throws FileNotFoundException {
+		DetectorArgs uut = new DetectorArgs("findings.yml", DetectorMode.DETECT_ONLY, "src", "", "", "");
+		assertEquals("src", uut.getTrainingSrcPath());
+	}
 
-	@Before
-	public void setup() {
-		uut = new DetectorArgs("findings.yml", "src", "classes", "msrc", "mclasses", "psrc", "pclasses", DetectorMode.detectOnly);
+	@Test
+	public void getTrainingClassPath() throws FileNotFoundException {
+		DetectorArgs uut = new DetectorArgs("findings.yml", DetectorMode.DETECT_ONLY, "", "classes", "", "");
+		assertEquals("classes", uut.getTrainingClassPath());
 	}
 	
 	@Test
-	public void getProjectSrcPathTest() throws FileNotFoundException {
-		assertEquals("src", uut.getProjectSrcPath());
+	public void getTargetSrcPath() throws FileNotFoundException {
+		DetectorArgs uut = new DetectorArgs("findings.yml", DetectorMode.DETECT_ONLY, "", "", "src", "");
+		assertEquals("src", uut.getTargetSrcPath());
 	}
 
 	@Test
-	public void getProjectClassPathTest() throws FileNotFoundException {
-		assertEquals("classes", uut.getProjectClassPath());
-	}
-	
-	@Test
-	public void getMisuseSrcPathTest() throws FileNotFoundException {
-		assertEquals("msrc", uut.getMisuseSrcPath());
-	}
-
-	@Test
-	public void getMisuseClassPathTest() throws FileNotFoundException {
-		assertEquals("mclasses", uut.getMisuseClassPath());
-	}
-
-	@Test
-	public void getPatternsSrcPathTest() throws FileNotFoundException {
-		assertEquals("psrc", uut.getPatternsSrcPath());
-	}
-
-	@Test
-	public void getPatternsClassPathTest() throws FileNotFoundException {
-		assertEquals("pclasses", uut.getPatternsClassPath());
+	public void getTargetClassPath() throws FileNotFoundException {
+		DetectorArgs uut = new DetectorArgs("", DetectorMode.DETECT_ONLY, "", "", "", "classes");
+		assertEquals("classes", uut.getTargetClassPath());
 	}
 
 	@Test
 	public void getFindingsFileTest() throws FileNotFoundException {
+		DetectorArgs uut = new DetectorArgs("findings.yml", DetectorMode.DETECT_ONLY, "", "", "", "");
 		assertEquals("findings.yml", uut.getFindingsFile());
 	}
 	
 	@Test
 	public void getDetectorModeTest() throws FileNotFoundException {
-		assertEquals(DetectorMode.detectOnly, uut.getDetectorMode());
+		DetectorArgs uut = new DetectorArgs("", DetectorMode.DETECT_ONLY, "", "", "", "");
+		assertEquals(DetectorMode.DETECT_ONLY, uut.getDetectorMode());
+	}
+	
+	@Test(expected = FileNotFoundException.class)
+	public void throwsOnNoFindingsFile() throws FileNotFoundException {
+		DetectorArgs uut = new DetectorArgs(null, null, null, null, null, null);
+		uut.getFindingsFile();
+	}
+
+	@Test(expected = FileNotFoundException.class)
+	public void throwsOnNoDetectorMode() throws FileNotFoundException {
+		DetectorArgs uut = new DetectorArgs(null, null, null, null, null, null);
+		uut.getDetectorMode();
+	}
+	
+	@Test(expected = FileNotFoundException.class)
+	public void throwsOnNoTrainingSrcPath() throws FileNotFoundException {
+		DetectorArgs uut = new DetectorArgs(null, null, null, null, null, null);
+		uut.getTrainingSrcPath();
+	}
+	
+	@Test(expected = FileNotFoundException.class)
+	public void throwsOnNoTrainingClassPath() throws FileNotFoundException {
+		DetectorArgs uut = new DetectorArgs(null, null, null, null, null, null);
+		uut.getTrainingClassPath();
+	}
+	
+	@Test(expected = FileNotFoundException.class)
+	public void throwsOnNoTargetSrcPath() throws FileNotFoundException {
+		DetectorArgs uut = new DetectorArgs(null, null, null, null, null, null);
+		uut.getTargetSrcPath();
+	}
+	
+	@Test(expected = FileNotFoundException.class)
+	public void throwsOnNoTargetClassPath() throws FileNotFoundException {
+		DetectorArgs uut = new DetectorArgs(null, null, null, null, null, null);
+		uut.getTargetClassPath();
 	}
 }

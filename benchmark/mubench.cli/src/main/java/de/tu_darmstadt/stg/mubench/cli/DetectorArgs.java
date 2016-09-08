@@ -4,23 +4,19 @@ import java.io.FileNotFoundException;
 
 public class DetectorArgs {
 	private final String findingsFile;
-	private final String projectSrcPath;
-	private final String projectClassPath;
-	private final String misuseSrcPath;
-	private final String misuseClassPath;
-	private final String patternsSrcPath;
-	private final String patternsClassPath;
+	private final String trainingSrcPath;
+	private final String trainingClassPath;
+	private final String targetSrcPath;
+	private final String targetClassPath;
 	private final DetectorMode detectorMode;
 
-	public DetectorArgs(String findingsFile, String projectSrc, String projectClasses, String misuseSrc, String misuseClasses, String patternsSrc,
-			String patternsClasses, DetectorMode detectorMode) {
+	public DetectorArgs(String findingsFile, DetectorMode detectorMode, String trainingSrcPath,
+			String trainingClassPath, String targetSrcPath, String targetClassPath) {
 		this.findingsFile = findingsFile;
-		this.projectSrcPath = projectSrc;
-		this.projectClassPath = projectClasses;
-		this.misuseSrcPath = misuseSrc;
-		this.misuseClassPath = misuseClasses;
-		this.patternsSrcPath = patternsSrc;
-		this.patternsClassPath = patternsClasses;
+		this.trainingSrcPath = trainingSrcPath;
+		this.trainingClassPath = trainingClassPath;
+		this.targetSrcPath = targetSrcPath;
+		this.targetClassPath = targetClassPath;
 		this.detectorMode = detectorMode;
 	}
 
@@ -29,46 +25,35 @@ public class DetectorArgs {
 			throw new FileNotFoundException("findings file not provided");
 		return findingsFile;
 	}
-	
-	public String getProjectSrcPath() throws FileNotFoundException {
-		if (projectSrcPath == null)
-			throw new FileNotFoundException("project source path not provided");
-		return projectSrcPath;
-	}
-	
-	public String getProjectClassPath() throws FileNotFoundException {
-		if (projectClassPath == null)
-			throw new FileNotFoundException("project classpath not provided");
-		return projectClassPath;
-	}
-	
-	public String getMisuseSrcPath() throws FileNotFoundException {
-		if (misuseSrcPath == null)
-			throw new FileNotFoundException("misuse source path not provided");
-		return misuseSrcPath;
-	}
-	
-	public String getMisuseClassPath() throws FileNotFoundException {
-		if (misuseClassPath == null)
-			throw new FileNotFoundException("misuse classpath not provided");
-		return misuseClassPath;
-	}
-	
-	public String getPatternsSrcPath() throws FileNotFoundException {
-		if (patternsSrcPath == null)
-			throw new FileNotFoundException("patterns source path not provided");
-		return patternsSrcPath;
-	}
-	
-	public String getPatternsClassPath() throws FileNotFoundException {
-		if (patternsClassPath == null)
-			throw new FileNotFoundException("patterns classpath not provided");
-		return patternsClassPath;
-	}
-	
+
 	public DetectorMode getDetectorMode() throws FileNotFoundException {
 		if (detectorMode == null)
 			throw new FileNotFoundException("detector mode not provided");
 		return detectorMode;
 	}
+
+	public String getTrainingSrcPath() throws FileNotFoundException {
+		if (trainingSrcPath == null)
+			throw new FileNotFoundException("training source path not provided");
+		return trainingSrcPath;
+	}
+
+	public String getTrainingClassPath() throws FileNotFoundException {
+		if (trainingClassPath == null)
+			throw new FileNotFoundException("training classpath not provided");
+		return trainingClassPath;
+	}
+
+	public String getTargetSrcPath() throws FileNotFoundException {
+		if (targetSrcPath == null)
+			throw new FileNotFoundException("target source path not provided");
+		return targetSrcPath;
+	}
+
+	public String getTargetClassPath() throws FileNotFoundException {
+		if (targetClassPath == null)
+			throw new FileNotFoundException("target classpath not provided");
+		return targetClassPath;
+	}
+
 }
