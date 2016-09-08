@@ -54,45 +54,31 @@ class TestDetect:
 
         assert_equals(self.last_invoke[0], "detector.jar")
 
-    def test_passes_project_src(self):
+    def test_passes_detect_only_paths(self):
         project = create_project("project")
         version = create_version("0")
+        self.uut.detector_mode = DetectorMode.detect_only
 
         self.uut.process_project_version(project, version)
 
-        self.assert_last_invoke_arg_value_equals(
-            self.uut.key_src_project,
-            '"' + version.get_compile(self.checkout_base).original_sources_path + '"')
+        compile = version.get_compile(self.checkout_base)
+        self.assert_last_invoke_path_equals(self.uut.key_training_src_path, compile.pattern_sources_path)
+        self.assert_last_invoke_path_equals(self.uut.key_training_classpath, compile.pattern_classes_path)
+        self.assert_last_invoke_path_equals(self.uut.key_target_src_path, compile.misuse_source_path)
+        self.assert_last_invoke_path_equals(self.uut.key_target_classpath, compile.misuse_classes_path)
 
-    def test_passes_misuse_src(self):
+    def test_passes_mine_and_detect_paths(self):
         project = create_project("project")
         version = create_version("0")
+        self.uut.detector_mode = DetectorMode.mine_and_detect
 
         self.uut.process_project_version(project, version)
 
-        self.assert_last_invoke_arg_value_equals(
-            self.uut.key_src_misuse,
-            '"' + version.get_compile(self.checkout_base).misuse_source_path + '"')
-
-    def test_passes_project_classes_path(self):
-        project = create_project("project")
-        version = create_version("0", meta={"build": {"commands": [":any:"]}}, project=project)
-
-        self.uut.process_project_version(project, version)
-
-        self.assert_last_invoke_arg_value_equals(
-            self.uut.key_classes_project,
-            '"' + version.get_compile(self.checkout_base).original_classes_path + '"')
-
-    def test_passes_misuse_classes_path(self):
-        project = create_project("project")
-        version = create_version("0", meta={"build": {"commands": [":any:"]}}, project=project)
-
-        self.uut.process_project_version(project, version)
-
-        self.assert_last_invoke_arg_value_equals(
-            self.uut.key_classes_misuse,
-            '"' + version.get_compile(self.checkout_base).misuse_classes_path + '"')
+        compile = version.get_compile(self.checkout_base)
+        self.assert_last_invoke_path_equals(self.uut.key_training_src_path, compile.original_sources_path)
+        self.assert_last_invoke_path_equals(self.uut.key_training_classpath, compile.original_classes_path)
+        self.assert_arg_not_in_last_invoke(self.uut.key_target_src_path)
+        self.assert_arg_not_in_last_invoke(self.uut.key_target_classpath)
 
     def test_passes_findings_file(self):
         project = create_project("project")
@@ -100,40 +86,8 @@ class TestDetect:
 
         self.uut.process_project_version(project, version)
 
-        self.assert_last_invoke_arg_value_equals(self.uut.key_findings_file,
-                                                 '"' + join(self.results_path, "project", "0",
-                                                            self.findings_file) + '"')
-
-    def test_invokes_detector_without_patterns_paths_without_patterns(self):
-        project = create_project("project")
-        version = create_version("0")
-
-        self.uut.process_project_version(project, version)
-
-        self.assert_arg_not_in_last_invoke(self.uut.key_src_patterns)
-        self.assert_arg_not_in_last_invoke(self.uut.key_classes_patterns)
-
-    def test_invokes_detector_with_patterns_src_path(self):
-        project = create_project("project")
-        version = create_version("0", meta={"build": {"commands": [":any:"]}}, project=project)
-        version._PATTERNS = [Pattern("", "a")]
-
-        self.uut.process_project_version(project, version)
-
-        self.assert_last_invoke_arg_value_equals(
-            self.uut.key_src_patterns,
-            '"' + version.get_compile(self.checkout_base).pattern_sources_path + '"')
-
-    def test_invokes_detector_with_patterns_class_path(self):
-        project = create_project("project")
-        version = create_version("0", meta={"build": {"commands": {":any:"}}}, project=project)
-        version._PATTERNS = [Pattern("", "a")]
-
-        self.uut.process_project_version(project, version)
-
-        self.assert_last_invoke_arg_value_equals(
-            self.uut.key_classes_patterns,
-            '"' + version.get_compile(self.checkout_base).pattern_classes_path + '"')
+        self.assert_last_invoke_path_equals(self.uut.key_findings_file,
+                                            join(self.results_path, "project", "0", self.findings_file))
 
     def test_invokes_detector_with_mode(self):
         project = create_project("project")
@@ -142,7 +96,7 @@ class TestDetect:
 
         self.uut.process_project_version(project, version)
 
-        self.assert_last_invoke_arg_value_equals(self.uut.key_detector_mode, '0')
+        self.assert_last_invoke_path_equals(self.uut.key_detector_mode, '0')
 
     def test_writes_results(self):
         project = create_project("project")
@@ -180,8 +134,8 @@ class TestDetect:
 
         assert_raises(UserWarning, self.uut.process_project_version, project, version)
 
-    def assert_last_invoke_arg_value_equals(self, key, value):
-        self.assert_arg_value_equals(self.last_invoke[1], key, value)
+    def assert_last_invoke_path_equals(self, key, value):
+        self.assert_arg_value_equals(self.last_invoke[1], key, '"' + value + '"')
 
     def assert_arg_not_in_last_invoke(self, key):
         assert key not in self.last_invoke[1]

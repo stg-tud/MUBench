@@ -81,14 +81,12 @@ class Detect(ProjectVersionTask):
         self.timeout = timeout  # type: Optional[int]
         self.java_options = ['-' + option for option in java_options]  # type: List[str]
 
-        self.key_findings_file = "target"  # type: str
-        self.key_src_project = "src"  # type: str
-        self.key_src_misuse = "src_misuse"  # type: str
-        self.key_src_patterns = "src_patterns"  # type: str
-        self.key_classes_project = "classpath"  # type: str
-        self.key_classes_misuse = "classpath_misuse"  # type: str
-        self.key_classes_patterns = "classpath_patterns"  # type: str
-        self.key_detector_mode = "detector_mode"  # type: str
+        self.key_findings_file = "target"
+        self.key_detector_mode = "detector_mode"
+        self.key_training_src_path = "training_src_path"
+        self.key_training_classpath = "training_classpath"
+        self.key_target_src_path = "target_src_path"
+        self.key_target_classpath = "target_classpath"
 
     def get_requirements(self):
         return [JavaRequirement()]
@@ -134,7 +132,7 @@ class Detect(ProjectVersionTask):
         run = Run(result_path)
 
         detector_path = Detect.__get_misuse_detector_path(self.detector)
-        detector_args = self.get_detector_arguments(findings_file_path, project, version)
+        detector_args = self.get_detector_arguments(findings_file_path, version)
 
         if run.is_success() and not self.force_detect and not self._new_detector_available(run):
             logger.info("Detector findings for %s already exists. Skipping detection.", version)
@@ -170,26 +168,25 @@ class Detect(ProjectVersionTask):
         else:
             return Response.skip
 
-    def get_detector_arguments(self, findings_file_path: str, project: Project, version: ProjectVersion) -> List[str]:
+    def get_detector_arguments(self, findings_file_path: str, version: ProjectVersion) -> List[str]:
         project_compile = version.get_compile(self.compiles_base_path)
         findings_file = [self.key_findings_file, self.to_arg_path(findings_file_path)]
-        src_project = [self.key_src_project, self.to_arg_path(project_compile.original_sources_path)]
-        src_misuse = [self.key_src_misuse, self.to_arg_path(project_compile.misuse_source_path)]
-        detector_mode = [self.key_detector_mode, str(int(self.detector_mode))]
-        src_patterns = []
-        classes_project = []
-        classes_misuse = []
-        classes_patterns = []
-        if version.patterns:
-            src_patterns = [self.key_src_patterns, self.to_arg_path(project_compile.pattern_sources_path)]
-        if version.compile_commands:
-            classes_project = [self.key_classes_project, self.to_arg_path(project_compile.original_classes_path)]
-            classes_misuse = [self.key_classes_misuse, self.to_arg_path(project_compile.misuse_classes_path)]
-            if version.patterns:
-                classes_patterns = [self.key_classes_patterns, self.to_arg_path(project_compile.pattern_classes_path)]
-        return findings_file + \
-               src_project + src_misuse + src_patterns + \
-               classes_project + classes_misuse + classes_patterns + detector_mode
+        detector_mode = [self.key_detector_mode, self.to_arg_path(str(int(self.detector_mode)))]
+
+        training_src_path = []
+        training_classpath = []
+        target_src_path = []
+        target_classpath = []
+        if self.detector_mode == DetectorMode.detect_only:
+            training_src_path = [self.key_training_src_path, self.to_arg_path(project_compile.pattern_sources_path)]
+            training_classpath = [self.key_training_classpath, self.to_arg_path(project_compile.pattern_classes_path)]
+            target_src_path = [self.key_target_src_path, self.to_arg_path(project_compile.misuse_source_path)]
+            target_classpath = [self.key_target_classpath, self.to_arg_path(project_compile.misuse_classes_path)]
+        elif self.detector_mode == DetectorMode.mine_and_detect:
+            training_src_path = [self.key_training_src_path, self.to_arg_path(project_compile.original_sources_path)]
+            training_classpath = [self.key_training_classpath, self.to_arg_path(project_compile.original_classes_path)]
+
+        return findings_file + detector_mode + training_src_path + training_classpath + target_src_path + target_classpath
 
     def _invoke_detector(self, absolute_misuse_detector_path: str, detector_args: List[str]):
         command = ["java"] + self.java_options + ["-jar",
