@@ -78,10 +78,10 @@ class TestDetect:
         self.uut.process_project_version(project, version)
 
         compile = version.get_compile(self.checkout_base)
-        self.assert_last_invoke_path_equals(self.uut.key_training_src_path, compile.original_sources_path)
-        self.assert_last_invoke_path_equals(self.uut.key_training_classpath, compile.original_classes_path)
-        self.assert_arg_not_in_last_invoke(self.uut.key_target_src_path)
-        self.assert_arg_not_in_last_invoke(self.uut.key_target_classpath)
+        self.assert_arg_not_in_last_invoke(self.uut.key_training_src_path)
+        self.assert_arg_not_in_last_invoke(self.uut.key_training_classpath)
+        self.assert_last_invoke_path_equals(self.uut.key_target_src_path, compile.original_sources_path)
+        self.assert_last_invoke_path_equals(self.uut.key_target_classpath, compile.original_classes_path)
 
     def test_passes_findings_file(self):
         project = create_project("project")

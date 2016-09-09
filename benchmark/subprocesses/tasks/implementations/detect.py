@@ -189,8 +189,8 @@ class Detect(ProjectVersionTask):
             target_src_path = [self.key_target_src_path, self.to_arg_path(project_compile.misuse_source_path)]
             target_classpath = [self.key_target_classpath, self.to_arg_path(project_compile.misuse_classes_path)]
         elif self.detector_mode == DetectorMode.mine_and_detect:
-            training_src_path = [self.key_training_src_path, self.to_arg_path(project_compile.original_sources_path)]
-            training_classpath = [self.key_training_classpath, self.to_arg_path(project_compile.original_classes_path)]
+            target_src_path = [self.key_target_src_path, self.to_arg_path(project_compile.original_sources_path)]
+            target_classpath = [self.key_target_classpath, self.to_arg_path(project_compile.original_classes_path)]
 
         return findings_file + detector_mode + training_src_path + training_classpath + target_src_path + target_classpath
 
