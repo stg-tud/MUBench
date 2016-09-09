@@ -131,6 +131,10 @@ class Detect(ProjectVersionTask):
         findings_file_path = join(result_path, self.detector_findings_file)
         run = Run(result_path)
 
+        if self.detector_mode == DetectorMode.detect_only and not version.patterns:
+            logger.info("No patterns for %s. Skipping detection.", version)
+            return Response.skip
+
         detector_path = Detect.__get_misuse_detector_path(self.detector)
         detector_args = self.get_detector_arguments(findings_file_path, version)
 

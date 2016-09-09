@@ -7,9 +7,10 @@ from unittest.mock import MagicMock
 from nose.tools import assert_equals, assert_raises
 
 from benchmark.data.pattern import Pattern
+from benchmark.subprocesses.tasks.base.project_task import Response
 from benchmark.subprocesses.tasks.implementations.detect import Detect, DetectorMode
 from benchmark.utils.io import write_yaml
-from benchmark_tests.test_utils.data_util import create_misuse, create_project, create_version
+from benchmark_tests.test_utils.data_util import create_project, create_version, create_misuse
 
 
 # noinspection PyAttributeOutsideInit
@@ -22,7 +23,7 @@ class TestDetect:
 
         os.chdir(self.temp_dir)
 
-        self.uut = Detect("detector", self.findings_file, self.checkout_base, self.results_path, 1, None, [], False)
+        self.uut = Detect("detector", self.findings_file, self.checkout_base, self.results_path, 2, None, [], False)
 
         self.last_invoke = None
 
@@ -56,7 +57,9 @@ class TestDetect:
 
     def test_passes_detect_only_paths(self):
         project = create_project("project")
-        version = create_version("0")
+        misuse = create_misuse("misuse", project=project)
+        misuse._PATTERNS = [Pattern("", "")]
+        version = create_version("0", misuses=[misuse])
         self.uut.detector_mode = DetectorMode.detect_only
 
         self.uut.process_project_version(project, version)
@@ -133,6 +136,16 @@ class TestDetect:
         self.uut._invoke_detector = MagicMock(side_effect=UserWarning)
 
         assert_raises(UserWarning, self.uut.process_project_version, project, version)
+
+    def test_skips_detect_only_if_no_patterns_are_available(self):
+        project = create_project("project")
+        version = create_version("0", project=project)
+        self.uut.detector_mode = DetectorMode.detect_only
+        self.uut._invoke_detector = MagicMock(side_effect=UserWarning)
+
+        response = self.uut.process_project_version(project, version)
+
+        assert_equals(Response.skip, response)
 
     def assert_last_invoke_path_equals(self, key, value):
         self.assert_arg_value_equals(self.last_invoke[1], key, '"' + value + '"')
