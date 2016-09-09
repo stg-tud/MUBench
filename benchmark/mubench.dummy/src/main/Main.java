@@ -14,7 +14,7 @@ public class Main {
 	public static void main(String[] args) throws Exception {
 		DetectorArgs myArgs = ArgParser.parse(args);
 		
-		String dirPath = myArgs.getProjectSrcPath();
+		String dirPath = myArgs.getTargetSrcPath();
 		String findingsFile = myArgs.getFindingsFile();
 		
 		DetectorOutput output = new DetectorOutput(findingsFile);
