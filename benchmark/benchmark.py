@@ -26,6 +26,10 @@ class Benchmark:
     RESULTS_PATH = realpath("findings")
     REVIEW_PATH = realpath("reviews")
 
+    EX1_SUBFOLDER = "ex1_detect-only"
+    EX2_SUBFOLDER = "ex2_detect-only"
+    EX3_SUBFOLDER = "ex3_detect-only"
+
     def __init__(self, config):
         self.detector_result_file = 'findings.yml'
         self.reviewed_eval_result_file = 'reviewed-result.csv'
@@ -61,12 +65,20 @@ class Benchmark:
         self.runner.add(compile_handler)
 
     def _setup_detect(self):
+        results_path = Benchmark.RESULTS_PATH
+        if config.experiment == 1:
+            results_path = join(results_path, Benchmark.EX1_SUBFOLDER)
+        elif config.experiment == 2:
+            results_path = join(results_path, Benchmark.EX2_SUBFOLDER)
+        elif config.experiment == 3:
+            results_path = join(results_path, Benchmark.EX3_SUBFOLDER)
+
         # TODO make task append the detector name to the results path
-        results_path = join(Benchmark.RESULTS_PATH, self.config.detector)
-        detector_runner = Detect(self.config.detector, self.detector_result_file, Benchmark.CHECKOUTS_PATH,
-                                 results_path, self.config.experiment,
-                                 self.config.timeout, self.config.java_options, self.config.force_detect)
-        self.runner.add(detector_runner)
+        results_path = join(results_path, self.config.detector)
+
+        self.runner.add(Detect(self.config.detector, self.detector_result_file, Benchmark.CHECKOUTS_PATH, results_path,
+                               self.config.experiment, self.config.timeout, self.config.java_options,
+                               self.config.force_detect))
 
     def _setup_review_prepare(self):
         detectors = available_detectors
@@ -75,17 +87,16 @@ class Benchmark:
 
         for detector in detectors:
             results_path = join(Benchmark.RESULTS_PATH, detector)
-            is_ex1_detector = detector.endswith("-do")
-            if is_ex1_detector and config.experiment == 1:
-                self.runner.add(ReviewPrepareEx1("ex1_detect-only", detector, results_path, Benchmark.REVIEW_PATH,
+            if config.experiment == 1:
+                self.runner.add(ReviewPrepareEx1(Benchmark.EX1_SUBFOLDER, detector, results_path, Benchmark.REVIEW_PATH,
                                                  Benchmark.CHECKOUTS_PATH, Benchmark.CHECKOUTS_PATH,
                                                  self.config.force_prepare))
-            elif not is_ex1_detector and config.experiment == 2:
-                self.runner.add(ReviewPrepareEx2("ex2_mine-and-detect", detector, results_path, Benchmark.REVIEW_PATH,
+            elif config.experiment == 2:
+                self.runner.add(ReviewPrepareEx2(Benchmark.EX2_SUBFOLDER, detector, results_path, Benchmark.REVIEW_PATH,
                                                  Benchmark.CHECKOUTS_PATH, Benchmark.CHECKOUTS_PATH,
                                                  self.config.force_prepare))
-            elif not is_ex1_detector and config.experiment == 3:
-                self.runner.add(ReviewPrepareEx3("ex3_all-findings", detector, results_path, Benchmark.REVIEW_PATH,
+            elif config.experiment == 3:
+                self.runner.add(ReviewPrepareEx3(Benchmark.EX3_SUBFOLDER, detector, results_path, Benchmark.REVIEW_PATH,
                                                  Benchmark.CHECKOUTS_PATH, Benchmark.CHECKOUTS_PATH,
                                                  self.config.top_n_findings, self.config.force_prepare))
 
@@ -94,11 +105,11 @@ class Benchmark:
             return
 
         if config.experiment == 1:
-            self.runner.add(ReviewCheck("ex1_detect-only", Benchmark.REVIEW_PATH, available_detectors))
+            self.runner.add(ReviewCheck(Benchmark.EX1_SUBFOLDER, Benchmark.REVIEW_PATH, available_detectors))
         elif config.experiment == 2:
-            self.runner.add(ReviewCheck("ex2_mine-and-detect", Benchmark.REVIEW_PATH, available_detectors))
+            self.runner.add(ReviewCheck(Benchmark.EX2_SUBFOLDER, Benchmark.REVIEW_PATH, available_detectors))
         elif config.experiment == 3:
-            self.runner.add(ReviewCheckEx3("ex3_all-findings", Benchmark.REVIEW_PATH, available_detectors))
+            self.runner.add(ReviewCheckEx3(Benchmark.EX3_SUBFOLDER, Benchmark.REVIEW_PATH, available_detectors))
 
     def run(self) -> None:
         if config.subprocess == 'visualize':
