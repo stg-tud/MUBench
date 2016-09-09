@@ -63,7 +63,7 @@ class TestCompile:
                     create_file(join(class_path, package, file))
                     print("fake compile: {}".format(join(class_path, package, file)))
 
-        self.uut = Compile(self.checkout_base_path, self.checkout_base_path, 1, False)
+        self.uut = Compile(self.checkout_base_path, self.checkout_base_path, False)
         self.uut._compile = MagicMock(side_effect=mock_compile)
 
     def teardown(self):
@@ -114,7 +114,7 @@ class TestCompile:
 
         self.uut.process_project_version(self.project, self.version)
 
-        assert exists(join(self.pattern_sources_path, "a0.java"))
+        assert exists(join(self.pattern_sources_path, "a.java"))
 
     def test_skips_copy_of_pattern_sources_if_copy_exists(self):
         self.version._PATTERNS = {self.create_pattern("a.java")}
@@ -123,7 +123,7 @@ class TestCompile:
 
         self.uut.process_project_version(self.project, self.version)
 
-        assert not exists(join(self.pattern_sources_path, "b0.java"))
+        assert not exists(join(self.pattern_sources_path, "b.java"))
 
     def test_forces_copy_of_pattern_sources(self):
         self.version._PATTERNS = {self.create_pattern("a.java")}
@@ -133,8 +133,8 @@ class TestCompile:
 
         self.uut.process_project_version(self.project, self.version)
 
-        assert exists(join(self.pattern_sources_path, "b0.java"))
-        assert not exists(join(self.pattern_sources_path, "a0.java"))
+        assert exists(join(self.pattern_sources_path, "b.java"))
+        assert not exists(join(self.pattern_sources_path, "a.java"))
 
     def test_skips_if_no_config(self):
         del self.version._YAML["build"]
@@ -194,14 +194,14 @@ class TestCompile:
 
         self.uut.process_project_version(self.project, self.version)
 
-        assert exists(join(self.pattern_classes_path, "a0.class"))
+        assert exists(join(self.pattern_classes_path, "a.class"))
 
     def test_compiles_patterns_in_package(self):
         self.version._PATTERNS = {self.create_pattern(join("a", "b.java"))}
 
         self.uut.process_project_version(self.project, self.version)
 
-        assert exists(join(self.pattern_classes_path, "a", "b0.class"))
+        assert exists(join(self.pattern_classes_path, "a", "b.class"))
 
     def test_skips_compile_patterns_if_pattern_classes_exist(self):
         makedirs(self.pattern_classes_path)
@@ -209,7 +209,7 @@ class TestCompile:
 
         self.uut.process_project_version(self.project, self.version)
 
-        assert not exists(join(self.pattern_classes_path, "a0.class"))
+        assert not exists(join(self.pattern_classes_path, "a.class"))
 
     def test_forces_compile_patterns(self):
         makedirs(self.pattern_classes_path)
@@ -218,7 +218,7 @@ class TestCompile:
 
         self.uut.process_project_version(self.project, self.version)
 
-        assert exists(join(self.pattern_classes_path, "a0.class"))
+        assert exists(join(self.pattern_classes_path, "a.class"))
 
     def create_pattern(self, filename):
         pattern = Pattern(self.temp_dir, filename)

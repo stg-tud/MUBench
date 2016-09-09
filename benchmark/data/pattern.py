@@ -1,7 +1,6 @@
 from distutils.file_util import copy_file
-from fileinput import FileInput
 from os import makedirs
-from os.path import exists, join, splitext, dirname, basename
+from os.path import exists, join, dirname, basename, splitext
 
 
 class Pattern:
@@ -29,41 +28,22 @@ class Pattern:
 
     @property
     def file_name(self):
-        return splitext(self.pattern_path)[0]
+        return self.pattern_path
 
     @property
-    def class_name(self):
-        return basename(self.file_name)
+    def file_name_without_extension(self):
+        return splitext(self.file_name)[0]
 
-    @property
-    def file_extension(self):
-        return splitext(self.path)[1]
-
-    def duplicate(self, destination: str, times: int):
-        duplicates = set()
-        for i in range(times):
-            duplicates.add(self.copy(destination, str(i)))
-        return duplicates
-
-    def copy(self, destination: str, suffix: str="") -> str:
-        new_pattern_path = self.file_name + suffix + self.file_extension
-        new_pattern = Pattern(destination, new_pattern_path)
+    def copy(self, destination: str) -> 'Pattern':
+        new_pattern = Pattern(destination, self.file_name)
 
         makedirs(new_pattern.orig_dir, exist_ok=True)
         copy_file(self.path, new_pattern.path)
 
-        self._replace_class_name(new_pattern.path, suffix)
-
         return new_pattern
 
-    def _get_destination_file(self, destination: str, i: int) -> str:
-        return join(destination, self.file_name + str(i) + self.file_extension)
-
-    def _replace_class_name(self, copied_file: str, suffix: str) -> None:
-        with FileInput(copied_file, inplace=True) as file:
-            for line in file:
-                # FileInput inplace redirects stdout to the file
-                print(line.replace(self.class_name, self.class_name + suffix), end='')
+    def _get_destination_file(self, destination: str) -> str:
+        return join(destination, self.file_name)
 
 
 class NoPatternFileError(FileNotFoundError):

@@ -16,9 +16,7 @@ class TestPattern:
         self.orig_dir = join(join(self.temp_dir, "origin"))
         makedirs(self.orig_dir, exist_ok=True)
 
-        self.pattern_file_base_name = "pattern"
-        self.pattern_file_extension = ".java"
-        self.pattern_file_name = self.pattern_file_base_name + self.pattern_file_extension
+        self.pattern_file_name = "pattern.java"
         self.pattern_file_path = join(self.temp_dir, self.pattern_file_name)
         create_file(self.pattern_file_path)
 
@@ -34,55 +32,14 @@ class TestPattern:
         uut = Pattern(self.temp_dir, "file.txt")
         assert_raises(NoPatternFileError, uut.is_valid)
 
-    def test_duplicate(self):
+    def test_copy(self):
+        destination = "copy"
         uut = Pattern(self.temp_dir, self.pattern_file_name)
-        duplicates = uut.duplicate(self.temp_dir, 2)
+        copy = uut.copy(join(self.temp_dir, destination))
 
-        dup1path = self.pattern_file_base_name + "0" + self.pattern_file_extension
-        dup2path = self.pattern_file_base_name + "1" + self.pattern_file_extension
-        assert_equals(duplicates, {Pattern(self.temp_dir, dup1path), Pattern(self.temp_dir, dup2path)})
-        assert exists(join(self.temp_dir, dup1path))
-        assert exists(join(self.temp_dir, dup2path))
-
-    def test_duplicate_changes_class_name(self):
-        uut = Pattern(self.orig_dir, "UseResult.java")
-
-        test_content = """
-            import java.math.BigInteger;
-
-            public class UseResult {
-                public UseResult() {}
-                public void pattern(String value, int bit) {}
-            }
-        """
-        with open(uut.path, 'w') as pattern:
-            pattern.write(test_content)
-
-        duplicate = next(iter(uut.duplicate(self.temp_dir, 1)))
-
-        with open(duplicate.path, "r") as copy:
-            actual_content = copy.read()
-
-        expectation = """
-            import java.math.BigInteger;
-
-            public class UseResult0 {
-                public UseResult0() {}
-                public void pattern(String value, int bit) {}
-            }
-        """
-
-        assert_equals(actual_content, expectation)
-
-    def test_duplicate_with_package(self):
-        pattern_name = join("mypackage", "Pattern.java")
-        uut = Pattern(self.temp_dir, pattern_name)
-        makedirs(uut.orig_dir)
-        create_file(uut.path)
-
-        uut.duplicate(self.temp_dir, 1)
-
-        assert exists(join(self.temp_dir, "mypackage", "Pattern0.java"))
+        copy_path = join(destination, self.pattern_file_name)
+        assert_equals(copy, Pattern(self.temp_dir, copy_path))
+        assert exists(join(self.temp_dir, copy_path))
 
     def test_equality(self):
         assert Pattern("p", "a") == Pattern("p", "a")

@@ -17,11 +17,10 @@ from benchmark.utils.shell import Shell, CommandFailedError
 class Compile(ProjectVersionTask):
     __BUILD_DIR = "build"
 
-    def __init__(self, checkouts_base_path: str, compiles_base_path: str, pattern_frequency: int, force_compile):
+    def __init__(self, checkouts_base_path: str, compiles_base_path: str, force_compile):
         super().__init__()
         self.checkouts_base_path = checkouts_base_path
         self.compiles_base_path = compiles_base_path
-        self.pattern_frequency = pattern_frequency
         self.force_compile = force_compile
 
     def get_requirements(self):
@@ -31,7 +30,6 @@ class Compile(ProjectVersionTask):
         logger = logging.getLogger("compile")
         logger.info("Compiling %s...", version)
         logger.debug("- Force compile     = %r", self.force_compile)
-        logger.debug("- Pattern frequency = %r", self.pattern_frequency)
         logger = logging.getLogger("compile.tasks")
 
         project_compile = version.get_compile(self.compiles_base_path)
@@ -99,8 +97,7 @@ class Compile(ProjectVersionTask):
         else:
             try:
                 logger.info("Copying pattern sources...")
-                self.__copy_pattern_sources(version.patterns, project_compile.pattern_sources_path,
-                                            self.pattern_frequency)
+                self.__copy_pattern_sources(version.patterns, project_compile.pattern_sources_path)
             except IOError as e:
                 logger.error("Failed to copy pattern sources: %s", e)
                 return Response.skip
@@ -110,11 +107,11 @@ class Compile(ProjectVersionTask):
         else:
             try:
                 logger.debug("Copying patterns to source directory...")
-                duplicates = self.__duplicate(version.patterns, sources_path, self.pattern_frequency)
+                copies = self.__copy(version.patterns, sources_path)
                 logger.info("Compiling patterns...")
                 self._compile(version.compile_commands, build_path)
                 logger.debug("Copying pattern classes...")
-                self.__copy_pattern_classes(duplicates, classes_path, project_compile.pattern_classes_path)
+                self.__copy_pattern_classes(copies, classes_path, project_compile.pattern_classes_path)
             except FileNotFoundError as e:
                 remove_tree(project_compile.pattern_classes_path)
                 logger.error("Compilation failed: %s", e)
@@ -140,10 +137,10 @@ class Compile(ProjectVersionTask):
             shutil.copy(join(sources_path, file), dst)
 
     @staticmethod
-    def __copy_pattern_sources(patterns: Set[Pattern], destination: str, pattern_frequency: int):
+    def __copy_pattern_sources(patterns: Set[Pattern], destination: str):
         remove_tree(destination)
         for pattern in patterns:
-            pattern.duplicate(destination, pattern_frequency)
+            pattern.copy(destination)
 
     @staticmethod
     def __copy_additional_compile_sources(version: ProjectVersion, checkout_dir: str):
@@ -167,17 +164,17 @@ class Compile(ProjectVersionTask):
             shutil.copy(join(classes_path, file), dst)
 
     @staticmethod
-    def __duplicate(patterns, destination, pattern_frequency: int):
-        duplicates = set()
+    def __copy(patterns, destination):
+        copies = set()
         for pattern in patterns:
-            duplicates.update(pattern.duplicate(destination, pattern_frequency))
-        return duplicates
+            copies.add(pattern.copy(destination))
+        return copies
 
     @staticmethod
     def __copy_pattern_classes(patterns, classes_path, destination):
         remove_tree(destination)
         for pattern in patterns:
-            pattern_class_file_name = pattern.file_name + ".class"
+            pattern_class_file_name = pattern.file_name_without_extension + ".class"
             new_name = join(destination, pattern_class_file_name)
             makedirs(dirname(new_name), exist_ok=True)
             shutil.copy(join(classes_path, pattern_class_file_name), new_name)
