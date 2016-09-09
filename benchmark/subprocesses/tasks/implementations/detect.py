@@ -128,20 +128,22 @@ class Detect(ProjectVersionTask):
         logger = logging.getLogger("detect")
 
         result_path = join(self.results_base_path, version.project_id, version.version_id)
-        findings_file_path = join(result_path, self.detector_findings_file)
         run = Run(result_path)
 
-        if self.detector_mode == DetectorMode.detect_only and not version.patterns:
+        if run.result == Result.error and not self._new_detector_available(run):
+            logger.info("Error in previous run for %s. Skipping detection.", version)
+            return Response.skip
+        elif self.detector_mode == DetectorMode.detect_only and not version.patterns:
             logger.info("No patterns for %s. Skipping detection.", version)
             return Response.skip
-
-        detector_path = Detect.__get_misuse_detector_path(self.detector)
-        detector_args = self.get_detector_arguments(findings_file_path, version)
-
-        if run.is_success() and not self.force_detect and not self._new_detector_available(run):
+        elif run.is_success() and not self.force_detect and not self._new_detector_available(run):
             logger.info("Detector findings for %s already exists. Skipping detection.", version)
             return Response.ok
         else:
+            findings_file_path = join(result_path, self.detector_findings_file)
+            detector_path = Detect.__get_misuse_detector_path(self.detector)
+            detector_args = self.get_detector_arguments(findings_file_path, version)
+
             remove_tree(result_path)
             makedirs(result_path, exist_ok=True)
             logger.info("Detecting misuses in %s...", version)

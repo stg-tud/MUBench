@@ -118,14 +118,14 @@ class TestDetect:
 
         self.uut.process_project_version(project, version)
 
-    def test_repeats_detection_if_previous_run_failed(self):
+    def test_skips_detect_if_previous_run_was_error(self):
         project = create_project("project")
         version = create_version("0", project=project)
         write_yaml({"result": "error"},
                    file=join(self.results_path, version.project_id, version.version_id, "result.yml"))
         self.uut._invoke_detector = MagicMock(side_effect=UserWarning)
 
-        assert_raises(UserWarning, self.uut.process_project_version, project, version)
+        self.uut.process_project_version(project, version)
 
     def test_force_detect_on_new_detector(self):
         project = create_project("project")
