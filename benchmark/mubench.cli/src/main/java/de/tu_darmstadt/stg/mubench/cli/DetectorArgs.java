@@ -56,4 +56,12 @@ public class DetectorArgs {
 		return targetClassPath;
 	}
 
+	public CodePath getTargetPath() throws FileNotFoundException {
+		return new CodePath(getTargetSrcPath(), getTargetClassPath());
+	}
+
+	public CodePath getTrainingPath() throws FileNotFoundException {
+		return new CodePath(getTrainingSrcPath(), getTargetClassPath());
+	}
+
 }
