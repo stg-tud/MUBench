@@ -37,9 +37,9 @@ public class ArgParser {
 				targetClassPath = next_arg;
 				break;
 			case keyDetectorMode:
-				if (next_arg == "0") {
+				if (next_arg.equals("0")) {
 					detectorMode = DetectorMode.MINE_AND_DETECT;
-				} else if (next_arg == "1") {
+				} else if (next_arg.equals("1")) {
 					detectorMode = DetectorMode.DETECT_ONLY;
 				} else {
 					throw new IllegalArgumentException("Unknown detector mode " + next_arg);
