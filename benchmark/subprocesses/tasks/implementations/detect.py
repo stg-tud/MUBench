@@ -30,6 +30,7 @@ class Run:
     FINDINGS_FILE = "findings.yml"
 
     def __init__(self, path: str):
+        self.__path = path
         self.__findings_file_path = join(path, Run.FINDINGS_FILE)
         self.__run_file_path = join(path, Run.RUN_FILE)
         self.result = None  # type: Result
@@ -63,6 +64,11 @@ class Run:
         run_data.update(
             {"result": self.result.name, "runtime": self.runtime, "message": self.message, "md5": detector_md5})
         write_yaml(run_data, file=self.__run_file_path)
+
+    def reset(self):
+        path = self.__path
+        remove_tree(path)
+        self.__init__(path)
 
 
 class DetectorMode(IntEnum):
@@ -142,6 +148,8 @@ class Detect(ProjectVersionTask):
             logger.info("Detector findings for %s already exists. Skipping detection.", version)
             return Response.ok
         else:
+            run.reset()
+
             findings_file_path = join(result_path, self.detector_findings_file)
             detector_path = Detect.__get_misuse_detector_path(self.detector)
             detector_args = self.get_detector_arguments(findings_file_path, version)
