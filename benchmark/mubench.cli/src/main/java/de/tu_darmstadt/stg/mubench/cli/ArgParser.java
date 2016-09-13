@@ -41,6 +41,8 @@ public class ArgParser {
 					detectorMode = DetectorMode.MINE_AND_DETECT;
 				} else if (next_arg == "1") {
 					detectorMode = DetectorMode.DETECT_ONLY;
+				} else {
+					throw new IllegalArgumentException("Unknown detector mode " + next_arg);
 				}
 				break;
 			default:
