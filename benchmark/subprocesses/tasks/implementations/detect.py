@@ -26,7 +26,7 @@ class Result(Enum):
 
 
 class Run:
-    RUN_FILE = "result.yml"
+    RUN_FILE = "run.yml"
     FINDINGS_FILE = "findings.yml"
 
     def __init__(self, path: str):
@@ -59,7 +59,9 @@ class Run:
         return self.__findings
 
     def write(self, detector_md5: str):
-        run_data = {"result": self.result.name, "runtime": self.runtime, "message": self.message, "md5": detector_md5}
+        run_data = read_yaml(self.__run_file_path) if exists(self.__run_file_path) else {}
+        run_data.update(
+            {"result": self.result.name, "runtime": self.runtime, "message": self.message, "md5": detector_md5})
         write_yaml(run_data, file=self.__run_file_path)
 
 

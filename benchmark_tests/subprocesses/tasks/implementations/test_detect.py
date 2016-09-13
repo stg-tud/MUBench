@@ -107,13 +107,13 @@ class TestDetect:
 
         self.uut.process_project_version(project, version)
 
-        assert exists(join(self.results_path, version.project_id, version.version_id, "result.yml"))
+        assert exists(join(self.results_path, version.project_id, version.version_id, "run.yml"))
 
     def test_skips_detect_if_previous_run_succeeded(self):
         project = create_project("project")
         version = create_version("0", project=project)
         write_yaml({"result": "success"},
-                   file=join(self.results_path, version.project_id, version.version_id, "result.yml"))
+                   file=join(self.results_path, version.project_id, version.version_id, "run.yml"))
         self.uut._invoke_detector = MagicMock(side_effect=UserWarning)
 
         self.uut.process_project_version(project, version)
@@ -122,7 +122,7 @@ class TestDetect:
         project = create_project("project")
         version = create_version("0", project=project)
         write_yaml({"result": "error"},
-                   file=join(self.results_path, version.project_id, version.version_id, "result.yml"))
+                   file=join(self.results_path, version.project_id, version.version_id, "run.yml"))
         self.uut._invoke_detector = MagicMock(side_effect=UserWarning)
 
         self.uut.process_project_version(project, version)
@@ -131,7 +131,7 @@ class TestDetect:
         project = create_project("project")
         version = create_version("0", project=project)
         write_yaml({"result": "success"},
-                   file=join(self.results_path, version.project_id, version.version_id, "result.yml"))
+                   file=join(self.results_path, version.project_id, version.version_id, "run.yml"))
         self.uut._new_detector_available = lambda x: True
         self.uut._invoke_detector = MagicMock(side_effect=UserWarning)
 
