@@ -28,30 +28,30 @@ public class DetectorOutputTest {
 		findingsFile = testFolder.newFile();
 		uut = new DetectorOutput(findingsFile.toString());
 	}
-	
+
 	@Test
 	public void writesFinding() throws IOException {
 		uut.add("file1", "method1");
-		
+
 		assertOutput(uut, lines("id: 0", "file: file1", "method: method1"));
 	}
-	
+
 	@Test
 	public void writesAdditionalData() throws IOException {
 		DetectorFinding finding = uut.add("file", "method");
 		finding.put("additional", "info");
-		
+
 		assertOutput(uut, lines("id: 0", "file: file", "method: method", "additional: info"));
 	}
-	
+
 	@Test
 	public void writesListData() throws IOException {
 		DetectorFinding finding = uut.add("f", "m");
 		finding.put("list", Arrays.asList("a", "b", "c"));
-		
+
 		assertOutput(uut, lines("id: 0", "file: f", "method: m", "list:", "- a", "- b", "- c"));
 	}
-	
+
 	@Test
 	public void writesMultipleFindings() throws IOException {
 		uut.add("f1", "m1");
@@ -59,24 +59,34 @@ public class DetectorOutputTest {
 
 		assertOutput(uut, lines("id: 0", "file: f1", "method: m1", "---", "id: 1", "file: f2", "method: m2"));
 	}
-	
+
 	@Test
 	public void writesMultilineData() throws IOException {
 		DetectorFinding finding = uut.add("f", "m");
 		finding.put("multiline", "line1\nline2\n");
-		
+
 		assertOutput(uut, lines("id: 0", "file: f", "method: m", "multiline: |", "  line1", "  line2"));
 	}
-	
+
 	@Test
 	public void writesMultilineDataWithCR() throws IOException {
 		DetectorFinding finding = uut.add("f", "m");
 		finding.put("multiline", "line1\r\nline2\n\r");
-		
+
 		assertOutput(uut, lines("id: 0", "file: f", "method: m", "multiline: |", "  line1", "  line2"));
 	}
-	
-	private List<String> lines(String...lines) {
+
+	@Test
+	public void writesRunInformation() throws IOException {
+		uut.addRunInformation("patternfrequency", "10");
+		uut.write();
+		Path outputPath = Paths.get(testFolder.getRoot().getAbsolutePath(), "run.yml");
+		List<String> output = Files.readAllLines(outputPath, Charset.forName("UTF-8"));
+		String[] expected = new String[] { "patternfrequency: '10'" };
+		assertThat(output, is(lines(expected)));
+	}
+
+	private List<String> lines(String... lines) {
 		return Arrays.asList(lines);
 	}
 
