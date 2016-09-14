@@ -1,27 +1,31 @@
 package main;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.LinkedList;
 
-import de.tu_darmstadt.stg.mubench.cli.ArgParser;
-import de.tu_darmstadt.stg.mubench.cli.DetectorArgs;
+import de.tu_darmstadt.stg.mubench.cli.CodePath;
 import de.tu_darmstadt.stg.mubench.cli.DetectorOutput;
+import de.tu_darmstadt.stg.mubench.cli.MuBenchRunner;
 
-public class Main {
-	/**
-	 * @param args
-	 */
-	public static void main(String[] args) throws Exception {
-		DetectorArgs myArgs = ArgParser.parse(args);
-		
-		String dirPath = myArgs.getTargetSrcPath();
-		String findingsFile = myArgs.getFindingsFile();
-		
-		DetectorOutput output = new DetectorOutput(findingsFile);
-		for (File file : listFiles(dirPath)) {
-			output.add(file.getPath(), "<init>()");
+public class Main extends MuBenchRunner {
+
+	public static void main(String[] args) throws IOException {
+		new Main().run(args);
+	}
+	
+	protected void mineAndDetect(CodePath trainingAndTargetPath, DetectorOutput output) {
+		dummyMine(output, trainingAndTargetPath.srcPath);
+	}
+	
+	protected void detectOnly(CodePath patternPath, CodePath targetPath, DetectorOutput output) {
+		dummyMine(output, targetPath.srcPath);
+	}
+
+	private void dummyMine(DetectorOutput output, String targetPath) {
+		for (File file : listFiles(targetPath)) {
+			output.add(file.getPath(), "m()");
 		}
-		output.write();
 	}
 
 	public static LinkedList<File> listFiles(String directoryName) {

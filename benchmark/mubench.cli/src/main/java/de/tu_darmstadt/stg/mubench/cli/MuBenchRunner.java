@@ -5,7 +5,7 @@ import java.io.IOException;
 
 /**
  * Implement a concrete runner like this:
- * <code>
+ * <pre><code>
  * public class XYRunner extends MuBenchRunner {
  *   public static void main(String[] args) {
  *   	new XYRunner().run(args);
@@ -14,7 +14,7 @@ import java.io.IOException;
  *   // Run-Mode Implementations
  *   ...
  * }
- * </code>
+ * </code></pre>
  */
 public abstract class MuBenchRunner {
 	public void run(String[] args) throws IOException {
