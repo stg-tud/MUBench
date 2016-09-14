@@ -4,6 +4,14 @@
 	<groupId>de.tu-darmstadt.stg</groupId>
 	<artifactId>mubench.dummy</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
+	
+	<repositories>
+		<repository>
+			<id>stg-mubench</id>
+			<name>MuBench</name>
+			<url>http://www.st.informatik.tu-darmstadt.de/artifacts/mubench/mvn/</url>
+		</repository>
+	</repositories>
 
 	<build>
 		<sourceDirectory>src</sourceDirectory>

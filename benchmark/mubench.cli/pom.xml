@@ -12,14 +12,14 @@
 
 	<distributionManagement>
 		<repository>
-			<id>stg-eko</id>
-			<name>Eko Releases</name>
-			<url>http://vm16.rbg.informatik.tu-darmstadt.de/nexus/repository/maven-releases</url>
+			<id>stg-mubench</id>
+			<name>MuBench</name>
+			<url>ftp://www.st.informatik.tu-darmstadt.de/mubench/mvn</url>
 		</repository>
 		<snapshotRepository>
-			<id>stg-eko</id>
-			<name>Eko Snapshot</name>
-			<url>http://vm16.rbg.informatik.tu-darmstadt.de/nexus/repository/maven-snapshots</url>
+			<id>stg-mubench</id>
+			<name>MuBench</name>
+			<url>ftp://www.st.informatik.tu-darmstadt.de/mubench/mvn</url>
 		</snapshotRepository>
 	</distributionManagement>
 
@@ -28,6 +28,14 @@
 	</properties>
 
 	<build>
+		<extensions>
+			<!-- Enabling the use of FTP -->
+			<extension>
+				<groupId>org.apache.maven.wagon</groupId>
+				<artifactId>wagon-ftp</artifactId>
+				<version>1.0-beta-6</version>
+			</extension>
+		</extensions>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
