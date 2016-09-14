@@ -46,7 +46,7 @@ public class DetectorOutput {
 		return (List<String>) runInformation.put(key, value);
 	}
 
-	public void write() throws IOException {
+	void write() throws IOException {
 		writeFindings();
 		writeRunInformation();
 	}
