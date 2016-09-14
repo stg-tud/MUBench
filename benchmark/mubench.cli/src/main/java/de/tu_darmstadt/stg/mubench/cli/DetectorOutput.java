@@ -24,7 +24,7 @@ public class DetectorOutput {
 	private final List<DetectorFinding> findings;
 	private final HashMap<String, Object> runInformation;
 
-	public DetectorOutput(String findingsFilePath) throws FileNotFoundException {
+	DetectorOutput(String findingsFilePath) throws FileNotFoundException {
 		findings = new LinkedList<>();
 		runInformation = new HashMap<>();
 		findingsFile = new File(findingsFilePath);
