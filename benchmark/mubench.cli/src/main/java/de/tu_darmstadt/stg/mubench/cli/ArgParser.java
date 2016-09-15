@@ -2,6 +2,7 @@ package de.tu_darmstadt.stg.mubench.cli;
 
 public class ArgParser {
 	public static final String keyFindingsFile = "target";
+	public static final String keyRunFile = "run_info";
 	public static final String keyDetectorMode = "detector_mode";
 	public static final String keyTrainingSrcPath = "training_src_path";
 	public static final String keyTrainingClassPath = "training_classpath";
@@ -10,6 +11,7 @@ public class ArgParser {
 
 	public static DetectorArgs parse(String[] args) {
 		String findingsFile = null;
+		String runFile = null;
 		DetectorMode detectorMode = null;
 		String trainingSrcPath = null;
 		String trainingClassPath = null;
@@ -23,6 +25,9 @@ public class ArgParser {
 			switch (arg) {
 			case keyFindingsFile:
 				findingsFile = next_arg;
+				break;
+			case keyRunFile:
+				runFile = next_arg;
 				break;
 			case keyTrainingSrcPath:
 				trainingSrcPath = next_arg;
@@ -51,13 +56,14 @@ public class ArgParser {
 		}
 
 		System.out.println("FindingsFile : " + findingsFile);
+		System.out.println("RunFile : " + runFile);		
 		System.out.println("DetectorMode : " + detectorMode);
 		System.out.println("TrainingSrcPath : " + trainingSrcPath);
 		System.out.println("TrainingClassPath : " + trainingClassPath);
 		System.out.println("TargetSrcPath : " + targetSrcPath);
 		System.out.println("TargetClassPath : " + targetClassPath);
 
-		return new DetectorArgs(findingsFile, detectorMode, trainingSrcPath, trainingClassPath, targetSrcPath,
-				targetClassPath);
+		return new DetectorArgs(findingsFile, runFile, detectorMode, trainingSrcPath, trainingClassPath, 
+				targetSrcPath, targetClassPath);
 	}
 }

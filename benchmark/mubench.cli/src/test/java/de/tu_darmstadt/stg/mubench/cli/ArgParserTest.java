@@ -13,6 +13,12 @@ public class ArgParserTest {
 		DetectorArgs actual = ArgParser.parse(new String[] { ArgParser.keyFindingsFile, "findings.yml" });
 		assertEquals("findings.yml", actual.getFindingsFile());
 	}
+	
+	@Test
+	public void parseRunFile() throws FileNotFoundException {
+		DetectorArgs actual = ArgParser.parse(new String[] { ArgParser.keyRunFile, "run.yml" });
+		assertEquals("run.yml", actual.getRunFile());
+	}
 
 	@Test
 	public void parseDetectorMode() throws FileNotFoundException {

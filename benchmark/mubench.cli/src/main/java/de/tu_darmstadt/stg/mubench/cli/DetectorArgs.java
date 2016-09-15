@@ -4,15 +4,17 @@ import java.io.FileNotFoundException;
 
 public class DetectorArgs {
 	private final String findingsFile;
+	private final String runFile;
 	private final String trainingSrcPath;
 	private final String trainingClassPath;
 	private final String targetSrcPath;
 	private final String targetClassPath;
 	private final DetectorMode detectorMode;
 
-	public DetectorArgs(String findingsFile, DetectorMode detectorMode, String trainingSrcPath,
+	public DetectorArgs(String findingsFile, String runFile, DetectorMode detectorMode, String trainingSrcPath,
 			String trainingClassPath, String targetSrcPath, String targetClassPath) {
 		this.findingsFile = findingsFile;
+		this.runFile = runFile;
 		this.trainingSrcPath = trainingSrcPath;
 		this.trainingClassPath = trainingClassPath;
 		this.targetSrcPath = targetSrcPath;
@@ -24,6 +26,12 @@ public class DetectorArgs {
 		if (findingsFile == null)
 			throw new FileNotFoundException("findings file not provided");
 		return findingsFile;
+	}
+	
+	public String getRunFile() throws FileNotFoundException {
+		if (runFile == null)
+			throw new FileNotFoundException("run file not provided");
+		return runFile;
 	}
 
 	public DetectorMode getDetectorMode() throws FileNotFoundException {
