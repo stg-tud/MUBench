@@ -55,7 +55,7 @@
 		<dependency>
 			<groupId>de.tu-darmstadt.stg</groupId>
 			<artifactId>mubench.cli</artifactId>
-			<version>0.0.7-SNAPSHOT</version>
+			<version>0.0.8-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
 </project>
