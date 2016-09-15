@@ -22,11 +22,13 @@ public class DetectorOutputTest {
 	public TemporaryFolder testFolder = new TemporaryFolder();
 	private DetectorOutput uut;
 	private File findingsFile;
+	private File runFile;
 
 	@Before
 	public void setup() throws IOException {
 		findingsFile = testFolder.newFile();
-		uut = new DetectorOutput(findingsFile.toString());
+		runFile = testFolder.newFile();
+		uut = new DetectorOutput(findingsFile.toString(), runFile.toString());
 	}
 
 	@Test
@@ -80,9 +82,9 @@ public class DetectorOutputTest {
 	public void writesRunInformation() throws IOException {
 		uut.addRunInformation("patternfrequency", "10");
 		uut.write();
-		Path outputPath = Paths.get(testFolder.getRoot().getAbsolutePath(), "run.yml");
-		List<String> output = Files.readAllLines(outputPath, Charset.forName("UTF-8"));
 		String[] expected = new String[] { "patternfrequency: '10'" };
+		Path outputPath = Paths.get(runFile.getAbsolutePath());
+		List<String> output = Files.readAllLines(outputPath, Charset.forName("UTF-8"));
 		assertThat(output, is(lines(expected)));
 	}
 

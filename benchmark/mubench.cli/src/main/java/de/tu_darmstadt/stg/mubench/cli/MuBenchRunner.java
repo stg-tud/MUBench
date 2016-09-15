@@ -22,7 +22,7 @@ public abstract class MuBenchRunner {
 	}
 
 	protected void run(DetectorArgs args) throws IOException {
-		DetectorOutput output = new DetectorOutput(args.getFindingsFile());
+		DetectorOutput output = new DetectorOutput(args.getFindingsFile(), args.getRunFile());
 		run(args.getDetectorMode(), args, output);
 		output.write();
 	}

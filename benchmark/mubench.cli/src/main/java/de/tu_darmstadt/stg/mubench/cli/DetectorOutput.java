@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -24,11 +23,11 @@ public class DetectorOutput {
 	private final List<DetectorFinding> findings;
 	private final HashMap<String, Object> runInformation;
 
-	DetectorOutput(String findingsFilePath) throws FileNotFoundException {
+	DetectorOutput(String findingsFilePath, String runInformationFilePath) throws FileNotFoundException {
 		findings = new LinkedList<>();
 		runInformation = new HashMap<>();
 		findingsFile = new File(findingsFilePath);
-		runInformationFile = Paths.get(findingsFile.getParentFile().toString(), "run.yml").toFile();
+		runInformationFile = new File(runInformationFilePath);
 	}
 
 	public DetectorFinding add(String file, String method) {
