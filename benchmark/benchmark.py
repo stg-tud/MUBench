@@ -32,6 +32,7 @@ class Benchmark:
 
     def __init__(self, config):
         self.detector_result_file = 'findings.yml'
+        self.detector_run_info_file = 'run.yml'
         self.reviewed_eval_result_file = 'reviewed-result.csv'
         self.visualize_result_file = 'result.csv'
 
@@ -75,9 +76,9 @@ class Benchmark:
         # TODO make task append the detector name to the results path
         results_path = join(results_path, self.config.detector)
 
-        self.runner.add(Detect(self.config.detector, self.detector_result_file, Benchmark.CHECKOUTS_PATH, results_path,
-                               self.config.experiment, self.config.timeout, self.config.java_options,
-                               self.config.force_detect))
+        self.runner.add(Detect(self.config.detector, self.detector_result_file, self.detector_run_info_file,
+                               Benchmark.CHECKOUTS_PATH, results_path, self.config.experiment, self.config.timeout,
+                               self.config.java_options, self.config.force_detect))
 
     def _setup_review_prepare(self):
         detectors = available_detectors

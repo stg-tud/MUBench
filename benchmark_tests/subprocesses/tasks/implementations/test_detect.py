@@ -19,11 +19,13 @@ class TestDetect:
         self.temp_dir = mkdtemp(prefix='mubench-detect-test_')
         self.checkout_base = join(self.temp_dir, "checkout")
         self.findings_file = "findings.yml"
+        self.run_file = "run.yml"
         self.results_path = join(self.temp_dir, "results")
 
         os.chdir(self.temp_dir)
 
-        self.uut = Detect("detector", self.findings_file, self.checkout_base, self.results_path, 2, None, [], False)
+        self.uut = Detect("detector", self.findings_file, self.run_file, self.checkout_base, self.results_path, 2, None,
+                          [], False)
 
         self.last_invoke = None
 
@@ -100,6 +102,15 @@ class TestDetect:
         self.uut.process_project_version(project, version)
 
         self.assert_last_invoke_path_equals(self.uut.key_detector_mode, '0')
+
+    def test_passes_run_file(self):
+        project = create_project("project")
+        version = create_version("0", project=project)
+
+        self.uut.process_project_version(project, version)
+
+        self.assert_last_invoke_path_equals(self.uut.key_run_file,
+                                            join(self.results_path, "project", "0", self.run_file))
 
     def test_writes_results(self):
         project = create_project("project")
@@ -178,9 +189,11 @@ class TestDetectDownload:
         self.temp_dir = mkdtemp(prefix='mubench-detect-test_')
         self.checkout_base = join(self.temp_dir, "checkout")
         self.findings_file = "findings.yml"
+        self.run_file = "run.yml"
         self.results_path = join(self.temp_dir, "results")
 
-        self.uut = Detect("detector", self.findings_file, self.checkout_base, self.results_path, 1, None, [], False)
+        self.uut = Detect("detector", self.findings_file, self.run_file, self.checkout_base, self.results_path, 1, None,
+                          [], False)
         self.uut._download = MagicMock(return_value=True)
 
     def test_downloads_detector_if_not_available(self):

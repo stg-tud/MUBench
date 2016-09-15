@@ -77,12 +77,14 @@ class DetectorMode(IntEnum):
 
 
 class Detect(ProjectVersionTask):
-    def __init__(self, detector: str, detector_result_file: str, compiles_base_path: str, results_base_path: str,
-                 experiment: int, timeout: Optional[int], java_options: List[str], force_detect: bool):
+    def __init__(self, detector: str, detector_findings_file: str, run_info_file: str, compiles_base_path: str,
+                 results_base_path: str, experiment: int, timeout: Optional[int], java_options: List[str],
+                 force_detect: bool):
         super().__init__()
         self.force_detect = force_detect  # type: bool
         self.detector = detector  # type: str
-        self.detector_findings_file = detector_result_file  # type: str
+        self.detector_findings_file = detector_findings_file  # type: str
+        self.run_info_file = run_info_file  # type: str
         self.compiles_base_path = compiles_base_path  # type: str
         self.results_base_path = results_base_path  # type: str
         self.detector_mode = Detect._get_detector_mode(experiment)  # type: DetectorMode
@@ -90,6 +92,7 @@ class Detect(ProjectVersionTask):
         self.java_options = ['-' + option for option in java_options]  # type: List[str]
 
         self.key_findings_file = "target"
+        self.key_run_file = "run_info"
         self.key_detector_mode = "detector_mode"
         self.key_training_src_path = "training_src_path"
         self.key_training_classpath = "training_classpath"
@@ -151,8 +154,9 @@ class Detect(ProjectVersionTask):
             run.reset()
 
             findings_file_path = join(result_path, self.detector_findings_file)
+            run_file_path = join(result_path, self.run_info_file)
             detector_path = Detect.__get_misuse_detector_path(self.detector)
-            detector_args = self.get_detector_arguments(findings_file_path, version)
+            detector_args = self.get_detector_arguments(findings_file_path, run_file_path, version)
 
             remove_tree(result_path)
             makedirs(result_path, exist_ok=True)
@@ -184,9 +188,10 @@ class Detect(ProjectVersionTask):
         else:
             return Response.skip
 
-    def get_detector_arguments(self, findings_file_path: str, version: ProjectVersion) -> List[str]:
+    def get_detector_arguments(self, findings_file_path: str, run_file_path: str, version: ProjectVersion) -> List[str]:
         project_compile = version.get_compile(self.compiles_base_path)
         findings_file = [self.key_findings_file, self.to_arg_path(findings_file_path)]
+        run_file = [self.key_run_file, self.to_arg_path(run_file_path)]
         detector_mode = [self.key_detector_mode, self.to_arg_path(str(int(self.detector_mode)))]
 
         training_src_path = []
@@ -202,7 +207,8 @@ class Detect(ProjectVersionTask):
             target_src_path = [self.key_target_src_path, self.to_arg_path(project_compile.original_sources_path)]
             target_classpath = [self.key_target_classpath, self.to_arg_path(project_compile.original_classes_path)]
 
-        return findings_file + detector_mode + training_src_path + training_classpath + target_src_path + target_classpath
+        return findings_file + run_file + detector_mode + training_src_path + training_classpath + target_src_path + \
+               target_classpath
 
     def _invoke_detector(self, absolute_misuse_detector_path: str, detector_args: List[str]):
         command = ["java"] + self.java_options + ["-jar",
