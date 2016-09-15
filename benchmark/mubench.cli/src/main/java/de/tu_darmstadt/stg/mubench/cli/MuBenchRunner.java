@@ -1,8 +1,5 @@
 package de.tu_darmstadt.stg.mubench.cli;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-
 /**
  * Implement a concrete runner like this:
  * <pre><code>
@@ -17,17 +14,17 @@ import java.io.IOException;
  * </code></pre>
  */
 public abstract class MuBenchRunner {
-	public void run(String[] args) throws IOException {
+	public void run(String[] args) throws Exception {
 		run(ArgParser.parse(args));
 	}
 
-	protected void run(DetectorArgs args) throws IOException {
+	protected void run(DetectorArgs args) throws Exception {
 		DetectorOutput output = new DetectorOutput(args.getFindingsFile(), args.getRunFile());
 		run(args.getDetectorMode(), args, output);
 		output.write();
 	}
 
-	protected void run(DetectorMode detectorMode, DetectorArgs args, DetectorOutput output) throws FileNotFoundException {
+	protected void run(DetectorMode detectorMode, DetectorArgs args, DetectorOutput output) throws Exception {
 		switch (detectorMode) {
 		case DETECT_ONLY:
 			detectOnly(args.getTrainingPath(), args.getTargetPath(), output);
@@ -40,7 +37,7 @@ public abstract class MuBenchRunner {
 		}
 	}
 
-	protected abstract void detectOnly(CodePath patternPath, CodePath targetPath, DetectorOutput output);
+	protected abstract void detectOnly(CodePath patternPath, CodePath targetPath, DetectorOutput output) throws Exception;
 
-	protected abstract void mineAndDetect(CodePath trainingAndTargetPath, DetectorOutput output);
+	protected abstract void mineAndDetect(CodePath trainingAndTargetPath, DetectorOutput output) throws Exception;
 }
