@@ -30,6 +30,10 @@ public class DetectorOutput {
 		runInformationFile = new File(runInformationFilePath);
 	}
 
+	public String getAdditionalOutputPath() throws FileNotFoundException {
+		return findingsFile.getParent();
+	}
+
 	public DetectorFinding add(String file, String method) {
 		DetectorFinding finding = new DetectorFinding(findings.size(), file, method);
 		findings.add(finding);
