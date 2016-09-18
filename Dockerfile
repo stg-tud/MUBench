@@ -1,29 +1,58 @@
-FROM drydock/u12pyt:prod
+FROM ubuntu:12.04
 
-# requirements
+# settings
+ENV DEBIAN_FRONTEND noninteractive
+RUN locale-gen en_US en_US.UTF-8
+RUN dpkg-reconfigure locales
+RUN echo "APT::Get::Assume-Yes \"true\";\nAPT::Get::force-yes \"true\";" >> /etc/apt/apt.conf.d/90forceyes
+RUN echo "deb http://extras.ubuntu.com/ubuntu precise main" >> /etc/apt/sources.list
+
+# default 
 RUN apt-get update
-RUN apt-get install -y oracle-java8-installer
-RUN apt-get install git
+RUN apt-get install python-pip
+RUN apt-get install python-software-properties
+
+# update apt reps
+RUN add-apt-repository ppa:cwchien/gradle
+RUN add-apt-repository ppa:webupd8team/java
+RUN add-apt-repository ppa:fkrull/deadsnakes
+RUN add-apt-repository ppa:dominik-stadler/subversion-1.8
+RUN add-apt-repository ppa:git-core/ppa
+RUN apt-get update
+
+# python setup
+RUN apt-get install python3.5 python3.5-dev
+RUN pip install virtualenv
+RUN virtualenv -p python3.5 $HOME/venv/3.5
+ENV PATH /root/venv/3.5/bin:$PATH
+RUN pip install nose pyyaml
+
+# mubench dependencies
 RUN apt-get install subversion
 RUN apt-get install maven
 RUN apt-get install graphviz
-RUN add-apt-repository ppa:cwchien/gradle
-RUN apt-get update
 RUN apt-get install gradle-ppa
+RUN apt-get install ant
 
-WORKDIR /mubench
-
-# python setup
-ENV PATH /root/venv/3.5/bin:$PATH
-RUN pip install pyyaml
+# git setup
+RUN apt-get install git
+RUN git config --global user.email "bob@builder.com"
+RUN git config --global user.name "Bob the Builder"
 
 # java8 setup
+RUN echo oracle-java8-installer shared/accepted-oracle-license-v1-1 select true | debconf-set-selections
+RUN apt-get install oracle-java8-installer
 ENV JAVA_HOME /usr/lib/jvm/java-8-oracle
 ENV PATH $PATH:$JAVA_HOME/bin
+ENV JAVA_TOOL_OPTIONS -Dfile.encoding=UTF8
 RUN update-alternatives --set java "$JAVA_HOME/jre/bin/java"
 RUN update-alternatives --set javac "$JAVA_HOME/bin/javac"
 RUN update-alternatives --set javaws "$JAVA_HOME/jre/bin/javaws"
 
-# git setup
-RUN git config --global user.email "bob@builder.com"
-RUN git config --global user.name "Bob the Builder"
+RUN apt-get clean
+RUN apt-get autoclean
+RUN apt-get autoremove
+
+WORKDIR /mubench
+
+
