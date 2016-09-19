@@ -1,5 +1,6 @@
 import html
 from os.path import join, basename, splitext
+import re
 from textwrap import wrap
 from typing import Dict
 from typing import List
@@ -223,10 +224,24 @@ def __get_target_code(compiles_path: str, version: ProjectVersion, file: str, me
     code = ""
     try:
         output = exec_util("MethodExtractor", "\"{}\" \"{}\"".format(misuse_file, method)).strip("\n")
+
+        # output comes as:
+        #
+        #   <first-line number>:<declaring type>:<code>
+        #   ===
+        #   <first-line number>:<declaring type>:<code>
+
+        # if there's other preceding output, we need to strip it
+        while output and not re.match("^[0-9]+:[^:\n]+:", output):
+            output_lines = output.split("\n", 2)
+            if len(output_lines) > 1:
+                output = output_lines[1]
+            else:
+                output = ""
+
         if output:
             methods = output.split("\n===\n")
             for method in methods:
-                # comes as "<first-line number>:<declaring type>:<code>
                 info = method.split(":", 2)
                 code += __get_snippet(int(info[0]) - 1,
                                       """class {} {{\n{}\n}}""".format(info[1], info[2].strip("\n")))
