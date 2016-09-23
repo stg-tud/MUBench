@@ -16,15 +16,15 @@ class Run:
 
     def __init__(self, path: str):
         self.__path = path
-        self.__findings_file_path = join(path, Run.FINDINGS_FILE)
-        self.__run_file_path = join(path, Run.RUN_FILE)
+        self.findings_file_path = join(path, Run.FINDINGS_FILE)
+        self.run_file_path = join(path, Run.RUN_FILE)
         self.result = None  # type: Result
         self.runtime = None  # type: float
         self.detector_md5 = None  # type: Optional[str]
         self.message = ""
         self.__findings = []  # type: List[Dict[str,str]]
-        if exists(self.__run_file_path):
-            data = read_yaml(self.__run_file_path)
+        if exists(self.run_file_path):
+            data = read_yaml(self.run_file_path)
             self.result = Result[data["result"]]
             self.runtime = data.get("runtime", -1)
             self.detector_md5 = data.get("md5", None)
@@ -39,16 +39,16 @@ class Run:
     @property
     def findings(self):
         if not self.__findings:
-            if exists(self.__findings_file_path):
-                with open(self.__findings_file_path, "r") as stream:
+            if exists(self.findings_file_path):
+                with open(self.findings_file_path, "r") as stream:
                     self.__findings = [finding for finding in yaml.load_all(stream) if finding]
         return self.__findings
 
     def write(self, detector_md5: str):
-        run_data = read_yaml(self.__run_file_path) if exists(self.__run_file_path) else {}
+        run_data = read_yaml(self.run_file_path) if exists(self.run_file_path) else {}
         run_data.update(
             {"result": self.result.name, "runtime": self.runtime, "message": self.message, "md5": detector_md5})
-        write_yaml(run_data, file=self.__run_file_path)
+        write_yaml(run_data, file=self.run_file_path)
 
     def reset(self):
         path = self.__path

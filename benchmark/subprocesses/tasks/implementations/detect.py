@@ -1,11 +1,12 @@
 import logging
 import time
-from enum import IntEnum
 from os import makedirs
-from os.path import join, realpath, exists
+from os.path import join, exists
 from typing import Optional, List
 from urllib.error import URLError
 
+from benchmark.data.detector import Detector
+from benchmark.data.experiment import Experiment, DetectorMode
 from benchmark.data.project import Project
 from benchmark.data.project_version import ProjectVersion
 from benchmark.data.run import Run, Result
@@ -17,25 +18,17 @@ from benchmark.utils.shell import Shell, CommandFailedError
 from benchmark.utils.web_util import download_file
 
 
-class DetectorMode(IntEnum):
-    mine_and_detect = 0
-    detect_only = 1
-
-
 class Detect(ProjectVersionTask):
-    def __init__(self, detector: str, detector_findings_file: str, run_info_file: str, compiles_base_path: str,
-                 results_base_path: str, experiment: int, timeout: Optional[int], java_options: List[str],
-                 force_detect: bool):
+    def __init__(self, detector: Detector, compiles_base_path: str, findings_base_path: str, experiment: Experiment,
+                 timeout: Optional[int], java_options: List[str], force_detect: bool):
         super().__init__()
-        self.force_detect = force_detect  # type: bool
-        self.detector = detector  # type: str
-        self.detector_findings_file = detector_findings_file  # type: str
-        self.run_info_file = run_info_file  # type: str
-        self.compiles_base_path = compiles_base_path  # type: str
-        self.results_base_path = results_base_path  # type: str
-        self.detector_mode = Detect._get_detector_mode(experiment)  # type: DetectorMode
-        self.timeout = timeout  # type: Optional[int]
-        self.java_options = ['-' + option for option in java_options]  # type: List[str]
+        self.force_detect = force_detect
+        self.detector = detector
+        self.compiles_base_path = compiles_base_path
+        self.results_base_path = findings_base_path
+        self.experiment = experiment
+        self.timeout = timeout
+        self.java_options = ['-' + option for option in java_options]
 
         self.key_findings_file = "target"
         self.key_run_file = "run_info"
@@ -63,20 +56,18 @@ class Detect(ProjectVersionTask):
             self._download()
 
     def _detector_available(self) -> bool:
-        return exists(Detect.__get_misuse_detector_path(self.detector))
+        return exists(self.detector.jar_path)
 
     def _download(self):
         logger = logging.getLogger("detect")
-        url = Detect.__get_misuse_detector_url(self.detector)
+        url = self.detector.jar_url
         logger.info("Loading detector from '%s'...", url)
-        file = Detect.__get_misuse_detector_path(self.detector)
-        md5_file = Detect.__get_misuse_detector_md5_file(self.detector)
+        file = self.detector.jar_path
 
         try:
-            if not exists(md5_file):
-                raise FileNotFoundError("Cannot validate download, MD5-checksum file '{}' missing".format(md5_file))
-
-            download_file(url, file, md5_file)
+            if not exists(self.detector.md5_path):
+                raise FileNotFoundError("Cannot validate download, MD5-checksum file '{}' missing".format(self.detector.md5_path))
+            download_file(url, file, self.detector.md5_path)
         except (FileNotFoundError, ValueError, URLError) as e:
             logger.error("Download failed: %s", e)
             exit(1)
@@ -87,10 +78,10 @@ class Detect(ProjectVersionTask):
         result_path = join(self.results_base_path, version.project_id, version.version_id)
         run = Run(result_path)
 
-        if run.result == Result.error and not self._new_detector_available(run):
+        if run.result == Result.error and not self._new_detector_available(run) and not self.force_detect:
             logger.info("Error in previous run for %s. Skipping detection.", version)
             return Response.skip
-        elif self.detector_mode == DetectorMode.detect_only and not version.patterns:
+        elif self.experiment.detector_mode == DetectorMode.detect_only and not version.patterns:
             logger.info("No patterns for %s. Skipping detection.", version)
             return Response.skip
         elif run.is_success() and not self.force_detect and not self._new_detector_available(run):
@@ -99,9 +90,9 @@ class Detect(ProjectVersionTask):
         else:
             run.reset()
 
-            findings_file_path = join(result_path, self.detector_findings_file)
-            run_file_path = join(result_path, self.run_info_file)
-            detector_path = Detect.__get_misuse_detector_path(self.detector)
+            findings_file_path = run.findings_file_path
+            run_file_path = run.run_file_path
+            detector_path = self.detector.jar_path
             detector_args = self.get_detector_arguments(findings_file_path, run_file_path, version)
 
             remove_tree(result_path)
@@ -126,7 +117,7 @@ class Detect(ProjectVersionTask):
                 runtime = end - start
                 run.runtime = runtime
 
-        run.write(Detect.__get_misuse_detector_md5(self.detector))
+        run.write(self.detector.md5)
 
         if run.is_success():
             logger.info("Detection took {0:.2f} seconds.".format(runtime))
@@ -138,18 +129,18 @@ class Detect(ProjectVersionTask):
         project_compile = version.get_compile(self.compiles_base_path)
         findings_file = [self.key_findings_file, self.to_arg_path(findings_file_path)]
         run_file = [self.key_run_file, self.to_arg_path(run_file_path)]
-        detector_mode = [self.key_detector_mode, self.to_arg_path(str(int(self.detector_mode)))]
+        detector_mode = [self.key_detector_mode, self.to_arg_path(str(int(self.experiment.detector_mode)))]
 
         training_src_path = []
         training_classpath = []
         target_src_path = []
         target_classpath = []
-        if self.detector_mode == DetectorMode.detect_only:
+        if self.experiment.detector_mode == DetectorMode.detect_only:
             training_src_path = [self.key_training_src_path, self.to_arg_path(project_compile.pattern_sources_path)]
             training_classpath = [self.key_training_classpath, self.to_arg_path(project_compile.pattern_classes_path)]
             target_src_path = [self.key_target_src_path, self.to_arg_path(project_compile.misuse_source_path)]
             target_classpath = [self.key_target_classpath, self.to_arg_path(project_compile.misuse_classes_path)]
-        elif self.detector_mode == DetectorMode.mine_and_detect:
+        elif self.experiment.detector_mode == DetectorMode.mine_and_detect:
             target_src_path = [self.key_target_src_path, self.to_arg_path(project_compile.original_sources_path)]
             target_classpath = [self.key_target_classpath, self.to_arg_path(project_compile.original_classes_path)]
 
@@ -163,46 +154,8 @@ class Detect(ProjectVersionTask):
         return Shell.exec(command, logger=logging.getLogger("detect.run"), timeout=self.timeout)
 
     def _new_detector_available(self, run: Run) -> bool:
-        return not Detect.__get_misuse_detector_md5(self.detector) == run.detector_md5
+        return not self.detector.md5 == run.detector_md5
 
     @staticmethod
     def to_arg_path(absolute_misuse_detector_path):
         return "\"{}\"".format(absolute_misuse_detector_path)
-
-    @staticmethod
-    def __get_misuse_detector_dir(detector: str):
-        return realpath(join("detectors", detector))
-
-    @staticmethod
-    def __get_misuse_detector_path(detector: str):
-        return join(Detect.__get_misuse_detector_dir(detector), detector + ".jar")
-
-    @staticmethod
-    def __get_misuse_detector_url(detector: str):
-        return "http://www.st.informatik.tu-darmstadt.de/artifacts/mubench/{}.jar".format(detector)
-
-    @staticmethod
-    def __get_misuse_detector_md5_file(detector: str):
-        return join(Detect.__get_misuse_detector_dir(detector), detector + ".md5")
-
-    @staticmethod
-    def __get_misuse_detector_md5(detector: str) -> Optional[str]:
-        md5_file = Detect.__get_misuse_detector_md5_file(detector)
-        md5 = None
-
-        if exists(md5_file):
-            with open(md5_file) as file:
-                md5 = file.read()
-
-        return md5
-
-    @staticmethod
-    def _get_detector_mode(experiment: int) -> DetectorMode:
-        if experiment == 1:
-            return DetectorMode.detect_only
-        elif experiment == 2:
-            return DetectorMode.mine_and_detect
-        elif experiment == 3:
-            return DetectorMode.mine_and_detect
-        else:
-            raise ValueError("Invalid experiment {}".format(experiment))

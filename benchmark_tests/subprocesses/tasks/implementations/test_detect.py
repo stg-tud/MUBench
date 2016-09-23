@@ -6,7 +6,10 @@ from unittest.mock import MagicMock
 
 from nose.tools import assert_equals, assert_raises
 
+from benchmark.data.detector import Detector
+from benchmark.data.experiment import Experiment
 from benchmark.data.pattern import Pattern
+from benchmark.data.run import Run
 from benchmark.subprocesses.tasks.base.project_task import Response
 from benchmark.subprocesses.tasks.implementations.detect import Detect, DetectorMode
 from benchmark.utils.io import write_yaml
@@ -17,15 +20,14 @@ from benchmark_tests.test_utils.data_util import create_project, create_version,
 class TestDetect:
     def setup(self):
         self.temp_dir = mkdtemp(prefix='mubench-detect-test_')
-        self.checkout_base = join(self.temp_dir, "checkout")
-        self.findings_file = "findings.yml"
-        self.run_file = "run.yml"
-        self.results_path = join(self.temp_dir, "results")
+        self.compiles_path = join(self.temp_dir, "checkout")
+        self.findings_path = join(self.temp_dir, "results")
 
         os.chdir(self.temp_dir)
 
-        self.uut = Detect("detector", self.findings_file, self.run_file, self.checkout_base, self.results_path, 2, None,
-                          [], False)
+        self.detector = Detector("path", "detector")
+        self.experiment = Experiment("2")
+        self.uut = Detect(self.detector, self.compiles_path, self.findings_path, self.experiment, None, [], False)
 
         self.last_invoke = None
 
@@ -36,17 +38,8 @@ class TestDetect:
         self.orig_invoke_detector = Detect._invoke_detector
         Detect._invoke_detector = mock_invoke_detector
 
-        # mock path resolving
-        def mock_get_misuse_detector_path(detector: str):
-            self.last_detector = detector
-            return detector + ".jar"
-
-        self.orig_get_misuse_detector_path = Detect._Detect__get_misuse_detector_path
-        Detect._Detect__get_misuse_detector_path = mock_get_misuse_detector_path
-
     def teardown(self):
         Detect._invoke_detector = self.orig_invoke_detector
-        Detect._Detect__get_misuse_detector_path = self.orig_get_misuse_detector_path
         rmtree(self.temp_dir, ignore_errors=True)
 
     def test_invokes_detector(self):
@@ -55,18 +48,18 @@ class TestDetect:
 
         self.uut.process_project_version(project, version)
 
-        assert_equals(self.last_invoke[0], "detector.jar")
+        assert_equals(self.last_invoke[0], self.detector.jar_path)
 
     def test_passes_detect_only_paths(self):
         project = create_project("project")
         misuse = create_misuse("misuse", project=project)
         misuse._PATTERNS = [Pattern("", "")]
         version = create_version("0", misuses=[misuse])
-        self.uut.detector_mode = DetectorMode.detect_only
+        self.experiment.id = Experiment.PROVIDED_PATTERNS
 
         self.uut.process_project_version(project, version)
 
-        compile = version.get_compile(self.checkout_base)
+        compile = version.get_compile(self.compiles_path)
         self.assert_last_invoke_path_equals(self.uut.key_training_src_path, compile.pattern_sources_path)
         self.assert_last_invoke_path_equals(self.uut.key_training_classpath, compile.pattern_classes_path)
         self.assert_last_invoke_path_equals(self.uut.key_target_src_path, compile.misuse_source_path)
@@ -75,11 +68,11 @@ class TestDetect:
     def test_passes_mine_and_detect_paths(self):
         project = create_project("project")
         version = create_version("0")
-        self.uut.detector_mode = DetectorMode.mine_and_detect
+        self.experiment.id = Experiment.TOP_FINDINGS
 
         self.uut.process_project_version(project, version)
 
-        compile = version.get_compile(self.checkout_base)
+        compile = version.get_compile(self.compiles_path)
         self.assert_arg_not_in_last_invoke(self.uut.key_training_src_path)
         self.assert_arg_not_in_last_invoke(self.uut.key_training_classpath)
         self.assert_last_invoke_path_equals(self.uut.key_target_src_path, compile.original_sources_path)
@@ -92,7 +85,7 @@ class TestDetect:
         self.uut.process_project_version(project, version)
 
         self.assert_last_invoke_path_equals(self.uut.key_findings_file,
-                                            join(self.results_path, "project", "0", self.findings_file))
+                                            join(self.findings_path, "project", "0", Run.FINDINGS_FILE))
 
     def test_invokes_detector_with_mode(self):
         project = create_project("project")
@@ -110,7 +103,7 @@ class TestDetect:
         self.uut.process_project_version(project, version)
 
         self.assert_last_invoke_path_equals(self.uut.key_run_file,
-                                            join(self.results_path, "project", "0", self.run_file))
+                                            join(self.findings_path, "project", "0", Run.RUN_FILE))
 
     def test_writes_results(self):
         project = create_project("project")
@@ -118,13 +111,13 @@ class TestDetect:
 
         self.uut.process_project_version(project, version)
 
-        assert exists(join(self.results_path, version.project_id, version.version_id, "run.yml"))
+        assert exists(join(self.findings_path, version.project_id, version.version_id, Run.RUN_FILE))
 
     def test_skips_detect_if_previous_run_succeeded(self):
         project = create_project("project")
         version = create_version("0", project=project)
         write_yaml({"result": "success"},
-                   file=join(self.results_path, version.project_id, version.version_id, "run.yml"))
+                   file=join(self.findings_path, version.project_id, version.version_id, Run.RUN_FILE))
         self.uut._invoke_detector = MagicMock(side_effect=UserWarning)
 
         self.uut.process_project_version(project, version)
@@ -133,7 +126,7 @@ class TestDetect:
         project = create_project("project")
         version = create_version("0", project=project)
         write_yaml({"result": "error"},
-                   file=join(self.results_path, version.project_id, version.version_id, "run.yml"))
+                   file=join(self.findings_path, version.project_id, version.version_id, Run.RUN_FILE))
         self.uut._invoke_detector = MagicMock(side_effect=UserWarning)
 
         self.uut.process_project_version(project, version)
@@ -142,7 +135,7 @@ class TestDetect:
         project = create_project("project")
         version = create_version("0", project=project)
         write_yaml({"result": "success"},
-                   file=join(self.results_path, version.project_id, version.version_id, "run.yml"))
+                   file=join(self.findings_path, version.project_id, version.version_id, Run.RUN_FILE))
         self.uut._new_detector_available = lambda x: True
         self.uut._invoke_detector = MagicMock(side_effect=UserWarning)
 
@@ -151,7 +144,7 @@ class TestDetect:
     def test_skips_detect_only_if_no_patterns_are_available(self):
         project = create_project("project")
         version = create_version("0", project=project)
-        self.uut.detector_mode = DetectorMode.detect_only
+        self.experiment.id = Experiment.PROVIDED_PATTERNS
         self.uut._invoke_detector = MagicMock(side_effect=UserWarning)
 
         response = self.uut.process_project_version(project, version)
@@ -172,28 +165,17 @@ class TestDetect:
                 assert_equals(args[i + 1], value)
 
 
-class TestDetectGetDetectorMode:
-    def test_detect_only_for_1(self):
-        assert_equals(DetectorMode.detect_only, Detect._get_detector_mode(1))
-
-    def test_mine_and_detect_for_2(self):
-        assert_equals(DetectorMode.mine_and_detect, Detect._get_detector_mode(2))
-
-    def test_mine_and_detect_for_3(self):
-        assert_equals(DetectorMode.mine_and_detect, Detect._get_detector_mode(3))
-
-
-class TestDetectDownload:
+class TestDetectorDownload:
     # noinspection PyAttributeOutsideInit
     def setup(self):
         self.temp_dir = mkdtemp(prefix='mubench-detect-test_')
-        self.checkout_base = join(self.temp_dir, "checkout")
+        self.compiles_path = join(self.temp_dir, "checkout")
         self.findings_file = "findings.yml"
-        self.run_file = "run.yml"
-        self.results_path = join(self.temp_dir, "results")
+        self.run_file = Run.RUN_FILE
+        self.findings_path = join(self.temp_dir, "results")
 
-        self.uut = Detect("detector", self.findings_file, self.run_file, self.checkout_base, self.results_path, 1, None,
-                          [], False)
+        self.uut = Detect(Detector("path", "detector"), self.compiles_path, self.findings_path,
+                          Experiment("1"), None, [], False)
         self.uut._download = MagicMock(return_value=True)
 
     def test_downloads_detector_if_not_available(self):

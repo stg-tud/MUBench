@@ -6,6 +6,8 @@ from datetime import datetime
 from os import listdir, makedirs
 from os.path import join, realpath, isdir, exists
 
+from benchmark.data.detector import Detector
+from benchmark.data.experiment import Experiment
 from benchmark.subprocesses.requirements import check_all_requirements
 from benchmark.subprocesses.result_processing.visualize_results import Visualizer
 from benchmark.subprocesses.tasking import TaskRunner
@@ -23,16 +25,15 @@ from benchmark.utils import command_line_util
 class Benchmark:
     DATA_PATH = realpath("data")
     CHECKOUTS_PATH = realpath("checkouts")
-    RESULTS_PATH = realpath("findings")
+    DETECTORS_PATH = realpath("detectors")
+    FINDINGS_PATH = realpath("findings")
     REVIEW_PATH = realpath("reviews")
 
-    EX1_SUBFOLDER = "ex1_detect-only"
-    EX2_SUBFOLDER = "ex2_detect-only"
-    EX3_SUBFOLDER = "ex3_detect-only"
+    EX1_SUBFOLDER = "detect-only"
+    EX2_SUBFOLDER = "mine-and-detect"
+    EX3_SUBFOLDER = "mine-and-detect"
 
     def __init__(self, config):
-        self.detector_result_file = 'findings.yml'
-        self.detector_run_info_file = 'run.yml'
         self.reviewed_eval_result_file = 'reviewed-result.csv'
         self.visualize_result_file = 'result.csv'
 
@@ -45,7 +46,7 @@ class Benchmark:
         self.runner = TaskRunner(Benchmark.DATA_PATH, config.white_list, config.black_list)
 
     def _run_visualize(self) -> None:
-        visualizer = Visualizer(Benchmark.RESULTS_PATH, self.reviewed_eval_result_file, self.visualize_result_file,
+        visualizer = Visualizer(Benchmark.FINDINGS_PATH, self.reviewed_eval_result_file, self.visualize_result_file,
                                 Benchmark.DATA_PATH)
         visualizer.create()
 
@@ -65,20 +66,10 @@ class Benchmark:
         self.runner.add(compile_handler)
 
     def _setup_detect(self):
-        results_path = Benchmark.RESULTS_PATH
-        if config.experiment == 1:
-            results_path = join(results_path, Benchmark.EX1_SUBFOLDER)
-        elif config.experiment == 2:
-            results_path = join(results_path, Benchmark.EX2_SUBFOLDER)
-        elif config.experiment == 3:
-            results_path = join(results_path, Benchmark.EX3_SUBFOLDER)
-
-        # TODO make task append the detector name to the results path
-        results_path = join(results_path, self.config.detector)
-
-        self.runner.add(Detect(self.config.detector, self.detector_result_file, self.detector_run_info_file,
-                               Benchmark.CHECKOUTS_PATH, results_path, self.config.experiment, self.config.timeout,
-                               self.config.java_options, self.config.force_detect))
+        detector = Detector(Benchmark.DETECTORS_PATH, self.config.detector)
+        experiment = Experiment(str(self.config.experiment))
+        self.runner.add(Detect(detector, Benchmark.CHECKOUTS_PATH, Benchmark.FINDINGS_PATH, experiment,
+                               self.config.timeout, self.config.java_options, self.config.force_detect))
 
     def _setup_review_prepare(self):
         detectors = available_detectors
@@ -86,7 +77,7 @@ class Benchmark:
             detectors = set(detectors).intersection(config.detector_white_list)
 
         for detector in detectors:
-            results_path = join(Benchmark.RESULTS_PATH, detector)
+            results_path = join(Benchmark.FINDINGS_PATH, detector)
             if config.experiment == 1:
                 self.runner.add(ReviewPrepareEx1(Benchmark.EX1_SUBFOLDER, detector, results_path, Benchmark.REVIEW_PATH,
                                                  Benchmark.CHECKOUTS_PATH, Benchmark.CHECKOUTS_PATH,
