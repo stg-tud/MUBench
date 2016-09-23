@@ -8,10 +8,7 @@ from unittest.mock import MagicMock
 
 from nose.tools import assert_equals
 
-from benchmark.data.build_config import BuildConfig
 from benchmark.data.pattern import Pattern
-from benchmark.data.project import Project
-from benchmark.data.repository import Repository
 from benchmark.subprocesses.tasks.base.project_task import Response
 from benchmark.subprocesses.tasks.implementations.compile import Compile
 from benchmark.utils.io import create_file
