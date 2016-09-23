@@ -25,8 +25,7 @@ class Experiment:
 
         self.id = experiment_id
 
-    @property
-    def findings_path(self, findings_base_path):
+    def get_findings_path(self, findings_base_path):
         return join(findings_base_path, self.id)
 
     @property
