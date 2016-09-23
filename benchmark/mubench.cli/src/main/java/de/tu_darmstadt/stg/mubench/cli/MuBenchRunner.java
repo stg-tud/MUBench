@@ -30,7 +30,7 @@ public abstract class MuBenchRunner {
 			detectOnly(args.getTrainingPath(), args.getTargetPath(), output);
 			break;
 		case MINE_AND_DETECT:
-			mineAndDetect(args.getTrainingPath(), output);
+			mineAndDetect(args.getTargetPath(), output);
 			break;
 		default:
 			throw new IllegalArgumentException("Unsupported runmode: " + detectorMode);
