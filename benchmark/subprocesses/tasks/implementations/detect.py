@@ -1,7 +1,6 @@
 import logging
 import time
-from os import makedirs
-from os.path import join, exists
+from os.path import exists
 from typing import Optional, List
 from urllib.error import URLError
 
@@ -13,19 +12,17 @@ from benchmark.data.run import Run, Result
 from benchmark.subprocesses.requirements import JavaRequirement
 from benchmark.subprocesses.tasks.base.project_task import Response
 from benchmark.subprocesses.tasks.base.project_version_task import ProjectVersionTask
-from benchmark.utils.io import remove_tree
 from benchmark.utils.shell import Shell, CommandFailedError
 from benchmark.utils.web_util import download_file
 
 
 class Detect(ProjectVersionTask):
-    def __init__(self, detector: Detector, compiles_base_path: str, findings_base_path: str, experiment: Experiment,
+    def __init__(self, detector: Detector, compiles_base_path: str, experiment: Experiment,
                  timeout: Optional[int], java_options: List[str], force_detect: bool):
         super().__init__()
         self.force_detect = force_detect
         self.detector = detector
         self.compiles_base_path = compiles_base_path
-        self.results_base_path = findings_base_path
         self.experiment = experiment
         self.timeout = timeout
         self.java_options = ['-' + option for option in java_options]
@@ -75,8 +72,7 @@ class Detect(ProjectVersionTask):
     def process_project_version(self, project: Project, version: ProjectVersion) -> Response:
         logger = logging.getLogger("detect")
 
-        result_path = join(self.results_base_path, version.project_id, version.version_id)
-        run = Run(result_path)
+        run = self.detector.get_run(self.experiment, version)
 
         if run.result == Result.error and not self._new_detector_available(run) and not self.force_detect:
             logger.info("Error in previous run for %s. Skipping detection.", version)
@@ -90,13 +86,9 @@ class Detect(ProjectVersionTask):
         else:
             run.reset()
 
-            findings_file_path = run.findings_file_path
-            run_file_path = run.run_file_path
             detector_path = self.detector.jar_path
-            detector_args = self.get_detector_arguments(findings_file_path, run_file_path, version)
+            detector_args = self.get_detector_arguments(run.findings_file_path, run.run_file_path, version)
 
-            remove_tree(result_path)
-            makedirs(result_path, exist_ok=True)
             logger.info("Detecting misuses in %s...", version)
             logger.debug("- Detector path = %s", detector_path)
             logger.debug("- Detector args = %s", detector_args)

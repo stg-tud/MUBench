@@ -161,16 +161,13 @@ class ReviewPrepare(ProjectVersionMisuseTask):
     no_hit = 0
     potential_hit = 1
 
-    def __init__(self, experiment: Experiment, detector: Detector, findings_path: str, reviews_path: str,
-                 checkout_base_dir: str, compiles_path: str, force_prepare: bool, details_page_generator):
+    def __init__(self, experiment: Experiment, detector: Detector, checkout_base_dir: str, compiles_path: str,
+                 force_prepare: bool, details_page_generator):
         super().__init__()
         self.experiment = experiment
         self.detector = detector
         self.compiles_path = compiles_path
-        self.findings_path = findings_path
-        self.detector_findings_path = self.detector.get_findings_path(self.findings_path, self.experiment)
-        self.reviews_path = reviews_path
-        self.review_path = join(reviews_path, experiment.id, detector.id)
+        self.detector_findings_path = self.detector.get_findings_path(self.experiment)
         self.checkout_base_dir = checkout_base_dir
         self.force_prepare = force_prepare
         self.details_page_generator = details_page_generator
@@ -203,31 +200,30 @@ class ReviewPrepare(ProjectVersionMisuseTask):
     def process_project_version_misuse(self, project: Project, version: ProjectVersion, misuse: Misuse) -> Response:
         logger = logging.getLogger("review_prepare.misuse")
 
-        findings_path = join(self.detector_findings_path, project.id, version.version_id)
-        detector_run = Run(findings_path)
+        detector_run = self.detector.get_run(self.experiment, version)
 
         if not detector_run.is_success():
             logger.info("Skipping %s in %s: no result.", misuse, version)
             self.__append_misuse_no_hits(version, misuse, "run: {}".format(detector_run.result))
             return Response.skip
 
-        review_dir = join(project.id, version.version_id, misuse.id)
-        review_url = join(review_dir, "review.php")
-        review_url_no_findings = join(review_dir, "no_findings.php")
-        review_path = join(self.review_path, review_dir)
+        review_dir = self.experiment.get_review_dir(version, misuse)
+        review_path = self.experiment.get_review_path(version, misuse)
+
+        review_details_url = join(review_dir, "review.php")
+        review_details_path = join(review_path, "review.php")
+        review_no_findings_url = join(review_dir, "no_findings.php")
+        review_no_findings_path = join(review_path, "no_findings.php")
 
         if self.force_prepare:
             logger.debug("Removing old review files for %s in %s...", misuse, version)
             remove_tree(review_path)
 
-        review_details_file = join(self.review_path, review_url)
-        review_details_file_no_finding = join(self.review_path, review_url_no_findings)
-
         if exists(review_path):
-            if exists(review_details_file):
-                self.__append_misuse_review(version, misuse, review_url)
+            if exists(review_details_path):
+                self.__append_misuse_review(version, misuse, review_details_url)
             else:
-                self.__append_misuse_no_hits(version, misuse, review_url_no_findings)
+                self.__append_misuse_no_hits(version, misuse, review_no_findings_url)
 
             logger.info("%s in %s is already prepared.", misuse, version)
             return Response.ok
@@ -251,13 +247,13 @@ class ReviewPrepare(ProjectVersionMisuseTask):
 
         if potential_hits:
             potential_hits = _specialize_findings(self.detector, potential_hits, review_path)
-            self.details_page_generator(self.experiment, review_details_file, self.detector,
+            self.details_page_generator(self.experiment, review_details_path, self.detector,
                                         self.compiles_path, version, misuse, potential_hits)
-            self.__append_misuse_review(version, misuse, review_url)
+            self.__append_misuse_review(version, misuse, review_details_url)
         else:
-            self.details_page_generator(self.experiment, review_details_file_no_finding, self.detector,
+            self.details_page_generator(self.experiment, review_no_findings_path, self.detector,
                                         self.compiles_path, version, misuse, [])
-            self.__append_misuse_no_hits(version, misuse, review_url_no_findings)
+            self.__append_misuse_no_hits(version, misuse, review_no_findings_url)
 
         return Response.ok
 
@@ -274,9 +270,9 @@ class ReviewPrepare(ProjectVersionMisuseTask):
                                             review_details_url, review_details_path, "review")
 
     def end(self):
-        safe_write(self.__review.to_html(), join(self.review_path, "index.php"), append=False)
-        _copy_review_resource_file(REVIEW_RECEIVER_FILE, self.reviews_path)
-        _copy_review_resource_file(REVIEW_UTILS_FILE, self.reviews_path)
+        safe_write(self.__review.to_html(), join(self.experiment.reviews_path, "index.php"), append=False)
+        _copy_review_resource_file(REVIEW_RECEIVER_FILE, self.experiment.reviews_path)
+        _copy_review_resource_file(REVIEW_UTILS_FILE, self.experiment.reviews_path)
 
     @staticmethod
     def find_potential_hits(findings: Iterable[Dict[str, str]], misuse: Misuse) -> List[Dict[str, str]]:
@@ -330,28 +326,25 @@ class ReviewPrepare(ProjectVersionMisuseTask):
 
 
 class ReviewPrepareEx1(ReviewPrepare):
-    def __init__(self, experiment: Experiment, detector: Detector, findings_path: str, reviews_path: str,
-                 checkout_base_dir: str, compiles_path: str, force_prepare: bool):
-        super().__init__(experiment, detector, findings_path, reviews_path, checkout_base_dir, compiles_path,
-                         force_prepare, review_page.generate_ex1)
+    def __init__(self, experiment: Experiment, detector: Detector, checkout_base_dir: str, compiles_path: str,
+                 force_prepare: bool):
+        super().__init__(experiment, detector, checkout_base_dir, compiles_path, force_prepare,
+                         review_page.generate_ex1)
 
 
 class ReviewPrepareEx2(ReviewPrepare):
-    def __init__(self, experiment: Experiment, detector: Detector, findings_path: str, reviews_path: str,
-                 checkout_base_dir: str, compiles_path: str, force_prepare: bool):
-        super().__init__(experiment, detector, findings_path, reviews_path, checkout_base_dir, compiles_path,
-                         force_prepare, review_page.generate_ex2)
+    def __init__(self, experiment: Experiment, detector: Detector, checkout_base_dir: str, compiles_path: str,
+                 force_prepare: bool):
+        super().__init__(experiment, detector, checkout_base_dir, compiles_path, force_prepare,
+                         review_page.generate_ex2)
 
 
 class ReviewPrepareEx3(ProjectVersionTask):
-    def __init__(self, experiment: Experiment, detector: Detector, findings_path: str, reviews_path: str,
-                 checkouts_path: str, compiles_path: str, top_n_findings: int, force_prepare: bool):
+    def __init__(self, experiment: Experiment, detector: Detector, checkouts_path: str, compiles_path: str,
+                 top_n_findings: int, force_prepare: bool):
         super().__init__()
         self.experiment = experiment
         self.compiles_path = compiles_path
-        self.findings_path = findings_path
-        self.reviews_path = reviews_path
-        self.review_path = join(reviews_path, experiment, detector)
         self.checkouts_path = checkouts_path
         self.top_n_findings = top_n_findings
         self.force_prepare = force_prepare
@@ -373,9 +366,10 @@ class ReviewPrepareEx3(ProjectVersionTask):
     def process_project_version(self, project: Project, version: ProjectVersion):
         logger = logging.getLogger("review_prepare.version")
 
-        run_dir = join(project.id, version.version_id)
-        findings_path = join(self.findings_path, run_dir)
-        detector_run = Run(findings_path)
+        detector_run = self.detector.get_run(self.experiment, version)
+        review_path = self.experiment.get_review_path(version)
+        run_dir = self.experiment.get_review_dir(version) # TODO run or review?
+
         self.__review.start_run_review(version.version_id, detector_run)
 
         if not detector_run.is_success():
@@ -384,7 +378,7 @@ class ReviewPrepareEx3(ProjectVersionTask):
 
         if self.force_prepare:
             logger.debug("Removing old review files for %s...", version)
-            remove_tree(join(self.review_path, project.id, version.version_id))
+            remove_tree(review_path)
 
         logger.info("Generating review files for %s...", version)
         findings = _sort_findings(self.detector, detector_run.findings)[:self.top_n_findings]
@@ -392,8 +386,8 @@ class ReviewPrepareEx3(ProjectVersionTask):
 
         for finding in findings:
             finding_name = "finding-{}".format(finding["id"])
-            details_url = join(project.id, version.version_id, finding_name + ".php")
-            details_path = join(self.review_path, details_url)
+            details_url = join(run_dir, finding_name + ".php")
+            details_path = join(review_path, finding_name + ".php")
 
             if self.force_prepare and exists(details_path):
                 remove(details_path)
@@ -402,16 +396,17 @@ class ReviewPrepareEx3(ProjectVersionTask):
                 logger.debug("    %s in %s is already prepared.", finding_name, version)
             else:
                 logger.debug("    Generating review file for %s in %s...", finding_name, version)
-                review_page.generate_ex3(self.experiment.id, details_path, self.detector.id, self.compiles_path, version,
+                review_page.generate_ex3(self.experiment.id, details_path, self.detector.id, self.compiles_path,
+                                         version,
                                          _specialize_finding(finding, self.detector, dirname(details_path)))
 
             self.__review.append_finding_review("Finding {}".format(finding["id"]), ["<i>unknown</i>"],
                                                 True, details_url, run_dir, finding_name)
 
     def end(self):
-        safe_write(self.__review.to_html(), join(self.review_path, "index.php"), append=False)
-        _copy_review_resource_file(REVIEW_RECEIVER_FILE, self.reviews_path)
-        _copy_review_resource_file(REVIEW_UTILS_FILE, self.reviews_path)
+        safe_write(self.__review.to_html(), join(self.experiment.reviews_path, "index.php"), append=False)
+        _copy_review_resource_file(REVIEW_RECEIVER_FILE, self.experiment.reviews_path)
+        _copy_review_resource_file(REVIEW_UTILS_FILE, self.experiment.reviews_path)
 
 
 # TODO move this to detector-specific review-page generators

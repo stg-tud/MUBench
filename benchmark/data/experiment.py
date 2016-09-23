@@ -1,6 +1,9 @@
 from enum import IntEnum
 from os.path import join
 
+from benchmark.data.misuse import Misuse
+from benchmark.data.project_version import ProjectVersion
+
 
 class DetectorMode(IntEnum):
     mine_and_detect = 0
@@ -19,14 +22,22 @@ class Experiment:
         BENCHMARK: DetectorMode.mine_and_detect
     }
 
-    def __init__(self, experiment_id: str):
+    def __init__(self, experiment_id: str, findings_path: str, reviews_path: str):
         if experiment_id not in Experiment.ALL:
             raise ValueError("no such experiment: {}".format(experiment_id))
 
         self.id = experiment_id
+        self.findings_path = join(findings_path, str(int(self.detector_mode)))
+        self.reviews_path = join(reviews_path, self.id)
 
-    def get_findings_path(self, findings_base_path):
-        return join(findings_base_path, self.id)
+    def get_review_dir(self, version: ProjectVersion, misuse: Misuse = None):
+        if self.id == Experiment.TOP_FINDINGS:
+            return join(version.project_id, version.version_id)
+        else:
+            return join(version.project_id, version.version_id, misuse.misuse_id)
+
+    def get_review_path(self, version: ProjectVersion, misuse: Misuse = None):
+        return join(self.reviews_path, self.get_review_dir(version, misuse))
 
     @property
     def detector_mode(self) -> DetectorMode:

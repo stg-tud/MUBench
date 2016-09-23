@@ -2,16 +2,17 @@ from os.path import join, exists
 from typing import Optional
 
 from benchmark.data.experiment import Experiment
+from benchmark.data.project_version import ProjectVersion
+from benchmark.data.run import Run
 
 
 class Detector:
-    def __init__(self, detectors_base_path: str, id: str):
-        self.id = id
-        self.__detectors_base_path = detectors_base_path
-        self.__base_path = join(self.__detectors_base_path, self.id)
-        self.jar_path = join(self.__base_path, self.id + ".jar")
+    def __init__(self, detectors_path: str, detector_id: str):
+        self.id = detector_id
+        self.path = join(detectors_path, self.id)
+        self.jar_path = join(self.path, self.id + ".jar")
         self.jar_url = "http://www.st.informatik.tu-darmstadt.de/artifacts/mubench/{}.jar".format(self.id)
-        self.md5_path = join(self.__base_path, self.id + ".md5")
+        self.md5_path = join(self.path, self.id + ".md5")
 
     @property
     def md5(self) -> Optional[str]:
@@ -24,8 +25,11 @@ class Detector:
 
         return md5
 
-    def get_findings_path(self, findings_base_path: str, experiment: Experiment):
-        return join(experiment.get_findings_path(findings_base_path), self.id)
+    def get_findings_path(self, experiment: Experiment):
+        return join(experiment.findings_path, self.id)
+
+    def get_run(self, experiment: Experiment, version: ProjectVersion):
+        return Run(join(self.get_findings_path(experiment), version.project_id, version.version_id))
 
     def __str__(self):
         return self.id

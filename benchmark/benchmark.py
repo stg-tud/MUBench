@@ -67,8 +67,8 @@ class Benchmark:
 
     def _setup_detect(self):
         detector = Detector(Benchmark.DETECTORS_PATH, self.config.detector)
-        experiment = Experiment(str(self.config.experiment))
-        self.runner.add(Detect(detector, Benchmark.CHECKOUTS_PATH, Benchmark.FINDINGS_PATH, experiment,
+        experiment = Experiment(str(self.config.experiment), Benchmark.FINDINGS_PATH, Benchmark.REVIEW_PATH)
+        self.runner.add(Detect(detector, Benchmark.CHECKOUTS_PATH, experiment,
                                self.config.timeout, self.config.java_options, self.config.force_detect))
 
     def _setup_review_prepare(self):
@@ -78,19 +78,17 @@ class Benchmark:
 
         for detector in detectors:
             detector = Detector(Benchmark.DETECTORS_PATH, detector)
-            experiment = Experiment(str(self.config.experiment))
+            experiment = Experiment(str(self.config.experiment), Benchmark.FINDINGS_PATH, Benchmark.REVIEW_PATH)
             if config.experiment == 1:
-                self.runner.add(ReviewPrepareEx1(experiment, detector, Benchmark.FINDINGS_PATH, Benchmark.REVIEW_PATH,
-                                                 Benchmark.CHECKOUTS_PATH, Benchmark.CHECKOUTS_PATH,
-                                                 self.config.force_prepare))
+                self.runner.add(ReviewPrepareEx1(experiment, detector, Benchmark.CHECKOUTS_PATH,
+                                                 Benchmark.CHECKOUTS_PATH, self.config.force_prepare))
             elif config.experiment == 2:
-                self.runner.add(ReviewPrepareEx2(experiment, detector, Benchmark.FINDINGS_PATH, Benchmark.REVIEW_PATH,
-                                                 Benchmark.CHECKOUTS_PATH, Benchmark.CHECKOUTS_PATH,
-                                                 self.config.force_prepare))
+                self.runner.add(ReviewPrepareEx2(experiment, detector, Benchmark.CHECKOUTS_PATH,
+                                                 Benchmark.CHECKOUTS_PATH, self.config.force_prepare))
             elif config.experiment == 3:
-                self.runner.add(ReviewPrepareEx3(experiment, detector, Benchmark.FINDINGS_PATH, Benchmark.REVIEW_PATH,
-                                                 Benchmark.CHECKOUTS_PATH, Benchmark.CHECKOUTS_PATH,
-                                                 self.config.top_n_findings, self.config.force_prepare))
+                self.runner.add(ReviewPrepareEx3(experiment, detector, Benchmark.CHECKOUTS_PATH,
+                                                 Benchmark.CHECKOUTS_PATH, self.config.top_n_findings,
+                                                 self.config.force_prepare))
 
     def _setup_review_check(self):
         if not exists(Benchmark.REVIEW_PATH):

@@ -1,5 +1,6 @@
 from enum import Enum
 from genericpath import exists
+from os import makedirs
 from os.path import join
 from typing import Dict
 from typing import List
@@ -51,9 +52,9 @@ class Run:
         write_yaml(run_data, file=self.run_file_path)
 
     def reset(self):
-        path = self.__path
-        remove_tree(path)
-        self.__init__(path)
+        remove_tree(self.__path)
+        makedirs(self.__path, exist_ok=True)
+        self.__init__(self.__path)
 
 
 class Result(Enum):
