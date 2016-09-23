@@ -26,3 +26,6 @@ class Detector:
 
     def get_findings_path(self, findings_base_path: str, experiment: Experiment):
         return join(experiment.get_findings_path(findings_base_path), self.id)
+
+    def __str__(self):
+        return self.id
