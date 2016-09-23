@@ -6,6 +6,8 @@ from shutil import copy
 from typing import Dict, Iterable
 from typing import List
 
+from benchmark.data.detector import Detector
+from benchmark.data.experiment import Experiment
 from benchmark.data.misuse import Misuse
 from benchmark.data.project import Project
 from benchmark.data.project_version import ProjectVersion
@@ -27,7 +29,7 @@ def _copy_review_resource_file(resource_name: str, destination_path: str):
 
 
 class Review:
-    def __init__(self, detector: str):
+    def __init__(self, detector: Detector):
         self.detector = detector
         self.project_reviews = []  # type: List[ProjectReview]
         self.__current_project_review = None  # type: ProjectReview
@@ -159,15 +161,16 @@ class ReviewPrepare(ProjectVersionMisuseTask):
     no_hit = 0
     potential_hit = 1
 
-    def __init__(self, experiment: str, detector: str, findings_path: str, reviews_path: str, checkout_base_dir: str,
-                 compiles_path: str, force_prepare: bool, details_page_generator):
+    def __init__(self, experiment: Experiment, detector: Detector, findings_path: str, reviews_path: str,
+                 checkout_base_dir: str, compiles_path: str, force_prepare: bool, details_page_generator):
         super().__init__()
         self.experiment = experiment
         self.detector = detector
         self.compiles_path = compiles_path
         self.findings_path = findings_path
+        self.detector_findings_path = self.detector.get_findings_path(self.findings_path, self.experiment)
         self.reviews_path = reviews_path
-        self.review_path = join(reviews_path, experiment, detector)
+        self.review_path = join(reviews_path, experiment.id, detector.id)
         self.checkout_base_dir = checkout_base_dir
         self.force_prepare = force_prepare
         self.details_page_generator = details_page_generator
@@ -188,7 +191,7 @@ class ReviewPrepare(ProjectVersionMisuseTask):
     def process_project_version(self, project: Project, version: ProjectVersion):
         logger = logging.getLogger("review_prepare.version")
 
-        findings_path = join(self.findings_path, project.id, version.version_id)
+        findings_path = join(self.detector_findings_path, project.id, version.version_id)
         detector_run = Run(findings_path)
         if not detector_run.result:
             logger.info("No results on %s.", version)
@@ -200,7 +203,7 @@ class ReviewPrepare(ProjectVersionMisuseTask):
     def process_project_version_misuse(self, project: Project, version: ProjectVersion, misuse: Misuse) -> Response:
         logger = logging.getLogger("review_prepare.misuse")
 
-        findings_path = join(self.findings_path, project.id, version.version_id)
+        findings_path = join(self.detector_findings_path, project.id, version.version_id)
         detector_run = Run(findings_path)
 
         if not detector_run.is_success():
@@ -327,22 +330,22 @@ class ReviewPrepare(ProjectVersionMisuseTask):
 
 
 class ReviewPrepareEx1(ReviewPrepare):
-    def __init__(self, experiment: str, detector: str, findings_path: str, reviews_path: str, checkout_base_dir: str,
-                 compiles_path: str, force_prepare: bool):
+    def __init__(self, experiment: Experiment, detector: Detector, findings_path: str, reviews_path: str,
+                 checkout_base_dir: str, compiles_path: str, force_prepare: bool):
         super().__init__(experiment, detector, findings_path, reviews_path, checkout_base_dir, compiles_path,
                          force_prepare, review_page.generate_ex1)
 
 
 class ReviewPrepareEx2(ReviewPrepare):
-    def __init__(self, experiment: str, detector: str, findings_path: str, reviews_path: str, checkout_base_dir: str,
-                 compiles_path: str, force_prepare: bool):
+    def __init__(self, experiment: Experiment, detector: Detector, findings_path: str, reviews_path: str,
+                 checkout_base_dir: str, compiles_path: str, force_prepare: bool):
         super().__init__(experiment, detector, findings_path, reviews_path, checkout_base_dir, compiles_path,
                          force_prepare, review_page.generate_ex2)
 
 
 class ReviewPrepareEx3(ProjectVersionTask):
-    def __init__(self, experiment: str, detector: str, findings_path: str, reviews_path: str, checkouts_path: str,
-                 compiles_path: str, top_n_findings: int, force_prepare: bool):
+    def __init__(self, experiment: Experiment, detector: Detector, findings_path: str, reviews_path: str,
+                 checkouts_path: str, compiles_path: str, top_n_findings: int, force_prepare: bool):
         super().__init__()
         self.experiment = experiment
         self.compiles_path = compiles_path
@@ -399,7 +402,7 @@ class ReviewPrepareEx3(ProjectVersionTask):
                 logger.debug("    %s in %s is already prepared.", finding_name, version)
             else:
                 logger.debug("    Generating review file for %s in %s...", finding_name, version)
-                review_page.generate_ex3(self.experiment, details_path, self.detector, self.compiles_path, version,
+                review_page.generate_ex3(self.experiment.id, details_path, self.detector.id, self.compiles_path, version,
                                          _specialize_finding(finding, self.detector, dirname(details_path)))
 
             self.__review.append_finding_review("Finding {}".format(finding["id"]), ["<i>unknown</i>"],
@@ -412,42 +415,36 @@ class ReviewPrepareEx3(ProjectVersionTask):
 
 
 # TODO move this to detector-specific review-page generators
-def _specialize_findings(detector: str, findings: List[Dict[str, str]], base_path):
+def _specialize_findings(detector: Detector, findings: List[Dict[str, str]], base_path):
     findings = _sort_findings(detector, findings)
     for finding in findings:
         _specialize_finding(finding, detector, base_path)
     return findings
 
 
-def _specialize_finding(finding, detector, base_path):
-    if detector.startswith("dmmc"):
+def _specialize_finding(finding, detector: Detector, base_path: str):
+    if detector.id == "dmmc":
         __format_float_value(finding, "strangeness")
-    elif detector.startswith("jadet") or detector.startswith("tikanga"):
+    elif detector.id == "jadet" or detector.id == "tikanga":
         __format_float_value(finding, "confidence")
         __format_float_value(finding, "defect_indicator")
-    elif detector.startswith("grouminer"):
+    elif detector.id == "grouminer":
         __format_float_value(finding, "rareness")
         __replace_dot_graph_with_image(finding, "overlap", base_path)
         __replace_dot_graph_with_image(finding, "pattern", base_path)
-    elif detector.startswith("mudetect"):
-        finding["overlap"] = finding["overlap"].replace(":0:0", "")
-        __replace_dot_graph_with_image(finding, "overlap", base_path)
-        finding["pattern"] = finding["pattern"].replace(":0:0", "")
-        __replace_dot_graph_with_image(finding, "pattern", base_path)
-        if "reduced_target" in finding:
-            finding["reduced_target"] = finding["reduced_target"].replace(":0:0", "")
-            __replace_dot_graph_with_image(finding, "reduced_target", base_path)
+    elif detector.id == "mudetect":
+        __replace_dot_graph_with_image(finding, "pattern_violation", base_path)
     return finding
 
 
-def _sort_findings(detector: str, findings: List[Dict[str, str]]):
-    if detector.startswith("dmmc"):
+def _sort_findings(detector: Detector, findings: List[Dict[str, str]]):
+    if detector.id == "dmmc":
         sort_by = "strangeness"
-    elif detector.startswith("jadet") or detector.startswith("tikanga"):
+    elif detector.id == "jadet" or detector.id == "tikanga":
         sort_by = "defect_indicator"
-    elif detector.startswith("grouminer"):
+    elif detector.id == "grouminer":
         sort_by = "rareness"
-    elif detector.startswith("mudetect"):
+    elif detector.id == "mudetect":
         sort_by = "confidence"
     else:
         sort_by = None

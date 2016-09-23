@@ -73,21 +73,22 @@ class Benchmark:
 
     def _setup_review_prepare(self):
         detectors = available_detectors
-        if config.detector_white_list:
-            detectors = set(detectors).intersection(config.detector_white_list)
+        if self.config.detector_white_list:
+            detectors = set(detectors).intersection(self.config.detector_white_list)
 
         for detector in detectors:
-            results_path = join(Benchmark.FINDINGS_PATH, detector)
+            detector = Detector(Benchmark.DETECTORS_PATH, detector)
+            experiment = Experiment(str(self.config.experiment))
             if config.experiment == 1:
-                self.runner.add(ReviewPrepareEx1(Benchmark.EX1_SUBFOLDER, detector, results_path, Benchmark.REVIEW_PATH,
+                self.runner.add(ReviewPrepareEx1(experiment, detector, Benchmark.FINDINGS_PATH, Benchmark.REVIEW_PATH,
                                                  Benchmark.CHECKOUTS_PATH, Benchmark.CHECKOUTS_PATH,
                                                  self.config.force_prepare))
             elif config.experiment == 2:
-                self.runner.add(ReviewPrepareEx2(Benchmark.EX2_SUBFOLDER, detector, results_path, Benchmark.REVIEW_PATH,
+                self.runner.add(ReviewPrepareEx2(experiment, detector, Benchmark.FINDINGS_PATH, Benchmark.REVIEW_PATH,
                                                  Benchmark.CHECKOUTS_PATH, Benchmark.CHECKOUTS_PATH,
                                                  self.config.force_prepare))
             elif config.experiment == 3:
-                self.runner.add(ReviewPrepareEx3(Benchmark.EX3_SUBFOLDER, detector, results_path, Benchmark.REVIEW_PATH,
+                self.runner.add(ReviewPrepareEx3(experiment, detector, Benchmark.FINDINGS_PATH, Benchmark.REVIEW_PATH,
                                                  Benchmark.CHECKOUTS_PATH, Benchmark.CHECKOUTS_PATH,
                                                  self.config.top_n_findings, self.config.force_prepare))
 
