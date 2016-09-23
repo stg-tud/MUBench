@@ -21,7 +21,7 @@ class Experiment:
 
     def __init__(self, experiment_id: str):
         if experiment_id not in Experiment.ALL:
-            raise ValueError("no such experiment: %s".format(experiment_id))
+            raise ValueError("no such experiment: {}".format(experiment_id))
 
         self.id = experiment_id
 
