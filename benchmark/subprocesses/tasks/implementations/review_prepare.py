@@ -13,7 +13,7 @@ from benchmark.subprocesses.requirements import JavaRequirement, DotRequirement
 from benchmark.subprocesses.tasks.base.project_task import Response
 from benchmark.subprocesses.tasks.base.project_version_misuse_task import ProjectVersionMisuseTask
 from benchmark.subprocesses.tasks.base.project_version_task import ProjectVersionTask
-from benchmark.subprocesses.tasks.implementations.detect import Run
+from benchmark.data.run import Run
 from benchmark.subprocesses.tasks.implementations.review import review_page
 from benchmark.subprocesses.tasks.implementations.review.review_page import REVIEW_RECEIVER_FILE
 from benchmark.utils.io import remove_tree, safe_write
