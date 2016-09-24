@@ -72,7 +72,7 @@ class Detect(ProjectVersionTask):
     def process_project_version(self, project: Project, version: ProjectVersion) -> Response:
         logger = logging.getLogger("detect")
 
-        run = self.detector.get_run(self.experiment, version)
+        run = self.experiment.get_run(self.detector, version)
 
         if run.result == Result.error and not self._new_detector_available(run) and not self.force_detect:
             logger.info("Error in previous run for %s. Skipping detection.", version)

@@ -85,7 +85,7 @@ def generate_ex1(experiment: str, review_file: str, detector: str, compiles_path
                    __get_patterns_code(misuse),
                    REVIEW_RECEIVER_FILE,
                    __get_findings_table(potential_hits, misuse.characteristics),
-                   experiment, detector, version.project_id, version.version_id, misuse.id)
+                   experiment, detector, version.project_id, version.version_id, misuse.misuse_id)
 
     safe_write(__get_page(review), review_file, False)
 
@@ -146,7 +146,7 @@ def generate_ex2(experiment: str, review_file: str, detector: str, compiles_path
                    __get_target_code(compiles_path, version, misuse.location.file, misuse.location.method),
                    REVIEW_RECEIVER_FILE,
                    __get_findings_table(potential_hits, misuse.characteristics),
-                   experiment, detector, version.project_id, version.version_id, misuse.id)
+                   experiment, detector, version.project_id, version.version_id, misuse.misuse_id)
 
     safe_write(__get_page(review), review_file, False)
 
