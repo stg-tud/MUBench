@@ -325,21 +325,21 @@ class ReviewPrepare(ProjectVersionMisuseTask):
         return matches
 
 
-class ReviewPrepareEx1(ReviewPrepare):
+class PrepareReviewOfBenchmarkWithPatternsTask(ReviewPrepare):
     def __init__(self, experiment: Experiment, detector: Detector, checkout_base_dir: str, compiles_path: str,
                  force_prepare: bool):
         super().__init__(experiment, detector, checkout_base_dir, compiles_path, force_prepare,
                          review_page.generate_ex1)
 
 
-class ReviewPrepareEx2(ReviewPrepare):
+class PrepareReviewOfBenchmarkTask(ReviewPrepare):
     def __init__(self, experiment: Experiment, detector: Detector, checkout_base_dir: str, compiles_path: str,
                  force_prepare: bool):
         super().__init__(experiment, detector, checkout_base_dir, compiles_path, force_prepare,
                          review_page.generate_ex2)
 
 
-class ReviewPrepareEx3(ProjectVersionTask):
+class PrepareReviewOfTopFindingsTask(ProjectVersionTask):
     def __init__(self, experiment: Experiment, detector: Detector, checkouts_path: str, compiles_path: str,
                  top_n_findings: int, force_prepare: bool):
         super().__init__()
