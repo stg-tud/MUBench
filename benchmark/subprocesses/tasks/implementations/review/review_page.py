@@ -27,8 +27,8 @@ ALL_VIOLATION_TYPES = [
 ]
 
 
-def generate_ex1(experiment: str, review_file: str, detector: str, compiles_path: str, version: ProjectVersion, misuse: Misuse,
-                 potential_hits: List[Dict[str, str]]):
+def generate_ex1(experiment: str, review_file: str, detector: str, compiles_path: str, version: ProjectVersion,
+                 misuse: Misuse, potential_hits: List[Dict[str, str]]):
     review = """
         <h1>Review</h1>
         <table>
