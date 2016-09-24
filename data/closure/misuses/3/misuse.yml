@@ -7,7 +7,7 @@ description: >
   ObjectType.getImplicitPrototype() may return null.
 location:
   file: com/google/javascript/jscomp/TypeCheck.java
-  method: "checkInterfaceConflictProperties(NodeTraversal, Node, String, HashMap<String, ObjectType>, HashMap<String, ObjectType>, ObjectType)"
+  method: "checkInterfaceConflictProperties(NodeTraversal, Node, String, HashMap, HashMap, ObjectType)"
 fix:
   commit: https://github.com/google/closure-compiler/commit/d1cfe67977d8f3aaa85ec20c262171da394d5977
   description: >
