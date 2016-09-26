@@ -89,3 +89,11 @@ class DotRequirement(Requirement):
 
     def check(self):
         Shell.exec("dot -V")
+
+
+class RequestsRequirement(Requirement):
+    def __init__(self):
+        super().__init__("requests 2.11.1")
+
+    def check(self):
+        import requests
