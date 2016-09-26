@@ -32,15 +32,14 @@ class TestReviewUploadEx1:
         self.misuse = create_misuse(TEST_MISUSE_ID, project=self.project)
         self.version = create_version(TEST_VERSION_ID, project=self.project, misuses=[self.misuse])
 
-        self.test_run = Run("")
-        self.test_run.result = Result.success
-
         self.detector = Detector(join(self.temp_dir, "detectors"), TEST_DETECTOR_ID)
         self.experiment = Experiment(Experiment.PROVIDED_PATTERNS, self.detector, self.findings_path,
                                      join(self.temp_dir, "reviews"))
-        self.uut = ReviewUpload(self.experiment, self.dataset, self.detector, self.checkout_base_dir)
+        self.test_run = self.experiment.get_run(self.version)
+        self.test_run.result = Result.success
+        self.experiment.get_run = lambda v: self.test_run
 
-        self.uut._get_run = lambda v: self.test_run
+        self.uut = ReviewUpload(self.experiment, self.dataset, self.detector, self.checkout_base_dir)
 
         self.potential_hits = []
         self.uut.find_potential_hits = lambda f, m: self.potential_hits
@@ -147,15 +146,14 @@ class TestReviewUploadEx2:
         self.misuse = create_misuse(TEST_MISUSE_ID, project=self.project)
         self.version = create_version(TEST_VERSION_ID, project=self.project, misuses=[self.misuse])
 
-        self.test_run = Run("")
-        self.test_run.result = Result.success
-
         self.detector = Detector(join(self.temp_dir, "detectors"), TEST_DETECTOR_ID)
         self.experiment = Experiment(Experiment.TOP_FINDINGS, self.detector, self.findings_path,
                                      join(self.temp_dir, "reviews"))
-        self.uut = ReviewUpload(self.experiment, self.dataset, self.detector, self.checkout_base_dir)
+        self.test_run = self.experiment.get_run(self.version)
+        self.test_run.result = Result.success
+        self.experiment.get_run = lambda v: self.test_run
 
-        self.uut._get_run = lambda v: self.test_run
+        self.uut = ReviewUpload(self.experiment, self.dataset, self.detector, self.checkout_base_dir)
 
         self.potential_hits = []
         self.uut.find_potential_hits = lambda f, m: self.potential_hits
@@ -243,15 +241,14 @@ class TestReviewUploadEx3:
         self.misuse = create_misuse(TEST_MISUSE_ID, project=self.project)
         self.version = create_version(TEST_VERSION_ID, project=self.project, misuses=[self.misuse])
 
-        self.test_run = Run("")
-        self.test_run.result = Result.success
-
         self.detector = Detector(join(self.temp_dir, "detectors"), TEST_DETECTOR_ID)
         self.experiment = Experiment(Experiment.BENCHMARK, self.detector, self.findings_path,
                                      join(self.temp_dir, "reviews"))
-        self.uut = ReviewUpload(self.experiment, self.dataset, self.detector, self.checkout_base_dir)
+        self.test_run = self.experiment.get_run(self.version)
+        self.test_run.result = Result.success
+        self.experiment.get_run = lambda v: self.test_run
 
-        self.uut._get_run = lambda v: self.test_run
+        self.uut = ReviewUpload(self.experiment, self.dataset, self.detector, self.checkout_base_dir)
 
         self.potential_hits = []
         self.uut.find_potential_hits = lambda f, m: self.potential_hits

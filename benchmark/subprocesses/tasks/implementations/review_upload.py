@@ -11,10 +11,9 @@ from benchmark.data.experiment import Experiment
 from benchmark.data.misuse import Misuse
 from benchmark.data.project import Project
 from benchmark.data.project_version import ProjectVersion
-from benchmark.subprocesses.requirements import JavaRequirement, RequestsRequirement
+from benchmark.subprocesses.requirements import RequestsRequirement
 from benchmark.subprocesses.tasks.base.project_task import Response
 from benchmark.subprocesses.tasks.base.project_version_misuse_task import ProjectVersionMisuseTask
-from benchmark.subprocesses.tasks.implementations.detect import Run
 
 
 class Request:
@@ -66,7 +65,7 @@ class ReviewUpload(ProjectVersionMisuseTask):
     def process_project_version_misuse(self, project: Project, version: ProjectVersion, misuse: Misuse) -> Response:
         logger = logging.getLogger("review_prepare.misuse")
 
-        detector_run = self._get_run(version)
+        detector_run = self.experiment.get_run(version)
 
         if not detector_run.is_success():
             logger.info("Skipping %s in %s: no result.", misuse.misuse_id, version)
@@ -110,9 +109,6 @@ class ReviewUpload(ProjectVersionMisuseTask):
         files = [file.request_file_tuple for file in self.request_files]
 
         self.post(url, data, files)
-
-    def _get_run(self, version: ProjectVersion) -> Run:
-        return self.experiment.get_run(self.detector, version)
 
     @staticmethod
     def post(url: str, data: str, files: List[Tuple[str, Tuple[str, IO[bytes], str]]]) -> requests.Response:

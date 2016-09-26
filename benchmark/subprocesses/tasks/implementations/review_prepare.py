@@ -188,8 +188,7 @@ class ReviewPrepare(ProjectVersionMisuseTask):
     def process_project_version(self, project: Project, version: ProjectVersion):
         logger = logging.getLogger("review_prepare.version")
 
-        findings_path = join(self.detector_findings_path, project.id, version.version_id)
-        detector_run = Run(findings_path)
+        detector_run = self.experiment.get_run(version)
         if not detector_run.result:
             logger.info("No results on %s.", version)
         else:
