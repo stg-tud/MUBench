@@ -23,15 +23,6 @@ class TestPattern:
     def teardown(self):
         rmtree(self.temp_dir, ignore_errors=True)
 
-    def test_fails_on_non_existent_file(self):
-        uut = Pattern(self.temp_dir, "does-not-exist.java")
-        assert_raises(NoPatternFileError, uut.is_valid)
-
-    def test_fails_on_file_with_bad_extension(self):
-        create_file(join(self.temp_dir, "file.txt"))
-        uut = Pattern(self.temp_dir, "file.txt")
-        assert_raises(NoPatternFileError, uut.is_valid)
-
     def test_copy(self):
         destination = "copy"
         uut = Pattern(self.temp_dir, self.pattern_file_name)
