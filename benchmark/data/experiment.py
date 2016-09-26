@@ -30,7 +30,7 @@ class Experiment:
 
         self.id = experiment_id
         self.detector = detector
-        self.findings_path = join(findings_path, str(int(self.detector_mode)), self.detector.id)
+        self.findings_path = join(findings_path, self.detector_mode.name, self.detector.id)
         self.reviews_path = join(reviews_path, self.id, self.detector.id)
 
     def get_run(self, version: ProjectVersion):

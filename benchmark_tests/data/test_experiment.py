@@ -21,7 +21,7 @@ class TestExperiment:
 
         run = experiment.get_run(version)
 
-        assert_equals(run._Run__path, join("-findings_path-", "0", "-detector-", "-project-", "-version-"))
+        assert_equals(run._Run__path, join("-findings_path-", "mine_and_detect", "-detector-", "-project-", "-version-"))
 
     def test_review_path_top_findings(self):
         detector = Detector("", "-detector-")
