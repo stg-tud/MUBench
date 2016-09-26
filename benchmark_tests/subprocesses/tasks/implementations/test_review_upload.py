@@ -35,8 +35,9 @@ class TestReviewUploadEx1:
         self.test_run = Run("")
         self.test_run.result = Result.success
 
-        self.experiment = Experiment("1", self.findings_path, join(self.temp_dir, "reviews"))
         self.detector = Detector(join(self.temp_dir, "detectors"), TEST_DETECTOR_ID)
+        self.experiment = Experiment(Experiment.PROVIDED_PATTERNS, self.detector, self.findings_path,
+                                     join(self.temp_dir, "reviews"))
         self.uut = ReviewUpload(self.experiment, self.dataset, self.detector, self.checkout_base_dir)
 
         self.uut._get_run = lambda v: self.test_run
@@ -149,8 +150,9 @@ class TestReviewUploadEx2:
         self.test_run = Run("")
         self.test_run.result = Result.success
 
-        self.experiment = Experiment("2", self.findings_path, join(self.temp_dir, "reviews"))
         self.detector = Detector(join(self.temp_dir, "detectors"), TEST_DETECTOR_ID)
+        self.experiment = Experiment(Experiment.TOP_FINDINGS, self.detector, self.findings_path,
+                                     join(self.temp_dir, "reviews"))
         self.uut = ReviewUpload(self.experiment, self.dataset, self.detector, self.checkout_base_dir)
 
         self.uut._get_run = lambda v: self.test_run
@@ -244,8 +246,9 @@ class TestReviewUploadEx3:
         self.test_run = Run("")
         self.test_run.result = Result.success
 
-        self.experiment = Experiment("3", self.findings_path, join(self.temp_dir, "reviews"))
         self.detector = Detector(join(self.temp_dir, "detectors"), TEST_DETECTOR_ID)
+        self.experiment = Experiment(Experiment.BENCHMARK, self.detector, self.findings_path,
+                                     join(self.temp_dir, "reviews"))
         self.uut = ReviewUpload(self.experiment, self.dataset, self.detector, self.checkout_base_dir)
 
         self.uut._get_run = lambda v: self.test_run

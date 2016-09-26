@@ -68,8 +68,8 @@ class Benchmark:
 
     def _setup_detect(self):
         detector = Detector(Benchmark.DETECTORS_PATH, self.config.detector)
-        experiment = Experiment(str(self.config.experiment), Benchmark.FINDINGS_PATH, Benchmark.REVIEW_PATH)
-        self.runner.add(Detect(detector, Benchmark.COMPILES_PATH, experiment, self.config.timeout,
+        experiment = Experiment(str(self.config.experiment), detector, Benchmark.FINDINGS_PATH, Benchmark.REVIEW_PATH)
+        self.runner.add(Detect(Benchmark.COMPILES_PATH, experiment, self.config.timeout,
                                self.config.java_options, self.config.force_detect))
 
     def _setup_review_prepare(self):
@@ -79,17 +79,18 @@ class Benchmark:
 
         for detector in detectors:
             detector = Detector(Benchmark.DETECTORS_PATH, detector)
-            experiment = Experiment(str(self.config.experiment), Benchmark.FINDINGS_PATH, Benchmark.REVIEW_PATH)
+            experiment = Experiment(str(self.config.experiment), detector, Benchmark.FINDINGS_PATH,
+                                    Benchmark.REVIEW_PATH)
             if experiment.id == Experiment.PROVIDED_PATTERNS:
-                self.runner.add(PrepareReviewOfBenchmarkWithPatternsTask(experiment, detector, Benchmark.CHECKOUTS_PATH,
+                self.runner.add(PrepareReviewOfBenchmarkWithPatternsTask(experiment, Benchmark.CHECKOUTS_PATH,
                                                                          Benchmark.COMPILES_PATH,
                                                                          self.config.force_prepare))
             elif experiment.id == Experiment.TOP_FINDINGS:
-                self.runner.add(PrepareReviewOfTopFindingsTask(experiment, detector, Benchmark.CHECKOUTS_PATH,
+                self.runner.add(PrepareReviewOfTopFindingsTask(experiment, Benchmark.CHECKOUTS_PATH,
                                                                Benchmark.COMPILES_PATH, self.config.top_n_findings,
                                                                self.config.force_prepare))
             elif experiment.id == Experiment.BENCHMARK:
-                self.runner.add(PrepareReviewOfBenchmarkTask(experiment, detector, Benchmark.CHECKOUTS_PATH,
+                self.runner.add(PrepareReviewOfBenchmarkTask(experiment, Benchmark.CHECKOUTS_PATH,
                                                              Benchmark.COMPILES_PATH, self.config.force_prepare))
 
     def _setup_review_check(self):

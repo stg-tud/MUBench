@@ -26,8 +26,8 @@ class TestDetect:
         os.chdir(self.temp_dir)
 
         self.detector = Detector("path", "detector")
-        self.experiment = Experiment("2", self.findings_path, "")
-        self.uut = Detect(self.detector, self.compiles_path, self.experiment, None, [], False)
+        self.experiment = Experiment("2", self.detector, self.findings_path, "")
+        self.uut = Detect(self.compiles_path, self.experiment, None, [], False)
 
         self.last_invoke = None
 
@@ -85,7 +85,7 @@ class TestDetect:
         self.uut.process_project_version(project, version)
 
         self.assert_last_invoke_path_equals(self.uut.key_findings_file,
-                                            self.experiment.get_run(self.detector, version).findings_file_path)
+                                            self.experiment.get_run(version).findings_file_path)
 
     def test_invokes_detector_with_mode(self):
         project = create_project("project")
@@ -103,7 +103,7 @@ class TestDetect:
         self.uut.process_project_version(project, version)
 
         self.assert_last_invoke_path_equals(self.uut.key_run_file,
-                                            self.experiment.get_run(self.detector, version).run_file_path)
+                                            self.experiment.get_run(version).run_file_path)
 
     def test_writes_results(self):
         project = create_project("project")
@@ -111,12 +111,12 @@ class TestDetect:
 
         self.uut.process_project_version(project, version)
 
-        assert exists(self.experiment.get_run(self.detector, version).run_file_path)
+        assert exists(self.experiment.get_run(version).run_file_path)
 
     def test_skips_detect_if_previous_run_succeeded(self):
         project = create_project("project")
         version = create_version("0", project=project)
-        write_yaml({"result": "success"}, file=self.experiment.get_run(self.detector, version).run_file_path)
+        write_yaml({"result": "success"}, file=self.experiment.get_run(version).run_file_path)
         self.uut._invoke_detector = MagicMock(side_effect=UserWarning)
 
         self.uut.process_project_version(project, version)
@@ -124,7 +124,7 @@ class TestDetect:
     def test_skips_detect_if_previous_run_was_error(self):
         project = create_project("project")
         version = create_version("0", project=project)
-        write_yaml({"result": "error"}, file=self.experiment.get_run(self.detector, version).run_file_path)
+        write_yaml({"result": "error"}, file=self.experiment.get_run(version).run_file_path)
         self.uut._invoke_detector = MagicMock(side_effect=UserWarning)
 
         self.uut.process_project_version(project, version)
@@ -132,7 +132,7 @@ class TestDetect:
     def test_force_detect_on_new_detector(self):
         project = create_project("project")
         version = create_version("0", project=project)
-        write_yaml({"result": "success"}, file=self.experiment.get_run(self.detector, version).run_file_path)
+        write_yaml({"result": "success"}, file=self.experiment.get_run(version).run_file_path)
         self.uut._new_detector_available = lambda x: True
         self.uut._invoke_detector = MagicMock(side_effect=UserWarning)
 
@@ -171,7 +171,8 @@ class TestDetectorDownload:
         self.run_file = Run.RUN_FILE
         self.findings_path = join(self.temp_dir, "results")
 
-        self.uut = Detect(Detector("path", "detector"), self.compiles_path, Experiment("1", self.findings_path, ""),
+        detector = Detector("path", "detector")
+        self.uut = Detect(self.compiles_path, Experiment(Experiment.PROVIDED_PATTERNS, detector, self.findings_path, ""),
                           None, [], False)
         self.uut._download = MagicMock(return_value=True)
 

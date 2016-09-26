@@ -17,13 +17,13 @@ from benchmark.utils.web_util import download_file
 
 
 class Detect(ProjectVersionTask):
-    def __init__(self, detector: Detector, compiles_base_path: str, experiment: Experiment,
-                 timeout: Optional[int], java_options: List[str], force_detect: bool):
+    def __init__(self, compiles_base_path: str, experiment: Experiment, timeout: Optional[int], java_options: List[str],
+                 force_detect: bool):
         super().__init__()
         self.force_detect = force_detect
-        self.detector = detector
         self.compiles_base_path = compiles_base_path
         self.experiment = experiment
+        self.detector = experiment.detector
         self.timeout = timeout
         self.java_options = ['-' + option for option in java_options]
 
@@ -72,7 +72,7 @@ class Detect(ProjectVersionTask):
     def process_project_version(self, project: Project, version: ProjectVersion) -> Response:
         logger = logging.getLogger("detect")
 
-        run = self.experiment.get_run(self.detector, version)
+        run = self.experiment.get_run(version)
 
         if run.result == Result.error and not self._new_detector_available(run) and not self.force_detect:
             logger.info("Error in previous run for %s. Skipping detection.", version)

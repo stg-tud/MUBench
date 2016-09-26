@@ -161,13 +161,13 @@ class ReviewPrepare(ProjectVersionMisuseTask):
     no_hit = 0
     potential_hit = 1
 
-    def __init__(self, experiment: Experiment, detector: Detector, checkout_base_dir: str, compiles_path: str,
-                 force_prepare: bool, details_page_generator):
+    def __init__(self, experiment: Experiment, checkout_base_dir: str, compiles_path: str, force_prepare: bool,
+                 details_page_generator):
         super().__init__()
         self.experiment = experiment
-        self.detector = detector
+        self.detector = experiment.detector
         self.compiles_path = compiles_path
-        self.detector_findings_path = self.experiment.get_findings_path(self.detector)
+        self.detector_findings_path = self.experiment.findings_path
         self.checkout_base_dir = checkout_base_dir
         self.force_prepare = force_prepare
         self.details_page_generator = details_page_generator
@@ -200,7 +200,7 @@ class ReviewPrepare(ProjectVersionMisuseTask):
     def process_project_version_misuse(self, project: Project, version: ProjectVersion, misuse: Misuse) -> Response:
         logger = logging.getLogger("review_prepare.misuse")
 
-        detector_run = self.experiment.get_run(self.detector, version)
+        detector_run = self.experiment.get_run(version)
 
         if not detector_run.is_success():
             logger.info("Skipping %s in %s: no result.", misuse, version)
@@ -208,7 +208,7 @@ class ReviewPrepare(ProjectVersionMisuseTask):
             return Response.skip
 
         review_dir = self.experiment.get_review_dir(version, misuse)
-        review_path = self.experiment.get_review_path(self.detector, version, misuse)
+        review_path = self.experiment.get_review_path(version, misuse)
 
         review_details_url = join(review_dir, "review.php")
         review_details_path = join(review_path, "review.php")
@@ -326,29 +326,27 @@ class ReviewPrepare(ProjectVersionMisuseTask):
 
 
 class PrepareReviewOfBenchmarkWithPatternsTask(ReviewPrepare):
-    def __init__(self, experiment: Experiment, detector: Detector, checkout_base_dir: str, compiles_path: str,
-                 force_prepare: bool):
-        super().__init__(experiment, detector, checkout_base_dir, compiles_path, force_prepare,
+    def __init__(self, experiment: Experiment, checkout_base_dir: str, compiles_path: str, force_prepare: bool):
+        super().__init__(experiment, checkout_base_dir, compiles_path, force_prepare,
                          review_page.generate_ex1)
 
 
 class PrepareReviewOfBenchmarkTask(ReviewPrepare):
-    def __init__(self, experiment: Experiment, detector: Detector, checkout_base_dir: str, compiles_path: str,
-                 force_prepare: bool):
-        super().__init__(experiment, detector, checkout_base_dir, compiles_path, force_prepare,
+    def __init__(self, experiment: Experiment, checkout_base_dir: str, compiles_path: str, force_prepare: bool):
+        super().__init__(experiment, checkout_base_dir, compiles_path, force_prepare,
                          review_page.generate_ex2)
 
 
 class PrepareReviewOfTopFindingsTask(ProjectVersionTask):
-    def __init__(self, experiment: Experiment, detector: Detector, checkouts_path: str, compiles_path: str,
-                 top_n_findings: int, force_prepare: bool):
+    def __init__(self, experiment: Experiment, checkouts_path: str, compiles_path: str, top_n_findings: int,
+                 force_prepare: bool):
         super().__init__()
         self.experiment = experiment
         self.compiles_path = compiles_path
         self.checkouts_path = checkouts_path
         self.top_n_findings = top_n_findings
         self.force_prepare = force_prepare
-        self.detector = detector
+        self.detector = experiment.detector
 
         self.__review = Review(self.detector)
 
@@ -366,9 +364,9 @@ class PrepareReviewOfTopFindingsTask(ProjectVersionTask):
     def process_project_version(self, project: Project, version: ProjectVersion):
         logger = logging.getLogger("review_prepare.version")
 
-        detector_run = self.experiment.get_run(self.detector, version)
+        detector_run = self.experiment.get_run(version)
         run_dir = self.experiment.get_review_dir(version)  # TODO run or review?
-        review_path = self.experiment.get_review_path(self.detector, version)
+        review_path = self.experiment.get_review_path(version)
 
         self.__review.start_run_review(version.version_id, detector_run)
 
