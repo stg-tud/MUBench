@@ -112,7 +112,7 @@ class ReviewUpload(ProjectVersionMisuseTask):
         self.post(url, data, files)
 
     def _get_run(self, version: ProjectVersion) -> Run:
-        return self.detector.get_run(self.experiment, version)
+        return self.experiment.get_run(self.detector, version)
 
     @staticmethod
     def post(url: str, data: str, files: List[Tuple[str, Tuple[str, IO[bytes], str]]]) -> requests.Response:
