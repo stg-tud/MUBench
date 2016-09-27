@@ -1,7 +1,7 @@
 import json
 import logging
 from os.path import join, dirname, basename
-from typing import Dict, Iterable, Tuple, IO
+from typing import Dict, Tuple, IO
 from typing import List
 
 import requests
@@ -47,10 +47,10 @@ class ReviewUpload(ProjectVersionMisuseTask):
 
     def __init__(self, experiment: Experiment, dataset: str, detector: Detector, checkout_base_dir: str):
         super().__init__()
-        self.experiment = experiment  # type: Experiment
-        self.dataset = dataset  # type: str
-        self.detector = detector  # type: Detector
-        self.checkout_base_dir = checkout_base_dir  # type: str
+        self.experiment = experiment
+        self.dataset = dataset
+        self.detector = detector
+        self.checkout_base_dir = checkout_base_dir
 
         self.request_data = []  # type: List[Request]
         self.request_files = []  # type: List[RequestFile]
