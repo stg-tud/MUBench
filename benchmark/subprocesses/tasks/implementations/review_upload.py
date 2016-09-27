@@ -41,10 +41,6 @@ class RequestFile:
 
 
 class ReviewUpload(ProjectVersionMisuseTask):
-    URL_EX1 = "/upload/ex1"  # TODO
-    URL_EX2 = "/upload/ex2"
-    URL_EX3 = "/upload/ex3"
-
     def __init__(self, experiment: Experiment, dataset: str, detector: Detector, checkout_base_dir: str):
         super().__init__()
         self.experiment = experiment
@@ -84,15 +80,7 @@ class ReviewUpload(ProjectVersionMisuseTask):
         return Response.ok
 
     def end(self):
-        if self.experiment.id == "1":
-            url = ReviewUpload.URL_EX1
-        elif self.experiment.id == "2":
-            url = ReviewUpload.URL_EX2
-        elif self.experiment.id == "3":
-            url = ReviewUpload.URL_EX3
-        else:
-            raise ValueError("Unknown experiment " + str(self.experiment))
-
+        url = "/upload/" + self.experiment.id
         request_data = [data.__dict__ for data in self.request_data]
         data = json.dumps(request_data, sort_keys=True)
         files = [file.request_file_tuple for file in self.request_files]

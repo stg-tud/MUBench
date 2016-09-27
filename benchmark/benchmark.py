@@ -67,8 +67,7 @@ class Benchmark:
         self.runner.add(compile_handler)
 
     def _setup_detect(self):
-        detector = Detector(Benchmark.DETECTORS_PATH, self.config.detector)
-        experiment = Experiment(str(self.config.experiment), detector, Benchmark.FINDINGS_PATH, Benchmark.REVIEW_PATH)
+        experiment = self.__get_experiment(Detector(Benchmark.DETECTORS_PATH, self.config.detector))
         self.runner.add(Detect(Benchmark.COMPILES_PATH, experiment, self.config.timeout,
                                self.config.java_options, self.config.force_detect))
 
@@ -78,9 +77,7 @@ class Benchmark:
             detectors = set(detectors).intersection(self.config.detector_white_list)
 
         for detector in detectors:
-            detector = Detector(Benchmark.DETECTORS_PATH, detector)
-            experiment = Experiment(str(self.config.experiment), detector, Benchmark.FINDINGS_PATH,
-                                    Benchmark.REVIEW_PATH)
+            experiment = self.__get_experiment(Detector(Benchmark.DETECTORS_PATH, detector))
             if experiment.id == Experiment.PROVIDED_PATTERNS:
                 self.runner.add(PrepareReviewOfBenchmarkWithPatternsTask(experiment, Benchmark.CHECKOUTS_PATH,
                                                                          Benchmark.COMPILES_PATH,
@@ -93,7 +90,16 @@ class Benchmark:
                 self.runner.add(PrepareReviewOfBenchmarkTask(experiment, Benchmark.CHECKOUTS_PATH,
                                                              Benchmark.COMPILES_PATH, self.config.force_prepare))
 
+    def __get_experiment(self, detector):
+        ex_ids = {
+            1: Experiment.PROVIDED_PATTERNS,
+            2: Experiment.TOP_FINDINGS,
+            3: Experiment.BENCHMARK
+        }
+        return Experiment(ex_ids.get(self.config.experiment), detector, Benchmark.FINDINGS_PATH, Benchmark.REVIEW_PATH)
+
     def _setup_review_check(self):
+        # TODO remove as soon as review server is in use
         if not exists(Benchmark.REVIEW_PATH):
             return
 

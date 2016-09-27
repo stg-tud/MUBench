@@ -13,10 +13,9 @@ class DetectorMode(IntEnum):
 
 
 class Experiment:
-    PROVIDED_PATTERNS = "1"
-    TOP_FINDINGS = "2"
-    BENCHMARK = "3"
-    ALL = [PROVIDED_PATTERNS, TOP_FINDINGS, BENCHMARK]
+    PROVIDED_PATTERNS = "ex1"
+    TOP_FINDINGS = "ex2"
+    BENCHMARK = "ex3"
 
     RUN_MODES = {
         PROVIDED_PATTERNS: DetectorMode.detect_only,
@@ -25,9 +24,6 @@ class Experiment:
     }
 
     def __init__(self, experiment_id: str, detector: Detector, findings_path: str, reviews_path: str):
-        if experiment_id not in Experiment.ALL:
-            raise ValueError("no such experiment: {}".format(experiment_id))
-
         self.id = experiment_id
         self.detector = detector
         self.findings_path = join(findings_path, self.detector_mode.name, self.detector.id)

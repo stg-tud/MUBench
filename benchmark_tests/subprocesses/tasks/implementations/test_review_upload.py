@@ -113,7 +113,7 @@ class TestReviewUploadEx1:
         self.uut.end()
 
         actual_url = self.post_url
-        assert_equals(actual_url, ReviewUpload.URL_EX1)
+        assert_equals(actual_url, "/upload/ex1")
 
     def test_post_data(self):
         self.uut.request_data = [Request(TEST_DATASET, self.detector, self.project, self.version,
@@ -214,7 +214,7 @@ class TestReviewUploadEx2:
         self.uut.end()
 
         actual_url = self.post_url
-        assert_equals(actual_url, ReviewUpload.URL_EX2)
+        assert_equals(actual_url, "/upload/ex2")
 
     def test_request_contains_findings(self):
         self.uut.request_data = [Request(TEST_DATASET, self.detector, self.project, self.version,
@@ -224,7 +224,7 @@ class TestReviewUploadEx2:
         self.uut.end()
 
         actual_url = self.post_url
-        assert_equals(actual_url, ReviewUpload.URL_EX2)
+        assert_equals(actual_url, "/upload/ex2")
 
 
 # noinspection PyAttributeOutsideInit
@@ -322,7 +322,7 @@ class TestReviewUploadEx3:
         self.uut.end()
 
         actual_url = self.post_url
-        assert_equals(actual_url, ReviewUpload.URL_EX3)
+        assert_equals(actual_url, "/upload/ex3")
 
     def test_post_data(self):
         self.uut.request_data = [Request(TEST_DATASET, self.detector, self.project, self.version,

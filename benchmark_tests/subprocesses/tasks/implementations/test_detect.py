@@ -26,7 +26,7 @@ class TestDetect:
         os.chdir(self.temp_dir)
 
         self.detector = Detector("path", "detector")
-        self.experiment = Experiment("2", self.detector, self.findings_path, "")
+        self.experiment = Experiment(Experiment.TOP_FINDINGS, self.detector, self.findings_path, "")
         self.uut = Detect(self.compiles_path, self.experiment, None, [], False)
 
         self.last_invoke = None
