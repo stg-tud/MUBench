@@ -301,14 +301,15 @@ class PrepareReviewOfTopFindingsTask(ProjectVersionTask):
         logger = logging.getLogger("review_prepare.version")
 
         detector_run = self.experiment.get_run(version)
-        run_dir = self.experiment.get_review_dir(version)  # TODO run or review?
-        review_path = self.experiment.get_review_path(version)
 
         self.__review.start_run_review(version.version_id, detector_run)
 
         if not detector_run.is_success():
             logger.info("Skipping %s: no result.", version)
-            return
+            return Response.skip
+
+        review_dir = self.experiment.get_review_dir(version)
+        review_path = self.experiment.get_review_path(version)
 
         if self.force_prepare:
             logger.debug("Removing old review files for %s...", version)
@@ -320,7 +321,7 @@ class PrepareReviewOfTopFindingsTask(ProjectVersionTask):
 
         for finding in findings:
             finding_name = "finding-{}".format(finding["id"])
-            details_url = join(run_dir, finding_name + ".php")
+            details_url = join(review_dir, finding_name + ".php")
             details_path = join(review_path, finding_name + ".php")
 
             if self.force_prepare and exists(details_path):
@@ -335,7 +336,7 @@ class PrepareReviewOfTopFindingsTask(ProjectVersionTask):
                                          _specialize_finding(finding, self.detector, dirname(details_path)))
 
             self.__review.append_finding_review("Finding {}".format(finding["id"]), ["<i>unknown</i>"],
-                                                True, details_url, run_dir, finding_name)
+                                                True, details_url, review_dir, finding_name)
 
     def end(self):
         safe_write(self.__review.to_html(), join(self.experiment.reviews_path, self.detector.id, "index.php"), append=False)
