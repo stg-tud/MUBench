@@ -158,9 +158,6 @@ class FindingReview:
 
 
 class ReviewPrepare(ProjectVersionMisuseTask):
-    no_hit = 0
-    potential_hit = 1
-
     def __init__(self, experiment: Experiment, checkout_base_dir: str, compiles_path: str, force_prepare: bool,
                  details_page_generator):
         super().__init__()
