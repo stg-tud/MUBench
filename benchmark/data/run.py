@@ -8,6 +8,8 @@ from typing import Optional
 
 import yaml
 
+from benchmark.data.finding import Finding
+from benchmark.data.misuse import Misuse
 from benchmark.utils.io import read_yaml, write_yaml, remove_tree
 
 
@@ -44,6 +46,19 @@ class Run:
                 with open(self.findings_file_path, "r") as stream:
                     self.__FINDINGS = [Finding(data) for data in yaml.load_all(stream) if data]
         return self.__FINDINGS
+
+    def get_potential_hits(self, misuse: Misuse):
+        potential_hits = self.__get_potential_hits(misuse, False)
+        if not potential_hits:
+            potential_hits = self.__get_potential_hits(misuse, True)
+        return potential_hits
+
+    def __get_potential_hits(self, misuse: Misuse, method_name_only: bool):
+        potential_hits = []
+        for finding in self.findings:
+            if finding.is_potential_hit(misuse, method_name_only):
+                potential_hits.append(finding)
+        return potential_hits
 
     def write(self, detector_md5: str):
         run_data = read_yaml(self.run_file_path) if exists(self.run_file_path) else {}
