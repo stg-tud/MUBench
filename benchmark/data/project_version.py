@@ -1,5 +1,4 @@
-from os import listdir
-from os.path import exists, isdir
+from os.path import exists
 from os.path import join
 from typing import List, Optional, Any, Dict, Set
 
@@ -7,7 +6,7 @@ import yaml
 
 from benchmark.data.misuse import Misuse, Pattern
 from benchmark.data.project_checkout import ProjectCheckout, GitProjectCheckout, SVNProjectCheckout, \
-    LocalProjectCheckout, SyntheticProjectCheckout, ZipProjectCheckout
+    SyntheticProjectCheckout, ZipProjectCheckout
 from benchmark.data.project_compile import ProjectCompile
 
 
@@ -58,7 +57,7 @@ class ProjectVersion:
             raise ValueError("unknown repository type: {}".format(repository.vcstype))
 
     def get_compile(self, base_path: str) -> ProjectCompile:
-        return ProjectCompile(join(base_path, self.project_id, self.version_id))
+        return ProjectCompile(join(base_path, self.project_id, self.version_id), self.misuses)
 
     @property
     def __compile_config(self):

@@ -4,7 +4,6 @@ from os.path import exists
 from typing import Optional, List
 from urllib.error import URLError
 
-from benchmark.data.detector import Detector
 from benchmark.data.experiment import Experiment, DetectorMode
 from benchmark.data.project import Project
 from benchmark.data.project_version import ProjectVersion
@@ -128,8 +127,8 @@ class Detect(ProjectVersionTask):
         target_src_path = []
         target_classpath = []
         if self.experiment.detector_mode == DetectorMode.detect_only:
-            training_src_path = [self.key_training_src_path, self.to_arg_path(project_compile.pattern_sources_path)]
-            training_classpath = [self.key_training_classpath, self.to_arg_path(project_compile.pattern_classes_path)]
+            training_src_path = [self.key_training_src_path, self.to_arg_path(project_compile.pattern_sources_base_path)]
+            training_classpath = [self.key_training_classpath, self.to_arg_path(project_compile.pattern_classes_base_path)]
             target_src_path = [self.key_target_src_path, self.to_arg_path(project_compile.misuse_source_path)]
             target_classpath = [self.key_target_classpath, self.to_arg_path(project_compile.misuse_classes_path)]
         elif self.experiment.detector_mode == DetectorMode.mine_and_detect:

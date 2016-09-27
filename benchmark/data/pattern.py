@@ -30,13 +30,10 @@ class Pattern:
     def file_name_without_extension(self):
         return splitext(self.file_name)[0]
 
-    def copy(self, destination: str) -> 'Pattern':
+    def copy(self, destination: str):
         new_pattern = Pattern(destination, self.file_name)
-
         makedirs(new_pattern.orig_dir, exist_ok=True)
         copy_file(self.path, new_pattern.path)
-
-        return new_pattern
 
     def _get_destination_file(self, destination: str) -> str:
         return join(destination, self.file_name)

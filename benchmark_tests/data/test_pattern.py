@@ -26,11 +26,10 @@ class TestPattern:
     def test_copy(self):
         destination = "copy"
         uut = Pattern(self.temp_dir, self.pattern_file_name)
-        copy = uut.copy(join(self.temp_dir, destination))
 
-        copy_path = join(destination, self.pattern_file_name)
-        assert_equals(copy, Pattern(self.temp_dir, copy_path))
-        assert exists(join(self.temp_dir, copy_path))
+        uut.copy(join(self.temp_dir, destination))
+
+        assert exists(join(self.temp_dir, join(destination, self.pattern_file_name)))
 
     def test_equality(self):
         assert Pattern("p", "a") == Pattern("p", "a")

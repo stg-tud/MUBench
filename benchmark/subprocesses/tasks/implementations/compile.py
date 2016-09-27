@@ -4,8 +4,9 @@ from os import makedirs
 from os.path import join, exists, dirname
 from typing import List, Set
 
-from benchmark.data.misuse import Pattern
+from benchmark.data.misuse import Pattern, Misuse
 from benchmark.data.project import Project
+from benchmark.data.project_compile import ProjectCompile
 from benchmark.data.project_version import ProjectVersion
 from benchmark.subprocesses.requirements import JavaRequirement, MavenRequirement, GradleRequirement
 from benchmark.subprocesses.tasks.base.project_task import Response
@@ -97,7 +98,7 @@ class Compile(ProjectVersionTask):
         else:
             try:
                 logger.info("Copying pattern sources...")
-                self.__copy_pattern_sources(version.patterns, project_compile.pattern_sources_path)
+                self.__copy_pattern_sources(version.misuses, project_compile)
             except IOError as e:
                 logger.error("Failed to copy pattern sources: %s", e)
                 return Response.skip
@@ -107,13 +108,13 @@ class Compile(ProjectVersionTask):
         else:
             try:
                 logger.debug("Copying patterns to source directory...")
-                copies = self.__copy(version.patterns, sources_path)
+                self.__copy(version.patterns, sources_path)
                 logger.info("Compiling patterns...")
                 self._compile(version.compile_commands, build_path)
                 logger.debug("Copying pattern classes...")
-                self.__copy_pattern_classes(copies, classes_path, project_compile.pattern_classes_path)
+                self.__copy_pattern_classes(version.misuses, classes_path, project_compile)
             except FileNotFoundError as e:
-                remove_tree(project_compile.pattern_classes_path)
+                remove_tree(project_compile.pattern_classes_base_path)
                 logger.error("Compilation failed: %s", e)
                 return Response.skip
             except CommandFailedError as e:
@@ -137,10 +138,12 @@ class Compile(ProjectVersionTask):
             shutil.copy(join(sources_path, file), dst)
 
     @staticmethod
-    def __copy_pattern_sources(patterns: Set[Pattern], destination: str):
-        remove_tree(destination)
-        for pattern in patterns:
-            pattern.copy(destination)
+    def __copy_pattern_sources(misuses: List[Misuse], project_compile: ProjectCompile):
+        remove_tree(project_compile.pattern_sources_base_path)
+        for misuse in misuses:
+            pattern_source_path = project_compile.get_pattern_source_path(misuse)
+            for pattern in misuse.patterns:
+                pattern.copy(pattern_source_path)
 
     @staticmethod
     def __copy_additional_compile_sources(version: ProjectVersion, checkout_dir: str):
@@ -164,17 +167,18 @@ class Compile(ProjectVersionTask):
             shutil.copy(join(classes_path, file), dst)
 
     @staticmethod
-    def __copy(patterns, destination):
-        copies = set()
+    def __copy(patterns: Set[Pattern], destination: str):
         for pattern in patterns:
-            copies.add(pattern.copy(destination))
-        return copies
+            pattern.copy(destination)
 
     @staticmethod
-    def __copy_pattern_classes(patterns, classes_path, destination):
-        remove_tree(destination)
-        for pattern in patterns:
-            pattern_class_file_name = pattern.file_name_without_extension + ".class"
-            new_name = join(destination, pattern_class_file_name)
-            makedirs(dirname(new_name), exist_ok=True)
-            shutil.copy(join(classes_path, pattern_class_file_name), new_name)
+    def __copy_pattern_classes(misuses: List[Misuse], classes_path: str, project_compile: ProjectCompile):
+        remove_tree(project_compile.pattern_classes_base_path)
+        for misuse in misuses:
+            pattern_classes_path = project_compile.get_pattern_classes_path(misuse)
+            for pattern in misuse.patterns:
+                pattern_class_file_name = pattern.file_name_without_extension + ".class"
+                new_name = join(pattern_classes_path, pattern_class_file_name)
+                print("NEW NAME = " + new_name)
+                makedirs(dirname(new_name), exist_ok=True)
+                shutil.copy(join(classes_path, pattern_class_file_name), new_name)

@@ -85,6 +85,8 @@ class TestProjectVersion:
         assert_equals(join(self.uut.path, "compile"), self.uut.additional_compile_sources)
 
     def test_derives_compile_base_path(self):
+        self.uut._MISUSES = [create_misuse("m")]  # prevent version from loading misuses
+
         project_compile = self.uut.get_compile("/base/path")
 
         assert_equals(join("/base/path", self.project_id, self.version_id), project_compile.base_path)

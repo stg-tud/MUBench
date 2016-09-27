@@ -82,7 +82,7 @@ class TestCompile:
         assert exists(join(self.misuse_source_path, "mu.file"))
 
     def test_skips_copy_of_original_sources_if_copy_exists(self):
-        makedirs(join(self.base_path, "original-src"))
+        makedirs(self.original_sources_path)
         create_file(join(self.source_path, "b.file"))
 
         self.uut.process_project_version(self.project, self.version)
@@ -107,31 +107,29 @@ class TestCompile:
         assert not exists(join(self.original_sources_path, "old.file"))
 
     def test_copies_pattern_sources(self):
-        self.version._PATTERNS = {self.create_pattern("a.java")}
+        self.create_misuse_with_pattern("m", "a.java")
 
         self.uut.process_project_version(self.project, self.version)
 
-        assert exists(join(self.pattern_sources_path, "a.java"))
+        print("EXPECTED PATH = " + join(self.pattern_sources_path, "m", "a.java"))
+        assert exists(join(self.pattern_sources_path, "m", "a.java"))
 
     def test_skips_copy_of_pattern_sources_if_copy_exists(self):
-        self.version._PATTERNS = {self.create_pattern("a.java")}
-        self.uut.process_project_version(self.project, self.version)
-        self.version._PATTERNS = {self.create_pattern("b.java")}
+        self.create_misuse_with_pattern("m", "a.java")
+        makedirs(join(self.pattern_sources_path, "m"))
 
         self.uut.process_project_version(self.project, self.version)
 
-        assert not exists(join(self.pattern_sources_path, "b.java"))
+        assert not exists(join(self.pattern_sources_path, "m", "a.java"))
 
     def test_forces_copy_of_pattern_sources(self):
-        self.version._PATTERNS = {self.create_pattern("a.java")}
-        self.uut.process_project_version(self.project, self.version)
-        self.version._PATTERNS = {self.create_pattern("b.java")}
+        self.create_misuse_with_pattern("m", "a.java")
+        makedirs(join(self.pattern_sources_path, "m"))
         self.uut.force_compile = True
 
         self.uut.process_project_version(self.project, self.version)
 
-        assert exists(join(self.pattern_sources_path, "b.java"))
-        assert not exists(join(self.pattern_sources_path, "a.java"))
+        assert exists(join(self.pattern_sources_path, "m", "a.java"))
 
     def test_skips_if_no_config(self):
         del self.version._YAML["build"]
@@ -187,35 +185,41 @@ class TestCompile:
         assert exists(join(self.misuse_classes_path, "mu.class"))
 
     def test_compiles_patterns(self):
-        self.version._PATTERNS = {self.create_pattern("a.java")}
+        self.create_misuse_with_pattern("m", "a.java")
 
         self.uut.process_project_version(self.project, self.version)
 
-        assert exists(join(self.pattern_classes_path, "a.class"))
+        assert exists(join(self.pattern_classes_path, "m", "a.class"))
 
     def test_compiles_patterns_in_package(self):
-        self.version._PATTERNS = {self.create_pattern(join("a", "b.java"))}
+        self.create_misuse_with_pattern("m", join("a", "b.java"))
 
         self.uut.process_project_version(self.project, self.version)
 
-        assert exists(join(self.pattern_classes_path, "a", "b.class"))
+        assert exists(join(self.pattern_classes_path, "m", "a", "b.class"))
 
     def test_skips_compile_patterns_if_pattern_classes_exist(self):
-        makedirs(self.pattern_classes_path)
-        self.version._PATTERNS = {self.create_pattern("a.java")}
+        self.create_misuse_with_pattern("m", "a.java")
+        makedirs(join(self.pattern_classes_path, "m"))
 
         self.uut.process_project_version(self.project, self.version)
 
-        assert not exists(join(self.pattern_classes_path, "a.class"))
+        assert not exists(join(self.pattern_classes_path, "m", "a.class"))
 
     def test_forces_compile_patterns(self):
-        makedirs(self.pattern_classes_path)
-        self.version._PATTERNS = {self.create_pattern("a.java")}
+        self.create_misuse_with_pattern("m", "a.java")
+        makedirs(join(self.pattern_classes_path, "m"))
         self.uut.force_compile = True
 
         self.uut.process_project_version(self.project, self.version)
 
-        assert exists(join(self.pattern_classes_path, "a.class"))
+        assert exists(join(self.pattern_classes_path, "m", "a.class"))
+
+    def create_misuse_with_pattern(self, misuse_id, pattern_file):
+        misuse = create_misuse(misuse_id, project=self.project)
+        create_file(join(self.source_path, misuse.location.file))
+        misuse._PATTERNS = {self.create_pattern(pattern_file)}
+        self.version._MISUSES = [misuse]
 
     def create_pattern(self, filename):
         pattern = Pattern(self.temp_dir, filename)

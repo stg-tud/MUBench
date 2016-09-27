@@ -60,8 +60,8 @@ class TestDetect:
         self.uut.process_project_version(project, version)
 
         compile = version.get_compile(self.compiles_path)
-        self.assert_last_invoke_path_equals(self.uut.key_training_src_path, compile.pattern_sources_path)
-        self.assert_last_invoke_path_equals(self.uut.key_training_classpath, compile.pattern_classes_path)
+        self.assert_last_invoke_path_equals(self.uut.key_training_src_path, compile.pattern_sources_base_path)
+        self.assert_last_invoke_path_equals(self.uut.key_training_classpath, compile.pattern_classes_base_path)
         self.assert_last_invoke_path_equals(self.uut.key_target_src_path, compile.misuse_source_path)
         self.assert_last_invoke_path_equals(self.uut.key_target_classpath, compile.misuse_classes_path)
 
