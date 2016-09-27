@@ -8,6 +8,7 @@ from benchmark.data.detector import Detector
 from benchmark.data.experiment import Experiment
 from benchmark.subprocesses.tasks.implementations.detect import Run, Result
 from benchmark.subprocesses.tasks.implementations.review_upload import ReviewUpload, Request
+from benchmark.utils.io import remove_tree
 from benchmark_tests.data.test_misuse import create_misuse
 from benchmark_tests.test_utils.data_util import create_project, create_version
 
@@ -53,6 +54,9 @@ class TestReviewUploadEx1:
             self.post_files = files
 
         self.uut.post = post_mock
+
+    def teardown(self):
+        remove_tree(self.temp_dir)
 
     def test_creates_request_data(self):
         self.uut.process_project_version_misuse(self.project, self.version, self.misuse)
