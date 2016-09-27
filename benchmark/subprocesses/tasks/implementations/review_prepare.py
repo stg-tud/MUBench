@@ -3,7 +3,7 @@ from copy import deepcopy
 from os import makedirs, remove
 from os.path import join, exists, dirname
 from shutil import copy
-from typing import Dict, Iterable
+from typing import Dict
 from typing import List
 
 from benchmark.data.detector import Detector
@@ -11,11 +11,11 @@ from benchmark.data.experiment import Experiment
 from benchmark.data.misuse import Misuse
 from benchmark.data.project import Project
 from benchmark.data.project_version import ProjectVersion
+from benchmark.data.run import Run
 from benchmark.subprocesses.requirements import JavaRequirement, DotRequirement
 from benchmark.subprocesses.tasks.base.project_task import Response
 from benchmark.subprocesses.tasks.base.project_version_misuse_task import ProjectVersionMisuseTask
 from benchmark.subprocesses.tasks.base.project_version_task import ProjectVersionTask
-from benchmark.data.run import Run
 from benchmark.subprocesses.tasks.implementations.review import review_page
 from benchmark.subprocesses.tasks.implementations.review.review_page import REVIEW_RECEIVER_FILE
 from benchmark.utils.io import remove_tree, safe_write
