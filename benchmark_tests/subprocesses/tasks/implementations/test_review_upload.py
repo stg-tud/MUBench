@@ -41,7 +41,7 @@ class TestReviewUploadEx1:
         self.test_run.get_potential_hits = lambda m: self.potential_hits
         self.experiment.get_run = lambda v: self.test_run
 
-        self.uut = ReviewUpload(self.experiment, self.dataset, self.detector, self.checkout_base_dir)
+        self.uut = ReviewUpload(self.experiment, self.dataset, self.checkout_base_dir)
 
         self.post_url = None
         self.post_data = None
@@ -155,7 +155,7 @@ class TestReviewUploadEx2:
         self.test_run.get_potential_hits = lambda m: self.potential_hits
         self.experiment.get_run = lambda v: self.test_run
 
-        self.uut = ReviewUpload(self.experiment, self.dataset, self.detector, self.checkout_base_dir)
+        self.uut = ReviewUpload(self.experiment, self.dataset, self.checkout_base_dir)
 
         self.post_url = None
         self.post_data = None
@@ -250,7 +250,7 @@ class TestReviewUploadEx3:
         self.test_run.get_potential_hits = lambda m: self.potential_hits
         self.experiment.get_run = lambda v: self.test_run
 
-        self.uut = ReviewUpload(self.experiment, self.dataset, self.detector, self.checkout_base_dir)
+        self.uut = ReviewUpload(self.experiment, self.dataset, self.checkout_base_dir)
 
         self.post_url = None
         self.post_data = None

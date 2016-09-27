@@ -41,11 +41,11 @@ class RequestFile:
 
 
 class ReviewUpload(ProjectVersionMisuseTask):
-    def __init__(self, experiment: Experiment, dataset: str, detector: Detector, checkout_base_dir: str):
+    def __init__(self, experiment: Experiment, dataset: str, checkout_base_dir: str):
         super().__init__()
         self.experiment = experiment
         self.dataset = dataset
-        self.detector = detector
+        self.detector = experiment.detector
         self.checkout_base_dir = checkout_base_dir
 
         self.request_data = []  # type: List[Request]
