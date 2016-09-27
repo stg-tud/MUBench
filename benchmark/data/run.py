@@ -23,7 +23,7 @@ class Run:
         self.runtime = None  # type: float
         self.detector_md5 = None  # type: Optional[str]
         self.message = ""
-        self.__findings = []  # type: List[Dict[str,str]]
+        self.__FINDINGS = []  # type: List[Finding]
         if exists(self.run_file_path):
             data = read_yaml(self.run_file_path)
             self.result = Result[data["result"]]
@@ -38,12 +38,12 @@ class Run:
         return self.result == Result.error or self.result == Result.timeout
 
     @property
-    def findings(self):
-        if not self.__findings:
+    def findings(self) -> List[Finding]:
+        if not self.__FINDINGS:
             if exists(self.findings_file_path):
                 with open(self.findings_file_path, "r") as stream:
-                    self.__findings = [finding for finding in yaml.load_all(stream) if finding]
-        return self.__findings
+                    self.__FINDINGS = [Finding(data) for data in yaml.load_all(stream) if data]
+        return self.__FINDINGS
 
     def write(self, detector_md5: str):
         run_data = read_yaml(self.run_file_path) if exists(self.run_file_path) else {}
