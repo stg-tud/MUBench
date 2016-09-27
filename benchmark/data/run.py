@@ -15,10 +15,10 @@ class Run:
     RUN_FILE = "run.yml"
     FINDINGS_FILE = "findings.yml"
 
-    def __init__(self, path: str):
-        self.__path = path
-        self.findings_file_path = join(path, Run.FINDINGS_FILE)
-        self.run_file_path = join(path, Run.RUN_FILE)
+    def __init__(self, findings_path: str):
+        self.findings_path = findings_path
+        self.findings_file_path = join(self.findings_path, Run.FINDINGS_FILE)
+        self.run_file_path = join(self.findings_path, Run.RUN_FILE)
         self.result = None  # type: Result
         self.runtime = None  # type: float
         self.detector_md5 = None  # type: Optional[str]
@@ -52,9 +52,9 @@ class Run:
         write_yaml(run_data, file=self.run_file_path)
 
     def reset(self):
-        remove_tree(self.__path)
-        makedirs(self.__path, exist_ok=True)
-        self.__init__(self.__path)
+        remove_tree(self.findings_path)
+        makedirs(self.findings_path, exist_ok=True)
+        self.__init__(self.findings_path)
 
 
 class Result(Enum):
