@@ -72,18 +72,7 @@ class ReviewUpload(ProjectVersionMisuseTask):
             return Response.skip
 
         logger.debug("Checking hit for %s in %s...", misuse, version)
-
-        findings = detector_run.findings
-        potential_hits = self.find_potential_hits(findings, misuse)
-
-        if self.experiment == 2:
-            matches = []
-            for finding in potential_hits:
-                for pattern in misuse.patterns:
-                    if pattern.class_name in finding["pattern"]:
-                        matches.append(finding)
-                        break
-            potential_hits = matches
+        potential_hits = detector_run.get_potential_hits(misuse)
 
         logger.info("Found %s potential hits for %s.", len(potential_hits), misuse)
         data = Request(self.dataset, self.detector, project, version, potential_hits)
@@ -115,53 +104,3 @@ class ReviewUpload(ProjectVersionMisuseTask):
         user = ""  # TODO set these values
         password = ""
         requests.post(url, auth=(user, password), data=data, files=files)
-
-    @staticmethod
-    def find_potential_hits(findings: Iterable[Dict[str, str]], misuse: Misuse) -> List[Dict[str, str]]:
-        candidates = ReviewUpload.__filter_by_file(findings, misuse.location.file)
-        candidates = ReviewUpload.__filter_by_method(candidates, misuse.location.method)
-        return candidates
-
-    @staticmethod
-    def __filter_by_file(findings, misuse_file):
-        matches = []
-        for finding in findings:
-            if ReviewUpload.__matches_file(finding["file"], misuse_file):
-                matches.append(finding)
-        return matches
-
-    @staticmethod
-    def __matches_file(finding_file, misuse_file):
-        # If file is an inner class "Outer$Inner.class", the source file is "Outer.java".
-        if "$" in finding_file:
-            finding_file = finding_file.split("$", 1)[0] + ".java"
-        # If file is a class file "A.class", the source file is "A.java".
-        if finding_file.endswith(".class"):
-            finding_file = finding_file[:-5] + "java"
-        return finding_file.endswith(misuse_file)
-
-    @staticmethod
-    def __filter_by_method(findings, misuse_method):
-        misuse_constructor = misuse_method.replace(misuse_method.split("(", 1)[0], "<init>")
-        matches = []
-
-        for finding in findings:
-            if "method" in finding:
-                method = finding["method"]
-                # if detector reports only method names, this ensures we don't match prefixes of method names
-                if "(" not in method:
-                    method += "("
-                if method in misuse_method or method in misuse_constructor:
-                    matches.append(finding)
-            else:
-                # don't filter if the detector reports no method
-                matches.append(finding)
-
-        if not matches:
-            # fall back to match without the signature
-            for finding in findings:
-                method = finding["method"].split("(")[0] + "("
-                if method in misuse_method:
-                    matches.append(finding)
-
-        return matches

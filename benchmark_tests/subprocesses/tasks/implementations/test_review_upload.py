@@ -1,7 +1,6 @@
 import json
 from os.path import join
 from tempfile import mkdtemp
-from typing import Dict, List
 
 from nose.tools import assert_equals
 
@@ -32,17 +31,17 @@ class TestReviewUploadEx1:
         self.misuse = create_misuse(TEST_MISUSE_ID, project=self.project)
         self.version = create_version(TEST_VERSION_ID, project=self.project, misuses=[self.misuse])
 
+        self.potential_hits = []
+
         self.detector = Detector(join(self.temp_dir, "detectors"), TEST_DETECTOR_ID)
         self.experiment = Experiment(Experiment.PROVIDED_PATTERNS, self.detector, self.findings_path,
                                      join(self.temp_dir, "reviews"))
-        self.test_run = self.experiment.get_run(self.version)
+        self.test_run = Run("")
         self.test_run.result = Result.success
+        self.test_run.get_potential_hits = lambda m: self.potential_hits
         self.experiment.get_run = lambda v: self.test_run
 
         self.uut = ReviewUpload(self.experiment, self.dataset, self.detector, self.checkout_base_dir)
-
-        self.potential_hits = []
-        self.uut.find_potential_hits = lambda f, m: self.potential_hits
 
         self.post_url = None
         self.post_data = None
@@ -146,17 +145,17 @@ class TestReviewUploadEx2:
         self.misuse = create_misuse(TEST_MISUSE_ID, project=self.project)
         self.version = create_version(TEST_VERSION_ID, project=self.project, misuses=[self.misuse])
 
+        self.potential_hits = []
+
         self.detector = Detector(join(self.temp_dir, "detectors"), TEST_DETECTOR_ID)
         self.experiment = Experiment(Experiment.TOP_FINDINGS, self.detector, self.findings_path,
                                      join(self.temp_dir, "reviews"))
-        self.test_run = self.experiment.get_run(self.version)
+        self.test_run = Run("")
         self.test_run.result = Result.success
+        self.test_run.get_potential_hits = lambda m: self.potential_hits
         self.experiment.get_run = lambda v: self.test_run
 
         self.uut = ReviewUpload(self.experiment, self.dataset, self.detector, self.checkout_base_dir)
-
-        self.potential_hits = []
-        self.uut.find_potential_hits = lambda f, m: self.potential_hits
 
         self.post_url = None
         self.post_data = None
@@ -241,17 +240,17 @@ class TestReviewUploadEx3:
         self.misuse = create_misuse(TEST_MISUSE_ID, project=self.project)
         self.version = create_version(TEST_VERSION_ID, project=self.project, misuses=[self.misuse])
 
+        self.potential_hits = []
+
         self.detector = Detector(join(self.temp_dir, "detectors"), TEST_DETECTOR_ID)
         self.experiment = Experiment(Experiment.BENCHMARK, self.detector, self.findings_path,
                                      join(self.temp_dir, "reviews"))
-        self.test_run = self.experiment.get_run(self.version)
+        self.test_run = Run("")
         self.test_run.result = Result.success
+        self.test_run.get_potential_hits = lambda m: self.potential_hits
         self.experiment.get_run = lambda v: self.test_run
 
         self.uut = ReviewUpload(self.experiment, self.dataset, self.detector, self.checkout_base_dir)
-
-        self.potential_hits = []
-        self.uut.find_potential_hits = lambda f, m: self.potential_hits
 
         self.post_url = None
         self.post_data = None
@@ -307,8 +306,8 @@ class TestReviewUploadEx3:
         assert_equals(TEST_VERSION_ID, actual.version)
 
     def test_request_contains_potential_hits(self):
-        self.potential_hits = [{"id": "-1-", "misuse": "-p-.-m1-", "detector-specific": "-specific2-"},
-                               {"id": "-2-", "misuse": "-p-.-m2-", "detector-specific": "-specific1-"}]
+        self.potential_hits = [{"id": "-1-", "misuse": "-p-.-m1-", "detector-specific": "-specific1-"},
+                               {"id": "-2-", "misuse": "-p-.-m2-", "detector-specific": "-specific2-"}]
 
         self.uut.process_project_version_misuse(self.project, self.version, self.misuse)
 
@@ -340,67 +339,3 @@ class TestReviewUploadEx3:
                                                      "misuse": "-p-.-m1-"},
                                                     {"id": "-2-", "detector-specific": "-specific2-",
                                                      "misuse": "-p-.-m2-"}]}], sort_keys=True))
-
-
-class TestFindPotentialMatches:
-    # noinspection PyAttributeOutsideInit
-    def setup(self):
-        self.misuse = create_misuse('misuse', meta={"location": {"file": "a", "method": "m()"}})
-
-    def test_matches_on_file(self):
-        self.misuse.location.file = "some-class.java"
-        self.assert_potential_hit([{"file": "some-class.java"}])
-
-    def test_matches_on_file_absolute(self):
-        self.misuse.location.file = "java/main/some-class.java"
-        self.assert_potential_hit([{"file": "/some/prefix/java/main/some-class.java"}])
-
-    def test_matches_on_class(self):
-        self.misuse.location.file = "some-class.java"
-        self.assert_potential_hit([{"file": "some-class.class"}])
-
-    def test_matches_on_inner_class(self):
-        self.misuse.location.file = "some-class.java"
-        self.assert_potential_hit([{"file": "some-class$inner-class.class"}])
-
-    def test_differs_on_method(self):
-        self.misuse.location.method = "method()"
-        self.assert_no_potential_hit([{"method": "other_method()"}])
-
-    def test_matches_on_method_name(self):
-        self.misuse.location.method = "method(A, B)"
-        self.assert_potential_hit([{"method": "method"}])
-
-    def test_differs_on_method_name_prefix(self):
-        self.misuse.location.method = "appendX"
-        self.assert_no_potential_hit([{"method": "append"}])
-
-    def test_matches_on_method_signature(self):
-        self.misuse.location.method = "method(A, B)"
-        self.assert_potential_hit([{"method": "method(A, B)"}])
-
-    def test_falls_back_to_method_name_if_no_match_on_signature(self):
-        self.misuse.location.method = "method(A)"
-        self.assert_potential_hit([{"method": "method(p.A)"}])
-
-    def test_matches_only_on_signature_if_match_on_signature(self):
-        self.misuse.location.method = "method(A)"
-        self.assert_potential_hit([{"method": "method(A)"}, {"method": "method(B)"}])
-
-    def test_matches_constructor(self):
-        self.misuse.location.method = "A()"
-        self.assert_potential_hit([{"method": "<init>()"}])
-
-    def create_findings(self, findings: List[Dict[str, str]]):
-        for finding in findings:
-            if "file" not in finding:
-                finding["file"] = self.misuse.location.file
-            if "method" not in finding:
-                finding["method"] = self.misuse.location.method
-        return findings
-
-    def assert_potential_hit(self, findings):
-        assert ReviewUpload.find_potential_hits(self.create_findings(findings), self.misuse)
-
-    def assert_no_potential_hit(self, findings):
-        assert not ReviewUpload.find_potential_hits(self.create_findings(findings), self.misuse)

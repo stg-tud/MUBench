@@ -226,17 +226,7 @@ class ReviewPrepare(ProjectVersionMisuseTask):
 
         logger.debug("Checking hit for %s in %s...", misuse, version)
 
-        findings = detector_run.findings
-        potential_hits = self.find_potential_hits(findings, misuse)
-
-        if self.detector == "mudetect-do":
-            matches = []
-            for finding in potential_hits:
-                for pattern in misuse.patterns:
-                    if pattern.class_name in finding["pattern"]:
-                        matches.append(finding)
-                        break
-            potential_hits = matches
+        potential_hits = detector_run.get_potential_hits(misuse)
 
         logger.info("Found %s potential hits for %s.", len(potential_hits), misuse)
         logger.debug("Generating review files for %s in %s...", misuse, version)
@@ -269,56 +259,6 @@ class ReviewPrepare(ProjectVersionMisuseTask):
         safe_write(self.__review.to_html(), join(self.experiment.reviews_path, self.detector.id, "index.php"), append=False)
         _copy_review_resource_file(REVIEW_RECEIVER_FILE, join(self.experiment.reviews_path, ".."))
         _copy_review_resource_file(REVIEW_UTILS_FILE, join(self.experiment.reviews_path, ".."))
-
-    @staticmethod
-    def find_potential_hits(findings: Iterable[Dict[str, str]], misuse: Misuse) -> List[Dict[str, str]]:
-        candidates = ReviewPrepare.__filter_by_file(findings, misuse.location.file)
-        candidates = ReviewPrepare.__filter_by_method(candidates, misuse.location.method)
-        return candidates
-
-    @staticmethod
-    def __filter_by_file(findings, misuse_file):
-        matches = []
-        for finding in findings:
-            if ReviewPrepare.__matches_file(finding["file"], misuse_file):
-                matches.append(finding)
-        return matches
-
-    @staticmethod
-    def __matches_file(finding_file, misuse_file):
-        # If file is an inner class "Outer$Inner.class", the source file is "Outer.java".
-        if "$" in finding_file:
-            finding_file = finding_file.split("$", 1)[0] + ".java"
-        # If file is a class file "A.class", the source file is "A.java".
-        if finding_file.endswith(".class"):
-            finding_file = finding_file[:-5] + "java"
-        return finding_file.endswith(misuse_file)
-
-    @staticmethod
-    def __filter_by_method(findings, misuse_method):
-        misuse_constructor = misuse_method.replace(misuse_method.split("(", 1)[0], "<init>")
-        matches = []
-
-        for finding in findings:
-            if "method" in finding:
-                method = finding["method"]
-                # if detector reports only method names, this ensures we don't match prefixes of method names
-                if "(" not in method:
-                    method += "("
-                if method in misuse_method or method in misuse_constructor:
-                    matches.append(finding)
-            else:
-                # don't filter if the detector reports no method
-                matches.append(finding)
-
-        if not matches:
-            # fall back to match without the signature
-            for finding in findings:
-                method = finding["method"].split("(")[0] + "("
-                if method in misuse_method:
-                    matches.append(finding)
-
-        return matches
 
 
 class PrepareReviewOfBenchmarkWithPatternsTask(ReviewPrepare):
