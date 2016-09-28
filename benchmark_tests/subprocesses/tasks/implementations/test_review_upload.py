@@ -4,6 +4,7 @@ from tempfile import mkdtemp
 
 from nose.tools import assert_equals
 
+from benchmark.data.run import VersionRun
 from detectors.dummy.dummy import DummyDetector
 from benchmark.data.experiment import Experiment
 from benchmark.subprocesses.tasks.implementations.detect import Run, Result
@@ -36,7 +37,7 @@ class TestReviewUploadEx1:
         self.detector = DummyDetector(join(self.temp_dir, "detectors"))
         self.experiment = Experiment(Experiment.PROVIDED_PATTERNS, self.detector, self.findings_path,
                                      join(self.temp_dir, "reviews"))
-        self.test_run = Run(self.detector, self.findings_path, self.version)
+        self.test_run = VersionRun(self.detector, self.findings_path, self.version)
         self.test_run.result = Result.success
         self.test_run.get_potential_hits = lambda m: self.potential_hits
         self.experiment.get_run = lambda v: self.test_run
@@ -153,7 +154,7 @@ class TestReviewUploadEx2:
         self.detector = DummyDetector(join(self.temp_dir, "detectors"))
         self.experiment = Experiment(Experiment.TOP_FINDINGS, self.detector, self.findings_path,
                                      join(self.temp_dir, "reviews"))
-        self.test_run = Run(self.detector, self.findings_path, self.version)
+        self.test_run = VersionRun(self.detector, self.findings_path, self.version)
         self.test_run.result = Result.success
         self.test_run.get_potential_hits = lambda m: self.potential_hits
         self.experiment.get_run = lambda v: self.test_run
@@ -248,7 +249,7 @@ class TestReviewUploadEx3:
         self.detector = DummyDetector(join(self.temp_dir, "detectors"))
         self.experiment = Experiment(Experiment.BENCHMARK, self.detector, self.findings_path,
                                      join(self.temp_dir, "reviews"))
-        self.test_run = Run(self.detector, self.findings_path, self.version)
+        self.test_run = VersionRun(self.detector, self.findings_path, self.version)
         self.test_run.result = Result.success
         self.test_run.get_potential_hits = lambda m: self.potential_hits
         self.experiment.get_run = lambda v: self.test_run

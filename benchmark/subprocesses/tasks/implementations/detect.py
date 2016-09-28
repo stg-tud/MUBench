@@ -4,7 +4,7 @@ from os.path import exists
 from typing import Optional, List
 from urllib.error import URLError
 
-from benchmark.data.experiment import Experiment, DetectorMode
+from benchmark.data.experiment import Experiment
 from benchmark.data.project import Project
 from benchmark.data.project_version import ProjectVersion
 from benchmark.data.run import Run, Result
@@ -16,15 +16,13 @@ from benchmark.utils.web_util import download_file
 
 
 class Detect(ProjectVersionTask):
-    def __init__(self, compiles_base_path: str, experiment: Experiment, timeout: Optional[int], java_options: List[str],
-                 force_detect: bool):
+    def __init__(self, compiles_base_path: str, experiment: Experiment, timeout: Optional[int], force_detect: bool):
         super().__init__()
         self.force_detect = force_detect
         self.compiles_base_path = compiles_base_path
         self.experiment = experiment
         self.detector = experiment.detector
         self.timeout = timeout
-        self.java_options = ['-' + option for option in java_options]
 
         self.key_findings_file = "target"
         self.key_run_file = "run_info"
@@ -72,7 +70,7 @@ class Detect(ProjectVersionTask):
         logger = logging.getLogger("detect")
         run = self.experiment.get_run(version)
 
-        if self._detector_updated(run) or self.force_detect:
+        if run.is_outdated() or self.force_detect:
             pass
         elif run.is_error():
             logger.info("Error in previous %s. Skipping.", run)
@@ -90,9 +88,7 @@ class Detect(ProjectVersionTask):
         logger = logging.getLogger("detect.run")
         start = time.time()
         try:
-            detector_path = self.detector.jar_path
-            detector_args = self.get_detector_arguments(run.findings_file_path, run.run_file_path, run.version)
-            self._invoke_detector(detector_path, detector_args)
+            run.execute(self.compiles_base_path, self.timeout, logger)
             run.result = Result.success
         except CommandFailedError as e:
             logger.error("Detector failed: %s", e)
@@ -107,41 +103,6 @@ class Detect(ProjectVersionTask):
             run.runtime = runtime
             logger.info("Run took {0:.2f} seconds.".format(runtime))
 
-        run.save(self.detector.md5)
+        run.save()
 
         return Response.ok if run.is_success() else Response.skip
-
-    def get_detector_arguments(self, findings_file_path: str, run_file_path: str, version: ProjectVersion) -> List[str]:
-        project_compile = version.get_compile(self.compiles_base_path)
-        findings_file = [self.key_findings_file, self.to_arg_path(findings_file_path)]
-        run_file = [self.key_run_file, self.to_arg_path(run_file_path)]
-        detector_mode = [self.key_detector_mode, self.to_arg_path(str(int(self.experiment.detector_mode)))]
-
-        training_src_path = []
-        training_classpath = []
-        target_src_path = []
-        target_classpath = []
-        if self.experiment.detector_mode == DetectorMode.detect_only:
-            training_src_path = [self.key_training_src_path, self.to_arg_path(project_compile.pattern_sources_base_path)]
-            training_classpath = [self.key_training_classpath, self.to_arg_path(project_compile.pattern_classes_base_path)]
-            target_src_path = [self.key_target_src_path, self.to_arg_path(project_compile.misuse_source_path)]
-            target_classpath = [self.key_target_classpath, self.to_arg_path(project_compile.misuse_classes_path)]
-        elif self.experiment.detector_mode == DetectorMode.mine_and_detect:
-            target_src_path = [self.key_target_src_path, self.to_arg_path(project_compile.original_sources_path)]
-            target_classpath = [self.key_target_classpath, self.to_arg_path(project_compile.original_classes_path)]
-
-        return findings_file + run_file + detector_mode + training_src_path + training_classpath + target_src_path + \
-               target_classpath
-
-    def _invoke_detector(self, absolute_misuse_detector_path: str, detector_args: List[str]):
-        command = ["java"] + self.java_options + ["-jar",
-                                                  self.to_arg_path(absolute_misuse_detector_path)] + detector_args
-        command = " ".join(command)
-        return Shell.exec(command, logger=logging.getLogger("detect.run"), timeout=self.timeout)
-
-    def _detector_updated(self, run: Run) -> bool:
-        return not self.detector.md5 == run.detector_md5
-
-    @staticmethod
-    def to_arg_path(absolute_misuse_detector_path):
-        return "\"{}\"".format(absolute_misuse_detector_path)

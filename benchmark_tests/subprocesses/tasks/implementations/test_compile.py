@@ -32,7 +32,8 @@ class TestCompile:
                                       meta={"build": {"src": self.source_dir,
                                                       "commands": ["mkdir classes"],
                                                       "classes": "classes"},
-                                            "revision": "0"})
+                                            "revision": "0"},
+                                      misuses=[])
 
         checkout = self.version.get_checkout(self.checkout_base_path)
 

@@ -4,8 +4,10 @@ from typing import Optional, Dict, List
 
 
 class Detector:
-    def __init__(self, detectors_path: str, detector_id: str):
+    def __init__(self, detectors_path: str, detector_id: str, java_options: List[str]):
         self.id = detector_id
+        self.java_options = java_options
+
         self.path = join(detectors_path, self.id)
         self.jar_path = join(self.path, self.id + ".jar")
         self.jar_url = "http://www.st.informatik.tu-darmstadt.de/artifacts/mubench/{}.jar".format(self.id)

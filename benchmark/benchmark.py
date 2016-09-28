@@ -68,8 +68,7 @@ class Benchmark:
 
     def _setup_detect(self):
         experiment = self.__get_experiment(self.config.detector)
-        self.runner.add(Detect(Benchmark.COMPILES_PATH, experiment, self.config.timeout,
-                               self.config.java_options, self.config.force_detect))
+        self.runner.add(Detect(Benchmark.COMPILES_PATH, experiment, self.config.timeout, self.config.force_detect))
 
     def _setup_review_prepare(self):
         detectors = available_detectors
@@ -113,7 +112,8 @@ class Benchmark:
             "tikanga": Tikanga,
             "mudetect": MuDetect,
         }
-        return detectors[detector](self.DETECTORS_PATH, detector) \
+        java_options = ['-' + option for option in self.config.java_options]
+        return detectors[detector](self.DETECTORS_PATH, detector, java_options) \
             if detector in detectors else DummyDetector(self.DETECTORS_PATH)
 
     def _setup_review_check(self):

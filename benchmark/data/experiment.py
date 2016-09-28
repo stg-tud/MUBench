@@ -1,15 +1,9 @@
-from enum import IntEnum
 from os.path import join
 
 from benchmark.data.detector import Detector
 from benchmark.data.misuse import Misuse
 from benchmark.data.project_version import ProjectVersion
-from benchmark.data.run import Run
-
-
-class DetectorMode(IntEnum):
-    mine_and_detect = 0
-    detect_only = 1
+from benchmark.data.run import PerMisuseRun, VersionRun
 
 
 class Experiment:
@@ -17,20 +11,17 @@ class Experiment:
     TOP_FINDINGS = "ex2"
     BENCHMARK = "ex3"
 
-    RUN_MODES = {
-        PROVIDED_PATTERNS: DetectorMode.detect_only,
-        TOP_FINDINGS: DetectorMode.mine_and_detect,
-        BENCHMARK: DetectorMode.mine_and_detect
-    }
-
-    def __init__(self, experiment_id: str, detector: Detector, findings_path: str, reviews_path: str):
+    def __init__(self, experiment_id: str, detector: Detector, findings_base_path: str, reviews_path: str):
         self.id = experiment_id
         self.detector = detector
-        self.findings_path = join(findings_path, self.detector_mode.name, self.detector.id)
+        self.findings_base_path = findings_base_path
         self.reviews_path = join(reviews_path, self.id, self.detector.id)
 
     def get_run(self, version: ProjectVersion):
-        return Run(self.detector, self.findings_path, version)
+        if self.id == Experiment.PROVIDED_PATTERNS:
+            return PerMisuseRun(self.detector, self.findings_base_path, version)
+        else:
+            return VersionRun(self.detector, self.findings_base_path, version)
 
     def get_review_dir(self, version: ProjectVersion, misuse: Misuse = None):
         if self.id == Experiment.TOP_FINDINGS:
@@ -40,7 +31,3 @@ class Experiment:
 
     def get_review_path(self, version: ProjectVersion, misuse: Misuse = None):
         return join(self.reviews_path, self.get_review_dir(version, misuse))
-
-    @property
-    def detector_mode(self) -> DetectorMode:
-        return Experiment.RUN_MODES.get(self.id)

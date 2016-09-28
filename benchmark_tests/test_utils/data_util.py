@@ -16,7 +16,7 @@ def create_version(version_id: str, misuses: List[Misuse] = None, meta: Dict[str
         project = create_project("-project-")
     version = ProjectVersion(project._base_path, project.id, version_id)
     version._ProjectVersion__project = project
-    version._MISUSES = [] if misuses is None else misuses
+    version._MISUSES = [create_misuse("-misuse-")] if misuses is None else misuses
     version._YAML = {} if meta is None else meta
     project._VERSIONS.append(version)
     return version
