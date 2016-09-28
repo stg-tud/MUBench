@@ -1,7 +1,7 @@
 from typing import Dict, Optional
 
 from benchmark.data import detector
-from benchmark.data.detector_specialising.customizer_util import format_float_value
+from benchmark.data.detector_specialising.specialising_util import format_float_value
 
 
 class Specialising(detector.Specialising):
