@@ -39,8 +39,14 @@ class Run:
     def is_success(self):
         return self.result == Result.success
 
+    def is_error(self):
+        return self.result == Result.error
+
+    def is_timeout(self):
+        return self.result == Result.timeout
+
     def is_failure(self):
-        return self.result == Result.error or self.result == Result.timeout
+        return self.is_error() or self.is_timeout()
 
     @property
     def findings(self) -> List[Finding]:
