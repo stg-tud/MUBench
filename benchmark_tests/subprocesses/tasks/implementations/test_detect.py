@@ -102,8 +102,7 @@ class TestDetect:
 
         self.uut.process_project_version(project, version)
 
-        self.assert_last_invoke_path_equals(self.uut.key_run_file,
-                                            self.experiment.get_run(version).run_file_path)
+        self.assert_last_invoke_path_equals(self.uut.key_run_file, self.experiment.get_run(version).run_file_path)
 
     def test_writes_results(self):
         project = create_project("project")
