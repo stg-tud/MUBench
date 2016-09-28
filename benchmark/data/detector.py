@@ -56,11 +56,11 @@ class Specialising:
 
     @staticmethod
     def get_specialising(detector_id: str) -> Dict[str, 'Specialising']:
-        from benchmark.data.detector_specialising import dmmc
-        from benchmark.data.detector_specialising import grouminer
-        from benchmark.data.detector_specialising import jadet
-        from benchmark.data.detector_specialising import mudetect
-        from benchmark.data.detector_specialising import tikanga
+        from detectors.dmmc import dmmc
+        from detectors.grouminer import grouminer
+        from detectors.jadet import jadet
+        from detectors.mudetect import mudetect
+        from detectors.tikanga import tikanga
 
         customizers = {
             'dmmc': dmmc.Specialising,
