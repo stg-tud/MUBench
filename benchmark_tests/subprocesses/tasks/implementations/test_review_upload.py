@@ -37,7 +37,7 @@ class TestReviewUploadEx1:
         self.detector = DefaultDetector(join(self.temp_dir, "detectors"), TEST_DETECTOR_ID)
         self.experiment = Experiment(Experiment.PROVIDED_PATTERNS, self.detector, self.findings_path,
                                      join(self.temp_dir, "reviews"))
-        self.test_run = Run("", self.version)
+        self.test_run = Run(self.detector, self.findings_path, self.version)
         self.test_run.result = Result.success
         self.test_run.get_potential_hits = lambda m: self.potential_hits
         self.experiment.get_run = lambda v: self.test_run
@@ -154,7 +154,7 @@ class TestReviewUploadEx2:
         self.detector = DefaultDetector(join(self.temp_dir, "detectors"), TEST_DETECTOR_ID)
         self.experiment = Experiment(Experiment.TOP_FINDINGS, self.detector, self.findings_path,
                                      join(self.temp_dir, "reviews"))
-        self.test_run = Run("", self.version)
+        self.test_run = Run(self.detector, self.findings_path, self.version)
         self.test_run.result = Result.success
         self.test_run.get_potential_hits = lambda m: self.potential_hits
         self.experiment.get_run = lambda v: self.test_run
@@ -249,7 +249,7 @@ class TestReviewUploadEx3:
         self.detector = DefaultDetector(join(self.temp_dir, "detectors"), TEST_DETECTOR_ID)
         self.experiment = Experiment(Experiment.BENCHMARK, self.detector, self.findings_path,
                                      join(self.temp_dir, "reviews"))
-        self.test_run = Run("", self.version)
+        self.test_run = Run(self.detector, self.findings_path, self.version)
         self.test_run.result = Result.success
         self.test_run.get_potential_hits = lambda m: self.potential_hits
         self.experiment.get_run = lambda v: self.test_run

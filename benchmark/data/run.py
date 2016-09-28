@@ -8,6 +8,7 @@ from typing import Optional
 
 import yaml
 
+from benchmark.data.detector import Detector
 from benchmark.data.finding import Finding
 from benchmark.data.misuse import Misuse
 from benchmark.data.project_version import ProjectVersion
@@ -18,12 +19,15 @@ class Run:
     RUN_FILE = "run.yml"
     FINDINGS_FILE = "findings.yml"
 
-    def __init__(self, findings_path: str, version: ProjectVersion):
-        self.findings_path = findings_path
+    def __init__(self, detector: Detector, findings_path: str, version: ProjectVersion):
+        self.detector = detector
+        self.__findings_base_path = findings_path
+        self.findings_path = join(findings_path, version.project_id, version.version_id)
         self.version = version
 
         self.findings_file_path = join(self.findings_path, Run.FINDINGS_FILE)
         self.run_file_path = join(self.findings_path, Run.RUN_FILE)
+
         self.result = None  # type: Result
         self.runtime = None  # type: float
         self.detector_md5 = None  # type: Optional[str]
@@ -78,7 +82,7 @@ class Run:
     def reset(self):
         remove_tree(self.findings_path)
         makedirs(self.findings_path, exist_ok=True)
-        self.__init__(self.findings_path, self.version)
+        self.__init__(self.detector, self.__findings_base_path, self.version)
 
     def __str__(self):
         return "run on {}".format(self.version)
