@@ -108,7 +108,7 @@ class Detect(ProjectVersionTask):
                 runtime = end - start
                 run.runtime = runtime
 
-        run.write(self.detector.md5)
+        run.save(self.detector.md5)
 
         if run.is_success():
             logger.info("Detection took {0:.2f} seconds.".format(runtime))

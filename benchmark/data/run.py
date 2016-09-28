@@ -69,7 +69,7 @@ class Run:
                 potential_hits.append(finding)
         return potential_hits
 
-    def write(self, detector_md5: str):
+    def save(self, detector_md5: str):
         run_data = read_yaml(self.run_file_path) if exists(self.run_file_path) else {}
         run_data.update(
             {"result": self.result.name, "runtime": self.runtime, "message": self.message, "md5": detector_md5})
