@@ -132,7 +132,7 @@ class TestDetect:
         project = create_project("project")
         version = create_version("0", project=project)
         write_yaml({"result": "success"}, file=self.experiment.get_run(version).run_file_path)
-        self.uut._new_detector_available = lambda x: True
+        self.uut._detector_updated = lambda x: True
         self.uut._invoke_detector = MagicMock(side_effect=UserWarning)
 
         assert_raises(UserWarning, self.uut.process_project_version, project, version)

@@ -70,51 +70,46 @@ class Detect(ProjectVersionTask):
 
     def process_project_version(self, project: Project, version: ProjectVersion) -> Response:
         logger = logging.getLogger("detect")
-
         run = self.experiment.get_run(version)
 
-        if run.result == Result.error and not self._new_detector_available(run) and not self.force_detect:
-            logger.info("Error in previous run for %s. Skipping detection.", version)
+        if self._detector_updated(run) or self.force_detect:
+            pass
+        elif run.is_error():
+            logger.info("Error in previous %s. Skipping.", run)
             return Response.skip
-        elif self.experiment.detector_mode == DetectorMode.detect_only and not version.patterns:
-            logger.info("No patterns for %s. Skipping detection.", version)
+        elif run.is_success():
+            logger.info("Successful previous %s. Skipping.", run)
             return Response.skip
-        elif run.is_success() and not self.force_detect and not self._new_detector_available(run):
-            logger.info("Detector findings for %s already exists. Skipping detection.", version)
-            return Response.ok
-        else:
-            run.reset()
+        elif self.experiment.id == Experiment.PROVIDED_PATTERNS and not version.patterns:
+            logger.info("No patterns to run with. Skipping.")
+            return Response.skip
 
+        run.reset()
+
+        logger.info("Executing %s...", run)
+        logger = logging.getLogger("detect.run")
+        start = time.time()
+        try:
             detector_path = self.detector.jar_path
-            detector_args = self.get_detector_arguments(run.findings_file_path, run.run_file_path, version)
-
-            logger.info("Detecting misuses in %s...", version)
-            logger.debug("- Detector path = %s", detector_path)
-            logger.debug("- Detector args = %s", detector_args)
-            logger = logging.getLogger("detect.run")
-            start = time.time()
-            try:
-                self._invoke_detector(detector_path, detector_args)
-                run.result = Result.success
-            except CommandFailedError as e:
-                logger.error("Detector failed: %s", e)
-                run.result = Result.error
-                run.message = str(e)
-            except TimeoutError:
-                logger.error("Detector took longer than the maximum of %s seconds", self.timeout)
-                run.result = Result.timeout
-            finally:
-                end = time.time()
-                runtime = end - start
-                run.runtime = runtime
+            detector_args = self.get_detector_arguments(run.findings_file_path, run.run_file_path, run.version)
+            self._invoke_detector(detector_path, detector_args)
+            run.result = Result.success
+        except CommandFailedError as e:
+            logger.error("Detector failed: %s", e)
+            run.result = Result.error
+            run.message = str(e)
+        except TimeoutError:
+            logger.error("Detector took longer than the maximum of %s seconds", self.timeout)
+            run.result = Result.timeout
+        finally:
+            end = time.time()
+            runtime = end - start
+            run.runtime = runtime
+            logger.info("Run took {0:.2f} seconds.".format(runtime))
 
         run.save(self.detector.md5)
 
-        if run.is_success():
-            logger.info("Detection took {0:.2f} seconds.".format(runtime))
-            return Response.ok
-        else:
-            return Response.skip
+        return Response.ok if run.is_success() else Response.skip
 
     def get_detector_arguments(self, findings_file_path: str, run_file_path: str, version: ProjectVersion) -> List[str]:
         project_compile = version.get_compile(self.compiles_base_path)
@@ -144,7 +139,7 @@ class Detect(ProjectVersionTask):
         command = " ".join(command)
         return Shell.exec(command, logger=logging.getLogger("detect.run"), timeout=self.timeout)
 
-    def _new_detector_available(self, run: Run) -> bool:
+    def _detector_updated(self, run: Run) -> bool:
         return not self.detector.md5 == run.detector_md5
 
     @staticmethod
