@@ -10,5 +10,6 @@ class Specialising(detector.Specialising):
         return "confidence"
 
     def _specialize_finding(self, findings_path: str, finding: Dict[str, str]):
-        replace_dot_graph_with_image(finding, "pattern_violation", findings_path)
+        violation = replace_dot_graph_with_image(finding, "pattern_violation", findings_path)
+        self.files.append(violation)
         return finding

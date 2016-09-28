@@ -31,6 +31,9 @@ class Detector:
 
 
 class Specialising:
+    def __init__(self):
+        self.files = []  # type: List[str]
+
     def specialize_findings(self, findings_path: str, findings: List[Dict[str, str]]) -> List[Dict[str, str]]:
         findings = self._sort_findings(findings)
         for finding in findings:

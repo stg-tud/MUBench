@@ -12,6 +12,7 @@ class Specialising(detector.Specialising):
 
     def _specialize_finding(self, findings_path: str, finding: Dict[str, str]):
         format_float_value(finding, "rareness")
-        replace_dot_graph_with_image(finding, "overlap", findings_path)
-        replace_dot_graph_with_image(finding, "pattern", findings_path)
+        overlap = replace_dot_graph_with_image(finding, "overlap", findings_path)
+        pattern = replace_dot_graph_with_image(finding, "pattern", findings_path)
+        self.files.extend([overlap, pattern])
         return finding
