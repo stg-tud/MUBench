@@ -48,16 +48,19 @@ class Misuse:
         self.__location = None
         self.__fix = None
 
+        self._YAML = None
+        self._PATTERNS = []
+
     @property
     def _yaml(self):
-        if getattr(self, '_YAML', None) is None:
+        if not self._YAML:
             with open(self.misuse_file, 'r') as stream:
                 self._YAML = yaml.load(stream)
         return self._YAML
 
     @property
     def patterns(self) -> Set[Pattern]:
-        if getattr(self, '_PATTERNS', None) is None:
+        if not self._PATTERNS:
             pattern_path = join(self.path, "patterns")
             if isdir(pattern_path):
                 self._PATTERNS = set(

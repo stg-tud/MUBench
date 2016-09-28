@@ -1,4 +1,4 @@
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Pattern
 
 from benchmark.data.misuse import Misuse
 from benchmark.data.project import Project
@@ -22,12 +22,13 @@ def create_version(version_id: str, misuses: List[Misuse] = None, meta: Dict[str
     return version
 
 
-def create_misuse(misuse_id: str, meta: Dict[str, Any] = None, project: Project=None):
+def create_misuse(misuse_id: str, meta: Dict[str, Any] = None, project: Project=None, patterns: List[Pattern] = None):
     if not project:
         project = create_project("-project-")
     misuse = Misuse(project._base_path, project.id, misuse_id)
     misuse._Misuse__project = project
     misuse._YAML = {"location": {"file": "-dummy-/-file-", "method": "-method-()"}}
-    if meta is not None:
+    misuse._PATTERNS = patterns if patterns else []
+    if meta:
         misuse._YAML.update(meta)
     return misuse
