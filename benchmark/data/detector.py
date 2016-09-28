@@ -48,10 +48,3 @@ class Detector:
         return self.id
 
 
-class DefaultDetector(Detector):
-    @property
-    def _sort_by(self) -> Optional[str]:
-        return None
-
-    def _specialize_finding(self, findings_path: str, finding: Dict[str, str]) -> Dict[str, str]:
-        return finding

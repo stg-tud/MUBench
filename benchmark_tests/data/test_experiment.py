@@ -2,9 +2,9 @@ from os.path import join
 
 from nose.tools import assert_equals
 
-from benchmark.data.detector import DefaultDetector
 from benchmark.data.experiment import Experiment
 from benchmark_tests.test_utils.data_util import create_project, create_version, create_misuse
+from detectors.dummy.dummy import DummyDetector
 
 
 class TestExperiment:
@@ -15,7 +15,7 @@ class TestExperiment:
 
     # noinspection PyAttributeOutsideInit
     def setup(self):
-        self.detector = DefaultDetector("", "-detector-")
+        self.detector = DummyDetector("-detectors-")
         self.project = create_project("-project-")
         self.version = create_version("-version-", project=self.project)
 

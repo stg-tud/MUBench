@@ -1,16 +1,18 @@
 from typing import Dict
 from typing import List
 
-from benchmark.data.detector import Detector
 from benchmark.data.finding import Finding
 from benchmark.data.run import Run
 from benchmark_tests.test_utils.data_util import create_misuse, create_version
+from detectors.dummy.dummy import DummyDetector
 
 
 class TestRun:
     # noinspection PyAttributeOutsideInit
     def setup(self):
         self.misuse = create_misuse('misuse', meta={"location": {"file": "a", "method": "m()"}})
+        self.version = create_version("-version-", misuses=[self.misuse])
+        self.detector = DummyDetector("-detectors-")
 
     def test_falls_back_to_method_name_if_no_match_on_signature(self):
         self.misuse.location.method = "method(A)"
@@ -21,7 +23,7 @@ class TestRun:
         self.assert_potential_hit([{"method": "method(A)"}, {"method": "method(B)"}])
 
     def assert_potential_hit(self, findings):
-        run = Run(Detector("", "-detector-"), "", create_version("-version-"))
+        run = Run(self.detector, self.version)
         run._Run__FINDINGS = self.create_findings(findings)
         assert run.get_potential_hits(self.misuse)
 

@@ -6,7 +6,6 @@ from unittest.mock import MagicMock
 
 from nose.tools import assert_equals, assert_raises
 
-from benchmark.data.detector import DefaultDetector
 from benchmark.data.experiment import Experiment
 from benchmark.data.pattern import Pattern
 from benchmark.data.run import Run
@@ -14,6 +13,7 @@ from benchmark.subprocesses.tasks.base.project_task import Response
 from benchmark.subprocesses.tasks.implementations.detect import Detect, DetectorMode
 from benchmark.utils.io import write_yaml
 from benchmark_tests.test_utils.data_util import create_project, create_version, create_misuse
+from detectors.dummy.dummy import DummyDetector
 
 
 # noinspection PyAttributeOutsideInit
@@ -25,7 +25,7 @@ class TestDetect:
 
         os.chdir(self.temp_dir)
 
-        self.detector = DefaultDetector("path", "detector")
+        self.detector = DummyDetector("path")
         self.experiment = Experiment(Experiment.TOP_FINDINGS, self.detector, self.findings_path, "")
         self.uut = Detect(self.compiles_path, self.experiment, None, [], False)
 

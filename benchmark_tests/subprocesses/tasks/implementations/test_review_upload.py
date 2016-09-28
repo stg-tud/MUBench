@@ -4,7 +4,7 @@ from tempfile import mkdtemp
 
 from nose.tools import assert_equals
 
-from benchmark.data.detector import DefaultDetector
+from detectors.dummy.dummy import DummyDetector
 from benchmark.data.experiment import Experiment
 from benchmark.subprocesses.tasks.implementations.detect import Run, Result
 from benchmark.subprocesses.tasks.implementations.review_upload import ReviewUpload, Request
@@ -12,7 +12,6 @@ from benchmark.utils.io import remove_tree
 from benchmark_tests.data.test_misuse import create_misuse
 from benchmark_tests.test_utils.data_util import create_project, create_version
 
-TEST_DETECTOR_ID = "-detector-"
 TEST_DATASET = "-dataset-"
 TEST_PROJECT_ID = "-p-"
 TEST_VERSION_ID = "-v-"
@@ -34,7 +33,7 @@ class TestReviewUploadEx1:
 
         self.potential_hits = []
 
-        self.detector = DefaultDetector(join(self.temp_dir, "detectors"), TEST_DETECTOR_ID)
+        self.detector = DummyDetector(join(self.temp_dir, "detectors"))
         self.experiment = Experiment(Experiment.PROVIDED_PATTERNS, self.detector, self.findings_path,
                                      join(self.temp_dir, "reviews"))
         self.test_run = Run(self.detector, self.findings_path, self.version)
@@ -86,7 +85,7 @@ class TestReviewUploadEx1:
         self.uut.process_project_version_misuse(self.project, self.version, self.misuse)
 
         actual = self.uut.request_data[0]
-        assert_equals(TEST_DETECTOR_ID, actual.detector_name)
+        assert_equals(self.detector.id, actual.detector_name)
 
     def test_request_contains_project_id(self):
         self.uut.process_project_version_misuse(self.project, self.version, self.misuse)
@@ -127,7 +126,7 @@ class TestReviewUploadEx1:
         self.uut.end()
 
         actual_data = self.post_data
-        assert_equals(actual_data, json.dumps([{"detector_name": "-detector-", "dataset": "-dataset-",
+        assert_equals(actual_data, json.dumps([{"detector_name": self.detector.id, "dataset": TEST_DATASET,
                                                 "project": "-p-", "version": "-v-",
                                                 "findings": [
                                                     {"id": "-1-", "detector-specific": "-specific1-",
@@ -151,7 +150,7 @@ class TestReviewUploadEx2:
 
         self.potential_hits = []
 
-        self.detector = DefaultDetector(join(self.temp_dir, "detectors"), TEST_DETECTOR_ID)
+        self.detector = DummyDetector(join(self.temp_dir, "detectors"))
         self.experiment = Experiment(Experiment.TOP_FINDINGS, self.detector, self.findings_path,
                                      join(self.temp_dir, "reviews"))
         self.test_run = Run(self.detector, self.findings_path, self.version)
@@ -200,7 +199,7 @@ class TestReviewUploadEx2:
         self.uut.process_project_version_misuse(self.project, self.version, self.misuse)
 
         actual = self.uut.request_data[0]
-        assert_equals(TEST_DETECTOR_ID, actual.detector_name)
+        assert_equals(self.detector.id, actual.detector_name)
 
     def test_request_contains_project_id(self):
         self.uut.process_project_version_misuse(self.project, self.version, self.misuse)
@@ -246,7 +245,7 @@ class TestReviewUploadEx3:
 
         self.potential_hits = []
 
-        self.detector = DefaultDetector(join(self.temp_dir, "detectors"), TEST_DETECTOR_ID)
+        self.detector = DummyDetector(join(self.temp_dir, "detectors"))
         self.experiment = Experiment(Experiment.BENCHMARK, self.detector, self.findings_path,
                                      join(self.temp_dir, "reviews"))
         self.test_run = Run(self.detector, self.findings_path, self.version)
@@ -295,7 +294,7 @@ class TestReviewUploadEx3:
         self.uut.process_project_version_misuse(self.project, self.version, self.misuse)
 
         actual = self.uut.request_data[0]
-        assert_equals(TEST_DETECTOR_ID, actual.detector_name)
+        assert_equals(self.detector.id, actual.detector_name)
 
     def test_request_contains_project_id(self):
         self.uut.process_project_version_misuse(self.project, self.version, self.misuse)
@@ -336,7 +335,7 @@ class TestReviewUploadEx3:
         self.uut.end()
 
         actual_data = self.post_data
-        assert_equals(actual_data, json.dumps([{"detector_name": "-detector-", "dataset": "-dataset-",
+        assert_equals(actual_data, json.dumps([{"detector_name": self.detector.id, "dataset": TEST_DATASET,
                                                 "project": "-p-", "version": "-v-",
                                                 "findings": [
                                                     {"id": "-1-", "detector-specific": "-specific1-",

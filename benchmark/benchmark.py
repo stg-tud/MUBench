@@ -100,7 +100,7 @@ class Benchmark:
                           Benchmark.FINDINGS_PATH, Benchmark.REVIEW_PATH)
 
     def __get_detector(self, detector: str):
-        from benchmark.data.detector import DefaultDetector
+        from detectors.dummy.dummy import DummyDetector
         from detectors.dmmc.dmmc import Dmmc
         from detectors.grouminer.grouminer import Grouminer
         from detectors.jadet.jadet import Jadet
@@ -114,7 +114,7 @@ class Benchmark:
             "mudetect": MuDetect,
         }
         return detectors[detector](self.DETECTORS_PATH, detector) \
-            if detector in detectors else DefaultDetector(self.DETECTORS_PATH, detector)
+            if detector in detectors else DummyDetector(self.DETECTORS_PATH)
 
     def _setup_review_check(self):
         # TODO remove as soon as review server is in use
