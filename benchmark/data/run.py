@@ -80,6 +80,9 @@ class Run:
         makedirs(self.findings_path, exist_ok=True)
         self.__init__(self.findings_path, self.version)
 
+    def __str__(self):
+        return "run on {}".format(self.version)
+
 
 class Result(Enum):
     error = 0
