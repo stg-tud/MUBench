@@ -1,10 +1,10 @@
 from typing import Dict, Optional
 
-from benchmark.data import detector
+from benchmark.data.detector import Detector
 from benchmark.data.detector_specialising.specialising_util import format_float_value
 
 
-class Specialising(detector.Specialising):
+class Jadet(Detector):
     @property
     def _sort_by(self) -> Optional[str]:
         return "defect_indicator"

@@ -11,6 +11,8 @@ class Detector:
         self.jar_url = "http://www.st.informatik.tu-darmstadt.de/artifacts/mubench/{}.jar".format(self.id)
         self.md5_path = join(self.path, self.id + ".md5")
 
+        self.files_to_upload = []  # type: List[str]
+
     @property
     def md5(self) -> Optional[str]:
         md5_file = self.md5_path
@@ -22,25 +24,13 @@ class Detector:
 
         return md5
 
-    @property
-    def specialising(self) -> 'Specialising':
-        return Specialising.get_specialising(self.id)
-
-    def __str__(self):
-        return self.id
-
-
-class Specialising:
-    def __init__(self):
-        self.files = []  # type: List[str]
-
     def specialize_findings(self, findings_path: str, findings: List[Dict[str, str]]) -> List[Dict[str, str]]:
         findings = self._sort_findings(findings)
         for finding in findings:
             self._specialize_finding(findings_path, finding)
         return findings
 
-    def _sort_findings(self, findings: List[Dict[str, str]]):
+    def _sort_findings(self, findings: List[Dict[str, str]]) -> List[Dict[str, str]]:
         findings = deepcopy(findings)
         sort_by = self._sort_by
         if sort_by:
@@ -51,32 +41,17 @@ class Specialising:
     def _sort_by(self) -> Optional[str]:
         raise NotImplementedError
 
-    def _specialize_finding(self, findings_path: str, finding: Dict[str, str]):
+    def _specialize_finding(self, findings_path: str, finding: Dict[str, str]) -> Dict[str, str]:
         raise NotImplementedError
 
-    @staticmethod
-    def get_specialising(detector_id: str) -> Dict[str, 'Specialising']:
-        from detectors.dmmc import dmmc
-        from detectors.grouminer import grouminer
-        from detectors.jadet import jadet
-        from detectors.mudetect import mudetect
-        from detectors.tikanga import tikanga
-
-        customizers = {
-            'dmmc': dmmc.Specialising,
-            'grouminer': grouminer.Specialising,
-            'jadet': jadet.Specialising,
-            'tikanga': tikanga.Customizer,
-            'mudetect': mudetect.Specialising,
-        }
-
-        return customizers[detector_id]() if detector_id in customizers else DefaultSpecialising()
+    def __str__(self):
+        return self.id
 
 
-class DefaultSpecialising(Specialising):
+class DefaultDetector(Detector):
     @property
     def _sort_by(self) -> Optional[str]:
         return None
 
-    def _specialize_finding(self, findings_path: str, finding: Dict[str, str]):
+    def _specialize_finding(self, findings_path: str, finding: Dict[str, str]) -> Dict[str, str]:
         return finding

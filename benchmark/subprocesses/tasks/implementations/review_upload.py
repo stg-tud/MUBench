@@ -69,9 +69,8 @@ class ReviewUpload(ProjectVersionMisuseTask):
 
         logger.debug("Checking hit for %s in %s...", misuse, version)
         potential_hits = detector_run.get_potential_hits(misuse)
-        specialising = self.detector.specialising
-        specialized_potential_hits = specialising.specialize_findings(detector_run.findings_path, potential_hits)
-        files = [RequestFile(f) for f in specialising.files]
+        specialized_potential_hits = self.detector.specialize_findings(detector_run.findings_path, potential_hits)
+        files = [RequestFile(f) for f in self.detector.files_to_upload]
 
         logger.info("Found %s potential hits for %s.", len(specialized_potential_hits), misuse)
         logger.debug("Specialising generated additional files: %s", " | ".join([f.name for f in files]))

@@ -17,7 +17,8 @@ from benchmark.subprocesses.tasks.implementations.compile import Compile
 from benchmark.subprocesses.tasks.implementations.detect import Detect
 from benchmark.subprocesses.tasks.implementations.info import Info
 from benchmark.subprocesses.tasks.implementations.review_check import ReviewCheck, ReviewCheckEx3
-from benchmark.subprocesses.tasks.implementations.review_prepare import PrepareReviewOfBenchmarkWithPatternsTask, PrepareReviewOfBenchmarkTask, \
+from benchmark.subprocesses.tasks.implementations.review_prepare import PrepareReviewOfBenchmarkWithPatternsTask, \
+    PrepareReviewOfBenchmarkTask, \
     PrepareReviewOfTopFindingsTask
 from benchmark.utils import command_line_util
 
@@ -96,7 +97,25 @@ class Benchmark:
             2: Experiment.TOP_FINDINGS,
             3: Experiment.BENCHMARK
         }
-        return Experiment(ex_ids.get(self.config.experiment), detector, Benchmark.FINDINGS_PATH, Benchmark.REVIEW_PATH)
+        return Experiment(ex_ids.get(self.config.experiment), self.__get_detector(detector),
+                          Benchmark.FINDINGS_PATH, Benchmark.REVIEW_PATH)
+
+    def __get_detector(self, detector):
+        from benchmark.data.detector import DefaultDetector
+        from detectors.dmmc.dmmc import Dmmc
+        from detectors.grouminer.grouminer import Grouminer
+        from detectors.jadet.jadet import Jadet
+        from detectors.tikanga.tikanga import Tikanga
+        from detectors.mudetect.mudetect import MuDetect
+        detectors = {
+            "dmmc": Dmmc,
+            "grouminer": Grouminer,
+            "jadet": Jadet,
+            "tikanga": Tikanga,
+            "mudetect": MuDetect,
+        }
+        return detectors[detector]() if detector in detectors else DefaultDetector(self.DETECTORS_PATH,
+                                                                                   self.config.detector)
 
     def _setup_review_check(self):
         # TODO remove as soon as review server is in use

@@ -1,5 +1,5 @@
-from detectors.jadet import jadet
+from detectors.jadet.jadet import Jadet
 
 
-class Customizer(jadet.Specialising):
+class Tikanga(Jadet):
     pass
