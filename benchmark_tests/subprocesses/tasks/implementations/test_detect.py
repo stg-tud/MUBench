@@ -6,7 +6,7 @@ from unittest.mock import MagicMock
 
 from nose.tools import assert_equals, assert_raises
 
-from benchmark.data.detector import Detector
+from benchmark.data.detector import DefaultDetector
 from benchmark.data.experiment import Experiment
 from benchmark.data.pattern import Pattern
 from benchmark.data.run import Run
@@ -25,7 +25,7 @@ class TestDetect:
 
         os.chdir(self.temp_dir)
 
-        self.detector = Detector("path", "detector")
+        self.detector = DefaultDetector("path", "detector")
         self.experiment = Experiment(Experiment.TOP_FINDINGS, self.detector, self.findings_path, "")
         self.uut = Detect(self.compiles_path, self.experiment, None, [], False)
 
@@ -171,7 +171,7 @@ class TestDetectorDownload:
         self.run_file = Run.RUN_FILE
         self.findings_path = join(self.temp_dir, "results")
 
-        detector = Detector("path", "detector")
+        detector = DefaultDetector("path", "detector")
         self.uut = Detect(self.compiles_path, Experiment(Experiment.PROVIDED_PATTERNS, detector, self.findings_path, ""),
                           None, [], False)
         self.uut._download = MagicMock(return_value=True)

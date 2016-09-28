@@ -6,7 +6,6 @@ from datetime import datetime
 from os import listdir, makedirs
 from os.path import join, realpath, isdir, exists
 
-from benchmark.data.detector import Detector
 from benchmark.data.experiment import Experiment
 from benchmark.subprocesses.requirements import check_all_requirements
 from benchmark.subprocesses.result_processing.visualize_results import Visualizer
@@ -68,7 +67,7 @@ class Benchmark:
         self.runner.add(compile_handler)
 
     def _setup_detect(self):
-        experiment = self.__get_experiment(Detector(Benchmark.DETECTORS_PATH, self.config.detector))
+        experiment = self.__get_experiment(self.config.detector)
         self.runner.add(Detect(Benchmark.COMPILES_PATH, experiment, self.config.timeout,
                                self.config.java_options, self.config.force_detect))
 
@@ -78,7 +77,7 @@ class Benchmark:
             detectors = set(detectors).intersection(self.config.detector_white_list)
 
         for detector in detectors:
-            experiment = self.__get_experiment(Detector(Benchmark.DETECTORS_PATH, detector))
+            experiment = self.__get_experiment(detector)
             if experiment.id == Experiment.PROVIDED_PATTERNS:
                 self.runner.add(PrepareReviewOfBenchmarkWithPatternsTask(experiment, Benchmark.CHECKOUTS_PATH,
                                                                          Benchmark.COMPILES_PATH,
@@ -91,7 +90,7 @@ class Benchmark:
                 self.runner.add(PrepareReviewOfBenchmarkTask(experiment, Benchmark.CHECKOUTS_PATH,
                                                              Benchmark.COMPILES_PATH, self.config.force_prepare))
 
-    def __get_experiment(self, detector):
+    def __get_experiment(self, detector: str):
         ex_ids = {
             1: Experiment.PROVIDED_PATTERNS,
             2: Experiment.TOP_FINDINGS,
@@ -100,7 +99,7 @@ class Benchmark:
         return Experiment(ex_ids.get(self.config.experiment), self.__get_detector(detector),
                           Benchmark.FINDINGS_PATH, Benchmark.REVIEW_PATH)
 
-    def __get_detector(self, detector):
+    def __get_detector(self, detector: str):
         from benchmark.data.detector import DefaultDetector
         from detectors.dmmc.dmmc import Dmmc
         from detectors.grouminer.grouminer import Grouminer
@@ -114,8 +113,8 @@ class Benchmark:
             "tikanga": Tikanga,
             "mudetect": MuDetect,
         }
-        return detectors[detector]() if detector in detectors else DefaultDetector(self.DETECTORS_PATH,
-                                                                                   self.config.detector)
+        return detectors[detector](self.DETECTORS_PATH, detector) \
+            if detector in detectors else DefaultDetector(self.DETECTORS_PATH, detector)
 
     def _setup_review_check(self):
         # TODO remove as soon as review server is in use

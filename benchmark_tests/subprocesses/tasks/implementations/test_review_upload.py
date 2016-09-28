@@ -4,7 +4,7 @@ from tempfile import mkdtemp
 
 from nose.tools import assert_equals
 
-from benchmark.data.detector import Detector
+from benchmark.data.detector import DefaultDetector
 from benchmark.data.experiment import Experiment
 from benchmark.subprocesses.tasks.implementations.detect import Run, Result
 from benchmark.subprocesses.tasks.implementations.review_upload import ReviewUpload, Request
@@ -34,7 +34,7 @@ class TestReviewUploadEx1:
 
         self.potential_hits = []
 
-        self.detector = Detector(join(self.temp_dir, "detectors"), TEST_DETECTOR_ID)
+        self.detector = DefaultDetector(join(self.temp_dir, "detectors"), TEST_DETECTOR_ID)
         self.experiment = Experiment(Experiment.PROVIDED_PATTERNS, self.detector, self.findings_path,
                                      join(self.temp_dir, "reviews"))
         self.test_run = Run("")
@@ -151,7 +151,7 @@ class TestReviewUploadEx2:
 
         self.potential_hits = []
 
-        self.detector = Detector(join(self.temp_dir, "detectors"), TEST_DETECTOR_ID)
+        self.detector = DefaultDetector(join(self.temp_dir, "detectors"), TEST_DETECTOR_ID)
         self.experiment = Experiment(Experiment.TOP_FINDINGS, self.detector, self.findings_path,
                                      join(self.temp_dir, "reviews"))
         self.test_run = Run("")
@@ -246,7 +246,7 @@ class TestReviewUploadEx3:
 
         self.potential_hits = []
 
-        self.detector = Detector(join(self.temp_dir, "detectors"), TEST_DETECTOR_ID)
+        self.detector = DefaultDetector(join(self.temp_dir, "detectors"), TEST_DETECTOR_ID)
         self.experiment = Experiment(Experiment.BENCHMARK, self.detector, self.findings_path,
                                      join(self.temp_dir, "reviews"))
         self.test_run = Run("")

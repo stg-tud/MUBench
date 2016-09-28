@@ -2,21 +2,20 @@ from os.path import join
 
 from nose.tools import assert_equals
 
-from benchmark.data.detector import Detector
+from benchmark.data.detector import DefaultDetector
 from benchmark.data.experiment import Experiment
-from benchmark.data.run import Run
 from benchmark_tests.test_utils.data_util import create_project, create_version, create_misuse
 
 
 class TestExperiment:
     def test_detector_run_mode(self):
-        experiment = Experiment(Experiment.PROVIDED_PATTERNS, Detector("", ""), "", "")
+        experiment = Experiment(Experiment.PROVIDED_PATTERNS, DefaultDetector("", ""), "", "")
 
         assert_equals(experiment.detector_mode, Experiment.RUN_MODES[Experiment.PROVIDED_PATTERNS])
 
     # noinspection PyAttributeOutsideInit
     def setup(self):
-        self.detector = Detector("", "-detector-")
+        self.detector = DefaultDetector("", "-detector-")
         self.project = create_project("-project-")
         self.version = create_version("-version-", project=self.project)
 
