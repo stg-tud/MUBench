@@ -10,6 +10,7 @@ import yaml
 
 from benchmark.data.finding import Finding
 from benchmark.data.misuse import Misuse
+from benchmark.data.project_version import ProjectVersion
 from benchmark.utils.io import read_yaml, write_yaml, remove_tree
 
 
@@ -17,8 +18,10 @@ class Run:
     RUN_FILE = "run.yml"
     FINDINGS_FILE = "findings.yml"
 
-    def __init__(self, findings_path: str):
+    def __init__(self, findings_path: str, version: ProjectVersion):
         self.findings_path = findings_path
+        self.version = version
+
         self.findings_file_path = join(self.findings_path, Run.FINDINGS_FILE)
         self.run_file_path = join(self.findings_path, Run.RUN_FILE)
         self.result = None  # type: Result
@@ -69,7 +72,7 @@ class Run:
     def reset(self):
         remove_tree(self.findings_path)
         makedirs(self.findings_path, exist_ok=True)
-        self.__init__(self.findings_path)
+        self.__init__(self.findings_path, self.version)
 
 
 class Result(Enum):

@@ -3,7 +3,7 @@ from typing import List
 
 from benchmark.data.finding import Finding
 from benchmark.data.run import Run
-from benchmark_tests.test_utils.data_util import create_misuse
+from benchmark_tests.test_utils.data_util import create_misuse, create_version
 
 
 class TestRun:
@@ -20,7 +20,7 @@ class TestRun:
         self.assert_potential_hit([{"method": "method(A)"}, {"method": "method(B)"}])
 
     def assert_potential_hit(self, findings):
-        run = Run("")
+        run = Run("", create_version("v"))
         run._Run__FINDINGS = self.create_findings(findings)
         assert run.get_potential_hits(self.misuse)
 

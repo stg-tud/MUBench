@@ -30,7 +30,7 @@ class Experiment:
         self.reviews_path = join(reviews_path, self.id, self.detector.id)
 
     def get_run(self, version: ProjectVersion):
-        return Run(join(self.findings_path, version.project_id, version.version_id))
+        return Run(join(self.findings_path, version.project_id, version.version_id), version)
 
     def get_review_dir(self, version: ProjectVersion, misuse: Misuse = None):
         if self.id == Experiment.TOP_FINDINGS:
