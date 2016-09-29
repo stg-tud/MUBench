@@ -235,6 +235,19 @@ class PerMisuseRun(VersionRun):
     def _load_findings(self) -> List[Finding]:
         return [finding for misuse_run in self.__misuse_runs for finding in misuse_run.findings]
 
+    def __get_potential_hits(self, misuse: Misuse, method_name_only: bool):
+        potential_hits = []
+        for finding in self.__get_findings(misuse):
+            if finding.is_potential_hit(misuse, method_name_only):
+                potential_hits.append(finding)
+        return potential_hits
+
+    def __get_findings(self, misuse: Misuse):
+        for run in self.__misuse_runs:
+            if run.misuse == misuse:
+                return run.findings
+        raise ValueError("no run for {}".format(misuse))
+
     def execute(self, compiles_path: str, timeout: Optional[int], logger: Logger):
         for run in self.__misuse_runs:
             run.execute(compiles_path, timeout, logger)
