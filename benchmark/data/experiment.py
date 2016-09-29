@@ -1,9 +1,17 @@
 from os.path import join
+from typing import Dict, List
 
 from benchmark.data.detector import Detector
+from benchmark.data.finding import Finding
 from benchmark.data.misuse import Misuse
 from benchmark.data.project_version import ProjectVersion
-from benchmark.data.run import PerMisuseRun, VersionRun
+from benchmark.data.run import PerMisuseRun, VersionRun, Run
+
+
+class RunResult:
+    def __init__(self):
+        self.potential_hits = {}  # type: Dict[Misuse, List[Finding]]
+        self.files = []  # type: List[str]
 
 
 class Experiment:
@@ -31,3 +39,23 @@ class Experiment:
 
     def get_review_path(self, version: ProjectVersion, misuse: Misuse = None):
         return join(self.reviews_path, self.get_review_dir(version, misuse))
+
+    def get_run_results(self, run: Run) -> RunResult:
+        result = RunResult()
+        findings_path = run._get_findings_path()
+
+        if self.id == Experiment.TOP_FINDINGS:
+            findings = run.detector.specialize_findings(findings_path, run.findings)
+            for finding in findings:
+                misuse = Misuse("", run.version.project_id, "finding" + finding["id"])
+                misuse.location.file = finding["file"]
+                misuse.location.method = finding["method"]
+                result.potential_hits[misuse] = [finding]
+        else:
+            for misuse in run.version.misuses:
+                result.potential_hits[misuse] = self.detector.specialize_findings(findings_path,
+                                                                                  run.get_potential_hits(misuse))
+
+        result.files = run.detector.files_to_upload
+
+        return result
