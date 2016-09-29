@@ -121,6 +121,9 @@ class Misuse:
     def __str__(self):
         return "misuse '{}'".format(self.id)
 
+    def __hash__(self):
+        return self.path.__hash__()
+
     def __eq__(self, other):
         return self.path == other.path
 
