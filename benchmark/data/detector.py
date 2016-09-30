@@ -1,6 +1,8 @@
 from copy import deepcopy
 from os.path import join, exists
-from typing import Optional, Dict, List
+from typing import Optional, List
+
+from benchmark.data.finding import Finding, SpecializedFinding
 
 
 class Detector:
@@ -26,13 +28,13 @@ class Detector:
 
         return md5
 
-    def specialize_findings(self, findings_path: str, findings: List[Dict[str, str]]) -> List[Dict[str, str]]:
+    def specialize_findings(self, findings_path: str, findings: List[Finding]) -> List[SpecializedFinding]:
         findings = self._sort_findings(findings)
         for finding in findings:
             self._specialize_finding(findings_path, finding)
         return findings
 
-    def _sort_findings(self, findings: List[Dict[str, str]]) -> List[Dict[str, str]]:
+    def _sort_findings(self, findings: List[Finding]) -> List[Finding]:
         findings = deepcopy(findings)
         sort_by = self._sort_by
         if sort_by:
@@ -43,7 +45,7 @@ class Detector:
     def _sort_by(self) -> Optional[str]:
         raise NotImplementedError
 
-    def _specialize_finding(self, findings_path: str, finding: Dict[str, str]) -> Dict[str, str]:
+    def _specialize_finding(self, findings_path: str, finding: Finding) -> SpecializedFinding:
         raise NotImplementedError
 
     def __str__(self):

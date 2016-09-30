@@ -1,6 +1,7 @@
-from typing import Optional, Dict
+from typing import Optional
 
 from benchmark.data.detector import Detector
+from benchmark.data.finding import Finding, SpecializedFinding
 
 
 class DummyDetector(Detector):
@@ -11,5 +12,5 @@ class DummyDetector(Detector):
     def _sort_by(self) -> Optional[str]:
         return None
 
-    def _specialize_finding(self, findings_path: str, finding: Dict[str, str]) -> Dict[str, str]:
+    def _specialize_finding(self, findings_path: str, finding: Finding) -> SpecializedFinding:
         return finding
