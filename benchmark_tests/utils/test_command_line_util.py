@@ -114,18 +114,6 @@ def test_java_options_default_empty():
     assert_equals([], result.java_options)
 
 
-def test_review_prepare_without_force():
-    parser = get_command_line_parser([], [])
-    result = parser.parse_args(['review:prepare', '1'])
-    assert not result.force_prepare
-
-
-def test_review_prepare_with_force():
-    parser = get_command_line_parser([], [])
-    result = parser.parse_args(['review:prepare', '1', '--force-prepare'])
-    assert result.force_prepare
-
-
 def test_script_is_case_insensitive():
     parser = get_command_line_parser([], ['GENERAL'])
     parser.parse_args(['stats', 'general'])
