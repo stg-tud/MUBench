@@ -118,7 +118,7 @@ class RunExecution:
 
     @property
     def potential_hits(self):
-        return self.findings_filter.get_potential_hits(self.findings)
+        return self.findings_filter.get_potential_hits(self.findings, self._get_findings_path())
 
     @property
     def findings(self) -> List[Finding]:
