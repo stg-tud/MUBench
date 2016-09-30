@@ -36,7 +36,6 @@ def get_command_line_parser(available_detectors: List[str], available_scripts: L
     __add_checkout_subprocess(subparsers)
     __add_compile_subprocess(subparsers)
     __add_detect_subprocess(available_detectors, subparsers)
-    __add_review_prepare_subprocess(subparsers)
     __add_review_check_subprocess(subparsers)
     __add_visualize_subprocess(subparsers)
     __add_stats_subprocess(available_scripts, subparsers)
@@ -95,21 +94,6 @@ def __add_detect_subprocess(available_detectors: List[str], subparsers) -> None:
     __setup_detector_arguments(detect_parser, available_detectors)
     __setup_checkout_arguments(detect_parser)
     __setup_compile_arguments(detect_parser)
-
-
-def __add_review_prepare_subprocess(subparsers) -> None:
-    review_prepare_parser = subparsers.add_parser('review:prepare', formatter_class=SortingHelpFormatter,
-                                                  description="Prepare findings for reviewing.",  # TODO: more detail?
-                                                  help="Prepare findings for reviewing.")  # type: ArgumentParser
-    review_prepare_parser.add_argument('experiment', help="the experiment to prepare reviews for", type=int,
-                                       choices=[1, 2, 3])
-    __setup_misuse_filter_arguments(review_prepare_parser)
-    review_prepare_parser.add_argument('--only-detectors', metavar='D', nargs='+', dest="detector_white_list",
-                                       default=[], help="prepare only for the detectors whose names are given")
-    review_prepare_parser.add_argument('--force-prepare', dest='force_prepare', action='store_true', default=False,
-                                       help="force generating new review files")
-    review_prepare_parser.add_argument('--top-n', metavar='N', dest="top_n_findings", type=int, default=10,
-                                       help="include the top-n findings in experiment 3 review pages")
 
 
 def __add_review_check_subprocess(subparsers) -> None:

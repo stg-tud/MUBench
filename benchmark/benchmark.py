@@ -16,9 +16,6 @@ from benchmark.subprocesses.tasks.implementations.compile import Compile
 from benchmark.subprocesses.tasks.implementations.detect import Detect
 from benchmark.subprocesses.tasks.implementations.info import Info
 from benchmark.subprocesses.tasks.implementations.review_check import ReviewCheck, ReviewCheckEx3
-from benchmark.subprocesses.tasks.implementations.review_prepare import PrepareReviewOfBenchmarkWithPatternsTask, \
-    PrepareReviewOfBenchmarkTask, \
-    PrepareReviewOfTopFindingsTask
 from benchmark.utils import command_line_util
 
 
@@ -69,25 +66,6 @@ class Benchmark:
     def _setup_detect(self):
         experiment = self.__get_experiment(self.config.detector)
         self.runner.add(Detect(Benchmark.COMPILES_PATH, experiment, self.config.timeout, self.config.force_detect))
-
-    def _setup_review_prepare(self):
-        detectors = available_detectors
-        if self.config.detector_white_list:
-            detectors = set(detectors).intersection(self.config.detector_white_list)
-
-        for detector in detectors:
-            experiment = self.__get_experiment(detector)
-            if experiment.id == Experiment.PROVIDED_PATTERNS:
-                self.runner.add(PrepareReviewOfBenchmarkWithPatternsTask(experiment, Benchmark.CHECKOUTS_PATH,
-                                                                         Benchmark.COMPILES_PATH,
-                                                                         self.config.force_prepare))
-            elif experiment.id == Experiment.TOP_FINDINGS:
-                self.runner.add(PrepareReviewOfTopFindingsTask(experiment, Benchmark.CHECKOUTS_PATH,
-                                                               Benchmark.COMPILES_PATH, self.config.top_n_findings,
-                                                               self.config.force_prepare))
-            elif experiment.id == Experiment.BENCHMARK:
-                self.runner.add(PrepareReviewOfBenchmarkTask(experiment, Benchmark.CHECKOUTS_PATH,
-                                                             Benchmark.COMPILES_PATH, self.config.force_prepare))
 
     def __get_experiment(self, detector: str):
         ex_ids = {
@@ -146,8 +124,6 @@ class Benchmark:
             self._setup_checkout()
             self._setup_compile()
             self._setup_detect()
-        elif config.subprocess == 'review:prepare':
-            self._setup_review_prepare()
         elif config.subprocess == 'review:check':
             self._setup_review_check()
         elif config.subprocess == 'stats':
