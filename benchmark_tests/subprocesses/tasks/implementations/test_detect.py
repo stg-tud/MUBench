@@ -7,7 +7,9 @@ from unittest.mock import MagicMock, ANY
 from nose.tools import assert_equals
 
 from benchmark.data.experiment import Experiment
-from benchmark.data.run import Result, VersionRun
+from benchmark.data.run import Run
+from benchmark.data.run_execution import DetectorMode, Result, VersionExecution
+from benchmark.data.run_result import AllFindings
 from benchmark.subprocesses.tasks.base.project_task import Response
 from benchmark.subprocesses.tasks.implementations.detect import Detect
 from benchmark_tests.test_utils.data_util import create_project, create_version
@@ -26,7 +28,9 @@ class TestDetect:
         self.project = create_project("-project-")
         self.version = create_version("-version-", project=self.project)
         self.detector = DummyDetector("path")
-        self.test_run = VersionRun(self.detector, self.findings_path, self.version)
+        self.test_run_execution = VersionExecution(DetectorMode.detect_only, self.detector, self.version,
+                                                   self.findings_path, AllFindings(self.detector, self.version))
+        self.test_run = Run([self.test_run_execution])
         self.test_run.execute = MagicMock(return_value="test execution successful")
         self.experiment = Experiment(Experiment.TOP_FINDINGS, self.detector, self.findings_path, "")
         self.experiment.get_run = lambda v: self.test_run
@@ -54,7 +58,7 @@ class TestDetect:
         self.test_run.save.assert_called_with()
 
     def test_skips_detect_if_previous_run_succeeded(self):
-        self.test_run.result = Result.success
+        self.test_run.is_success = lambda: True
 
         response = self.uut.process_project_version(self.project, self.version)
 
@@ -62,7 +66,7 @@ class TestDetect:
         assert_equals(Response.skip, response)
 
     def test_skips_detect_if_previous_run_was_error(self):
-        self.test_run.result = Result.error
+        self.test_run.is_error = lambda: True
 
         response = self.uut.process_project_version(self.project, self.version)
 
@@ -70,7 +74,7 @@ class TestDetect:
         assert_equals(Response.skip, response)
 
     def test_force_detect_on_new_detector(self):
-        self.test_run.result = Result.success
+        self.test_run.is_success = lambda: True
         self.test_run.is_outdated = lambda: True
 
         response = self.uut.process_project_version(self.project, self.version)

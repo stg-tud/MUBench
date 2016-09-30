@@ -1,17 +1,11 @@
 from os.path import join
-from typing import Dict, List
 
 from benchmark.data.detector import Detector
-from benchmark.data.finding import Finding
 from benchmark.data.misuse import Misuse
 from benchmark.data.project_version import ProjectVersion
-from benchmark.data.run import PerMisuseRun, VersionRun, Run
-
-
-class RunResult:
-    def __init__(self):
-        self.potential_hits = {}  # type: Dict[Misuse, List[Finding]]
-        self.files = []  # type: List[str]
+from benchmark.data.run import Run
+from benchmark.data.run_execution import MisuseExecution, VersionExecution, DetectorMode
+from benchmark.data.run_result import PotentialHits, AllFindings
 
 
 class Experiment:
@@ -25,11 +19,23 @@ class Experiment:
         self.findings_base_path = findings_base_path
         self.reviews_path = join(reviews_path, self.id, self.detector.id)
 
-    def get_run(self, version: ProjectVersion):
+    def get_run(self, version: ProjectVersion) -> Run:
         if self.id == Experiment.PROVIDED_PATTERNS:
-            return PerMisuseRun(self.detector, self.findings_base_path, version)
+            executions = [
+                MisuseExecution(DetectorMode.detect_only, self.detector, version, misuse, self.findings_base_path,
+                                PotentialHits(self.detector, misuse)) for
+                misuse in version.misuses]
+        elif self.id == Experiment.TOP_FINDINGS:
+            executions = [
+                VersionExecution(DetectorMode.mine_and_detect, self.detector, version, self.findings_base_path,
+                                 AllFindings(self.detector, version))]
+        elif self.id == Experiment.BENCHMARK:
+            executions = [VersionExecution(DetectorMode.detect_only, self.detector, version, self.findings_base_path,
+                                           AllFindings(self.detector, version))]
         else:
-            return VersionRun(self.detector, self.findings_base_path, version)
+            executions = []
+
+        return Run(executions)
 
     def get_review_dir(self, version: ProjectVersion, misuse: Misuse = None):
         if self.id == Experiment.TOP_FINDINGS:
@@ -39,23 +45,3 @@ class Experiment:
 
     def get_review_path(self, version: ProjectVersion, misuse: Misuse = None):
         return join(self.reviews_path, self.get_review_dir(version, misuse))
-
-    def get_run_results(self, run: Run) -> RunResult:
-        result = RunResult()
-        findings_path = run._get_findings_path()
-
-        if self.id == Experiment.TOP_FINDINGS:
-            findings = run.detector.specialize_findings(findings_path, run.findings)
-            for finding in findings:
-                misuse = Misuse("", run.version.project_id, "finding" + finding["id"])
-                misuse.location.file = finding["file"]
-                misuse.location.method = finding["method"]
-                result.potential_hits[misuse] = [finding]
-        else:
-            for misuse in run.version.misuses:
-                result.potential_hits[misuse] = self.detector.specialize_findings(findings_path,
-                                                                                  run.get_potential_hits(misuse))
-
-        result.files = run.detector.files_to_upload
-
-        return result

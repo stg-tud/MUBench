@@ -8,6 +8,7 @@ import requests
 
 from benchmark.data.detector import Detector
 from benchmark.data.experiment import Experiment
+from benchmark.data.finding import SpecializedFinding
 from benchmark.data.misuse import Misuse
 from benchmark.data.project import Project
 from benchmark.data.project_version import ProjectVersion
@@ -18,7 +19,7 @@ from benchmark.subprocesses.tasks.base.project_version_misuse_task import Projec
 
 class Request:
     def __init__(self, dataset: str, detector: Detector, project: Project,
-                 version: ProjectVersion, findings: List[Dict]):
+                 version: ProjectVersion, findings: List[SpecializedFinding]):
         self.detector_name = detector.id
         self.project = project.id
         self.version = version.version_id
@@ -48,8 +49,7 @@ class ReviewUpload(ProjectVersionMisuseTask):
         self.detector = experiment.detector
         self.checkout_base_dir = checkout_base_dir
 
-        self.request_data = []  # type: List[Request]
-        self.request_files = []  # type: List[RequestFile]
+        self.data = []  # type: List[Request]
 
     def get_requirements(self):
         return [RequestsRequirement()]
@@ -68,25 +68,21 @@ class ReviewUpload(ProjectVersionMisuseTask):
             return Response.skip
 
         logger.debug("Checking hit for %s in %s...", misuse, version)
-        result = self.experiment.get_run_results(detector_run)
-        potential_hits = [finding for findings in result.potential_hits.values() for finding in findings]
-        files = [RequestFile(f) for f in result.files]
+        run = self.experiment.get_run(version)
+        findings = run.results
 
-        logger.info("Found %s potential hits for %s.", len(potential_hits), misuse)
-        logger.debug("Specialising generated additional files: %s", " | ".join([f.name for f in files]))
-        data = Request(self.dataset, self.detector, project, version, potential_hits)
-
-        self.request_data.append(data)
-        self.request_files.extend(files)
+        logger.info("Found %s potential hits for %s.", len(findings), misuse)
+        data = Request(self.dataset, self.detector, project, version, findings)
+        self.data.append(data)
 
         return Response.ok
 
     def end(self):
         url = "/upload/" + self.experiment.id
-        request_data = [data.__dict__ for data in self.request_data]
-        data = json.dumps(request_data, sort_keys=True)
-        files = [file.request_file_tuple for file in self.request_files]
+        request_data = []  # TODO serialize self.data
+        files = []
 
+        data = json.dumps(request_data, sort_keys=True)
         self.post(url, data, files)
 
     @staticmethod

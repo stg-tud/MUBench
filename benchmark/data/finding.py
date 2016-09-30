@@ -1,4 +1,4 @@
-from typing import Dict
+from typing import Dict, List
 
 from benchmark.data.misuse import Misuse
 
@@ -8,7 +8,7 @@ class Finding(Dict[str, str]):
         super().__init__()
         self.update(data)
 
-    def is_potential_hit(self, misuse: Misuse, method_name_only: bool=False):
+    def is_potential_hit(self, misuse: Misuse, method_name_only: bool = False):
         return self.__is_match_by_file(misuse.location.file) and \
                self.__is_match_by_method(misuse.location.method, method_name_only)
 
@@ -28,7 +28,7 @@ class Finding(Dict[str, str]):
     def __file(self):
         return self["file"]
 
-    def __is_match_by_method(self, misuse_method, method_name_only: bool=False):
+    def __is_match_by_method(self, misuse_method, method_name_only: bool = False):
         finding_method = self.__method()
 
         if method_name_only:
@@ -42,3 +42,9 @@ class Finding(Dict[str, str]):
 
     def __method(self):
         return self["method"] if "method" in self else ""
+
+
+class SpecializedFinding(Finding):
+    def __init__(self, data: Dict[str, str], files: List[str]):
+        super().__init__(data)
+        self.files = files
