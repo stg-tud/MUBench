@@ -11,7 +11,7 @@ from benchmark.data.finding import Finding
 from benchmark.data.misuse import Misuse
 from benchmark.data.project_compile import ProjectCompile
 from benchmark.data.project_version import ProjectVersion
-from benchmark.data.run_result import FindingsFilter
+from benchmark.data.findings_filters import FindingsFilter
 from benchmark.utils.io import write_yaml, remove_tree, read_yaml
 from benchmark.utils.shell import Shell
 

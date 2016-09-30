@@ -5,7 +5,7 @@ from benchmark.data.misuse import Misuse
 from benchmark.data.project_version import ProjectVersion
 from benchmark.data.run import Run
 from benchmark.data.run_execution import MisuseExecution, VersionExecution, DetectorMode
-from benchmark.data.run_result import PotentialHits, AllFindings
+from benchmark.data.findings_filters import PotentialHits, AllFindings
 
 
 class Experiment:

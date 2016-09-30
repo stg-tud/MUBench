@@ -9,7 +9,7 @@ from nose.tools import assert_equals
 from benchmark.data.experiment import Experiment
 from benchmark.data.run import Run
 from benchmark.data.run_execution import DetectorMode, Result, VersionExecution
-from benchmark.data.run_result import AllFindings
+from benchmark.data.findings_filters import AllFindings
 from benchmark.subprocesses.tasks.base.project_task import Response
 from benchmark.subprocesses.tasks.implementations.detect import Detect
 from benchmark_tests.test_utils.data_util import create_project, create_version
