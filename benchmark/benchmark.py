@@ -15,7 +15,6 @@ from benchmark.subprocesses.tasks.implementations.checkout import Checkout
 from benchmark.subprocesses.tasks.implementations.compile import Compile
 from benchmark.subprocesses.tasks.implementations.detect import Detect
 from benchmark.subprocesses.tasks.implementations.info import Info
-from benchmark.subprocesses.tasks.implementations.review_check import ReviewCheck, ReviewCheckEx3
 from benchmark.utils import command_line_util
 
 
@@ -94,18 +93,6 @@ class Benchmark:
         return detectors[detector](self.DETECTORS_PATH, detector, java_options) \
             if detector in detectors else DummyDetector(self.DETECTORS_PATH)
 
-    def _setup_review_check(self):
-        # TODO remove as soon as review server is in use
-        if not exists(Benchmark.REVIEW_PATH):
-            return
-
-        if config.experiment == 1:
-            self.runner.add(ReviewCheck(Benchmark.EX1_SUBFOLDER, Benchmark.REVIEW_PATH, available_detectors))
-        elif config.experiment == 2:
-            self.runner.add(ReviewCheck(Benchmark.EX2_SUBFOLDER, Benchmark.REVIEW_PATH, available_detectors))
-        elif config.experiment == 3:
-            self.runner.add(ReviewCheckEx3(Benchmark.EX3_SUBFOLDER, Benchmark.REVIEW_PATH, available_detectors))
-
     def run(self) -> None:
         if config.subprocess == 'visualize':
             self._run_visualize()
@@ -124,8 +111,6 @@ class Benchmark:
             self._setup_checkout()
             self._setup_compile()
             self._setup_detect()
-        elif config.subprocess == 'review:check':
-            self._setup_review_check()
         elif config.subprocess == 'stats':
             self._setup_stats()
 

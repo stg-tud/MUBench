@@ -15,9 +15,6 @@ script:
   - mvn test -f benchmark/mubench.cli/pom.xml
   - mvn test -f benchmark/mubench.utils/pom.xml
   - "./mubench detect dummy 1 --only synthetic"
-  - "./mubench review:check 1"
-  - "./mubench review:check 2"
-  - "./mubench review:check 3"
   
 notifications:
   email:

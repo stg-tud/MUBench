@@ -36,7 +36,6 @@ def get_command_line_parser(available_detectors: List[str], available_scripts: L
     __add_checkout_subprocess(subparsers)
     __add_compile_subprocess(subparsers)
     __add_detect_subprocess(available_detectors, subparsers)
-    __add_review_check_subprocess(subparsers)
     __add_visualize_subprocess(subparsers)
     __add_stats_subprocess(available_scripts, subparsers)
 
@@ -94,13 +93,6 @@ def __add_detect_subprocess(available_detectors: List[str], subparsers) -> None:
     __setup_detector_arguments(detect_parser, available_detectors)
     __setup_checkout_arguments(detect_parser)
     __setup_compile_arguments(detect_parser)
-
-
-def __add_review_check_subprocess(subparsers) -> None:
-    review_check_parser = subparsers.add_parser('review:check',
-                                                formatter_class=SortingHelpFormatter)  # TODO: add description and help texts
-    review_check_parser.add_argument('experiment', help="the experiment to check reviews for", type=int,
-                                     choices=[1, 2, 3])
 
 def __add_visualize_subprocess(subparsers) -> None:
     subparsers.add_parser('visualize', formatter_class=SortingHelpFormatter,
