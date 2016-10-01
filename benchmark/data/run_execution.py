@@ -37,13 +37,13 @@ class RunExecutionState:
         self.run_file = run_file
 
         data = {
-            "execution_result": None,
+            "result": None,
             "runtime": None,
             "message": "",
             "md5": None
         }
         data.update(read_yaml(run_file) if exists(run_file) else {})
-        self.execution_result = Result[data["execution_result"]] if data["execution_result"] else None
+        self.execution_result = Result[data["result"]] if data["result"] else None
         self.runtime = data["runtime"]
         self.message = data["message"]
         self._detector_md5 = data["md5"]
@@ -106,7 +106,6 @@ class RunExecution:
         self._findings_base_path = findings_base_path
         self._findings_file_path = join(self._get_findings_path(), self.FINDINGS_FILE)
         self.__FINDINGS = None
-        self.state = self._get_state()
 
         self.findings_filter = findings_filter
 
@@ -143,7 +142,8 @@ class RunExecution:
     def _load_findings(self):
         raise NotImplementedError
 
-    def _get_state(self):
+    @property
+    def state(self):
         return RunExecutionState(self.detector, self._run_file_path)
 
     def save(self):
@@ -152,7 +152,8 @@ class RunExecution:
     def reset(self):
         remove_tree(self._get_findings_path())
         makedirs(self._get_findings_path(), exist_ok=True)
-        self.__init__(self.run_mode, self.detector, self.version, self._findings_base_path, self.findings_filter)
+        RunExecution.__init__(self, self.run_mode, self.detector, self.version, self._findings_base_path,
+                              self.findings_filter)
 
     def __str__(self):
         return str(self.version)
@@ -188,8 +189,8 @@ class VersionExecution(RunExecution):
 class MisuseExecution(RunExecution):
     def __init__(self, run_mode: DetectorMode, detector: Detector, version: ProjectVersion, misuse: Misuse,
                  findings_base_path: str, findings_filter: FindingsFilter):
-        super().__init__(run_mode, detector, version, findings_base_path, findings_filter)
         self.misuse = misuse
+        super().__init__(run_mode, detector, version, findings_base_path, findings_filter)
 
     def _get_findings_path(self):
         return join(self._findings_base_path,

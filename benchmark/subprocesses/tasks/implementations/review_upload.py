@@ -69,7 +69,7 @@ class ReviewUpload(ProjectVersionMisuseTask):
 
         logger.debug("Checking hit for %s in %s...", misuse, version)
         run = self.experiment.get_run(version)
-        findings = run.results
+        findings = run.results()
 
         logger.info("Found %s potential hits for %s.", len(findings), misuse)
         data = Request(self.dataset, self.detector, project, version, findings)

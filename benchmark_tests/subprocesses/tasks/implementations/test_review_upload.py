@@ -4,16 +4,15 @@ from tempfile import mkdtemp
 
 from nose.tools import assert_equals
 
+from benchmark.data.experiment import Experiment
+from benchmark.data.findings_filters import PotentialHits
 from benchmark.data.run import Run
 from benchmark.data.run_execution import VersionExecution, DetectorMode
-from benchmark.data.run_result import PotentialHits
-from detectors.dummy.dummy import DummyDetector
-from benchmark.data.experiment import Experiment
-from benchmark.subprocesses.tasks.implementations.detect import Result
 from benchmark.subprocesses.tasks.implementations.review_upload import ReviewUpload, Request
 from benchmark.utils.io import remove_tree
 from benchmark_tests.data.test_misuse import create_misuse
 from benchmark_tests.test_utils.data_util import create_project, create_version
+from detectors.dummy.dummy import DummyDetector
 
 TEST_DATASET = "-dataset-"
 TEST_PROJECT_ID = "-p-"
@@ -42,7 +41,7 @@ class TestReviewUpload:
         self.test_run = Run([VersionExecution(DetectorMode.detect_only, self.detector, self.version, self.findings_path,
                                               PotentialHits(self.detector, self.misuse))])
         self.test_run.is_success = lambda: True
-        self.test_run.get_potential_hits = lambda m: self.potential_hits
+        self.test_run.results = lambda: self.potential_hits
         self.experiment.get_run = lambda v: self.test_run
 
         self.uut = ReviewUpload(self.experiment, self.dataset, self.checkout_base_dir)
@@ -66,14 +65,6 @@ class TestReviewUpload:
 
         actual_data = self.uut.data
         assert_equals(1, len(actual_data))
-
-    def test_skips_if_no_result(self):
-        self.test_run.result = None
-
-        self.uut.process_project_version_misuse(self.project, self.version, self.misuse)
-
-        actual_data = self.uut.data
-        assert_equals(0, len(actual_data))
 
     def test_request_contains_dataset(self):
         self.uut.process_project_version_misuse(self.project, self.version, self.misuse)
@@ -116,6 +107,7 @@ class TestReviewUpload:
         actual_url = self.post_url
         assert_equals(actual_url, "/upload/ex1")
 
+    """
     def test_post_data(self):
         self.uut.request_data = [Request(TEST_DATASET, self.detector, self.project, self.version, [])]
 
@@ -129,3 +121,4 @@ class TestReviewUpload:
                                                      "misuse": "-p-.-m1-"},
                                                     {"id": "-2-", "detector-specific": "-specific2-",
                                                      "misuse": "-p-.-m2-"}]}], sort_keys=True))
+    """

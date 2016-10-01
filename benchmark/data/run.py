@@ -14,7 +14,6 @@ class Run:
         for execution in self.executions:
             execution.execute(compile_base_path, timeout, logger)
 
-    @property
     def results(self) -> List[SpecializedFinding]:
         potential_hits = []
         for execution in self.executions:
@@ -33,10 +32,16 @@ class Run:
         return "run on {}".format(", ".join([str(e) for e in self.executions]))
 
     def is_success(self):
-        return all([execution.state.is_success() for execution in self.executions])
+        return self.executions and all([execution.state.is_success() for execution in self.executions])
 
     def is_outdated(self):
         return any([execution.state.is_outdated() for execution in self.executions])
 
     def is_error(self):
         return any([execution.state.is_error() for execution in self.executions])
+
+    def is_timeout(self):
+        return any([execution.state.is_timeout() for execution in self.executions])
+
+    def is_failure(self):
+        return self.is_error() or self.is_timeout()
