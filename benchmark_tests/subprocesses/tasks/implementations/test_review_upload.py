@@ -5,10 +5,11 @@ from tempfile import mkdtemp
 from nose.tools import assert_equals
 
 from benchmark.data.experiment import Experiment
+from benchmark.data.finding import SpecializedFinding
 from benchmark.data.findings_filters import PotentialHits
 from benchmark.data.run import Run
 from benchmark.data.run_execution import VersionExecution, DetectorMode
-from benchmark.subprocesses.tasks.implementations.review_upload import ReviewUpload, Request
+from benchmark.subprocesses.tasks.implementations.review_upload import ReviewUpload, RequestData
 from benchmark.utils.io import remove_tree
 from benchmark_tests.data.test_misuse import create_misuse
 from benchmark_tests.test_utils.data_util import create_project, create_version
@@ -91,8 +92,8 @@ class TestReviewUpload:
         assert_equals(TEST_VERSION_ID, actual.version)
 
     def test_request_contains_potential_hits(self):
-        self.potential_hits = [{"id": "-1-", "misuse": "-p-.-m1-", "detector-specific": "-specific1-"},
-                               {"id": "-2-", "misuse": "-p-.-m2-", "detector-specific": "-specific2-"}]
+        self.potential_hits = [{"id": "-1-", "misuse": "-p-.-m1-", "detector_specific": "-specific1-"},
+                               {"id": "-2-", "misuse": "-p-.-m2-", "detector_specific": "-specific2-"}]
 
         self.uut.process_project_version_misuse(self.project, self.version, self.misuse)
 
@@ -100,25 +101,22 @@ class TestReviewUpload:
         assert_equals(self.potential_hits, actual.findings)
 
     def test_post_url(self):
-        self.uut.request_data = [Request(TEST_DATASET, self.detector, self.project, self.version, [])]
+        self.uut.data = [RequestData(TEST_DATASET, self.detector, self.project, self.version, [])]
 
         self.uut.end()
 
         actual_url = self.post_url
         assert_equals(actual_url, "/upload/ex1")
 
-    """
     def test_post_data(self):
-        self.uut.request_data = [Request(TEST_DATASET, self.detector, self.project, self.version, [])]
+        self.uut.data = [RequestData(TEST_DATASET, self.detector, self.project, self.version, [
+            SpecializedFinding({"id": "-1-", "detector_specific": "-specific-", "misuse": "-p-.-m-"}, [])])]
 
         self.uut.end()
 
         actual_data = self.post_data
-        assert_equals(actual_data, json.dumps([{"detector_name": self.detector.id, "dataset": TEST_DATASET,
-                                                "project": "-p-", "version": "-v-",
-                                                "findings": [
-                                                    {"id": "-1-", "detector-specific": "-specific1-",
-                                                     "misuse": "-p-.-m1-"},
-                                                    {"id": "-2-", "detector-specific": "-specific2-",
-                                                     "misuse": "-p-.-m2-"}]}], sort_keys=True))
-    """
+        assert_equals(json.dumps([{"detector_name": self.detector.id, "dataset": TEST_DATASET,
+                                   "project": "-p-", "version": "-v-",
+                                   "findings": [
+                                       {"id": "-1-", "detector_specific": "-specific-",
+                                        "misuse": "-p-.-m-"}]}], sort_keys=True), actual_data)

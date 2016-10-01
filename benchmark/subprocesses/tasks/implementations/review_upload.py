@@ -1,5 +1,6 @@
 import json
 import logging
+from json import JSONEncoder
 from os.path import join, dirname, basename
 from typing import Dict, Tuple, IO
 from typing import List
@@ -17,9 +18,10 @@ from benchmark.subprocesses.tasks.base.project_task import Response
 from benchmark.subprocesses.tasks.base.project_version_misuse_task import ProjectVersionMisuseTask
 
 
-class Request:
-    def __init__(self, dataset: str, detector: Detector, project: Project,
-                 version: ProjectVersion, findings: List[SpecializedFinding]):
+class RequestData:
+    def __init__(self, dataset: str, detector: Detector, project: Project, version: ProjectVersion,
+                 findings: List[SpecializedFinding]):
+        super().__init__()
         self.detector_name = detector.id
         self.project = project.id
         self.version = version.version_id
@@ -34,7 +36,7 @@ class RequestFile:
 
     @property
     def request_file_tuple(self) -> Tuple[str, Tuple[str, IO[bytes], str]]:
-        return self.name, (self.name, self.__stream, self.path)
+        return self.name, (self.name, self.__stream, "image/png")  # TODO make MIME type a parameter
 
     @property
     def __stream(self) -> IO[bytes]:
@@ -49,7 +51,7 @@ class ReviewUpload(ProjectVersionMisuseTask):
         self.detector = experiment.detector
         self.checkout_base_dir = checkout_base_dir
 
-        self.data = []  # type: List[Request]
+        self.data = []  # type: List[RequestData]
 
     def get_requirements(self):
         return [RequestsRequirement()]
@@ -72,18 +74,19 @@ class ReviewUpload(ProjectVersionMisuseTask):
         findings = run.results()
 
         logger.info("Found %s potential hits for %s.", len(findings), misuse)
-        data = Request(self.dataset, self.detector, project, version, findings)
+        data = RequestData(self.dataset, self.detector, project, version, findings)
         self.data.append(data)
 
         return Response.ok
 
     def end(self):
         url = "/upload/" + self.experiment.id
-        request_data = []  # TODO serialize self.data
-        files = []
+        files = []  # TODO get files
 
-        data = json.dumps(request_data, sort_keys=True)
-        self.post(url, data, files)
+        self.post(url, self.__serialize_data(), files)
+
+    def __serialize_data(self) -> str:
+        return json.dumps([d.__dict__ for d in self.data], sort_keys=True)
 
     @staticmethod
     def post(url: str, data: str, files: List[Tuple[str, Tuple[str, IO[bytes], str]]]) -> requests.Response:
