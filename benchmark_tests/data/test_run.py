@@ -48,7 +48,7 @@ class TestRun:
         self.write_run_file({"result": "error"})
 
         run = Run([VersionExecution(DetectorMode.mine_and_detect, self.detector, self.version, self.findings_path,
-                                    AllFindings(self.detector, self.version))])
+                                    AllFindings(self.detector))])
 
         assert run.is_error()
 
@@ -56,7 +56,7 @@ class TestRun:
         self.write_run_file({"result": "timeout"})
 
         run = Run([VersionExecution(DetectorMode.mine_and_detect, self.detector, self.version, self.findings_path,
-                                    AllFindings(self.detector, self.version))])
+                                    AllFindings(self.detector))])
 
         assert run.is_timeout()
 
@@ -64,7 +64,7 @@ class TestRun:
         self.write_run_file({"result": "success"})
 
         run = Run([VersionExecution(DetectorMode.mine_and_detect, self.detector, self.version, self.findings_path,
-                                    AllFindings(self.detector, self.version))])
+                                    AllFindings(self.detector))])
 
         assert run.is_success()
 
@@ -109,7 +109,7 @@ class TestRun:
         self.write_run_file({"result": "success", "runtime": "23.42", "message": "-arbitrary text-"})
 
         execution = VersionExecution(DetectorMode.mine_and_detect, self.detector, self.version, self.findings_path,
-                                     AllFindings(self.detector, self.version))
+                                     AllFindings(self.detector))
 
         assert execution.state.is_success()
         assert_equals(execution.state.runtime, "23.42")
@@ -117,7 +117,7 @@ class TestRun:
 
     def test_execute(self):
         execution = VersionExecution(DetectorMode.mine_and_detect, self.detector, self.version, "-findings-",
-                                     AllFindings(self.detector, self.version))
+                                     AllFindings(self.detector))
 
         execution.execute("-compiles-", 42, self.logger)
 

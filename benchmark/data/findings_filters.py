@@ -35,9 +35,8 @@ class PotentialHits(FindingsFilter):
 
 
 class AllFindings(FindingsFilter):
-    def __init__(self, detector: Detector, version: ProjectVersion):
+    def __init__(self, detector: Detector):
         super().__init__(detector)
-        self.version = version
 
     def get_potential_hits(self, findings: List[Finding], findings_path: str) -> List[SpecializedFinding]:
         return self.detector.specialize_findings(findings_path, findings)

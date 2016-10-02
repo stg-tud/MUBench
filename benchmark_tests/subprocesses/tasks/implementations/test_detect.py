@@ -29,7 +29,7 @@ class TestDetect:
         self.version = create_version("-version-", project=self.project)
         self.detector = DummyDetector("path")
         self.test_run_execution = VersionExecution(DetectorMode.detect_only, self.detector, self.version,
-                                                   self.findings_path, AllFindings(self.detector, self.version))
+                                                   self.findings_path, AllFindings(self.detector))
         self.test_run = Run([self.test_run_execution])
         self.test_run.execute = MagicMock(return_value="test execution successful")
         self.experiment = Experiment(Experiment.TOP_FINDINGS, self.detector, self.findings_path, "")

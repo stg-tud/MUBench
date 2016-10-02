@@ -28,10 +28,10 @@ class Experiment:
         elif self.id == Experiment.TOP_FINDINGS:
             executions = [
                 VersionExecution(DetectorMode.mine_and_detect, self.detector, version, self.findings_base_path,
-                                 AllFindings(self.detector, version))]
+                                 AllFindings(self.detector))]
         elif self.id == Experiment.BENCHMARK:
             executions = [VersionExecution(DetectorMode.detect_only, self.detector, version, self.findings_base_path,
-                                           AllFindings(self.detector, version))]
+                                           AllFindings(self.detector))]
         else:
             executions = []
 
