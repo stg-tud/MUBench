@@ -1,11 +1,10 @@
 import json
 import logging
-from json import JSONEncoder
-from os.path import join, dirname, basename
-from typing import Dict, Tuple, IO
-from typing import List
+from os.path import join, basename
 
 import requests
+from typing import List
+from typing import Tuple, IO
 
 from benchmark.data.detector import Detector
 from benchmark.data.experiment import Experiment
@@ -27,20 +26,6 @@ class RequestData:
         self.version = version.version_id
         self.dataset = dataset
         self.findings = findings
-
-
-class RequestFile:
-    def __init__(self, path: str):
-        self.name = basename(path)
-        self.path = dirname(path)
-
-    @property
-    def request_file_tuple(self) -> Tuple[str, Tuple[str, IO[bytes], str]]:
-        return self.name, (self.name, self.__stream, "image/png")  # TODO make MIME type a parameter
-
-    @property
-    def __stream(self) -> IO[bytes]:
-        return open(join(self.path, self.name), 'rb')
 
 
 class ReviewUpload(ProjectVersionMisuseTask):
@@ -81,15 +66,30 @@ class ReviewUpload(ProjectVersionMisuseTask):
 
     def end(self):
         url = "/upload/" + self.experiment.id
-        files = []  # TODO get files
-
-        self.post(url, self.__serialize_data(), files)
+        file_paths = self.get_file_paths(self.data)
+        self.post(url, self.__serialize_data(), file_paths)
 
     def __serialize_data(self) -> str:
         return json.dumps([d.__dict__ for d in self.data], sort_keys=True)
 
     @staticmethod
-    def post(url: str, data: str, files: List[Tuple[str, Tuple[str, IO[bytes], str]]]) -> requests.Response:
+    def get_file_paths(data: List[RequestData]) -> List[str]:
+        files = []
+        findings = []
+        for data in data:
+            findings.extend(data.findings)
+        for finding in findings:
+            files.extend(finding.files)
+        return files
+
+    @staticmethod
+    def post(url: str, data: str, file_paths: List[str]) -> requests.Response:
         user = ""  # TODO set these values
         password = ""
+        files = [ReviewUpload._get_request_file_tuple(path) for path in file_paths]
         requests.post(url, auth=(user, password), data=data, files=files)
+
+    @staticmethod
+    def _get_request_file_tuple(path) -> Tuple[str, Tuple[str, IO[bytes], str]]:
+        name = basename(path)
+        return name, (name, open(join(path), 'rb'), "image/png")  # TODO make MIME type a parameter

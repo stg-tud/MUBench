@@ -15,5 +15,6 @@ class Grouminer(Detector):
         format_float_value(finding, "rareness")
         overlap = replace_dot_graph_with_image(finding, "overlap", findings_path)
         pattern = replace_dot_graph_with_image(finding, "pattern", findings_path)
-        self.files_to_upload.extend([overlap, pattern])
-        return finding
+        specialized_finding = SpecializedFinding(finding)
+        specialized_finding.set_files([overlap, pattern])
+        return specialized_finding

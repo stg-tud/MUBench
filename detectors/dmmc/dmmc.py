@@ -12,4 +12,4 @@ class Dmmc(Detector):
 
     def _specialize_finding(self, findings_path: str, finding: Finding) -> SpecializedFinding:
         format_float_value(finding, "strangeness")
-        return finding
+        return SpecializedFinding(finding)

@@ -13,4 +13,4 @@ class DummyDetector(Detector):
         return None
 
     def _specialize_finding(self, findings_path: str, finding: Finding) -> SpecializedFinding:
-        return finding
+        return SpecializedFinding(finding)

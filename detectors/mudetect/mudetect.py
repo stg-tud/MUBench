@@ -12,5 +12,6 @@ class MuDetect(Detector):
 
     def _specialize_finding(self, findings_path: str, finding: Finding) -> SpecializedFinding:
         violation = replace_dot_graph_with_image(finding, "pattern_violation", findings_path)
-        self.files_to_upload.append(violation)
-        return finding
+        specialized_finding = SpecializedFinding(finding)
+        specialized_finding.set_files([violation])
+        return specialized_finding
