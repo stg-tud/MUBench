@@ -48,53 +48,41 @@ To benchmark your own detector the following steps are necessary:
 1. Create a new subfolder `my-detector` in the [detectors](https://github.com/stg-tud/MUBench/tree/master/detectors) folder. `my-detector` will be the Id used to refer to your detector when running the benchmark.
 2. Add an executable JAR with your detector as `my-detector/my-detector.jar`.<sup>[1](#mubenchcli)</sup>
 3. Run MUBench
-4. Manually review the results.
+4. Review the results.
 5. Let MUBench summarize the results.
 
-<a name="mubenchcli">1</a>: Your detector jar's entry point is expected to be what we call a MUBench Runner. It receives input and is expected to write output that the benchmark understands. We provide you some utilities to do so via `mubench.cli`, which comes as a Maven dependency `de.tu-darmstadt.stg:mubench.cli:0.0.3-SNAPSHOT` (Attention: `mubench.cli` is currently not hosted in a public Maven repository. Please find the project [in this repository](https://github.com/stg-tud/MUBench/tree/master/benchmark/mubench.cli) and build it yourself).
+<a name="mubenchcli">1</a>: Your detector jar's entry point is expected to be a [MUBench Runner](#runner).
 
-### Which Inputs Will I Get?
+### <a name="runner" /> MUBench Runner
 
-Use `de.tu_darmstadt.stg.mubench.cli.ArgParser.parse(String[] args)` to parse the command-line arguments to an instance of `de.tu_darmstadt.stg.mubench.cli.DetectorArgs`. This gives you access to the following paths:
+For MUBench to run your detector and interpret its results, your detector's executable needs to comply with MUBench's command-line interface. The easiest way to achieve this is for your entry-point class to extend `MuBenchRunner`, which comes with the Maven dependency [`de.tu-darmstadt.stg:mubench.cli`](https://github.com/stg-tud/MUBench/tree/master/benchmark/mubench.cli) via our repository at `http://www.st.informatik.tu-darmstadt.de/artifacts/mubench/mvn/`.
 
-- `getFindingsFile()`: The file MUBench expects you to write your findings to.
-- `getProjectSrcPath()`: The path to the project sources containing the misuse. You may use this to mine usage patterns and find misuses.
-- `getProjectClassPath()`: The class files corresponding to the project sources.
-- `getPatternsSrcPath()`: The path to the pattern files. Pattern files are regular java files containing a class with one or more methods, each containing a correct usage for the misuses in the project.
-- `getPatternsClassPath()`: The class files corresponding to the pattern sources.
+A typical MUBench Runner looks like this:
 
-Note that the getters check that the provided values are valid and throw if otherwise. This way, MUBench can report a meaningful error, should one of the parameters somehow be wrong.
+    public class XYRunner extends MuBenchRunner {
+      public static void main(String[] args) {
+        new XYRunner().run(args);
+      }
+      
+      void detectOnly(CodePath patternPath, CodePath targetPath, DetectorOutput output) throws Exception {
+        ...
+      }
+      
+      void mineAndDetect(CodePath trainingAndTargetPath, DetectorOutput output) throws Exception {
+        ...
+      }
+    }
 
-### What Output Should I Produce?
+Currently, Runners should support two run modes:
 
-Use `de.tu_darmstadt.stg.mubench.cli.DetectorOutput` to collect and write your output. Add one or more instances of `de.tu_darmstadt.stg.mubench.cli.DetectorFinding` to the output. Each finding corresponds to one misuse your detector finds in a project. For each you must provide two properties that MUBench uses to identify potential hits for the known misuses:
+1. "Detect Only"-mode, where the detector is provided with hand-crafted patterns (a one-method class implementing the correct usage) and some target code to find violations of these patterns in. All input is provided as Java source code and corresponding Bytecode.
+2. "Mine and Detect"-mode, where the detector should mine its own patterns in the provided code base and find violations in that same code base. Again, input is provided as source code and corresponding Bytecode.
 
-- `file`: The full path to either source or class file your detector found the misuse in.
-- `method`: either the method's simple name (e.g., `method`) or a full signature (e.g., `method(Object, List, int)`) of the method your detector found the misuse in. If you provide a full signature and MUBench is unable to identify a potential hit, it automatically falls back to using only the method name. This way it ensures that a difference in the signature notation does not make us miss a potential hit.
-
-You may provide the finding with additional properties that help reviewing your detector's findings. These properties will be included in the review information.
+The `DetectorOutput` is essentially a collection where you add your detector's findings.
 
 ### How do I review?
 
-MUBench prepares a review website for you, which lists the potential hits for all misuses in its dataset. After running the review preparation, you can open this site from `reviews/index.html`. Follow the links to the review-details pages to review the potential hits of your detector. The pages list for every misuse the potential hits, with an `Id` and all the metadata your detector provides in the output.
-
-To report an actual hit of your detector, create `reviews/<detector>/<project>/<version>/<misuse>/reviewX.yml` with `X` being 1 or 2, depending on whether you are the first or second reviewer. The files content should look like follows:
-
-```
-reviewer: Sven
-hits:
-  - id: <potential-hit-id>
-    elements:
-      - missing/call
-  - id: <other-potential-hit-id>
-    elements:
-      - missing/condition/null_check
-      - superfluous/call
-comment: >
-  This is especially interesting, because...
-```
-
-When you're done reviewing all potential hits, tell MUBench to summarize the results for you.
+We are currently rebuilding the review infrastructure. Please come back for more details in a bit!
 
 ## Contribute Misuses
 
