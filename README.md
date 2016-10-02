@@ -22,11 +22,11 @@ The MUBench dataset is an [MSR 2016 Data Showcase](http://2016.msrconf.org/#/dat
 ### Setup
 
 1. Install [Docker](https://www.docker.com/products/overview#/install_the_platform).
-2. Run `./mubench.sh check` (or `./mubench.bat check`).
+2. Run `./mubench check` (or `./mubench.bat check`).
 
 ### Benchmark
 
-MUBench is a benchmark for API-misuse detectors. Run `./mubench.sh -h` for details about how to benchmark detectors.
+MUBench is a benchmark for API-misuse detectors. Run `./mubench -h` for details about how to benchmark detectors.
 
 MUBench uses the misuses specified in the `data` subfolder. The first time a misuse is used in benchmarking, the repository containing that misuse is cloned. Subsequently, the existing clone is used, such that benchmarking runs offline.
 
