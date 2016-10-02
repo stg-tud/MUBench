@@ -75,11 +75,9 @@ class ReviewUpload(ProjectVersionMisuseTask):
     @staticmethod
     def get_file_paths(data: List[RequestData]) -> List[str]:
         files = []
-        findings = []
         for data in data:
-            findings.extend(data.findings)
-        for finding in findings:
-            files.extend(finding.files)
+            for finding in data.findings:
+                files.extend(finding.files)
         return files
 
     @staticmethod
