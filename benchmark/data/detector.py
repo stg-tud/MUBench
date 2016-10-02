@@ -15,8 +15,6 @@ class Detector:
         self.jar_url = "http://www.st.informatik.tu-darmstadt.de/artifacts/mubench/{}.jar".format(self.id)
         self.md5_path = join(self.path, self.id + ".md5")
 
-        self.files_to_upload = []  # type: List[str]
-
     @property
     def md5(self) -> Optional[str]:
         md5_file = self.md5_path
