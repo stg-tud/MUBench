@@ -22,7 +22,11 @@ The MUBench dataset is an [MSR 2016 Data Showcase](http://2016.msrconf.org/#/dat
 ### Setup
 
 1. Install [Docker](https://www.docker.com/products/overview#/install_the_platform).
-2. Run `./mubench check` (or `./mubench.bat check`).
+2. When on Windows, you need to allow Docker to mount your MUBench-checkout directory:
+  1. Right click the Docker icon in the system tray and choose "Settings".
+  2. Open the "Shared Drives" tab.
+  3. Ensure the drive that contains your checkout is selected and apply.
+3. Run `./mubench check` (or `./mubench.bat check`). On the first run, this may take some time.
 
 ### Benchmark
 
