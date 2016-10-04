@@ -11,6 +11,7 @@ The MUBench dataset is an [MSR 2016 Data Showcase](http://2016.msrconf.org/#/dat
 * Hoan A. Nguyen
 * [Tien N. Nguyen](http://home.eng.iastate.edu/~tien/)
 * [Mattis Kämmerer](https://github.com/M8is)
+* [Jonas Schlitzer](https://github.com/joschli)
 
 ## Publications
 
