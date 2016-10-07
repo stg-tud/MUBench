@@ -1,5 +1,3 @@
-from os.path import basename
-
 from typing import Dict, List
 
 from benchmark.data.misuse import Misuse
@@ -47,14 +45,6 @@ class Finding(Dict[str, str]):
 
 
 class SpecializedFinding(Finding):
-    def __init__(self, data: Dict[str, str]):
+    def __init__(self, data: Dict[str, str], files: List[str] = None):
         super().__init__(data)
-        self.__files = []
-
-    def set_files(self, files: List[str]):
-        self.__files = files
-        self.update({"files": [basename(f) for f in files]})
-
-    @property
-    def files(self) -> List[str]:
-        return self.__files
+        self.files = files

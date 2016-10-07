@@ -123,8 +123,7 @@ class TestReviewUpload:
 
     def test_post_files(self):
         files = ['-p-.-v-.overlap.png']
-        finding = SpecializedFinding({})
-        finding.set_files(files)
+        finding = SpecializedFinding({}, files)
         test_data = RequestData(TEST_DATASET, self.detector, self.project, self.version,
                                 [finding])
         self.uut.data = [test_data]
