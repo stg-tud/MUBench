@@ -211,6 +211,6 @@ class MisuseExecution(RunExecution):
     def _load_findings(self):
         if exists(self._findings_file_path):
             with open(self._findings_file_path) as stream:
-                return [Finding(data).update({"misuse": self.misuse.id}) for data in yaml.load_all(stream) if data]
+                return [Finding(data) for data in yaml.load_all(stream) if data]
         else:
             return []
