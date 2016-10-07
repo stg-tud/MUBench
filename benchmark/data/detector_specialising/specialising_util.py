@@ -12,7 +12,7 @@ def format_float_value(finding, float_key):
 def replace_dot_graph_with_image(finding, key, base_path) -> str:
     image_name = "f{}-{}.png".format(finding["id"], key)
     __create_image(finding[key], join(base_path, image_name))
-    finding[key] = """<img src="./{}" />""".format(image_name)
+    finding[key] = image_name
     return join(base_path, image_name)
 
 
