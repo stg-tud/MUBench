@@ -4,7 +4,7 @@ from benchmark.data.detector import Detector
 from benchmark.data.misuse import Misuse
 from benchmark.data.project_version import ProjectVersion
 from benchmark.data.run import Run
-from benchmark.data.detector_execution import MisuseExecution, VersionExecution, DetectorMode
+from benchmark.data.detector_execution import DetectOnlyExecution, MineAndDetectExecution, DetectorMode
 from benchmark.data.findings_filters import PotentialHits, AllFindings
 
 
@@ -22,16 +22,15 @@ class Experiment:
     def get_run(self, version: ProjectVersion) -> Run:
         if self.id == Experiment.PROVIDED_PATTERNS:
             executions = [
-                MisuseExecution(DetectorMode.detect_only, self.detector, version, misuse, self.findings_base_path,
-                                PotentialHits(self.detector, [misuse])) for
+                DetectOnlyExecution(self.detector, version, misuse, self.findings_base_path,
+                                    PotentialHits(self.detector, [misuse])) for
                 misuse in version.misuses]
         elif self.id == Experiment.TOP_FINDINGS:
             executions = [
-                VersionExecution(DetectorMode.mine_and_detect, self.detector, version, self.findings_base_path,
-                                 AllFindings(self.detector))]
+                MineAndDetectExecution(self.detector, version, self.findings_base_path, AllFindings(self.detector))]
         elif self.id == Experiment.BENCHMARK:
-            executions = [VersionExecution(DetectorMode.detect_only, self.detector, version, self.findings_base_path,
-                                           PotentialHits(self.detector, version.misuses))]
+            executions = [MineAndDetectExecution(self.detector, version, self.findings_base_path,
+                                                 PotentialHits(self.detector, version.misuses))]
         else:
             executions = []
 

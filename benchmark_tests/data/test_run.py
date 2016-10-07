@@ -7,7 +7,7 @@ from unittest.mock import MagicMock, PropertyMock
 
 from nose.tools import assert_equals
 
-from benchmark.data.detector_execution import VersionExecution, DetectorMode, DetectorExecution, \
+from benchmark.data.detector_execution import MineAndDetectExecution, DetectorMode, DetectorExecution, \
     DetectorExecutionState
 from benchmark.data.findings_filters import AllFindings
 from benchmark.data.run import Run
@@ -79,32 +79,28 @@ class TestRun:
     def test_error(self):
         self.write_run_file({"result": "error"})
 
-        run = Run([VersionExecution(DetectorMode.mine_and_detect, self.detector, self.version, self.findings_path,
-                                    AllFindings(self.detector))])
+        run = Run([MineAndDetectExecution(self.detector, self.version, self.findings_path, AllFindings(self.detector))])
 
         assert run.is_error()
 
     def test_timeout(self):
         self.write_run_file({"result": "timeout"})
 
-        run = Run([VersionExecution(DetectorMode.mine_and_detect, self.detector, self.version, self.findings_path,
-                                    AllFindings(self.detector))])
+        run = Run([MineAndDetectExecution(self.detector, self.version, self.findings_path, AllFindings(self.detector))])
 
         assert run.is_timeout()
 
     def test_success(self):
         self.write_run_file({"result": "success"})
 
-        run = Run([VersionExecution(DetectorMode.mine_and_detect, self.detector, self.version, self.findings_path,
-                                    AllFindings(self.detector))])
+        run = Run([MineAndDetectExecution(self.detector, self.version, self.findings_path, AllFindings(self.detector))])
 
         assert run.is_success()
 
     def test_metadata(self):
         self.write_run_file({"result": "success", "runtime": "23.42", "message": "-arbitrary text-"})
 
-        execution = VersionExecution(DetectorMode.mine_and_detect, self.detector, self.version, self.findings_path,
-                                     AllFindings(self.detector))
+        execution = MineAndDetectExecution(self.detector, self.version, self.findings_path, AllFindings(self.detector))
 
         assert execution.state.is_success()
         assert_equals(execution.state.runtime, "23.42")

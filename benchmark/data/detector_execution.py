@@ -158,10 +158,10 @@ class DetectorExecution:
         return str(self.version)
 
 
-class VersionExecution(DetectorExecution):
-    def __init__(self, run_mode: DetectorMode, detector: Detector, version: ProjectVersion, findings_base_path: str,
+class MineAndDetectExecution(DetectorExecution):
+    def __init__(self, detector: Detector, version: ProjectVersion, findings_base_path: str,
                  findings_filter: FindingsFilter):
-        super().__init__(run_mode, detector, version, findings_base_path, findings_filter)
+        super().__init__(DetectorMode.mine_and_detect, detector, version, findings_base_path, findings_filter)
 
     def _get_findings_path(self):
         return join(self._findings_base_path,
@@ -185,11 +185,11 @@ class VersionExecution(DetectorExecution):
             return []
 
 
-class MisuseExecution(DetectorExecution):
-    def __init__(self, run_mode: DetectorMode, detector: Detector, version: ProjectVersion, misuse: Misuse,
-                 findings_base_path: str, findings_filter: FindingsFilter):
+class DetectOnlyExecution(DetectorExecution):
+    def __init__(self, detector: Detector, version: ProjectVersion, misuse: Misuse, findings_base_path: str,
+                 findings_filter: FindingsFilter):
         self.misuse = misuse
-        super().__init__(run_mode, detector, version, findings_base_path, findings_filter)
+        super().__init__(DetectorMode.detect_only, detector, version, findings_base_path, findings_filter)
 
     def _get_findings_path(self):
         return join(self._findings_base_path,

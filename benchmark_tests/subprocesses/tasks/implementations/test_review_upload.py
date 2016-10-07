@@ -8,7 +8,7 @@ from benchmark.data.experiment import Experiment
 from benchmark.data.finding import SpecializedFinding
 from benchmark.data.findings_filters import PotentialHits
 from benchmark.data.run import Run
-from benchmark.data.detector_execution import VersionExecution, DetectorMode
+from benchmark.data.detector_execution import MineAndDetectExecution, DetectorMode
 from benchmark.subprocesses.tasks.implementations.review_upload import ReviewUpload, RequestData
 from benchmark.utils.io import remove_tree, create_file
 from benchmark_tests.data.test_misuse import create_misuse
@@ -39,8 +39,8 @@ class TestReviewUpload:
         self.detector = DummyDetector(join(self.temp_dir, "detectors"))
         self.experiment = Experiment(Experiment.PROVIDED_PATTERNS, self.detector, self.findings_path,
                                      join(self.temp_dir, "reviews"))
-        self.test_run = Run([VersionExecution(DetectorMode.detect_only, self.detector, self.version, self.findings_path,
-                                              PotentialHits(self.detector, self.misuse))])
+        self.test_run = Run([MineAndDetectExecution(self.detector, self.version, self.findings_path,
+                                                    PotentialHits(self.detector, self.misuse))])
         self.test_run.is_success = lambda: True
         self.test_run.results = lambda: self.potential_hits
         self.experiment.get_run = lambda v: self.test_run

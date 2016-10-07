@@ -6,7 +6,7 @@ from unittest.mock import MagicMock, ANY
 
 from nose.tools import assert_equals
 
-from benchmark.data.detector_execution import DetectorMode, VersionExecution
+from benchmark.data.detector_execution import DetectorMode, MineAndDetectExecution
 from benchmark.data.experiment import Experiment
 from benchmark.data.findings_filters import AllFindings
 from benchmark.data.run import Run
@@ -28,8 +28,8 @@ class TestDetect:
         self.project = create_project("-project-")
         self.version = create_version("-version-", project=self.project)
         self.detector = DummyDetector("path")
-        self.test_run_execution = VersionExecution(DetectorMode.detect_only, self.detector, self.version,
-                                                   self.findings_path, AllFindings(self.detector))
+        self.test_run_execution = MineAndDetectExecution(self.detector, self.version, self.findings_path,
+                                                         AllFindings(self.detector))
         self.test_run = Run([self.test_run_execution])
         self.test_run.execute = MagicMock(return_value="test execution successful")
         self.experiment = Experiment(Experiment.TOP_FINDINGS, self.detector, self.findings_path, "")

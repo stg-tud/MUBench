@@ -2,7 +2,7 @@ import logging
 from os.path import join
 from unittest.mock import MagicMock
 
-from benchmark.data.detector_execution import MisuseExecution, DetectorMode, VersionExecution
+from benchmark.data.detector_execution import DetectOnlyExecution, DetectorMode, MineAndDetectExecution
 from benchmark.data.findings_filters import PotentialHits, AllFindings
 from benchmark.utils.shell import Shell
 from benchmark_tests.test_utils.data_util import create_misuse, create_version, create_project
@@ -30,8 +30,8 @@ class TestDetectOnlyExecution:
         target_src_path = join("-compiles-", "-project-", "-version-", "misuse-src")
         target_classpath = join("-compiles-", "-project-", "-version-", "misuse-classes")
 
-        run = MisuseExecution(DetectorMode.detect_only, self.detector, self.version, self.misuse, "-findings-",
-                              PotentialHits(self.detector, self.misuse))
+        run = DetectOnlyExecution(self.detector, self.version, self.misuse, "-findings-",
+                                  PotentialHits(self.detector, self.misuse))
 
         run.execute("-compiles-", 42, self.logger)
 
@@ -65,8 +65,7 @@ class TestMineAndDetectExecution:
         target_src_path = join("-compiles-", "-project-", "-version-", "original-src")
         target_classpath = join("-compiles-", "-project-", "-version-", "original-classes")
 
-        execution = VersionExecution(DetectorMode.mine_and_detect, self.detector, self.version, "-findings-",
-                                     AllFindings(self.detector))
+        execution = MineAndDetectExecution(self.detector, self.version, "-findings-", AllFindings(self.detector))
 
         execution.execute("-compiles-", 42, self.logger)
 
