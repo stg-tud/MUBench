@@ -4,7 +4,7 @@ from nose.tools import assert_equals, assert_is_instance
 
 from benchmark.data.experiment import Experiment
 from benchmark.data.run import Run
-from benchmark.data.run_execution import VersionExecution, MisuseExecution
+from benchmark.data.detector_execution import VersionExecution, MisuseExecution
 from benchmark_tests.test_utils.data_util import create_project, create_version, create_misuse
 from detectors.dummy.dummy import DummyDetector
 

@@ -8,7 +8,7 @@ from benchmark.data.experiment import Experiment
 from benchmark.data.finding import SpecializedFinding
 from benchmark.data.findings_filters import PotentialHits
 from benchmark.data.run import Run
-from benchmark.data.run_execution import VersionExecution, DetectorMode
+from benchmark.data.detector_execution import VersionExecution, DetectorMode
 from benchmark.subprocesses.tasks.implementations.review_upload import ReviewUpload, RequestData
 from benchmark.utils.io import remove_tree, create_file
 from benchmark_tests.data.test_misuse import create_misuse

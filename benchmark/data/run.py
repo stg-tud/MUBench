@@ -3,11 +3,11 @@ from logging import Logger
 from typing import List, Optional
 
 from benchmark.data.finding import SpecializedFinding
-from benchmark.data.run_execution import RunExecution
+from benchmark.data.detector_execution import DetectorExecution
 
 
 class Run:
-    def __init__(self, run_executions: List[RunExecution]):
+    def __init__(self, run_executions: List[DetectorExecution]):
         self.executions = run_executions
 
     def execute(self, compile_base_path: str, timeout: Optional[int], logger: Logger):

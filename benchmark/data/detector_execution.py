@@ -1,17 +1,16 @@
+import yaml
 from enum import Enum, IntEnum
 from logging import Logger
 from os import makedirs
 from os.path import join, exists
-
-import yaml
 from typing import Optional, List
 
 from benchmark.data.detector import Detector
 from benchmark.data.finding import Finding
+from benchmark.data.findings_filters import FindingsFilter
 from benchmark.data.misuse import Misuse
 from benchmark.data.project_compile import ProjectCompile
 from benchmark.data.project_version import ProjectVersion
-from benchmark.data.findings_filters import FindingsFilter
 from benchmark.utils.io import write_yaml, remove_tree, read_yaml
 from benchmark.utils.shell import Shell
 
@@ -31,7 +30,7 @@ class DetectorMode(IntEnum):
     detect_only = 1
 
 
-class RunExecutionState:
+class DetectorExecutionState:
     def __init__(self, detector: Detector, run_file: str):
         self.detector = detector
         self.run_file = run_file
@@ -86,7 +85,7 @@ class RunExecutionState:
         return data
 
 
-class RunExecution:
+class DetectorExecution:
     RUN_FILE = "run.yml"
     FINDINGS_FILE = "findings.yml"
 
@@ -144,7 +143,7 @@ class RunExecution:
 
     @property
     def state(self):
-        return RunExecutionState(self.detector, self._run_file_path)
+        return DetectorExecutionState(self.detector, self._run_file_path)
 
     def save(self):
         self.state.save()
@@ -152,14 +151,14 @@ class RunExecution:
     def reset(self):
         remove_tree(self._get_findings_path())
         makedirs(self._get_findings_path(), exist_ok=True)
-        RunExecution.__init__(self, self.run_mode, self.detector, self.version, self._findings_base_path,
-                              self.findings_filter)
+        DetectorExecution.__init__(self, self.run_mode, self.detector, self.version, self._findings_base_path,
+                                   self.findings_filter)
 
     def __str__(self):
         return str(self.version)
 
 
-class VersionExecution(RunExecution):
+class VersionExecution(DetectorExecution):
     def __init__(self, run_mode: DetectorMode, detector: Detector, version: ProjectVersion, findings_base_path: str,
                  findings_filter: FindingsFilter):
         super().__init__(run_mode, detector, version, findings_base_path, findings_filter)
@@ -186,7 +185,7 @@ class VersionExecution(RunExecution):
             return []
 
 
-class MisuseExecution(RunExecution):
+class MisuseExecution(DetectorExecution):
     def __init__(self, run_mode: DetectorMode, detector: Detector, version: ProjectVersion, misuse: Misuse,
                  findings_base_path: str, findings_filter: FindingsFilter):
         self.misuse = misuse
