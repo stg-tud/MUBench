@@ -2,7 +2,7 @@ import logging
 from os.path import join
 from unittest.mock import MagicMock
 
-from benchmark.data.detector_execution import DetectOnlyExecution, DetectorMode, MineAndDetectExecution
+from benchmark.data.detector_execution import DetectOnlyExecution, MineAndDetectExecution
 from benchmark.data.findings_filters import PotentialHits, AllFindings
 from benchmark.utils.shell import Shell
 from benchmark_tests.test_utils.data_util import create_misuse, create_version, create_project
@@ -20,6 +20,9 @@ class TestDetectOnlyExecution:
 
         self.__orig_shell_exec = Shell.exec
         Shell.exec = MagicMock()
+
+    def teardown(self):
+        Shell.exec = self.__orig_shell_exec
 
     def test_execute_per_misuse(self):
         jar = join("-detectors-", "dummy", "dummy.jar")
@@ -57,6 +60,9 @@ class TestMineAndDetectExecution:
 
         self.__orig_shell_exec = Shell.exec
         Shell.exec = MagicMock()
+
+    def teardown(self):
+        Shell.exec = self.__orig_shell_exec
 
     def test_execute(self):
         jar = join("-detectors-", "dummy", "dummy.jar")
