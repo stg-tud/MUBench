@@ -47,4 +47,4 @@ class Finding(Dict[str, str]):
 class SpecializedFinding(Finding):
     def __init__(self, data: Dict[str, str], files: List[str] = None):
         super().__init__(data)
-        self.files = files
+        self.files = files or []
