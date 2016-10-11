@@ -1,28 +1,31 @@
 import logging
 
+from typing import List
+
 from benchmark.data.project import Project
 from benchmark.data.project_version import ProjectVersion
-from benchmark.subprocesses.tasks.base.project_task import ProjectTask, Response
+from benchmark.subprocesses.tasks.base.project_task import ProjectTask
 
 
 class ProjectVersionTask(ProjectTask):
-    def process_project(self, project: Project) -> Response:
+    def process_project(self, project: Project) -> List[str]:
         logger = logging.getLogger("versions")
+        black_list = []
         for version in project.versions:
             if self.__skip(version):
                 logger.debug("Skipping %s", version)
             else:
                 response = self.process_project_version(project, version)
-                if response is Response.skip:
+                if response:
                     logger.info("Cannot proceed on %s; skipping for subsequent tasks.", version)
-                    self.black_list.append(version.id)
+                    black_list.extend(response)
 
-        return Response.ok
+        return black_list
 
     def __skip(self, version: ProjectVersion):
         blacklisted = version.id in self.black_list
         whitelisted = version.id in self.white_list or version.project_id in self.white_list
         return blacklisted or (self.white_list and not whitelisted)
 
-    def process_project_version(self, project: Project, version: ProjectVersion) -> Response:
+    def process_project_version(self, project: Project, version: ProjectVersion) -> List[str]:
         raise NotImplementedError

@@ -13,7 +13,6 @@ from benchmark.data.misuse import Misuse
 from benchmark.data.project import Project
 from benchmark.data.project_version import ProjectVersion
 from benchmark.subprocesses.requirements import RequestsRequirement
-from benchmark.subprocesses.tasks.base.project_task import Response
 from benchmark.subprocesses.tasks.base.project_version_misuse_task import ProjectVersionMisuseTask
 
 
@@ -45,14 +44,14 @@ class ReviewUpload(ProjectVersionMisuseTask):
         logger = logging.getLogger("review_prepare")
         logger.info("Preparing review for results of %s...", self.detector)
 
-    def process_project_version_misuse(self, project: Project, version: ProjectVersion, misuse: Misuse) -> Response:
+    def process_project_version_misuse(self, project: Project, version: ProjectVersion, misuse: Misuse) -> List[str]:
         logger = logging.getLogger("review_prepare.misuse")
 
         detector_run = self.experiment.get_run(version)
 
         if not detector_run.is_success():
             logger.info("Skipping %s in %s: no result.", misuse.misuse_id, version)
-            return Response.skip
+            return self.skip(misuse)
 
         logger.debug("Checking hit for %s in %s...", misuse, version)
         run = self.experiment.get_run(version)
@@ -62,7 +61,7 @@ class ReviewUpload(ProjectVersionMisuseTask):
         data = RequestData(self.dataset, self.detector, project, version, findings)
         self.data.append(data)
 
-        return Response.ok
+        return self.ok()
 
     def end(self):
         url = "/upload/" + self.experiment.id

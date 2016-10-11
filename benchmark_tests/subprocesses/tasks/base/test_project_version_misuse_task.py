@@ -1,13 +1,7 @@
-from typing import List
-from typing import Tuple
 from unittest.mock import MagicMock, call
 
 from nose.tools import assert_equals
 
-from benchmark.data.misuse import Misuse
-from benchmark.data.project import Project
-from benchmark.data.project_version import ProjectVersion
-from benchmark.subprocesses.tasks.base.project_task import Response
 from benchmark.subprocesses.tasks.base.project_version_misuse_task import ProjectVersionMisuseTask
 from benchmark_tests.test_utils.data_util import create_misuse, create_version, create_project
 

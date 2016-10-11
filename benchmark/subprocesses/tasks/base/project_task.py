@@ -10,7 +10,7 @@ class Response(Enum):
 
 
 class Requirement:
-    def __init__(self, description: str, check = None):
+    def __init__(self, description: str, check=None):
         self.description = description
         if not check:
             check = self.check
@@ -22,28 +22,20 @@ class Requirement:
 
 class ProjectTask:
     def __init__(self):
-        self.__black_list = []
-        self.__white_list = []
+        self.black_list = []
+        self.white_list = []
 
     @property
     def name(self):
         return type(self).__name__.lower()
 
-    @property
-    def black_list(self):
-        return self.__black_list
+    @staticmethod
+    def ok():
+        return []
 
-    @black_list.setter
-    def black_list(self, black_list: List[str]):
-        self.__black_list = black_list
-
-    @property
-    def white_list(self):
-        return self.__white_list
-
-    @white_list.setter
-    def white_list(self, white_list: List[str]):
-        self.__white_list = white_list
+    @staticmethod
+    def skip(entity):
+        return [entity.id]
 
     def get_requirements(self) -> Set[Requirement]:
         return []
@@ -51,7 +43,7 @@ class ProjectTask:
     def start(self) -> None:
         pass
 
-    def process_project(self, project: Project) -> Response:
+    def process_project(self, project: Project) -> List[str]:
         raise NotImplementedError
 
     def end(self) -> None:

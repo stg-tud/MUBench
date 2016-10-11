@@ -1,11 +1,12 @@
 import logging
 
+from typing import List
+
 from benchmark.data.project import Project
 from benchmark.data.project_version import ProjectVersion
 from benchmark.subprocesses.requirements import GitRequirement, SVNRequirement
-from benchmark.subprocesses.tasks.base.project_task import Response
 from benchmark.subprocesses.tasks.base.project_version_task import ProjectVersionTask
-from benchmark.utils.shell import CommandFailedError, Shell
+from benchmark.utils.shell import CommandFailedError
 
 
 class Checkout(ProjectVersionTask):
@@ -17,14 +18,14 @@ class Checkout(ProjectVersionTask):
     def get_requirements(self):
         return [GitRequirement(), SVNRequirement()]
 
-    def process_project_version(self, project: Project, version: ProjectVersion) -> Response:
+    def process_project_version(self, project: Project, version: ProjectVersion) -> List[str]:
         logger = logging.getLogger("checkout")
 
         try:
             checkout = version.get_checkout(self.checkouts_path)
         except ValueError as e:
             logger.error("Checkout data corrupted: %s", e)
-            return Response.skip
+            return self.skip(version)
 
         try:
             checkout_exists = checkout.exists()
@@ -37,11 +38,11 @@ class Checkout(ProjectVersionTask):
                     checkout.delete()
                 checkout.create()
 
-            return Response.ok
+            return self.ok()
 
         except CommandFailedError as e:
             logger.error("Checkout failed: %s", e)
-            return Response.skip
+            return self.skip(version)
         except IOError:
             logger.error("Checkout failed.", exc_info=True)
-            return Response.skip
+            return self.skip(version)

@@ -3,14 +3,13 @@ import time
 from os.path import exists
 from urllib.error import URLError
 
-from typing import Optional
+from typing import Optional, List
 
+from benchmark.data.detector_execution import Result
 from benchmark.data.experiment import Experiment
 from benchmark.data.project import Project
 from benchmark.data.project_version import ProjectVersion
-from benchmark.data.detector_execution import Result
 from benchmark.subprocesses.requirements import JavaRequirement
-from benchmark.subprocesses.tasks.base.project_task import Response
 from benchmark.subprocesses.tasks.base.project_version_task import ProjectVersionTask
 from benchmark.utils.shell import CommandFailedError
 from benchmark.utils.web_util import download_file
@@ -67,7 +66,7 @@ class Detect(ProjectVersionTask):
             logger.error("Download failed: %s", e)
             exit(1)
 
-    def process_project_version(self, project: Project, version: ProjectVersion) -> Response:
+    def process_project_version(self, project: Project, version: ProjectVersion) -> List[str]:
         logger = logging.getLogger("detect")
         run = self.experiment.get_run(version)
 
@@ -75,13 +74,13 @@ class Detect(ProjectVersionTask):
             pass
         elif run.is_error():
             logger.info("Error in previous %s. Skipping.", run)
-            return Response.skip
+            return self.skip(version)
         elif run.is_success():
             logger.info("Successful previous %s. Skipping.", run)
-            return Response.skip
+            return self.skip(version)
         elif self.experiment.id == Experiment.PROVIDED_PATTERNS and not version.patterns:
             logger.info("No patterns to run with. Skipping.")
-            return Response.skip
+            return self.skip(version)
 
         run.reset()
 
@@ -106,4 +105,4 @@ class Detect(ProjectVersionTask):
 
         run.save()
 
-        return Response.ok if run.is_success() else Response.skip
+        return self.ok() if run.is_success() else self.skip(version)

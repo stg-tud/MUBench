@@ -5,7 +5,7 @@ from unittest.mock import MagicMock, call
 from nose.tools import assert_equals, assert_raises
 
 from benchmark.subprocesses.tasking import TaskRunner
-from benchmark.subprocesses.tasks.base.project_task import ProjectTask, Response, Requirement
+from benchmark.subprocesses.tasks.base.project_task import ProjectTask, Requirement
 from benchmark.utils.io import remove_tree, create_file
 from benchmark_tests.test_utils.data_util import create_project
 
@@ -105,7 +105,7 @@ class TestTaskRunner:
 
     def test_adds_project_to_backlist_when_task_answers_skip(self):
         self.uut._get_projects = MagicMock(return_value=[(create_project("p1"))])
-        self.test_task.process_project = MagicMock(return_value=Response.skip)
+        self.test_task.process_project = MagicMock(return_value=["p1"])
 
         self.uut.run()
 

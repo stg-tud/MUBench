@@ -3,18 +3,15 @@ from os import makedirs
 from os.path import join, exists, dirname, relpath
 from shutil import rmtree
 from tempfile import mkdtemp
-from typing import List
 from unittest.mock import MagicMock
 
 from nose.tools import assert_equals
+from typing import List
 
 from benchmark.data.pattern import Pattern
-from benchmark.subprocesses.tasks.base.project_task import Response
 from benchmark.subprocesses.tasks.implementations.compile import Compile
 from benchmark.utils.io import create_file
 from benchmark.utils.shell import CommandFailedError
-
-# noinspection PyAttributeOutsideInit
 from benchmark_tests.test_utils.data_util import create_version, create_project, create_misuse
 
 
@@ -137,7 +134,7 @@ class TestCompile:
 
         response = self.uut.process_project_version(self.project, self.version)
 
-        assert_equals(Response.skip, response)
+        assert_equals([self.version.id], response)
 
     def test_passes_compile_commands(self):
         self.version._YAML["build"]["commands"] = ["a", "b"]
@@ -175,7 +172,7 @@ class TestCompile:
 
         response = self.uut.process_project_version(self.project, self.version)
 
-        assert_equals(Response.skip, response)
+        assert_equals([self.version.id], response)
 
     def test_copies_misuse_classes(self):
         create_file(join(self.source_path, "mu.java"))

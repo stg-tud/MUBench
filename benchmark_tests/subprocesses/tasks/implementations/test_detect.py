@@ -6,11 +6,10 @@ from unittest.mock import MagicMock, ANY
 
 from nose.tools import assert_equals
 
-from benchmark.data.detector_execution import DetectorMode, MineAndDetectExecution
+from benchmark.data.detector_execution import MineAndDetectExecution
 from benchmark.data.experiment import Experiment
 from benchmark.data.findings_filters import AllFindings
 from benchmark.data.run import Run
-from benchmark.subprocesses.tasks.base.project_task import Response
 from benchmark.subprocesses.tasks.implementations.detect import Detect
 from benchmark_tests.test_utils.data_util import create_project, create_version
 from detectors.dummy.dummy import DummyDetector
@@ -63,7 +62,7 @@ class TestDetect:
         response = self.uut.process_project_version(self.project, self.version)
 
         self.test_run.execute.assert_not_called()
-        assert_equals(Response.skip, response)
+        assert_equals([self.version.id], response)
 
     def test_skips_detect_if_previous_run_was_error(self):
         self.test_run.is_error = lambda: True
@@ -71,7 +70,7 @@ class TestDetect:
         response = self.uut.process_project_version(self.project, self.version)
 
         self.test_run.execute.assert_not_called()
-        assert_equals(Response.skip, response)
+        assert_equals([self.version.id], response)
 
     def test_force_detect_on_new_detector(self):
         self.test_run.is_success = lambda: True
@@ -80,7 +79,7 @@ class TestDetect:
         response = self.uut.process_project_version(self.project, self.version)
 
         self.test_run.execute.assert_called_with(self.compiles_path, None, ANY)
-        assert_equals(Response.ok, response)
+        assert_equals([], response)
 
     def test_skips_detect_only_if_no_patterns_are_available(self):
         self.experiment.id = Experiment.PROVIDED_PATTERNS
@@ -88,7 +87,7 @@ class TestDetect:
         response = self.uut.process_project_version(self.project, self.version)
 
         self.test_run.execute.assert_not_called()
-        assert_equals(Response.skip, response)
+        assert_equals([self.version.id], response)
 
 
 class TestDetectorDownload:

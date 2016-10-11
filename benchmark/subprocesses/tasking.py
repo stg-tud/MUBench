@@ -1,13 +1,13 @@
 import logging
 from datetime import datetime
 from os import listdir
-from typing import List
-
 from os.path import exists, join
+
+from typing import List
 
 from benchmark.data.project import Project
 from benchmark.subprocesses.requirements import are_satisfied
-from benchmark.subprocesses.tasks.base.project_task import ProjectTask, Response
+from benchmark.subprocesses.tasks.base.project_task import ProjectTask
 
 
 class TaskRunner:
@@ -35,9 +35,9 @@ class TaskRunner:
                     logger.debug("Skipping %s", project)
                 else:
                     response = task.process_project(project)
-                    if response == Response.skip:
+                    if response:
                         logger.info("Cannot proceed on %s; skipping for subsequent tasks.", project)
-                        self.black_list.append(project.id)
+                        self.black_list.extend(response)
             task.end()
 
     def check(self) -> None:

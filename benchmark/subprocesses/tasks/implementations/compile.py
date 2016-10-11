@@ -2,6 +2,7 @@ import logging
 import shutil
 from os import makedirs
 from os.path import join, exists, dirname
+
 from typing import List, Set
 
 from benchmark.data.misuse import Pattern, Misuse
@@ -9,7 +10,6 @@ from benchmark.data.project import Project
 from benchmark.data.project_compile import ProjectCompile
 from benchmark.data.project_version import ProjectVersion
 from benchmark.subprocesses.requirements import JavaRequirement, MavenRequirement, GradleRequirement
-from benchmark.subprocesses.tasks.base.project_task import Response
 from benchmark.subprocesses.tasks.base.project_version_task import ProjectVersionTask
 from benchmark.utils.io import remove_tree, copy_tree
 from benchmark.utils.shell import Shell, CommandFailedError
@@ -57,11 +57,11 @@ class Compile(ProjectVersionTask):
                 self.__copy_misuse_sources(sources_path, version.misuses, project_compile.misuse_source_path)
             except IOError as e:
                 logger.error("Failed to copy project sources: %s", e)
-                return Response.skip
+                return self.skip(version)
 
         if not version.compile_commands:
             logger.warn("Skipping compilation: not configured.")
-            return Response.skip
+            return self.skip(version)
 
         if not needs_compile:
             logger.info("Already compiled project.")
@@ -74,14 +74,14 @@ class Compile(ProjectVersionTask):
                 self.__copy_misuse_classes(classes_path, version.misuses, project_compile.misuse_classes_path)
             except CommandFailedError as e:
                 logger.error("Compilation failed: %s", e)
-                return Response.skip
+                return self.skip(version)
             except FileNotFoundError as e:
                 logger.error("Failed to copy classes: %s", e)
-                return Response.skip
+                return self.skip(version)
 
         if not version.patterns:
             logger.info("Skipping pattern compilation: no patterns.")
-            return Response.ok
+            return self.ok()
 
         needs_copy_pattern_sources = project_compile.needs_copy_pattern_sources() or self.force_compile
         needs_compile_patterns = project_compile.needs_compile_patterns() or self.force_compile
@@ -101,7 +101,7 @@ class Compile(ProjectVersionTask):
                 self.__copy_pattern_sources(version.misuses, project_compile)
             except IOError as e:
                 logger.error("Failed to copy pattern sources: %s", e)
-                return Response.skip
+                return self.skip(version)
 
         if not needs_compile_patterns:
             logger.info("Already compiled patterns.")
@@ -116,12 +116,12 @@ class Compile(ProjectVersionTask):
             except FileNotFoundError as e:
                 remove_tree(project_compile.pattern_classes_base_path)
                 logger.error("Compilation failed: %s", e)
-                return Response.skip
+                return self.skip(version)
             except CommandFailedError as e:
                 logger.error("Compilation failed: %s", e)
-                return Response.skip
+                return self.skip(version)
 
-        return Response.ok
+        return self.ok()
 
     @staticmethod
     def __clean_copy(sources_path: str, destination: str):
