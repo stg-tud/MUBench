@@ -4,6 +4,7 @@ from os.path import join, exists
 from urllib.error import URLError
 
 from nose.tools import assert_raises
+from pathlib import Path
 
 from benchmark.utils.io import create_file, safe_write
 from benchmark.utils.web_util import validate_file, download_file, is_valid_file
@@ -59,7 +60,7 @@ class TestDownloadFile:
         self.tmp = mkdtemp()
         self.remote_file = join(self.tmp, "remote.file")
         create_file(self.remote_file)
-        self.url = "file://" + self.remote_file
+        self.url = Path(self.remote_file).as_uri()
 
         self.target = join(self.tmp, "local.file")
 

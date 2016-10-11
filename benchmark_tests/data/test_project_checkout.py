@@ -4,6 +4,7 @@ from shutil import rmtree
 from tempfile import mkdtemp
 
 from nose.tools import assert_equals
+from pathlib import Path
 
 from benchmark.data.project_checkout import GitProjectCheckout, LocalProjectCheckout, SVNProjectCheckout, \
     SyntheticProjectCheckout, ZipProjectCheckout
@@ -191,7 +192,7 @@ class TestSVNProjectCheckout:
     # noinspection PyAttributeOutsideInit
     def setup(self):
         self.temp_dir = mkdtemp(prefix='mubench-checkout-svn_')
-        self.svn_url = "file://{}".format(join(dirname(realpath(__file__)), "test_svn"))
+        self.svn_url = Path(join(dirname(realpath(__file__)), "test_svn")).as_uri()
         self.checkouts_dir = join(self.temp_dir, "checkouts")
 
         self.uut = SVNProjectCheckout(self.svn_url, self.checkouts_dir, "-project-", "-version-", "1")
@@ -228,7 +229,7 @@ class TestSVNProjectCheckout:
 
         self.uut.create()
         checkout_version2.create()
-        
+
         assert checkout_version2.exists()
 
     def test_to_string(self):
