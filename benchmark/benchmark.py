@@ -16,6 +16,7 @@ from benchmark.subprocesses.tasks.implementations.compile import Compile
 from benchmark.subprocesses.tasks.implementations.detect import Detect
 from benchmark.subprocesses.tasks.implementations.info import Info
 from benchmark.utils import command_line_util
+from benchmark.utils.dataset_util import get_white_list
 
 
 class Benchmark:
@@ -25,6 +26,8 @@ class Benchmark:
     DETECTORS_PATH = realpath("detectors")
     FINDINGS_PATH = realpath("findings")
     REVIEW_PATH = realpath("reviews")
+
+    DATASETS_FILE_PATH = join(DATA_PATH, 'datasets.yml')
 
     EX1_SUBFOLDER = "detect-only"
     EX2_SUBFOLDER = "mine-and-detect"
@@ -36,11 +39,17 @@ class Benchmark:
 
         self.config = config
 
-        if 'white_list' not in config:
-            config.white_list = []
-        if 'black_list' not in config:
-            config.black_list = []
-        self.runner = TaskRunner(Benchmark.DATA_PATH, config.white_list, config.black_list)
+        white_list = []
+        black_list = []
+        if 'white_list' in config:
+            white_list.extend(config.white_list)
+        if 'black_list' in config:
+            black_list.extend(config.black_list)
+
+        if 'dataset' in config:
+            white_list.extend(get_white_list(join(self.DATASETS_FILE_PATH), config.dataset))
+
+        self.runner = TaskRunner(Benchmark.DATA_PATH, white_list, black_list)
 
     def _run_visualize(self) -> None:
         visualizer = Visualizer(Benchmark.FINDINGS_PATH, self.reviewed_eval_result_file, self.visualize_result_file,

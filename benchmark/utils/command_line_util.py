@@ -114,6 +114,8 @@ def __setup_misuse_filter_arguments(parser: ArgumentParser):
                         help="process only projects or project versions whose names are given")
     parser.add_argument('--skip', metavar='Y', nargs='+', dest='black_list', default=[],
                         help="skip all projects or project versions whose names are given")
+    parser.add_argument('--dataset', metavar='DATASET', dest='dataset',
+                        help="process only misuses in the specified data set")
 
 
 def __setup_checkout_arguments(parser: ArgumentParser):

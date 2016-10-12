@@ -117,3 +117,9 @@ def test_java_options_default_empty():
 def test_script_is_case_insensitive():
     parser = get_command_line_parser([], ['GENERAL'])
     parser.parse_args(['stats', 'general'])
+
+
+def test_dataset():
+    parser = get_command_line_parser(['dummy'], [])
+    result = parser.parse_args(['detect', 'dummy', '1', '--dataset', 'crypto'])
+    assert_equals('crypto', result.dataset)
