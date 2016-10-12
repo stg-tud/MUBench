@@ -28,7 +28,6 @@ class TestReviewUpload:
 
         self.findings_path = join(self.temp_dir, "findings")
         self.dataset = TEST_DATASET
-        self.checkout_base_dir = join(self.temp_dir, "checkouts")
 
         self.project = create_project(TEST_PROJECT_ID)
         self.misuse = create_misuse(TEST_MISUSE_ID, project=self.project)
@@ -45,7 +44,7 @@ class TestReviewUpload:
         self.test_run.results = lambda: self.potential_hits
         self.experiment.get_run = lambda v: self.test_run
 
-        self.uut = ReviewUpload(self.experiment, self.dataset, self.checkout_base_dir)
+        self.uut = ReviewUpload(self.experiment, self.dataset)
 
         self.post_url = None
         self.post_data = None
