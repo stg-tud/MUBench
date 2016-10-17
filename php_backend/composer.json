@@ -1,0 +1,5 @@
+{
+    "require": {
+        "tuupola/slim-basic-auth": "^2.2"
+    }
+}
