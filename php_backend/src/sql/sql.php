@@ -6,10 +6,11 @@ use \Slim\Middleware\HttpBasicAuthentication\PdoAuthenticator;
 
 function get_db_connection(){
 	$servername = "127.0.0.1";
-	$username = "example_user";
-	$password = "Admin2015";
+	$username = "root";
+	$password = "mubench";
+	$db_name = "mubench";
 
-	$pdo = new PDO("mysql:host=$servername;dbname=exampleDB", $username, $password);
+	$pdo = new PDO("mysql:host=$servername;dbname=mubench", $username, $password);
 	$pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
 	return $pdo;

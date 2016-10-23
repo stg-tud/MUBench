@@ -1,12 +1,13 @@
 <?php
-
+require_once 'sql/sql.php';
 
 use \Slim\Middleware\HttpBasicAuthentication\PdoAuthenticator;
 
-$pdo = new \PDO("mysql:host=localhost;dbname=exampleDB", "root", "Admin2015");
+$pdo = get_db_connection();
+
 
 $app->add(new \Slim\Middleware\HttpBasicAuthentication([
-    "path" => "/",
+    "path" => "/index.php/api",
     "realm" => "Protected",
     "authenticator" => new PdoAuthenticator([
         "pdo" => $pdo
