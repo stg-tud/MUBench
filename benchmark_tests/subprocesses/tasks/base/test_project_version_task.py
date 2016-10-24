@@ -4,7 +4,7 @@ from nose.tools import assert_equals
 
 from benchmark.subprocesses.tasks.base.project_version_task import ProjectVersionTask
 from benchmark_tests.subprocesses.test_taskrunner import create_project
-from benchmark_tests.test_utils.data_util import create_version
+from benchmark_tests.test_utils.data_util import create_version, create_misuse
 
 
 class TestProjectVersionTask:
@@ -52,3 +52,16 @@ class TestProjectVersionTask:
         self.uut.process_project(self.project)
 
         assert_equals(2, len(self.uut.process_project_version.call_args_list))
+
+    def test_white_list_misuse(self):
+        project = create_project("-p-")
+        misuse1 = create_misuse("-m1-", project=project)
+        misuse2 = create_misuse("-m2-", project=project)
+        version1 = create_version("-v1-", misuses=[misuse1], project=project)
+        create_version("-v2-", misuses=[misuse2], project=project)
+
+        self.uut.white_list = [misuse1.id]
+
+        self.uut.process_project(project)
+
+        assert_equals([call(project, version1)], self.uut.process_project_version.call_args_list)
