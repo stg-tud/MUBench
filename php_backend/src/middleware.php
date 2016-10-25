@@ -1,15 +1,10 @@
 <?php
-require_once 'sql/sql.php';
+require_once 'ConnectionDB.php';
+require_once 'DirectoryHelper.php';
 
 use \Slim\Middleware\HttpBasicAuthentication\PdoAuthenticator;
 
-$pdo = get_db_connection();
 
-
-$app->add(new \Slim\Middleware\HttpBasicAuthentication([
-    "path" => "/index.php/api",
-    "realm" => "Protected",
-    "authenticator" => new PdoAuthenticator([
-        "pdo" => $pdo
-    ])
-]));
+$app->db = new DBConnection();
+$app->db->connectDB('localhost', 'mubench', 'root', 'mubench', $app->getContainer()['logger']);
+$app->dir = new DirectoryHelper('./logs', $app->getContainer()['logger']);
