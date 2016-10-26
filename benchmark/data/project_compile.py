@@ -34,7 +34,7 @@ class ProjectCompile:
         return False
 
     def __needs_copy_pattern_sources(self, misuse: Misuse):
-        return not isdir(join(self.pattern_sources_base_path, misuse.misuse_id))
+        return not isdir(self.get_pattern_source_path(misuse))
 
     def needs_compile(self):
         return not isdir(self.original_classes_path)
@@ -46,7 +46,7 @@ class ProjectCompile:
         return False
 
     def __needs_compile_patterns(self, misuse: Misuse):
-        return not isdir(join(self.pattern_classes_base_path, misuse.misuse_id))
+        return not isdir(self.get_pattern_classes_path(misuse))
 
     def get_pattern_source_path(self, misuse: Misuse):
         return join(self.pattern_sources_base_path, misuse.misuse_id)
