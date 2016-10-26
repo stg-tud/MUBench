@@ -23,7 +23,7 @@ class ProjectVersionMisuseTask(ProjectVersionTask):
 
     def __skip(self, misuse: Misuse):
         blacklisted = misuse.id in self.black_list
-        whitelisted = misuse.id in self.white_list
+        whitelisted = misuse.id in self.white_list or misuse.project_id in self.white_list
         return blacklisted or (self.white_list and not whitelisted)
 
     def process_project_version_misuse(self, project: Project, version: ProjectVersion, misuse: Misuse) -> List[str]:
