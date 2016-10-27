@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-import logging
 import logging.handlers
 import sys
 from datetime import datetime
@@ -17,6 +16,7 @@ from benchmark.subprocesses.tasks.implementations.detect import Detect
 from benchmark.subprocesses.tasks.implementations.info import Info
 from benchmark.utils import command_line_util
 from benchmark.utils.dataset_util import get_white_list
+from benchmark.utils.logging import IndentFormatter
 
 
 class Benchmark:
@@ -124,22 +124,6 @@ class Benchmark:
             self._setup_stats()
 
         self.runner.run()
-
-
-class IndentFormatter(logging.Formatter):
-    def __init__(self, fmt=None, datefmt=None):
-        logging.Formatter.__init__(self, fmt, datefmt)
-
-    def format(self, rec):
-        logger_name = rec.name
-        logger_level = 0
-        if logger_name != "root":
-            logger_level = logger_name.count('.') + 1
-        rec.indent = "    " * logger_level
-        out = logging.Formatter.format(self, rec)
-        out = out.replace("\n", "\n" + rec.indent)
-        del rec.indent
-        return out
 
 
 detectors_path = realpath('detectors')
