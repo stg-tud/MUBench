@@ -1,5 +1,6 @@
 import logging
 from os.path import join
+from tempfile import mkdtemp
 from unittest import mock
 from unittest.mock import MagicMock, PropertyMock
 
@@ -9,6 +10,7 @@ from benchmark.data.detector_execution import DetectOnlyExecution, MineAndDetect
     DetectorMode
 from benchmark.data.findings_filters import PotentialHits, AllFindings
 from benchmark.data.project_compile import ProjectCompile
+from benchmark.utils.io import remove_tree, write_yaml
 from benchmark.utils.shell import Shell, CommandFailedError
 from benchmark_tests.test_utils.data_util import create_misuse, create_version, create_project
 from detectors.dummy.dummy import DummyDetector
@@ -28,12 +30,18 @@ class DetectorExecutionTestImpl(DetectorExecution):
 class TestExecutionState:
     # noinspection PyAttributeOutsideInit
     def setup(self):
+        self.temp_dir = mkdtemp(prefix='mubench-run-test_')
+        self.findings_path = join(self.temp_dir, "-findings-")
+
         self.detector = DummyDetector("-detectors-")
         self.version = create_version("-v-")
         self.findings_base_path = "-findings-"
 
         self.uut = DetectorExecutionTestImpl(DetectorMode.detect_only, self.detector, self.version,
                                              self.findings_base_path, AllFindings(self.detector))
+
+    def teardown(self):
+        remove_tree(self.temp_dir)
 
     def test_run_outdated(self):
         with mock.patch('detectors.dummy.dummy.DummyDetector.md5', new_callable=PropertyMock) as mock_md5:
@@ -61,6 +69,20 @@ class TestExecutionState:
         self.uut.is_error = lambda: False
 
         assert self.uut.is_failure()
+
+    def test_load(self):
+        self.write_run_file({"result": "success", "runtime": "23.42", "message": "-arbitrary text-"})
+
+        execution = MineAndDetectExecution(self.detector, self.version, self.findings_path, AllFindings(self.detector))
+
+        assert execution.is_success()
+        assert_equals(execution.runtime, "23.42")
+        assert_equals(execution.message, "-arbitrary text-")
+
+    def write_run_file(self, run_data):
+        write_yaml(run_data, join(self.findings_path,
+                                  DetectorMode.mine_and_detect.name, self.detector.id,
+                                  self.version.project_id, self.version.version_id, DetectorExecution.RUN_FILE))
 
 
 class TestDetectorExecution:
