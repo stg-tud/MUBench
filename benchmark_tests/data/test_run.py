@@ -2,54 +2,17 @@ import logging
 from os.path import join
 from shutil import rmtree
 from tempfile import mkdtemp
-from unittest import mock
-from unittest.mock import MagicMock, PropertyMock
+from unittest.mock import MagicMock
 
 from nose.tools import assert_equals
 
-from benchmark.data.detector_execution import MineAndDetectExecution, DetectorMode, DetectorExecution, \
-    DetectorExecutionState
+from benchmark.data.detector_execution import MineAndDetectExecution, DetectorMode, DetectorExecution
 from benchmark.data.findings_filters import AllFindings
 from benchmark.data.run import Run
 from benchmark.utils.io import write_yaml
 from benchmark.utils.shell import Shell
 from benchmark_tests.test_utils.data_util import create_misuse, create_version, create_project
 from detectors.dummy.dummy import DummyDetector
-
-
-class TestRunState:
-    # noinspection PyAttributeOutsideInit
-    def setup(self):
-        self.detector = DummyDetector("-detectors-")
-
-    def test_run_outdated(self):
-        with mock.patch('detectors.dummy.dummy.DummyDetector.md5', new_callable=PropertyMock) as mock_md5:
-            mock_md5.return_value = "-md5-"
-            detector = DummyDetector("-detectors-")
-
-            state = DetectorExecutionState(detector, "")
-
-            assert state.is_outdated()
-
-    def test_run_up_to_date(self):
-        state = DetectorExecutionState(self.detector, "")
-        state._detector_md5 = self.detector.md5
-
-        assert not state.is_outdated()
-
-    def test_error_is_failure(self):
-        state = DetectorExecutionState(self.detector, "")
-        state.is_error = lambda: True
-        state.is_timeout = lambda: False
-
-        assert state.is_failure()
-
-    def test_timeout_is_failure(self):
-        state = DetectorExecutionState(self.detector, "")
-        state.is_timeout = lambda: True
-        state.is_error = lambda: False
-
-        assert state.is_failure()
 
 
 class TestRun:

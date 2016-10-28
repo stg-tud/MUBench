@@ -1,17 +1,13 @@
 import logging
-import time
 from os.path import exists
+from typing import Optional, List
 from urllib.error import URLError
 
-from typing import Optional, List
-
-from benchmark.data.detector_execution import Result
 from benchmark.data.experiment import Experiment
 from benchmark.data.project import Project
 from benchmark.data.project_version import ProjectVersion
 from benchmark.subprocesses.requirements import JavaRequirement
 from benchmark.subprocesses.tasks.base.project_version_task import ProjectVersionTask
-from benchmark.utils.shell import CommandFailedError
 from benchmark.utils.web_util import download_file
 
 
