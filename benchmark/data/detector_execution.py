@@ -1,3 +1,4 @@
+import time
 import yaml
 from enum import Enum, IntEnum
 from logging import Logger
@@ -12,7 +13,7 @@ from benchmark.data.misuse import Misuse
 from benchmark.data.project_compile import ProjectCompile
 from benchmark.data.project_version import ProjectVersion
 from benchmark.utils.io import write_yaml, remove_tree, read_yaml
-from benchmark.utils.shell import Shell
+from benchmark.utils.shell import Shell, CommandFailedError
 
 
 def _quote(value: str):
@@ -28,61 +29,6 @@ class Result(Enum):
 class DetectorMode(IntEnum):
     mine_and_detect = 0
     detect_only = 1
-
-
-class DetectorExecutionState:
-    def __init__(self, detector: Detector, run_file: str):
-        self.detector = detector
-        self.run_file = run_file
-
-        data = {
-            "result": None,
-            "runtime": None,
-            "message": "",
-            "md5": None
-        }
-        data.update(read_yaml(run_file) if exists(run_file) else {})
-        self.execution_result = Result[data["result"]] if data["result"] else None
-        self.runtime = data["runtime"]
-        self.message = data["message"]
-        self._detector_md5 = data["md5"]
-
-    def is_success(self):
-        return self.execution_result == Result.success
-
-    def is_error(self):
-        return self.execution_result == Result.error
-
-    def is_timeout(self):
-        return self.execution_result == Result.timeout
-
-    def is_failure(self):
-        return self.is_error() or self.is_timeout()
-
-    def is_outdated(self):
-        return self.detector.md5 != self._detector_md5
-
-    def save(self):
-        # load and update, since an execution might have written additional fields to the file since initialization
-        run_data = self.__load_data(self.run_file)
-        run_data.update({
-            "result": self.execution_result.name if self.execution_result else None,
-            "runtime": self.runtime,
-            "message": self.message,
-            "md5": self.detector.md5
-        })
-        write_yaml(run_data, file=self.run_file)
-
-    @staticmethod
-    def __load_data(run_file_path: str):
-        data = {
-            "result": None,
-            "runtime": None,
-            "message": "",
-            "md5": None
-        }
-        data.update(read_yaml(run_file_path) if exists(run_file_path) else {})
-        return data
 
 
 class DetectorExecution:
@@ -106,13 +52,43 @@ class DetectorExecution:
         self._findings_file_path = join(self._get_findings_path(), self.FINDINGS_FILE)
         self.__FINDINGS = None
 
+        data = {
+            "result": None,
+            "runtime": None,
+            "message": "",
+            "md5": None
+        }
+        data.update(read_yaml(self._run_file_path) if exists(self._run_file_path) else {})
+        self.result = Result[data["result"]] if data["result"] else None
+        self.runtime = data["runtime"]
+        self.message = data["message"]
+        self._detector_md5 = data["md5"]
+
         self.findings_filter = findings_filter
 
     def execute(self, compile_base_path: str, timeout: Optional[int], logger: Logger):
         detector_invocation = ["java"] + self.detector.java_options + ["-jar", _quote(self.detector.jar_path)]
         command = detector_invocation + self._get_detector_arguments(self.version.get_compile(compile_base_path))
         command = " ".join(command)
-        return Shell.exec(command, logger=logger, timeout=timeout)
+
+        start = time.time()
+        try:
+            Shell.exec(command, logger=logger, timeout=timeout)
+            self.result = Result.success
+        except CommandFailedError as e:
+            logger.error("Detector failed: %s", e)
+            self.result = Result.error
+            self.message = str(e)
+        except TimeoutError:
+            logger.error("Detector took longer than the maximum of %s seconds", timeout)
+            self.result = Result.timeout
+        finally:
+            end = time.time()
+            runtime = end - start
+            self.runtime = runtime
+            logger.info("Run took {0:.2f} seconds.".format(runtime))
+
+        self.save()
 
     @property
     def potential_hits(self):
@@ -141,18 +117,48 @@ class DetectorExecution:
     def _load_findings(self):
         raise NotImplementedError
 
-    @property
-    def state(self):
-        return DetectorExecutionState(self.detector, self._run_file_path)
-
     def save(self):
-        self.state.save()
+        # load and update, since an execution might have written additional fields to the file since initialization
+        run_data = self.__load_data(self._run_file_path)
+        run_data.update({
+            "result": self.result.name if self.result else None,
+            "runtime": self.runtime,
+            "message": self.message,
+            "md5": self.detector.md5
+        })
+        write_yaml(run_data, file=self._run_file_path)
 
     def reset(self):
         remove_tree(self._get_findings_path())
         makedirs(self._get_findings_path(), exist_ok=True)
         DetectorExecution.__init__(self, self.run_mode, self.detector, self.version, self._findings_base_path,
                                    self.findings_filter)
+
+    def is_success(self):
+        return self.result == Result.success
+
+    def is_error(self):
+        return self.result == Result.error
+
+    def is_timeout(self):
+        return self.result == Result.timeout
+
+    def is_failure(self):
+        return self.is_error() or self.is_timeout()
+
+    def is_outdated(self):
+        return self.detector.md5 != self._detector_md5
+
+    @staticmethod
+    def __load_data(run_file_path: str):
+        data = {
+            "result": None,
+            "runtime": None,
+            "message": "",
+            "md5": None
+        }
+        data.update(read_yaml(run_file_path) if exists(run_file_path) else {})
+        return data
 
     def __str__(self):
         return str(self.version)

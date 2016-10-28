@@ -32,16 +32,16 @@ class Run:
         return "run on {}".format(", ".join([str(e) for e in self.executions]))
 
     def is_success(self):
-        return self.executions and all([execution.state.is_success() for execution in self.executions])
+        return self.executions and all([execution.is_success() for execution in self.executions])
 
     def is_outdated(self):
-        return any([execution.state.is_outdated() for execution in self.executions])
+        return any([execution.is_outdated() for execution in self.executions])
 
     def is_error(self):
-        return any([execution.state.is_error() for execution in self.executions])
+        return any([execution.is_error() for execution in self.executions])
 
     def is_timeout(self):
-        return any([execution.state.is_timeout() for execution in self.executions])
+        return any([execution.is_timeout() for execution in self.executions])
 
     def is_failure(self):
         return self.is_error() or self.is_timeout()

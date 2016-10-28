@@ -49,13 +49,6 @@ class TestDetect:
 
         self.test_run.execute.assert_called_with(self.compiles_path, None, ANY)
 
-    def test_writes_results(self):
-        self.test_run.save = MagicMock()
-
-        self.uut.process_project_version(self.project, self.version)
-
-        self.test_run.save.assert_called_with()
-
     def test_skips_detect_if_previous_run_succeeded(self):
         self.test_run.is_success = lambda: True
 

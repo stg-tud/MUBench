@@ -86,23 +86,6 @@ class Detect(ProjectVersionTask):
 
         logger.info("Executing %s...", run)
         logger = logging.getLogger("detect.run")
-        start = time.time()
-        try:
-            run.execute(self.compiles_base_path, self.timeout, logger)
-            run.result = Result.success
-        except CommandFailedError as e:
-            logger.error("Detector failed: %s", e)
-            run.result = Result.error
-            run.message = str(e)
-        except TimeoutError:
-            logger.error("Detector took longer than the maximum of %s seconds", self.timeout)
-            run.result = Result.timeout
-        finally:
-            end = time.time()
-            runtime = end - start
-            run.runtime = runtime
-            logger.info("Run took {0:.2f} seconds.".format(runtime))
-
-        run.save()
+        run.execute(self.compiles_base_path, self.timeout, logger)
 
         return self.ok() if run.is_success() else self.skip(version)
