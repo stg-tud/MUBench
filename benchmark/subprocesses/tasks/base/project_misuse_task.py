@@ -3,6 +3,7 @@ from typing import List
 
 from benchmark.data.misuse import Misuse
 from benchmark.data.project import Project
+from benchmark.data.project_version import ProjectVersion
 from benchmark.subprocesses.tasks.base.project_task import ProjectTask
 
 
@@ -13,21 +14,21 @@ class ProjectMisuseTask(ProjectTask):
         misuses = set()
         for version in project.versions:
             for misuse in version.misuses:
-                misuses.add(misuse)
+                if misuse not in misuses:
+                    if self.__skip(project, version, misuse):
+                        logger = logging.getLogger("misuses")
+                        logger.debug("Skipping %s", misuse)
+                    else:
+                        response = self.process_project_misuse(project, misuse)
+                        black_list.extend(response)
 
-        for misuse in misuses:
-            if self.__skip(misuse):
-                logger = logging.getLogger("misuses")
-                logger.debug("Skipping %s", misuse)
-            else:
-                response = self.process_project_misuse(project, misuse)
-                black_list.extend(response)
+                misuses.add(misuse)
 
         return black_list
 
-    def __skip(self, misuse: Misuse):
+    def __skip(self, project: Project, version: ProjectVersion, misuse: Misuse):
         blacklisted = misuse.id in self.black_list
-        whitelisted = misuse.id in self.white_list
+        whitelisted = misuse.id in self.white_list or version.id in self.white_list or project.id in self.white_list
         return blacklisted or (self.white_list and not whitelisted)
 
     def process_project_misuse(self, project: Project, misuse: Misuse) -> List[str]:

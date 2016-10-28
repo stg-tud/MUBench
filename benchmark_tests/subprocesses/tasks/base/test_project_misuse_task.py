@@ -41,3 +41,37 @@ class TestProjectVersionMisuseTask:
         uut.process_project(project)
 
         assert_equals([call(project, misuse1)], uut.process_project_misuse.call_args_list)
+
+    def test_white_list_project(self):
+        uut = ProjectMisuseTask()
+        uut.process_project_misuse = MagicMock()
+
+        project1 = create_project("-p1-")
+        project2 = create_project("-p2-")
+        misuse1 = create_misuse("-m1-", project=project1)
+        misuse2 = create_misuse("-m2-", project=project2)
+        create_version("-v1-", misuses=[misuse1], project=project1)
+        create_version("-v2-", misuses=[misuse2], project=project2)
+
+        uut.white_list = [project1.id]
+
+        uut.process_project(project1)
+        uut.process_project(project2)
+
+        assert_equals([call(project1, misuse1)], uut.process_project_misuse.call_args_list)
+
+    def test_white_list_version(self):
+        uut = ProjectMisuseTask()
+        uut.process_project_misuse = MagicMock()
+
+        project = create_project("-p-")
+        misuse1 = create_misuse("-m1-", project=project)
+        misuse2 = create_misuse("-m2-", project=project)
+        version1 = create_version("-v1-", misuses=[misuse1], project=project)
+        create_version("-v2-", misuses=[misuse2], project=project)
+
+        uut.white_list = [version1.id]
+
+        uut.process_project(project)
+
+        assert_equals([call(project, misuse1)], uut.process_project_misuse.call_args_list)

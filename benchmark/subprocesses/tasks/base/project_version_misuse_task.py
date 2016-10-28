@@ -12,7 +12,7 @@ class ProjectVersionMisuseTask(ProjectVersionTask):
         black_list = []
 
         for misuse in version.misuses:
-            if self.__skip(misuse):
+            if self.__skip_misuse(project, version, misuse):
                 logger = logging.getLogger("versions.misuses")
                 logger.debug("Skipping %s", misuse)
             else:
@@ -21,9 +21,9 @@ class ProjectVersionMisuseTask(ProjectVersionTask):
 
         return black_list
 
-    def __skip(self, misuse: Misuse):
+    def __skip_misuse(self, project: Project, version: ProjectVersion, misuse: Misuse):
         blacklisted = misuse.id in self.black_list
-        whitelisted = misuse.id in self.white_list or misuse.project_id in self.white_list
+        whitelisted = misuse.id in self.white_list or version.id in self.white_list or project.id in self.white_list
         return blacklisted or (self.white_list and not whitelisted)
 
     def process_project_version_misuse(self, project: Project, version: ProjectVersion, misuse: Misuse) -> List[str]:
