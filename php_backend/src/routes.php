@@ -1,39 +1,35 @@
 <?php
 // Routes
+function varDumpToString ($var)
+{
+    ob_start();
+    var_dump($var);
+    return ob_get_clean();
+}
 
 $app->get('/', function ($request, $response, $args) use ($app) {
     return $this->renderer->render($response, 'index.phtml', array('name' => 'Test'));
 });
 
-$app->post('/api/upload/ex1', function ($request, $response, $args) use ($app) {
-	$obj = json_decode($request->getBody());
-	if($obj){
-		foreach($obj as $d){
-			$app->db->handleData('ex1', $d, $d->{'findings'});
-			//$app->dir->handleImage('ex1', $obj->{'project'}, $obj->{'version'}, $img);
-			$this->logger->info('ex1');
-		}	
-	}
+$app->get('/impressum/', function ($request, $response, $args) use ($app) {
+    return $this->renderer->render($response, 'impressum.html');
 });
 
-$app->post('/api/upload/ex2', function ($request, $response, $args) use ($app){
-	$obj = json_decode($request->getBody());
-	if($obj){
-		foreach($obj as $d){
-			$app->db->handleData('ex2', $d, $d->{'findings'});
-			//$app->dir->handleImage('ex1', $obj->{'project'}, $obj->{'version'}, $img);
-			$this->logger->info('ex2');
-		}	
-	}
+$app->get('/ex/[{experiment}]', function ($request, $response, $args) use ($app, $settings) {
+	$experiment = $args['experiment'];
+	$detectors = $app->db->getDetectors($experiment);
+	$template = $settings['ex_template'][$experiment];
+    return $this->renderer->render($response, 'ex.phtml', array('detectors' => $detectors, 'id' => $template['id'], 'title' => $template['title']));
 });
 
-$app->post('/api/upload/ex3', function ($request, $response, $args) use ($app){
-    $obj = json_decode($request->getBody());
-	if($obj){
+$app->post('/api/upload/[{experiment}]', function ($request, $response, $args) use ($app) {
+	$obj = json_decode($request->getBody());
+	$experiment = $args['experiment'];
+	if($obj && ($experiment === "ex1" || $experiment === "ex2" || $experiment === "ex3")){
 		foreach($obj as $d){
-			$app->db->handleData('ex3', $d, $d->{'findings'});
+			$app->db->handleData($experiment, $d, $d->{'findings'});
 			//$app->dir->handleImage('ex1', $obj->{'project'}, $obj->{'version'}, $img);
-			$this->logger->info('ex3');
+			$this->logger->info($experiment);
 		}	
 	}
 });

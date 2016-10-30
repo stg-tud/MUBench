@@ -12,11 +12,14 @@ class DirectoryHelper {
 
 	public function handleImage($prefix, $project, $version, $img){
 		$path = $this->root . "/" . $prefix . "/" . $project . "/" . $version;
+		$this->logger->info($path);
+		$this->logger->info(file_exists($path));
 		if(file_exists($path)){
+			$this->logger->info("DELETE PATH");
 			$this->deleteDir($path);
 		}
-		mdkir($path, 0777, true);
-		$img->moveTo($path . $img->getClientFilename());
+		$this->logger->info($path . "/" . $img->getClientFilename());
+		$img->moveTo($path . "/" . $img->getClientFilename());
 	}
 
 	public function deleteDir($dirPath) {

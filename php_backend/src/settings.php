@@ -11,9 +11,23 @@ return [
 
         // Monolog settings
         'logger' => [
-            'name' => 'slim-app',
+            'name' => 'mubench',
             'path' => __DIR__ . '/../logs/app.log',
             'level' => \Monolog\Logger::DEBUG,
         ],
     ],
+    'ex_template' => [
+        "ex1" => [
+        "title" => "Detect Only",
+        "id" => "1"
+        ],
+        "ex2" => [
+        "title" => "All Findings (Top 10 per Project)",
+        "id" => "2"
+        ],
+        "ex3" => [
+        "title" => "Mine and Detect",
+        "id" => "3"
+        ]
+    ]
 ];

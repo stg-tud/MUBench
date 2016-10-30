@@ -1,15 +1,26 @@
-<!DOCTYPE html>
+
 <html>
-    <head>
-        <meta charset="utf-8"/>
-        <title>Mubench</title>
-        </style>
-    </head>
-    <body>
-        <?php if (isset($name)) : ?>
-            <h2>Hello <?= htmlspecialchars($name); ?>!</h2>
-        <?php else: ?>
-            <p>Try <a href="http://www.slimframework.com">SlimFramework</a>
-        <?php endif; ?>
-    </body>
+<head>
+<title>MUBench Review Page</title>
+<link rel="stylesheet" type="text/css" href="style/style.css" />
+</head>
+<body>
+<h1>MUBench Review Page</h1>
+
+<ul>
+  <li><a href="index.php/ex/ex1">Experiment 1 - Detect Only</a></li>
+  <li><a href="index.php/ex/ex2">Experiment 2 - All Findings (Top 10 of 5 Projects)</a></li>
+  <li><a href="index.php/ex/ex3">Experiment 3 - Mine and Detect</a></li>
+</ul>
+
+<hr style="margin-top: 2cm;"/>
+
+<div class="comment">
+<p>(this page was last updated at August 31, 2016)</p>
+</div>
+
+<div class="legal">
+<a href="index.php/impressum/">Legal Note / Impressum</a>
+</div>
+</body>
 </html>

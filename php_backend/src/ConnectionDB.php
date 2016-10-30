@@ -13,7 +13,6 @@ class DBConnection {
 		$this->pdo = new PDO("mysql:host=$servername;dbname=$dbname", $username, $password);
 		$this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION, PDO::MYSQL_ATTR_USE_BUFFERED_QUERY);
 		$this->logger = $logger;
-		$this->logger->info("Database connnected");
 	}
 
 	public function handleData($ex, $obj, $obj_array){
@@ -116,6 +115,24 @@ class DBConnection {
 		$values = $values . "');";
 		$output = $output . $values;
 		return $output;
+	}
+
+	public function getDetectors($experiment){
+		try{
+	    	$query = $this->pdo->query("SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE';");
+		}catch(PDOException $e){
+			$this->logger->info("Error: " . $e->getMessage());
+		}
+		$columns = array();
+		if(count($query) == 0){
+			return $columns;
+		}
+		foreach($query as $q){
+			if(substr($q[0],0,strlen($experiment)) === $experiment){
+				$columns[] = split('[_]', $q[0])[2];
+			}
+		}
+		return $columns;
 	}
 
 	public function deleteStatement($table, $project, $version){
