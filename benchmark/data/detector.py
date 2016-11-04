@@ -28,9 +28,10 @@ class Detector:
 
     def specialize_findings(self, findings_path: str, findings: List[Finding]) -> List[SpecializedFinding]:
         findings = self._sort_findings(findings)
+        specialized_findings = []
         for finding in findings:
-            self._specialize_finding(findings_path, finding)
-        return findings
+            specialized_findings.append(self._specialize_finding(findings_path, finding))
+        return specialized_findings
 
     def _sort_findings(self, findings: List[Finding]) -> List[Finding]:
         findings = deepcopy(findings)
