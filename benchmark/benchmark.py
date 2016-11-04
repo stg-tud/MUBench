@@ -5,10 +5,10 @@ from datetime import datetime
 from os import listdir, makedirs
 from os.path import join, realpath, isdir, exists
 
-from benchmark.tasks.tasks.implementations import stats
-from benchmark.tasks.tasks.implementations.checkout import Checkout
-from benchmark.tasks.tasks.implementations.compile import Compile
-from benchmark.tasks.tasks.implementations.detect import Detect
+from benchmark.tasks.implementations import stats
+from benchmark.tasks.implementations.checkout import Checkout
+from benchmark.tasks.implementations.compile import Compile
+from benchmark.tasks.implementations.detect import Detect
 
 from benchmark.data.experiment import Experiment
 from benchmark.requirements import check_all_requirements
