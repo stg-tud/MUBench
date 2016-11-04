@@ -29,7 +29,7 @@ def get_command_line_parser(available_detectors: List[str], available_scripts: L
 
     subparsers = parser.add_subparsers(
         help="MUBench provides several tasks. Run `mubench <task> -h` for details.",
-        dest='subprocess')
+        dest='task')
 
     __add_check_subprocess(subparsers)
     __add_info_subprocess(subparsers)
@@ -56,27 +56,35 @@ def parse_args(args: List[str], available_detectors: List[str], available_script
 
 def __add_check_subprocess(subparsers) -> None:
     subparsers.add_parser('check', formatter_class=SortingHelpFormatter,
-                          help="Validate whether the environment meets the prerequisites to run MUBench.")  # type: ArgumentParser
+                          help="Validate whether the environment meets the prerequisites to run MUBench.",
+                          description="Validate whether the environment meets the prerequisites to run MUBench.")
 
 
 def __add_info_subprocess(subparsers) -> None:
     parser = subparsers.add_parser('info', formatter_class=SortingHelpFormatter,
-                          help="Show info about projects, project versions, and misuses in MUBench.")
+                                   help="Show info about projects, project versions, and misuses in MUBench.",
+                                   description="Show info about projects, project versions, and misuses in MUBench.")
     __setup_misuse_filter_arguments(parser)
 
 
 def __add_checkout_subprocess(subparsers) -> None:
     checkout_parser = subparsers.add_parser('checkout', formatter_class=SortingHelpFormatter,
-                                            description="Clone the repositories containing the misuses from the MUBench dataset. The clones will be created below the `checkouts` folder.",
-                                            help="Clone the repositories containing the misuses from the MUBench dataset. The clones will be created below the `checkouts` folder.")  # type: ArgumentParser
+                                            help="Clone the project versions with the misuses "
+                                                 "from the MUBench dataset.",
+                                            description="Clone the project versions with the misuses "
+                                                        "from the MUBench dataset.",
+                                            epilog="The clones will be created below `checkouts/`.")  # type: ArgumentParser
     __setup_misuse_filter_arguments(checkout_parser)
     __setup_checkout_arguments(checkout_parser)
 
 
 def __add_compile_subprocess(subparsers) -> None:
     compile_parser = subparsers.add_parser('compile', formatter_class=SortingHelpFormatter,
-                                           description="Compile the checkouts and the the patterns. Run `checkout`, if necessary.",
-                                           help="Compile the checkouts and the patterns. Run `checkout`, if necessary.")
+                                           help="Compile the projects and the patterns. "
+                                                "Run `checkout`, if necessary.",
+                                           description="Compile the projects and patterns. "
+                                                       "Run `checkout`, if necessary.",
+                                           epilog="Compilation data is store below `checkouts/`.")  # type: ArgumentParser
     __setup_misuse_filter_arguments(compile_parser)
     __setup_compile_arguments(compile_parser)
     __setup_checkout_arguments(compile_parser)
@@ -84,10 +92,10 @@ def __add_compile_subprocess(subparsers) -> None:
 
 def __add_detect_subprocess(available_detectors: List[str], subparsers) -> None:
     detect_parser = subparsers.add_parser('detect', formatter_class=SortingHelpFormatter,
-                                          description="Run a detector on the checkouts. Run `compile` before.",
-                                          help="Run a detector on the checkouts. Run `compile` before. " +
-                                               "Run `detect -h` to see a list of available detectors.",
-                                          epilog="The results are written to `results/<detector>/<misuse>/`.")  # type: ArgumentParser
+                                          help="Run a detector on the checkouts. Run `compile`, if necessary. ",
+                                          description="Run a detector on the checkouts. Run `compile`, if necessary. "
+                                                      "Run `detect -h` to see a list of available detectors.",
+                                          epilog="The findings are written to `findings/`.")  # type: ArgumentParser
     __setup_misuse_filter_arguments(detect_parser)
     __setup_detector_arguments(detect_parser, available_detectors)
     __setup_checkout_arguments(detect_parser)
@@ -108,7 +116,7 @@ def __setup_misuse_filter_arguments(parser: ArgumentParser):
                         help="process only projects or project versions whose names are given")
     parser.add_argument('--skip', metavar='Y', nargs='+', dest='black_list', default=[],
                         help="skip all projects or project versions whose names are given")
-    parser.add_argument('--dataset', metavar='DATASET', dest='dataset',
+    parser.add_argument('--dataset', metavar='DATASET', dest='dataset', default=None,
                         help="process only misuses in the specified data set")
 
 
@@ -128,9 +136,10 @@ def __setup_detector_arguments(parser: ArgumentParser, available_detectors: List
     parser.add_argument('experiment', help="configures the detector for the experiment", type=int,
                         choices=[1, 2, 3])
     parser.add_argument('--force-detect', dest='force_detect', action='store_true', default=False,
-                        help="force a new `detect` run, deleting the previous result")
+                        help="force a clean detection, deleting the any previous findings")
     parser.add_argument('--timeout', type=int, default=None, metavar='s',
-                        help="abort detection of a misuse after the provided number of seconds (if it needs to be run) and skip the misuse")
+                        help="abort detection after the provided number of seconds")
     parser.add_argument('--java-options', metavar='option', nargs='+', dest='java_options', default=[],
-                        help="will be passed to the java subprocess running the detector (example: `--java-options Xmx6144M` will run `java -Xmx6144M`)")
+                        help="pass options to the java subprocess running the detector "
+                             "(example: `--java-options Xmx4G` runs `java -Xmx4G`)")
 

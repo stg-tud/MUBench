@@ -98,21 +98,21 @@ class Benchmark:
             if detector in detectors else DummyDetector(self.DETECTORS_PATH)
 
     def run(self) -> None:
-        if config.subprocess == 'check':
+        if config.task == 'check':
             check_all_requirements()
             return
-        elif config.subprocess == 'info':
+        elif config.task == 'info':
             self._setup_info()
-        elif config.subprocess == 'checkout':
+        elif config.task == 'checkout':
             self._setup_checkout()
-        elif config.subprocess == 'compile':
+        elif config.task == 'compile':
             self._setup_checkout()
             self._setup_compile()
-        elif config.subprocess == 'detect':
+        elif config.task == 'detect':
             self._setup_checkout()
             self._setup_compile()
             self._setup_detect()
-        elif config.subprocess == 'stats':
+        elif config.task == 'stats':
             self._setup_stats()
 
         self.runner.run()

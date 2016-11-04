@@ -11,13 +11,13 @@ def test_invalid_mode():
 def test_mode_check():
     parser = get_command_line_parser([], [])
     result = parser.parse_args(['check'])
-    assert result.subprocess == 'check'
+    assert result.task == 'check'
 
 
 def test_checkout():
     parser = get_command_line_parser([], [])
     result = parser.parse_args(['checkout'])
-    assert result.subprocess == 'checkout'
+    assert result.task == 'checkout'
 
 
 def test_detect_fails_without_detector():
