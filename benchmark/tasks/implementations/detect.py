@@ -73,7 +73,7 @@ class Detect(ProjectVersionTask):
             return self.skip(version)
         elif run.is_success():
             logger.info("Successful previous %s. Skipping.", run)
-            return self.skip(version)
+            return self.ok()
         elif self.experiment.id == Experiment.PROVIDED_PATTERNS and not version.patterns:
             logger.info("No patterns to run with. Skipping.")
             return self.skip(version)
