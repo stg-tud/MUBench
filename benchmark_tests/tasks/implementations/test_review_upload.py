@@ -9,7 +9,7 @@ from benchmark.data.experiment import Experiment
 from benchmark.data.finding import SpecializedFinding
 from benchmark.data.findings_filters import PotentialHits
 from benchmark.data.run import Run
-from benchmark.tasks.implementations.review_upload import ReviewUpload, RequestData
+from benchmark.tasks.implementations.review_upload import ReviewUpload, ProjectVersionReviewData
 from benchmark.utils.io import remove_tree, create_file
 from benchmark_tests.data.test_misuse import create_misuse
 from benchmark_tests.test_utils.data_util import create_project, create_version
@@ -41,19 +41,19 @@ class TestReviewUpload:
         self.test_run = Run([MineAndDetectExecution(self.detector, self.version, self.findings_path,
                                                     PotentialHits(self.detector, self.misuse))])
         self.test_run.is_success = lambda: True
-        self.test_run.results = lambda: self.potential_hits
+        self.test_run.get_potential_hits = lambda: self.potential_hits
         self.experiment.get_run = lambda v: self.test_run
 
-        self.uut = ReviewUpload(self.experiment, self.dataset)
+        self.uut = ReviewUpload(self.experiment, self.dataset, "http://dummy.url")
 
-        self.post_url = None
-        self.post_data = None
-        self.post_files = None
+        self.last_post_url = None
+        self.last_post_data = None
+        self.Last_post_files = None
 
         def post_mock(url, data, files):
-            self.post_url = url
-            self.post_data = data
-            self.post_files = files
+            self.last_post_url = url
+            self.last_post_data = data
+            self.Last_post_files = files
 
         self.uut.post = post_mock
 
@@ -61,76 +61,74 @@ class TestReviewUpload:
         remove_tree(self.temp_dir)
 
     def test_creates_request_data(self):
-        self.uut.process_project_version_misuse(self.project, self.version, self.misuse)
+        self.uut.process_project_version(self.project, self.version)
+        self.uut.end()
 
-        actual_data = self.uut.data
+        actual_data = self.last_post_data
         assert_equals(1, len(actual_data))
 
     def test_request_contains_dataset(self):
-        self.uut.process_project_version_misuse(self.project, self.version, self.misuse)
+        self.uut.process_project_version(self.project, self.version)
+        self.uut.end()
 
-        actual = self.uut.data[0]
+        actual = self.last_post_data[0]
         assert_equals(TEST_DATASET, actual.dataset)
 
     def test_request_contains_detector_name(self):
-        self.uut.process_project_version_misuse(self.project, self.version, self.misuse)
+        self.uut.process_project_version(self.project, self.version)
+        self.uut.end()
 
-        actual = self.uut.data[0]
+        actual = self.last_post_data[0]
         assert_equals(self.detector.id, actual.detector_name)
 
     def test_request_contains_project_id(self):
-        self.uut.process_project_version_misuse(self.project, self.version, self.misuse)
+        self.uut.process_project_version(self.project, self.version)
+        self.uut.end()
 
-        actual = self.uut.data[0]
+        actual = self.last_post_data[0]
         assert_equals(TEST_PROJECT_ID, actual.project)
 
     def test_request_contains_version_id(self):
-        self.uut.process_project_version_misuse(self.project, self.version, self.misuse)
+        self.uut.process_project_version(self.project, self.version)
+        self.uut.end()
 
-        actual = self.uut.data[0]
+        actual = self.last_post_data[0]
         assert_equals(TEST_VERSION_ID, actual.version)
 
     def test_request_contains_potential_hits(self):
-        self.potential_hits = [{"id": "-1-", "misuse": "-p-.-m1-", "detector_specific": "-specific1-"},
-                               {"id": "-2-", "misuse": "-p-.-m2-", "detector_specific": "-specific2-"}]
+        self.potential_hits = [
+            SpecializedFinding({"id": "-1-", "misuse": "-p-.-m1-", "detector_specific": "-specific1-"}),
+            SpecializedFinding({"id": "-2-", "misuse": "-p-.-m2-", "detector_specific": "-specific2-"})
+        ]
 
-        self.uut.process_project_version_misuse(self.project, self.version, self.misuse)
+        self.uut.process_project_version(self.project, self.version)
+        self.uut.end()
 
-        actual = self.uut.data[0]
+        actual = self.last_post_data[0]
         assert_equals(self.potential_hits, actual.findings)
 
+    def test_nothing_to_upload(self):
+        self.uut.end()
+
+        assert_equals(self.last_post_url, None)  # == post was not invoked
+
     def test_post_url(self):
-        self.uut.data = [RequestData(TEST_DATASET, self.detector, self.project, self.version, [])]
-
+        self.uut.process_project_version(self.project, self.version)
         self.uut.end()
 
-        actual_url = self.post_url
-        assert_equals(actual_url, "/upload/ex1")
-
-    def test_post_data(self):
-        self.uut.data = [RequestData(TEST_DATASET, self.detector, self.project, self.version, [
-            SpecializedFinding({"id": "-1-", "detector_specific": "-specific-", "misuse": "-p-.-m-"})])]
-
-        self.uut.end()
-
-        actual_data = self.post_data
-        assert_equals(json.dumps([{"detector_name": self.detector.id, "dataset": TEST_DATASET,
-                                   "project": "-p-", "version": "-v-",
-                                   "findings": [
-                                       {"id": "-1-", "detector_specific": "-specific-",
-                                        "misuse": "-p-.-m-"}]}], sort_keys=True), actual_data)
+        actual_url = self.last_post_url
+        assert_equals(actual_url, "http://dummy.url/upload/ex1")
 
     def test_post_files(self):
-        files = ['-p-.-v-.overlap.png']
-        finding = SpecializedFinding({}, files)
-        test_data = RequestData(TEST_DATASET, self.detector, self.project, self.version,
-                                [finding])
-        self.uut.data = [test_data]
+        self.potential_hits = [
+            SpecializedFinding({"id": "-1-"}, files=["-file1-"]),
+            SpecializedFinding({"id": "-2-"}, files=["-file2-"])
+        ]
 
+        self.uut.process_project_version(self.project, self.version)
         self.uut.end()
 
-        actual_files = self.post_files
-        assert_equals(files, actual_files)
+        assert_equals(["-file1-", "-file2-"], self.Last_post_files)
 
 
 class TestRequestFileTuple:

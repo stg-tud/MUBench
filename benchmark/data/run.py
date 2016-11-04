@@ -14,7 +14,7 @@ class Run:
         for execution in self.executions:
             execution.execute(compile_base_path, timeout, logger)
 
-    def results(self) -> List[SpecializedFinding]:
+    def get_potential_hits(self) -> List[SpecializedFinding]:
         potential_hits = []
         for execution in self.executions:
             potential_hits.extend(execution.potential_hits)
