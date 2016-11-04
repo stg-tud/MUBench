@@ -44,3 +44,11 @@ class Experiment:
 
     def get_review_path(self, version: ProjectVersion, misuse: Misuse = None):
         return join(self.reviews_path, self.get_review_dir(version, misuse))
+
+    def __str__(self):
+        if self.id == Experiment.PROVIDED_PATTERNS:
+            return "experiment 1 (provided patterns)"
+        elif self.id == Experiment.TOP_FINDINGS:
+            return "experiment 2 (top findings)"
+        elif self.id == Experiment.BENCHMARK:
+            return "experiment 3 (benchmark)"

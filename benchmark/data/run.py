@@ -29,7 +29,7 @@ class Run:
             execution.reset()
 
     def __str__(self):
-        return "run on {}".format(", ".join([str(e) for e in self.executions]))
+        return "run on {}".format(self.executions[0].version)
 
     def is_success(self):
         return self.executions and all([execution.is_success() for execution in self.executions])
