@@ -4,8 +4,8 @@ from unittest.mock import MagicMock, call
 
 from nose.tools import assert_equals, assert_raises
 
-from benchmark.subprocesses.tasking import TaskRunner
 from benchmark.subprocesses.tasks.base.project_task import ProjectTask, Requirement
+from benchmark.task_runner import TaskRunner
 from benchmark.utils.io import remove_tree, create_file
 from benchmark_tests.test_utils.data_util import create_project
 

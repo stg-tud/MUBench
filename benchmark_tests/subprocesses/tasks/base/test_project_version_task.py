@@ -3,8 +3,7 @@ from unittest.mock import MagicMock, call
 from nose.tools import assert_equals
 
 from benchmark.subprocesses.tasks.base.project_version_task import ProjectVersionTask
-from benchmark_tests.subprocesses.test_taskrunner import create_project
-from benchmark_tests.test_utils.data_util import create_version, create_misuse
+from benchmark_tests.test_utils.data_util import create_version, create_misuse, create_project
 
 
 class TestProjectVersionTask:

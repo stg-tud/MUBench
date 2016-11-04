@@ -7,12 +7,12 @@ from os.path import join, realpath, isdir, exists
 
 from benchmark.data.experiment import Experiment
 from benchmark.subprocesses.requirements import check_all_requirements
-from benchmark.subprocesses.tasking import TaskRunner
 from benchmark.subprocesses.tasks.implementations import stats
 from benchmark.subprocesses.tasks.implementations.checkout import Checkout
 from benchmark.subprocesses.tasks.implementations.compile import Compile
 from benchmark.subprocesses.tasks.implementations.detect import Detect
 from benchmark.subprocesses.tasks.implementations.info import Info
+from benchmark.task_runner import TaskRunner
 from benchmark.utils import command_line_util
 from benchmark.utils.dataset_util import get_white_list
 from benchmark.utils.logging import IndentFormatter
