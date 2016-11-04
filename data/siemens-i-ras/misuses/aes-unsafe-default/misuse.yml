@@ -1,0 +1,20 @@
+api:
+- javax.crypto
+characteristics:
+- missing/condition/value_or_state
+crash: false
+description: >
+  Using "AES" in Cipher.getInstance defaults to "AES/EBC/PKCS5Padding".
+  The mode "EBC" is unsafe, hence the default "AES" should not be used.
+location:
+  file: Encrypting.java
+  method: encrypt(byte[], byte[])
+fix:
+  description: >
+    Use "AES/CBC/PKCS5Padding" since "CBC" is safe.
+internal: false
+pattern:
+- single object
+source:
+  name: Analyse der Verwendung von Kryptographie-APIs in Java-basierten Anwendungen
+
