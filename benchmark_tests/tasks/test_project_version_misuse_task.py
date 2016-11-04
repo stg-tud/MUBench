@@ -2,7 +2,7 @@ from unittest.mock import MagicMock, call
 
 from nose.tools import assert_equals
 
-from benchmark.subprocesses.tasks.base.project_version_misuse_task import ProjectVersionMisuseTask
+from benchmark.tasks.project_version_misuse_task import ProjectVersionMisuseTask
 from benchmark_tests.test_utils.data_util import create_misuse, create_version, create_project
 
 

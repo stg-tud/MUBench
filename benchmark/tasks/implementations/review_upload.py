@@ -13,7 +13,7 @@ from benchmark.data.misuse import Misuse
 from benchmark.data.project import Project
 from benchmark.data.project_version import ProjectVersion
 from benchmark.requirements import RequestsRequirement
-from benchmark.subprocesses.tasks.base.project_version_misuse_task import ProjectVersionMisuseTask
+from benchmark.tasks.project_version_misuse_task import ProjectVersionMisuseTask
 
 
 class RequestData:

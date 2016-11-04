@@ -4,7 +4,7 @@ from unittest.mock import MagicMock
 from nose.tools import assert_equals
 
 from benchmark.data.project_checkout import ProjectCheckout
-from benchmark.subprocesses.tasks.implementations.checkout import Checkout
+from benchmark.tasks.implementations.checkout import Checkout
 from benchmark.utils.shell import CommandFailedError
 from benchmark_tests.test_utils.data_util import create_project, create_version
 

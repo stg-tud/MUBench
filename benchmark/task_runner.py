@@ -6,7 +6,7 @@ from typing import List
 
 from benchmark.data.project import Project
 from benchmark.requirements import are_satisfied
-from benchmark.subprocesses.tasks.base.project_task import ProjectTask
+from benchmark.tasks.project_task import ProjectTask
 
 
 class TaskRunner:

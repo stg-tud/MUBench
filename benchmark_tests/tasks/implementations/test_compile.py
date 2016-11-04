@@ -3,13 +3,13 @@ from os import makedirs
 from os.path import join, exists, dirname, relpath
 from shutil import rmtree
 from tempfile import mkdtemp
+from typing import List
 from unittest.mock import MagicMock
 
 from nose.tools import assert_equals
-from typing import List
 
 from benchmark.data.pattern import Pattern
-from benchmark.subprocesses.tasks.implementations.compile import Compile
+from benchmark.tasks.implementations.compile import Compile
 from benchmark.utils.io import create_file
 from benchmark.utils.shell import CommandFailedError
 from benchmark_tests.test_utils.data_util import create_version, create_project, create_misuse

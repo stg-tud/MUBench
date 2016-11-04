@@ -1,7 +1,7 @@
 import logging
 from typing import List
 
-from benchmark.subprocesses.tasks.base.project_task import Requirement
+from benchmark.tasks.project_task import Requirement
 from benchmark.utils.shell import Shell
 
 

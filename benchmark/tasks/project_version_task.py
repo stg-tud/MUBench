@@ -1,10 +1,9 @@
 import logging
-
 from typing import List
 
 from benchmark.data.project import Project
 from benchmark.data.project_version import ProjectVersion
-from benchmark.subprocesses.tasks.base.project_task import ProjectTask
+from benchmark.tasks.project_task import ProjectTask
 
 
 class ProjectVersionTask(ProjectTask):

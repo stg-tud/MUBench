@@ -9,7 +9,7 @@ from benchmark.data.project import Project
 from benchmark.data.project_compile import ProjectCompile
 from benchmark.data.project_version import ProjectVersion
 from benchmark.requirements import JavaRequirement, MavenRequirement, GradleRequirement
-from benchmark.subprocesses.tasks.base.project_version_task import ProjectVersionTask
+from benchmark.tasks.project_version_task import ProjectVersionTask
 from benchmark.utils.io import remove_tree, copy_tree
 from benchmark.utils.shell import Shell, CommandFailedError
 

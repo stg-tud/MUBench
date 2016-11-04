@@ -10,7 +10,7 @@ from benchmark.data.detector_execution import MineAndDetectExecution
 from benchmark.data.experiment import Experiment
 from benchmark.data.findings_filters import AllFindings
 from benchmark.data.run import Run
-from benchmark.subprocesses.tasks.implementations.detect import Detect
+from benchmark.tasks.implementations.detect import Detect
 from benchmark_tests.test_utils.data_util import create_project, create_version
 from detectors.dummy.dummy import DummyDetector
 
