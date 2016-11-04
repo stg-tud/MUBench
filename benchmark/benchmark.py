@@ -7,7 +7,6 @@ from os.path import join, realpath, isdir, exists
 
 from benchmark.data.experiment import Experiment
 from benchmark.subprocesses.requirements import check_all_requirements
-from benchmark.subprocesses.result_processing.visualize_results import Visualizer
 from benchmark.subprocesses.tasking import TaskRunner
 from benchmark.subprocesses.tasks.implementations import stats
 from benchmark.subprocesses.tasks.implementations.checkout import Checkout
@@ -50,11 +49,6 @@ class Benchmark:
             white_list.extend(get_white_list(join(self.DATASETS_FILE_PATH), config.dataset))
 
         self.runner = TaskRunner(Benchmark.DATA_PATH, white_list, black_list)
-
-    def _run_visualize(self) -> None:
-        visualizer = Visualizer(Benchmark.FINDINGS_PATH, self.reviewed_eval_result_file, self.visualize_result_file,
-                                Benchmark.DATA_PATH)
-        visualizer.create()
 
     def _setup_stats(self) -> None:
         stats_calculator = stats.get_calculator(self.config.script)
@@ -103,10 +97,7 @@ class Benchmark:
             if detector in detectors else DummyDetector(self.DETECTORS_PATH)
 
     def run(self) -> None:
-        if config.subprocess == 'visualize':
-            self._run_visualize()
-            return
-        elif config.subprocess == 'check':
+        if config.subprocess == 'check':
             check_all_requirements()
             return
         elif config.subprocess == 'info':
