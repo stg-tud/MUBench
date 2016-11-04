@@ -2,14 +2,13 @@ import logging
 import shutil
 from os import makedirs
 from os.path import join, exists, dirname
-
 from typing import List, Set
 
 from benchmark.data.misuse import Pattern, Misuse
 from benchmark.data.project import Project
 from benchmark.data.project_compile import ProjectCompile
 from benchmark.data.project_version import ProjectVersion
-from benchmark.subprocesses.requirements import JavaRequirement, MavenRequirement, GradleRequirement
+from benchmark.requirements import JavaRequirement, MavenRequirement, GradleRequirement
 from benchmark.subprocesses.tasks.base.project_version_task import ProjectVersionTask
 from benchmark.utils.io import remove_tree, copy_tree
 from benchmark.utils.shell import Shell, CommandFailedError

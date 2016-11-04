@@ -1,10 +1,10 @@
 import json
 import logging
 from os.path import join, basename
-
-import requests
 from typing import List
 from typing import Tuple, IO
+
+import requests
 
 from benchmark.data.detector import Detector
 from benchmark.data.experiment import Experiment
@@ -12,7 +12,7 @@ from benchmark.data.finding import SpecializedFinding
 from benchmark.data.misuse import Misuse
 from benchmark.data.project import Project
 from benchmark.data.project_version import ProjectVersion
-from benchmark.subprocesses.requirements import RequestsRequirement
+from benchmark.requirements import RequestsRequirement
 from benchmark.subprocesses.tasks.base.project_version_misuse_task import ProjectVersionMisuseTask
 
 

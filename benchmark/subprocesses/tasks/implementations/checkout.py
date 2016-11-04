@@ -1,10 +1,9 @@
 import logging
-
 from typing import List
 
 from benchmark.data.project import Project
 from benchmark.data.project_version import ProjectVersion
-from benchmark.subprocesses.requirements import GitRequirement, SVNRequirement
+from benchmark.requirements import GitRequirement, SVNRequirement
 from benchmark.subprocesses.tasks.base.project_version_task import ProjectVersionTask
 from benchmark.utils.shell import CommandFailedError
 

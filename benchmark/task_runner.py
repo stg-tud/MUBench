@@ -2,11 +2,10 @@ import logging
 from datetime import datetime
 from os import listdir
 from os.path import exists, join
-
 from typing import List
 
 from benchmark.data.project import Project
-from benchmark.subprocesses.requirements import are_satisfied
+from benchmark.requirements import are_satisfied
 from benchmark.subprocesses.tasks.base.project_task import ProjectTask
 
 

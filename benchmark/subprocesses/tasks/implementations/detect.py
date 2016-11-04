@@ -6,7 +6,7 @@ from urllib.error import URLError
 from benchmark.data.experiment import Experiment
 from benchmark.data.project import Project
 from benchmark.data.project_version import ProjectVersion
-from benchmark.subprocesses.requirements import JavaRequirement
+from benchmark.requirements import JavaRequirement
 from benchmark.subprocesses.tasks.base.project_version_task import ProjectVersionTask
 from benchmark.utils.web_util import download_file
 

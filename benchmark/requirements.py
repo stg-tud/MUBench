@@ -1,6 +1,4 @@
-import inspect
 import logging
-import sys
 from typing import List
 
 from benchmark.subprocesses.tasks.base.project_task import Requirement
@@ -40,7 +38,7 @@ class PyYamlRequirement(Requirement):
         super().__init__("PyYaml")
 
     def check(self):
-        import yaml
+        pass
 
 
 class GitRequirement(Requirement):
@@ -96,4 +94,4 @@ class RequestsRequirement(Requirement):
         super().__init__("requests 2.11.1")
 
     def check(self):
-        import requests
+        pass

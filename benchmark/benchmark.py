@@ -6,7 +6,7 @@ from os import listdir, makedirs
 from os.path import join, realpath, isdir, exists
 
 from benchmark.data.experiment import Experiment
-from benchmark.subprocesses.requirements import check_all_requirements
+from benchmark.requirements import check_all_requirements
 from benchmark.subprocesses.tasks.implementations import stats
 from benchmark.subprocesses.tasks.implementations.checkout import Checkout
 from benchmark.subprocesses.tasks.implementations.compile import Compile
