@@ -10,23 +10,22 @@ import requests
 from benchmark.data.detector import Detector
 from benchmark.data.experiment import Experiment
 from benchmark.data.finding import SpecializedFinding
-from benchmark.data.misuse import Misuse
 from benchmark.data.project import Project
 from benchmark.data.project_version import ProjectVersion
 from benchmark.requirements import RequestsRequirement
-from benchmark.tasks.project_version_misuse_task import ProjectVersionMisuseTask
 from benchmark.tasks.project_version_task import ProjectVersionTask
 
 
 class ProjectVersionReviewData:
     def __init__(self, dataset: str, detector: Detector, project: Project, version: ProjectVersion,
-                 findings: List[SpecializedFinding]):
+                 number_of_findings: int, potential_hits: List[SpecializedFinding]):
         super().__init__()
+        self.dataset = dataset
         self.detector_name = detector.id
         self.project = project.id
         self.version = version.version_id
-        self.dataset = dataset
-        self.findings = findings
+        self.number_of_findings = number_of_findings
+        self.findings = potential_hits
 
 
 class ReviewUpload(ProjectVersionTask):
@@ -56,11 +55,12 @@ class ReviewUpload(ProjectVersionTask):
             return self.skip(version)
 
         logger.info("Preparing findings in %s...", version)
+        number_of_findings = len(detector_run.get_findings())
         potential_hits = detector_run.get_potential_hits()
 
         logger.info("Found %s potential hits.", len(potential_hits))
         self.__review_data.append(
-            ProjectVersionReviewData(self.dataset, self.detector, project, version, potential_hits))
+            ProjectVersionReviewData(self.dataset, self.detector, project, version, number_of_findings, potential_hits))
 
         return self.ok()
 

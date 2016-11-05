@@ -1,6 +1,7 @@
 import json
 from os.path import join
 from tempfile import mkdtemp
+from unittest.mock import MagicMock
 
 from nose.tools import assert_equals
 
@@ -94,6 +95,15 @@ class TestReviewUpload:
 
         actual = self.last_post_data[0]
         assert_equals(TEST_VERSION_ID, actual.version)
+
+    def test_request_contains_total_number_of_findings(self):
+        self.test_run.get_findings = MagicMock(return_value=[1, 2, 3, 4])
+
+        self.uut.process_project_version(self.project, self.version)
+        self.uut.end()
+
+        actual = self.last_post_data[0]
+        assert_equals(4, actual.number_of_findings)
 
     def test_request_contains_potential_hits(self):
         self.potential_hits = [
