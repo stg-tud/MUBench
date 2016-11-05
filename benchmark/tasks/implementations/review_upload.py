@@ -71,6 +71,9 @@ class ReviewUpload(ProjectVersionTask):
             elif detector_run.is_timeout():
                 logger.info("Run on %s timed out.", version)
                 result = "timeout"
+            else:
+                logger.info("Not run on %s.", version)
+                result = "not run"
 
         self.__review_data.append(ProjectVersionReviewData(self.dataset, self.detector, project, version,
                                   result, runtime, number_of_findings, potential_hits))

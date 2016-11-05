@@ -147,6 +147,15 @@ class TestReviewUpload:
         actual = self.last_post_data[0]
         assert_equals("timeout", actual.result)
 
+    def test_request_contains_result_not_run(self):
+        self.test_run.is_success = lambda: False
+
+        self.uut.process_project_version(self.project, self.version)
+        self.uut.end()
+
+        actual = self.last_post_data[0]
+        assert_equals("not run", actual.result)
+
     def test_nothing_to_upload(self):
         self.uut.end()
 
