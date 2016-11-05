@@ -39,8 +39,10 @@ class TestReviewUpload:
         self.detector = DummyDetector(join(self.temp_dir, "detectors"))
         self.experiment = Experiment(Experiment.PROVIDED_PATTERNS, self.detector, self.findings_path,
                                      join(self.temp_dir, "reviews"))
-        self.test_run = Run([MineAndDetectExecution(self.detector, self.version, self.findings_path,
-                                                    PotentialHits(self.detector, self.misuse))])
+        execution = MineAndDetectExecution(self.detector, self.version, self.findings_path,
+                                           PotentialHits(self.detector, self.misuse))
+        execution.runtime = 42
+        self.test_run = Run([execution])
         self.test_run.is_success = lambda: True
         self.test_run.get_potential_hits = lambda: self.potential_hits
         self.experiment.get_run = lambda v: self.test_run
@@ -104,6 +106,15 @@ class TestReviewUpload:
 
         actual = self.last_post_data[0]
         assert_equals(4, actual.number_of_findings)
+
+    def test_request_contains_runtime(self):
+        self.test_run.get_runtime = MagicMock(return_value=42)
+
+        self.uut.process_project_version(self.project, self.version)
+        self.uut.end()
+
+        actual = self.last_post_data[0]
+        assert_equals(42, actual.runtime)
 
     def test_request_contains_potential_hits(self):
         self.potential_hits = [

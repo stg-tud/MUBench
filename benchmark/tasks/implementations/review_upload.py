@@ -18,12 +18,13 @@ from benchmark.tasks.project_version_task import ProjectVersionTask
 
 class ProjectVersionReviewData:
     def __init__(self, dataset: str, detector: Detector, project: Project, version: ProjectVersion,
-                 number_of_findings: int, potential_hits: List[SpecializedFinding]):
+                 runtime: float, number_of_findings: int, potential_hits: List[SpecializedFinding]):
         super().__init__()
         self.dataset = dataset
         self.detector_name = detector.id
         self.project = project.id
         self.version = version.version_id
+        self.runtime = runtime
         self.number_of_findings = number_of_findings
         self.findings = potential_hits
 
@@ -55,12 +56,14 @@ class ReviewUpload(ProjectVersionTask):
             return self.skip(version)
 
         logger.info("Preparing findings in %s...", version)
+        runtime = detector_run.get_runtime()
         number_of_findings = len(detector_run.get_findings())
         potential_hits = detector_run.get_potential_hits()
 
         logger.info("Found %s potential hits.", len(potential_hits))
         self.__review_data.append(
-            ProjectVersionReviewData(self.dataset, self.detector, project, version, number_of_findings, potential_hits))
+            ProjectVersionReviewData(self.dataset, self.detector, project, version,
+                                     runtime, number_of_findings, potential_hits))
 
         return self.ok()
 
