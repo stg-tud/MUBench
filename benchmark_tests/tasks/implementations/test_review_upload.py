@@ -98,6 +98,13 @@ class TestReviewUpload:
         actual = self.last_post_data[0]
         assert_equals(TEST_VERSION_ID, actual.version)
 
+    def test_request_contains_result_success(self):
+        self.uut.process_project_version(self.project, self.version)
+        self.uut.end()
+
+        actual = self.last_post_data[0]
+        assert_equals("success", actual.result)
+
     def test_request_contains_total_number_of_findings(self):
         self.test_run.get_findings = MagicMock(return_value=[1, 2, 3, 4])
 
