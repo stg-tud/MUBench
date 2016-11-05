@@ -25,21 +25,16 @@ TEST_MISUSE_ID = "-m-"
 # noinspection PyAttributeOutsideInit
 class TestReviewUpload:
     def setup(self):
-        self.temp_dir = mkdtemp(prefix="mubench_test-review-prepare")
-
-        self.findings_path = join(self.temp_dir, "findings")
         self.dataset = TEST_DATASET
-
         self.project = create_project(TEST_PROJECT_ID)
         self.misuse = create_misuse(TEST_MISUSE_ID, project=self.project)
         self.version = create_version(TEST_VERSION_ID, project=self.project, misuses=[self.misuse])
 
         self.potential_hits = []
 
-        self.detector = DummyDetector(join(self.temp_dir, "detectors"))
-        self.experiment = Experiment(Experiment.PROVIDED_PATTERNS, self.detector, self.findings_path,
-                                     join(self.temp_dir, "reviews"))
-        execution = MineAndDetectExecution(self.detector, self.version, self.findings_path,
+        self.detector = DummyDetector("-detectors-path-")
+        self.experiment = Experiment(Experiment.PROVIDED_PATTERNS, self.detector, "-findings-path-", "-reviews-path-")
+        execution = MineAndDetectExecution(self.detector, self.version, "-findings-path-",
                                            PotentialHits(self.detector, self.misuse))
         execution.runtime = 42
         self.test_run = Run([execution])
@@ -59,9 +54,6 @@ class TestReviewUpload:
             self.Last_post_files = files
 
         self.uut.post = post_mock
-
-    def teardown(self):
-        remove_tree(self.temp_dir)
 
     def test_creates_request_data(self):
         self.uut.process_project_version(self.project, self.version)
