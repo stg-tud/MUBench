@@ -26,6 +26,12 @@ class Run:
             findings.extend(execution.findings)
         return findings
 
+    def get_runtime(self):
+        runtime = 0
+        for execution in self.executions:
+            runtime += execution.runtime
+        return runtime / len(self.executions)
+
     def save(self):
         for execution in self.executions:
             execution.save()

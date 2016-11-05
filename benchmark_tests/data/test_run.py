@@ -85,3 +85,14 @@ class TestRun:
 
         assert_equals(potential_hits, ["finding1", "finding2", "finding3"])
 
+    def test_get_runtime(self):
+        execution1 = MagicMock()
+        execution1.runtime = 10
+        execution2 = MagicMock()
+        execution2.runtime = 5
+        run = Run([execution1, execution2])
+
+        runtime = run.get_runtime()
+
+        assert_equals(runtime, 7.5)
+
