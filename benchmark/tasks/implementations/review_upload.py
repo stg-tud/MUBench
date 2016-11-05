@@ -27,7 +27,7 @@ class ProjectVersionReviewData:
         self.result = result
         self.runtime = runtime
         self.number_of_findings = number_of_findings
-        self.findings = potential_hits
+        self.potential_hits = potential_hits
 
 
 class ReviewUpload(ProjectVersionTask):
@@ -93,7 +93,7 @@ class ReviewUpload(ProjectVersionTask):
     def get_file_paths(review_data: List[ProjectVersionReviewData]) -> List[str]:
         files = []
         for version_review_data in review_data:
-            for finding in version_review_data.findings:
+            for finding in version_review_data.potential_hits:
                 files.extend(finding.files)
         return files
 

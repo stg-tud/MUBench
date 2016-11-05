@@ -125,7 +125,7 @@ class TestReviewUpload:
         self.uut.end()
 
         actual = self.last_post_data[0]
-        assert_equals(self.potential_hits, actual.findings)
+        assert_equals(self.potential_hits, actual.potential_hits)
 
     def test_request_contains_result_error(self):
         self.test_run.is_success = lambda: False
