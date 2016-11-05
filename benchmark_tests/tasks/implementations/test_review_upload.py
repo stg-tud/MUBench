@@ -97,7 +97,7 @@ class TestReviewUpload:
         actual = self.last_post_data[0]
         assert_equals("success", actual.result)
 
-    def test_request_contains_total_number_of_findings(self):
+    def test_request_contains_total_number_of_findings_from_successful_run(self):
         self.test_run.get_findings = MagicMock(return_value=[1, 2, 3, 4])
 
         self.uut.process_project_version(self.project, self.version)
@@ -106,7 +106,7 @@ class TestReviewUpload:
         actual = self.last_post_data[0]
         assert_equals(4, actual.number_of_findings)
 
-    def test_request_contains_runtime(self):
+    def test_request_contains_runtime_for_successful_run(self):
         self.test_run.get_runtime = MagicMock(return_value=42)
 
         self.uut.process_project_version(self.project, self.version)
@@ -115,7 +115,7 @@ class TestReviewUpload:
         actual = self.last_post_data[0]
         assert_equals(42, actual.runtime)
 
-    def test_request_contains_potential_hits(self):
+    def test_request_contains_potential_hits_of_successful_run(self):
         self.potential_hits = [
             SpecializedFinding({"id": "-1-", "misuse": "-p-.-m1-", "detector_specific": "-specific1-"}),
             SpecializedFinding({"id": "-2-", "misuse": "-p-.-m2-", "detector_specific": "-specific2-"})
