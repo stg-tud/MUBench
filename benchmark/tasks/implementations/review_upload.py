@@ -51,20 +51,26 @@ class ReviewUpload(ProjectVersionTask):
         logger = self.logger.getChild("version")
 
         detector_run = self.experiment.get_run(version)
-
-        if not detector_run.is_success():
-            logger.info("Skipping %s: no result.", version)
-            return self.skip(version)
-
-        logger.info("Preparing findings in %s...", version)
         runtime = detector_run.get_runtime()
-        number_of_findings = len(detector_run.get_findings())
-        potential_hits = detector_run.get_potential_hits()
 
-        logger.info("Found %s potential hits.", len(potential_hits))
-        self.__review_data.append(
-            ProjectVersionReviewData(self.dataset, self.detector, project, version,
-                                     "success", runtime, number_of_findings, potential_hits))
+        if detector_run.is_success():
+            logger.info("Preparing findings in %s...", version)
+
+            result = "success"
+            number_of_findings = len(detector_run.get_findings())
+            potential_hits = detector_run.get_potential_hits()
+
+            logger.info("Found %s potential hits.", len(potential_hits))
+        else:
+            number_of_findings = 0
+            potential_hits = []
+
+            if detector_run.is_error():
+                logger.info("Run on %s produced an error.", version)
+                result = "error"
+
+        self.__review_data.append(ProjectVersionReviewData(self.dataset, self.detector, project, version,
+                                  result, runtime, number_of_findings, potential_hits))
 
         return self.ok()
 
