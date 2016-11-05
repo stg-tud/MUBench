@@ -74,4 +74,14 @@ class TestRun:
 
         assert_equals(potential_hits, ["finding1", "finding2", "finding3"])
 
+    def test_get_findings(self):
+        execution1 = MagicMock()
+        execution1.findings = ["finding1", "finding2"]
+        execution2 = MagicMock()
+        execution2.findings = ["finding3"]
+        run = Run([execution1, execution2])
+
+        potential_hits = run.get_findings()
+
+        assert_equals(potential_hits, ["finding1", "finding2", "finding3"])
 

@@ -2,7 +2,7 @@ from logging import Logger
 
 from typing import List, Optional
 
-from benchmark.data.finding import SpecializedFinding
+from benchmark.data.finding import SpecializedFinding, Finding
 from benchmark.data.detector_execution import DetectorExecution
 
 
@@ -19,6 +19,12 @@ class Run:
         for execution in self.executions:
             potential_hits.extend(execution.potential_hits)
         return potential_hits
+
+    def get_findings(self) -> List[Finding]:
+        findings = []
+        for execution in self.executions:
+            findings.extend(execution.findings)
+        return findings
 
     def save(self):
         for execution in self.executions:
