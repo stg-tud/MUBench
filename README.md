@@ -133,6 +133,7 @@ fix:
 ## Setup Mubench Webserver
 
 Requirements: php5.6, mysql5.6
+
 PHP Extensions: php5.6xml, php5.6mbstring
 
 1. Run the `docker run --rm -v "PATH/TO/php_backend":/mubench svamann/mubench-ci composer install` in the php_backend directory

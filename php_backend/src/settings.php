@@ -29,5 +29,11 @@ return [
         "title" => "Mine and Detect",
         "id" => "3"
         ]
+    ],
+    'db' => [
+        'user' => 'root',
+        'password' => 'mubench',
+        'url' => 'localhost',
+        'name' => 'mubench'
     ]
 ];
