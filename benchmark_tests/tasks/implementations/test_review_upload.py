@@ -1,16 +1,13 @@
-import json
 from os.path import join
 from tempfile import mkdtemp
 from unittest.mock import MagicMock
 
 from nose.tools import assert_equals
 
-from benchmark.data.detector_execution import MineAndDetectExecution
 from benchmark.data.experiment import Experiment
 from benchmark.data.finding import SpecializedFinding
-from benchmark.data.findings_filters import PotentialHits
 from benchmark.data.run import Run
-from benchmark.tasks.implementations.review_upload import ReviewUpload, ProjectVersionReviewData
+from benchmark.tasks.implementations.review_upload import ReviewUpload
 from benchmark.utils.io import remove_tree, create_file
 from benchmark_tests.data.test_misuse import create_misuse
 from benchmark_tests.test_utils.data_util import create_project, create_version
@@ -30,131 +27,117 @@ class TestReviewUpload:
         self.misuse = create_misuse(TEST_MISUSE_ID, project=self.project)
         self.version = create_version(TEST_VERSION_ID, project=self.project, misuses=[self.misuse])
 
-        self.potential_hits = []
-
         self.detector = DummyDetector("-detectors-path-")
         self.experiment = Experiment(Experiment.PROVIDED_PATTERNS, self.detector, "-findings-path-", "-reviews-path-")
-        execution = MineAndDetectExecution(self.detector, self.version, "-findings-path-",
-                                           PotentialHits(self.detector, self.misuse))
-        execution.runtime = 42
-        self.test_run = Run([execution])
-        self.test_run.is_success = lambda: True
-        self.test_run.get_potential_hits = lambda: self.potential_hits
+        self.test_run = Run([MagicMock()])
+        self.test_run.is_success = lambda: False
+        self.test_run.is_error = lambda: False
+        self.test_run.is_timeout = lambda: False
         self.experiment.get_run = lambda v: self.test_run
 
         self.uut = ReviewUpload(self.experiment, self.dataset, "http://dummy.url")
 
         self.last_post_url = None
         self.last_post_data = None
-        self.Last_post_files = None
+        self.last_post_files = None
 
         def post_mock(url, data, files):
             self.last_post_url = url
             self.last_post_data = data
-            self.Last_post_files = files
+            self.last_post_files = files
 
         self.uut.post = post_mock
 
-    def test_creates_request_data(self):
-        self.uut.process_project_version(self.project, self.version)
-        self.uut.end()
-
-        actual_data = self.last_post_data
-        assert_equals(1, len(actual_data))
-
-    def test_request_contains_dataset(self):
-        self.uut.process_project_version(self.project, self.version)
-        self.uut.end()
-
-        actual = self.last_post_data[0]
-        assert_equals(TEST_DATASET, actual.dataset)
-
-    def test_request_contains_detector_name(self):
-        self.uut.process_project_version(self.project, self.version)
-        self.uut.end()
-
-        actual = self.last_post_data[0]
-        assert_equals(self.detector.id, actual.detector_name)
-
-    def test_request_contains_project_id(self):
-        self.uut.process_project_version(self.project, self.version)
-        self.uut.end()
-
-        actual = self.last_post_data[0]
-        assert_equals(TEST_PROJECT_ID, actual.project)
-
-    def test_request_contains_version_id(self):
-        self.uut.process_project_version(self.project, self.version)
-        self.uut.end()
-
-        actual = self.last_post_data[0]
-        assert_equals(TEST_VERSION_ID, actual.version)
-
-    def test_request_contains_result_success(self):
-        self.uut.process_project_version(self.project, self.version)
-        self.uut.end()
-
-        actual = self.last_post_data[0]
-        assert_equals("success", actual.result)
-
-    def test_request_contains_total_number_of_findings_from_successful_run(self):
-        self.test_run.get_findings = MagicMock(return_value=[1, 2, 3, 4])
-
-        self.uut.process_project_version(self.project, self.version)
-        self.uut.end()
-
-        actual = self.last_post_data[0]
-        assert_equals(4, actual.number_of_findings)
-
-    def test_request_contains_runtime_for_successful_run(self):
-        self.test_run.get_runtime = MagicMock(return_value=42)
-
-        self.uut.process_project_version(self.project, self.version)
-        self.uut.end()
-
-        actual = self.last_post_data[0]
-        assert_equals(42, actual.runtime)
-
-    def test_request_contains_potential_hits_of_successful_run(self):
-        self.potential_hits = [
+    def test_upload_successful_run(self):
+        self.test_run.is_success = lambda: True
+        self.test_run.get_runtime = lambda: 42
+        findings = [
             SpecializedFinding({"id": "-1-", "misuse": "-p-.-m1-", "detector_specific": "-specific1-"}),
             SpecializedFinding({"id": "-2-", "misuse": "-p-.-m2-", "detector_specific": "-specific2-"})
+        ]
+        self.test_run.get_findings = lambda: findings
+        potential_hits = findings[:1]
+        self.test_run.get_potential_hits = lambda: potential_hits
+
+        self.uut.process_project_version(self.project, self.version)
+        self.uut.end()
+
+        assert_equals([{
+            "dataset": TEST_DATASET,
+            "detector": self.detector.id,
+            "project": TEST_PROJECT_ID,
+            "version": TEST_VERSION_ID,
+            "result": "success",
+            "runtime": 42.0,
+            "number_of_findings": 2,
+            "potential_hits": potential_hits
+        }], self.last_post_data)
+
+    def test_uploads_files(self):
+        self.test_run.is_success = lambda: True
+
+        self.test_run.get_potential_hits = lambda: [
+            SpecializedFinding({"id": "-1-"}, files=["-file1-"]),
+            SpecializedFinding({"id": "-2-"}, files=["-file2-"])
         ]
 
         self.uut.process_project_version(self.project, self.version)
         self.uut.end()
 
-        actual = self.last_post_data[0]
-        assert_equals(self.potential_hits, actual.potential_hits)
+        assert_equals(self.last_post_files, ["-file1-", "-file2-"])
 
-    def test_request_contains_result_error(self):
-        self.test_run.is_success = lambda: False
+    def test_upload_error_run(self):
         self.test_run.is_error = lambda: True
+        self.test_run.get_runtime = lambda: 1337
 
         self.uut.process_project_version(self.project, self.version)
         self.uut.end()
 
-        actual = self.last_post_data[0]
-        assert_equals("error", actual.result)
+        assert_equals([{
+            "dataset": TEST_DATASET,
+            "detector": self.detector.id,
+            "project": TEST_PROJECT_ID,
+            "version": TEST_VERSION_ID,
+            "result": "error",
+            "runtime": 1337,
+            "number_of_findings": 0,
+            "potential_hits": []
+        }], self.last_post_data)
 
-    def test_request_contains_result_timeout(self):
-        self.test_run.is_success = lambda: False
+    def test_upload_timeout_run(self):
         self.test_run.is_timeout = lambda: True
+        self.test_run.get_runtime = lambda: 1000000
 
         self.uut.process_project_version(self.project, self.version)
         self.uut.end()
 
-        actual = self.last_post_data[0]
-        assert_equals("timeout", actual.result)
+        assert_equals([{
+            "dataset": TEST_DATASET,
+            "detector": self.detector.id,
+            "project": TEST_PROJECT_ID,
+            "version": TEST_VERSION_ID,
+            "result": "timeout",
+            "runtime": 1000000,
+            "number_of_findings": 0,
+            "potential_hits": []
+        }], self.last_post_data)
 
-    def test_request_contains_result_not_run(self):
-        self.test_run.is_success = lambda: False
+    def test_upload_not_run(self):
+        self.test_run.get_runtime = lambda: 0
 
         self.uut.process_project_version(self.project, self.version)
         self.uut.end()
 
-        actual = self.last_post_data[0]
-        assert_equals("not run", actual.result)
+        assert_equals([{
+            "dataset": TEST_DATASET,
+            "detector": self.detector.id,
+            "project": TEST_PROJECT_ID,
+            "version": TEST_VERSION_ID,
+            "result": "not run",
+            "runtime": 0,
+            "number_of_findings": 0,
+            "potential_hits": []
+        }], self.last_post_data)
 
     def test_nothing_to_upload(self):
         self.uut.end()
@@ -165,19 +148,7 @@ class TestReviewUpload:
         self.uut.process_project_version(self.project, self.version)
         self.uut.end()
 
-        actual_url = self.last_post_url
-        assert_equals(actual_url, "http://dummy.url/upload/ex1")
-
-    def test_post_files(self):
-        self.potential_hits = [
-            SpecializedFinding({"id": "-1-"}, files=["-file1-"]),
-            SpecializedFinding({"id": "-2-"}, files=["-file2-"])
-        ]
-
-        self.uut.process_project_version(self.project, self.version)
-        self.uut.end()
-
-        assert_equals(["-file1-", "-file2-"], self.Last_post_files)
+        assert_equals(self.last_post_url, "http://dummy.url/upload/ex1")
 
 
 class TestRequestFileTuple:

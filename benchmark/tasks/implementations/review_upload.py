@@ -1,6 +1,7 @@
 import json
 import logging
 from os.path import join, basename
+from typing import Dict
 from typing import List
 from typing import Tuple, IO
 from urllib.parse import urljoin
@@ -16,20 +17,6 @@ from benchmark.requirements import RequestsRequirement
 from benchmark.tasks.project_version_task import ProjectVersionTask
 
 
-class ProjectVersionReviewData:
-    def __init__(self, dataset: str, detector: Detector, project: Project, version: ProjectVersion,
-                 result: str, runtime: float, number_of_findings: int, potential_hits: List[SpecializedFinding]):
-        super().__init__()
-        self.dataset = dataset
-        self.detector_name = detector.id
-        self.project = project.id
-        self.version = version.version_id
-        self.result = result
-        self.runtime = runtime
-        self.number_of_findings = number_of_findings
-        self.potential_hits = potential_hits
-
-
 class ReviewUpload(ProjectVersionTask):
     def __init__(self, experiment: Experiment, dataset: str, review_site_url: str):
         super().__init__()
@@ -39,7 +26,8 @@ class ReviewUpload(ProjectVersionTask):
         self.review_site_url = review_site_url
 
         self.logger = logging.getLogger("review_findings")
-        self.__review_data = []  # type: List[ProjectVersionReviewData]
+        self.__review_data = []  # type: List[Dict]
+        self.__files_paths = []  #type: List[str]
 
     def get_requirements(self):
         return [RequestsRequirement()]
@@ -75,8 +63,17 @@ class ReviewUpload(ProjectVersionTask):
                 logger.info("Not run on %s.", version)
                 result = "not run"
 
-        self.__review_data.append(ProjectVersionReviewData(self.dataset, self.detector, project, version,
-                                  result, runtime, number_of_findings, potential_hits))
+        self.__review_data.append({
+            "dataset": self.dataset,
+            "detector": self.detector.id,
+            "project": project.id,
+            "version": version.version_id,
+            "result": result,
+            "runtime": runtime,
+            "number_of_findings": number_of_findings,
+            "potential_hits": potential_hits
+        })
+        self.__files_paths.extend(ReviewUpload.get_file_paths(potential_hits))
 
         return self.ok()
 
@@ -86,23 +83,21 @@ class ReviewUpload(ProjectVersionTask):
         else:
             url = urljoin(self.review_site_url, "upload/" + self.experiment.id)
             self.logger.info("Uploading to %s...", url)
-            file_paths = self.get_file_paths(self.__review_data)
-            self.post(url, self.__review_data, file_paths)
+            self.post(url, self.__review_data, self.__files_paths)
 
     @staticmethod
-    def get_file_paths(review_data: List[ProjectVersionReviewData]) -> List[str]:
+    def get_file_paths(findings: List[SpecializedFinding]) -> List[str]:
         files = []
-        for version_review_data in review_data:
-            for finding in version_review_data.potential_hits:
-                files.extend(finding.files)
+        for finding in findings:
+            files.extend(finding.files)
         return files
 
     @staticmethod
-    def post(url: str, data: List[ProjectVersionReviewData], file_paths: List[str]) -> requests.Response:
+    def post(url: str, data: List[Dict], file_paths: List[str]) -> requests.Response:
         user = ""  # TODO set these values
         password = ""
         files = [ReviewUpload._get_request_file_tuple(path) for path in file_paths]
-        serialized_data = json.dumps([d.__dict__ for d in data], sort_keys=True)
+        serialized_data = json.dumps([d for d in data], sort_keys=True)
         requests.post(url, auth=(user, password), data=serialized_data, files=files)
 
     @staticmethod
