@@ -130,6 +130,37 @@ fix:
     - name: a/Client.java
       diff: http://a.com/repo/commits/4711/Client.java
 ```
+## Setup Mubench Webserver
+
+Requirements: php5.6, mysql5.6
+PHP Extensions: php5.6xml, php5.6mbstring
+
+1. Run the `./install_dependencies` in the php_backend directory
+2. Create upload directory in php_backend
+3. Set your database credentials in settings.php
+3. Upload the php_backend directory
+  1. Mount it with your apache
+  2. Give read/write permissions on the upload and logs directory
+5. Create metadata and patterns table in your mysql database with:
+´´´
+
+CREATE TABLE metadata (
+misuse TEXT NOT NULL,
+description TEXT NOT NULL,
+fix_description TEXT NOT NULL,
+violation_types TEXT NOT NULL,
+file TEXT NOT NULL,
+method TEXT NOT NULL,
+code TEXT NOT NULL,
+);
+
+CREATE TABLE patterns (
+misuse TEXT NOT NULL,
+name TEXT NOT NULL,
+code TEXT NOT NULL
+);
+
+```
 
 ## License
 

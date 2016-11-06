@@ -6,7 +6,13 @@ RUN apt-get update
 
 RUN apt-get install php5.6
 RUN apt-get install mysql-server
+RUN apt-get install php5.6-xml
+RUN apt-get install php5.6-mbstring
 
 RUN wget https://phar.phpunit.de/phpunit.phar
 RUN chmod +x phpunit.phar
 RUN mv phpunit.phar /usr/local/bin/phpunit
+
+RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
+RUN php composer-setup.php --install-dir=/usr/local/bin --filename=composer
+RUN php -r "unlink('composer-setup.php');"
