@@ -13,19 +13,14 @@ from benchmark_tests.data.test_misuse import create_misuse
 from benchmark_tests.test_utils.data_util import create_project, create_version
 from detectors.dummy.dummy import DummyDetector
 
-TEST_DATASET = "-dataset-"
-TEST_PROJECT_ID = "-p-"
-TEST_VERSION_ID = "-v-"
-TEST_MISUSE_ID = "-m-"
-
 
 # noinspection PyAttributeOutsideInit
 class TestReviewUpload:
     def setup(self):
-        self.dataset = TEST_DATASET
-        self.project = create_project(TEST_PROJECT_ID)
-        self.misuse = create_misuse(TEST_MISUSE_ID, project=self.project)
-        self.version = create_version(TEST_VERSION_ID, project=self.project, misuses=[self.misuse])
+        self.dataset = "-d-"
+        self.project = create_project("-p-")
+        self.misuse = create_misuse("-m-", project=self.project)
+        self.version = create_version("-v-", project=self.project, misuses=[self.misuse])
 
         self.detector = DummyDetector("-detectors-path-")
         self.experiment = Experiment(Experiment.PROVIDED_PATTERNS, self.detector, "-findings-path-", "-reviews-path-")
@@ -63,10 +58,10 @@ class TestReviewUpload:
         self.uut.end()
 
         assert_equals([{
-            "dataset": TEST_DATASET,
+            "dataset": self.dataset,
             "detector": self.detector.id,
-            "project": TEST_PROJECT_ID,
-            "version": TEST_VERSION_ID,
+            "project": self.project.id,
+            "version": self.version.version_id,
             "result": "success",
             "runtime": 42.0,
             "number_of_findings": 2,
@@ -94,10 +89,10 @@ class TestReviewUpload:
         self.uut.end()
 
         assert_equals([{
-            "dataset": TEST_DATASET,
+            "dataset": self.dataset,
             "detector": self.detector.id,
-            "project": TEST_PROJECT_ID,
-            "version": TEST_VERSION_ID,
+            "project": self.project.id,
+            "version": self.version.version_id,
             "result": "error",
             "runtime": 1337,
             "number_of_findings": 0,
@@ -112,10 +107,10 @@ class TestReviewUpload:
         self.uut.end()
 
         assert_equals([{
-            "dataset": TEST_DATASET,
+            "dataset": self.dataset,
             "detector": self.detector.id,
-            "project": TEST_PROJECT_ID,
-            "version": TEST_VERSION_ID,
+            "project": self.project.id,
+            "version": self.version.version_id,
             "result": "timeout",
             "runtime": 1000000,
             "number_of_findings": 0,
@@ -129,10 +124,10 @@ class TestReviewUpload:
         self.uut.end()
 
         assert_equals([{
-            "dataset": TEST_DATASET,
+            "dataset": self.dataset,
             "detector": self.detector.id,
-            "project": TEST_PROJECT_ID,
-            "version": TEST_VERSION_ID,
+            "project": self.project.id,
+            "version": self.version.version_id,
             "result": "not run",
             "runtime": 0,
             "number_of_findings": 0,
