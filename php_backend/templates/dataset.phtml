@@ -8,8 +8,8 @@
 <h2>Experiment <?= htmlspecialchars($id); ?> - <?= htmlspecialchars($title); ?></h2>
 
 <ul>
-	<?php foreach($detectors as $d) : ?>
-            <li><a href="./<?= htmlspecialchars($d); ?>"><?= htmlspecialchars($d); ?></a></li>   
+	<?php foreach($data as $d) : ?>
+            <li><a href="./../experiment/<?= htmlspecialchars($prefix); ?>_<?= htmlspecialchars($d); ?>"><?= htmlspecialchars($d); ?></a></li>   
     <?php endforeach; ?>
 </ul>
 

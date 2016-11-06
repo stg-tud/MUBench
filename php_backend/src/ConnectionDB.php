@@ -46,6 +46,61 @@ class DBConnection {
 		$this->execStatements($statements);
 	}
 
+	public function handleMetaData($json){
+		$deleteStatement = "DELETE FROM metadata where misuse='" . $json->{'misuse'} . "';";
+		$this->pdo->exec($deleteStatement);
+		$statement = "INSERT INTO metadata (misuse, description, fix_description, violation_types, file, method, code) VALUES( :misuse, :description, :fix_description, :violation_types, :file, :method, :code);";
+		$sth = $this->pdo->prepare($statement, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
+		$sth->execute(array(':misuse' => $json->{'misuse'}, ':description' => $json->{'description'}, ':fix_description' => $json->{'fix_description'}, ':violation_types' => $this->arrayToString($json->{'violation_types'}), ':file' => $json->{'location'}->{'file'}, ':method' => $json->{'location'}->{'method'}, ':code' => $json->{'code'}));
+	}
+
+	public function getData($exp, $detector){
+		try{
+	    	$query = $this->pdo->query("SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE';");
+		}catch(PDOException $e){
+			$this->logger->info("Error: " . $e->getMessage());
+		}
+		$tables = array();
+		$results = array();
+		if(count($query) == 0){
+			return $tables;
+		}
+		foreach($query as $q){
+			$arr = split('[_]', $q[0]);
+			if($arr[0] === $exp && $arr[2] === $detector){
+				$tables[] = $q[0];
+			}
+		}
+		foreach($tables as $t){
+			$statement = "SELECT * FROM " . $t . ";";
+			if(count($result) > 0){
+				$result = $this->pdo->query($statement);
+			}
+		}
+		return $results;
+	}
+
+	public function getMetadata($data){
+		try{
+	    	$query = $this->pdo->query("SELECT * FROM metadata;");
+		}catch(PDOException $e){
+			$this->logger->info("Error: " . $e->getMessage());
+		} 
+		$results = array();
+		foreach($query as $q){
+			$results[] = $q;
+		}
+		return $results;
+	}
+
+	public function arrayToString($json){
+		$out = $json[0] . ';';
+		for($i = 1; $i < count($json); $i++){
+			$out = $out . ';' . $json[$i];
+		}
+		return $out;
+	}
+
 	private function execStatements($statements){
 		foreach($statements as $s){
 			try{
@@ -117,22 +172,41 @@ class DBConnection {
 		return $output;
 	}
 
-	public function getDetectors($experiment){
+
+
+	public function getTables(){
 		try{
 	    	$query = $this->pdo->query("SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE';");
 		}catch(PDOException $e){
 			$this->logger->info("Error: " . $e->getMessage());
 		}
-		$columns = array();
+		$tables = array();
 		if(count($query) == 0){
-			return $columns;
+			return $tables;
 		}
 		foreach($query as $q){
-			if(substr($q[0],0,strlen($experiment)) === $experiment){
-				$columns[] = split('[_]', $q[0])[2];
+			$tables[] = $q[0];		
+		}
+		return $tables;
+	}
+
+	public function getDatasets($prefix){
+		return $this->getPrefixTable($prefix, 1);
+	}
+
+	public function getDetectors($prefix){
+		return $this->getPrefixTable($prefix, 2);
+	}
+
+	public function getPrefixTable($prefix, $suffix){
+		$tables = $this->getTables();
+		$names = array();
+		foreach($tables as $t){
+			if(substr($t,0,strlen($prefix)) === $prefix){
+				$names[] = split('[_]', $t)[$suffix];
 			}
 		}
-		return $columns;
+		return $names;
 	}
 
 	public function deleteStatement($table, $project, $version){

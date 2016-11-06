@@ -1,0 +1,32 @@
+
+                <h1>Detector: <?= htmlspecialchars($detector); ?></h1>
+            <?php foreach($projects as $p) : ?>
+                <h2>Project: <?= htmlspecialchars($p['project']); ?></h2>
+                <table>
+                <?php foreach($p['versions'] as $v) : ?>
+                    <tr>
+                        <td>Version:</td>
+                        <td><?= htmlspecialchars($v['version']); ?> (result: success, findings: <?= htmlspecialchars($v['findings']); ?>, runtime: 4.4s)</td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td>
+                        
+                            <table border="1" cellpadding="5">
+                           
+                                <tr><th>Misuse</th><th>Violation Types</th><th>Result</th><th>Reviewed By</th></tr>
+                                 <?php foreach($v['items'] as $r) : ?>
+                                <tr>
+                                    <td><?= htmlspecialchars($p['project']); ?>.<?= htmlspecialchars($r['id']); ?></td>
+                                    <td><?= htmlspecialchars($r['type']); ?></td>
+                                    <td><a href="../../project/1/<?= htmlspecialchars($r['review']); ?>">review</a></td>
+                                    <td></td>
+                                </tr>
+                                <?php endforeach; ?>
+                            </table>
+                            
+                        </td>
+                    </tr>
+                    <?php endforeach; ?>
+                </table>
+                <?php endforeach; ?>

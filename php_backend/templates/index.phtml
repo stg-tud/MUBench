@@ -8,9 +8,9 @@
 <h1>MUBench Review Page</h1>
 
 <ul>
-  <li><a href="index.php/ex/ex1">Experiment 1 - Detect Only</a></li>
-  <li><a href="index.php/ex/ex2">Experiment 2 - All Findings (Top 10 of 5 Projects)</a></li>
-  <li><a href="index.php/ex/ex3">Experiment 3 - Mine and Detect</a></li>
+    <?php foreach($experiments as $e) : ?>
+            <li><a href="index.php/dataset/ex<?= htmlspecialchars($e['id']); ?>">Experiment <?= htmlspecialchars($e['id']); ?> - <?= htmlspecialchars($e['title']); ?></a></li>   
+    <?php endforeach; ?>
 </ul>
 
 <hr style="margin-top: 2cm;"/>

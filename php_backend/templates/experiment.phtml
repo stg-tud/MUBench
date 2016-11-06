@@ -1,0 +1,26 @@
+<html>
+<head>
+<title>MUBench Review Page - Experiment <?= htmlspecialchars($id); ?></title>
+<link rel="stylesheet" type="text/css" href="/../style/style.css" />
+</head>
+<body>
+<h1>MUBench Review Page</h1>
+<h2>Experiment <?= htmlspecialchars($id); ?> - <?= htmlspecialchars($title); ?></h2>
+
+<ul>
+	<?php foreach($data as $d) : ?>
+            <li><a href="./../detect/ex<?= htmlspecialchars($id); ?>_<?= htmlspecialchars($d); ?>"><?= htmlspecialchars($d); ?></a></li>   
+    <?php endforeach; ?>
+</ul>
+
+<hr style="margin-top: 2cm;"/>
+
+<div class="comment">
+<p>(this page was last updated at August 31, 2016)</p>
+</div>
+
+<div class="legal">
+<a href="/../index.php/impressum/">Legal Note / Impressum</a>
+</div>
+</body>
+</html>
