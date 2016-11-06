@@ -135,15 +135,14 @@ fix:
 Requirements: php5.6, mysql5.6
 PHP Extensions: php5.6xml, php5.6mbstring
 
-1. Run the `./install_dependencies` in the php_backend directory
+1. Run the `docker run --rm -v "PATH/TO/php_backend":/mubench svamann/mubench-ci composer install` in the php_backend directory
 2. Create upload directory in php_backend
 3. Set your database credentials in settings.php
 3. Upload the php_backend directory
   1. Mount it with your apache
   2. Give read/write permissions on the upload and logs directory
 5. Create metadata and patterns table in your mysql database with:
-´´´
-
+```
 CREATE TABLE metadata (
 misuse TEXT NOT NULL,
 description TEXT NOT NULL,
@@ -159,7 +158,6 @@ misuse TEXT NOT NULL,
 name TEXT NOT NULL,
 code TEXT NOT NULL
 );
-
 ```
 
 ## License
