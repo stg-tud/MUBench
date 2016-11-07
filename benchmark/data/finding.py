@@ -54,10 +54,11 @@ class Finding(Dict[str, str]):
         snippets = []
         output = exec_util("MethodExtractor", "\"{}\" \"{}\"".format(self.__file(), self.__method()))
 
-        methods = output.split("\n===\n")
-        for method in methods:
-            info = method.split(":", 2)
-            snippets.append(Snippet("""class {} {{\n{}\n}}""".format(info[1], info[2]), int(info[0]) - 1))
+        if output:
+            methods = output.split("\n===\n")
+            for method in methods:
+                info = method.split(":", 2)
+                snippets.append(Snippet("""class {} {{\n{}\n}}""".format(info[1], info[2]), int(info[0]) - 1))
 
         return snippets
 

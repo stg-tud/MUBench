@@ -67,6 +67,13 @@ class TestPotentialHit:
 
 @patch("benchmark.data.finding.exec_util")
 class TestTargetCode:
+    def test_no_code(self, utils_mock):
+        utils_mock.return_value = ""
+
+        finding = Finding({"file": "-file-"})
+
+        assert_equals(finding.get_snippets(), [])
+
     def test_loads_code(self, utils_mock):
         utils_mock.side_effect =\
             lambda tool, args: "1:T:-code-" if tool == "MethodExtractor" and args == '"-file-" "-method-"' else ""
