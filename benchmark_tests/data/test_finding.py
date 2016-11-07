@@ -75,22 +75,15 @@ class TestTargetCode:
 
         assert_equals(finding.get_snippets(), [])
 
-    def test_loads_code(self, utils_mock):
+    def test_loads_snippet(self, utils_mock):
         utils_mock.side_effect =\
-            lambda tool, args: "1:T:-code-" if tool == "MethodExtractor" and args == '"-file-" "-method-"' else ""
+            lambda tool, args: "42:T:-code-" if tool == "MethodExtractor" and args == '"-file-" "-method-"' else ""
 
         finding = Finding({"file": "-file-", "method": "-method-"})
 
-        assert_equals("class T {\n-code-\n}", finding.get_snippets()[0].code)
+        assert_equals([Snippet("class T {\n-code-\n}", 41)], finding.get_snippets())
 
-    def test_loads_first_line_number(self, util_mock):
-        util_mock.return_value = "42:-type-:-code-"
-
-        finding = Finding({"file": "-file-"})
-
-        assert_equals(41, finding.get_snippets()[0].first_line_number)
-
-    def test_loads_multiple_methods(self, utils_mock):
+    def test_loads_multiple_snippets(self, utils_mock):
         utils_mock.return_value = "42:T:t-code\n===\n32:A:a-code"
 
         finding = Finding({"file": "-file-"})
