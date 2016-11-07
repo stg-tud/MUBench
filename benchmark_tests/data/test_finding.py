@@ -1,4 +1,7 @@
 from typing import Dict
+from unittest.mock import patch
+
+from nose.tools import assert_equals
 
 from benchmark.data.finding import Finding
 from benchmark_tests.test_utils.data_util import create_misuse
@@ -60,3 +63,14 @@ class TestPotentialHit:
             finding_data["method"] = self.misuse.location.method
 
         return Finding(finding_data)
+
+
+class TestTargetCode:
+    @patch("benchmark.data.finding.exec_util")
+    def test_loads_code(self, utils_mock):
+        utils_mock.side_effect =\
+            lambda tool, args: "-code-" if tool == "MethodExtractor" and args == '"-file-" "-method-"' else ""
+
+        finding = Finding({"file": "-file-", "method": "-method-"})
+
+        assert_equals("-code-", finding.get_snippet().code)
