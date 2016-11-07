@@ -22,7 +22,7 @@ class PublishFindingsTask(ProjectVersionTask):
 
         self.logger = logging.getLogger("review_findings")
         self.__review_data = []  # type: List[Dict]
-        self.__files_paths = []  #type: List[str]
+        self.__files_paths = []  # type: List[str]
 
     def get_requirements(self):
         return [RequestsRequirement()]
