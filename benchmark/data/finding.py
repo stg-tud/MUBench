@@ -54,6 +54,13 @@ class Finding(Dict[str, str]):
 
     def get_snippets(self) -> List[Snippet]:
         snippets = []
+
+        # output comes as:
+        #
+        #   <first-line number>:<declaring type>:<code>
+        #   ===
+        #   <first-line number>:<declaring type>:<code>
+        #
         output = exec_util("MethodExtractor", "\"{}\" \"{}\"".format(self.__file(), self.__method()))
 
         # if there's other preceding output, we need to strip it
