@@ -77,3 +77,32 @@ class TestPublishMetadataTask:
         assert_equals(post_mock.call_args[0][1][0]["patterns"], [
             {"id": "P1", "snippet": {"code": pattern_code, "first_line": 1}}
         ])
+
+    @patch("benchmark.tasks.implementations.publish_metadata_task.open")
+    def test_publishes_pattern_code_without_preamble(self, open_mock, post_mock):
+        pattern_preamble = "package foo;\n" \
+                       "import Bar;\n" \
+                       "\n"
+        pattern_code = "public class P1 {\n" \
+                       "  void m() { return; }\n" \
+                       "}"
+        open_mock.return_value = StringIO(pattern_preamble + pattern_code)
+        misuse = create_misuse("-m-", project=self.project, patterns=[Pattern("/", "P1.java")])
+
+        task = PublishMetadataTask("http://test.url")
+        task.process_project_misuse(self.project, misuse)
+        task.end()
+
+        assert_equals(post_mock.call_args[0][1][0]["patterns"][0]["snippet"]["code"], pattern_code)
+
+    @patch("benchmark.tasks.implementations.publish_metadata_task.open")
+    def test_publishes_pattern_code_without_trailing_newlines(self, open_mock, post_mock):
+        pattern_code = "public class P1 {}"
+        open_mock.return_value = StringIO(pattern_code + "\n\n\n")
+        misuse = create_misuse("-m-", project=self.project, patterns=[Pattern("/", "P1.java")])
+
+        task = PublishMetadataTask("http://test.url")
+        task.process_project_misuse(self.project, misuse)
+        task.end()
+
+        assert_equals(post_mock.call_args[0][1][0]["patterns"][0]["snippet"]["code"], pattern_code)
