@@ -7,7 +7,7 @@ from nose.tools import assert_equals
 from benchmark.data.experiment import Experiment
 from benchmark.data.finding import SpecializedFinding
 from benchmark.data.run import Run
-from benchmark.tasks.implementations.review_upload import ReviewUpload
+from benchmark.tasks.implementations.publish_findings_task import PublishFindingsTask
 from benchmark.utils.io import remove_tree, create_file
 from benchmark_tests.data.test_misuse import create_misuse
 from benchmark_tests.test_utils.data_util import create_project, create_version
@@ -15,7 +15,7 @@ from detectors.dummy.dummy import DummyDetector
 
 
 # noinspection PyAttributeOutsideInit
-class TestReviewUpload:
+class TestPublishFindingsTask:
     def setup(self):
         self.dataset = "-d-"
         self.project = create_project("-p-")
@@ -30,7 +30,7 @@ class TestReviewUpload:
         self.test_run.is_timeout = lambda: False
         self.experiment.get_run = lambda v: self.test_run
 
-        self.uut = ReviewUpload(self.experiment, self.dataset, "http://dummy.url")
+        self.uut = PublishFindingsTask(self.experiment, self.dataset, "http://dummy.url")
 
         self.last_post_url = None
         self.last_post_data = None
@@ -157,18 +157,18 @@ class TestRequestFileTuple:
         remove_tree(self.temp_dir)
 
     def test_create_request_file_tuple_name(self):
-        actual_tuple = ReviewUpload._get_request_file_tuple(self.file)
+        actual_tuple = PublishFindingsTask._get_request_file_tuple(self.file)
 
         assert_equals("file.png", actual_tuple[0])
         assert_equals("file.png", actual_tuple[1][0])
 
     def test_create_request_file_tuple_stream(self):
-        actual_tuple = ReviewUpload._get_request_file_tuple(self.file)
+        actual_tuple = PublishFindingsTask._get_request_file_tuple(self.file)
 
         assert_equals(self.file, actual_tuple[1][1].name)
         assert_equals('rb', actual_tuple[1][1].mode)
 
     def test_create_request_file_tuple_mime_type(self):
-        actual_tuple = ReviewUpload._get_request_file_tuple(self.file)
+        actual_tuple = PublishFindingsTask._get_request_file_tuple(self.file)
 
         assert_equals('image/png', actual_tuple[1][2])

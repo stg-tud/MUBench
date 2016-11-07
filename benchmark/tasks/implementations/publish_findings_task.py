@@ -8,7 +8,6 @@ from urllib.parse import urljoin
 
 import requests
 
-from benchmark.data.detector import Detector
 from benchmark.data.experiment import Experiment
 from benchmark.data.finding import SpecializedFinding
 from benchmark.data.project import Project
@@ -17,7 +16,7 @@ from benchmark.requirements import RequestsRequirement
 from benchmark.tasks.project_version_task import ProjectVersionTask
 
 
-class ReviewUpload(ProjectVersionTask):
+class PublishFindingsTask(ProjectVersionTask):
     def __init__(self, experiment: Experiment, dataset: str, review_site_url: str):
         super().__init__()
         self.experiment = experiment
@@ -73,7 +72,7 @@ class ReviewUpload(ProjectVersionTask):
             "number_of_findings": number_of_findings,
             "potential_hits": potential_hits
         })
-        self.__files_paths.extend(ReviewUpload.get_file_paths(potential_hits))
+        self.__files_paths.extend(PublishFindingsTask.get_file_paths(potential_hits))
 
         return self.ok()
 
@@ -96,7 +95,7 @@ class ReviewUpload(ProjectVersionTask):
     def post(url: str, data: List[Dict], file_paths: List[str]) -> requests.Response:
         user = ""  # TODO set these values
         password = ""
-        files = [ReviewUpload._get_request_file_tuple(path) for path in file_paths]
+        files = [PublishFindingsTask._get_request_file_tuple(path) for path in file_paths]
         serialized_data = json.dumps([d for d in data], sort_keys=True)
         requests.post(url, auth=(user, password), data=serialized_data, files=files)
 

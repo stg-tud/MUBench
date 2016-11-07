@@ -36,7 +36,7 @@ def get_command_line_parser(available_detectors: List[str], available_scripts: L
     __add_checkout_subprocess(subparsers)
     __add_compile_subprocess(subparsers)
     __add_detect_subprocess(available_detectors, subparsers)
-    __add_review_subprocess(available_detectors, subparsers)
+    __add_publish_subprocess(available_detectors, subparsers)
     __add_stats_subprocess(available_scripts, subparsers)
 
     return parser
@@ -103,28 +103,25 @@ def __add_detect_subprocess(available_detectors: List[str], subparsers) -> None:
     __setup_compile_arguments(detect_parser)
 
 
-def __add_review_subprocess(available_detectors: List[str], subparsers) -> None:
-    review_parser = subparsers.add_parser('review', formatter_class=SortingHelpFormatter,
-                                          help="Tasks to manage the manual review of detector findings.",
-                                          description="Tasks to manage the manual review of detector findings, i.e., "
-                                                      "the data upload to a review site.")  # type: ArgumentParser
+def __add_publish_subprocess(available_detectors: List[str], subparsers) -> None:
+    review_parser = subparsers.add_parser('publish', formatter_class=SortingHelpFormatter,
+                                          help="Tasks to publish data to a review site.",
+                                          description="Tasks to publish data to a review site.")  # type: ArgumentParser
     review_subparsers = review_parser.add_subparsers(
-        help="MUBench provides several review tasks. Run `mubench review <task> -h` for details. "
+        help="MUBench provides multiple publishing tasks. Run `mubench publish <task> -h` for details. "
              "See https://github.com/stg-tud/MUBench#review-setup for details on how to setup a review site.",
-        dest='review_task')
+        dest='publish_task')
 
     findings_parser = review_subparsers.add_parser("findings", formatter_class=SortingHelpFormatter,
-                                                   help="Upload detection findings to the review site. "
+                                                   help="Publish detection findings to the review site. "
                                                         "Run `compile`, if necessary.",
-                                                   description="Upload detection findings to the review site. "
-                                                               "Run `detect`, if necessary. "
-                                                               "See https://github.com/stg-tud/MUBench#review-setup "
-                                                               "for details on how to setup a review site.")
+                                                   description="Publish detection findings to the review site. "
+                                                               "Run `detect`, if necessary.")
     __setup_misuse_filter_arguments(findings_parser)
     __setup_detector_arguments(findings_parser, available_detectors)
     __setup_checkout_arguments(findings_parser)
     __setup_compile_arguments(findings_parser)
-    __setup_review_argument(findings_parser)
+    __setup_publish_argument(findings_parser)
 
 
 def __add_stats_subprocess(available_scripts: List[str], subparsers) -> None:
@@ -169,6 +166,6 @@ def __setup_detector_arguments(parser: ArgumentParser, available_detectors: List
                              "(example: `--java-options Xmx4G` runs `java -Xmx4G`)")
 
 
-def __setup_review_argument(parser: ArgumentParser) -> None:
+def __setup_publish_argument(parser: ArgumentParser) -> None:
     parser.add_argument("-s", "--review-site", required=True, metavar="URL", dest="review_site_url",
                         help="use the specified review site")
