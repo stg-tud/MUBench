@@ -97,7 +97,7 @@ class PublishFindingsTask(ProjectVersionTask):
         password = ""
         files = [PublishFindingsTask._get_request_file_tuple(path) for path in file_paths]
         serialized_data = json.dumps([d for d in data], sort_keys=True)
-        requests.post(url, auth=(user, password), data=serialized_data, files=files)
+        requests.post(url, auth=(user, password), data={"data": serialized_data}, files=files)
 
     @staticmethod
     def _get_request_file_tuple(path) -> Tuple[str, Tuple[str, IO[bytes], str]]:
