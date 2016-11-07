@@ -95,3 +95,10 @@ class TestTargetCode:
         finding = Finding({"file": "-file-"})
 
         assert_equals(2, len(finding.get_snippets()))
+
+    def test_strips_additional_output(self, utils_mock):
+        utils_mock.return_value = "Arbitrary additional output\n1:C:code"
+
+        finding = Finding({"file": "-file-"})
+
+        assert_equals(1, len(finding.get_snippets()))

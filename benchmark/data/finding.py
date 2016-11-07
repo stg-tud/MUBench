@@ -1,5 +1,7 @@
 from typing import Dict, List
 
+import re
+
 from benchmark.data.misuse import Misuse
 from benchmark.utils.java_utils import exec_util
 
@@ -53,6 +55,14 @@ class Finding(Dict[str, str]):
     def get_snippets(self) -> List[Snippet]:
         snippets = []
         output = exec_util("MethodExtractor", "\"{}\" \"{}\"".format(self.__file(), self.__method()))
+
+        # if there's other preceding output, we need to strip it
+        while output and not re.match("^[0-9]+:[^:\n]+:", output):
+            output_lines = output.split("\n", 2)
+            if len(output_lines) > 1:
+                output = output_lines[1]
+            else:
+                output = ""
 
         if output:
             methods = output.split("\n===\n")
