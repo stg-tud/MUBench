@@ -1,12 +1,7 @@
-import json
 import logging
-from os.path import join, basename
 from typing import Dict
 from typing import List
-from typing import Tuple, IO
 from urllib.parse import urljoin
-
-import requests
 
 from benchmark.data.experiment import Experiment
 from benchmark.data.finding import SpecializedFinding
@@ -14,6 +9,7 @@ from benchmark.data.project import Project
 from benchmark.data.project_version import ProjectVersion
 from benchmark.requirements import RequestsRequirement
 from benchmark.tasks.project_version_task import ProjectVersionTask
+from benchmark.utils.web_util import post
 
 
 class PublishFindingsTask(ProjectVersionTask):
@@ -82,7 +78,7 @@ class PublishFindingsTask(ProjectVersionTask):
         else:
             url = urljoin(self.review_site_url, "upload/" + self.experiment.id)
             self.logger.info("Uploading to %s...", url)
-            self.post(url, self.__review_data, self.__files_paths)
+            post(url, self.__review_data, file_paths=self.__files_paths)
 
     @staticmethod
     def get_file_paths(findings: List[SpecializedFinding]) -> List[str]:
@@ -90,16 +86,3 @@ class PublishFindingsTask(ProjectVersionTask):
         for finding in findings:
             files.extend(finding.files)
         return files
-
-    @staticmethod
-    def post(url: str, data: List[Dict], file_paths: List[str]) -> requests.Response:
-        user = ""  # TODO set these values
-        password = ""
-        files = [PublishFindingsTask._get_request_file_tuple(path) for path in file_paths]
-        serialized_data = json.dumps([d for d in data], sort_keys=True)
-        requests.post(url, auth=(user, password), data={"data": serialized_data}, files=files)
-
-    @staticmethod
-    def _get_request_file_tuple(path) -> Tuple[str, Tuple[str, IO[bytes], str]]:
-        name = basename(path)
-        return name, (name, open(join(path), 'rb'), "image/png")  # TODO make MIME type a parameter

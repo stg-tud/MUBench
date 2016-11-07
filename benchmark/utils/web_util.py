@@ -1,8 +1,12 @@
 import hashlib
+import json
 import shutil
+from typing import List
 from urllib.request import urlopen
 from os import remove
-from os.path import exists
+from os.path import exists, basename
+
+import requests
 
 
 def download_file(url: str, file: str, md5_checksum: str = None):
@@ -71,5 +75,10 @@ def __compute_md5(file: str):
     return hash_md5.hexdigest()
 
 
-def post(url: str, data: object):
-    pass
+def post(url: str, data: object, file_paths: List[str] = None, username: str="", password: str=""):
+    serialized_data = json.dumps(data, sort_keys=True)
+    if file_paths:
+        files = [(basename(path), (basename(path), open(path, 'rb'), "image/png")) for path in file_paths]
+        requests.post(url, auth=(username, password), data={"data": serialized_data}, files=files)
+    else:
+        requests.post(url, auth=(username, password), data=serialized_data)
