@@ -4,10 +4,12 @@ from os.path import exists, join, dirname, basename, splitext
 
 
 class Pattern:
-    def __init__(self, basepath: str, pattern_path: str):
+    def __init__(self, basepath: str, relative_pattern_path: str):
         self.basepath = basepath
-        self.pattern_path = pattern_path
-        self.path = join(basepath, pattern_path)
+        self.__relative_pattern_path = relative_pattern_path
+        self.path = join(basepath, relative_pattern_path)
+        self.orig_dir = dirname(self.path)
+        self.name = splitext(basename(self.__relative_pattern_path))[0]
 
     def __hash__(self):
         return hash(self.path)
@@ -19,25 +21,16 @@ class Pattern:
         return self.path
 
     @property
-    def orig_dir(self):
-        return dirname(self.path)
-
-    @property
-    def file_name(self):
-        return self.pattern_path
-
-    @property
-    def file_name_without_extension(self):
-        return splitext(self.file_name)[0]
+    def relative_path_without_extension(self):
+        return splitext(self.__relative_pattern_path)[0]
 
     def copy(self, destination: str):
-        new_pattern = Pattern(destination, self.file_name)
+        new_pattern = Pattern(destination, self.__relative_pattern_path)
         makedirs(new_pattern.orig_dir, exist_ok=True)
         copy_file(self.path, new_pattern.path)
 
     def _get_destination_file(self, destination: str) -> str:
-        return join(destination, self.file_name)
-
+        return join(destination, self.__relative_pattern_path)
 
 class NoPatternFileError(FileNotFoundError):
     pass

@@ -46,3 +46,18 @@ class TestPattern:
     def test_hashable(self):
         path = join("a", "b")
         assert_equals(hash(path), hash(Pattern("a", "b")))
+
+    def test_path(self):
+        pattern = Pattern("/base", "pattern")
+
+        assert_equals("/base/pattern", pattern.path)
+
+    def test_name(self):
+        pattern = Pattern("/base", "path/pattern.file")
+
+        assert_equals("pattern", pattern.name)
+
+    def test_relative_path_without_extension(self):
+        pattern = Pattern("/base", "path/pattern.file")
+
+        assert_equals("path/pattern", pattern.relative_path_without_extension)

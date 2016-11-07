@@ -176,7 +176,7 @@ class Compile(ProjectVersionTask):
         for misuse in misuses:
             pattern_classes_path = project_compile.get_pattern_classes_path(misuse)
             for pattern in misuse.patterns:
-                pattern_class_file_name = pattern.file_name_without_extension + ".class"
+                pattern_class_file_name = pattern.relative_path_without_extension + ".class"
                 new_name = join(pattern_classes_path, pattern_class_file_name)
                 makedirs(dirname(new_name), exist_ok=True)
                 shutil.copy(join(classes_path, pattern_class_file_name), new_name)
