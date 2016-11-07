@@ -15,6 +15,7 @@ from benchmark.requirements import check_all_requirements
 from benchmark.tasks.implementations.info import Info
 from benchmark.task_runner import TaskRunner
 from benchmark.tasks.implementations.publish_findings_task import PublishFindingsTask
+from benchmark.tasks.implementations.publish_metadata_task import PublishMetadataTask
 from benchmark.utils import command_line_util
 from benchmark.utils.dataset_util import get_white_list
 from benchmark.utils.logging import IndentFormatter
@@ -75,6 +76,9 @@ class Benchmark:
         experiment = self.__get_experiment(self.config.detector)
         self.runner.add(PublishFindingsTask(experiment, self.config.dataset, self.config.review_site_url))
 
+    def _setup_publish_metadata(self):
+        self.runner.add(PublishMetadataTask(self.config.review_site_url))
+
     def __get_experiment(self, detector: str):
         ex_ids = {
             1: Experiment.PROVIDED_PATTERNS,
@@ -123,6 +127,9 @@ class Benchmark:
                 self._setup_compile()
                 self._setup_detect()
                 self._setup_publish_findings()
+            elif config.publish_task == 'metadata':
+                self._setup_checkout()
+                self._setup_publish_metadata()
         elif config.task == 'stats':
             self._setup_stats()
 

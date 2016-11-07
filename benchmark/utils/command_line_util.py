@@ -104,24 +104,34 @@ def __add_detect_subprocess(available_detectors: List[str], subparsers) -> None:
 
 
 def __add_publish_subprocess(available_detectors: List[str], subparsers) -> None:
-    review_parser = subparsers.add_parser('publish', formatter_class=SortingHelpFormatter,
+    publish_parser = subparsers.add_parser('publish', formatter_class=SortingHelpFormatter,
                                           help="Tasks to publish data to a review site.",
                                           description="Tasks to publish data to a review site.")  # type: ArgumentParser
-    review_subparsers = review_parser.add_subparsers(
+    publish_subparsers = publish_parser.add_subparsers(
         help="MUBench provides multiple publishing tasks. Run `mubench publish <task> -h` for details. "
              "See https://github.com/stg-tud/MUBench#review-setup for details on how to setup a review site.",
         dest='publish_task')
 
-    findings_parser = review_subparsers.add_parser("findings", formatter_class=SortingHelpFormatter,
-                                                   help="Publish detection findings to the review site. "
-                                                        "Run `compile`, if necessary.",
-                                                   description="Publish detection findings to the review site. "
-                                                               "Run `detect`, if necessary.")
+    findings_parser = publish_subparsers.add_parser("findings", formatter_class=SortingHelpFormatter,
+                                                    help="Publish detection findings to the review site. "
+                                                         "Run `detect`, if necessary.",
+                                                    description="Publish detection findings to the review site. "
+                                                                "Run `detect`, if necessary.")  # type: ArgumentParser
     __setup_misuse_filter_arguments(findings_parser)
     __setup_detector_arguments(findings_parser, available_detectors)
     __setup_checkout_arguments(findings_parser)
     __setup_compile_arguments(findings_parser)
     __setup_publish_argument(findings_parser)
+
+    metadata_parser = publish_subparsers.add_parser("metadata", formatter_class=SortingHelpFormatter,
+                                                    help="Publish misuse metadata to the review site. "
+                                                         "Run `checkout`, if necessary.",
+                                                    description="Publish misuse metadata to the review site. "
+                                                                "Run `checkout`, if necessary.")  # type: ArgumentParser
+
+    __setup_misuse_filter_arguments(metadata_parser)
+    __setup_checkout_arguments(metadata_parser)
+    __setup_publish_argument(metadata_parser)
 
 
 def __add_stats_subprocess(available_scripts: List[str], subparsers) -> None:
