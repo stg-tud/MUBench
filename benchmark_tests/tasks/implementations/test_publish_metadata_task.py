@@ -1,7 +1,7 @@
 from unittest.mock import patch
 
 from benchmark.tasks.implementations.publish_metadata_task import PublishMetadataTask
-from benchmark_tests.test_utils.data_util import create_misuse, create_version, create_project
+from benchmark_tests.test_utils.data_util import create_misuse, create_project
 
 
 class TestPublishMetadataTask:
