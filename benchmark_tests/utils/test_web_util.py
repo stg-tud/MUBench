@@ -1,13 +1,14 @@
 from tempfile import mkdtemp
 
 from os.path import join, exists
+from unittest.mock import patch
 from urllib.error import URLError
 
-from nose.tools import assert_raises
+from nose.tools import assert_raises, assert_equals
 from pathlib import Path
 
 from benchmark.utils.io import create_file, safe_write
-from benchmark.utils.web_util import validate_file, download_file, is_valid_file
+from benchmark.utils.web_util import validate_file, download_file, is_valid_file, post
 
 EMPTY_FILE_MD5 = "d41d8cd98f00b204e9800998ecf8427e"
 
@@ -87,3 +88,26 @@ class TestDownloadFile:
             download_file(self.url, self.target, ":wrong-md5:")
 
         assert not exists(self.target)
+
+
+@patch("requests.post")
+class TestPost:
+    def test_post_data(self, post_mock):
+        post("-url-", "-data-")
+
+        post_mock.assert_called_with(url="-url-", data='"-data-"')
+
+    def test_post_auth(self, post_mock):
+        post("-url-", "-data-", username="user", password="pw")
+
+        assert_equals(post_mock.call_args[1]["auth"], ("user", "pw"))
+
+    @patch("builtins.open")
+    def test_post_with_files(self, open_mock, post_mock):
+        open_mock.return_value = "-file-content-"
+
+        post("-url-", "-data-", file_paths=["/fake/file/path"])
+
+        args = post_mock.call_args
+        assert_equals(args[1]["data"], {"data": '"-data-"'})
+        assert_equals(args[1]["files"], [("path", ("path", "-file-content-", "image/png"))])

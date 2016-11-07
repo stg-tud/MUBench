@@ -76,9 +76,17 @@ def __compute_md5(file: str):
 
 
 def post(url: str, data: object, file_paths: List[str] = None, username: str="", password: str=""):
-    serialized_data = json.dumps(data, sort_keys=True)
+    request = {
+        "url": url,
+        "data": json.dumps(data)
+    }
+
+    if username:
+        request["auth"] = (username, password)
+
     if file_paths:
+        request["data"] = {"data": request["data"]}
         files = [(basename(path), (basename(path), open(path, 'rb'), "image/png")) for path in file_paths]
-        requests.post(url, auth=(username, password), data={"data": serialized_data}, files=files)
-    else:
-        requests.post(url, auth=(username, password), data=serialized_data)
+        request["files"] = files
+
+    requests.post(**request)
