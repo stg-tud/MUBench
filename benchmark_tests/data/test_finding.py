@@ -65,12 +65,19 @@ class TestPotentialHit:
         return Finding(finding_data)
 
 
+@patch("benchmark.data.finding.exec_util")
 class TestTargetCode:
-    @patch("benchmark.data.finding.exec_util")
     def test_loads_code(self, utils_mock):
         utils_mock.side_effect =\
-            lambda tool, args: "-code-" if tool == "MethodExtractor" and args == '"-file-" "-method-"' else ""
+            lambda tool, args: "1:-code-" if tool == "MethodExtractor" and args == '"-file-" "-method-"' else ""
 
         finding = Finding({"file": "-file-", "method": "-method-"})
 
         assert_equals("-code-", finding.get_snippet().code)
+
+    def test_loads_first_line_number(self, util_mock):
+        util_mock.return_value = "42:-code-"
+
+        finding = Finding({"file": "-file-"})
+
+        assert_equals(42, finding.get_snippet().first_line_number)

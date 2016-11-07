@@ -7,7 +7,7 @@ from benchmark.utils.java_utils import exec_util
 class Snippet:
     def __init__(self, code: str, first_line: int):
         self.code = code
-        self.first_line = first_line
+        self.first_line_number = first_line
 
 
 class Finding(Dict[str, str]):
@@ -50,10 +50,10 @@ class Finding(Dict[str, str]):
     def __method(self):
         return self["method"] if "method" in self else ""
 
-    def get_snippet(self):
-        code = exec_util("MethodExtractor", "\"{}\" \"{}\"".format(self.__file(), self.__method()))
-
-        return Snippet(code, -1)
+    def get_snippet(self) -> Snippet:
+        method = exec_util("MethodExtractor", "\"{}\" \"{}\"".format(self.__file(), self.__method()))
+        info = method.split(":", 2)
+        return Snippet(info[1], int(info[0]))
 
 
 class SpecializedFinding(Finding):
