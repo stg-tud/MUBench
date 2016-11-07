@@ -1,7 +1,9 @@
+from io import StringIO
 from unittest.mock import patch
 
 from nose.tools import assert_equals
 
+from benchmark.data.pattern import Pattern
 from benchmark.tasks.implementations.publish_metadata_task import PublishMetadataTask
 from benchmark_tests.test_utils.data_util import create_misuse, create_project
 
@@ -56,5 +58,22 @@ class TestPublishMetadataTask:
             "location": {
                 "file": "/some/file.java",
                 "method": "-some.method()-"
-            }
+            },
+            "patterns": []
         }])
+
+    @patch("benchmark.tasks.implementations.publish_metadata_task.open")
+    def test_publishes_pattern_code(self, open_mock, post_mock):
+        pattern_code = "public class P1 {\n" \
+            "  void m() { return; }\n" \
+            "}"
+        open_mock.return_value = StringIO(pattern_code)
+        misuse = create_misuse("-m-", project=self.project, patterns=[Pattern("/base/path", "P1.java")])
+
+        task = PublishMetadataTask("http://test.url")
+        task.process_project_misuse(self.project, misuse)
+        task.end()
+
+        assert_equals(post_mock.call_args[0][1][0]["patterns"], [
+            {"id": "P1", "snippet": {"code": pattern_code, "first_line": 1}}
+        ])

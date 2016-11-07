@@ -29,10 +29,25 @@ class PublishMetadataTask(ProjectMisuseTask):
             "fix": {
                 "description": misuse.fix.description,
                 "diff-url": misuse.fix.commit
-            }
+            },
+            "patterns": self.__get_patterns(misuse)
         })
 
         return self.ok()
+
+    def __get_patterns(self, misuse: Misuse):
+        patterns = []
+        for pattern in misuse.patterns:
+            with open(pattern.path, 'r') as pattern_file:
+                pattern_code_lines = pattern_file.read().splitlines()
+            pattern_code_lines = [line for line in pattern_code_lines if not self.__is_preamble_line(line)]
+            pattern_code = "\n".join(pattern_code_lines)
+            patterns.append({"id": pattern.name, "snippet": {"code": pattern_code, "first_line": 1}})
+        return patterns
+
+    @staticmethod
+    def __is_preamble_line(line: str):
+        return line.startswith("import") or line.startswith("package") or not line
 
     def end(self):
         url = urljoin(self.review_site_url, METADATA_UPLOAD_PATH)
