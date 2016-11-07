@@ -3,7 +3,8 @@ from unittest.mock import patch
 
 from nose.tools import assert_equals
 
-from benchmark.data.finding import Finding
+from benchmark.data.finding import Finding, Snippet
+from benchmark.utils.shell import CommandFailedError
 from benchmark_tests.test_utils.data_util import create_misuse
 
 
@@ -102,3 +103,10 @@ class TestTargetCode:
         finding = Finding({"file": "-file-"})
 
         assert_equals(1, len(finding.get_snippets()))
+
+    def test_extraction_error(self, utils_mock):
+        utils_mock.side_effect = CommandFailedError("cmd", "output")
+
+        finding = Finding({"file": "-file-"})
+
+        assert_equals([Snippet("Failed to execute 'cmd': output", 1)], finding.get_snippets())
