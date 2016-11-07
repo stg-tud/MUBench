@@ -50,10 +50,16 @@ class Finding(Dict[str, str]):
     def __method(self):
         return self["method"] if "method" in self else ""
 
-    def get_snippet(self) -> Snippet:
-        method = exec_util("MethodExtractor", "\"{}\" \"{}\"".format(self.__file(), self.__method()))
-        info = method.split(":", 2)
-        return Snippet(info[1], int(info[0]))
+    def get_snippets(self) -> List[Snippet]:
+        snippets = []
+        output = exec_util("MethodExtractor", "\"{}\" \"{}\"".format(self.__file(), self.__method()))
+
+        methods = output.split("\n===\n")
+        for method in methods:
+            info = method.split(":", 2)
+            snippets.append(Snippet("""class {} {{\n{}\n}}""".format(info[1], info[2]), int(info[0]) - 1))
+
+        return snippets
 
 
 class SpecializedFinding(Finding):
