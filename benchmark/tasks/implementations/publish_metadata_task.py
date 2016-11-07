@@ -21,7 +21,16 @@ class PublishMetadataTask(ProjectMisuseTask):
         self.__metadata.clear()
 
     def process_project_misuse(self, project: Project, misuse: Misuse):
-        self.__metadata.append({"misuse": misuse.id})
+        self.__metadata.append({
+            "misuse": misuse.id,
+            "location": misuse.location.__dict__,
+            "description": misuse.description,
+            "violation_types": misuse.characteristics,
+            "fix": {
+                "description": misuse.fix.description,
+                "diff-url": misuse.fix.commit
+            }
+        })
 
     def end(self):
         url = urljoin(self.review_site_url, METADATA_UPLOAD_PATH)
