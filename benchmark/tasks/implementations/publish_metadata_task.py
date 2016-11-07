@@ -32,6 +32,8 @@ class PublishMetadataTask(ProjectMisuseTask):
             }
         })
 
+        return self.ok()
+
     def end(self):
         url = urljoin(self.review_site_url, METADATA_UPLOAD_PATH)
         post(url, self.__metadata)
