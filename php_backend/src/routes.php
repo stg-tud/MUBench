@@ -32,7 +32,7 @@ $app->get('/experiment/[{prefix}]', function ($request, $response, $args) use ($
 $app->get('/detect/[{experiment_detector}]', function ($request, $response, $args) use ($app) {
 	$arr = split('[_]', $args['experiment_detector']);
 	$exp = $arr[0];
-	$detector = $arr[1];
+	$detector = $arr[2];
 	$test = [
 	0 => [
 			"project" => "aclang",
@@ -56,7 +56,7 @@ $app->post('/api/upload/[{experiment}]', function ($request, $response, $args) u
 	$experiment = $args['experiment'];
 	if($obj && ($experiment === "ex1" || $experiment === "ex2" || $experiment === "ex3")){
 		foreach($obj as $d){
-			$app->db->handleData($experiment, $d, $d->{'findings'});
+			$app->db->handleData($experiment, $d, $d->{'potential_hits'});
 			//$app->dir->handleImage('ex1', $obj->{'project'}, $obj->{'version'}, $img);
 			$this->logger->info($experiment);
 		}	

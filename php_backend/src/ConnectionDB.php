@@ -16,7 +16,7 @@ class DBConnection {
 	}
 
 	public function handleData($ex, $obj, $obj_array){
-		$table = $this->getTableName($ex, $obj->{'dataset'}, $obj->{'detector_name'});
+		$table = $this->getTableName($ex, $obj->{'dataset'}, $obj->{'detector'});
 		$project = $obj->{'project'};
 		$version = $obj->{'version'};
 		$statements = [];
@@ -140,6 +140,9 @@ class DBConnection {
 	}
 
 	public function getTableName($ex, $dataset, $detector){
+		if(is_null($dataset)){
+			return $ex . '_any_' . $detector;
+		}
 		return $ex . '_' . $dataset . '_' . $detector;
 	}
 
