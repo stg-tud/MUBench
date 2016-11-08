@@ -13,12 +13,13 @@ from benchmark.utils.web_util import post
 
 
 class PublishFindingsTask(ProjectVersionTask):
-    def __init__(self, experiment: Experiment, dataset: str, review_site_url: str):
+    def __init__(self, experiment: Experiment, dataset: str, review_site_url: str, upload_limit: int):
         super().__init__()
         self.experiment = experiment
         self.detector = experiment.detector
         self.dataset = dataset
         self.review_site_url = review_site_url
+        self.upload_limit = upload_limit
 
         self.logger = logging.getLogger("review_findings")
         self.__review_data = []  # type: List[Dict]
@@ -57,6 +58,9 @@ class PublishFindingsTask(ProjectVersionTask):
             else:
                 logger.info("Not run on %s.", version)
                 result = "not run"
+
+        if len(potential_hits) > self.upload_limit:
+            potential_hits = potential_hits[0:self.upload_limit]
 
         self.__review_data.append({
             "dataset": self.dataset,

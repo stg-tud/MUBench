@@ -1,4 +1,4 @@
-from argparse import ArgumentParser, HelpFormatter
+from argparse import ArgumentParser, HelpFormatter, ArgumentTypeError
 from operator import attrgetter
 
 from typing import List, Any
@@ -122,6 +122,15 @@ def __add_publish_subprocess(available_detectors: List[str], subparsers) -> None
     __setup_checkout_arguments(findings_parser)
     __setup_compile_arguments(findings_parser)
     __setup_publish_argument(findings_parser)
+
+    def upload_limit(x):
+        limit = int(x)
+        if limit < 1 or limit > 500:
+            raise ArgumentTypeError("invalid value: {} (choose from [1,500])".format(limit))
+        return limit
+
+    findings_parser.add_argument('--limit', type=upload_limit, default=50, metavar='n', dest="limit",
+                                 help="publish only a specified number of potential hits. From [1,500]; default 50.")
 
     metadata_parser = publish_subparsers.add_parser("metadata", formatter_class=SortingHelpFormatter,
                                                     help="Publish misuse metadata to the review site. "

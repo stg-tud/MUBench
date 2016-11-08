@@ -2,6 +2,7 @@ from os.path import join
 from tempfile import mkdtemp
 from unittest.mock import MagicMock, patch
 
+import sys
 from nose.tools import assert_equals
 
 from benchmark.data.detector import Detector
@@ -36,7 +37,7 @@ class TestPublishFindingsTask:
         self.experiment.get_run = lambda v: self.test_run
         self.experiment.detector = self.detector
 
-        self.uut = PublishFindingsTask(self.experiment, self.dataset, "http://dummy.url")
+        self.uut = PublishFindingsTask(self.experiment, self.dataset, "http://dummy.url", sys.maxsize)
 
     def test_post_url(self, post_mock):
         self.experiment.id = "test_experiment"
@@ -83,6 +84,16 @@ class TestPublishFindingsTask:
         self.uut.end()
 
         assert_equals(post_mock.call_args[1]["file_paths"], ["-file1-", "-file2-"])
+
+    def test_publish_successful_run_limit_findings(self, post_mock):
+        self.test_run.is_success = lambda: True
+        self.test_run.get_potential_hits = lambda: [SpecializedFinding({"id": str(i)}) for i in range(1,42)]
+        self.uut = PublishFindingsTask(self.experiment, self.dataset, "http://u.rl", 2)
+
+        self.uut.process_project_version(self.project, self.version)
+        self.uut.end()
+
+        assert_equals(len(post_mock.call_args[0][1][0]["potential_hits"]), 2)
 
     def test_publish_erroneous_run(self, post_mock):
         self.test_run.is_error = lambda: True
