@@ -16,6 +16,7 @@ script:
   - mvn test -f benchmark/mubench.utils/pom.xml
   - "./mubench.py detect dummy 1 --only synthetic"
   - cd php_backend
+  - composer install
   - phpunit --bootstrap vendor/autoload.php tests/
   
 notifications:
