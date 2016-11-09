@@ -8,6 +8,7 @@ RUN apt-get install php5.6
 RUN apt-get install mysql-server
 RUN apt-get install php5.6-xml
 RUN apt-get install php5.6-mbstring
+RUN apt-get install php5.6-sqlite
 
 RUN wget https://phar.phpunit.de/phpunit.phar
 RUN chmod +x phpunit.phar
