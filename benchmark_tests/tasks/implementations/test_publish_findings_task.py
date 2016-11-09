@@ -1,8 +1,6 @@
-from os.path import join
-from tempfile import mkdtemp
+import sys
 from unittest.mock import MagicMock, patch
 
-import sys
 from nose.tools import assert_equals
 
 from benchmark.data.detector import Detector
@@ -10,7 +8,6 @@ from benchmark.data.experiment import Experiment
 from benchmark.data.finding import SpecializedFinding
 from benchmark.data.run import Run
 from benchmark.tasks.implementations.publish_findings_task import PublishFindingsTask
-from benchmark.utils.io import remove_tree, create_file
 from benchmark_tests.data.test_misuse import create_misuse
 from benchmark_tests.test_utils.data_util import create_project, create_version
 
