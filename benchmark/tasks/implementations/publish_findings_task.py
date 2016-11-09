@@ -62,6 +62,9 @@ class PublishFindingsTask(ProjectVersionTask):
         if len(potential_hits) > self.upload_limit:
             potential_hits = potential_hits[0:self.upload_limit]
 
+        for potential_hit in potential_hits:
+            potential_hit["target_snippets"] = [snippet.__dict__ for snippet in potential_hit.get_snippets()]
+
         self.__post(project, version, runtime, number_of_findings, result, potential_hits)
 
         return self.ok()

@@ -1,11 +1,12 @@
 import sys
+from typing import Dict, List
 from unittest.mock import MagicMock, patch
 
 from nose.tools import assert_equals
 
 from benchmark.data.detector import Detector
 from benchmark.data.experiment import Experiment
-from benchmark.data.finding import SpecializedFinding
+from benchmark.data.finding import SpecializedFinding, Snippet
 from benchmark.data.run import Run
 from benchmark.tasks.implementations.publish_findings_task import PublishFindingsTask
 from benchmark_tests.data.test_misuse import create_misuse
@@ -45,8 +46,8 @@ class TestPublishFindingsTask:
         self.test_run.is_success = lambda: True
         self.test_run.get_runtime = lambda: 42
         findings = [
-            SpecializedFinding({"id": "-1-", "misuse": "-p-.-m1-", "detector_specific": "-specific1-"}),
-            SpecializedFinding({"id": "-2-", "misuse": "-p-.-m2-", "detector_specific": "-specific2-"})
+            _create_finding({"id": "-1-", "misuse": "-p-.-m1-", "detector_specific": "-specific1-"}),
+            _create_finding({"id": "-2-", "misuse": "-p-.-m2-", "detector_specific": "-specific2-"})
         ]
         self.test_run.get_findings = lambda: findings
         potential_hits = findings[:1]
@@ -69,8 +70,8 @@ class TestPublishFindingsTask:
         self.test_run.is_success = lambda: True
 
         self.test_run.get_potential_hits = lambda: [
-            SpecializedFinding({"id": "-1-"}, files=["-file1-"]),
-            SpecializedFinding({"id": "-2-"}, files=["-file2-"])
+            _create_finding({"id": "-1-"}, file_paths=["-file1-"]),
+            _create_finding({"id": "-2-"}, file_paths=["-file2-"])
         ]
 
         self.uut.process_project_version(self.project, self.version)
@@ -79,12 +80,21 @@ class TestPublishFindingsTask:
 
     def test_publish_successful_run_limit_findings(self, post_mock):
         self.test_run.is_success = lambda: True
-        self.test_run.get_potential_hits = lambda: [SpecializedFinding({"id": str(i)}) for i in range(1,42)]
+        self.test_run.get_potential_hits = lambda: [_create_finding({"id": str(i)}) for i in range(1,42)]
         self.uut = PublishFindingsTask(self.experiment, self.dataset, "http://u.rl", 2)
 
         self.uut.process_project_version(self.project, self.version)
 
         assert_equals(len(post_mock.call_args[0][1]["potential_hits"]), 2)
+
+    def test_publish_successful_run_code_snippets(self, post_mock):
+        self.test_run.is_success = lambda: True
+        self.test_run.get_potential_hits = lambda: [_create_finding({"id": "42"}, snippets=[Snippet("-code-", 23)])]
+
+        self.uut.process_project_version(self.project, self.version)
+
+        assert_equals(post_mock.call_args[0][1]["potential_hits"][0]["target_snippets"],
+                      [{"code": "-code-", "first_line_number": 23}])
 
     def test_publish_erroneous_run(self, post_mock):
         self.test_run.is_error = lambda: True
@@ -140,3 +150,13 @@ class TestPublishFindingsTask:
         self.uut.end()
 
         post_mock.assert_not_called()
+
+
+def _create_finding(data: Dict, file_paths=None, snippets=None):
+    if snippets is None:
+        snippets = []
+    if file_paths is None:
+        file_paths = []
+    finding = SpecializedFinding(data, files=file_paths)
+    finding.get_snippets = lambda: snippets
+    return finding
