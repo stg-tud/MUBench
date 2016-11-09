@@ -1,6 +1,6 @@
 build:
   pre_ci_boot:
-    image_name: svamann/mubench
+    image_name: svamann/mubench-ci
     image_tag: latest
     pull: true
 
@@ -15,6 +15,8 @@ script:
   - mvn test -f benchmark/mubench.cli/pom.xml
   - mvn test -f benchmark/mubench.utils/pom.xml
   - "./mubench.py detect dummy 1 --only synthetic"
+  - cd php_backend
+  - phpunit --bootstrap vendor/autoload.php tests/
   
 notifications:
   email:
