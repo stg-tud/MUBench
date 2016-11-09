@@ -3,11 +3,13 @@
             <?php foreach($projects as $p) : ?>
                 <h2>Project: <?= htmlspecialchars($p['project']); ?></h2>
                 <table>
-                <?php foreach($p['versions'] as $v) : ?>
+                    <?php for($i = 0; $i < count($p['versions']); $i++) : ?>
+
                     <tr>
                         <td>Version:</td>
-                        <td><?= htmlspecialchars($v['version']); ?> (result: success, findings: <?= htmlspecialchars($v['findings']); ?>, runtime: 4.4s)</td>
+                        <td><?= htmlspecialchars($p['versions'][$i]); ?> (result: <?= htmlspecialchars($p['stats'][$i]['result']); ?>, findings: <?= htmlspecialchars($p['stats'][$i]['number_of_findings']); ?>, runtime: <?= htmlspecialchars(substr($p['stats'][$i]['runtime'], 0, 4)); ?>s)</td>
                     </tr>
+
                     <tr>
                         <td></td>
                         <td>
@@ -15,11 +17,11 @@
                             <table border="1" cellpadding="5">
                            
                                 <tr><th>Misuse</th><th>Violation Types</th><th>Result</th><th>Reviewed By</th></tr>
-                                 <?php foreach($v['items'] as $r) : ?>
+                                 <?php foreach($p['misuse'][$p['versions'][$i]] as $r) : ?>
                                 <tr>
-                                    <td><?= htmlspecialchars($p['project']); ?>.<?= htmlspecialchars($r['id']); ?></td>
-                                    <td><?= htmlspecialchars($r['type']); ?></td>
-                                    <td><a href="../../project/1/<?= htmlspecialchars($r['review']); ?>">review</a></td>
+                                    <td><?= htmlspecialchars($r); ?></td>
+                                    <td></td>
+                                    <td><a href="../review/<?= htmlspecialchars($identifier); ?>_<?= htmlspecialchars($r); ?>">review</a></td>
                                     <td></td>
                                 </tr>
                                 <?php endforeach; ?>
@@ -27,6 +29,6 @@
                             
                         </td>
                     </tr>
-                    <?php endforeach; ?>
+                    <?php endfor; ?>
                 </table>
                 <?php endforeach; ?>

@@ -35,5 +35,6 @@ return [
         'password' => 'mubench',
         'url' => 'localhost',
         'name' => 'mubench'
-    ]
+    ],
+    'upload' => "./upload"
 ];

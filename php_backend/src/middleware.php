@@ -4,7 +4,13 @@ require_once 'DirectoryHelper.php';
 
 use \Slim\Middleware\HttpBasicAuthentication\PdoAuthenticator;
 
+$servername = $settings['db']['url'];
+$dbname = $settings['db']['name'];
+$username = $settings['db']['user'];
+$password = $settings['db']['password'];
 
-$app->db = new DBConnection();
-$app->db->connectDB($settings['db']['url'], $settings['db']['name'], $settings['db']['user'], $settings['db']['password'], $app->getContainer()['logger']);
-$app->dir = new DirectoryHelper('./upload', $app->getContainer()['logger']);
+$pdo = new PDO("mysql:host=$servername;dbname=$dbname", $username, $password);
+$pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION, PDO::MYSQL_ATTR_USE_BUFFERED_QUERY);
+
+$app->db = new DBConnection($pdo, $app->getContainer()['logger']);
+$app->dir = new DirectoryHelper($settings['upload'], $app->getContainer()['logger']);
