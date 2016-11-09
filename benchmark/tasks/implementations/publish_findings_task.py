@@ -19,17 +19,17 @@ class PublishFindingsTask(ProjectVersionTask):
         self.detector = experiment.detector
         self.dataset = dataset
         self.review_site_url = review_site_url
+        self.__upload_url = urljoin(self.review_site_url, "upload/" + self.experiment.id)
         self.upload_limit = upload_limit
 
         self.logger = logging.getLogger("review_findings")
-        self.__review_data = []  # type: List[Dict]
-        self.__files_paths = []  # type: List[str]
 
     def get_requirements(self):
         return [RequestsRequirement()]
 
     def start(self):
-        self.logger.info("Prepare findings of %s in %s...", self.detector, self.experiment)
+        self.logger.info("Prepare findings of %s in %s for upload to %s...",
+                         self.detector, self.experiment, self.__upload_url)
 
     def process_project_version(self, project: Project, version: ProjectVersion) -> List[str]:
         logger = self.logger.getChild("version")
@@ -62,7 +62,12 @@ class PublishFindingsTask(ProjectVersionTask):
         if len(potential_hits) > self.upload_limit:
             potential_hits = potential_hits[0:self.upload_limit]
 
-        self.__review_data.append({
+        self.__post(project, version, runtime, number_of_findings, result, potential_hits)
+
+        return self.ok()
+
+    def __post(self, project, version, runtime, number_of_findings, result, potential_hits):
+        data = {
             "dataset": self.dataset,
             "detector": self.detector.id,
             "project": project.id,
@@ -71,18 +76,9 @@ class PublishFindingsTask(ProjectVersionTask):
             "runtime": runtime,
             "number_of_findings": number_of_findings,
             "potential_hits": potential_hits
-        })
-        self.__files_paths.extend(PublishFindingsTask.get_file_paths(potential_hits))
-
-        return self.ok()
-
-    def end(self):
-        if not self.__review_data:
-            self.logger.info("Nothing to upload.")
-        else:
-            url = urljoin(self.review_site_url, "upload/" + self.experiment.id)
-            self.logger.info("Uploading to %s...", url)
-            post(url, self.__review_data, file_paths=self.__files_paths)
+        }
+        file_paths = PublishFindingsTask.get_file_paths(potential_hits)
+        post(self.__upload_url, data, file_paths=file_paths)
 
     @staticmethod
     def get_file_paths(findings: List[SpecializedFinding]) -> List[str]:

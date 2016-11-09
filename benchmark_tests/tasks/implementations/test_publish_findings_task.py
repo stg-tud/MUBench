@@ -33,19 +33,16 @@ class TestPublishFindingsTask:
         self.detector.id = "test_detector"
 
         self.experiment = MagicMock()  # type: Experiment
-        self.experiment.id = "test"
+        self.experiment.id = "test_experiment"
         self.experiment.get_run = lambda v: self.test_run
         self.experiment.detector = self.detector
 
         self.uut = PublishFindingsTask(self.experiment, self.dataset, "http://dummy.url", sys.maxsize)
 
     def test_post_url(self, post_mock):
-        self.experiment.id = "test_experiment"
-
         self.uut.process_project_version(self.project, self.version)
-        self.uut.end()
 
-        assert_equals(post_mock.call_args[0][0], "http://dummy.url/upload/test_experiment")
+        assert_equals(post_mock.call_args[0][0], "http://dummy.url/upload/" + self.experiment.id)
 
     def test_publish_successful_run(self, post_mock):
         self.test_run.is_success = lambda: True
@@ -59,9 +56,8 @@ class TestPublishFindingsTask:
         self.test_run.get_potential_hits = lambda: potential_hits
 
         self.uut.process_project_version(self.project, self.version)
-        self.uut.end()
 
-        assert_equals(post_mock.call_args[0][1], [{
+        assert_equals(post_mock.call_args[0][1], {
             "dataset": self.dataset,
             "detector": self.detector.id,
             "project": self.project.id,
@@ -70,7 +66,7 @@ class TestPublishFindingsTask:
             "runtime": 42.0,
             "number_of_findings": 2,
             "potential_hits": potential_hits
-        }])
+        })
 
     def test_publish_successful_run_files(self, post_mock):
         self.test_run.is_success = lambda: True
@@ -81,7 +77,6 @@ class TestPublishFindingsTask:
         ]
 
         self.uut.process_project_version(self.project, self.version)
-        self.uut.end()
 
         assert_equals(post_mock.call_args[1]["file_paths"], ["-file1-", "-file2-"])
 
@@ -91,18 +86,16 @@ class TestPublishFindingsTask:
         self.uut = PublishFindingsTask(self.experiment, self.dataset, "http://u.rl", 2)
 
         self.uut.process_project_version(self.project, self.version)
-        self.uut.end()
 
-        assert_equals(len(post_mock.call_args[0][1][0]["potential_hits"]), 2)
+        assert_equals(len(post_mock.call_args[0][1]["potential_hits"]), 2)
 
     def test_publish_erroneous_run(self, post_mock):
         self.test_run.is_error = lambda: True
         self.test_run.get_runtime = lambda: 1337
 
         self.uut.process_project_version(self.project, self.version)
-        self.uut.end()
 
-        assert_equals(post_mock.call_args[0][1], [{
+        assert_equals(post_mock.call_args[0][1], {
             "dataset": self.dataset,
             "detector": self.detector.id,
             "project": self.project.id,
@@ -111,16 +104,15 @@ class TestPublishFindingsTask:
             "runtime": 1337,
             "number_of_findings": 0,
             "potential_hits": []
-        }])
+        })
 
     def test_publish_timeout_run(self, post_mock):
         self.test_run.is_timeout = lambda: True
         self.test_run.get_runtime = lambda: 1000000
 
         self.uut.process_project_version(self.project, self.version)
-        self.uut.end()
 
-        assert_equals(post_mock.call_args[0][1], [{
+        assert_equals(post_mock.call_args[0][1], {
             "dataset": self.dataset,
             "detector": self.detector.id,
             "project": self.project.id,
@@ -129,15 +121,14 @@ class TestPublishFindingsTask:
             "runtime": 1000000,
             "number_of_findings": 0,
             "potential_hits": []
-        }])
+        })
 
     def test_publish_not_run(self, post_mock):
         self.test_run.get_runtime = lambda: 0
 
         self.uut.process_project_version(self.project, self.version)
-        self.uut.end()
 
-        assert_equals(post_mock.call_args[0][1], [{
+        assert_equals(post_mock.call_args[0][1], {
             "dataset": self.dataset,
             "detector": self.detector.id,
             "project": self.project.id,
@@ -146,7 +137,7 @@ class TestPublishFindingsTask:
             "runtime": 0,
             "number_of_findings": 0,
             "potential_hits": []
-        }])
+        })
 
     def test_nothing_to_upload(self, post_mock):
         self.uut.end()
