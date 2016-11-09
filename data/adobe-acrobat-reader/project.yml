@@ -1,0 +1,4 @@
+name: Synthetic Examples of javax.security API Misuses in the Adobe Acrobat Reader Android App project
+repository:
+  type: synthetic
+url: https://play.google.com/store/apps/details?id=com.adobe.reader
