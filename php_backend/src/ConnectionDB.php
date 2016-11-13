@@ -43,7 +43,7 @@ class DBConnection {
 	}
 
 	public function insertMetadata($misuse, $desc, $fix_desc, $violation, $file, $method, $code){
-		return "INSERT INTO metadata (misuse, description, fix_description, violation_types, file, method, code) VALUES(" . $this->pdo->quote($misuse) . "," . $this->pdo->quote($desc) . "," . $this->pdo->quote($fix_desc) . "," . $this->pdo->quote($violation) . "," . $this->quote($file) . "," . $this->quote($method) . "," . $this->quote($code) . ");";
+		return "INSERT INTO metadata (misuse, description, fix_description, violation_types, file, method, code) VALUES(" . $this->pdo->quote($misuse) . "," . $this->pdo->quote($desc) . "," . $this->pdo->quote($fix_desc) . "," . $this->pdo->quote($violation) . "," . $this->pdo->quote($file) . "," . $this->pdo->quote($method) . "," . $this->pdo->quote($code) . ");";
 	}
 
 	public function getStatStatement($table, $project, $version, $result, $runtime, $findings){
@@ -104,14 +104,6 @@ class DBConnection {
 		return $tables;
 	}
 
-	public function getDatasets($prefix){
-		return $this->getPrefixTable($prefix, 1);
-	}
-
-	public function getDetectors($prefix){
-		return $this->getPrefixTable($prefix, 2);
-	}
-
 	public function getStats($id){
 		try{
 			$query = $this->pdo->query("SELECT result, runtime, number_of_findings FROM stats WHERE id=" . $this->pdo->quote($id) . ";");
@@ -132,16 +124,7 @@ class DBConnection {
 		return $query;
 	}
 
-	public function getPrefixTable($prefix, $suffix){
-		$tables = $this->getTables();
-		$names = array();
-		foreach($tables as $t){
-			if(substr($t,0,strlen($prefix)) === $prefix){
-				$names[] = split('[_]', $t)[$suffix];
-			}
-		}
-		return $names;
-	}
+
 
 	public function deleteStatement($table, $project, $version){
 		return "DELETE FROM " . $table . " WHERE identifier=" . $this->pdo->quote($project . "." . $version) . ";";

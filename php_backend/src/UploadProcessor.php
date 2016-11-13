@@ -3,11 +3,9 @@
 class UploadProcessor {
 
 	private $db;
-	private $logger;
 
-	function __construct($db, $logger){
+	function __construct($db){
 		$this->db = $db;
-		$this->logger = $logger;
 	}
 
 	public function handleData($ex, $obj, $obj_array){
@@ -53,7 +51,7 @@ class UploadProcessor {
 	}	
 
 	public function arrayToString($json){
-		$out = $json[0] . ';';
+		$out = $json[0];
 		for($i = 1; $i < count($json); $i++){
 			$out = $out . ';' . $json[$i];
 		}
@@ -68,51 +66,6 @@ class UploadProcessor {
 			$columns[] = $key;
 		}
 		return $columns;
-	}
-
-	public function getPotentialHitsIndex($table){
-		$query = $this->db->getSmallDataPotentialHits($table);
-		$hits = [];
-		$lastIdentifier = "";
-		$currentVersion = "";
-		$hit = [];
-		foreach($query as $q){
-			if($lastIdentifier === ""){
-				$hit = [];
-				$lastIdentifier = $q['project'];
-				$hit['project'] = $q['project'];
-			}
-
-			if($lastIdentifier === $q['project'] && $currentVersion != $q['version']){
-				$hit['versions'][] = $q['version'];
-				$currentVersion = $q['version'];
-				$hit['stats'][] = $this->db->getStats($table . "_" . $lastIdentifier . "_" . $currentVersion);
-			}
-			
-			if($lastIdentifier != $q['project'] && $currentVersion != $q['version']){
-				$hits[] = $hit;
-				$hit = [];
-				$hit['project'] = $q['project'];
-				$hit['version'][] = $q['version'];
-				$lastIdentifier = $q['project'];
-				$currentVersion = $q['version'];
-			}
-
-			if($lastIdentifier === $q['project'] && $currentVersion === $q['version']){
-				$add = true;
-				foreach($hit['misuse'][$currentVersion] as $m){
-					if($m === $q['misuse']){
-						$add = false;
-					}
-				}
-				if($add){
-					$hit['misuse'][$currentVersion][] = $q['misuse'];
-				}
-			}
-		}
-		$hit['stats'][] = $this->db->getStats($table . "_" . $lastIdentifier . "_" . $currentVersion);
-		$hits[] = $hit;
-		return $hits;
 	}
 
 }

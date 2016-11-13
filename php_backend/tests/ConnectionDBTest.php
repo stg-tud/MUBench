@@ -47,12 +47,6 @@ class ConnectionDBTest extends TestCase{
         $this->assertEquals($expected, $name);
     }
 
-    public function testgetJsonNames(){
-        $actual = $this->db->getJsonNames($this->obj->{'findings'});
-        $expected = array('project', 'version', 'a', 'b', 'c', 'd', 'e');
-        $this->assertEquals($expected, $actual);
-    }
-
     public function testColumnStatement(){
         $actual = $this->db->addColumnStatement('table', 'b');
         $expected = 'ALTER TABLE table ADD b TEXT;';
@@ -62,6 +56,30 @@ class ConnectionDBTest extends TestCase{
     public function testCreateTableStatement(){
         $actual = $this->db->createTableStatement('table', $this->obj->{'findings'});
         $expected = 'CREATE TABLE table(identifier TEXT NOT NULL, project TEXT NOT NULL, version TEXT NOT NULL,a TEXT,b TEXT,c TEXT,d TEXT,e TEXT);';
+        $this->assertEquals($expected, $actual);
+    }
+
+    public function testdeleteMetadata(){
+        $actual = $this->db->deleteMetadata('misuse');
+        $expected = "DELETE FROM metadata where misuse='misuse';";
+        $this->assertEquals($expected, $actual);
+    }
+
+    public function testInsertMetadata(){
+        $actual = $this->db->insertMetadata('misuse', 'desc', 'fix_desc', 'violation', 'file', 'method', 'code');
+        $expected = "INSERT INTO metadata (misuse, description, fix_description, violation_types, file, method, code) VALUES('misuse','desc','fix_desc','violation','file','method','code');";        
+        $this->assertEquals($expected, $actual);
+    }
+
+    public function testGetStatsStateent(){
+        $actual = $this->db->getStatStatement('table', 'project', 'version', 'result', 'runtime', 'findings');
+        $expected = "INSERT INTO stats (id, result, runtime, number_of_findings) VALUES ('table_project_version','result','runtime','findings');";
+        $this->assertEquals($expected, $actual);
+    }
+
+    public function testStatDeleteStatement(){
+        $actual = $this->db->getStatDeleteStatement('table', 'project', 'version');
+        $expected = "DELETE FROM stats WHERE id='table_project_version';";
         $this->assertEquals($expected, $actual);
     }
 

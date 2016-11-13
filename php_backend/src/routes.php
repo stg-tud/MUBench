@@ -11,14 +11,14 @@ $app->get('/impressum/', function ($request, $response, $args) use ($app) {
 
 $app->get('/dataset/[{prefix}]', function ($request, $response, $args) use ($app, $settings) {
 	$prefix = $args['prefix'];
-	$data = $app->db->getDatasets($prefix);
+	$data = $app->data->getDatasets($prefix);
 	$template = $settings['ex_template'][split('[_]', $prefix)[0]];
     return $this->renderer->render($response, 'dataset.phtml', array('data' => $data, 'id' => $template['id'], 'title' => $template['title'], 'prefix' => $prefix));
 });
 
 $app->get('/experiment/[{prefix}]', function ($request, $response, $args) use ($app, $settings) {
 	$prefix = $args['prefix'];
-	$data = $app->db->getDetectors($prefix);
+	$data = $app->data->getDetectors($prefix);
 	$template = $settings['ex_template'][split('[_]', $prefix)[0]];
     return $this->renderer->render($response, 'experiment.phtml', array('data' => $data, 'id' => $template['id'], 'title' => $template['title'], 'prefix' => $prefix));
 });
@@ -30,7 +30,7 @@ $app->get('/detect/[{detector}]', function ($request, $response, $args) use ($ap
 	if(count($arr) != 3 || !($exp === "ex1" || $exp === "ex2" || $exp === "ex3") || $detector == ""){
 		return;
 	}
-	$data = $app->processor->getPotentialHitsIndex($args['detector']);
+	$data = $app->data->getPotentialHitsIndex($args['detector']);
 	return $this->renderer->render($response, 'detector.phtml', array('identifier' => $args['detector'], 'detector' => $detector,'projects' => $data));
 });
 
@@ -48,7 +48,7 @@ $app->post('/api/upload/[{experiment}]', function ($request, $response, $args) u
 				$f[$h->{'pattern_violation'}] = $d->{'project'} . "/" . $d->{'version'};
 			}
 			$this->logger->info("HALLO");
-			$app->processor->handleData($experiment, $d, $d->{'potential_hits'});
+			$app->upload->handleData($experiment, $d, $d->{'potential_hits'});
 			$this->logger->info("HALLO2");
 		}
 		foreach($request->getUploadedFiles() as $img){
@@ -60,6 +60,6 @@ $app->post('/api/upload/[{experiment}]', function ($request, $response, $args) u
 $app->post('/api/upload/misuse-metadata/', function ($request, $response, $args) use ($app) {
 	$obj = json_decode($request->getUploadedFiles()['json']->getStream());
 	foreach($obj as $o){
-		$app->db->handleMetaData($o);
+		$app->upload->handleMetaData($o);
 	}
 });
