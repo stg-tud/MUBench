@@ -30,7 +30,7 @@ $app->get('/detect/[{detector}]', function ($request, $response, $args) use ($ap
 	if(count($arr) != 3 || !($exp === "ex1" || $exp === "ex2" || $exp === "ex3") || $detector == ""){
 		return;
 	}
-	$data = $app->db->getPotentialHits($args['detector']);
+	$data = $app->processor->getPotentialHitsIndex($args['detector']);
 	return $this->renderer->render($response, 'detector.phtml', array('identifier' => $args['detector'], 'detector' => $detector,'projects' => $data));
 });
 
@@ -47,7 +47,9 @@ $app->post('/api/upload/[{experiment}]', function ($request, $response, $args) u
 			foreach($d->{'potential_hits'} as $h){
 				$f[$h->{'pattern_violation'}] = $d->{'project'} . "/" . $d->{'version'};
 			}
-			$app->db->handleData($experiment, $d, $d->{'potential_hits'});
+			$this->logger->info("HALLO");
+			$app->processor->handleData($experiment, $d, $d->{'potential_hits'});
+			$this->logger->info("HALLO2");
 		}
 		foreach($request->getUploadedFiles() as $img){
 			$app->dir->handleImage($experiment, $f[$img->getClientFilename()], $img);

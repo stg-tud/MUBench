@@ -10,63 +10,11 @@ class DBConnection {
 		$this->pdo = $pdo;
 	}
 
-	public function handleData($ex, $obj, $obj_array){
-		$table = $this->getTableName($ex, $obj->{'dataset'}, $obj->{'detector'});
-		$project = $obj->{'project'};
-		$version = $obj->{'version'};
-		$runtime = $obj->{'runtime'};
-		$result = $obj->{'result'};
-		$findings = $obj->{'number_of_findings'};
-		$statements = [];
-		$statements[] = $this->getStatDeleteStatement($table, $project, $version);
-		$statements[] = $this->getStatStatement($table, $project, $version, $result, $runtime, $findings);
-		$columns = $this->getTableColumns($table);
-		$obj_columns = $this->getJsonNames($obj_array);
-		if(count($columns) == 0){
-			$statements[] = $this->createTableStatement($table, $obj_array);
-		}
-		$statements[] = $this->deleteStatement($table, $project, $version);
-		$columns = $this->getTableColumns($table);
-		foreach($obj_columns as $c){
-			$add = true;
-			foreach($columns as $oc){
-				if($c == $oc){
-					$add = false;
-					break;
-				}
-			}
-			if($add){
-				$statements[] = $this->addColumnStatement($table, $c);
-			}
-		}
-		foreach($obj_array as $hit){
-			$statements[] = $this->insertStatement($table, $project, $version, $hit);
-			
-		}
-		$this->execStatements($statements);
-	}
-
-	public function handleMetaData($json){
-		$deleteStatement = "DELETE FROM metadata where misuse='" . $json->{'misuse'} . "';";
-		$this->pdo->exec($deleteStatement);
-		$statement = "INSERT INTO metadata (misuse, description, fix_description, violation_types, file, method, code) VALUES( :misuse, :description, :fix_description, :violation_types, :file, :method, :code);";
-		$sth = $this->pdo->prepare($statement, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
-		$sth->execute(array(':misuse' => $json->{'misuse'}, ':description' => $json->{'description'}, ':fix_description' => $json->{'fix_description'}, ':violation_types' => $this->arrayToString($json->{'violation_types'}), ':file' => $json->{'location'}->{'file'}, ':method' => $json->{'location'}->{'method'}, ':code' => $json->{'code'}));
-	}
-
-	public function arrayToString($json){
-		$out = $json[0] . ';';
-		for($i = 1; $i < count($json); $i++){
-			$out = $out . ';' . $json[$i];
-		}
-		return $out;
-	}
-
-	private function execStatements($statements){
+	public function execStatements($statements){
 		foreach($statements as $s){
 			try{
 	    		$status = $this->pdo->exec($s);
-	    		//$this->logger->info("Statement: " . $s . " | Changed: " . $status);
+	    		$this->logger->info("Statement: " . $s . " | Changed: " . $status);
 			}catch(PDOException $e){
 				$this->logger->info("Error: " . $e->getMessage());
 			}
@@ -90,22 +38,20 @@ class DBConnection {
 		return $columns;
 	}
 
+	public function deleteMetadata($misuse){
+		return "DELETE FROM metadata where misuse='" . $misuse . "';";
+	}
+
+	public function insertMetadata($misuse, $desc, $fix_desc, $violation, $file, $method, $code){
+		return "INSERT INTO metadata (misuse, description, fix_description, violation_types, file, method, code) VALUES(" . $this->pdo->quote($misuse) . "," . $this->pdo->quote($desc) . "," . $this->pdo->quote($fix_desc) . "," . $this->pdo->quote($violation) . "," . $this->quote($file) . "," . $this->quote($method) . "," . $this->quote($code) . ");";
+	}
+
 	public function getStatStatement($table, $project, $version, $result, $runtime, $findings){
 		return "INSERT INTO stats (id, result, runtime, number_of_findings) VALUES (" . $this->pdo->quote($table . "_" . $project . "_" . $version) ."," . $this->pdo->quote($result) . "," . $this->pdo->quote($runtime) . "," . $this->pdo->quote($findings) . ");";
 	}
 
 	public function getStatDeleteStatement($table, $project, $version){
 		return "DELETE FROM stats WHERE id=" . $this->pdo->quote($table . "_" . $project . "_" . $version) .";";
-	}
-
-	public function getJsonNames($obj){
-		$columns = array();
-		$columns[] = 'project';
-		$columns[] = 'version';
-		foreach($obj[0] as $key => $value){
-			$columns[] = $key;
-		}
-		return $columns;
 	}
 
 	public function getTableName($ex, $dataset, $detector){
@@ -177,53 +123,13 @@ class DBConnection {
 		}
 	}
 
-	public function getPotentialHits($table){
+	public function getSmallDataPotentialHits($table){
 		try{
-			$query = $this->pdo->query("SELECT * FROM " . $table . ";");
+			$query = $this->pdo->query("SELECT project, version, misuse FROM " . $table . ";");
 		}catch(PDOException $e){
 			$this->logger->info("Error: " . $e->getMessage());
 		}
-		$hits = [];
-		$lastIdentifier = "";
-		$currentVersion = "";
-		$hit = [];
-		foreach($query as $q){
-			if($lastIdentifier === ""){
-				$hit = [];
-				$lastIdentifier = $q['project'];
-				$hit['project'] = $q['project'];
-			}
-
-			if($lastIdentifier === $q['project'] && $currentVersion != $q['version']){
-				$hit['versions'][] = $q['version'];
-				$currentVersion = $q['version'];
-				$hit['stats'][] = $this->getStats($table . "_" . $lastIdentifier . "_" . $currentVersion);
-			}
-			
-			if($lastIdentifier != $q['project'] && $currentVersion != $q['version']){
-				$hits[] = $hit;
-				$hit = [];
-				$hit['project'] = $q['project'];
-				$hit['version'][] = $q['version'];
-				$lastIdentifier = $q['project'];
-				$currentVersion = $q['version'];
-			}
-
-			if($lastIdentifier === $q['project'] && $currentVersion === $q['version']){
-				$add = true;
-				foreach($hit['misuse'][$currentVersion] as $m){
-					if($m === $q['misuse']){
-						$add = false;
-					}
-				}
-				if($add){
-					$hit['misuse'][$currentVersion][] = $q['misuse'];
-				}
-			}
-		}
-		$hit['stats'][] = $this->getStats($table . "_" . $lastIdentifier . "_" . $currentVersion);
-		$hits[] = $hit;
-		return $hits;
+		return $query;
 	}
 
 	public function getPrefixTable($prefix, $suffix){

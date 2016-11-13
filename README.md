@@ -143,6 +143,7 @@ PHP Extensions: php5.6xml, php5.6mbstring
   1. Mount it with your apache
   2. Give read/write permissions on the upload and logs directory
 5. Create metadata and patterns table in your mysql database with:
+
 ```
 CREATE TABLE metadata (
 misuse TEXT NOT NULL,
@@ -158,6 +159,13 @@ CREATE TABLE patterns (
 misuse TEXT NOT NULL,
 name TEXT NOT NULL,
 code TEXT NOT NULL
+);
+
+CREATE TABLE stats (
+id TEXT NOT NULL, 
+result TEXT NOT NULL, 
+runtime TEXT NOT NULL, 
+number_of_findings TEXT NOT NULL
 );
 ```
 
