@@ -1,7 +1,7 @@
 api:
 - javax.crypto
 characteristics:
-
+- missing/condition/value_or_state
 crash: false
 description: >
   The key used is defined statically in the code.
