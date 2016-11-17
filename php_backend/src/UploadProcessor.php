@@ -15,7 +15,7 @@ class UploadProcessor {
 		$runtime = $obj->{'runtime'};
 		$result = $obj->{'result'};
 		$findings = $obj->{'number_of_findings'};
-
+		
 		$statements = [];
 		$statements[] = $this->db->getStatDeleteStatement($table, $project, $version);
 		$statements[] = $this->db->getStatStatement($table, $project, $version, $result, $runtime, $findings);

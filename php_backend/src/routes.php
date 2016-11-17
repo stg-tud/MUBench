@@ -37,7 +37,6 @@ $app->get('/detect/[{detector}]', function ($request, $response, $args) use ($ap
 		return;
 	}
 	$data = $app->data->getPotentialHitsIndex($args['detector']);
-	$this->logger->info(dump($data));
 	return $this->renderer->render($response, 'detector.phtml', array('exp' => $exp, 'identifier' => $args['detector'], 'detector' => $detector,'projects' => $data));
 });
 
@@ -54,8 +53,7 @@ $app->get('/ex1/review/[{misuse}]', function ($request, $response, $args) use ($
 	$data = $app->data->getMetadata($misuse);
 	$patterns = $app->data->getPatterns($misuse);
 	$hits = $app->data->getHits("ex1_" . $set . "_" . $detector, $project, $version, $misuse);
-	$this->logger->info(dump($patterns));
-	return $this->renderer->render($response, 'review_ex1.phtml', array('detector' => $detector, 'version' => $version, 'project' => $project, 'misuse' => $misuse, 'desc' => $data['description'], 'fix_desc' => $data['fix_description'], 'diff_url' => $data['diff_url'], 'violation_types' => $data['violation_types'], 'file' => $data['file'], 'method' => $data['method'], 'code' => $hits[0]['target_snippets'], 'line' => $hits[0]['line'], 'pattern_code' => $patterns['code'], 'pattern_line' => $patterns['line'], 'pattern_name' => $patterns['name'], 'hits' => []));
+	return $this->renderer->render($response, 'review_ex1.phtml', array('detector' => $detector, 'version' => $version, 'project' => $project, 'misuse' => $misuse, 'desc' => $data['description'], 'fix_desc' => $data['fix_description'], 'diff_url' => $data['diff_url'], 'violation_types' => $data['violation_types'], 'file' => $data['file'], 'method' => $data['method'], 'code' => $hits[0]['target_snippets'], 'line' => $hits[0]['line'], 'pattern_code' => $patterns['code'], 'pattern_line' => $patterns['line'], 'pattern_name' => $patterns['name'], 'hits' => $hits));
 });
 
 $app->get('/ex2/review/[{misuse}]', function ($request, $response, $args) use ($app) {
@@ -71,8 +69,7 @@ $app->get('/ex2/review/[{misuse}]', function ($request, $response, $args) use ($
 	$data = $app->data->getMetadata($misuse);
 	$patterns = $app->data->getPatterns($misuse);
 	$hits = $app->data->getHits("ex2_" . $set . "_" . $detector, $project, $version, $misuse);
-	$this->logger->info(dump($patterns));
-	return $this->renderer->render($response, 'review_ex1.phtml', array('detector' => $detector, 'version' => $version, 'project' => $project, 'misuse' => $misuse, 'desc' => $data['description'], 'fix_desc' => $data['fix_description'], 'diff_url' => $data['diff_url'], 'violation_types' => $data['violation_types'], 'file' => $data['file'], 'method' => $data['method'], 'code' => $hits[0]['target_snippets'], 'line' => $hits[0]['line'], 'pattern_code' => $patterns['code'], 'pattern_line' => $patterns['line'], 'pattern_name' => $patterns['name'], 'hits' => []));
+	return $this->renderer->render($response, 'review_ex1.phtml', array('detector' => $detector, 'version' => $version, 'project' => $project, 'misuse' => $misuse, 'desc' => $data['description'], 'fix_desc' => $data['fix_description'], 'diff_url' => $data['diff_url'], 'violation_types' => $data['violation_types'], 'file' => $data['file'], 'method' => $data['method'], 'code' => $hits[0]['target_snippets'], 'line' => $hits[0]['line'], 'pattern_code' => $patterns['code'], 'pattern_line' => $patterns['line'], 'pattern_name' => $patterns['name'], 'hits' => $hits));
 });
 
 $app->get('/ex3/review/[{misuse}]', function ($request, $response, $args) use ($app) {
@@ -88,7 +85,7 @@ $app->get('/ex3/review/[{misuse}]', function ($request, $response, $args) use ($
 	$data = $app->data->getMetadata($misuse);
 	$patterns = $app->data->getPatterns($misuse);
 	$hits = $app->data->getHits("ex3_" . $set . "_" . $detector, $project, $version, $misuse);
-	return $this->renderer->render($response, 'review_ex1.phtml', array('detector' => $detector, 'version' => $version, 'project' => $project, 'misuse' => $misuse, 'desc' => $data['description'], 'fix_desc' => $data['fix_description'], 'diff_url' => $data['diff_url'], 'violation_types' => $data['violation_types'], 'file' => $data['file'], 'method' => $data['method'], 'code' => $hits[0]['target_snippets'], 'line' => $hits[0]['line'], 'pattern_code' => $patterns['code'], 'pattern_line' => $patterns['line'], 'pattern_name' => $patterns['name'], 'hits' => []));
+	return $this->renderer->render($response, 'review_ex1.phtml', array('detector' => $detector, 'version' => $version, 'project' => $project, 'misuse' => $misuse, 'desc' => $data['description'], 'fix_desc' => $data['fix_description'], 'diff_url' => $data['diff_url'], 'violation_types' => $data['violation_types'], 'file' => $data['file'], 'method' => $data['method'], 'code' => $hits[0]['target_snippets'], 'line' => $hits[0]['line'], 'pattern_code' => $patterns['code'], 'pattern_line' => $patterns['line'], 'pattern_name' => $patterns['name'], 'hits' => $hits));
 });
 
 $app->post('/api/upload/[{experiment:ex[1-3]}]', function ($request, $response, $args) use ($app) {
@@ -103,9 +100,7 @@ $app->post('/api/upload/[{experiment:ex[1-3]}]', function ($request, $response, 
 });
 
 $app->post('/api/upload/metadata', function ($request, $response, $args) use ($app) {
-	$this->logger->info("Hallo");
 	$obj = json_decode($request->getBody());
-	$this->logger->info(dump($obj));
 	foreach($obj as $o){
 		$app->upload->handleMetaData($o);
 	}

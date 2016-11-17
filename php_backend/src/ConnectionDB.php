@@ -14,7 +14,7 @@ class DBConnection {
 		foreach($statements as $s){
 			try{
 	    		$status = $this->pdo->exec($s);
-	    		//$this->logger->info("Statement: " . $s . " | Changed: " . $status);
+	    		$this->logger->info("Statement: " . $s . " | Changed: " . $status);
 			}catch(PDOException $e){
 				$this->logger->info("Error: " . $e->getMessage());
 			}
