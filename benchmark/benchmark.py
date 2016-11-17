@@ -19,6 +19,7 @@ from benchmark.tasks.implementations.publish_metadata_task import PublishMetadat
 from benchmark.utils import command_line_util
 from benchmark.utils.dataset_util import get_white_list
 from benchmark.utils.logging import IndentFormatter
+from detectors.muminer.muminer import MuMiner
 
 
 class Benchmark:
@@ -102,6 +103,7 @@ class Benchmark:
             "jadet": Jadet,
             "tikanga": Tikanga,
             "mudetect": MuDetect,
+            "muminer": MuMiner,
         }
         java_options = ['-' + option for option in self.config.java_options]
         return detectors[detector](self.DETECTORS_PATH, detector, java_options) \
