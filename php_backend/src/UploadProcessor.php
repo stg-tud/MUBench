@@ -15,11 +15,17 @@ class UploadProcessor {
 		$runtime = $obj->{'runtime'};
 		$result = $obj->{'result'};
 		$findings = $obj->{'number_of_findings'};
+
 		$statements = [];
 		$statements[] = $this->db->getStatDeleteStatement($table, $project, $version);
 		$statements[] = $this->db->getStatStatement($table, $project, $version, $result, $runtime, $findings);
 		$columns = $this->db->getTableColumns($table);
 		$obj_columns = $this->getJsonNames($obj_array);
+		foreach($obj_array as $hit){
+			$code = $hit->{'target_snippets'};
+			$hit->{'line'} = $code[0]->{'first_line_number'};
+			$hit->{'target_snippets'} = $code[0]->{'code'};
+		}
 		if(count($columns) == 0){
 			$statements[] = $this->db->createTableStatement($table, $obj_array);
 		}
@@ -46,7 +52,11 @@ class UploadProcessor {
 	public function handleMetaData($json){
 		$statements = [];
 		$statements[] = $this->db->deleteMetadata($json->{'misuse'});
-		$statements[] = $this->db->insertMetadata($json->{'misuse'},$json->{'description'}, $json->{'fix_description'}, $this->arrayToString($json->{'violation_types'}), $json->{'location'}->{'file'}, $json->{'location'}->{'method'}, $json->{'code'});
+		$statements[] = $this->db->deletePatterns($json->{'misuse'});
+		$statements[] = $this->db->insertMetadata($json->{'misuse'},$json->{'description'}, $json->{'fix'}->{'description'}, $json->{'fix'}->{'diff-url'}, $this->arrayToString($json->{'violation_types'}), $json->{'location'}->{'file'}, $json->{'location'}->{'method'});
+		foreach($json->{'patterns'} as $p){
+			$statements[] = $this->db->insertPattern($json->{'misuse'}, $p->{'id'}, $p->{'snippet'}->{'code'}, $p->{'snippet'}->{'first_line'});
+		}
 		$this->db->execStatements($statements);
 	}	
 

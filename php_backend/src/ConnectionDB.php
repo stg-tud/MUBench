@@ -14,7 +14,7 @@ class DBConnection {
 		foreach($statements as $s){
 			try{
 	    		$status = $this->pdo->exec($s);
-	    		$this->logger->info("Statement: " . $s . " | Changed: " . $status);
+	    		//$this->logger->info("Statement: " . $s . " | Changed: " . $status);
 			}catch(PDOException $e){
 				$this->logger->info("Error: " . $e->getMessage());
 			}
@@ -39,11 +39,19 @@ class DBConnection {
 	}
 
 	public function deleteMetadata($misuse){
-		return "DELETE FROM metadata where misuse='" . $misuse . "';";
+		return "DELETE FROM metadata WHERE misuse='" . $misuse . "';";
 	}
 
-	public function insertMetadata($misuse, $desc, $fix_desc, $violation, $file, $method, $code){
-		return "INSERT INTO metadata (misuse, description, fix_description, violation_types, file, method, code) VALUES(" . $this->pdo->quote($misuse) . "," . $this->pdo->quote($desc) . "," . $this->pdo->quote($fix_desc) . "," . $this->pdo->quote($violation) . "," . $this->pdo->quote($file) . "," . $this->pdo->quote($method) . "," . $this->pdo->quote($code) . ");";
+	public function insertMetadata($misuse, $desc, $fix_desc, $diff_url, $violation, $file, $method){
+		return "INSERT INTO metadata (misuse, description, fix_description, diff_url, violation_types, file, method) VALUES(" . $this->pdo->quote($misuse) . "," . $this->pdo->quote($desc) . "," . $this->pdo->quote($fix_desc) . "," . $this->pdo->quote($diff_url) . "," . $this->pdo->quote($violation) . "," . $this->pdo->quote($file) . "," . $this->pdo->quote($method) . ");";
+	}
+
+	public function insertPattern($misuse, $id, $code, $line){
+		return "INSERT INTO patterns (misuse, name, code, line) VALUES(" . $this->pdo->quote($misuse) . "," . $this->pdo->quote($id) . "," . $this->pdo->quote($code) . "," . $this->pdo->quote($line) . ");";
+	}
+
+	public function deletePatterns($misuse){
+		return "DELETE FROM patterns WHERE misuse='misuse';";
 	}
 
 	public function getStatStatement($table, $project, $version, $result, $runtime, $findings){
@@ -124,7 +132,32 @@ class DBConnection {
 		return $query;
 	}
 
+	public function getMetadata($misuse){
+		try{
+			$query = $this->pdo->query("SELECT * from metadata WHERE misuse=" . $this->pdo->quote($misuse) . ";");
+		}catch(PDOException $e){
+			$this->logger->info("Error: " . $e->getMessage());
+		}
+		return $query;
+	}
 
+	public function getPattern($misuse){
+		try{
+			$query = $this->pdo->query("SELECT * from patterns WHERE misuse=" . $this->pdo->quote($misuse) . ";");
+		}catch(PDOException $e){
+			$this->logger->info("Error: " . $e->getMessage());
+		}
+		return $query;
+	}
+
+	public function getHits($table, $project, $version, $misuse){
+		try{
+			$query = $this->pdo->query("SELECT * from ". $table . " WHERE misuse=" . $this->pdo->quote($misuse) . " AND project=" . $this->pdo->quote($project) . " AND version=" . $this->pdo->quote($version) . ";");
+		}catch(PDOException $e){
+			$this->logger->info("Error: " . $e->getMessage());
+		}
+		return $query;
+	}
 
 	public function deleteStatement($table, $project, $version){
 		return "DELETE FROM " . $table . " WHERE identifier=" . $this->pdo->quote($project . "." . $version) . ";";

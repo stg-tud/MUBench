@@ -61,13 +61,25 @@ class ConnectionDBTest extends TestCase{
 
     public function testdeleteMetadata(){
         $actual = $this->db->deleteMetadata('misuse');
-        $expected = "DELETE FROM metadata where misuse='misuse';";
+        $expected = "DELETE FROM metadata WHERE misuse='misuse';";
         $this->assertEquals($expected, $actual);
     }
 
     public function testInsertMetadata(){
-        $actual = $this->db->insertMetadata('misuse', 'desc', 'fix_desc', 'violation', 'file', 'method', 'code');
-        $expected = "INSERT INTO metadata (misuse, description, fix_description, violation_types, file, method, code) VALUES('misuse','desc','fix_desc','violation','file','method','code');";        
+        $actual = $this->db->insertMetadata('misuse', 'desc', 'fix_desc', 'diff_url', 'violation', 'file', 'method');
+        $expected = "INSERT INTO metadata (misuse, description, fix_description, diff_url, violation_types, file, method) VALUES('misuse','desc','fix_desc','diff_url','violation','file','method');";        
+        $this->assertEquals($expected, $actual);
+    }
+
+    public function testInsertPattern(){
+        $actual = $this->db->insertPattern('misuse', 'id', 'code', 'line');
+        $expected = "INSERT INTO patterns (misuse, name, code, line) VALUES('misuse','id','code','line');";
+        $this->assertEquals($expected, $actual);
+    }
+
+    public function testDeletePatterns(){
+        $actual = $this->db->deletePatterns('misuse');
+        $expected = "DELETE FROM patterns WHERE misuse='misuse';";
         $this->assertEquals($expected, $actual);
     }
 

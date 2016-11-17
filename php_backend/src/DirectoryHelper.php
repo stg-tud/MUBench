@@ -10,12 +10,9 @@ class DirectoryHelper {
 		$this->logger = $logger;
 	}
 
-	public function handleImage($ex, $id, $img){
-		$this->logger->info("FOO");
-		$path = $this->root . "/" . $id . "/";
-		$this->logger->info($mg);
+	public function handleImage($ex, $project, $version, $img){
+		$path = $this->root . "/" . $project . "/" . $version . "/";
 		$file = $path . $img->getClientFilename();
-		$this->logger->info($path);
 		if(file_exists($file)){
 			unlink($file);
 		}

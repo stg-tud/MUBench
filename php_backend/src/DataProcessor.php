@@ -45,6 +45,8 @@ class DataProcessor {
 				}
 				if($add){
 					$hit['misuse'][$currentVersion][] = $q['misuse'];
+					$meta = $this->getMetadata($q['misuse']);
+					$hit['violation_types'] = $meta['violation_types'];
 				}
 			}
 		}
@@ -53,6 +55,30 @@ class DataProcessor {
 		return $hits;
 	}
 
+	public function getMetadata($misuse){
+		$query = $this->db->getMetadata($misuse);
+		foreach($query as $q){
+			$data = $q;
+			$data['violation_types'] = split('[;]', $q['violation_types']);
+			return $data;
+		}
+	}
+
+	public function getPatterns($misuse){
+		$query = $this->db->getPattern($misuse);
+		foreach($query as $q){
+			return $q;
+		}
+	}
+
+	public function getHits($table, $project, $version, $misuse){
+		$query = $this->db->getHits($table, $project, $version, $misuse);
+		$result = [];
+		foreach($query as $q){
+			$result[] = $q;
+		}
+		return $result;
+	}
 	
 	public function getDatasets($prefix){
 		return $this->getPrefixTable($prefix, 1);
