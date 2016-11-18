@@ -111,3 +111,11 @@ class TestPost:
         args = post_mock.call_args
         assert_equals(args[1]["data"], {"data": '"-data-"'})
         assert_equals(args[1]["files"], [("path", ("path", "-file-content-", "image/png"))])
+
+    @patch("benchmark.utils.web_util.getpass.getpass")
+    def test_post_with_auth(self, pass_mock, post_mock):
+        pass_mock.return_value = "-password-"
+
+        post("-url-", "-data-", username="-username-")
+
+        assert_equals(post_mock.call_args[1]["auth"], ("-username-", "-password-"))

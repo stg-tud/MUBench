@@ -1,3 +1,4 @@
+import getpass
 import hashlib
 import json
 import shutil
@@ -82,6 +83,8 @@ def post(url: str, data: object, file_paths: List[str] = None, username: str="",
     }
 
     if username:
+        if not password:
+            password = getpass.getpass("Enter password for '{}': ".format(username))
         request["auth"] = (username, password)
 
     if file_paths:
