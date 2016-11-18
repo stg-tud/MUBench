@@ -188,3 +188,6 @@ def __setup_detector_arguments(parser: ArgumentParser, available_detectors: List
 def __setup_publish_argument(parser: ArgumentParser) -> None:
     parser.add_argument("-s", "--review-site", required=True, metavar="URL", dest="review_site_url",
                         help="use the specified review site")
+    parser.add_argument("-u", "--username", metavar="USER", dest="review_site_user", default=None,
+                        help="use the specified user to authenticate with the review site."
+                             " Triggers password prompt if set.")

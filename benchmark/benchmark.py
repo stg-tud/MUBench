@@ -75,11 +75,11 @@ class Benchmark:
 
     def _setup_publish_findings(self):
         experiment = self.__get_experiment(self.config.detector)
-        self.runner.add(PublishFindingsTask(experiment, self.config.dataset, self.config.review_site_url,
-                                            self.config.limit))
+        self.runner.add(PublishFindingsTask(experiment, self.config.dataset, self.config.limit,
+                                            self.config.review_site_url, self.config.review_site_user))
 
     def _setup_publish_metadata(self):
-        self.runner.add(PublishMetadataTask(self.config.review_site_url))
+        self.runner.add(PublishMetadataTask(self.config.review_site_url, self.config.review_site_user))
 
     def __get_experiment(self, detector: str):
         ex_ids = {

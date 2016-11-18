@@ -23,6 +23,15 @@ class TestPublishMetadataTask:
 
         assert_equals(post_mock.call_args[0][0], "http://test.url/upload/metadata")
 
+    def test_publish_user(self, post_mock):
+        misuse = create_misuse("-m-")
+
+        task = PublishMetadataTask("http://test.url", "-username-")
+        task.process_project_misuse(self.project, misuse)
+        task.end()
+
+        assert_equals(post_mock.call_args[1]["username"], "-username-")
+
     def test_publishes_metadata(self, post_mock):
         misuse = create_misuse("-m-", meta={
             "description": "-description-",

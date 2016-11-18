@@ -1,5 +1,5 @@
+import getpass
 import logging
-from typing import Dict
 from typing import List
 from urllib.parse import urljoin
 
@@ -13,14 +13,17 @@ from benchmark.utils.web_util import post
 
 
 class PublishFindingsTask(ProjectVersionTask):
-    def __init__(self, experiment: Experiment, dataset: str, review_site_url: str, upload_limit: int):
+    def __init__(self, experiment: Experiment, dataset: str, upload_limit: int,
+                 review_site_url: str, review_site_user: str=""):
         super().__init__()
         self.experiment = experiment
         self.detector = experiment.detector
         self.dataset = dataset
+        self.upload_limit = upload_limit
         self.review_site_url = review_site_url
         self.__upload_url = urljoin(self.review_site_url, "upload/" + self.experiment.id)
-        self.upload_limit = upload_limit
+        self.review_site_user = review_site_user
+        self.review_site_user_password = ""
 
         self.logger = logging.getLogger("review_findings")
 
@@ -28,6 +31,10 @@ class PublishFindingsTask(ProjectVersionTask):
         return [RequestsRequirement()]
 
     def start(self):
+        if self.review_site_user:
+            self.review_site_user_password = getpass.getpass(
+                "Enter review-site password for '{}': ".format(self.review_site_user))
+
         self.logger.info("Prepare findings of %s in %s for upload to %s...",
                          self.detector, self.experiment, self.__upload_url)
 
@@ -81,7 +88,8 @@ class PublishFindingsTask(ProjectVersionTask):
             "potential_hits": potential_hits
         }
         file_paths = PublishFindingsTask.get_file_paths(potential_hits)
-        post(self.__upload_url, data, file_paths=file_paths)
+        post(self.__upload_url, data, file_paths=file_paths,
+             username=self.review_site_user, password=self.review_site_user_password)
 
     @staticmethod
     def get_file_paths(findings: List[SpecializedFinding]) -> List[str]:

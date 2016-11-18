@@ -1,5 +1,5 @@
 import sys
-from typing import Dict, List
+from typing import Dict
 from unittest.mock import MagicMock, patch
 
 from nose.tools import assert_equals
@@ -35,12 +35,22 @@ class TestPublishFindingsTask:
         self.experiment.get_run = lambda v: self.test_run
         self.experiment.detector = self.detector
 
-        self.uut = PublishFindingsTask(self.experiment, self.dataset, "http://dummy.url", sys.maxsize)
+        self.uut = PublishFindingsTask(self.experiment, self.dataset, sys.maxsize, "http://dummy.url", "-username-")
 
     def test_post_url(self, post_mock):
         self.uut.process_project_version(self.project, self.version)
 
         assert_equals(post_mock.call_args[0][0], "http://dummy.url/upload/" + self.experiment.id)
+
+    @patch("benchmark.tasks.implementations.publish_findings_task.getpass.getpass")
+    def test_post_user(self, pass_mock, post_mock):
+        pass_mock.return_value = "-password-"
+
+        self.uut.start() # asks for password once on start
+        self.uut.process_project_version(self.project, self.version)
+
+        assert_equals(post_mock.call_args[1]["username"], "-username-")
+        assert_equals(post_mock.call_args[1]["password"], "-password-")
 
     def test_publish_successful_run(self, post_mock):
         self.test_run.is_success = lambda: True
@@ -81,7 +91,7 @@ class TestPublishFindingsTask:
     def test_publish_successful_run_limit_findings(self, post_mock):
         self.test_run.is_success = lambda: True
         self.test_run.get_potential_hits = lambda: [_create_finding({"id": str(i)}) for i in range(1,42)]
-        self.uut = PublishFindingsTask(self.experiment, self.dataset, "http://u.rl", 2)
+        self.uut = PublishFindingsTask(self.experiment, self.dataset, 2, "http://u.rl")
 
         self.uut.process_project_version(self.project, self.version)
 

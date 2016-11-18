@@ -11,9 +11,10 @@ METADATA_UPLOAD_PATH = "upload/metadata"
 
 
 class PublishMetadataTask(ProjectMisuseTask):
-    def __init__(self, review_site_url: str):
+    def __init__(self, review_site_url: str, review_site_user: str=""):
         super().__init__()
         self.review_site_url = review_site_url
+        self.review_site_user = review_site_user
 
         self.__metadata = []  # type: List[Dict]
 
@@ -51,4 +52,4 @@ class PublishMetadataTask(ProjectMisuseTask):
 
     def end(self):
         url = urljoin(self.review_site_url, METADATA_UPLOAD_PATH)
-        post(url, self.__metadata)
+        post(url, self.__metadata, username=self.review_site_user)
