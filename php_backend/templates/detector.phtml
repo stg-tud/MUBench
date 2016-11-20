@@ -21,11 +21,15 @@
                                 <tr>
                                     <td><?= htmlspecialchars($r); ?></td>
                                     <td>
-                                        <?php foreach($p['violation_types'] as $v) : ?>
+                                    <?php if(empty($p[$r])) : ?>
+                                        unknown
+                                    <?php else : ?>
+                                        <?php foreach($p[$r] as $v) : ?>
                                             <?= htmlspecialchars($v); ?><br/>
                                         <?php endforeach; ?>
-                                    </td>
-                                    <td><a href="../<?= htmlspecialchars($exp); ?>/review/<?= htmlspecialchars($identifier); ?>_<?= htmlspecialchars($p['project']); ?>_<?= htmlspecialchars($p['versions'][$i]); ?>_<?= htmlspecialchars($r); ?>">review</a></td>
+                                    <?php endif; ?>
+                                    </td>   
+                                    <td><a href="../review/<?= htmlspecialchars($identifier); ?>_<?= htmlspecialchars($p['project']); ?>_<?= htmlspecialchars($p['versions'][$i]); ?>_<?= htmlspecialchars($r); ?>">review</a></td>
                                     <td></td>
                                 </tr>
                                 <?php endforeach; ?>

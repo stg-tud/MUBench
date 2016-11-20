@@ -8,8 +8,8 @@ class DataProcessor {
 		$this->db = $db;
 	}
 
-	public function getPotentialHitsIndex($table){
-		$query = $this->db->getSmallDataPotentialHits($table);
+	public function getPotentialHitsIndex($table, $exp){
+		$query = $this->db->getSmallDataPotentialHits($table, $exp);
 		$hits = [];
 		$lastIdentifier = "";
 		$currentVersion = "";
@@ -39,14 +39,14 @@ class DataProcessor {
 			if($lastIdentifier === $q['project'] && $currentVersion === $q['version']){
 				$add = true;
 				foreach($hit['misuse'][$currentVersion] as $m){
-					if($m === $q['misuse']){
+					if($m === ($exp === "ex2" ? $q['id'] : $q['misuse'])){
 						$add = false;
 					}
 				}
 				if($add){
-					$hit['misuse'][$currentVersion][] = $q['misuse'];
+					$hit['misuse'][$currentVersion][] = ($exp === "ex2" ? $q['id'] : $q['misuse']);
 					$meta = $this->getMetadata($q['misuse']);
-					$hit['violation_types'] = $meta['violation_types'];
+					$hit[$q['misuse']] = $meta['violation_types'];
 				}
 			}
 		}
@@ -71,10 +71,15 @@ class DataProcessor {
 		}
 	}
 
-	public function getHits($table, $project, $version, $misuse){
-		$query = $this->db->getHits($table, $project, $version, $misuse);
+	public function getHits($table, $project, $version, $misuse, $exp){
+		$query = $this->db->getHits($table, $project, $version, $misuse, $exp);
 		$result = [];
 		foreach($query as $q){
+			foreach($q as $key => $value){
+				if($key !== "target_snippets" && strpos($value, ";") !== false){
+					$q[$key] = split('[;]', $value);
+				}
+			}
 			$result[] = $q;
 		}
 		return $result;
@@ -93,7 +98,17 @@ class DataProcessor {
 		$names = array();
 		foreach($tables as $t){
 			if(substr($t,0,strlen($prefix)) === $prefix){
-				$names[] = split('[_]', $t)[$suffix];
+				$new = split('[_]', $t)[$suffix];
+				$add = true;
+				foreach($names as $n){
+					if($n === $new){
+						$add = false;
+						break;
+					}
+				}
+				if($add){
+					$names[] = $new;
+				}
 			}
 		}
 		return $names;

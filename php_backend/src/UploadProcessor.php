@@ -20,12 +20,12 @@ class UploadProcessor {
 		$statements[] = $this->db->getStatDeleteStatement($table, $project, $version);
 		$statements[] = $this->db->getStatStatement($table, $project, $version, $result, $runtime, $findings);
 		$columns = $this->db->getTableColumns($table);
-		$obj_columns = $this->getJsonNames($obj_array);
 		foreach($obj_array as $hit){
 			$code = $hit->{'target_snippets'};
 			$hit->{'line'} = $code[0]->{'first_line_number'};
 			$hit->{'target_snippets'} = $code[0]->{'code'};
 		}
+		$obj_columns = $this->getJsonNames($obj_array);
 		if(count($columns) == 0){
 			$statements[] = $this->db->createTableStatement($table, $obj_array);
 		}

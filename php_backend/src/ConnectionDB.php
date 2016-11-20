@@ -14,7 +14,6 @@ class DBConnection {
 		foreach($statements as $s){
 			try{
 	    		$status = $this->pdo->exec($s);
-	    		$this->logger->info("Statement: " . $s . " | Changed: " . $status);
 			}catch(PDOException $e){
 				$this->logger->info("Error: " . $e->getMessage());
 			}
@@ -84,16 +83,24 @@ class DBConnection {
 
 	public function insertStatement($table, $project, $version, $obj){
 		$output = "INSERT INTO " . $table . " ( identifier, project, version";
-		$values = " VALUES ('" . $project . "." . $version ."','" . $project . "','" . $version;
+		$values = " VALUES (" . $this->pdo->quote($project . "." . $version) ."," . $this->pdo->quote($project) . "," . $this->pdo->quote($version);
 		foreach($obj as $key => $value){
 			$output = $output . ", " . $key;
-			$values = $values . "','" . $value;
+			$values = $values . "," . $this->pdo->quote(is_array($value) ? $this->arrayToString($value) : $value);
 		}
 
 		$output = $output . ")";
-		$values = $values . "');";
+		$values = $values . ");";
 		$output = $output . $values;
 		return $output;
+	}
+
+	public function arrayToString($json){
+		$out = $json[0];
+		for($i = 1; $i < count($json); $i++){
+			$out = $out . ';' . $json[$i];
+		}
+		return $out;
 	}
 
 	public function getTables(){
@@ -123,9 +130,13 @@ class DBConnection {
 		}
 	}
 
-	public function getSmallDataPotentialHits($table){
+	public function getSmallDataPotentialHits($table, $exp){
+		$statement = "SELECT project, version, misuse FROM " . $table . ";";
+		if($exp === "ex2"){
+			$statement = "SELECT project, version, id FROM " . $table . ";";
+		}
 		try{
-			$query = $this->pdo->query("SELECT project, version, misuse FROM " . $table . ";");
+			$query = $this->pdo->query($statement);
 		}catch(PDOException $e){
 			$this->logger->info("Error: " . $e->getMessage());
 		}
@@ -150,9 +161,9 @@ class DBConnection {
 		return $query;
 	}
 
-	public function getHits($table, $project, $version, $misuse){
+	public function getHits($table, $project, $version, $misuse, $exp){
 		try{
-			$query = $this->pdo->query("SELECT * from ". $table . " WHERE misuse=" . $this->pdo->quote($misuse) . " AND project=" . $this->pdo->quote($project) . " AND version=" . $this->pdo->quote($version) . ";");
+			$query = $this->pdo->query("SELECT * from ". $table . " WHERE " . ($exp === "ex2" ? "id=" : "misuse=") . $this->pdo->quote($misuse) . " AND project=" . $this->pdo->quote($project) . " AND version=" . $this->pdo->quote($version) . ";");
 		}catch(PDOException $e){
 			$this->logger->info("Error: " . $e->getMessage());
 		}
