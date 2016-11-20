@@ -1,6 +1,12 @@
 <?php
 // Routes
 
+function dump($var){
+	ob_start();
+	var_dump($var);
+	return  ob_get_clean();
+}
+
 $app->get('/', function ($request, $response, $args) use ($settings) {
     return $this->renderer->render($response, 'index.phtml', array('experiments' => $settings['ex_template']));
 });
@@ -30,8 +36,8 @@ $app->get('/detect/[{detector}]', function ($request, $response, $args) use ($ap
 	if(count($arr) != 3 || !($exp === "ex1" || $exp === "ex2" || $exp === "ex3") || $detector == ""){
 		return;
 	}
-	$data = $app->data->getPotentialHitsIndex($args['detector'], $exp);
-	return $this->renderer->render($response, 'detector.phtml', array('exp' => $exp, 'identifier' => $args['detector'], 'detector' => $detector,'projects' => $data));
+	$stats = $app->data->getIndex($args['detector'], $exp);
+	return $this->renderer->render($response, 'detector.phtml', array('exp' => $exp, 'identifier' => $args['detector'], 'detector' => $detector,'projects' => $stats));
 });
 
 $app->get('/review/[{misuse}]', function ($request, $response, $args) use ($app) {
@@ -48,6 +54,7 @@ $app->get('/review/[{misuse}]', function ($request, $response, $args) use ($app)
 	$data = $app->data->getMetadata($misuse);
 	$patterns = $app->data->getPatterns($misuse);
 	$hits = $app->data->getHits($exp . "_" . $set . "_" . $detector, $project, $version, $misuse, $exp);
+	$this->logger->info(dump($hits));
 	return $this->renderer->render($response, 'review.phtml', array('exp' => $exp, 'detector' => $detector, 'version' => $version, 'project' => $project, 'misuse' => $misuse, 'desc' => $data['description'], 'fix_desc' => $data['fix_description'], 'diff_url' => $data['diff_url'], 'violation_types' => $data['violation_types'], 'file' => ($exp == "ex2" ? $hits[0]['file'] : $data['file']), 'method' => ($exp == "ex2" ? $hits[0]['method'] : $data['method']), 'code' => $hits[0]['target_snippets'], 'line' => $hits[0]['line'], 'pattern_code' => $patterns['code'], 'pattern_line' => $patterns['line'], 'pattern_name' => $patterns['name'], 'hits' => $hits));
 });
 

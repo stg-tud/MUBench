@@ -1,13 +1,13 @@
 
                 <h1>Detector: <?= htmlspecialchars($detector); ?></h1>
             <?php foreach($projects as $p) : ?>
-                <h2>Project: <?= htmlspecialchars($p['project']); ?></h2>
+                <h2>Project: <?= htmlspecialchars($p[0]['project']); ?></h2>
                 <table>
-                    <?php for($i = 0; $i < count($p['versions']); $i++) : ?>
+                    <?php foreach($p as $v) : ?>
 
                     <tr>
                         <td>Version:</td>
-                        <td><?= htmlspecialchars($p['versions'][$i]); ?> (result: <?= htmlspecialchars($p['stats'][$i]['result']); ?>, findings: <?= htmlspecialchars($p['stats'][$i]['number_of_findings']); ?>, runtime: <?= htmlspecialchars(substr($p['stats'][$i]['runtime'], 0, 4)); ?>s)</td>
+                        <td><?= htmlspecialchars($v['version']); ?> (result: <?= htmlspecialchars($v['result']); ?>, findings: <?= htmlspecialchars($v['number_of_findings']); ?>, runtime: <?= htmlspecialchars(substr($v['runtime'], 0, 4)); ?>s)</td>
                     </tr>
 
                     <tr>
@@ -17,19 +17,19 @@
                             <table border="1" cellpadding="5">
                            
                                 <tr><th>Misuse</th><th>Violation Types</th><th>Result</th><th>Reviewed By</th></tr>
-                                 <?php foreach($p['misuse'][$p['versions'][$i]] as $r) : ?>
+                                 <?php foreach($v['hits'] as $hit) : ?>
                                 <tr>
-                                    <td><?= htmlspecialchars($r); ?></td>
+                                    <td><?= htmlspecialchars($exp !== "ex2" ? $hit['misuse'] : $hit['id']); ?></td>
                                     <td>
-                                    <?php if(empty($p[$r])) : ?>
+                                    <?php if(empty($hit['violation_types'])) : ?>
                                         unknown
                                     <?php else : ?>
-                                        <?php foreach($p[$r] as $v) : ?>
+                                        <?php foreach($hit['violation_types'] as $v) : ?>
                                             <?= htmlspecialchars($v); ?><br/>
                                         <?php endforeach; ?>
                                     <?php endif; ?>
                                     </td>   
-                                    <td><a href="../review/<?= htmlspecialchars($identifier); ?>_<?= htmlspecialchars($p['project']); ?>_<?= htmlspecialchars($p['versions'][$i]); ?>_<?= htmlspecialchars($r); ?>">review</a></td>
+                                    <td><a href="../review/<?= htmlspecialchars($identifier); ?>_<?= htmlspecialchars($hit['project']); ?>_<?= htmlspecialchars($hit['version']); ?>_<?= htmlspecialchars($exp !== "ex2" ? $hit['misuse'] : $hit['id']); ?>">review</a></td>
                                     <td></td>
                                 </tr>
                                 <?php endforeach; ?>
@@ -37,6 +37,6 @@
                             
                         </td>
                     </tr>
-                    <?php endfor; ?>
+                    <?php endforeach; ?>
                 </table>
                 <?php endforeach; ?>

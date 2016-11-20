@@ -8,53 +8,6 @@ class DataProcessor {
 		$this->db = $db;
 	}
 
-	public function getPotentialHitsIndex($table, $exp){
-		$query = $this->db->getSmallDataPotentialHits($table, $exp);
-		$hits = [];
-		$lastIdentifier = "";
-		$currentVersion = "";
-		$hit = [];
-		foreach($query as $q){
-			if($lastIdentifier === ""){
-				$hit = [];
-				$lastIdentifier = $q['project'];
-				$hit['project'] = $q['project'];
-			}
-
-			if($lastIdentifier === $q['project'] && $currentVersion != $q['version']){
-				$hit['versions'][] = $q['version'];
-				$currentVersion = $q['version'];
-				$hit['stats'][] = $this->db->getStats($table . "_" . $lastIdentifier . "_" . $currentVersion);
-			}
-			
-			if($lastIdentifier != $q['project'] && $currentVersion != $q['version']){
-				$hits[] = $hit;
-				$hit = [];
-				$hit['project'] = $q['project'];
-				$hit['version'][] = $q['version'];
-				$lastIdentifier = $q['project'];
-				$currentVersion = $q['version'];
-			}
-
-			if($lastIdentifier === $q['project'] && $currentVersion === $q['version']){
-				$add = true;
-				foreach($hit['misuse'][$currentVersion] as $m){
-					if($m === ($exp === "ex2" ? $q['id'] : $q['misuse'])){
-						$add = false;
-					}
-				}
-				if($add){
-					$hit['misuse'][$currentVersion][] = ($exp === "ex2" ? $q['id'] : $q['misuse']);
-					$meta = $this->getMetadata($q['misuse']);
-					$hit[$q['misuse']] = $meta['violation_types'];
-				}
-			}
-		}
-		$hit['stats'][] = $this->db->getStats($table . "_" . $lastIdentifier . "_" . $currentVersion);
-		$hits[] = $hit;
-		return $hits;
-	}
-
 	public function getMetadata($misuse){
 		$query = $this->db->getMetadata($misuse);
 		foreach($query as $q){
@@ -112,6 +65,23 @@ class DataProcessor {
 			}
 		}
 		return $names;
+	}
+
+	public function getIndex($table, $exp){
+		$stats = $this->db->getAllStats($table);
+		$projects = [];
+		foreach($stats as $s){
+			
+			foreach($this->db->getPotentialHits($table, $s['project'], $s['version']) as $hit){
+				if($exp !== "ex2"){
+					$meta = $this->getMetadata($hit['misuse']);
+					$hit['violation_types'] = $meta['violation_types'];
+				}
+				$s['hits'][] = $hit;
+			}
+			$projects[$s['project']][] = $s;
+		}
+		return $projects;
 	}
 
 }

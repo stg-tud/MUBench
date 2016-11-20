@@ -53,8 +53,8 @@ class DBConnection {
 		return "DELETE FROM patterns WHERE misuse='misuse';";
 	}
 
-	public function getStatStatement($table, $project, $version, $result, $runtime, $findings){
-		return "INSERT INTO stats (id, result, runtime, number_of_findings) VALUES (" . $this->pdo->quote($table . "_" . $project . "_" . $version) ."," . $this->pdo->quote($result) . "," . $this->pdo->quote($runtime) . "," . $this->pdo->quote($findings) . ");";
+	public function getStatStatement($table, $project, $version, $result, $runtime, $findings, $table){
+		return "INSERT INTO stats (id, result, runtime, number_of_findings, exp, project, version) VALUES (" . $this->pdo->quote($table . "_" . $project . "_" . $version) ."," . $this->pdo->quote($result) . "," . $this->pdo->quote($runtime) . "," . $this->pdo->quote($findings) . "," . $this->pdo->quote($table) . "," . $this->pdo->quote($project) . "," . $this->pdo->quote($version) .");";
 	}
 
 	public function getStatDeleteStatement($table, $project, $version){
@@ -130,6 +130,19 @@ class DBConnection {
 		}
 	}
 
+	public function getAllStats($id){
+		try{
+			$query = $this->pdo->query("SELECT * FROM stats WHERE exp=" . $this->pdo->quote($id) . ";");
+		}catch(PDOException $e){
+			$this->logger->info("Error: " . $e->getMessage());
+		}
+		$result = [];
+		foreach($query as $q){
+			$result[] = $q;
+		}
+		return $result;
+	}
+
 	public function getSmallDataPotentialHits($table, $exp){
 		$statement = "SELECT project, version, misuse FROM " . $table . ";";
 		if($exp === "ex2"){
@@ -168,6 +181,19 @@ class DBConnection {
 			$this->logger->info("Error: " . $e->getMessage());
 		}
 		return $query;
+	}
+
+	public function getPotentialHits($table, $project, $version){
+		try{
+			$query = $this->pdo->query("SELECT * from ". $table . " WHERE project=" . $this->pdo->quote($project) . " AND version=" . $this->pdo->quote($version) . ";");
+		}catch(PDOException $e){
+			$this->logger->info("Error: " . $e->getMessage());
+		}
+		$result = [];
+		foreach($query as $q){
+			$result[] = $q;
+		}
+		return $result;
 	}
 
 	public function deleteStatement($table, $project, $version){

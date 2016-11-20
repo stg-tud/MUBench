@@ -18,7 +18,7 @@ class UploadProcessor {
 		
 		$statements = [];
 		$statements[] = $this->db->getStatDeleteStatement($table, $project, $version);
-		$statements[] = $this->db->getStatStatement($table, $project, $version, $result, $runtime, $findings);
+		$statements[] = $this->db->getStatStatement($table, $project, $version, $result, $runtime, $findings, $table);
 		$columns = $this->db->getTableColumns($table);
 		foreach($obj_array as $hit){
 			$code = $hit->{'target_snippets'};
