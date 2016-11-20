@@ -165,7 +165,10 @@ CREATE TABLE stats (
 id TEXT NOT NULL, 
 result TEXT NOT NULL, 
 runtime TEXT NOT NULL, 
-number_of_findings TEXT NOT NULL
+number_of_findings TEXT NOT NULL,
+exp TEXT NOT NULL,
+project TEXT NOT NULL,
+version TEXT NOT NULL
 );
 ```
 
