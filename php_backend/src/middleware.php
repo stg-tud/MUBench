@@ -7,9 +7,7 @@ require_once 'DataProcessor.php';
 $app->add(new \Slim\Middleware\HttpBasicAuthentication([
     "path" => "/api/", /* or ["/admin", "/api"] */
     "realm" => "Protected",
-    "users" => [
-        "admin" => "pass"
-    ]
+    "users" => $settings['users']
 ]));
 
 $servername = $settings['db']['url'];
