@@ -84,8 +84,8 @@ class ConnectionDBTest extends TestCase{
     }
 
     public function testGetStatsStateent(){
-        $actual = $this->db->getStatStatement('table', 'project', 'version', 'result', 'runtime', 'findings');
-        $expected = "INSERT INTO stats (id, result, runtime, number_of_findings) VALUES ('table_project_version','result','runtime','findings');";
+        $actual = $this->db->getStatStatement('table', 'project', 'version', 'result', 'runtime', 'findings', 'table');
+        $expected = "INSERT INTO stats (id, result, runtime, number_of_findings, exp, project, version) VALUES ('table_project_version','result','runtime','findings','table','project','version');";
         $this->assertEquals($expected, $actual);
     }
 
