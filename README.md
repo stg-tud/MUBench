@@ -152,13 +152,14 @@ fix_description TEXT NOT NULL,
 violation_types TEXT NOT NULL,
 file TEXT NOT NULL,
 method TEXT NOT NULL,
-code TEXT NOT NULL,
+diff_url TEXT NOT NULL,
 );
 
 CREATE TABLE patterns (
 misuse TEXT NOT NULL,
 name TEXT NOT NULL,
-code TEXT NOT NULL
+code TEXT NOT NULL,
+line TEXT NOT NULL
 );
 
 CREATE TABLE stats (
