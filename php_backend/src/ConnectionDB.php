@@ -53,7 +53,7 @@ class DBConnection {
 		return "DELETE FROM patterns WHERE misuse='misuse';";
 	}
 
-	public function getStatStatement($table, $project, $version, $result, $runtime, $findings, $table){
+	public function getStatStatement($table, $project, $version, $result, $runtime, $findings){
 		return "INSERT INTO stats (id, result, runtime, number_of_findings, exp, project, version) VALUES (" . $this->pdo->quote($table . "_" . $project . "_" . $version) ."," . $this->pdo->quote($result) . "," . $this->pdo->quote($runtime) . "," . $this->pdo->quote($findings) . "," . $this->pdo->quote($table) . "," . $this->pdo->quote($project) . "," . $this->pdo->quote($version) .");";
 	}
 
