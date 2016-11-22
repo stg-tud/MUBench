@@ -22,11 +22,11 @@ return [
         "id" => "1"
         ],
         "ex2" => [
-        "title" => "All Findings (Top 10 per Project)",
+        "title" => "All Findings",
         "id" => "2"
         ],
         "ex3" => [
-        "title" => "Mine and Detect",
+        "title" => "Benchmark",
         "id" => "3"
         ]
     ],
