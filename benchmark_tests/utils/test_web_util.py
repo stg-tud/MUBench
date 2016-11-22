@@ -1,11 +1,11 @@
-from tempfile import mkdtemp
-
 from os.path import join, exists
-from unittest.mock import patch
+from pathlib import Path
+from tempfile import mkdtemp
+from unittest.mock import patch, MagicMock
 from urllib.error import URLError
 
 from nose.tools import assert_raises, assert_equals
-from pathlib import Path
+from requests import Response
 
 from benchmark.utils.io import create_file, safe_write
 from benchmark.utils.web_util import validate_file, download_file, is_valid_file, post
@@ -119,3 +119,11 @@ class TestPost:
         post("-url-", "-data-", username="-username-")
 
         assert_equals(post_mock.call_args[1]["auth"], ("-username-", "-password-"))
+
+    def test_post_access_denied(self, post_mock):
+        response = MagicMock(spec=Response)
+        response.raise_for_status.side_effect = UserWarning()
+        post_mock.return_value = response
+
+        with assert_raises(UserWarning):
+            post("-url-", "-data-")

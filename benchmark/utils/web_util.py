@@ -92,4 +92,5 @@ def post(url: str, data: object, file_paths: List[str] = None, username: str="",
         files = [(basename(path), (basename(path), open(path, 'rb'), "image/png")) for path in file_paths]
         request["files"] = files
 
-    requests.post(**request)
+    response = requests.post(**request)
+    response.raise_for_status()
