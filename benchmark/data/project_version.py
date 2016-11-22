@@ -83,7 +83,7 @@ class ProjectVersion:
         if not self._MISUSES:
             misuse_ids = self._yaml.get("misuses", []) or []
             if not misuse_ids:
-                logging.Logger("version").warning("!! %s has no misuses!", self)
+                logging.getLogger("version").warning("!! %s has no misuses!", self)
             self._MISUSES = [Misuse(self._base_path, self.__project.id, misuse_id) for misuse_id in misuse_ids
                              if Misuse.is_misuse(join(self._misuses_dir, misuse_id))]
 
