@@ -130,7 +130,7 @@ fix:
     - name: a/Client.java
       diff: http://a.com/repo/commits/4711/Client.java
 ```
-## Setup Mubench Webserver
+## Setup MUBench Review Site
 
 Requirements: php5.6, mysql5.6
 
@@ -141,6 +141,8 @@ PHP Extensions: php5.6xml, php5.6mbstring
 3. Upload the contents of `./php_backend` to your webserver
 4. Give read/write permissions on the upload and logs directory
 5. Import [`./php_backend/init_db.sql`](https://github.com/stg-tud/MUBench/blob/master/php_backend/init_db.sql) into your database.
+
+The review site should now be available. Use `your.url/index.php/api/` for sending data via the command-line interface.
 
 ## License
 
