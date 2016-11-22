@@ -1,3 +1,4 @@
+import logging
 from typing import Dict
 from typing import List
 from urllib.parse import urljoin
@@ -52,4 +53,5 @@ class PublishMetadataTask(ProjectMisuseTask):
 
     def end(self):
         url = urljoin(self.review_site_url, METADATA_UPLOAD_PATH)
+        logging.Logger("publish.metadata").info("Uploading metadata about %r misuses to %s...", len(self.__metadata), url)
         post(url, self.__metadata, username=self.review_site_user)
