@@ -53,6 +53,13 @@ class TestProjectVersion:
 
         assert_equals([misuse], actual_misuses)
 
+    def test_version_without_misuse(self):
+        self.uut._YAML = {"misuses": None}
+
+        actual_misuses = self.uut.misuses
+
+        assert_equals([], actual_misuses)
+
     def test_finds_only_own_misuses(self):
         project = create_project(self.project_id, base_path=self.temp_dir)
         misuse1 = create_misuse("1", project=project)
