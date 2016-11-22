@@ -1,0 +1,8 @@
+#!/bin/sh
+
+realpath() {
+    [[ $1 = /* ]] && echo "$1" || echo "$PWD/${1#./}"
+}
+SCRIPT_DIR=$(dirname "$(realpath "$0")")
+
+docker run --rm -v "$SCRIPT_DIR/php_backend":/mubench svamann/mubench-ci /bin/bash -c "composer install; mkdir upload"
