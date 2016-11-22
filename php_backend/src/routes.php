@@ -18,19 +18,19 @@ $app->get('/impressum/', function ($request, $response, $args) use ($app) {
 $app->get('/dataset/[{prefix}]', function ($request, $response, $args) use ($app, $settings) {
 	$prefix = $args['prefix'];
 	$data = $app->data->getDatasets($prefix);
-	$template = $settings['ex_template'][split('[_]', $prefix)[0]];
+	$template = $settings['ex_template'][explode('[_]', $prefix)[0]];
     return $this->renderer->render($response, 'dataset.phtml', array('data' => $data, 'id' => $template['id'], 'title' => $template['title'], 'prefix' => $prefix));
 });
 
 $app->get('/experiment/[{prefix}]', function ($request, $response, $args) use ($app, $settings) {
 	$prefix = $args['prefix'];
 	$data = $app->data->getDetectors($prefix);
-	$template = $settings['ex_template'][split('[_]', $prefix)[0]];
+	$template = $settings['ex_template'][explode('[_]', $prefix)[0]];
     return $this->renderer->render($response, 'experiment.phtml', array('data' => $data, 'id' => $template['id'], 'title' => $template['title'], 'prefix' => $prefix));
 });
 
 $app->get('/detect/[{detector}]', function ($request, $response, $args) use ($app) {
-	$arr = split('[_]', $args['detector']);
+	$arr = explode('[_]', $args['detector']);
 	$exp = $arr[0];
 	$detector = $arr[2];
 	if(count($arr) != 3 || !($exp === "ex1" || $exp === "ex2" || $exp === "ex3") || $detector == ""){
@@ -41,7 +41,7 @@ $app->get('/detect/[{detector}]', function ($request, $response, $args) use ($ap
 });
 
 $app->get('/review/[{misuse}]', function ($request, $response, $args) use ($app) {
-	$arr = split('[_]', $args['misuse']);
+	$arr = explode('[_]', $args['misuse']);
 	$exp = $arr[0];
 	$set = $arr[1];
 	$detector = $arr[2];

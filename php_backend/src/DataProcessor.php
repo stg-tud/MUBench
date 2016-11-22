@@ -12,7 +12,7 @@ class DataProcessor {
 		$query = $this->db->getMetadata($misuse);
 		foreach($query as $q){
 			$data = $q;
-			$data['violation_types'] = split('[;]', $q['violation_types']);
+			$data['violation_types'] = explode('[;]', $q['violation_types']);
 			return $data;
 		}
 	}
@@ -30,7 +30,7 @@ class DataProcessor {
 		foreach($query as $q){
 			foreach($q as $key => $value){
 				if($key !== "target_snippets" && strpos($value, ";") !== false){
-					$q[$key] = split('[;]', $value);
+					$q[$key] = explode('[;]', $value);
 				}
 			}
 			$result[] = $q;
@@ -51,7 +51,7 @@ class DataProcessor {
 		$names = array();
 		foreach($tables as $t){
 			if(substr($t,0,strlen($prefix)) === $prefix){
-				$new = split('[_]', $t)[$suffix];
+				$new = explode('[_]', $t)[$suffix];
 				$add = true;
 				foreach($names as $n){
 					if($n === $new){
