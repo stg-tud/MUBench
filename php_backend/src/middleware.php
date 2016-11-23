@@ -18,7 +18,8 @@ $password = $settings['db']['password'];
 $pdo = new PDO("mysql:host=$servername;dbname=$dbname", $username, $password);
 $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION, PDO::MYSQL_ATTR_USE_BUFFERED_QUERY);
 
-$db = new DBConnection($pdo, $app->getContainer()['logger']);
+$logger = $app->getContainer()['logger'];
+$db = new DBConnection($pdo, $logger);
 $app->upload = new UploadProcessor($db);
 $app->data = new DataProcessor($db);
-$app->dir = new DirectoryHelper($settings['upload'], $app->getContainer()['logger']);
+$app->dir = new DirectoryHelper($settings['upload'], $logger);
