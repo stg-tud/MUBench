@@ -147,16 +147,6 @@ local.properties
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
 
-### Composer ###
-composer.phar
-php_backend/vendor/
-php_backend/logs/*.log
-*.png
-
-# Commit your application's lock file http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file
-# You may choose to ignore a library lock file http://getcomposer.org/doc/02-libraries.md#lock-file
-# composer.lock
-
 ### MUBench ###
 
 # Benchmark created folders
