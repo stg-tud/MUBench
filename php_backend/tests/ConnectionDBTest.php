@@ -14,7 +14,7 @@ class ConnectionDBTest extends TestCase{
 
     protected function setUp(){
         $this->obj = json_decode('{"findings":[{"a":"1", "b":"2", "c":"3", "d":"4", "e":"5"}]}');
-        $this->db = new DBConnection($this->getConnection(), NULL);
+        $this->db = new DBConnection($this->getConnection(), new \Monolog\Logger("test"));
     }
 
     public function testInsertStatement(){

@@ -15,7 +15,7 @@ class UploadProcessorTest extends TestCase{
 
     protected function setUp(){
         $this->obj = json_decode('{"findings":[{"a":"1", "b":"2", "c":"3", "d":"4", "e":"5"}]}');
-        $this->proc = new UploadProcessor(new DBConnection($this->getConnection(), NULL));
+        $this->proc = new UploadProcessor(new DBConnection($this->getConnection(), new \Monolog\Logger("test")));
     }
 
     public function testgetJsonNames(){
