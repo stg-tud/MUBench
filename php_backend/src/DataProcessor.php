@@ -4,7 +4,7 @@ class DataProcessor {
 
 	private $db;
 
-	function __construct($db){
+	function __construct(DBConnection $db){
 		$this->db = $db;
 	}
 

@@ -1,11 +1,13 @@
 <?php
 
+use Monolog\Logger;
+
 class DBConnection {
 
 	private $pdo;
 	private $logger;
 
-	function __construct($pdo, $logger){
+	function __construct(PDO $pdo, Logger $logger){
 		$this->logger = $logger;
 		$this->pdo = $pdo;
 	}
