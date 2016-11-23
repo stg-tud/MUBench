@@ -21,7 +21,7 @@
                                 <tr>
                                     <td><?= htmlspecialchars($exp !== "ex2" ? $hit['misuse'] : $hit['id']); ?></td>
                                     <td>
-                                    <?php if(empty($hit['violation_types'])) : ?>
+                                    <?php if(!$hit['violation_types'] || empty($hit['violation_types'])) : ?>
                                         unknown
                                     <?php else : ?>
                                         <?php foreach($hit['violation_types'] as $v) : ?>

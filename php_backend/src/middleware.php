@@ -16,7 +16,8 @@ $username = $settings['db']['user'];
 $password = $settings['db']['password'];
 
 $pdo = new PDO("mysql:host=$servername;dbname=$dbname", $username, $password);
-$pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION, PDO::MYSQL_ATTR_USE_BUFFERED_QUERY);
+$pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+$pdo->setAttribute(PDO::MYSQL_ATTR_USE_BUFFERED_QUERY, true);
 
 $logger = $app->getContainer()['logger'];
 $db = new DBConnection($pdo, $logger);

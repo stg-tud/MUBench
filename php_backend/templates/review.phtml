@@ -33,9 +33,11 @@
             <tr><td class="vtop"><b>Violation Types:</b></td><td>
             
             <ul>
-            <?php foreach($violation_types as $v) : ?>
-                <li><?= htmlspecialchars($v); ?></li>
-            <?php endforeach; ?>
+            <?php if($violation_types) : ?>
+                <?php foreach($violation_types as $v) : ?>
+                    <li><?= htmlspecialchars($v); ?></li>
+                <?php endforeach; ?>
+            <?php endif; ?>
             </ul></td></tr>
         <?php else : ?>
             <tr><td><b>Finding:</b></td><td><?= htmlspecialchars($misuse); ?></td></tr>
@@ -98,9 +100,11 @@
             <?php endforeach; ?>
             <td>
                 <ul>
+                <?php if($violation_types) : ?>
                     <?php foreach($violation_types as $v) : ?>
-                    <li><?= htmlspecialchars($v); ?></li>
-                     <?php endforeach; ?>
+                        <li><?= htmlspecialchars($v); ?></li>
+                    <?php endforeach; ?>
+                <?php endif; ?>
                 </ul>
             </td>
         </tr>
