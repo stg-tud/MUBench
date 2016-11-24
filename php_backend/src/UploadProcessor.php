@@ -8,6 +8,16 @@ class UploadProcessor {
 		$this->db = $db;
 	}
 
+	public function processReview($review){
+		$name = $review['review_name'];
+		$identifier = $review['review_identifier'];
+		$comment = $review['review_comment'];
+		$hit = $review['review_hit'];
+		$statements = [];
+		$statements[] = $this->db->getReviewStatement($identifier, $name, $hit, $comment);
+		$this->db->execStatements($statements);
+	}
+
 	public function handleData($ex, $obj, $obj_array){
 		$table = $this->db->getTableName($ex, $obj->{'dataset'}, $obj->{'detector'});
 		$project = $obj->{'project'};

@@ -7,6 +7,17 @@ function dump($var){
 	return  ob_get_clean();
 }
 
+function detect_route($args, $app, $r, $response, $logged){
+	$arr = explode('[_]', $args['detector']);
+	$exp = $arr[0];
+	$detector = $arr[2];
+	if(count($arr) != 3 || !($exp === "ex1" || $exp === "ex2" || $exp === "ex3") || $detector == ""){
+		return;
+	}
+	$stats = $app->data->getIndex($args['detector'], $exp);
+	return $r->renderer->render($response, 'detector.phtml', array('logged' => $logged, 'exp' => $exp, 'identifier' => $args['detector'], 'detector' => $detector,'projects' => $stats));
+}
+
 $app->get('/', function ($request, $response, $args) use ($settings) {
     return $this->renderer->render($response, 'index.phtml', array('experiments' => $settings['ex_template']));
 });
@@ -30,17 +41,37 @@ $app->get('/experiment/[{prefix}]', function ($request, $response, $args) use ($
 });
 
 $app->get('/detect/[{detector}]', function ($request, $response, $args) use ($app) {
-	$arr = explode('[_]', $args['detector']);
-	$exp = $arr[0];
-	$detector = $arr[2];
-	if(count($arr) != 3 || !($exp === "ex1" || $exp === "ex2" || $exp === "ex3") || $detector == ""){
-		return;
-	}
-	$stats = $app->data->getIndex($args['detector'], $exp);
-	return $this->renderer->render($response, 'detector.phtml', array('exp' => $exp, 'identifier' => $args['detector'], 'detector' => $detector,'projects' => $stats));
+	return detect_route($args, $app, $this, $response, false);
 });
 
 $app->get('/review/[{misuse}]', function ($request, $response, $args) use ($app) {
+	$arr = split('[_]', $args['misuse']);
+	$exp = $arr[0];
+	$set = $arr[1];
+	$detector = $arr[2];
+	$project = $arr[3];
+	$version = $arr[4];
+	$misuse = $arr[5];
+	if(count($arr) < 6  || $detector == ""){
+		return;
+	}
+	$data = $app->data->getMetadata($misuse);
+	$patterns = $app->data->getPatterns($misuse);
+	$hits = $app->data->getHits($exp . "_" . $set . "_" . $detector, $project, $version, $misuse, $exp);
+	return $this->renderer->render($response, 'review.phtml', array('logged' => false, 'exp' => $exp, 'detector' => $detector, 'version' => $version, 'project' => $project, 'misuse' => $misuse, 'desc' => $data['description'], 'fix_desc' => $data['fix_description'], 'diff_url' => $data['diff_url'], 'violation_types' => $data['violation_types'], 'file' => ($exp == "ex2" ? $hits[0]['file'] : $data['file']), 'method' => ($exp == "ex2" ? $hits[0]['method'] : $data['method']), 'code' => $hits[0]['target_snippets'], 'line' => $hits[0]['line'], 'pattern_code' => $patterns['code'], 'pattern_line' => $patterns['line'], 'pattern_name' => $patterns['name'], 'hits' => $hits));
+});
+
+$app->get('/logged/detect/[{detector}]', function ($request, $response, $args) use ($app) {
+	return detect_route($args, $app, $this, $response, true);
+});
+
+$app->post('/logged/review_form/[{detector}]', function ($request, $response, $args) use ($app) {
+	$obj = $request->getParsedBody();
+	$app->upload->processReview($obj);
+	return  $response->withRedirect('/index.php/logged/detect/' . $args['detector']);
+});
+
+$app->get('/logged/review/[{misuse}]', function ($request, $response, $args) use ($app) {
 	$arr = explode('[_]', $args['misuse']);
 	$exp = $arr[0];
 	$set = $arr[1];
@@ -51,16 +82,19 @@ $app->get('/review/[{misuse}]', function ($request, $response, $args) use ($app)
 	if(count($arr) != 6  || $detector == ""){
 		return;
 	}
+	$review = $app->data->getReview($request->getServerParams()['PHP_AUTH_USER'], $args['misuse']);
 	$data = $app->data->getMetadata($misuse);
 	$patterns = $app->data->getPatterns($misuse);
 	$hits = $app->data->getHits($exp . "_" . $set . "_" . $detector, $project, $version, $misuse, $exp);
-	$this->logger->info(dump($hits));
-	return $this->renderer->render($response, 'review.phtml', array('exp' => $exp, 'detector' => $detector, 'version' => $version, 'project' => $project, 'misuse' => $misuse, 'desc' => $data['description'], 'fix_desc' => $data['fix_description'], 'diff_url' => $data['diff_url'], 'violation_types' => $data['violation_types'], 'file' => ($exp == "ex2" ? $hits[0]['file'] : $data['file']), 'method' => ($exp == "ex2" ? $hits[0]['method'] : $data['method']), 'code' => $hits[0]['target_snippets'], 'line' => $hits[0]['line'], 'pattern_code' => $patterns['code'], 'pattern_line' => $patterns['line'], 'pattern_name' => $patterns['name'], 'hits' => $hits));
+	return $this->renderer->render($response, 'review.phtml', array('review' => $review, 'set' => $set, 'logged' => true, 'name' => $request->getServerParams()['PHP_AUTH_USER'], 'exp' => $exp, 'detector' => $detector, 'version' => $version, 'project' => $project, 'misuse' => $misuse, 'desc' => $data['description'], 'fix_desc' => $data['fix_description'], 'diff_url' => $data['diff_url'], 'violation_types' => $data['violation_types'], 'file' => ($exp == "ex2" ? $hits[0]['file'] : $data['file']), 'method' => ($exp == "ex2" ? $hits[0]['method'] : $data['method']), 'code' => $hits[0]['target_snippets'], 'line' => $hits[0]['line'], 'pattern_code' => $patterns['code'], 'pattern_line' => $patterns['line'], 'pattern_name' => $patterns['name'], 'hits' => $hits));
 });
 
 $app->post('/api/upload/[{experiment:ex[1-3]}]', function ($request, $response, $args) use ($app) {
 	$obj = json_decode($request->getBody());
 	$experiment = $args['experiment'];
+	if(!$obj){
+		$this->logger->error("upload failed, object empty");
+	}
 	if($obj){
 		$app->upload->handleData($experiment, $obj, $obj->{'potential_hits'});
 	}

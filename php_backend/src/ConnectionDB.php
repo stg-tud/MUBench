@@ -16,6 +16,7 @@ class DBConnection {
 		foreach($statements as $s){
 			try{
 	    		$status = $this->pdo->exec($s);
+	    		$this->logger->info($status);
 			}catch(PDOException $e){
 				$this->logger->info("Error: " . $e->getMessage());
 			}
@@ -176,6 +177,15 @@ class DBConnection {
 		return $query;
 	}
 
+	public function getReview($user, $identifier){
+		try{
+			$query = $this->pdo->query("SELECT * from reviews WHERE name=" . $this->pdo->quote($user) . " AND identifier=" . $this->pdo->quote($identifier) . ";");
+		}catch(PDOException $e){
+			$this->logger->info("Error: " . $e->getMessage());
+		}
+		return $query;
+	}
+
 	public function getHits($table, $project, $version, $misuse, $exp){
 		try{
 			$query = $this->pdo->query("SELECT * from ". $table . " WHERE " . ($exp === "ex2" ? "id=" : "misuse=") . $this->pdo->quote($misuse) . " AND project=" . $this->pdo->quote($project) . " AND version=" . $this->pdo->quote($version) . ";");
@@ -196,6 +206,19 @@ class DBConnection {
 			$result[] = $q;
 		}
 		return $result;
+	}
+
+	public function getAllReviews($identifier){
+		try{
+			$query = $this->pdo->query("SELECT name from reviews WHERE identifier=" . $this->pdo->quote($identifier) . ";");
+		}catch(PDOException $e){
+			$this->logger->info("Error: " . $e->getMessage());
+		}
+		return $query;
+	}
+
+	public function getReviewStatement($identifier, $name, $hit, $comment){
+		return "INSERT INTO reviews (identifier, name, hit, comment) VALUES (" . $this->pdo->quote($identifier) . "," . $this->pdo->quote($name) . "," . $this->pdo->quote($hit) . "," . $this->pdo->quote($comment) . ");";
 	}
 
 	public function deleteStatement($table, $project, $version){

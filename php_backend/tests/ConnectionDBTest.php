@@ -95,4 +95,10 @@ class ConnectionDBTest extends TestCase{
         $this->assertEquals($expected, $actual);
     }
 
+    public function testInsertReviewStatement(){
+        $actual = $this->db->getReviewStatement("identifier", "name", "hit", "comment");
+        $expected = "INSERT INTO reviews (identifier, name, hit, comment) VALUES ('identifier','name','hit','comment');";
+        $this->assertEquals($expected, $actual);
+    }
+    
 }

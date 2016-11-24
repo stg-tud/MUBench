@@ -10,7 +10,6 @@
                 <script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js?autoload=true&amp;skin=sunburst"></script>
             </head>
             <body>
-            
         <h1>Review</h1>
         <table>
             <tr><td><b>Detector:</b></td><td><?= htmlspecialchars($detector); ?></td></tr>
@@ -34,10 +33,10 @@
             
             <ul>
             <?php if($violation_types) : ?>
-                <?php foreach($violation_types as $v) : ?>
-                    <li><?= htmlspecialchars($v); ?></li>
-                <?php endforeach; ?>
-            <?php endif; ?>
+            <?php foreach($violation_types as $v) : ?>
+                <li><?= htmlspecialchars($v); ?></li>
+            <?php endforeach; ?>
+        <?php endif; ?>
             </ul></td></tr>
         <?php else : ?>
             <tr><td><b>Finding:</b></td><td><?= htmlspecialchars($misuse); ?></td></tr>
@@ -60,8 +59,10 @@
             <p>Findings of the detector that identify an anomaly in the same file and method as the known misuse.</p>
         <?php else : ?>
             <h2>Metadata</h2>
-        <?php endif; ?>    
+        <?php endif; ?> 
+
         <?php if(count($hits) > 0) : ?>
+        <form action="../review_form/<?= htmlspecialchars($exp); ?>_<?= htmlspecialchars($set); ?>_<?= htmlspecialchars($detector); ?>" method="post" target="">
         <table border="1" cellpadding="5">
         
 
@@ -78,7 +79,21 @@
 
         <?php foreach($hits as $hit) : ?>
         <tr>
-            <td>?
+            <td>
+            <?php if($logged) : ?>
+                <?php if($review) : ?>
+                        <?= htmlspecialchars($review['hit']); ?>
+                <?php else : ?>
+                <select name="review_hit" size="1" >
+                    <option value="No" >No</option>
+                    <option value="Yes" >Yes</option>
+                    <option value="?" >?</option>
+                </select>
+                <?php endif; ?>
+
+            <?php else : ?>
+                ?
+            <?php endif;?>
             </td>
             <?php foreach($hit as $key => $value) : ?>
                 <?php if(is_string($key) && $key !== "target_snippets" && $key !== "file" && $key !== "line" && $key !== "project" && $key !== "version" && $key !== "misuse" && $key !== "identifier")  : ?>
@@ -100,17 +115,43 @@
             <?php endforeach; ?>
             <td>
                 <ul>
-                <?php if($violation_types) : ?>
-                    <?php foreach($violation_types as $v) : ?>
-                        <li><?= htmlspecialchars($v); ?></li>
-                    <?php endforeach; ?>
-                <?php endif; ?>
+                    <?php if($violation_types) : ?>
+                <?php foreach($violation_types as $v) : ?>
+                <li><?= htmlspecialchars($v); ?></li>
+                <?php endforeach; ?>
+            <?php endif;?>
                 </ul>
             </td>
         </tr>
        <?php endforeach; ?>
        </table>
+         <?php if($logged) :?>
+                <table>
+                <tr><td><b>Reviewer Name:</b><br/>(lower case, no spaces)</td>
+                    <td><?= htmlspecialchars($name); ?></td></tr>
+                <tr><td class="vtop"><b>Comment:</b></td>
+
+                    <td>
+                    <?php if($review) : ?>
+                        <?= htmlspecialchars($review['comment']); ?>
+                    <?php else : ?>
+                        <textarea name="review_comment" cols="80" rows="5"></textarea>
+                    <?php endif; ?>
+                    </td></tr>
+                </table>
+                <input type="hidden" name="review_name" value="<?= htmlspecialchars($name); ?>"/>
+                <input type="hidden" name="review_identifier" value="<?= htmlspecialchars($exp); ?>_<?= htmlspecialchars($set); ?>_<?= htmlspecialchars($detector); ?>_<?= htmlspecialchars($project); ?>_<?= htmlspecialchars($version); ?>_<?= htmlspecialchars($misuse); ?>"/>
+                    
+                <?php if(!$review) : ?>
+                    <input type="submit" value="Save Review" />
+                <?php else : ?>
+                    <button type="button" action="">Edit</button>
+                <?php endif; ?>
+                </form>
+
         <?php endif; ?>
+        <?php endif; ?>
+        
             </body>
         </html>
     

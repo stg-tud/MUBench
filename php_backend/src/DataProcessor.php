@@ -1,11 +1,15 @@
 <?php
 
+use Monolog\Logger;
+
 class DataProcessor {
 
 	private $db;
+	private $logger;
 
-	function __construct(DBConnection $db){
+	function __construct(DBConnection $db, Logger $logger){
 		$this->db = $db;
+		$this->logger = $logger;
 	}
 
 	public function getMetadata($misuse){
@@ -14,6 +18,13 @@ class DataProcessor {
 			$data = $q;
 			$data['violation_types'] = explode('[;]', $q['violation_types']);
 			return $data;
+		}
+	}
+
+	public function getReview($user, $identifier){
+		$query = $this->db->getReview($user, $identifier);
+		foreach($query as $q){
+			return $q;
 		}
 	}
 
@@ -67,16 +78,26 @@ class DataProcessor {
 		return $names;
 	}
 
+	public function getAllReviews($table, $project, $version, $id){
+		$query = $this->db->getAllReviews($table . "_" . $project . "_" . $version . "_" . $id);
+		$reviewer = [];
+		foreach($query as $q){
+			$reviewer[] = $q['name'];
+		}
+		return $reviewer;
+	}
+
 	public function getIndex($table, $exp){
 		$stats = $this->db->getAllStats($table);
 		$projects = [];
 		foreach($stats as $s){
-			
 			foreach($this->db->getPotentialHits($table, $s['project'], $s['version']) as $hit){
 				if($exp !== "ex2"){
 					$meta = $this->getMetadata($hit['misuse']);
 					$hit['violation_types'] = $meta['violation_types'];
 				}
+				$reviews = $this->getAllReviews($table, $s['project'], $s['version'], $exp === "ex2" ? $hit['id'] : $hit['misuse']);
+				$hit['reviews'] = $reviews;
 				$s['hits'][] = $hit;
 			}
 			$projects[$s['project']][] = $s;
