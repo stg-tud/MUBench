@@ -93,7 +93,8 @@ $app->post('/api/upload/[{experiment:ex[1-3]}]', function ($request, $response, 
 	$obj = json_decode($request->getBody());
 	$experiment = $args['experiment'];
 	if(!$obj){
-		$this->logger->error("upload failed, object empty");
+		$this->logger->error("upload failed, object empty" . dump($request->getBody()));
+		return $response->withStatus(500);
 	}
 	if($obj){
 		$app->upload->handleData($experiment, $obj, $obj->{'potential_hits'});
@@ -101,6 +102,7 @@ $app->post('/api/upload/[{experiment:ex[1-3]}]', function ($request, $response, 
 	foreach($request->getUploadedFiles() as $img){
 		$app->dir->handleImage($experiment, $obj->{'project'}, $obj->{'version'}, $img);
 	}
+	return $response->withStatus(200);
 });
 
 $app->post('/api/upload/metadata', function ($request, $response, $args) use ($app) {
