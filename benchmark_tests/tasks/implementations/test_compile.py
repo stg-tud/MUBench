@@ -128,6 +128,15 @@ class TestCompile:
 
         assert exists(join(self.pattern_sources_path, "m", "a.java"))
 
+    def test_skips_copy_of_pattern_sources_if_no_pattern(self):
+        self.create_misuse_with_pattern("mwp", "a.java")
+        makedirs(join(self.pattern_sources_path, "mwp"))
+        self.version._MISUSES.append(create_misuse("mwop", project=self.project))
+
+        self.uut.process_project_version(self.project, self.version)
+
+        assert not exists(join(self.pattern_sources_path, "mwp", "a.java"))
+
     def test_skips_if_no_config(self):
         del self.version._YAML["build"]
 
