@@ -221,6 +221,15 @@ class TestCompile:
 
         assert exists(join(self.pattern_classes_path, "m", "a.class"))
 
+    def test_skips_compile_patterns_if_no_pattern(self):
+        self.create_misuse_with_pattern("mwp", "a.java")
+        makedirs(join(self.pattern_classes_path, "mwp"))
+        self.version._MISUSES.append(create_misuse("mwop", project=self.project))
+
+        self.uut.process_project_version(self.project, self.version)
+
+        assert not exists(join(self.pattern_classes_path, "mwp", "a.class"))
+
     def create_misuse_with_pattern(self, misuse_id, pattern_file):
         misuse = create_misuse(misuse_id, project=self.project)
         create_file(join(self.source_path, misuse.location.file))
