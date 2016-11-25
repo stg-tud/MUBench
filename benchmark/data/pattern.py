@@ -32,5 +32,6 @@ class Pattern:
     def _get_destination_file(self, destination: str) -> str:
         return join(destination, self.__relative_pattern_path)
 
+
 class NoPatternFileError(FileNotFoundError):
     pass
