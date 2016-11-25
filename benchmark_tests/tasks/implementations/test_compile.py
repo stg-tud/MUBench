@@ -109,7 +109,6 @@ class TestCompile:
 
         self.uut.process_project_version(self.project, self.version)
 
-        print("EXPECTED PATH = " + join(self.pattern_sources_path, "m", "a.java"))
         assert exists(join(self.pattern_sources_path, "m", "a.java"))
 
     def test_skips_copy_of_pattern_sources_if_copy_exists(self):
