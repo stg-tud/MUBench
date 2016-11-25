@@ -78,7 +78,12 @@ class DetectorExecution:
         except CommandFailedError as e:
             logger.error("Detector failed: %s", e)
             self.result = Result.error
-            self.message = str(e)
+            message = str(e)
+            message_lines = str.splitlines(message)
+            if len(message_lines) > 5000:
+                self.message = "\n".join(message_lines[0:500]) + "\n" + "\n".join(message_lines[-4500:])
+            else:
+                self.message = message
         except TimeoutError:
             logger.error("Detector took longer than the maximum of %s seconds", timeout)
             self.result = Result.timeout
