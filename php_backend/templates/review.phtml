@@ -105,7 +105,7 @@
                         <?php endforeach; ?>
                     </ul>
                 <?php elseif(strpos($value, ".png") !== false) : ?>
-                    <img src="/upload/<?= htmlspecialchars($project); ?>/<?= htmlspecialchars($version); ?>/<?= htmlspecialchars($hit[$key]); ?>" />
+                    <img src="/site/upload/<?= htmlspecialchars($project); ?>/<?= htmlspecialchars($version); ?>/<?= htmlspecialchars($hit[$key]); ?>" />
                 <?php else : ?>
                     <?= htmlspecialchars($value); ?>
                 <?php endif; ?>

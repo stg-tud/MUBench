@@ -16,7 +16,7 @@ class DirectoryHelper {
 		if(file_exists($file)){
 			unlink($file);
 		}
-		$this->logger->info(mkdir($path, 0700, true));
+		$this->logger->info('Moved img: ' . $img->getClientFilename() . " to " . mkdir($path, 0745, true));
 		$img->moveTo($file);
 	}
 

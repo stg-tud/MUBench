@@ -16,9 +16,9 @@ class DBConnection {
 		foreach($statements as $s){
 			try{
 	    		$status = $this->pdo->exec($s);
-	    		$this->logger->info($status);
+	    		$this->logger->error($status);
 			}catch(PDOException $e){
-				$this->logger->info("Error: " . $e->getMessage());
+				$this->logger->error("Error execStatement: (" . $e->getMessage() . ") executing " . $s );
 			}
 		}
 	}
@@ -28,7 +28,7 @@ class DBConnection {
 	    try{
 	    	$query = $this->pdo->query($sql);
 		}catch(PDOException $e){
-			$this->logger->info("Error: " . $e->getMessage());
+			$this->logger->error("Error getTableColumns: " . $e->getMessage());
 		}
 		$columns = array();
 		if(count($query) == 0){
@@ -110,7 +110,7 @@ class DBConnection {
 		try{
 	    	$query = $this->pdo->query("SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE';");
 		}catch(PDOException $e){
-			$this->logger->info("Error: " . $e->getMessage());
+			$this->logger->error("Error getTables: " . $e->getMessage());
 		}
 		$tables = array();
 		if(count($query) == 0){
@@ -126,7 +126,7 @@ class DBConnection {
 		try{
 			$query = $this->pdo->query("SELECT result, runtime, number_of_findings FROM stats WHERE id=" . $this->pdo->quote($id) . ";");
 		}catch(PDOException $e){
-			$this->logger->info("Error: " . $e->getMessage());
+			$this->logger->error("Error getStats: " . $e->getMessage());
 		}
 		foreach($query as $q){
 			return $q;
@@ -137,7 +137,7 @@ class DBConnection {
 		try{
 			$query = $this->pdo->query("SELECT * FROM stats WHERE exp=" . $this->pdo->quote($id) . ";");
 		}catch(PDOException $e){
-			$this->logger->info("Error: " . $e->getMessage());
+			$this->logger->error("Error getAllStats: " . $e->getMessage());
 		}
 		$result = [];
 		foreach($query as $q){
@@ -154,7 +154,7 @@ class DBConnection {
 		try{
 			$query = $this->pdo->query($statement);
 		}catch(PDOException $e){
-			$this->logger->info("Error: " . $e->getMessage());
+			$this->logger->error("Error getSmallDataPotentialHits: " . $e->getMessage());
 		}
 		return $query;
 	}
@@ -163,7 +163,7 @@ class DBConnection {
 		try{
 			$query = $this->pdo->query("SELECT * from metadata WHERE misuse=" . $this->pdo->quote($misuse) . ";");
 		}catch(PDOException $e){
-			$this->logger->info("Error: " . $e->getMessage());
+			$this->logger->error("Error getMetadata: " . $e->getMessage());
 		}
 		return $query;
 	}
@@ -172,7 +172,7 @@ class DBConnection {
 		try{
 			$query = $this->pdo->query("SELECT * from patterns WHERE misuse=" . $this->pdo->quote($misuse) . ";");
 		}catch(PDOException $e){
-			$this->logger->info("Error: " . $e->getMessage());
+			$this->logger->error("Error getPattern: " . $e->getMessage());
 		}
 		return $query;
 	}
@@ -181,7 +181,7 @@ class DBConnection {
 		try{
 			$query = $this->pdo->query("SELECT * from reviews WHERE name=" . $this->pdo->quote($user) . " AND identifier=" . $this->pdo->quote($identifier) . ";");
 		}catch(PDOException $e){
-			$this->logger->info("Error: " . $e->getMessage());
+			$this->logger->error("Error getReview: " . $e->getMessage());
 		}
 		return $query;
 	}
@@ -190,7 +190,7 @@ class DBConnection {
 		try{
 			$query = $this->pdo->query("SELECT * from ". $table . " WHERE " . ($exp === "ex2" ? "id=" : "misuse=") . $this->pdo->quote($misuse) . " AND project=" . $this->pdo->quote($project) . " AND version=" . $this->pdo->quote($version) . ";");
 		}catch(PDOException $e){
-			$this->logger->info("Error: " . $e->getMessage());
+			$this->logger->error("Error getHits: " . $e->getMessage());
 		}
 		return $query;
 	}
@@ -199,7 +199,7 @@ class DBConnection {
 		try{
 			$query = $this->pdo->query("SELECT * from ". $table . " WHERE project=" . $this->pdo->quote($project) . " AND version=" . $this->pdo->quote($version) . ";");
 		}catch(PDOException $e){
-			$this->logger->info("Error: " . $e->getMessage());
+			$this->logger->error("Error getPotentialHits: " . $e->getMessage());
 		}
 		$result = [];
 		foreach($query as $q){
@@ -212,7 +212,7 @@ class DBConnection {
 		try{
 			$query = $this->pdo->query("SELECT name from reviews WHERE identifier=" . $this->pdo->quote($identifier) . ";");
 		}catch(PDOException $e){
-			$this->logger->info("Error: " . $e->getMessage());
+			$this->logger->error("Error getAllReviews: " . $e->getMessage());
 		}
 		return $query;
 	}
