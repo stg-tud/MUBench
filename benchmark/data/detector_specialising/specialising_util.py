@@ -1,7 +1,8 @@
-from os import makedirs
+from os import makedirs, remove
 
 from os.path import dirname, join
 
+from benchmark.utils.io import safe_write
 from benchmark.utils.shell import Shell
 
 
@@ -11,11 +12,15 @@ def format_float_value(finding, float_key):
 
 def replace_dot_graph_with_image(finding, key, base_path) -> str:
     image_name = "f{}-{}.png".format(finding["id"], key)
-    __create_image(finding[key], join(base_path, image_name))
+    __create_image(finding[key], base_path, image_name)
     finding[key] = image_name
     return join(base_path, image_name)
 
 
-def __create_image(dot_graph, file):
-    makedirs(dirname(file), exist_ok=True)
-    Shell.exec("""echo "{}" | dot -Tpng -o"{}" """.format(dot_graph.replace("\\", "\\\\").replace("\"", "\\\""), file))
+def __create_image(dot_graph, working_directory, image_name):
+    makedirs(working_directory, exist_ok=True)
+    image_path = join(working_directory, image_name)
+    dot_path = image_path + ".dot"
+    safe_write(dot_graph, dot_path, append=False)
+    Shell.exec("dot -Tpng -o""{}"" ""{}""".format(image_path, dot_path))
+    remove(dot_path)
