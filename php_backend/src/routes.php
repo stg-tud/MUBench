@@ -68,7 +68,7 @@ $app->get('/logged/detect/[{detector}]', function ($request, $response, $args) u
 $app->post('/logged/review_form/[{detector}]', function ($request, $response, $args) use ($app) {
 	$obj = $request->getParsedBody();
 	$app->upload->processReview($obj);
-	return  $response->withRedirect('/index.php/logged/detect/' . $args['detector']);
+	return  $response->withRedirect('/site/index.php/logged/detect/' . $args['detector']);
 });
 
 $app->get('/logged/review/[{misuse}]', function ($request, $response, $args) use ($app) {
@@ -90,13 +90,14 @@ $app->get('/logged/review/[{misuse}]', function ($request, $response, $args) use
 });
 
 $app->post('/api/upload/[{experiment:ex[1-3]}]', function ($request, $response, $args) use ($app) {
-	$obj = $request->getParsedBody()["data"];
+	$obj = json_decode($request->getParsedBody()["data"]);
 	$experiment = $args['experiment'];
 	if(!$obj){
 		$this->logger->error("upload failed, object empty " . dump($request->getParsedBody()));
 		return $response->withStatus(500);
 	}
     $app->upload->handleData($experiment, $obj, $obj->{'potential_hits'});
+	$app->dir->deleteOldImages($experiment, $obj->{'project'}, $obj->{'version'});
     foreach($request->getUploadedFiles() as $img){
         $app->dir->handleImage($experiment, $obj->{'project'}, $obj->{'version'}, $img);
     }
@@ -104,7 +105,7 @@ $app->post('/api/upload/[{experiment:ex[1-3]}]', function ($request, $response, 
 });
 
 $app->post('/api/upload/metadata', function ($request, $response, $args) use ($app) {
-	$obj = $request->getParsedBody()["data"];
+	$obj = json_decode($request->getParsedBody()["data"]);
 	if(!$obj){
 		$this->logger->error("upload of metadata failed, object empty: " . dump($request->getParsedBody()));
 		return $response->withStatus(500);

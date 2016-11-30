@@ -16,7 +16,7 @@ class DBConnection {
 		foreach($statements as $s){
 			try{
 	    		$status = $this->pdo->exec($s);
-	    		$this->logger->error($status);
+	    		$this->logger->info("Status execStatement: " . $status);
 			}catch(PDOException $e){
 				$this->logger->error("Error execStatement: (" . $e->getMessage() . ") executing " . $s );
 			}
