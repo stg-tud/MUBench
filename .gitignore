@@ -155,3 +155,5 @@ findings/
 reviews/
 results/
 out.log*
+php_backend/upload/
+php_backend/vendor/

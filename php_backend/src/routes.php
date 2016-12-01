@@ -105,9 +105,9 @@ $app->post('/api/upload/[{experiment:ex[1-3]}]', function ($request, $response, 
 });
 
 $app->post('/api/upload/metadata', function ($request, $response, $args) use ($app) {
-	$obj = json_decode($request->getParsedBody()["data"]);
+	$obj = json_decode($request->getBody());
 	if(!$obj){
-		$this->logger->error("upload of metadata failed, object empty: " . dump($request->getParsedBody()));
+		$this->logger->error("upload of metadata failed, object empty: " . dump($request->getBody()));
 		return $response->withStatus(500);
 	}
 	foreach($obj as $o){
