@@ -110,12 +110,22 @@ characteristics:
   - superfluous/call
   - missing/condition/null_check
   - missing/condition/value_or_state
-  - missing/condition/threading
-  - missing/condition/environment
-  - superfluous/condition
+  - missing/condition/synchronization
+  - missing/condition/context
+  - misplaced/condition/null_check
+  - misplaced/condition/value_or_state
+  - misplaced/condition/synchronization
+  - misplaced/condition/context
+  - superfluous/condition/null_check
+  - superfluous/condition/value_or_state
+  - superfluous/condition/synchronization
+  - superfluous/condition/context
   - missing/exception_handling
+  - misplaced/exception_handling
   - superfluous/exception_handling
-  - missing/guarantee
+  - missing/iteration
+  - misplaced/iteration
+  - superfluous/iteration
 build:
   src: src/main/java
   commands:
