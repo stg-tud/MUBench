@@ -113,12 +113,14 @@ class DataProcessor {
 				$reviews = $this->getAllReviews($table, $s['project'], $s['version'], $exp === "ex2" ? $hit['id'] : $hit['misuse']);
 				$hit['reviews'] = $reviews;
 				$add = true;
-				foreach($s['hits'] as $h){
-				    if(($exp === "ex2" && $hit['id'] === $h['id']) || ($exp !== "ex2" && $hit['misuse'] === $h['misuse'])){
-				        $add = false;
+				if($s['hits']) {
+                    foreach ($s['hits'] as $h) {
+                        if (($exp === "ex2" && $hit['id'] === $h['id']) || ($exp !== "ex2" && $hit['misuse'] === $h['misuse'])) {
+                            $add = false;
+                        }
                     }
                 }
-                if($add) {
+                if ($add) {
                     $s['hits'][] = $hit;
                 }
 			}
