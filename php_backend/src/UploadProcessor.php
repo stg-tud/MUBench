@@ -12,9 +12,12 @@ class UploadProcessor {
 		$name = $review['review_name'];
 		$identifier = $review['review_identifier'];
 		$comment = $review['review_comment'];
-		$hit = $review['review_hit'];
-		$statements = [];
-		$statements[] = $this->db->getReviewStatement($identifier, $name, $hit, $comment);
+		$hits = $review['review_hit'];
+        $statements = [];
+        $statements[] = $this->db->getReviewDeleteStatement($identifier, $name);
+        foreach($hits as $key => $value){
+            $statements[] = $this->db->getReviewStatement($identifier, $name, $value['hit'], $comment, $this->arrayToString($value['types']), $key);
+        }
 		$this->db->execStatements($statements);
 	}
 

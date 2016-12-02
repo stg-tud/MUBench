@@ -23,9 +23,12 @@ class DataProcessor {
 
 	public function getReview($user, $identifier){
 		$query = $this->db->getReview($user, $identifier);
+		$result = [];
 		foreach($query as $q){
-			return $q;
+			$q['types'] = explode(";", $q['violation_type']);
+			$result[$q['id']] = $q;
 		}
+		return $result;
 	}
 
 	public function getPatterns($misuse){
@@ -85,7 +88,15 @@ class DataProcessor {
 			return [];
 		}
 		foreach($query as $q){
-			$reviewer[] = $q['name'];
+		    $add = true;
+		    foreach($reviewer as $r){
+		        if($r === $q['name']){
+                    $add = false;
+                }
+            }
+            if($add) {
+                $reviewer[] = $q['name'];
+            }
 		}
 		return $reviewer;
 	}
@@ -101,7 +112,15 @@ class DataProcessor {
 				}
 				$reviews = $this->getAllReviews($table, $s['project'], $s['version'], $exp === "ex2" ? $hit['id'] : $hit['misuse']);
 				$hit['reviews'] = $reviews;
-				$s['hits'][] = $hit;
+				$add = true;
+				foreach($s['hits'] as $h){
+				    if(($exp === "ex2" && $hit['id'] === $h['id']) || ($exp !== "ex2" && $hit['misuse'] === $h['misuse'])){
+				        $add = false;
+                    }
+                }
+                if($add) {
+                    $s['hits'][] = $hit;
+                }
 			}
 			$projects[$s['project']][] = $s;
 		}

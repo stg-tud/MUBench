@@ -96,8 +96,14 @@ class ConnectionDBTest extends TestCase{
     }
 
     public function testInsertReviewStatement(){
-        $actual = $this->db->getReviewStatement("identifier", "name", "hit", "comment");
-        $expected = "INSERT INTO reviews (identifier, name, hit, comment) VALUES ('identifier','name','hit','comment');";
+        $actual = $this->db->getReviewDeleteStatement("test_test", "test");
+        $expected = "DELETE FROM reviews WHERE identifier='test_test' AND name='test';";
+        $this->assertEquals($expected, $actual);
+    }
+
+    public function testDeleteReviewStatement(){
+        $actual = $this->db->getReviewStatement("identifier", "name", "hit", "comment", "type", "id");
+        $expected = "INSERT INTO reviews (identifier, name, hit, comment, violation_type, id) VALUES ('identifier','name','hit','comment','type','id');";
         $this->assertEquals($expected, $actual);
     }
     

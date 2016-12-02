@@ -81,16 +81,24 @@
         <tr>
             <td>
             <?php if($logged) : ?>
-                <?php if($review) : ?>
-                        <?= htmlspecialchars($review['hit']); ?>
+                <select name="review_hit[<?= htmlspecialchars($hit['id']); ?>][hit]" size="1" >
+                <?php if($review && $review[$hit['id']]["hit"] === "Yes") : ?>
+                    <option selected="selected" value="Yes" >Yes</option>
                 <?php else : ?>
-                <select name="review_hit" size="1" >
-                    <option value="No" >No</option>
-                    <option value="Yes" >Yes</option>
-                    <option value="?" >?</option>
-                </select>
-                <?php endif; ?>
+                    <option value="Yes" >?</option>
+                <?php endif;?>
+                <?php if($review && $review[$hit['id']]["hit"] === "No") : ?>
+                    <option selected="selected" value="No" >No</option>
+                <?php else : ?>
+                    <option value="No" >?</option>
+                <?php endif;?>
 
+                <?php if($review && $review[$hit['id']]["hit"] === "?") : ?>
+                    <option selected="selected" value="?" >?</option>
+                <?php else : ?>
+                    <option value="?" >?</option>
+                <?php endif;?>
+                </select>
             <?php else : ?>
                 ?
             <?php endif;?>
@@ -114,12 +122,60 @@
               <?php endif; ?>
             <?php endforeach; ?>
             <td>
+                <?php if($logged) : ?>
+                    <?php if($exp === "ex2") : ?>
+                        <select name="review_hit[<?= htmlspecialchars($hit['id']); ?>][types][]" size="10" multiple>
+                            <option value="missing/call" >missing/call</option>
+                            <option value="missing/condition/null_check" >missing/condition/null_check</option>
+                            <option value="missing/condition/value_or_state" >missing/condition/value_or_state</option>
+                            <option value="missing/condition/synchronization" >missing/condition/synchronization</option>
+                            <option value="missing/exception_handling" >missing/exception_handling</option>
+                            <option value="superfluous/call" >superfluous/call</option>
+                            <option value="superfluous/condition" >superfluous/condition</option>
+                            <option value="superfluous/exception_handling" >superfluous/exception_handling</option>
+                            <option value="misplaced/call" >misplaced/call</option>
+                            <option value="missing/condition/context" >missing/condition/context</option>
+                            <option value="misplaced/condition/null_check" >misplaced/condition/null_check</option>
+                            <option value="misplaced/condition/value_or_state" >misplaced/condition/value_or_state</option>
+                            <option value="misplaced/condition/synchronization" >misplaced/condition/synchronization</option>
+                            <option value="misplaced/condition/context" >misplaced/condition/context</option>
+                            <option value="superfluous/condition/null_check" >superfluous/condition/null_check</option>
+                            <option value="superfluous/condition/value_or_state" >superfluous/condition/value_or_state</option>
+                            <option value="superfluous/condition/synchronization" >superfluous/condition/synchronization</option>
+                            <option value="superfluous/condition/context" >superfluous/condition/context</option>
+                            <option value="misplaced/exception_handling" >misplaced/exception_handling</option>
+                            <option value="missing/iteration" >missing/iteration</option>
+                            <option value="misplaced/iteration" >misplaced/iteration</option>
+                            <option value="superfluous/iteration" >superfluous/iteration</option>
+                        </select>
+                    <?php else : ?>
+                        <?php if($violation_types) : ?>
+                            <select name="review_hit[<?= htmlspecialchars($hit['id']); ?>][types][]" size="<?= htmlspecialchars(count($violation_types)); ?>" multiple>
+                            <?php foreach($violation_types as $v) : ?>
+                                <?php $add = true ?>
+                                <?php foreach($review[$hit['id']]["types"] as $t) : ?>
+                                    <?php if($t === $v) : ?>
+                                        <option selected="selected" value="<?= htmlspecialchars($v); ?>"><?= htmlspecialchars($v); ?></option>
+                                        <?php $add = false ?>
+                                    <?php endif; ?>
+                                <?php endforeach; ?>
+                                <?php if($add) : ?>
+                                    <option value="<?= htmlspecialchars($v); ?>"><?= htmlspecialchars($v); ?></option>
+                                <?php endif; ?>
+                            <?php endforeach; ?>
+                            </select>
+                        <?php endif;?>
+
+                    <?php endif; ?>
+
+                <?php else : ?>
                 <ul>
                     <?php if($violation_types) : ?>
                 <?php foreach($violation_types as $v) : ?>
                 <li><?= htmlspecialchars($v); ?></li>
                 <?php endforeach; ?>
             <?php endif;?>
+                    <?php endif;?>
                 </ul>
             </td>
         </tr>
@@ -133,7 +189,7 @@
 
                     <td>
                     <?php if($review) : ?>
-                        <?= htmlspecialchars($review['comment']); ?>
+                        <textarea name="review_comment" cols="80" rows="5"><?= htmlspecialchars($review[$hits[0]['id']]['comment']); ?></textarea>
                     <?php else : ?>
                         <textarea name="review_comment" cols="80" rows="5"></textarea>
                     <?php endif; ?>
@@ -142,11 +198,7 @@
                 <input type="hidden" name="review_name" value="<?= htmlspecialchars($name); ?>"/>
                 <input type="hidden" name="review_identifier" value="<?= htmlspecialchars($exp); ?>_<?= htmlspecialchars($set); ?>_<?= htmlspecialchars($detector); ?>_<?= htmlspecialchars($project); ?>_<?= htmlspecialchars($version); ?>_<?= htmlspecialchars($misuse); ?>"/>
                     
-                <?php if(!$review) : ?>
-                    <input type="submit" value="Save Review" />
-                <?php else : ?>
-                    <button type="button" action="">Edit</button>
-                <?php endif; ?>
+                <input type="submit" value="Save Review" />
                 </form>
 
         <?php endif; ?>

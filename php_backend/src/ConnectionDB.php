@@ -217,9 +217,13 @@ class DBConnection {
 		return $query;
 	}
 
-	public function getReviewStatement($identifier, $name, $hit, $comment){
-		return "INSERT INTO reviews (identifier, name, hit, comment) VALUES (" . $this->pdo->quote($identifier) . "," . $this->pdo->quote($name) . "," . $this->pdo->quote($hit) . "," . $this->pdo->quote($comment) . ");";
+	public function getReviewStatement($identifier, $name, $hit, $comment, $type, $id){
+		return "INSERT INTO reviews (identifier, name, hit, comment, violation_type, id) VALUES (" . $this->pdo->quote($identifier) . "," . $this->pdo->quote($name) . "," . $this->pdo->quote($hit) . "," . $this->pdo->quote($comment) . "," . $this->pdo->quote($type) . "," . $this->pdo->quote($id) .");";
 	}
+
+	public function getReviewDeleteStatement($identifier, $name){
+	    return "DELETE FROM reviews WHERE identifier=" . $this->pdo->quote($identifier) . " AND name=" . $this->pdo->quote($name) . ";";
+    }
 
 	public function deleteStatement($table, $project, $version){
 		return "DELETE FROM " . $table . " WHERE identifier=" . $this->pdo->quote($project . "." . $version) . ";";
