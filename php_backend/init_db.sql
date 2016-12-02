@@ -16,11 +16,20 @@ line TEXT NOT NULL
 );
 
 CREATE TABLE stats (
-id TEXT NOT NULL, 
-result TEXT NOT NULL, 
-runtime TEXT NOT NULL, 
+id TEXT NOT NULL,
+result TEXT NOT NULL,
+runtime TEXT NOT NULL,
 number_of_findings TEXT NOT NULL,
 exp TEXT NOT NULL,
 project TEXT NOT NULL,
 version TEXT NOT NULL
+);
+
+CREATE TABLE reviews (
+identifier TEXT NOT NULL,
+name TEXT NOT NULL,
+hit TEXT NOT NULL,
+comment TEXT NOT NULL,
+violation_type TEXT NOT NULL,
+id TEXT NOT NULL
 );
