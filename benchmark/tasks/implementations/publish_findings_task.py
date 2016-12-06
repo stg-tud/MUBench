@@ -19,7 +19,7 @@ class PublishFindingsTask(ProjectVersionTask):
         self.detector = experiment.detector
         self.dataset = dataset
         self.review_site_url = review_site_url
-        self.__upload_url = urljoin(self.review_site_url, "upload/" + self.experiment.id)
+        self.__upload_url = urljoin(self.review_site_url, "api/upload/" + self.experiment.id)
         self.review_site_user = review_site_user
         self.review_site_user_password = ""
 

@@ -21,7 +21,7 @@ class TestPublishMetadataTask:
         task.process_project_misuse(self.project, misuse)
         task.end()
 
-        assert_equals(post_mock.call_args[0][0], "http://test.url/upload/metadata")
+        assert_equals(post_mock.call_args[0][0], "http://test.url/api/upload/metadata")
 
     def test_publish_user(self, post_mock):
         misuse = create_misuse("-m-")

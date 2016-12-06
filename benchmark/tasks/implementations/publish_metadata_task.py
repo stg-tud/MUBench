@@ -8,8 +8,6 @@ from benchmark.data.project import Project
 from benchmark.tasks.project_misuse_task import ProjectMisuseTask
 from benchmark.utils.web_util import post
 
-METADATA_UPLOAD_PATH = "upload/metadata"
-
 
 class PublishMetadataTask(ProjectMisuseTask):
     def __init__(self, review_site_url: str, review_site_user: str=""):
@@ -52,6 +50,6 @@ class PublishMetadataTask(ProjectMisuseTask):
         return line.startswith("import") or line.startswith("package") or not line
 
     def end(self):
-        url = urljoin(self.review_site_url, METADATA_UPLOAD_PATH)
+        url = urljoin(self.review_site_url, "api/upload/metadata")
         logging.getLogger("publish.metadata").info("Uploading metadata about %r misuses to %s...", len(self.__metadata), url)
         post(url, self.__metadata, username=self.review_site_user)

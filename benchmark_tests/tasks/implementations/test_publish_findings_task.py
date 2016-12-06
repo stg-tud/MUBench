@@ -40,7 +40,7 @@ class TestPublishFindingsTask:
     def test_post_url(self, post_mock):
         self.uut.process_project_version(self.project, self.version)
 
-        assert_equals(post_mock.call_args[0][0], "http://dummy.url/upload/" + self.experiment.id)
+        assert_equals(post_mock.call_args[0][0], "http://dummy.url/api/upload/" + self.experiment.id)
 
     @patch("benchmark.tasks.implementations.publish_findings_task.getpass.getpass")
     def test_post_user(self, pass_mock, post_mock):
