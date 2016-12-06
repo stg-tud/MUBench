@@ -47,6 +47,9 @@ class Experiment:
         if self.id == Experiment.PROVIDED_PATTERNS:
             return "experiment 1 (provided patterns)"
         elif self.id == Experiment.TOP_FINDINGS:
-            return "experiment 2 (top findings)"
+            if self.limit:
+                return "experiment 2 (top-{} findings)".format(self.limit)
+            else:
+                return "experiment 2 (all findings)"
         elif self.id == Experiment.BENCHMARK:
             return "experiment 3 (benchmark)"
