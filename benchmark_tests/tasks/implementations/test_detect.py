@@ -31,7 +31,7 @@ class TestDetect:
                                                          AllFindings(self.detector))
         self.test_run = Run([self.test_run_execution])
         self.test_run.execute = MagicMock(return_value="test execution successful")
-        self.experiment = Experiment(Experiment.TOP_FINDINGS, self.detector, self.findings_path, "")
+        self.experiment = Experiment(Experiment.TOP_FINDINGS, self.detector, self.findings_path)
         self.experiment.get_run = lambda v: self.test_run
         self.uut = Detect(self.compiles_path, self.experiment, None, False)
 
@@ -91,7 +91,7 @@ class TestDetectorDownload:
         self.findings_path = join(self.temp_dir, "findings")
 
         detector = DummyDetector("path")
-        experiment = Experiment(Experiment.PROVIDED_PATTERNS, detector, self.findings_path, "")
+        experiment = Experiment(Experiment.PROVIDED_PATTERNS, detector, self.findings_path)
         self.uut = Detect(self.compiles_path, experiment, None, False)
         self.uut._download = MagicMock(return_value=True)
 

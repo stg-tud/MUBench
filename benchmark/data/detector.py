@@ -26,12 +26,12 @@ class Detector:
 
         return md5
 
-    def specialize_findings(self, findings_path: str, findings: List[Finding]) -> List[SpecializedFinding]:
+    def specialize_findings(self, findings_path: str, findings: List[Finding],
+                            limit: int = 0) -> List[SpecializedFinding]:
         findings = self._sort_findings(findings)
-        specialized_findings = []
-        for finding in findings:
-            specialized_findings.append(self._specialize_finding(findings_path, finding))
-        return specialized_findings
+        if limit:
+            findings = findings[0:limit]
+        return [self._specialize_finding(findings_path, finding) for finding in findings]
 
     def _sort_findings(self, findings: List[Finding]) -> List[Finding]:
         findings = deepcopy(findings)

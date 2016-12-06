@@ -40,3 +40,11 @@ class TestAllFindings:
         actual = self.uut.get_potential_hits(expected, "")
 
         assert_equals(expected, actual)
+
+    def test_limits_number_of_findings(self):
+        all = [Finding({"id": "1"}), Finding({"id": "2"})]
+        self.uut.limit = 1
+
+        actual = self.uut.get_potential_hits(all, "")
+
+        assert_equals(1, len(actual))

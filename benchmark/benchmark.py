@@ -28,7 +28,6 @@ class Benchmark:
     COMPILES_PATH = CHECKOUTS_PATH
     DETECTORS_PATH = realpath("detectors")
     FINDINGS_PATH = realpath("findings")
-    REVIEW_PATH = realpath("reviews")
 
     DATASETS_FILE_PATH = join(DATA_PATH, 'datasets.yml')
 
@@ -75,8 +74,7 @@ class Benchmark:
 
     def _setup_publish_findings(self):
         experiment = self.__get_experiment(self.config.detector)
-        self.runner.add(PublishFindingsTask(experiment, self.config.dataset, self.config.limit,
-                                            self.config.review_site_url, self.config.review_site_user))
+        self.runner.add(PublishFindingsTask(experiment, self.config.dataset, self.config.review_site_url, self.config.review_site_user))
 
     def _setup_publish_metadata(self):
         self.runner.add(PublishMetadataTask(self.config.review_site_url, self.config.review_site_user))
@@ -87,8 +85,12 @@ class Benchmark:
             2: Experiment.TOP_FINDINGS,
             3: Experiment.BENCHMARK
         }
+        try:
+            limit = self.config.limit
+        except AttributeError:
+            limit = 0
         return Experiment(ex_ids.get(self.config.experiment), self.__get_detector(detector),
-                          Benchmark.FINDINGS_PATH, Benchmark.REVIEW_PATH)
+                          Benchmark.FINDINGS_PATH, limit)
 
     def __get_detector(self, detector: str):
         from detectors.dummy.dummy import DummyDetector

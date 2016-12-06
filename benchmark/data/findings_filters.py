@@ -40,8 +40,9 @@ class PotentialHits(FindingsFilter):
 
 
 class AllFindings(FindingsFilter):
-    def __init__(self, detector: Detector):
+    def __init__(self, detector: Detector, limit: int = 0):
         super().__init__(detector)
+        self.limit = limit
 
     def get_potential_hits(self, findings: List[Finding], findings_path: str) -> List[SpecializedFinding]:
-        return self.detector.specialize_findings(findings_path, findings)
+        return self.detector.specialize_findings(findings_path, findings, self.limit)

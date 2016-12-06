@@ -35,7 +35,7 @@ class TestPublishFindingsTask:
         self.experiment.get_run = lambda v: self.test_run
         self.experiment.detector = self.detector
 
-        self.uut = PublishFindingsTask(self.experiment, self.dataset, sys.maxsize, "http://dummy.url", "-username-")
+        self.uut = PublishFindingsTask(self.experiment, self.dataset, "http://dummy.url", "-username-")
 
     def test_post_url(self, post_mock):
         self.uut.process_project_version(self.project, self.version)
@@ -87,15 +87,6 @@ class TestPublishFindingsTask:
         self.uut.process_project_version(self.project, self.version)
 
         assert_equals(post_mock.call_args[1]["file_paths"], ["-file1-", "-file2-"])
-
-    def test_publish_successful_run_limit_findings(self, post_mock):
-        self.test_run.is_success = lambda: True
-        self.test_run.get_potential_hits = lambda: [_create_finding({"id": str(i)}) for i in range(1,42)]
-        self.uut = PublishFindingsTask(self.experiment, self.dataset, 2, "http://u.rl")
-
-        self.uut.process_project_version(self.project, self.version)
-
-        assert_equals(len(post_mock.call_args[0][1]["potential_hits"]), 2)
 
     def test_publish_successful_run_code_snippets(self, post_mock):
         self.test_run.is_success = lambda: True

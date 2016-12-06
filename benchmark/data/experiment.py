@@ -13,11 +13,11 @@ class Experiment:
     TOP_FINDINGS = "ex2"
     BENCHMARK = "ex3"
 
-    def __init__(self, experiment_id: str, detector: Detector, findings_base_path: str, reviews_path: str):
+    def __init__(self, experiment_id: str, detector: Detector, findings_base_path: str, limit: int = 0):
         self.id = experiment_id
         self.detector = detector
         self.findings_base_path = findings_base_path
-        self.reviews_path = join(reviews_path, self.id, self.detector.id)
+        self.limit = limit
 
     def get_run(self, version: ProjectVersion) -> Run:
         if self.id == Experiment.PROVIDED_PATTERNS:
@@ -27,7 +27,8 @@ class Experiment:
                 misuse in version.misuses]
         elif self.id == Experiment.TOP_FINDINGS:
             executions = [
-                MineAndDetectExecution(self.detector, version, self.findings_base_path, AllFindings(self.detector))]
+                MineAndDetectExecution(self.detector, version, self.findings_base_path,
+                                       AllFindings(self.detector, self.limit))]
         elif self.id == Experiment.BENCHMARK:
             executions = [MineAndDetectExecution(self.detector, version, self.findings_base_path,
                                                  PotentialHits(self.detector, version.misuses))]
@@ -41,9 +42,6 @@ class Experiment:
             return join(version.project_id, version.version_id)
         else:
             return join(version.project_id, version.version_id, misuse.misuse_id)
-
-    def get_review_path(self, version: ProjectVersion, misuse: Misuse = None):
-        return join(self.reviews_path, self.get_review_dir(version, misuse))
 
     def __str__(self):
         if self.id == Experiment.PROVIDED_PATTERNS:
