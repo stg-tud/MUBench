@@ -1,11 +1,15 @@
 <?php
 
+use Monolog\Logger;
+
 class UploadProcessor {
 
 	private $db;
+	private $logger;
 
-	function __construct(DBConnection $db){
+	function __construct(DBConnection $db,Logger $logger){
 		$this->db = $db;
+		$this->logger = $logger;
 	}
 
 	public function processReview($review){
@@ -23,6 +27,7 @@ class UploadProcessor {
 
 	public function handleData($ex, $obj, $obj_array){
 		$table = $this->db->getTableName($ex, $obj->{'dataset'}, $obj->{'detector'});
+		$this->logger->info("Data for : " . $table);
 		$project = $obj->{'project'};
 		$version = $obj->{'version'};
 		$runtime = $obj->{'runtime'};
@@ -40,6 +45,7 @@ class UploadProcessor {
 		}
 		$obj_columns = $this->getJsonNames($obj_array);
 		if(count($columns) == 0){
+		    $this->logger->info("Creating new table " . $table);
 			$statements[] = $this->db->createTableStatement($table, $obj_array);
 		}
 		$statements[] = $this->db->deleteStatement($table, $project, $version);
@@ -56,9 +62,11 @@ class UploadProcessor {
 				$statements[] = $this->db->addColumnStatement($table, $c);
 			}
 		}
+		$this->logger->info("Inserting " . count($obj_array) . " entries into " . $table);
 		foreach($obj_array as $hit){
 			$statements[] = $this->db->insertStatement($table, $project, $version, $hit);
 		}
+		$this->logger->info("Executing all statements for: " . $table);
 		$this->db->execStatements($statements);
 	}
 

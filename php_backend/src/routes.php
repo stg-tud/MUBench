@@ -90,12 +90,26 @@ $app->get('/logged/review/[{misuse}]', function ($request, $response, $args) use
 });
 
 $app->post('/api/upload/[{experiment:ex[1-3]}]', function ($request, $response, $args) use ($app) {
-	$obj = json_decode($request->getParsedBody()["data"]);
+	$obj = json_decode($request->getParsedBody());
 	$experiment = $args['experiment'];
+	if(!$obj){
+	    $obj = json_decode($request->getBody());
+    }
+    if(!$obj){
+	    $obj = json_decode($_POST["data"]);
+    }
 	if(!$obj){
 		$this->logger->error("upload failed, object empty " . dump($request->getParsedBody()));
 		return $response->withStatus(500);
 	}
+	$project = $obj->{'project'};
+	$version = $obj->{'version'};
+	$hits = $obj->{'potential_hits'};
+	if(!$hits || !$project || !$version){
+	    $this->logger->error("upload failed, could not read data " . dump($obj));
+	    return $response->withStatus(500);
+    }
+    $this->logger->info("uploading data for: " . $project . " version " . $version . " with " . count($hits) . " hits.");
     $app->upload->handleData($experiment, $obj, $obj->{'potential_hits'});
 	$app->dir->deleteOldImages($experiment, $obj->{'project'}, $obj->{'version'});
     foreach($request->getUploadedFiles() as $img){
@@ -106,6 +120,12 @@ $app->post('/api/upload/[{experiment:ex[1-3]}]', function ($request, $response, 
 
 $app->post('/api/upload/metadata', function ($request, $response, $args) use ($app) {
 	$obj = json_decode($request->getBody());
+    if(!$obj){
+        $obj = json_decode($request->getParsedBody());
+    }
+    if(!$obj){
+        $obj = json_decode($_POST["data"]);
+    }
 	if(!$obj){
 		$this->logger->error("upload of metadata failed, object empty: " . dump($request->getBody()));
 		return $response->withStatus(500);
