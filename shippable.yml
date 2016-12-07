@@ -14,7 +14,7 @@ script:
   - nosetests --with-xunit --xunit-file=shippable/testresults/nosetests.xml
   - mvn test -f benchmark/mubench.cli/pom.xml
   - mvn test -f benchmark/mubench.utils/pom.xml
-  - "./mubench.py detect dummy 1 --only synthetic"
+  - "./mubench.py detect Dummy 1 --only synthetic"
   - cd php_backend
   - composer install
   - phpunit --bootstrap vendor/autoload.php tests/

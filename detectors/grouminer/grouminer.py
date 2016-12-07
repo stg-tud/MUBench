@@ -6,7 +6,7 @@ from benchmark.data.detector_specialising.specialising_util import replace_dot_g
 from benchmark.data.finding import Finding, SpecializedFinding
 
 
-class Grouminer(Detector):
+class GrouMiner(Detector):
     @property
     def _sort_by(self) -> Optional[str]:
         return "rareness"

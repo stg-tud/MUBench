@@ -13,7 +13,7 @@ from benchmark.data.project_compile import ProjectCompile
 from benchmark.utils.io import remove_tree, write_yaml
 from benchmark.utils.shell import Shell, CommandFailedError
 from benchmark_tests.test_utils.data_util import create_misuse, create_version, create_project
-from detectors.dummy.dummy import DummyDetector
+from detectors.Dummy.Dummy import Dummy
 
 
 class DetectorExecutionTestImpl(DetectorExecution):
@@ -33,7 +33,7 @@ class TestExecutionState:
         self.temp_dir = mkdtemp(prefix='mubench-run-test_')
         self.findings_path = join(self.temp_dir, "-findings-")
 
-        self.detector = DummyDetector("-detectors-")
+        self.detector = Dummy("-detectors-")
         self.version = create_version("-v-")
         self.findings_base_path = "-findings-"
 
@@ -44,9 +44,9 @@ class TestExecutionState:
         remove_tree(self.temp_dir)
 
     def test_run_outdated(self):
-        with mock.patch('detectors.dummy.dummy.DummyDetector.md5', new_callable=PropertyMock) as mock_md5:
+        with mock.patch('detectors.Dummy.Dummy.Dummy.md5', new_callable=PropertyMock) as mock_md5:
             mock_md5.return_value = "-md5-"
-            detector = DummyDetector("-detectors-")
+            detector = Dummy("-detectors-")
 
             uut = DetectorExecutionTestImpl(DetectorMode.detect_only, detector, self.version, self.findings_base_path,
                                             AllFindings(detector))
@@ -89,7 +89,7 @@ class TestDetectorExecution:
     # noinspection PyAttributeOutsideInit
     def setup(self):
         self.version = create_version("-version-", project=create_project("-project-"))
-        self.detector = DummyDetector("-detectors-")
+        self.detector = Dummy("-detectors-")
         self.findings_base_path = "-findings-"
 
         self.logger = logging.getLogger("test")
@@ -150,7 +150,7 @@ class TestDetectOnlyExecution:
     def setup(self):
         self.misuse = create_misuse('-misuse-', meta={"location": {"file": "a", "method": "m()"}})
         self.version = create_version("-version-", misuses=[self.misuse], project=create_project("-project-"))
-        self.detector = DummyDetector("-detectors-")
+        self.detector = Dummy("-detectors-")
         self.findings_base_path = "-findings-"
 
         self.logger = logging.getLogger("test")
@@ -166,9 +166,9 @@ class TestDetectOnlyExecution:
         Shell.exec = self.__orig_shell_exec
 
     def test_execute_per_misuse(self):
-        jar = join("-detectors-", "dummy", "dummy.jar")
-        target = join("-findings-", "detect_only", "dummy", "-project-", "-version-", "-misuse-", "findings.yml")
-        run_info = join("-findings-", "detect_only", "dummy", "-project-", "-version-", "-misuse-", "run.yml")
+        jar = join("-detectors-", "Dummy", "Dummy.jar")
+        target = join("-findings-", "detect_only", "Dummy", "-project-", "-version-", "-misuse-", "findings.yml")
+        run_info = join("-findings-", "detect_only", "Dummy", "-project-", "-version-", "-misuse-", "run.yml")
         training_src_path = join("-compiles-", "-project-", "-version-", "patterns-src", "-misuse-")
         training_classpath = join("-compiles-", "-project-", "-version-", "patterns-classes", "-misuse-")
         target_src_path = join("-compiles-", "-project-", "-version-", "misuse-src")
@@ -192,7 +192,7 @@ class TestMineAndDetectExecution:
     # noinspection PyAttributeOutsideInit
     def setup(self):
         self.version = create_version("-version-", project=create_project("-project-"))
-        self.detector = DummyDetector("-detectors-")
+        self.detector = Dummy("-detectors-")
         self.findings_base_path = "-findings-"
 
         self.logger = logging.getLogger("test")
@@ -208,9 +208,9 @@ class TestMineAndDetectExecution:
         Shell.exec = self.__orig_shell_exec
 
     def test_execute(self):
-        jar = join("-detectors-", "dummy", "dummy.jar")
-        target = join("-findings-", "mine_and_detect", "dummy", "-project-", "-version-", "findings.yml")
-        run_info = join("-findings-", "mine_and_detect", "dummy", "-project-", "-version-", "run.yml")
+        jar = join("-detectors-", "Dummy", "Dummy.jar")
+        target = join("-findings-", "mine_and_detect", "Dummy", "-project-", "-version-", "findings.yml")
+        run_info = join("-findings-", "mine_and_detect", "Dummy", "-project-", "-version-", "run.yml")
         target_src_path = join("-compiles-", "-project-", "-version-", "original-src")
         target_classpath = join("-compiles-", "-project-", "-version-", "original-classes")
 

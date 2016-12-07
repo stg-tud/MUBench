@@ -7,13 +7,13 @@ from benchmark.data.findings_filters import AllFindings
 from benchmark.data.run import Run
 from benchmark.data.detector_execution import MineAndDetectExecution, DetectOnlyExecution
 from benchmark_tests.test_utils.data_util import create_project, create_version, create_misuse
-from detectors.dummy.dummy import DummyDetector
+from detectors.Dummy.Dummy import Dummy
 
 
 class TestExperiment:
     # noinspection PyAttributeOutsideInit
     def setup(self):
-        self.detector = DummyDetector("-detectors-")
+        self.detector = Dummy("-detectors-")
         self.project = create_project("-project-")
         self.version = create_version("-version-", project=self.project)
 

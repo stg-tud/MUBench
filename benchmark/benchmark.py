@@ -5,6 +5,7 @@ from datetime import datetime
 from os import listdir, makedirs
 from os.path import join, realpath, isdir, exists
 
+from benchmark.data.detectors import find_detector
 from benchmark.tasks.implementations import stats
 from benchmark.tasks.implementations.checkout import Checkout
 from benchmark.tasks.implementations.compile import Compile
@@ -19,7 +20,6 @@ from benchmark.tasks.implementations.publish_metadata_task import PublishMetadat
 from benchmark.utils import command_line_util
 from benchmark.utils.dataset_util import get_white_list
 from benchmark.utils.logging import IndentFormatter
-from detectors.muminer.muminer import MuMiner
 
 
 class Benchmark:
@@ -69,17 +69,17 @@ class Benchmark:
         self.runner.add(compile_handler)
 
     def _setup_detect(self):
-        experiment = self.__get_experiment(self.config.detector)
+        experiment = self.__get_experiment()
         self.runner.add(Detect(Benchmark.COMPILES_PATH, experiment, self.config.timeout, self.config.force_detect))
 
     def _setup_publish_findings(self):
-        experiment = self.__get_experiment(self.config.detector)
+        experiment = self.__get_experiment()
         self.runner.add(PublishFindingsTask(experiment, self.config.dataset, self.config.review_site_url, self.config.review_site_user))
 
     def _setup_publish_metadata(self):
         self.runner.add(PublishMetadataTask(self.config.review_site_url, self.config.review_site_user))
 
-    def __get_experiment(self, detector: str):
+    def __get_experiment(self):
         ex_ids = {
             1: Experiment.PROVIDED_PATTERNS,
             2: Experiment.TOP_FINDINGS,
@@ -89,27 +89,15 @@ class Benchmark:
             limit = self.config.limit
         except AttributeError:
             limit = 0
-        return Experiment(ex_ids.get(self.config.experiment), self.__get_detector(detector),
-                          Benchmark.FINDINGS_PATH, limit)
+        return Experiment(ex_ids.get(self.config.experiment), self.__get_detector(), Benchmark.FINDINGS_PATH, limit)
 
-    def __get_detector(self, detector: str):
-        from detectors.dummy.dummy import DummyDetector
-        from detectors.dmmc.dmmc import Dmmc
-        from detectors.grouminer.grouminer import Grouminer
-        from detectors.jadet.jadet import Jadet
-        from detectors.tikanga.tikanga import Tikanga
-        from detectors.mudetect.mudetect import MuDetect
-        detectors = {
-            "dmmc": Dmmc,
-            "grouminer": Grouminer,
-            "jadet": Jadet,
-            "tikanga": Tikanga,
-            "mudetect": MuDetect,
-            "muminer": MuMiner,
-        }
-        java_options = ['-' + option for option in self.config.java_options]
-        return detectors[detector](self.DETECTORS_PATH, detector, java_options) \
-            if detector in detectors else DummyDetector(self.DETECTORS_PATH)
+    def __get_detector(self):
+        try:
+            java_options = ['-' + option for option in self.config.java_options]
+            return find_detector(self.DETECTORS_PATH, self.config.detector, java_options)
+        except ValueError as e:
+            logger.critical(e)
+            exit()
 
     def run(self) -> None:
         if config.task == 'check':

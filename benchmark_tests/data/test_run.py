@@ -12,7 +12,7 @@ from benchmark.data.run import Run
 from benchmark.utils.io import write_yaml
 from benchmark.utils.shell import Shell
 from benchmark_tests.test_utils.data_util import create_misuse, create_version, create_project
-from detectors.dummy.dummy import DummyDetector
+from detectors.Dummy.Dummy import Dummy
 
 
 class TestRun:
@@ -20,7 +20,7 @@ class TestRun:
     def setup(self):
         self.misuse = create_misuse('-misuse-', meta={"location": {"file": "a", "method": "m()"}})
         self.version = create_version("-version-", misuses=[self.misuse], project=create_project("-project-"))
-        self.detector = DummyDetector("-detectors-")
+        self.detector = Dummy("-detectors-")
 
         self.temp_dir = mkdtemp(prefix='mubench-run-test_')
         self.findings_path = join(self.temp_dir, "-findings-")

@@ -3,13 +3,13 @@ from nose.tools import assert_equals
 from benchmark.data.finding import Finding
 from benchmark.data.findings_filters import PotentialHits, AllFindings
 from benchmark_tests.test_utils.data_util import create_misuse
-from detectors.dummy.dummy import DummyDetector
+from detectors.Dummy.Dummy import Dummy
 
 
 class TestPotentialHits:
     # noinspection PyAttributeOutsideInit
     def setup(self):
-        self.detector = DummyDetector("")
+        self.detector = Dummy("")
         self.misuse = create_misuse("-m1-")
         self.misuses = [self.misuse, create_misuse("-m2-")]
 
@@ -27,7 +27,7 @@ class TestPotentialHits:
 class TestAllFindings:
     # noinspection PyAttributeOutsideInit
     def setup(self):
-        self.detector = DummyDetector("")
+        self.detector = Dummy("")
 
         self.misuse = create_misuse("-m1-")
         self.misuses = [self.misuse, create_misuse("-m2-")]

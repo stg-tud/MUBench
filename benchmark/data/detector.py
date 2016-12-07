@@ -8,12 +8,13 @@ from benchmark.data.finding import Finding, SpecializedFinding
 class Detector:
     def __init__(self, detectors_path: str, detector_id: str, java_options: List[str]):
         self.id = detector_id
+        self.base_name = detector_id.split("_", 1)[0]
         self.java_options = java_options
 
         self.path = join(detectors_path, self.id)
-        self.jar_path = join(self.path, self.id + ".jar")
-        self.jar_url = "http://www.st.informatik.tu-darmstadt.de/artifacts/mubench/{}.jar".format(self.id)
-        self.md5_path = join(self.path, self.id + ".md5")
+        self.jar_path = join(self.path, self.base_name + ".jar")
+        self.jar_url = "http://www.st.informatik.tu-darmstadt.de/artifacts/mubench/{}.jar".format(self.base_name)
+        self.md5_path = join(self.path, self.base_name + ".md5")
 
     @property
     def md5(self) -> Optional[str]:

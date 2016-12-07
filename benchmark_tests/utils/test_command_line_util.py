@@ -120,6 +120,6 @@ def test_script_is_case_insensitive():
 
 
 def test_dataset():
-    parser = get_command_line_parser(['dummy'], [])
-    result = parser.parse_args(['detect', 'dummy', '1', '--dataset', 'crypto'])
+    parser = get_command_line_parser(['Dummy'], [])
+    result = parser.parse_args(['detect', 'Dummy', '1', '--dataset', 'crypto'])
     assert_equals('crypto', result.dataset)

@@ -5,7 +5,7 @@ from benchmark.data.detector_specialising.specialising_util import format_float_
 from benchmark.data.finding import Finding, SpecializedFinding
 
 
-class Dmmc(Detector):
+class DMMC(Detector):
     @property
     def _sort_by(self) -> Optional[str]:
         return "strangeness"

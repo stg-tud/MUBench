@@ -12,7 +12,7 @@ from benchmark.data.findings_filters import AllFindings
 from benchmark.data.run import Run
 from benchmark.tasks.implementations.detect import Detect
 from benchmark_tests.test_utils.data_util import create_project, create_version
-from detectors.dummy.dummy import DummyDetector
+from detectors.Dummy.Dummy import Dummy
 
 
 # noinspection PyAttributeOutsideInit
@@ -26,7 +26,7 @@ class TestDetect:
 
         self.project = create_project("-project-")
         self.version = create_version("-version-", project=self.project)
-        self.detector = DummyDetector("path")
+        self.detector = Dummy("path")
         self.test_run_execution = MineAndDetectExecution(self.detector, self.version, self.findings_path,
                                                          AllFindings(self.detector))
         self.test_run = Run([self.test_run_execution])
@@ -90,7 +90,7 @@ class TestDetectorDownload:
         self.compiles_path = join(self.temp_dir, "checkout")
         self.findings_path = join(self.temp_dir, "findings")
 
-        detector = DummyDetector("path")
+        detector = Dummy("path")
         experiment = Experiment(Experiment.PROVIDED_PATTERNS, detector, self.findings_path)
         self.uut = Detect(self.compiles_path, experiment, None, False)
         self.uut._download = MagicMock(return_value=True)
