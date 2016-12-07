@@ -9,7 +9,7 @@
 
 <ul>
 	<?php foreach($data as $d) : ?>
-            <li><a href="./../detect/<?= htmlspecialchars($prefix); ?>_<?= htmlspecialchars($d); ?>"><?= htmlspecialchars($d); ?></a></li>   
+            <li><a href="../<?= htmlspecialchars($exp); ?>/<?= htmlspecialchars($dataset); ?>/<?= htmlspecialchars($d); ?>"><?= htmlspecialchars($d); ?></a></li>
     <?php endforeach; ?>
 </ul>
 

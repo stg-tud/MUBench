@@ -21,8 +21,8 @@ class DataProcessor {
 		}
 	}
 
-	public function getReview($user, $identifier){
-		$query = $this->db->getReview($user, $identifier);
+	public function getReview($exp, $set, $detector, $project, $version, $misuse, $reviewer){
+		$query = $this->db->getReview($reviewer, $exp . "_" . $set . "_" . $detector . "_" . $project . "_" . $version . "_" . $misuse);
 		$result = [];
 		foreach($query as $q){
 			$q['types'] = explode(";", $q['violation_type']);
@@ -101,7 +101,8 @@ class DataProcessor {
 		return $reviewer;
 	}
 
-	public function getIndex($table, $exp){
+	public function getIndex($exp, $dataset, $detector){
+	    $table = $exp . "_" . $dataset . "_" . $detector;
 		$stats = $this->db->getAllStats($table);
 		$projects = [];
 		foreach($stats as $s){
@@ -113,7 +114,7 @@ class DataProcessor {
 				$reviews = $this->getAllReviews($table, $s['project'], $s['version'], $exp === "ex2" ? $hit['id'] : $hit['misuse']);
 				$hit['reviews'] = $reviews;
 				$add = true;
-				if($s['hits']) {
+				if(array_key_exists('hits', $s)) {
                     foreach ($s['hits'] as $h) {
                         if (($exp === "ex2" && $hit['id'] === $h['id']) || ($exp !== "ex2" && $hit['misuse'] === $h['misuse'])) {
                             $add = false;

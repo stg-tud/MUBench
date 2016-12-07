@@ -62,7 +62,7 @@
         <?php endif; ?> 
 
         <?php if(count($hits) > 0) : ?>
-        <form action="../review_form/<?= htmlspecialchars($exp); ?>_<?= htmlspecialchars($set); ?>_<?= htmlspecialchars($detector); ?>" method="post" target="">
+        <form action="../../../../../review/<?= htmlspecialchars($exp); ?>/<?= htmlspecialchars($set); ?>/<?= htmlspecialchars($detector); ?>" method="post" target="">
         <table border="1" cellpadding="5">
         
 
@@ -100,7 +100,11 @@
                 <?php endif;?>
                 </select>
             <?php else : ?>
-                ?
+                <?php if($review) : ?>
+                    <?= htmlspecialchars($review[$hit['id']]["hit"]); ?>
+                <?php else : ?>
+                    ?
+                <?php endif;?>
             <?php endif;?>
             </td>
             <?php foreach($hit as $key => $value) : ?>
@@ -122,241 +126,294 @@
               <?php endif; ?>
             <?php endforeach; ?>
             <td>
-                <?php if($logged) : ?>
                     <?php if($exp === "ex2") : ?>
-                        <select name="review_hit[<?= htmlspecialchars($hit['id']); ?>][types][]" size="10" multiple>
+                    <?php if($logged) : ?>
+                    <select name="review_hit[<?= htmlspecialchars($hit['id']); ?>][types][]" size="10" multiple>
+                        <?php else : ?>
+                        <select disabled name="review_hit[<?= htmlspecialchars($hit['id']); ?>][types][]" size="10" multiple>
+                        <?php endif; ?>
                             <?php $add = true ?>
+                            <?php if($review) : ?>
                             <?php foreach($review[$hit['id']]["types"] as $t) : ?>
                                 <?php if($t === "missing/call") : ?>
                                     <option selected="selected" value="missing/call">missing/call</option>
                                     <?php $add = false ?>
                                 <?php endif; ?>
                             <?php endforeach; ?>
+                            <?php endif; ?>
                             <?php if($add) : ?>
                                 <option value="missing/call">missing/call</option>
                             <?php endif; ?>
                             <?php $add = true ?>
+                            <?php if($review) : ?>
                             <?php foreach($review[$hit['id']]["types"] as $t) : ?>
-                                <?php if($t === "missing/call") : ?>
+                                <?php if($t === "missing/condition/null_check") : ?>
                                     <option selected="selected" value="missing/condition/null_check">missing/condition/null_check</option>
                                     <?php $add = false ?>
                                 <?php endif; ?>
                             <?php endforeach; ?>
+                            <?php endif; ?>
                             <?php if($add) : ?>
                                 <option value="missing/condition/null_check">missing/condition/null_check</option>
                             <?php endif; ?>
                             <?php $add = true ?>
+                            <?php if($review) : ?>
                             <?php foreach($review[$hit['id']]["types"] as $t) : ?>
-                                <?php if($t === "missing/call") : ?>
+                                <?php if($t === "missing/condition/value_or_state") : ?>
                                     <option selected="selected" value="missing/condition/value_or_state">missing/condition/value_or_state</option>
                                     <?php $add = false ?>
                                 <?php endif; ?>
                             <?php endforeach; ?>
+                            <?php endif; ?>
                             <?php if($add) : ?>
                                 <option value="missing/condition/value_or_state">missing/condition/value_or_state</option>
                             <?php endif; ?>
                             <?php $add = true ?>
+                            <?php if($review) : ?>
                             <?php foreach($review[$hit['id']]["types"] as $t) : ?>
-                                <?php if($t === "missing/call") : ?>
+                                <?php if($t === "missing/condition/synchronization") : ?>
                                     <option selected="selected" value="missing/condition/synchronization">missing/condition/synchronization</option>
                                     <?php $add = false ?>
                                 <?php endif; ?>
                             <?php endforeach; ?>
+                            <?php endif; ?>
                             <?php if($add) : ?>
                                 <option value="missing/condition/synchronization">missing/condition/synchronization</option>
                             <?php endif; ?>
                             <?php $add = true ?>
+                            <?php if($review) : ?>
                             <?php foreach($review[$hit['id']]["types"] as $t) : ?>
-                                <?php if($t === "missing/call") : ?>
+                                <?php if($t === "missing/exception_handling") : ?>
                                     <option selected="selected" value="missing/exception_handling">missing/exception_handling</option>
                                     <?php $add = false ?>
                                 <?php endif; ?>
                             <?php endforeach; ?>
+                            <?php endif; ?>
                             <?php if($add) : ?>
                                 <option value="missing/exception_handling">missing/exception_handling</option>
                             <?php endif; ?>
                             <?php $add = true ?>
+                            <?php if($review) : ?>
                             <?php foreach($review[$hit['id']]["types"] as $t) : ?>
-                                <?php if($t === "missing/call") : ?>
+                                <?php if($t === "superfluous/call") : ?>
                                     <option selected="selected" value="superfluous/call">superfluous/call</option>
                                     <?php $add = false ?>
                                 <?php endif; ?>
                             <?php endforeach; ?>
+                            <?php endif; ?>
                             <?php if($add) : ?>
                                 <option value="superfluous/call">superfluous/call</option>
                             <?php endif; ?>
                             <?php $add = true ?>
+                            <?php if($review) : ?>
                             <?php foreach($review[$hit['id']]["types"] as $t) : ?>
-                                <?php if($t === "missing/call") : ?>
+                                <?php if($t === "superfluous/condition") : ?>
                                     <option selected="selected" value="superfluous/condition">superfluous/condition</option>
                                     <?php $add = false ?>
                                 <?php endif; ?>
                             <?php endforeach; ?>
+                            <?php endif; ?>
                             <?php if($add) : ?>
                                 <option value="superfluous/condition">superfluous/condition</option>
                             <?php endif; ?>
                             <?php $add = true ?>
+                            <?php if($review) : ?>
                             <?php foreach($review[$hit['id']]["types"] as $t) : ?>
-                                <?php if($t === "missing/call") : ?>
+                                <?php if($t === "superfluous/exception_handling") : ?>
                                     <option selected="selected" value="superfluous/exception_handling">superfluous/exception_handling</option>
                                     <?php $add = false ?>
                                 <?php endif; ?>
                             <?php endforeach; ?>
+                            <?php endif; ?>
                             <?php if($add) : ?>
                                 <option value="superfluous/exception_handling">superfluous/exception_handling</option>
                             <?php endif; ?>
                             <?php $add = true ?>
+                            <?php if($review) : ?>
                             <?php foreach($review[$hit['id']]["types"] as $t) : ?>
-                                <?php if($t === "missing/call") : ?>
+                                <?php if($t === "misplaced/call") : ?>
                                     <option selected="selected" value="misplaced/call">misplaced/call</option>
                                     <?php $add = false ?>
                                 <?php endif; ?>
                             <?php endforeach; ?>
+                            <?php endif; ?>
                             <?php if($add) : ?>
                                 <option value="misplaced/call">misplaced/call</option>
                             <?php endif; ?>
                             <?php $add = true ?>
+                            <?php if($review) : ?>
                             <?php foreach($review[$hit['id']]["types"] as $t) : ?>
-                                <?php if($t === "missing/call") : ?>
+                                <?php if($t === "missing/condition/context") : ?>
                                     <option selected="selected" value="missing/condition/context">missing/condition/context</option>
                                     <?php $add = false ?>
                                 <?php endif; ?>
                             <?php endforeach; ?>
+                            <?php endif; ?>
                             <?php if($add) : ?>
                                 <option value="missing/condition/context">missing/condition/context</option>
                             <?php endif; ?>
                             <?php $add = true ?>
+                            <?php if($review) : ?>
                             <?php foreach($review[$hit['id']]["types"] as $t) : ?>
-                                <?php if($t === "missing/call") : ?>
+                                <?php if($t === "misplaced/condition/null_check") : ?>
                                     <option selected="selected" value="misplaced/condition/null_check">misplaced/condition/null_check</option>
                                     <?php $add = false ?>
                                 <?php endif; ?>
                             <?php endforeach; ?>
+                            <?php endif; ?>
                             <?php if($add) : ?>
                                 <option value="misplaced/condition/null_check">misplaced/condition/null_check</option>
                             <?php endif; ?>
                             <?php $add = true ?>
+                            <?php if($review) : ?>
                             <?php foreach($review[$hit['id']]["types"] as $t) : ?>
-                                <?php if($t === "missing/call") : ?>
+                                <?php if($t === "misplaced/condition/value_or_state") : ?>
                                     <option selected="selected" value="misplaced/condition/value_or_state">misplaced/condition/value_or_state</option>
                                     <?php $add = false ?>
                                 <?php endif; ?>
                             <?php endforeach; ?>
+                            <?php endif; ?>
                             <?php if($add) : ?>
                                 <option value="misplaced/condition/value_or_state">misplaced/condition/value_or_state</option>
                             <?php endif; ?>
                             <?php $add = true ?>
+                            <?php if($review) : ?>
                             <?php foreach($review[$hit['id']]["types"] as $t) : ?>
-                                <?php if($t === "missing/call") : ?>
+                                <?php if($t === "misplaced/condition/synchronization") : ?>
                                     <option selected="selected" value="misplaced/condition/synchronization">misplaced/condition/synchronization</option>
                                     <?php $add = false ?>
                                 <?php endif; ?>
                             <?php endforeach; ?>
+                            <?php endif; ?>
                             <?php if($add) : ?>
                                 <option value="misplaced/condition/synchronization">misplaced/condition/synchronization</option>
                             <?php endif; ?>
                             <?php $add = true ?>
+                            <?php if($review) : ?>
                             <?php foreach($review[$hit['id']]["types"] as $t) : ?>
-                                <?php if($t === "missing/call") : ?>
+                                <?php if($t === "misplaced/condition/context") : ?>
                                     <option selected="selected" value="misplaced/condition/context">misplaced/condition/context</option>
                                     <?php $add = false ?>
                                 <?php endif; ?>
                             <?php endforeach; ?>
+                            <?php endif; ?>
                             <?php if($add) : ?>
                                 <option value="misplaced/condition/context">misplaced/condition/context</option>
                             <?php endif; ?>
                             <?php $add = true ?>
+                            <?php if($review) : ?>
                             <?php foreach($review[$hit['id']]["types"] as $t) : ?>
-                                <?php if($t === "missing/call") : ?>
+                                <?php if($t === "superfluous/condition/null_check") : ?>
                                     <option selected="selected" value="superfluous/condition/null_check">superfluous/condition/null_check</option>
                                     <?php $add = false ?>
                                 <?php endif; ?>
                             <?php endforeach; ?>
+                            <?php endif; ?>
                             <?php if($add) : ?>
                                 <option value="superfluous/condition/null_check">superfluous/condition/null_check</option>
                             <?php endif; ?>
                             <?php $add = true ?>
+                            <?php if($review) : ?>
                             <?php foreach($review[$hit['id']]["types"] as $t) : ?>
-                                <?php if($t === "missing/call") : ?>
+                                <?php if($t === "superfluous/condition/value_or_state") : ?>
                                     <option selected="selected" value="superfluous/condition/value_or_state">superfluous/condition/value_or_state</option>
                                     <?php $add = false ?>
                                 <?php endif; ?>
                             <?php endforeach; ?>
+                            <?php endif; ?>
                             <?php if($add) : ?>
                                 <option value="superfluous/condition/value_or_state">superfluous/condition/value_or_state</option>
                             <?php endif; ?>
                             <?php $add = true ?>
+                            <?php if($review) : ?>
                             <?php foreach($review[$hit['id']]["types"] as $t) : ?>
-                                <?php if($t === "missing/call") : ?>
+                                <?php if($t === "superfluous/condition/synchronization") : ?>
                                     <option selected="selected" value="superfluous/condition/synchronization">superfluous/condition/synchronization</option>
                                     <?php $add = false ?>
                                 <?php endif; ?>
                             <?php endforeach; ?>
+                            <?php endif; ?>
                             <?php if($add) : ?>
                                 <option value="superfluous/condition/synchronization">superfluous/condition/synchronization</option>
                             <?php endif; ?>
                             <?php $add = true ?>
+                            <?php if($review) : ?>
                             <?php foreach($review[$hit['id']]["types"] as $t) : ?>
-                                <?php if($t === "missing/call") : ?>
+                                <?php if($t === "superfluous/condition/context") : ?>
                                     <option selected="selected" value="superfluous/condition/context">superfluous/condition/context</option>
                                     <?php $add = false ?>
                                 <?php endif; ?>
                             <?php endforeach; ?>
+                            <?php endif; ?>
                             <?php if($add) : ?>
                                 <option value="superfluous/condition/context">superfluous/condition/context</option>
                             <?php endif; ?>
                             <?php $add = true ?>
+                            <?php if($review) : ?>
                             <?php foreach($review[$hit['id']]["types"] as $t) : ?>
-                                <?php if($t === "missing/call") : ?>
+                                <?php if($t === "misplaced/exception_handling") : ?>
                                     <option selected="selected" value="misplaced/exception_handling">misplaced/exception_handling</option>
                                     <?php $add = false ?>
                                 <?php endif; ?>
                             <?php endforeach; ?>
+                            <?php endif; ?>
                             <?php if($add) : ?>
                                 <option value="misplaced/exception_handling">misplaced/exception_handling</option>
                             <?php endif; ?>
                             <?php $add = true ?>
+                            <?php if($review) : ?>
                             <?php foreach($review[$hit['id']]["types"] as $t) : ?>
-                                <?php if($t === "missing/call") : ?>
+                                <?php if($t === "missing/iteration") : ?>
                                     <option selected="selected" value="missing/iteration">missing/iteration</option>
                                     <?php $add = false ?>
                                 <?php endif; ?>
                             <?php endforeach; ?>
+                            <?php endif; ?>
                             <?php if($add) : ?>
                                 <option value="missing/iteration">missing/iteration</option>
                             <?php endif; ?>
                             <?php $add = true ?>
+                            <?php if($review) : ?>
                             <?php foreach($review[$hit['id']]["types"] as $t) : ?>
-                                <?php if($t === "missing/call") : ?>
+                                <?php if($t === "misplaced/iteration") : ?>
                                     <option selected="selected" value="misplaced/iteration">misplaced/iteration</option>
                                     <?php $add = false ?>
                                 <?php endif; ?>
                             <?php endforeach; ?>
+                            <?php endif; ?>
                             <?php if($add) : ?>
                                 <option value="misplaced/iteration">misplaced/iteration</option>
                             <?php endif; ?>
                             <?php $add = true ?>
+                            <?php if($review) : ?>
                             <?php foreach($review[$hit['id']]["types"] as $t) : ?>
-                                <?php if($t === "missing/call") : ?>
+                                <?php if($t === "superfluous/iteration") : ?>
                                     <option selected="selected" value="superfluous/iteration">superfluous/iteration</option>
                                     <?php $add = false ?>
                                 <?php endif; ?>
                             <?php endforeach; ?>
+                            <?php endif; ?>
                             <?php if($add) : ?>
                                 <option value="superfluous/iteration">superfluous/iteration</option>
                             <?php endif; ?>
                         </select>
                     <?php else : ?>
                         <?php if($violation_types) : ?>
-                            <select name="review_hit[<?= htmlspecialchars($hit['id']); ?>][types][]" size="<?= htmlspecialchars(count($violation_types)); ?>" multiple>
-                            <?php foreach($violation_types as $v) : ?>
+                            <?php if($logged) : ?>
+                        <select name="review_hit[<?= htmlspecialchars($hit['id']); ?>][types][]" size="<?= htmlspecialchars(count($violation_types)); ?>" multiple>
+                        <?php else : ?>
+                                <select disabled name="review_hit[<?= htmlspecialchars($hit['id']); ?>][types][]" size="<?= htmlspecialchars(count($violation_types)); ?>" multiple>
+                            <?php endif; ?>
+                                <?php foreach($violation_types as $v) : ?>
                                 <?php $add = true ?>
+                                    <?php if($review) : ?>
                                 <?php foreach($review[$hit['id']]["types"] as $t) : ?>
                                     <?php if($t === $v) : ?>
                                         <option selected="selected" value="<?= htmlspecialchars($v); ?>"><?= htmlspecialchars($v); ?></option>
                                         <?php $add = false ?>
                                     <?php endif; ?>
                                 <?php endforeach; ?>
+                                    <?php endif; ?>
                                 <?php if($add) : ?>
                                     <option value="<?= htmlspecialchars($v); ?>"><?= htmlspecialchars($v); ?></option>
                                 <?php endif; ?>
@@ -365,16 +422,6 @@
                         <?php endif;?>
 
                     <?php endif; ?>
-
-                <?php else : ?>
-                <ul>
-                    <?php if($violation_types) : ?>
-                <?php foreach($violation_types as $v) : ?>
-                <li><?= htmlspecialchars($v); ?></li>
-                <?php endforeach; ?>
-            <?php endif;?>
-                    <?php endif;?>
-                </ul>
             </td>
         </tr>
        <?php endforeach; ?>
@@ -399,6 +446,16 @@
                 <input type="submit" value="Save Review" />
                 </form>
 
+        <?php endif; ?>
+        <?php if($review && !$logged) :?>
+                <table>
+                    <tr><td><b>Reviewer Name:</b><br/>(lower case, no spaces)</td>
+                        <td><?= htmlspecialchars($name); ?></td></tr>
+                    <tr><td class="vtop"><b>Comment:</b></td>
+                        <td>
+                                <textarea disabled name="review_comment" cols="80" rows="5"><?= htmlspecialchars($review[$hits[0]['id']]['comment']); ?></textarea>
+                        </td></tr>
+                </table>
         <?php endif; ?>
         <?php endif; ?>
         

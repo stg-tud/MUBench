@@ -5,7 +5,7 @@ require_once 'UploadProcessor.php';
 require_once 'DataProcessor.php';
 
 $app->add(new \Slim\Middleware\HttpBasicAuthentication([
-    "path" => ["/api/", "/logged/"],
+    "path" => ["/api/", "/private/"],
     "secure" => false,
     "realm" => "Protected",
     "users" => $settings['users']

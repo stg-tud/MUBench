@@ -9,7 +9,7 @@
 
 <ul>
     <?php foreach($experiments as $e) : ?>
-            <li><a href="index.php/dataset/ex<?= htmlspecialchars($e['id']); ?>">Experiment <?= htmlspecialchars($e['id']); ?> - <?= htmlspecialchars($e['title']); ?></a></li>   
+            <li><a href="index.php/ex<?= htmlspecialchars($e['id']); ?>">Experiment <?= htmlspecialchars($e['id']); ?> - <?= htmlspecialchars($e['title']); ?></a></li>
     <?php endforeach; ?>
 </ul>
 

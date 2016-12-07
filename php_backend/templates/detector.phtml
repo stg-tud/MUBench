@@ -1,5 +1,5 @@
    <?php if(!$logged) : ?>
-        <a href="../logged/detect/<?= htmlspecialchars($identifier); ?>">Login</a>
+        <a href="../../private/<?= htmlspecialchars($exp); ?>/<?= htmlspecialchars($dataset); ?>/<?= htmlspecialchars($detector); ?>">Login</a>
     <?php endif; ?>
                 <h1>Detector: <?= htmlspecialchars($detector); ?></h1>
             <?php foreach($projects as $p) : ?>
@@ -32,12 +32,12 @@
                                     <?php endif; ?>
                                     </td>   
                                     <td>
-                                        <a href="../review/<?= htmlspecialchars($identifier); ?>_<?= htmlspecialchars($hit['project']); ?>_<?= htmlspecialchars($hit['version']); ?>_<?= htmlspecialchars($exp !== "ex2" ? $hit['misuse'] : $hit['id']); ?>">review</a>
+                                        <a href="../<?= htmlspecialchars($dataset); ?>/<?= htmlspecialchars($detector); ?>/<?= htmlspecialchars($hit['project']); ?>/<?= htmlspecialchars($hit['version']); ?>/<?= htmlspecialchars($exp !== "ex2" ? $hit['misuse'] : $hit['id']); ?>">review</a>
                                     </td>
                                     <td>
                                         <?php if($hit['reviews'] && !empty($hit['reviews'])) : ?>
                                            <?php foreach($hit['reviews'] as $reviewer) : ?>
-                                                <a href="../review/<?= htmlspecialchars($identifier); ?>_<?= htmlspecialchars($hit['project']); ?>_<?= htmlspecialchars($hit['version']); ?>_<?= htmlspecialchars($exp !== "ex2" ? $hit['misuse'] : $hit['id']); ?>"><?= htmlspecialchars($reviewer); ?></a>
+                                                <a href="../<?= htmlspecialchars($dataset); ?>/<?= htmlspecialchars($detector); ?>/<?= htmlspecialchars($hit['project']); ?>/<?= htmlspecialchars($hit['version']); ?>/<?= htmlspecialchars($exp !== "ex2" ? $hit['misuse'] : $hit['id']); ?>/<?= htmlspecialchars($reviewer); ?>"><?= htmlspecialchars($reviewer); ?></a>
                                            <?php endforeach; ?> 
                                         <?php endif; ?>
                                     </td>
