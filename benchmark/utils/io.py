@@ -5,6 +5,10 @@ from stat import S_IWRITE
 from typing import Dict
 
 import yaml
+try:
+    from yaml import CLoader as Loader, CDumper as Dumper
+except ImportError:
+    from yaml import Loader, Dumper
 
 
 def safe_write(content: str, file_path: str, append: bool) -> None:
@@ -77,9 +81,9 @@ def write_yaml(data: Dict, file: str = None):
     if file:
         create_file(file)
         with open(file, "w") as stream:
-            return yaml.dump(data, stream, default_flow_style=False)
+            return yaml.dump(data, stream, Dumper=Dumper, default_flow_style=False)
     else:
-        return yaml.dump(data, default_flow_style=False)
+        return yaml.dump(data, Dumper=Dumper, default_flow_style=False)
 
 
 def __escape_str(data):
@@ -101,4 +105,4 @@ def __escape_str(data):
 
 def read_yaml(file: str):
     with open(file, "r") as stream:
-        return yaml.load(stream)
+        return yaml.load(stream, Loader=Loader)
