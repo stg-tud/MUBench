@@ -3,6 +3,8 @@ import logging
 from typing import List
 from urllib.parse import urljoin
 
+from requests import HTTPError
+
 from benchmark.data.experiment import Experiment
 from benchmark.data.finding import SpecializedFinding
 from benchmark.data.project import Project
@@ -67,7 +69,11 @@ class PublishFindingsTask(ProjectVersionTask):
         for potential_hit in potential_hits:
             potential_hit["target_snippets"] = [snippet.__dict__ for snippet in potential_hit.get_snippets()]
 
-        self.__post(project, version, runtime, number_of_findings, result, potential_hits)
+        try:
+            self.__post(project, version, runtime, number_of_findings, result, potential_hits)
+            logger.info("Findings published.")
+        except HTTPError as e:
+            logger.error("Failed to publish findings: %s", e)
 
         return self.ok()
 

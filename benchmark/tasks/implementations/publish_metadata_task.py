@@ -3,6 +3,8 @@ from typing import Dict
 from typing import List
 from urllib.parse import urljoin
 
+from requests import HTTPError
+
 from benchmark.data.misuse import Misuse
 from benchmark.data.project import Project
 from benchmark.tasks.project_misuse_task import ProjectMisuseTask
@@ -51,5 +53,10 @@ class PublishMetadataTask(ProjectMisuseTask):
 
     def end(self):
         url = urljoin(self.review_site_url, "api/upload/metadata")
-        logging.getLogger("publish.metadata").info("Uploading metadata about %r misuses to %s...", len(self.__metadata), url)
-        post(url, self.__metadata, username=self.review_site_user)
+        logger = logging.getLogger("publish.metadata")
+        logger.info("Uploading metadata about %r misuses to %s...", len(self.__metadata), url)
+        try:
+            post(url, self.__metadata, username=self.review_site_user)
+            logger.info("Metadata successfully published.")
+        except HTTPError as e:
+            logger.error("Failed to publish metadata: %s", e)
