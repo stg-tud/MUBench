@@ -19,7 +19,7 @@ class TestPotentialHits:
         finding = Finding({})
         finding.is_potential_hit = lambda misuse, y: misuse == self.misuse
 
-        potential_hits = self.uut.get_potential_hits([finding], "")
+        potential_hits = self.uut.get_potential_hits([finding])
 
         assert_equals(self.misuse.id, potential_hits[0]["misuse"])
 
@@ -37,7 +37,7 @@ class TestAllFindings:
     def test_returns_all_findings(self):
         expected = [Finding({"id": "1", "file": ""}), Finding({"id": "2", "file": ""})]
 
-        actual = self.uut.get_potential_hits(expected, "")
+        actual = self.uut.get_potential_hits(expected)
 
         assert_equals(expected, actual)
 
@@ -45,6 +45,6 @@ class TestAllFindings:
         all = [Finding({"id": "1"}), Finding({"id": "2"})]
         self.uut.limit = 1
 
-        actual = self.uut.get_potential_hits(all, "")
+        actual = self.uut.get_potential_hits(all)
 
         assert_equals(1, len(actual))

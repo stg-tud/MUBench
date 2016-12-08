@@ -26,10 +26,7 @@ class Detector:
 
         return md5
 
-    def specialize_findings(self, findings_path: str, findings: List[Finding],
-                            limit: int = 0) -> List[SpecializedFinding]:
-        if limit:
-            findings = findings[0:limit]
+    def specialize_findings(self, findings_path: str, findings: List[Finding]) -> List[SpecializedFinding]:
         return [self._specialize_finding(findings_path, finding) for finding in findings]
 
     def _specialize_finding(self, findings_path: str, finding: Finding) -> SpecializedFinding:
@@ -37,5 +34,3 @@ class Detector:
 
     def __str__(self):
         return self.id
-
-

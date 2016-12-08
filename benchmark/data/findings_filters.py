@@ -10,7 +10,7 @@ class FindingsFilter:
     def __init__(self, detector: Detector):
         self.detector = detector
 
-    def get_potential_hits(self, findings: List[Finding], findings_path: str):
+    def get_potential_hits(self, findings: List[Finding]):
         raise NotImplementedError()
 
 
@@ -19,23 +19,21 @@ class PotentialHits(FindingsFilter):
         super().__init__(detector)
         self.misuses = misuses
 
-    def get_potential_hits(self, findings: List[Finding], findings_path: str):
+    def get_potential_hits(self, findings: List[Finding]):
         for misuse in self.misuses:
-            potential_hits = self._get_potential_hits(self.detector, misuse, findings, findings_path, False)
+            potential_hits = self._get_potential_hits(misuse, findings, False)
             if not potential_hits:
-                potential_hits = self._get_potential_hits(self.detector, misuse, findings, findings_path, True)
+                potential_hits = self._get_potential_hits(misuse, findings, True)
             return potential_hits
 
     @staticmethod
-    def _get_potential_hits(detector: Detector, misuse: Misuse, findings: List[Finding], findings_path: str,
-                            method_name_only: bool):
+    def _get_potential_hits(misuse: Misuse, findings: List[Finding], method_name_only: bool):
         potential_hits = []
         for finding in findings:
             if finding.is_potential_hit(misuse, method_name_only):
                 finding = deepcopy(finding)
                 finding["misuse"] = misuse.id
                 potential_hits.append(finding)
-        potential_hits = detector.specialize_findings(findings_path, potential_hits)
         return potential_hits
 
 
@@ -44,5 +42,8 @@ class AllFindings(FindingsFilter):
         super().__init__(detector)
         self.limit = limit
 
-    def get_potential_hits(self, findings: List[Finding], findings_path: str) -> List[SpecializedFinding]:
-        return self.detector.specialize_findings(findings_path, findings, self.limit)
+    def get_potential_hits(self, findings: List[Finding]) -> List[SpecializedFinding]:
+        if self.limit:
+            return findings[0:self.limit]
+        else:
+            return findings

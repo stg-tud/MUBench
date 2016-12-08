@@ -99,7 +99,8 @@ class DetectorExecution:
     @property
     def potential_hits(self):
         if not self.__POTENTIAL_HITS:
-            self.__POTENTIAL_HITS = self.findings_filter.get_potential_hits(self.findings, self._get_findings_path())
+            potential_hits = self.findings_filter.get_potential_hits(self.findings)
+            self.__POTENTIAL_HITS = self.detector.specialize_findings(self._get_findings_path(), potential_hits)
         return self.__POTENTIAL_HITS
 
     @property
