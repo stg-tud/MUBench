@@ -1,6 +1,6 @@
 from os import makedirs, remove
 
-from os.path import dirname, join
+from os.path import dirname, join, exists
 
 from benchmark.utils.io import safe_write
 from benchmark.utils.shell import Shell
@@ -18,9 +18,10 @@ def replace_dot_graph_with_image(finding, key, base_path) -> str:
 
 
 def __create_image(dot_graph, working_directory, image_name):
-    makedirs(working_directory, exist_ok=True)
     image_path = join(working_directory, image_name)
-    dot_path = image_path + ".dot"
-    safe_write(dot_graph, dot_path, append=False)
-    Shell.exec("dot -Tpng -o""{}"" ""{}""".format(image_path, dot_path))
-    remove(dot_path)
+    if not exists(image_path):
+        makedirs(working_directory, exist_ok=True)
+        dot_path = image_path + ".dot"
+        safe_write(dot_graph, dot_path, append=False)
+        Shell.exec("dot -Tpng -o""{}"" ""{}""".format(image_path, dot_path))
+        remove(dot_path)
