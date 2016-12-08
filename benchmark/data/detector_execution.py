@@ -51,6 +51,7 @@ class DetectorExecution:
         self._findings_base_path = findings_base_path
         self._findings_file_path = join(self._get_findings_path(), self.FINDINGS_FILE)
         self.__FINDINGS = None
+        self.__POTENTIAL_HITS = None
 
         data = {
             "result": None,
@@ -97,7 +98,9 @@ class DetectorExecution:
 
     @property
     def potential_hits(self):
-        return self.findings_filter.get_potential_hits(self.findings, self._get_findings_path())
+        if not self.__POTENTIAL_HITS:
+            self.__POTENTIAL_HITS = self.findings_filter.get_potential_hits(self.findings, self._get_findings_path())
+        return self.__POTENTIAL_HITS
 
     @property
     def findings(self) -> List[Finding]:
