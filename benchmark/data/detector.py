@@ -1,4 +1,3 @@
-from copy import deepcopy
 from os.path import join, exists
 from typing import Optional, List
 
@@ -29,21 +28,9 @@ class Detector:
 
     def specialize_findings(self, findings_path: str, findings: List[Finding],
                             limit: int = 0) -> List[SpecializedFinding]:
-        findings = self._sort_findings(findings)
         if limit:
             findings = findings[0:limit]
         return [self._specialize_finding(findings_path, finding) for finding in findings]
-
-    def _sort_findings(self, findings: List[Finding]) -> List[Finding]:
-        findings = deepcopy(findings)
-        sort_by = self._sort_by
-        if sort_by:
-            findings.sort(key=lambda f: float(f[sort_by]), reverse=True)
-        return findings
-
-    @property
-    def _sort_by(self) -> Optional[str]:
-        raise NotImplementedError
 
     def _specialize_finding(self, findings_path: str, finding: Finding) -> SpecializedFinding:
         raise NotImplementedError

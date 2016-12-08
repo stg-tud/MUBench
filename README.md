@@ -74,7 +74,7 @@ Currently, Runners should support two run modes:
 1. "Detect Only"-mode, where the detector is provided with hand-crafted patterns (a one-method class implementing the correct usage) and some target code to find violations of these patterns in. All input is provided as Java source code and corresponding Bytecode.
 2. "Mine and Detect"-mode, where the detector should mine its own patterns in the provided code base and find violations in that same code base. Again, input is provided as source code and corresponding Bytecode.
 
-The `DetectorOutput` is essentially a collection where you add your detector's findings.
+The `DetectorOutput` is essentially a collection where you add your detector's findings. MUBench expects you to add the findings ordered by the detector's confidence, descending.
 
 ### How do I review?
 
