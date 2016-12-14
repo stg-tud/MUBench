@@ -11,7 +11,7 @@ class DirectoryHelper {
 	}
 
 	public function deleteOldImages($ex, $project, $version){
-        $path = $this->root . "/" . $project . "/" . $version . "/";
+        $path = $this->root . "/" . $ex . "/" . $project . "/" . $version . "/";
         if(file_exists($path)){
             $it = new RecursiveDirectoryIterator($path, RecursiveDirectoryIterator::SKIP_DOTS);
             $files = new RecursiveIteratorIterator($it,
@@ -28,7 +28,7 @@ class DirectoryHelper {
     }
 
 	public function handleImage($ex, $project, $version, $img){
-        $path = $this->root . "/" . $project . "/" . $version . "/";
+        $path = $this->root . "/" . $ex . "/" . $project . "/" . $version . "/";
 		$file = $path . $img->getClientFilename();
 		$this->logger->info('Moved img: ' . $img->getClientFilename() . " to " . mkdir($path, 0745, true));
 		$img->moveTo($file);

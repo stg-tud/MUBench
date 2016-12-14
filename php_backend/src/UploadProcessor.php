@@ -33,7 +33,7 @@ class UploadProcessor {
 		$runtime = $obj->{'runtime'};
 		$result = $obj->{'result'};
 		$findings = $obj->{'number_of_findings'};
-		
+
 		$statements = [];
 		$statements[] = $this->db->getStatDeleteStatement($table, $project, $version);
 		$statements[] = $this->db->getStatStatement($table, $project, $version, $result, $runtime, $findings);
@@ -47,21 +47,22 @@ class UploadProcessor {
 		if(count($columns) == 0){
 		    $this->logger->info("Creating new table " . $table);
 			$statements[] = $this->db->createTableStatement($table, $obj_array);
-		}
-		$statements[] = $this->db->deleteStatement($table, $project, $version);
-		$columns = $this->db->getTableColumns($table);
-		foreach($obj_columns as $c){
-			$add = true;
-			foreach($columns as $oc){
-				if($c == $oc){
-					$add = false;
-					break;
-				}
-			}
-			if($add){
-				$statements[] = $this->db->addColumnStatement($table, $c);
-			}
-		}
+		}else {
+            $statements[] = $this->db->deleteStatement($table, $project, $version);
+            $columns = $this->db->getTableColumns($table);
+            foreach ($obj_columns as $c) {
+                $add = true;
+                foreach ($columns as $oc) {
+                    if ($c == $oc) {
+                        $add = false;
+                        break;
+                    }
+                }
+                if ($add) {
+                    $statements[] = $this->db->addColumnStatement($table, $c);
+                }
+            }
+        }
 		$this->logger->info("Inserting " . count($obj_array) . " entries into " . $table);
 		foreach($obj_array as $hit){
 			$statements[] = $this->db->insertStatement($table, $project, $version, $hit);
