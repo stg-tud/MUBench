@@ -1,0 +1,15 @@
+api:
+- javax.crypto.Cipher
+characteristics:
+- missing/condition/value_or_state
+description: >
+  Uses AES with ECB mode.
+location:
+  file: com/JHapps/eKool/SecurePreferences.java
+  method: "SecurePreferences(Context context, String preferenceName, boolean encryptKeys)"
+fix:
+  description: >
+    Use AES with one of these modes: CBC, PCBC, CTR, CTS, CFB, CFB8..CFB128, OFB, OFB8..OFB128
+internal: true
+pattern:
+- single object

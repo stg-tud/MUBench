@@ -1,0 +1,12 @@
+api:
+- javax.crypto.Cipher
+characteristics:
+- missing/condition/value_or_state
+description: >
+  Uses DES which is considered unsafe.
+location:
+  file: saavn/cz/vity/freerapid/plugins/services/saavn/SaavnFileRunner.java
+  method: "decryptPlay(final String str)"
+internal: true
+pattern:
+- single object

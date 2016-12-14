@@ -1,0 +1,12 @@
+api:
+- javax.crypto.Cipher
+characteristics:
+- missing/condition/value_or_state
+description: >
+  May call doFinal on the same instance multiple times.
+location:
+  file: com/corona/crypto/AESCypher.java
+  method: "decrypt(final byte[] data)"
+internal: true
+pattern:
+- single object

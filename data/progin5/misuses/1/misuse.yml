@@ -1,0 +1,13 @@
+api:
+- javax.crypto.Cipher
+characteristics:
+- missing/condition/value_or_state
+description: >
+  Uses AES with default mode and padding. 
+  Since these values might chance per crypto provider this is considered a bad practice.
+location:
+  file: server/src/encryption/RSA.java
+  method: "encrypt(String text, PublicKey key)"
+internal: true
+pattern:
+- single object

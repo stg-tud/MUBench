@@ -1,0 +1,12 @@
+api:
+- javax.crypto.Cipher
+characteristics:
+- missing/condition/value_or_state
+description: >
+  Uses DES which is considered unsafe.
+location:
+  file: app/checker/PrivateKeyChecker.java
+  method: "decryptPKCS5(byte[] encoded, Key key)"
+internal: true
+pattern:
+- single object

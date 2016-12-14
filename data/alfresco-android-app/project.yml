@@ -1,0 +1,5 @@
+name: Alfresco Android Application
+repository:
+  type: git
+  url: https://github.com/Alfresco/alfresco-android-app
+url: https://github.com/Alfresco/alfresco-android-app

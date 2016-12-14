@@ -1,0 +1,12 @@
+api:
+- javax.crypto.Cipher
+characteristics:
+- missing/condition/value_or_state
+description: >
+  Uses a non-random key in CBC mode.
+location:
+  file: server/generateChecksumPostsAndReplies.java
+  method: "main(String[] args)"
+internal: true
+pattern:
+- single object

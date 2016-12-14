@@ -1,0 +1,13 @@
+api:
+- javax.crypto.Cipher
+characteristics:
+- missing/condition/value_or_state
+description: >
+  Uses AES with default mode and padding. 
+  Since these values might change per crypto provider this is considered a bad practice.
+location:
+  file: main/java/org/jclouds/encryption/bouncycastle/BouncyCastleEncryptionService.java
+  method: "rsaPrivateEncrypt(String toSign, Key key)"
+internal: true
+pattern:
+- single object

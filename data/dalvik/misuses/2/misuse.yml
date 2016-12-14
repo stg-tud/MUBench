@@ -1,0 +1,12 @@
+api:
+- javax.crypto.Cipher
+characteristics:
+- missing/condition/value_or_state
+description: >
+  Uses NullCipher as a default which doesn't encrypt the data.
+location:
+  file: src/main/java/javax/crypto/CipherInputStream.java
+  method: "CipherInputStream(InputStream is)"
+internal: true
+pattern:
+- single object

@@ -1,0 +1,5 @@
+name: Corona
+repository:
+  type: git
+  url: https://github.com/cftdanny/corona.old
+url: https://github.com/cftdanny/corona.old

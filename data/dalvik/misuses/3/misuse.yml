@@ -1,0 +1,15 @@
+api:
+- javax.crypto.Cipher
+characteristics:
+- missing/condition/value_or_state
+description: >
+  Uses RSA with PKCS1Padding.
+location:
+  file: main/java/org/apache/harmony/xnet/provider/jsse/ServerHandshakeImpl.java
+  method: "unwrap(byte[] bytes)"
+internal: true
+fix:
+  description: >
+    Use RSA with one of these paddings: OAEPWithMD5AndMGF1Padding, OAEPWithSHA-224AndMGF1Padding, OAEPWithSHA-256AndMGF1Padding, OAEPWithSHA-384AndMGF1Padding, OAEPWithSHA-512AndMGF1Padding
+pattern:
+- single object

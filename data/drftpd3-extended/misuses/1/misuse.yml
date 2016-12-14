@@ -1,0 +1,15 @@
+api:
+- javax.crypto.Cipher
+characteristics:
+- missing/condition/value_or_state
+description: >
+  Uses Blowfish with ECB mode.
+location:
+  file: org/drftpd/plugins/sitebot/Blowfish.java
+  method: "Blowfish(String key)"
+fix:
+  description: >
+    Use Blowfish with one of these modes: CBC, PCBC, CTR, CTS, CFB, CFB8..CFB64, OFB, OFB8..OFB64
+internal: true
+pattern:
+- single object
