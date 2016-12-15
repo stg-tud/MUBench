@@ -1,4 +1,5 @@
 <?php
+require_once 'Error.php';
 // DIC configuration
 
 $container = $app->getContainer();
@@ -16,4 +17,8 @@ $container['logger'] = function ($c) {
     $logger->pushProcessor(new Monolog\Processor\UidProcessor());
     $logger->pushHandler(new Monolog\Handler\StreamHandler($settings['path'], $settings['level']));
     return $logger;
+};
+
+$container['errorHandler'] = function ($c) {
+    return new App\Handlers\Error($c['logger']);
 };
