@@ -27,6 +27,7 @@ class DBConnection {
 
 	public function getTableColumns($table){
 		$sql = $this->columnQuery($table);
+		$query = [];
 	    try{
 	    	$query = $this->pdo->query($sql);
 		}catch(PDOException $e){

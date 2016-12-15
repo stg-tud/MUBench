@@ -78,12 +78,13 @@ $app->group('/api', function () use ($app) {
         $project = $obj->{'project'};
         $version = $obj->{'version'};
         $hits = $obj->{'potential_hits'};
+        $this->logger->info(dump($hits));
         if (!$hits || !$project || !$version) {
             $this->logger->error("upload failed, could not read data " . dump($obj));
             return $response->withStatus(500);
         }
         $this->logger->info("uploading data for: " . $project . " version " . $version . " with " . count($hits) . " hits.");
-        $app->upload->handleData($experiment, $obj, $obj->{'potential_hits'});
+        $app->upload->processData($experiment, $obj, $obj->{'potential_hits'});
         $app->dir->deleteOldImages($experiment, $obj->{'project'}, $obj->{'version'});
         $files = $request->getUploadedFiles();
         $this->logger->info("Received " . count($files) . " files");
@@ -106,7 +107,7 @@ $app->group('/api', function () use ($app) {
             return $response->withStatus(500);
         }
         foreach ($obj as $o) {
-            $app->upload->handleMetaData($o);
+            $app->upload->processMetaData($o);
         }
         return $response->withStatus(200);
     });

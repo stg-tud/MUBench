@@ -106,5 +106,15 @@ class ConnectionDBTest extends TestCase{
         $expected = "INSERT INTO reviews (identifier, name, hit, comment, violation_type, id) VALUES ('identifier','name','hit','comment','type','id');";
         $this->assertEquals($expected, $actual);
     }
-    
+
+    public function testExecCreateAndInsertTable(){
+        $statements = [];
+        $tableName = "testTable";
+        $statements[] = $this->db->createTableStatement($tableName, $this->obj->{'findings'});
+        $statements[] = $this->db->insertStatement($tableName, 'project', 'version', $this->obj->{"findings"}[0]);
+        $this->db->execStatements($statements);
+        $query = $this->db->getPotentialHits($tableName, 'project', 'version');
+        $this->assertTrue(count($query) != 0);
+    }
+
 }
