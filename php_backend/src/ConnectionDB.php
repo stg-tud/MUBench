@@ -109,6 +109,7 @@ class DBConnection {
 	}
 
 	public function getTables(){
+	    $query = [];
 		try{
 	    	$query = $this->pdo->query("SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE';");
 		}catch(PDOException $e){
@@ -125,6 +126,7 @@ class DBConnection {
 	}
 
 	public function getStats($id){
+        $query = [];
 		try{
 			$query = $this->pdo->query("SELECT result, runtime, number_of_findings FROM stats WHERE id=" . $this->pdo->quote($id) . ";");
 		}catch(PDOException $e){
@@ -136,6 +138,7 @@ class DBConnection {
 	}
 
 	public function getAllStats($id){
+        $query = [];
 		try{
 			$query = $this->pdo->query("SELECT * FROM stats WHERE exp=" . $this->pdo->quote($id) . ";");
 		}catch(PDOException $e){
@@ -153,6 +156,7 @@ class DBConnection {
 		if($exp === "ex2"){
 			$statement = "SELECT project, version, id FROM " . $table . ";";
 		}
+        $query = [];
 		try{
 			$query = $this->pdo->query($statement);
 		}catch(PDOException $e){
@@ -162,6 +166,7 @@ class DBConnection {
 	}
 
 	public function getMetadata($misuse){
+        $query = [];
 		try{
 			$query = $this->pdo->query("SELECT * from metadata WHERE misuse=" . $this->pdo->quote($misuse) . ";");
 		}catch(PDOException $e){
@@ -171,6 +176,7 @@ class DBConnection {
 	}
 
 	public function getPattern($misuse){
+	    $query = [];
 		try{
 			$query = $this->pdo->query("SELECT * from patterns WHERE misuse=" . $this->pdo->quote($misuse) . ";");
 		}catch(PDOException $e){
@@ -180,6 +186,7 @@ class DBConnection {
 	}
 
 	public function getReview($user, $identifier){
+        $query = [];
 		try{
 			$query = $this->pdo->query("SELECT * from reviews WHERE name=" . $this->pdo->quote($user) . " AND identifier=" . $this->pdo->quote($identifier) . ";");
 		}catch(PDOException $e){
@@ -189,6 +196,7 @@ class DBConnection {
 	}
 
 	public function getHits($table, $project, $version, $misuse, $exp){
+        $query = [];
 		try{
 			$query = $this->pdo->query("SELECT * from ". $table . " WHERE " . ($exp === "ex2" ? "id=" : "misuse=") . $this->pdo->quote($misuse) . " AND project=" . $this->pdo->quote($project) . " AND version=" . $this->pdo->quote($version) . ";");
 		}catch(PDOException $e){
@@ -198,6 +206,7 @@ class DBConnection {
 	}
 
 	public function getPotentialHits($table, $project, $version){
+        $query = [];
 		try{
 			$query = $this->pdo->query("SELECT * from ". $table . " WHERE project=" . $this->pdo->quote($project) . " AND version=" . $this->pdo->quote($version) . ";");
 		}catch(PDOException $e){
@@ -211,6 +220,7 @@ class DBConnection {
 	}
 
 	public function getAllReviews($identifier){
+        $query = [];
 		try{
 			$query = $this->pdo->query("SELECT name from reviews WHERE identifier=" . $this->pdo->quote($identifier) . ";");
 		}catch(PDOException $e){

@@ -3,6 +3,7 @@ require_once 'ConnectionDB.php';
 require_once 'DirectoryHelper.php';
 require_once 'UploadProcessor.php';
 require_once 'DataProcessor.php';
+require_once 'RoutesHelper.php';
 
 $app->add(new \Slim\Middleware\HttpBasicAuthentication([
     "path" => ["/api/", "/private/"],
@@ -25,3 +26,4 @@ $db = new DBConnection($pdo, $logger);
 $app->upload = new UploadProcessor($db, $logger);
 $app->dir = new DirectoryHelper($settings['upload'], $logger);
 $app->data = new DataProcessor($db, $logger);
+$app->helper = new RoutesHelper($logger);
