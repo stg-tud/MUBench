@@ -88,6 +88,32 @@ class TestPublishFindingsTask:
 
         assert_equals(post_mock.call_args[1]["file_paths"], ["-file1-", "-file2-"])
 
+    def test_publish_successful_run_in_chunks(self, post_mock):
+        self.uut.max_files_per_post = 1
+        self.test_run.is_success = lambda: True
+        self.test_run.get_potential_hits = lambda: [
+            _create_finding({"id": "-1-"}, file_paths=["-file1-"]),
+            _create_finding({"id": "-2-"}, file_paths=["-file2-"])
+        ]
+
+        self.uut.process_project_version(self.project, self.version)
+
+        assert_equals(len(post_mock.call_args_list), 2)
+        assert_equals(post_mock.call_args_list[0][1]["file_paths"], ["-file1-"])
+        assert_equals(post_mock.call_args_list[1][1]["file_paths"], ["-file2-"])
+
+    def test_publish_successful_run_in_partial_chunks(self, post_mock):
+        self.uut.max_files_per_post = 3
+        self.test_run.is_success = lambda: True
+        self.test_run.get_potential_hits = lambda: [
+            _create_finding({"id": "-1-"}, file_paths=["-file1-", "-file2-"]),
+            _create_finding({"id": "-2-"}, file_paths=["-file3-", "-file4-"])
+        ]
+
+        self.uut.process_project_version(self.project, self.version)
+
+        assert_equals(len(post_mock.call_args_list), 2)
+
     def test_publish_successful_run_code_snippets(self, post_mock):
         self.test_run.is_success = lambda: True
         self.test_run.get_potential_hits = lambda: [_create_finding({"id": "42"}, snippets=[Snippet("-code-", 23)])]

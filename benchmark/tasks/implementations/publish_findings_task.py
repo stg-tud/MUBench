@@ -17,6 +17,8 @@ from benchmark.utils.web_util import post
 class PublishFindingsTask(ProjectVersionTask):
     def __init__(self, experiment: Experiment, dataset: str, review_site_url: str, review_site_user: str= ""):
         super().__init__()
+        self.max_files_per_post = 20  # 20 is PHP's default limit to the number of files per request
+
         self.experiment = experiment
         self.detector = experiment.detector
         self.dataset = dataset
@@ -70,12 +72,28 @@ class PublishFindingsTask(ProjectVersionTask):
             potential_hit["target_snippets"] = [snippet.__dict__ for snippet in potential_hit.get_snippets()]
 
         try:
-            self.__post(project, version, runtime, number_of_findings, result, potential_hits)
+            for potential_hits_slice in self.__slice_by_max_files_per_post(potential_hits):
+                self.__post(project, version, runtime, number_of_findings, result, potential_hits_slice)
             logger.info("Findings published.")
         except HTTPError as e:
             logger.error("Failed to publish findings: %s", e)
 
         return self.ok()
+
+    def __slice_by_max_files_per_post(self, potential_hits: List[SpecializedFinding]) -> List[List[SpecializedFinding]]:
+        potential_hits_slice = []
+        number_of_files_in_slice = 0
+        for potential_hit in potential_hits:
+            number_of_files_in_hit = len(potential_hit.files)
+            if number_of_files_in_slice + number_of_files_in_hit > self.max_files_per_post:
+                yield potential_hits_slice
+                potential_hits_slice = [potential_hit]
+                number_of_files_in_slice = number_of_files_in_hit
+            else:
+                potential_hits_slice.append(potential_hit)
+                number_of_files_in_slice += number_of_files_in_hit
+
+        yield potential_hits_slice
 
     def __post(self, project, version, runtime, number_of_findings, result, potential_hits):
         data = {
