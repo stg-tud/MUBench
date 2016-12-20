@@ -15,7 +15,8 @@ from benchmark.utils.web_util import post
 
 
 class PublishFindingsTask(ProjectVersionTask):
-    def __init__(self, experiment: Experiment, dataset: str, review_site_url: str, review_site_user: str= ""):
+    def __init__(self, experiment: Experiment, dataset: str, review_site_url: str,
+                 review_site_user: str= "", review_site_password: str= ""):
         super().__init__()
         self.max_files_per_post = 20  # 20 is PHP's default limit to the number of files per request
 
@@ -25,7 +26,7 @@ class PublishFindingsTask(ProjectVersionTask):
         self.review_site_url = review_site_url
         self.__upload_url = urljoin(self.review_site_url, "api/upload/" + self.experiment.id)
         self.review_site_user = review_site_user
-        self.review_site_user_password = ""
+        self.review_site_password = review_site_password
 
         self.logger = logging.getLogger("review_findings")
 
@@ -33,8 +34,8 @@ class PublishFindingsTask(ProjectVersionTask):
         return [RequestsRequirement()]
 
     def start(self):
-        if self.review_site_user:
-            self.review_site_user_password = getpass.getpass(
+        if self.review_site_user and not self.review_site_password:
+            self.review_site_password = getpass.getpass(
                 "Enter review-site password for '{}': ".format(self.review_site_user))
 
         self.logger.info("Prepare findings of %s in %s for upload to %s...",
@@ -108,7 +109,7 @@ class PublishFindingsTask(ProjectVersionTask):
         }
         file_paths = PublishFindingsTask.get_file_paths(potential_hits)
         post(self.__upload_url, data, file_paths=file_paths,
-             username=self.review_site_user, password=self.review_site_user_password)
+             username=self.review_site_user, password=self.review_site_password)
 
     @staticmethod
     def get_file_paths(findings: List[SpecializedFinding]) -> List[str]:

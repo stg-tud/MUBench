@@ -23,14 +23,31 @@ class TestPublishMetadataTask:
 
         assert_equals(post_mock.call_args[0][0], "http://test.url/api/upload/metadata")
 
-    def test_publish_user(self, post_mock):
+    @patch("benchmark.tasks.implementations.publish_findings_task.getpass.getpass")
+    def test_post_auth_prompt(self, pass_mock, post_mock):
         misuse = create_misuse("-m-")
+        pass_mock.return_value = "-password-"
 
         task = PublishMetadataTask("http://test.url", "-username-")
+        task.start()  # should ask for password once
         task.process_project_misuse(self.project, misuse)
         task.end()
 
         assert_equals(post_mock.call_args[1]["username"], "-username-")
+        assert_equals(post_mock.call_args[1]["password"], "-password-")
+
+    @patch("benchmark.tasks.implementations.publish_findings_task.getpass.getpass")
+    def test_post_auth_provided(self, pass_mock, post_mock):
+        misuse = create_misuse("-m-")
+        pass_mock.side_effect = UserWarning("should skip prompt")
+
+        task = PublishMetadataTask("http://test.url", "-username-", "-password-")
+        task.start()  # should not ask for password, since already set
+        task.process_project_misuse(self.project, misuse)
+        task.end()
+
+        assert_equals(post_mock.call_args[1]["username"], "-username-")
+        assert_equals(post_mock.call_args[1]["password"], "-password-")
 
     def test_publishes_metadata(self, post_mock):
         misuse = create_misuse("-m-", meta={

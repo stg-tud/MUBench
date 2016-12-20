@@ -43,10 +43,21 @@ class TestPublishFindingsTask:
         assert_equals(post_mock.call_args[0][0], "http://dummy.url/api/upload/" + self.experiment.id)
 
     @patch("benchmark.tasks.implementations.publish_findings_task.getpass.getpass")
-    def test_post_user(self, pass_mock, post_mock):
+    def test_post_auth_prompt(self, pass_mock, post_mock):
         pass_mock.return_value = "-password-"
 
-        self.uut.start() # asks for password once on start
+        self.uut.start()  # asks for password once on start
+        self.uut.process_project_version(self.project, self.version)
+
+        assert_equals(post_mock.call_args[1]["username"], "-username-")
+        assert_equals(post_mock.call_args[1]["password"], "-password-")
+
+    @patch("benchmark.tasks.implementations.publish_findings_task.getpass.getpass")
+    def test_post_auth_provided(self, pass_mock, post_mock):
+        pass_mock.side_effect = UserWarning("should skip prompt")
+        self.uut.review_site_password = "-password-"
+
+        self.uut.start()  # should not ask for a password, since already set
         self.uut.process_project_version(self.project, self.version)
 
         assert_equals(post_mock.call_args[1]["username"], "-username-")

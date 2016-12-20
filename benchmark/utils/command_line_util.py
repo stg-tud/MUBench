@@ -121,7 +121,7 @@ def __add_publish_subprocess(available_detectors: List[str], subparsers) -> None
     __setup_detector_arguments(findings_parser, available_detectors)
     __setup_checkout_arguments(findings_parser)
     __setup_compile_arguments(findings_parser)
-    __setup_publish_argument(findings_parser)
+    __setup_publish_arguments(findings_parser)
 
     def upload_limit(x):
         limit = int(x)
@@ -140,7 +140,7 @@ def __add_publish_subprocess(available_detectors: List[str], subparsers) -> None
 
     __setup_misuse_filter_arguments(metadata_parser)
     __setup_checkout_arguments(metadata_parser)
-    __setup_publish_argument(metadata_parser)
+    __setup_publish_arguments(metadata_parser)
 
 
 def __add_stats_subprocess(available_scripts: List[str], subparsers) -> None:
@@ -185,9 +185,14 @@ def __setup_detector_arguments(parser: ArgumentParser, available_detectors: List
                              "(example: `--java-options Xmx4G` runs `java -Xmx4G`)")
 
 
-def __setup_publish_argument(parser: ArgumentParser) -> None:
+def __setup_publish_arguments(parser: ArgumentParser) -> None:
     parser.add_argument("-s", "--review-site", required=True, metavar="URL", dest="review_site_url",
                         help="use the specified review site")
     parser.add_argument("-u", "--username", metavar="USER", dest="review_site_user", default=None,
                         help="use the specified user to authenticate with the review site."
-                             " Triggers password prompt if set.")
+                             " If a user is provided, but no password,"
+                             " you will be prompted for the password before publication.")
+    parser.add_argument("-p", "--password", metavar="PASS", dest="review_site_password", default=None,
+                        help="use the specified password for authenticating as the specified user."
+                             " If a user is provided, but no password,"
+                             " you will be prompted for the password before publication.")
