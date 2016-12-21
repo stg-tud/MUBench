@@ -1,3 +1,23 @@
+crypto:
+- alfresco-android-app.1
+- chensun.1
+- chensun.2
+- corona-old.1
+- corona-old.2
+- corona-old.3
+- dalvik.1
+- dalvik.2
+- dalvik.3
+- drftpd3-extended.1
+- drftpd3-extended.2
+- ekool.1
+- freerapid-plugins.1
+- infosec-3.1
+- jclouds.1
+- progin5.1
+- siemens-i-ras.1
+- siemens-i-ras.2
+
 ###
 ### Datasets that group misuses by the source we identified them from.
 ###
