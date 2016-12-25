@@ -20,11 +20,13 @@ class PotentialHits(FindingsFilter):
         self.misuses = misuses
 
     def get_potential_hits(self, findings: List[Finding]):
+        potential_hits = []
         for misuse in self.misuses:
-            potential_hits = self._get_potential_hits(misuse, findings, False)
-            if not potential_hits:
-                potential_hits = self._get_potential_hits(misuse, findings, True)
-            return potential_hits
+            misuse_potential_hits = self._get_potential_hits(misuse, findings, False)
+            if not misuse_potential_hits:
+                misuse_potential_hits = self._get_potential_hits(misuse, findings, True)
+            potential_hits.extend(misuse_potential_hits)
+        return potential_hits
 
     @staticmethod
     def _get_potential_hits(misuse: Misuse, findings: List[Finding], method_name_only: bool):

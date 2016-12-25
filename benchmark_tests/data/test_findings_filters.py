@@ -10,18 +10,35 @@ class TestPotentialHits:
     # noinspection PyAttributeOutsideInit
     def setup(self):
         self.detector = Dummy("")
-        self.misuse = create_misuse("-m1-")
-        self.misuses = [self.misuse, create_misuse("-m2-")]
-
+        self.misuses = []
         self.uut = PotentialHits(self.detector, self.misuses)
 
-    def test_adds_misuse(self):
-        finding = Finding({})
-        finding.is_potential_hit = lambda misuse, y: misuse == self.misuse
+    def test_no_hit(self):
+        self.misuses.append(create_misuse("-m1-"))
+        finding = Finding({"id": "no potential hit"})
+        finding.is_potential_hit = lambda misuse, y: False
 
         potential_hits = self.uut.get_potential_hits([finding])
 
-        assert_equals(self.misuse.id, potential_hits[0]["misuse"])
+        assert_equals([], potential_hits)
+
+    def test_potential_hit(self):
+        self.misuses.append(create_misuse("-m1-"))
+        finding = Finding({"id": ":potential hit for m1:"})
+        finding.is_potential_hit = lambda misuse, y: misuse == self.misuses[0]
+
+        potential_hits = self.uut.get_potential_hits([finding])
+
+        assert_equals(self.misuses[0].id, potential_hits[0]["misuse"])
+
+    def test_potential_hit_for_second_misuse(self):
+        self.misuses.extend([create_misuse("-1st-"), create_misuse("-2nd-")])
+        finding = Finding({"id": ":some potential hit for second misuse:"})
+        finding.is_potential_hit = lambda misuse, y: misuse == self.misuses[1]
+
+        potential_hits = self.uut.get_potential_hits([finding])
+
+        assert_equals(self.misuses[1].id, potential_hits[0]["misuse"])
 
 
 class TestAllFindings:
