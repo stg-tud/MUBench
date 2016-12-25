@@ -45,6 +45,8 @@ class Info(ProjectVersionMisuseTask):
         self.__logger.info("    Compile  : %s", compile_state)
 
         super().process_project_version(project, version)
+
+        return self.ok()
     
     def process_project_version_misuse(self, project: Project, version: ProjectVersion, misuse: Misuse):
         self.__logger.info("    - Misuse           : %s", misuse.misuse_id)
@@ -66,3 +68,5 @@ class Info(ProjectVersionMisuseTask):
             self.__logger.info("      Enclosing Method : %s", location.method)
 
         self.__logger.info("      Fix Diff         : %s", misuse.fix.commit)
+
+        return self.ok()
