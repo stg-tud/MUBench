@@ -1,3 +1,8 @@
+build:
+  classes: build/temp/classes/
+  commands:
+  - ant init compile
+  src: src/
 misuses:
 - '1'
 - '2'
