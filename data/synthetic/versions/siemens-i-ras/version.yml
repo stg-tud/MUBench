@@ -1,0 +1,8 @@
+build:
+  classes: build/classes/main/
+  commands:
+  - gradle :compileJava
+  src: src/
+misuses:
+- 'aes-ecb-mode'
+- 'static-key'

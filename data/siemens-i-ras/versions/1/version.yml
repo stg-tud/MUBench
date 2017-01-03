@@ -1,5 +1,0 @@
-build:
-  src: src/
-misuses:
-- '1'
-- '2'

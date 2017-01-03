@@ -15,8 +15,8 @@ crypto:
 - infosec-3.1
 - jclouds.1
 - progin5.1
-- siemens-i-ras.1
-- siemens-i-ras.2
+- synthetic.aes-ecb-mode
+- synthetic.static-key
 
 ###
 ### Datasets that group misuses by the source we identified them from.
