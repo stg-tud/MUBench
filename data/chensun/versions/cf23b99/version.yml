@@ -1,3 +1,8 @@
+build:
+  classes: build/classes/main/
+  commands:
+  - gradle :compileJava
+  src: CS5430/src/
 misuses:
 - '1'
 - '2'
