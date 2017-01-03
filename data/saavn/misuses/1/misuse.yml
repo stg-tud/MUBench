@@ -5,7 +5,7 @@ characteristics:
 description: >
   Uses DES which is considered unsafe.
 location:
-  file: saavn/cz/vity/freerapid/plugins/services/saavn/SaavnFileRunner.java
+  file: SaavnFileRunner.java
   method: "decryptPlay(final String str)"
 internal: true
 pattern:
