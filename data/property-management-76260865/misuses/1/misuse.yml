@@ -1,0 +1,12 @@
+api:
+- javax.crypto.Cipher
+characteristics:
+- missing/condition/value_or_state
+description: >
+  Uses DES which is considered unsafe.
+location:
+  file: com/jason/property/encrypte/DesEncrypter.java
+  method: "enCrypto(String txt, String key)"
+internal: false
+pattern:
+- single object

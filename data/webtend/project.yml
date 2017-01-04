@@ -1,0 +1,5 @@
+name: Webtend
+repository:
+  type: git
+  url: https://github.com/freewind/webtend
+url: https://github.com/freewind/webtend

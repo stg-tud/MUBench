@@ -1,0 +1,12 @@
+api:
+- javax.crypto.Mac
+characteristics:
+- superfluous/call
+description: >
+  May call Mac.init(...) multiple times on the same instance
+location:
+  file: com/jason/property/encrypte/DesEncrypter.java
+  method: "calculateHMAC_SHA256(byte[] input, byte[] key)"
+internal: false
+pattern:
+- single object

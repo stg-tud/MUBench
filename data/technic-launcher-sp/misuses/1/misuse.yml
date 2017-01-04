@@ -1,0 +1,12 @@
+api:
+- javax.crypto.Cipher
+characteristics:
+- missing/condition/value_or_state
+description: >
+  Uses DES which is considered unsafe.
+location:
+  file: org/spoutcraft/launcher/skin/LoginFrame.java
+  method: "getCipher(int mode, String password)"
+internal: false
+pattern:
+- single object

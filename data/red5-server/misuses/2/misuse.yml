@@ -1,0 +1,12 @@
+api:
+- javax.crypto.spec.SecretKeySpec
+characteristics:
+- missing/condition/value_or_state
+description: >
+  Uses a non-random key in CBC mode.
+location:
+  file: server/generateChecksumPostsAndReplies.java
+  method: "calculateHMAC_SHA256(byte[] input, byte[] key)"
+internal: true
+pattern:
+- single object
