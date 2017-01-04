@@ -1,0 +1,12 @@
+api:
+- javax.crypto.Cipher
+characteristics:
+- missing/condition/value_or_state
+description: >
+  Uses AES with default mode and padding which is considered a bad practice since they depend on the provider.
+location:
+  file: com/vouov/yapps/util/AESUtils.java
+  method: "aes(int mode, String password, byte[] textBytes)"
+internal: false
+pattern:
+- single object
