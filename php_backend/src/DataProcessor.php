@@ -110,7 +110,6 @@ class DataProcessor {
 		$stats = $this->db->getAllStats($table);
 		$projects = [];
 		foreach($stats as $s){
-		    $s['hits'][] = ["misuse" => 5];
 			foreach($this->db->getPotentialHits($table, $s['project'], $s['version']) as $hit){
 				if($exp !== "ex2"){
 					$meta = $this->getMetadata($hit['misuse']);
@@ -132,13 +131,13 @@ class DataProcessor {
 			}
 			$projects[$s['project']][$s['version']] = $s;
 		}
-        $projects["b"] = ["582" => ["project" => "b", "version" => "582", "hits" => [0 => ["misuse" => 1], 1 => ["misuse" => 0]]], "1" => ["project" => "b", "version" => "1"]];
-        $projects["a"] = [0 => ["project" => "a"]];
 		ksort($projects);
         foreach($projects as $key => $value){
             ksort($projects[$key]);
             foreach($projects[$key] as $k2 => $value){
-                asort($projects[$key][$k2]['hits'],  "custom_sort");
+                if($projects[$key][$k2] && array_key_exists('hits', $projects[$key][$k2])) {
+                    ksort($projects[$key][$k2]['hits']);
+                }
             }
         }
 
