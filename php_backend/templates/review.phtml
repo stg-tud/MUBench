@@ -117,7 +117,7 @@
                         <?php endforeach; ?>
                     </ul>
                 <?php elseif(strpos($value, ".png") !== false) : ?>
-                    <img src="/site/upload/<?= htmlspecialchars($project); ?>/<?= htmlspecialchars($version); ?>/<?= htmlspecialchars($hit[$key]); ?>" />
+                    <img src="/site/upload/<?= htmlspecialchars($exp); ?>/<?= htmlspecialchars($set); ?>/<?= htmlspecialchars($detector); ?>/<?= htmlspecialchars($project); ?>/<?= htmlspecialchars($version); ?>/<?= htmlspecialchars($hit[$key]); ?>" />
                 <?php else : ?>
                     <?= htmlspecialchars($value); ?>
                 <?php endif; ?>

@@ -16,9 +16,7 @@ class DBConnection {
 		foreach($statements as $s){
 			try{
 	    		$status = $this->pdo->exec($s);
-	    		if(!is_numeric($status)){
-                    $this->logger->info("Status execStatement: " . $status . " executing . " . substr($s, 0, 10));
-                }
+                $this->logger->info("Status execStatement: " . $status . " executing . " . substr($s, 0, 10));
 			}catch(PDOException $e){
 				$this->logger->error("Error execStatement: (" . $e->getMessage() . ") executing " . $s );
 			}

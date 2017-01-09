@@ -49,6 +49,9 @@ class DataProcessor {
 			}
 			$result[] = $q;
 		}
+        for($i = 0; $i < count($result); $i = $i + 1){
+            ksort($result[$i]);
+        }
 		return $result;
 	}
 	
@@ -65,7 +68,7 @@ class DataProcessor {
 		$names = array();
 		foreach($tables as $t){
 			if(substr($t,0,strlen($prefix)) === $prefix){
-				$new = explode("_", $t)[$suffix];
+				$new = explode("_", $t, 3)[$suffix];
 				$add = true;
 				foreach($names as $n){
 					if($n === $new){
@@ -78,6 +81,7 @@ class DataProcessor {
 				}
 			}
 		}
+		asort($names);
 		return $names;
 	}
 
@@ -106,6 +110,7 @@ class DataProcessor {
 		$stats = $this->db->getAllStats($table);
 		$projects = [];
 		foreach($stats as $s){
+		    $s['hits'][] = ["misuse" => 5];
 			foreach($this->db->getPotentialHits($table, $s['project'], $s['version']) as $hit){
 				if($exp !== "ex2"){
 					$meta = $this->getMetadata($hit['misuse']);
@@ -122,12 +127,26 @@ class DataProcessor {
                     }
                 }
                 if ($add) {
-                    $s['hits'][] = $hit;
+                    $s['hits'][$hit['misuse']] = $hit;
                 }
 			}
-			$projects[$s['project']][] = $s;
+			$projects[$s['project']][$s['version']] = $s;
 		}
+        $projects["b"] = ["582" => ["project" => "b", "version" => "582", "hits" => [0 => ["misuse" => 1], 1 => ["misuse" => 0]]], "1" => ["project" => "b", "version" => "1"]];
+        $projects["a"] = [0 => ["project" => "a"]];
+		ksort($projects);
+        foreach($projects as $key => $value){
+            ksort($projects[$key]);
+            foreach($projects[$key] as $k2 => $value){
+                asort($projects[$key][$k2]['hits'],  "custom_sort");
+            }
+        }
+
 		return $projects;
 	}
+
+	function custom_sort($a, $b){
+	    return $a['misuse'] > $b['misuse'];
+    }
 
 }

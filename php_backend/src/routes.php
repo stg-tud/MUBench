@@ -19,7 +19,7 @@ $app->get('/{exp:ex[1-3]}/{dataset}', function ($request, $response, $args) use 
     $exp = $args['exp'];
     $dataset = $args['dataset'];
 	$data = $app->data->getDetectors($exp . "_" . $dataset);
-	if(!$data || emtpy($data)){
+	if(!$data){
 	    return $response->withStatus(404);
     }
 	$template = $settings['ex_template'][$exp];
@@ -78,7 +78,6 @@ $app->group('/api', function () use ($app) {
         $project = $obj->{'project'};
         $version = $obj->{'version'};
         $hits = $obj->{'potential_hits'};
-        $this->logger->info(dump($hits));
         if (!$hits || !$project || !$version) {
             $this->logger->error("upload failed, could not read data " . dump($obj));
             return $response->withStatus(500);
@@ -87,9 +86,9 @@ $app->group('/api', function () use ($app) {
         $app->upload->processData($experiment, $obj, $obj->{'potential_hits'});
         $app->dir->deleteOldImages($experiment, $obj->{'project'}, $obj->{'version'});
         $files = $request->getUploadedFiles();
-        $this->logger->info("Received " . count($files) . " files");
+        $this->logger->info("received " . count($files) . " files");
         foreach ($files as $img) {
-            $app->dir->handleImage($experiment, $obj->{'project'}, $obj->{'version'}, $img);
+            $app->dir->handleImage($experiment, $obj->{'dataset'} ? $obj->{'dataset'} : "any", $obj->{'detector'}, $obj->{'project'}, $obj->{'version'}, $img);
         }
         return $response->withStatus(200);
     });

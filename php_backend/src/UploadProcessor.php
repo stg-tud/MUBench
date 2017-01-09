@@ -86,7 +86,7 @@ class UploadProcessor
             $this->db->execStatements($statements);
             return;
         }
-        $statements[] = $this->db->deleteStatement($table, $project, $version);
+        //$statements[] = $this->db->deleteStatement($table, $project, $version);
         $columns = $this->db->getTableColumns($table);
         foreach ($obj_columns as $c) {
             $add = true;

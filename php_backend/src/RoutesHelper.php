@@ -28,7 +28,7 @@ class RoutesHelper
             return $response->withStatus(404);
         }
         $stats = $app->data->getIndex($exp, $dataset, $detector);
-        if(!$stats || empty($stats)){
+        if(!$stats){
             return $response->withStatus(404);
         }
         return $r->renderer->render($response, 'detector.phtml',
@@ -47,13 +47,16 @@ class RoutesHelper
         $data = $app->data->getMetadata($misuse);
         $patterns = $app->data->getPatterns($misuse);
         $hits = $app->data->getHits($exp . "_" . $set . "_" . $detector, $project, $version, $misuse, $exp);
-        if(empty($hits)){
+        if(!$hits){
             return $response->withStatus(404);
         }
         $reviewer = "";
         $review = NULL;
         if ($review_flag && !$logged) {
             $reviewer = $args['reviewer'];
+            if($request->getServerParams()['PHP_AUTH_USER'] && $request->getServerParams()['PHP_AUTH_USER'] === $reviewer){
+                $logged = true;
+            }
         } else if ($review_flag && $logged) {
             $reviewer = $request->getServerParams()['PHP_AUTH_USER'];
         }

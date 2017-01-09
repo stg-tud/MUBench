@@ -10,8 +10,8 @@ class DirectoryHelper {
 		$this->logger = $logger;
 	}
 
-	public function deleteOldImages($ex, $project, $version){
-        $path = $this->root . "/" . $ex . "/" . $project . "/" . $version . "/";
+	public function deleteOldImages($ex, $dataset, $detector, $project, $version){
+        $path = $this->buildPath($ex, $dataset, $detector, $project, $version);
         if(file_exists($path)){
             $it = new RecursiveDirectoryIterator($path, RecursiveDirectoryIterator::SKIP_DOTS);
             $files = new RecursiveIteratorIterator($it,
@@ -27,11 +27,16 @@ class DirectoryHelper {
         }
     }
 
-	public function handleImage($ex, $project, $version, $img){
-        $path = $this->root . "/" . $ex . "/" . $project . "/" . $version . "/";
+	public function handleImage($ex, $dataset, $detector, $project, $version, $img){
+        $path = $this->buildPath($ex, $dataset, $detector, $project, $version);
 		$file = $path . $img->getClientFilename();
-		$this->logger->info('Moved img: ' . $img->getClientFilename() . " to " . mkdir($path, 0745, true));
+		$this->logger->info("moving file " . $img->getClientFilename() . " to " . $path);
+        mkdir($path, 0745, true);
 		$img->moveTo($file);
 	}
+
+	private function buildPath($ex, $dataset, $detector, $project, $version){
+	    return $this->root . "/" . $ex . "/" . $dataset . "/" . $detector . "/" . $project . "/" . $version . "/";
+    }
 
 }
