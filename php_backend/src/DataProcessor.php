@@ -110,7 +110,7 @@ class DataProcessor {
 		$stats = $this->db->getAllStats($table);
 		$projects = [];
 		foreach($stats as $s){
-			foreach($this->db->getPotentialHits($table, $s['project'], $s['version']) as $hit){
+            foreach($this->db->getPotentialHits($table, $s['project'], $s['version']) as $hit){
 				if($exp !== "ex2"){
 					$meta = $this->getMetadata($hit['misuse']);
 					$hit['violation_types'] = $meta['violation_types'];
@@ -118,6 +118,7 @@ class DataProcessor {
 				$reviews = $this->getAllReviews($table, $s['project'], $s['version'], $exp === "ex2" ? $hit['id'] : $hit['misuse']);
 				$hit['reviews'] = $reviews;
 				$add = true;
+                $id = $exp === "ex2" ? $hit['id'] : $hit['misuse'];
 				if(array_key_exists('hits', $s)) {
                     foreach ($s['hits'] as $h) {
                         if (($exp === "ex2" && $hit['id'] === $h['id']) || ($exp !== "ex2" && $hit['misuse'] === $h['misuse'])) {
@@ -126,7 +127,7 @@ class DataProcessor {
                     }
                 }
                 if ($add) {
-                    $s['hits'][$hit['misuse']] = $hit;
+                    $s['hits'][$id] = $hit;
                 }
 			}
 			$projects[$s['project']][$s['version']] = $s;
