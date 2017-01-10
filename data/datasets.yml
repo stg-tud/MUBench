@@ -12,3 +12,72 @@ crypto:
   jmrtd.2
   pawotag.1
   tab-apps.1
+icse16-ex1:
+  aclang.587
+  acmath.998
+  adempiere.1312
+  alibaba-druid.e10f28
+  closure.114
+  closure.884
+  closure.319
+  httpclient.302
+  httpclient.444
+  httpclient.452
+  itext.5091
+  jackrabbit.1678
+  jackrabbit.1694
+  jackrabbit.1601
+  jackrabbit.1750
+  jackrabbit.1738
+  jfreechart.2183
+  jfreechart.164
+  jfreechart.2266
+  jfreechart.881
+  jfreechart.1025
+  jfreechart.103
+  jmrtd.67
+  jmrtd.51
+  jodatime.1231
+  lucene.754
+  lucene.207
+  lucene.1251
+  lucene.1918
+  rhino.286251
+  synthetic
+icse16-ex2:
+  closure.319
+  itext.5091
+  jmrtd.51
+  jodatime.1231
+  lucene.1918
+icse16-ex3:
+  aclang.587
+  acmath.998
+  adempiere.1312
+  alibaba-druid.e10f28
+  closure.114
+  closure.884
+  closure.319
+  httpclient.302
+  httpclient.444
+  httpclient.452
+  itext.5091
+  jackrabbit.1678
+  jackrabbit.1694
+  jackrabbit.1601
+  jackrabbit.1750
+  jackrabbit.1738
+  jfreechart.2183
+  jfreechart.164
+  jfreechart.2266
+  jfreechart.881
+  jfreechart.1025
+  jfreechart.103
+  jmrtd.67
+  jmrtd.51
+  jodatime.1231
+  lucene.754
+  lucene.207
+  lucene.1251
+  lucene.1918
+  rhino.286251
