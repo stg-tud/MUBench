@@ -12,7 +12,7 @@ crypto:
 - jmrtd.2
 - pawotag.1
 - tab-apps.1
-icse16-ex1:
+icse16ex1:
 - aclang.587
 - acmath.998
 - adempiere.1312
@@ -44,13 +44,13 @@ icse16-ex1:
 - lucene.1918
 - rhino.286251
 - synthetic
-icse16-ex2:
+icse16ex2:
 - closure.319
 - itext.5091
 - jmrtd.51
 - jodatime.1231
 - lucene.1918
-icse16-ex3:
+icse16ex3:
 - aclang.587
 - acmath.998
 - adempiere.1312
