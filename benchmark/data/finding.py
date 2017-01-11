@@ -45,7 +45,7 @@ class Finding(Dict[str, str]):
         return finding_file.endswith(misuse_file)
 
     def __file(self):
-        return self["file"]
+        return self.get("file", None)
 
     def __is_match_by_method(self, misuse_method, method_name_only: bool = False):
         finding_method = self.__method()
@@ -60,7 +60,7 @@ class Finding(Dict[str, str]):
         return finding_method in misuse_method
 
     def __method(self):
-        return self["method"] if "method" in self else ""
+        return self.get("method", "")
 
     def get_snippets(self) -> List[Snippet]:
         snippets = []
