@@ -74,7 +74,8 @@ class Benchmark:
 
     def _setup_publish_findings(self):
         experiment = self.__get_experiment()
-        self.runner.add(PublishFindingsTask(experiment, self.config.dataset, self.config.review_site_url,
+        self.runner.add(PublishFindingsTask(experiment, self.config.dataset, Benchmark.COMPILES_PATH,
+                                            self.config.review_site_url,
                                             self.config.review_site_user, self.config.review_site_password))
 
     def _setup_publish_metadata(self):

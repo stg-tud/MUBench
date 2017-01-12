@@ -15,7 +15,7 @@ from benchmark.utils.web_util import post
 
 
 class PublishFindingsTask(ProjectVersionTask):
-    def __init__(self, experiment: Experiment, dataset: str, review_site_url: str,
+    def __init__(self, experiment: Experiment, dataset: str, compiles_base_path: str, review_site_url: str,
                  review_site_user: str= "", review_site_password: str= ""):
         super().__init__()
         self.max_files_per_post = 20  # 20 is PHP's default limit to the number of files per request
@@ -23,6 +23,7 @@ class PublishFindingsTask(ProjectVersionTask):
         self.experiment = experiment
         self.detector = experiment.detector
         self.dataset = dataset
+        self.compiles_base_path = compiles_base_path
         self.review_site_url = review_site_url
         self.__upload_url = urljoin(self.review_site_url, "api/upload/" + self.experiment.id)
         self.review_site_user = review_site_user
@@ -69,8 +70,10 @@ class PublishFindingsTask(ProjectVersionTask):
                 logger.info("Not run on %s.", version)
                 result = "not run"
 
+        version_compile = version.get_compile(self.compiles_base_path)
         for potential_hit in potential_hits:
-            potential_hit["target_snippets"] = [snippet.__dict__ for snippet in potential_hit.get_snippets()]
+            snippets = potential_hit.get_snippets(version_compile.original_sources_path)
+            potential_hit["target_snippets"] = [snippet.__dict__ for snippet in snippets]
 
         try:
             for potential_hits_slice in self.__slice_by_max_files_per_post(potential_hits):

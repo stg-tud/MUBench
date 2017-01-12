@@ -2,6 +2,8 @@ from typing import Dict, List
 
 import re
 
+from os.path import join
+
 from benchmark.data.misuse import Misuse
 from benchmark.utils.java_utils import exec_util
 from benchmark.utils.shell import CommandFailedError
@@ -62,7 +64,7 @@ class Finding(Dict[str, str]):
     def __method(self):
         return self.get("method", "")
 
-    def get_snippets(self) -> List[Snippet]:
+    def get_snippets(self, source_base_path: str) -> List[Snippet]:
         snippets = []
 
         try:
@@ -72,7 +74,8 @@ class Finding(Dict[str, str]):
             #   ===
             #   <first-line number>:<declaring type>:<code>
             #
-            output = exec_util("MethodExtractor", "\"{}\" \"{}\"".format(self.__file(), self.__method()))
+            target_file = join(source_base_path, self.__file())
+            output = exec_util("MethodExtractor", "\"{}\" \"{}\"".format(target_file, self.__method()))
 
             # if there's other preceding output, we need to strip it
             while output and not re.match("^[0-9]+:[^:\n]+:", output):

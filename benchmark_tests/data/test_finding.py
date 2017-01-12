@@ -73,33 +73,41 @@ class TestTargetCode:
 
         finding = Finding({"file": "-file-"})
 
-        assert_equals(finding.get_snippets(), [])
+        assert_equals(finding.get_snippets("/base"), [])
 
     def test_loads_snippet(self, utils_mock):
-        utils_mock.side_effect =\
-            lambda tool, args: "42:T:-code-" if tool == "MethodExtractor" and args == '"-file-" "-method-"' else ""
+        utils_mock.side_effect = lambda tool, args:\
+                "42:T:-code-" if tool == "MethodExtractor" and args == '"/base/-file-" "-method-"' else ""
 
         finding = Finding({"file": "-file-", "method": "-method-"})
 
-        assert_equals([Snippet("class T {\n-code-\n}", 41)], finding.get_snippets())
+        assert_equals([Snippet("class T {\n-code-\n}", 41)], finding.get_snippets("/base"))
+
+    def test_loads_snippet_absolute_path(self, utils_mock):
+        utils_mock.side_effect = lambda tool, args: \
+            "42:T:-code-" if tool == "MethodExtractor" and args == '"/-absolute-file-" "-method-"' else ""
+
+        finding = Finding({"file": "/-absolute-file-", "method": "-method-"})
+
+        assert_equals(1, len(finding.get_snippets("/base")))
 
     def test_loads_multiple_snippets(self, utils_mock):
         utils_mock.return_value = "42:T:t-code\n===\n32:A:a-code"
 
         finding = Finding({"file": "-file-"})
 
-        assert_equals(2, len(finding.get_snippets()))
+        assert_equals(2, len(finding.get_snippets("/base")))
 
     def test_strips_additional_output(self, utils_mock):
         utils_mock.return_value = "Arbitrary additional output\n1:C:code"
 
         finding = Finding({"file": "-file-"})
 
-        assert_equals(1, len(finding.get_snippets()))
+        assert_equals(1, len(finding.get_snippets("/base")))
 
     def test_extraction_error(self, utils_mock):
         utils_mock.side_effect = CommandFailedError("cmd", "output")
 
         finding = Finding({"file": "-file-"})
 
-        assert_equals([Snippet("Failed to execute 'cmd': output", 1)], finding.get_snippets())
+        assert_equals([Snippet("Failed to execute 'cmd': output", 1)], finding.get_snippets("/base"))

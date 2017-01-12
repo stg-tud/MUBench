@@ -35,7 +35,7 @@ class TestPublishFindingsTask:
         self.experiment.get_run = lambda v: self.test_run
         self.experiment.detector = self.detector
 
-        self.uut = PublishFindingsTask(self.experiment, self.dataset, "http://dummy.url", "-username-")
+        self.uut = PublishFindingsTask(self.experiment, self.dataset, "/sources", "http://dummy.url", "-username-")
 
     def test_post_url(self, post_mock):
         self.uut.process_project_version(self.project, self.version)
@@ -196,5 +196,6 @@ def _create_finding(data: Dict, file_paths=None, snippets=None):
     if file_paths is None:
         file_paths = []
     finding = SpecializedFinding(data, files=file_paths)
-    finding.get_snippets = lambda: snippets
+    finding.get_snippets = lambda source_path:\
+        snippets if source_path == "/sources/-p-/-v-/original-src" else {}["illegal source path: %s" % source_path]
     return finding
