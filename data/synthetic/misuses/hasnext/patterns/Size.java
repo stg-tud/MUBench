@@ -2,8 +2,10 @@ import java.util.Collection;
 import java.util.Iterator;
 
 public class Size {
-	public Object pattern(Collection<Object> os, Object def) {
+	void pattern(Collection<Object> os) {
 		Iterator<Object> itr = os.iterator();
-		return os.size() != 0 ? itr.next() : def;
+		if (os.size() != 0) {
+      itr.next();
+    }
 	}
 }

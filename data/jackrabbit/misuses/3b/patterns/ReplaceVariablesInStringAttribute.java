@@ -8,8 +8,8 @@ class ReplaceVariablesInStringAttribute extends RepositoryConfigurationParser {
     super(null);
   }
   
-  String pattern(Element element) throws ConfigurationException {
+  void pattern(Element element) throws ConfigurationException {
     String value = getAttribute(element, ID_ATTRIBUTE, null);
-    return replaceVariables(value);
+    replaceVariables(value);
   }
 }

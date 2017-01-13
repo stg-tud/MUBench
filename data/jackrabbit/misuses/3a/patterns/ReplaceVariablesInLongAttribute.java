@@ -8,8 +8,8 @@ class ReplaceVariablesInLongAttribute extends RepositoryConfigurationParser {
     super(null);
   }
   
-  long pattern(Element element) throws ConfigurationException {
+  void pattern(Element element) throws ConfigurationException {
     String value = getAttribute(element, SYNC_DELAY_ATTRIBUTE, DEFAULT_SYNC_DELAY);
-    return Long.parseLong(replaceVariables(value));
+    Long.parseLong(replaceVariables(value));
   }
 }

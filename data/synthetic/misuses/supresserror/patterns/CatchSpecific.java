@@ -1,18 +1,13 @@
 import java.text.ParseException;
 
 public class CatchSpecific {
-	public void pattern() {
+	public void pattern(Target target) {
 		byte[] data = null;
 		try {
-			data = loadData();
+			data = target.loadData();
 		} catch (ParseException t) {
 			data = new byte[0];
 		}
 		// use data..
-	}
-
-	public byte[] loadData() throws ParseException {
-		// some time/memory consuming loading process...
-		return null;
 	}
 }

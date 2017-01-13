@@ -1,18 +1,13 @@
 import java.text.ParseException;
 
 public class SupressError {
-	public void misuse() {
+	public void misuse(Target target) {
 		byte[] data = null;
 		try {
-			data = loadData();
+			data = target.loadData();
 		} catch (Throwable t) {
 			data = new byte[0];
 		}
 		// use data..
-	}
-
-	public byte[] loadData() throws ParseException {
-		// some time/memory consuming loading process...
-		return null;
 	}
 }

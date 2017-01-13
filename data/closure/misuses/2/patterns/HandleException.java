@@ -9,11 +9,5 @@ class HandleException {
     } catch (CmdLineException e) {
       // handle exception...
     }
-    if (param == null) {
-      // do something...
-    } else {
-      String lowerParam = param.toLowerCase();
-      // do something else...
-    }
   }
 }

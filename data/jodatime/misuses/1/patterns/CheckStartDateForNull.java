@@ -8,17 +8,12 @@ import org.joda.time.Interval;
 import org.joda.time.contrib.hibernate.PersistentDateTime;
 
 class CheckStartDateForNull {
-  Object nullSafeGet(ResultSet resultSet, String[] names) throws HibernateException, SQLException {
-    if (resultSet == null)
-    {
-      return null;
-    }
+  void nullSafeGet(ResultSet resultSet, String[] names) throws HibernateException, SQLException {
     PersistentDateTime pst = new PersistentDateTime();
     DateTime start = (DateTime) pst.nullSafeGet(resultSet, names[0]);
     DateTime end = (DateTime) pst.nullSafeGet(resultSet, names[1]);
-    if (start == null || end == null) {
-        return null;
+    if (start != null && end != null) {
+        new Interval(start, end)
     }
-    return new Interval(start, end);
   }
 }

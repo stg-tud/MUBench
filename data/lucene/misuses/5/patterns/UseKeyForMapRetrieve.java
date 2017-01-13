@@ -6,40 +6,18 @@ import java.util.Map;
 import java.util.HashMap;
 
 abstract class UseKeyForMapRetrieve {
-  Object get(Map readerCache, IndexReader reader, Object key) throws IOException {
-    Map innerCache;
+  void get(Map innerCache, Object key) throws IOException {
     Object value;
-    synchronized (readerCache) {
-      innerCache = (Map) readerCache.get(reader);
-      if (innerCache == null) {
-        innerCache = new HashMap();
-        readerCache.put(reader, innerCache);
-        value = null;
-      } else {
-        value = innerCache.get(key);
-      }
-      if (value == null) {
-        value = new CreationPlaceholder();
-        innerCache.put(key, value);
-      }
+    if (innerCache == null) {
+      innerCache = new HashMap();
+      value = null;
+    } else {
+      value = innerCache.get(key);
     }
-    if (value instanceof CreationPlaceholder) {
-      synchronized (value) {
-        CreationPlaceholder progress = (CreationPlaceholder) value;
-        if (progress.value == null) {
-          progress.value = createValue(reader, key);
-          synchronized (readerCache) {
-            innerCache.put(key, progress.value);
-          }
-        }
-        return progress.value;
-      }
+    if (value == null) {
+      value = new CreationPlaceholder();
+      innerCache.put(key, value);
     }
-    return value;
-  }
-  
-  Object createValue(IndexReader reader, Object key) throws IOException {
-    return null; // stub
   }
   
   static final class CreationPlaceholder {

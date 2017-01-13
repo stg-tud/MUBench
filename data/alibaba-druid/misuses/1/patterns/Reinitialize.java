@@ -11,7 +11,7 @@ import javax.crypto.Cipher;
 import javax.crypto.NoSuchPaddingException;
 
 class Reinitialize {
-  Cipher patter(PublicKey publicKey, String text) throws NoSuchAlgorithmException, InvalidKeyException, NoSuchPaddingException, InvalidKeySpecException {
+  void pattern(PublicKey publicKey, String text) throws NoSuchAlgorithmException, InvalidKeyException, NoSuchPaddingException, InvalidKeySpecException {
     Cipher cipher = Cipher.getInstance("RSA");
 		try {
 			cipher.init(Cipher.DECRYPT_MODE, publicKey);
@@ -22,6 +22,5 @@ class Reinitialize {
       cipher = Cipher.getInstance("RSA");
       cipher.init(Cipher.DECRYPT_MODE, fakePrivateKey);
 		}
-    return cipher;
   }
 }

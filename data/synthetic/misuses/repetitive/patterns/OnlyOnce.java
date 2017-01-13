@@ -1,11 +1,9 @@
 import java.util.Collection;
 
 public class OnlyOnce {
-	public String pattern(Collection<Object> objects) {
-		String value = null;
+	void pattern(Collection<Object> objects) {
 		if (!objects.isEmpty()) {
-			value = objects.iterator().next().toString();
+			objects.iterator().next();
 		}
-		return value;
 	}
 }

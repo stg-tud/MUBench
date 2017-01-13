@@ -1,6 +1,5 @@
 api:
-- java.String
-- javax.crypto.Cipher
+- java.lang.String
 characteristics:
 - missing/call
 - superfluous/call

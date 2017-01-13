@@ -7,10 +7,10 @@ import javax.crypto.Cipher;
 import sos.mrtd.Util;
 
 class UseDecryptForDecryption {
-  byte[] pattern(Cipher cipher, PublicKey pubkey, MessageDigest digest, byte[] data) throws GeneralSecurityException {
+  void pattern(Cipher cipher, PublicKey pubkey, MessageDigest digest, byte[] data) throws GeneralSecurityException {
     cipher.init(Cipher.DECRYPT_MODE, pubkey);
     int digestLength = digest.getDigestLength();
     byte[] plaintext = cipher.doFinal(data);
-    return Util.recoverMessage(digestLength, plaintext);
+    Util.recoverMessage(digestLength, plaintext);
   }
 }

@@ -8,13 +8,13 @@ import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 
 class HandleInvalidKey {
-  byte[] pattern(String algorithmId, X509Certificate x509certificate, byte[] abyte0) throws InvalidKeyException, NoSuchAlgorithmException, IllegalBlockSizeException, NoSuchPaddingException, BadPaddingException {
+  void pattern(String algorithmId, X509Certificate x509certificate, byte[] abyte0) throws InvalidKeyException, NoSuchAlgorithmException, IllegalBlockSizeException, NoSuchPaddingException, BadPaddingException {
     Cipher cipher = Cipher.getInstance(algorithmId);
     try {
       cipher.init(1, x509certificate);
     } catch(InvalidKeyException e) {
       cipher.init(1, x509certificate.getPublicKey());
     }
-    return cipher.doFinal(abyte0);
+    cipher.doFinal(abyte0);
   }
 }

@@ -1,16 +1,11 @@
 import java.util.*;
 
 class HandleNoFirstKey {
-  Object pattern(SortedMap fieldToReader) {
-    String field;
+  void pattern(SortedMap fieldToReader) {
     try {
-      field = (String)fieldToReader.firstKey();
+      fieldToReader.firstKey();
     } catch(NoSuchElementException e) {
-      return null;
+      // ...
     }
-    if (field != null) {
-      return fieldToReader.get(field);
-    }
-    return null;
   }
 }
