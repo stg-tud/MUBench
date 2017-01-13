@@ -38,7 +38,11 @@ class DataProcessor {
 		}
 	}
 
-	public function getHits($table, $project, $version, $misuse, $exp){
+	public function getHits($detector, $project, $version, $misuse, $exp){
+	    $table = $this->db->getTableName($detector);
+	    if(!$table){
+	        return [];
+        }
 		$query = $this->db->getHits($table, $project, $version, $misuse, $exp);
 		$result = [];
 		foreach($query as $q){
@@ -59,8 +63,16 @@ class DataProcessor {
 		return $this->getPrefixTable($prefix, 1);
 	}
 
-	public function getDetectors($prefix){
-		return $this->getPrefixTable($prefix, 2);
+	public function getDetectors($exp){
+		$detectors = $this->db->getDetectorsTables();
+		$data = [];
+		foreach($detectors as $detector){
+		    $this->logger->info("DETECTOR: " . $detector['name']);
+		    if($this->db->hasFindingForExp($exp, $detector['id'])){
+                $data[] = $detector['name'];
+            }
+        }
+        return $data;
 	}
 
 	public function getPrefixTable($prefix, $suffix){
@@ -85,8 +97,8 @@ class DataProcessor {
 		return $names;
 	}
 
-	public function getAllReviews($table, $project, $version, $id){
-		$query = $this->db->getAllReviews($table . "_" . $project . "_" . $version . "_" . $id);
+	public function getReviewsMisuse($table, $project, $version, $id){
+		$query = $this->db->getReviewsByIdentifier($table . "_" . $project . "_" . $version . "_" . $id);
 		$reviewer = [];
 		if(!$query){
 			return [];
@@ -105,17 +117,106 @@ class DataProcessor {
 		return $reviewer;
 	}
 
-	public function getIndex($exp, $dataset, $detector){
-	    $table = $exp . "_" . $dataset . "_" . $detector;
+	public function getAllReviews(){
+	    $query = $this->db->getAllReviews();
+        if(!$query){
+            return [];
+        }
+        return $this->unwrapReviews($query);
+    }
+
+	public function getTodo($reviewer){
+        $exp = ["ex1", "ex2", "ex2"];
+        $reviews = $this->getAllReviews();
+        $reviewable = [];
+        $reviewable[1] = [];
+        $reviewable[2] = [];
+        $reviewable[3] = [];
+        foreach($exp as $ex){
+            foreach($this->getDatasets($ex) as $dataset){
+                foreach($this->getDetectors($ex . "_" . $dataset) as $detector){
+                    $index = $this->getIndex($ex, $dataset, $detector);
+                    foreach($index as $project => $versions){
+                        $count = 0;
+                        $alreadyReviewed = false;
+                        foreach($reviews[substr($ex, 2)] as $review){
+                            if($review['name'] === $reviewer || count >= 2){
+                                $alreadyReviewed = true;
+                                break;
+                            }
+                            if(($review['exp'] === $ex && $review['dataset'] === $dataset
+                                && $review['detector'] === $detector && $review['project'] === $project)){
+                                $count++;
+                            }
+                        }
+                        if(!$alreadyReviewed && $count < 2){
+                            foreach($versions as $version){
+                                foreach($version['hits'] as $hit){
+                                    $review = [];
+                                    $review['exp'] = $ex;
+                                    $review['dataset'] = $dataset;
+                                    $review['detector'] = $detector;
+                                    $review['project'] = $project;
+                                    $review['version'] = $version['version'];
+                                    $review['misuse'] = $ex !== "ex2" ? $hit['misuse'] : $hit['id'];
+                                    $reviewable[substr($ex, 2)][] = $review;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return $reviewable;
+    }
+
+	public function getReviewsByReviewer($reviewer){
+	    $query = $this->db->getReviewsByReviwer($reviewer);
+        if(!$query){
+            return [];
+        }
+        return $this->unwrapReviews($query);
+    }
+
+    public function unwrapReviews($query){
+	    $reviews = [];
+        $reviews[1] = [];
+        $reviews[2] = [];
+        $reviews[3] = [];
+        foreach($query as $q){
+            $review = [];
+            $ids = explode("_", $q['identifier']);
+            $review['exp'] = $ids[0];
+            if(array_key_exists($q['identifier'], $reviews)){
+                $reviews[substr($review['exp'],2)][$q['identifier']]['decision'] = $q['hit'];
+                $reviews[substr($review['exp'],2)][$q['identifier']]['types'] = array_merge($reviews[substr($review['exp'],2,1)][$q['identifier']]['types'], explode(";", $q['violation_types']));
+                continue;
+            }
+            $review['dataset'] = $ids[1];
+            $review['detector'] = $ids[2];
+            $review['project'] = $ids[3];
+            $review['version'] = $ids[4];
+            $review['misuse'] = $ids[5];
+            $review['decision'] = $q['hit'];
+            $review['comment'] = $q['comment'];
+            $review['types'] = explode(";", $q['violation_types']);
+            $review['name'] = $q['name'];
+            $reviews[substr($review['exp'],2)][$q['identifier']] = $review;
+        }
+        return $reviews;
+    }
+
+	public function getIndex($exp, $detector){
+	    $table = $this->db->getDetectorTable($detector);
 		$stats = $this->db->getAllStats($table);
 		$projects = [];
 		foreach($stats as $s){
-            foreach($this->db->getPotentialHits($table, $s['project'], $s['version']) as $hit){
+            foreach($this->db->getPotentialHits($table, $exp, $s['project'], $s['version']) as $hit){
 				if($exp !== "ex2"){
 					$meta = $this->getMetadata($hit['misuse']);
 					$hit['violation_types'] = $meta['violation_types'];
 				}
-				$reviews = $this->getAllReviews($table, $s['project'], $s['version'], $exp === "ex2" ? $hit['id'] : $hit['misuse']);
+				$reviews = $this->getReviewsMisuse($table, $s['project'], $s['version'], $exp === "ex2" ? $hit['id'] : $hit['misuse']);
 				$hit['reviews'] = $reviews;
 				$add = true;
                 $id = $exp === "ex2" ? $hit['id'] : $hit['misuse'];
@@ -144,9 +245,5 @@ class DataProcessor {
 
 		return $projects;
 	}
-
-	function custom_sort($a, $b){
-	    return $a['misuse'] > $b['misuse'];
-    }
 
 }

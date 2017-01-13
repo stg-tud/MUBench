@@ -1,4 +1,8 @@
-
+<?php if(!$logged) : ?>
+    <div>
+        <a href="index.php/private/">Login</a>
+    </div>
+<?php endif; ?>
 <html>
 <head>
 <title>MUBench Review Page</title>
@@ -9,7 +13,12 @@
 
 <ul>
     <?php foreach($experiments as $e) : ?>
+        <?php if(!$logged) : ?>
             <li><a href="index.php/ex<?= htmlspecialchars($e['id']); ?>">Experiment <?= htmlspecialchars($e['id']); ?> - <?= htmlspecialchars($e['title']); ?></a></li>
+        <?php endif; ?>
+        <?php if($logged) : ?>
+            <li><a href="./ex<?= htmlspecialchars($e['id']); ?>">Experiment <?= htmlspecialchars($e['id']); ?> - <?= htmlspecialchars($e['title']); ?></a></li>
+        <?php endif; ?>
     <?php endforeach; ?>
 </ul>
 

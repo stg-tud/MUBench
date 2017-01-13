@@ -1,7 +1,7 @@
 <?php
 // Routes
 $app->get('/', function ($request, $response, $args) use ($settings) {
-    return $this->renderer->render($response, 'index.phtml', array('experiments' => $settings['ex_template']));
+    return $this->renderer->render($response, 'index.phtml', array('experiments' => $settings['ex_template'], 'logged' => false));
 });
 
 $app->get('/impressum/', function ($request, $response, $args) use ($app) {
@@ -9,55 +9,67 @@ $app->get('/impressum/', function ($request, $response, $args) use ($app) {
 });
 
 $app->get('/{exp:ex[1-3]}', function ($request, $response, $args) use ($app, $settings) {
-	$prefix = $args['exp'];
-	$data = $app->data->getDatasets($prefix);
-	$template = $settings['ex_template'][$prefix];
-    return $this->renderer->render($response, 'dataset.phtml', array('data' => $data, 'id' => $template['id'], 'title' => $template['title'], 'prefix' => $prefix));
-});
-
-$app->get('/{exp:ex[1-3]}/{dataset}', function ($request, $response, $args) use ($app, $settings) {
     $exp = $args['exp'];
-    $dataset = $args['dataset'];
-	$data = $app->data->getDetectors($exp . "_" . $dataset);
-	if(!$data){
-	    return $response->withStatus(404);
-    }
+	$data = $app->data->getDetectors($exp);
 	$template = $settings['ex_template'][$exp];
-    return $this->renderer->render($response, 'experiment.phtml', array('data' => $data, 'id' => $template['id'], 'title' => $template['title'], 'exp' => $exp, 'dataset' => $dataset));
+    return $this->renderer->render($response, 'experiment.phtml', array('data' => $data, 'id' => $template['id'], 'title' => $template['title'], 'exp' => $exp, 'logged' => false));
 });
 
-$app->get('/{exp:ex[1-3]}/{dataset}/{detector}', function ($request, $response, $args) use ($app) {
+$app->get('/{exp:ex[1-3]}/{detector}', function ($request, $response, $args) use ($app) {
 	return $app->helper->detect_route($args, $app, $this, $response, false);
 });
 
-$app->get('/{exp:ex[1-3]}/{dataset}/{detector}/{project}/{version}/{misuse}', function ($request, $response, $args) use ($app) {
+$app->get('/{exp:ex[1-3]}/{detector}/{project}/{version}/{misuse}', function ($request, $response, $args) use ($app) {
     return $app->helper->review_route($args, $app, $this, $response, $request, false, false);
 });
 
-$app->get('/{exp:ex[1-3]}/{dataset}/{detector}/{project}/{version}/{misuse}/{reviewer}', function ($request, $response, $args) use ($app) {
+$app->get('/{exp:ex[1-3]}/{detector}/{project}/{version}/{misuse}/{reviewer}', function ($request, $response, $args) use ($app) {
     return $app->helper->review_route($args, $app, $this, $response, $request, false, true);
 });
 
-$app->group('/private', function () use ($app) {
+$app->group('/private', function () use ($app, $settings) {
 
-    $app->get('/{exp:ex[1-3]}/{dataset}/{detector}', function ($request, $response, $args) use ($app) {
+    $app->get('/', function ($request, $response, $args) use ($settings) {
+        return $this->renderer->render($response, 'index.phtml', array('experiments' => $settings['ex_template'], "logged" => true));
+    });
+
+    $app->get('/{exp:ex[1-3]}', function ($request, $response, $args) use ($app, $settings) {
+        $exp = $args['exp'];
+        $data = $app->data->getDetectors($exp);
+        if(!$data){
+            return $response->withStatus(404);
+        }
+        $template = $settings['ex_template'][$exp];
+        return $this->renderer->render($response, 'experiment.phtml', array('data' => $data, 'id' => $template['id'], 'title' => $template['title'], 'exp' => $exp, 'logged' => true));
+    });
+
+    $app->get('/{exp:ex[1-3]}/{detector}', function ($request, $response, $args) use ($app) {
         return $app->helper->detect_route($args, $app, $this, $response, true);
     });
 
-    $app->post('/review/{exp:ex[1-3]}/{dataset}/{detector}', function ($request, $response, $args) use ($app) {
+    $app->post('/review/{exp:ex[1-3]}/{detector}', function ($request, $response, $args) use ($app) {
         $obj = $request->getParsedBody();
         $app->upload->processReview($obj);
-        return $response->withRedirect('../../../' . $args['exp'] . "/" . $args['dataset'] . "/" . $args['detector']);
+        return $response->withRedirect('../../' . $args['exp'] . "/" . $args['detector']);
     });
 
-    $app->get('/{exp:ex[1-3]}/{dataset}/{detector}/{project}/{version}/{misuse}', function ($request, $response, $args) use ($app) {
+    $app->get('/{exp:ex[1-3]}/{detector}/{project}/{version}/{misuse}', function ($request, $response, $args) use ($app) {
         return $app->helper->review_route($args, $app, $this, $response, $request, true, true);
     });
 
-    $app->get('/{exp:ex[1-3]}/{dataset}/{detector}/{project}/{version}/{misuse}/{reviewer}', function ($request, $response, $args) use ($app) {
+    $app->get('/{exp:ex[1-3]}/{detector}/{project}/{version}/{misuse}/{reviewer}', function ($request, $response, $args) use ($app) {
         return $app->helper->review_route($args, $app, $this, $response, $request, false, true);
     });
 
+    $app->get('/overview', function ($request, $response, $args) use ($app){
+        $reviews = $app->data->getReviewsByReviewer($request->getServerParams()['PHP_AUTH_USER']);
+        return $this->renderer->render($response, 'overview.phtml', array("experiments" => $reviews));
+    });
+
+    $app->get('/todo', function ($request, $response, $args) use ($app){
+        $reviews = $app->data->getTodo($request->getServerParams()['PHP_AUTH_USER']);
+        return $this->renderer->render($response, 'todo.phtml', array("experiments" => $reviews));
+    });
 });
 
 $app->group('/api', function () use ($app) {

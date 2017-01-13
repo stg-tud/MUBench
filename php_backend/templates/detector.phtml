@@ -1,5 +1,7 @@
    <?php if(!$logged) : ?>
-        <a href="../../private/<?= htmlspecialchars($exp); ?>/<?= htmlspecialchars($dataset); ?>/<?= htmlspecialchars($detector); ?>">Login</a>
+       <div>
+        <a href="../private/<?= htmlspecialchars($exp); ?>/<?= htmlspecialchars($detector); ?>">Login</a>
+       </div>
     <?php endif; ?>
                 <h1>Detector: <?= htmlspecialchars($detector); ?></h1>
             <?php foreach($projects as $key => $p) : ?>
@@ -35,12 +37,12 @@
                                     </td>
                                     <?php endif; ?>
                                     <td>
-                                        <a href="../<?= htmlspecialchars($dataset); ?>/<?= htmlspecialchars($detector); ?>/<?= htmlspecialchars($hit['project']); ?>/<?= htmlspecialchars($hit['version']); ?>/<?= htmlspecialchars($exp !== "ex2" ? $hit['misuse'] : $hit['id']); ?>">review</a>
+                                        <a href="../<?= htmlspecialchars($exp); ?>/<?= htmlspecialchars($detector); ?>/<?= htmlspecialchars($hit['project']); ?>/<?= htmlspecialchars($hit['version']); ?>/<?= htmlspecialchars($exp !== "ex2" ? $hit['misuse'] : $hit['id']); ?>">review</a>
                                     </td>
                                     <td>
                                         <?php if($hit['reviews'] && !empty($hit['reviews'])) : ?>
                                            <?php foreach($hit['reviews'] as $reviewer) : ?>
-                                                <a href="../<?= htmlspecialchars($dataset); ?>/<?= htmlspecialchars($detector); ?>/<?= htmlspecialchars($hit['project']); ?>/<?= htmlspecialchars($hit['version']); ?>/<?= htmlspecialchars($exp !== "ex2" ? $hit['misuse'] : $hit['id']); ?>/<?= htmlspecialchars($reviewer); ?>"><?= htmlspecialchars($reviewer); ?></a>
+                                                <a href="../<?= htmlspecialchars($exp); ?>/<?= htmlspecialchars($detector); ?>/<?= htmlspecialchars($hit['project']); ?>/<?= htmlspecialchars($hit['version']); ?>/<?= htmlspecialchars($exp !== "ex2" ? $hit['misuse'] : $hit['id']); ?>/<?= htmlspecialchars($reviewer); ?>"><?= htmlspecialchars($reviewer); ?></a>
                                            <?php endforeach; ?> 
                                         <?php endif; ?>
                                     </td>

@@ -28,9 +28,11 @@ class UploadProcessorTest extends TestCase
             "CREATE TABLE patterns (misuse TEXT NOT NULL,name TEXT NOT NULL,code TEXT NOT NULL,line TEXT NOT NULL);";
         $statements[] =
             "CREATE TABLE reviews (identifier TEXT NOT NULL,name TEXT NOT NULL,hit TEXT NOT NULL,comment TEXT NOT NULL,violation_type TEXT NOT NULL,id TEXT NOT NULL);";
+        $statements[] =
+            "CREATE TABLE detectors (id int AUTO_INCREMENT, name TEXT NOT NULL);";
         $this->db->execStatements($statements);
         $this->obj =
-            json_decode('{"findings":[{"target_snippets":[{"first_line_number":0, "code":"c"}],"a":"1", "b":"2", "c":"3", "d":"4", "e":"5"}], "project":"p", "version":"v", "runtime":"0", "result":"success", "number_of_findings":"1", "dataset":"any", "detector":"mudetect"}');
+            json_decode('{"findings":[{"target_snippets":[{"first_line_number":0, "code":"c"}],"a":"1", "b":"2", "c":"3", "d":"4", "misuse":"5"}], "project":"p", "version":"v", "runtime":"0", "result":"success", "number_of_findings":"1", "dataset":"any", "detector":"mudetect"}');
         $this->metaObj =
             json_decode('{"misuse":"m.1", "fix":{"diff-url":"url", "description":"desc"}, "description":"d", "violation_types":["1","2"], "location":{"file":"f", "method":"m"}, "patterns":[{"id":"1","snippet":{"code":"c", "first_line":0}}]}');
         $this->reviewObj = array("review_name" => "admin", "review_identifier" => "id", "review_comment" => "test",
@@ -42,7 +44,7 @@ class UploadProcessorTest extends TestCase
     public function testgetJsonNames()
     {
         $actual = $this->proc->getJsonNames($this->obj->{'findings'});
-        $expected = array('project', 'version', 'target_snippets', 'a', 'b', 'c', 'd', 'e');
+        $expected = array('project', 'version', 'target_snippets', 'a', 'b', 'c', 'd', 'misuse');
         $this->assertEquals($expected, $actual);
     }
 
@@ -65,11 +67,12 @@ class UploadProcessorTest extends TestCase
         $table = "testTable";
         $project = "p";
         $version = "v";
+        $exp = "ex1";
         $findings = $this->proc->rearrangeCodeSnippets($this->obj->{'findings'});
-        $this->proc->handleTableColumns($table, $project, $version, $this->proc->getJsonNames($findings),
+        $this->proc->handleTableColumns($table, $this->proc->getJsonNames($findings),
             array(), $findings);
-        $this->proc->handleFindings($table, $project, $version, $findings);
-        $query = $this->db->getPotentialHits($table, $project, $version);
+        $this->proc->handleFindings($table, $exp ,$project, $version, $findings);
+        $query = $this->db->getPotentialHits($table, $exp, $project, $version);
         $this->assertTrue(count($query) == 1);
         $this->assertEquals("c", $query[0]['target_snippets']);
     }

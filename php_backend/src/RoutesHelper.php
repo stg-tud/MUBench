@@ -22,31 +22,29 @@ class RoutesHelper
     public function detect_route($args, $app, $r, $response, $logged)
     {
         $exp = $args['exp'];
-        $dataset = $args['dataset'];
         $detector = $args['detector'];
-        if (!($exp === "ex1" || $exp === "ex2" || $exp === "ex3") || $detector == "" || $dataset == "") {
+        if (!($exp === "ex1" || $exp === "ex2" || $exp === "ex3") || $detector == "") {
             return $response->withStatus(404);
         }
-        $stats = $app->data->getIndex($exp, $dataset, $detector);
+        $stats = $app->data->getIndex($exp, $detector);
         if(!$stats){
             return $response->withStatus(404);
         }
         return $r->renderer->render($response, 'detector.phtml',
-            array('logged' => $logged, 'exp' => $exp, 'dataset' => $dataset, 'detector' => $detector,
+            array('logged' => $logged, 'exp' => $exp, 'detector' => $detector,
                 'projects' => $stats));
     }
 
     public function review_route($args, $app, $r, $response, $request, $logged, $review_flag)
     {
         $exp = $args['exp'];
-        $set = $args['dataset'];
         $detector = $args['detector'];
         $project = $args['project'];
         $version = $args['version'];
         $misuse = $args['misuse'];
         $data = $app->data->getMetadata($misuse);
         $patterns = $app->data->getPatterns($misuse);
-        $hits = $app->data->getHits($exp . "_" . $set . "_" . $detector, $project, $version, $misuse, $exp);
+        $hits = $app->data->getHits($detector, $project, $version, $misuse, $exp);
         if(!$hits){
             return $response->withStatus(404);
         }

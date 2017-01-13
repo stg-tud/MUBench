@@ -32,7 +32,7 @@ class DBConnection {
 			$this->logger->error("Error getTableColumns: " . $e->getMessage());
 		}
 		$columns = array();
-		if(count($query) == 0){
+		if(!$query){
 			return $columns;
 		}
 		foreach($query as $q){
@@ -65,33 +65,73 @@ class DBConnection {
 		return "DELETE FROM stats WHERE id=" . $this->pdo->quote($table . "_" . $project . "_" . $version) .";";
 	}
 
-	public function getTableName($ex, $dataset, $detector){
-		if(is_null($dataset)){
-			return $ex . '_any_' . $detector;
-		}
-		return $ex . '_' . $dataset . '_' . $detector;
+	public function getTableName($detector){
+	    $query = [];
+	    $sql = "SELECT id from detectors WHERE name=" . $this->pdo->quote($detector) .";";
+	    try{
+	        $query = $this->pdo->query($sql);
+        }catch(PDOException $e){
+	        $this->logger->error("Error getTableName: " . $e->getMessage());
+        }
+        $columns = array();
+        if(!$query){
+            return NULL;
+        }
+        foreach($query as $q){
+            $columns[] = $q[0];
+        }
+        if(empty($columns)){
+            $sql = "INSERT INTO detectors (name) VALUES(" . $this->pdo->quote($detector) . ");";
+            try{
+                $this->pdo->exec($sql);
+            }catch(PDOException $e){
+                $this->logger->error("Error getTableName creating new entry: " . $e->getMessage());
+            }
+            return $this->getTableName($detector);
+        }else{
+            return "detector_" . $columns[0];
+        }
 	}
 
 	public function createTableStatement($name, $obj){
-		$output = 'CREATE TABLE ' . $name . '(identifier TEXT NOT NULL, project TEXT NOT NULL, version TEXT NOT NULL';
+	    // exp project version misuse rank (AUTO INCREMENT id)
+		$output = 'CREATE TABLE ' . $name . '(exp VARCHAR(100) NOT NULL, project VARCHAR(100) NOT NULL, version VARCHAR(100) NOT NULL';
 		foreach($obj[0] as $key => $value){
-			$output = $output . "," . $key . " TEXT";
+		    if($key === "id" || $key === "misuse"){
+                $output = $output . ", misuse VARCHAR(100) NOT NULL";
+            }else {
+                $output = $output . "," . $key . " TEXT";
+            }
 		}
-		$output = $output . ');';
+		$output = $output . ', PRIMARY KEY(exp, project, version, misuse));';
 		return $output;
 	}
+
+	public function getAllReviews(){
+        $query = [];
+        try{
+            $query = $this->pdo->query("SELECT * from reviews;");
+        }catch(PDOException $e){
+            $this->logger->error("Error getAllReview: " . $e->getMessage());
+        }
+        return $query;
+    }
 
 	public function addColumnStatement($table, $column){
 		return 'ALTER TABLE ' . $table . ' ADD ' . $column . ' TEXT;';
 	}
 
-	public function insertStatement($table, $project, $version, $obj){
-		$output = "INSERT INTO " . $table . " ( identifier, project, version";
-		$values = " VALUES (" . $this->pdo->quote($project . "." . $version) ."," . $this->pdo->quote($project) . "," . $this->pdo->quote($version);
+	public function insertStatement($table, $exp, $project, $version, $obj){
+		$output = "INSERT INTO " . $table . " ( exp, project, version";
+		$values = " VALUES (" . $this->pdo->quote($exp) . "," . $this->pdo->quote($project) . "," . $this->pdo->quote($version);
 		foreach($obj as $key => $value){
-			$output = $output . ", " . $key;
-			$values = $values . "," . $this->pdo->quote(is_array($value) ? $this->arrayToString($value) : $value);
-		}
+            if($key === "id" || $key === "misuse"){
+                $output = $output . ", misuse";
+            }else {
+                $output = $output . ", " . $key;
+            }
+            $values = $values . "," . $this->pdo->quote(is_array($value) ? $this->arrayToString($value) : $value);
+        }
 
 		$output = $output . ")";
 		$values = $values . ");";
@@ -107,10 +147,37 @@ class DBConnection {
 		return $out;
 	}
 
-	public function getTables(){
+	public function getDetectorTable($detector){
+        $query = [];
+        try{
+            $query = $this->pdo->query("SELECT id FROM detectors WHERE name=" . $this->pdo->quote($detector) . ";");
+        }catch(PDOException $e){
+            $this->logger->error("Error getDetectorTable: " . $e->getMessage());
+        }
+        foreach($query as $q){
+            return "detector_" . $q[0];
+        }
+
+    }
+
+	public function hasFindingForExp($exp, $detector){
+        $query = [];
+        try{
+            $query = $this->pdo->query("SELECT * FROM " . $detector . " WHERE exp=" . $this->pdo->quote($exp) . " LIMIT 1;");
+        }catch(PDOException $e){
+            $this->logger->error("Error findingForExp: " . $e->getMessage());
+        }
+        $tables = [];
+        foreach($query as $q){
+            $tables[] = $q[0];
+        }
+        return !empty($tables);
+    }
+
+	public function getDetectorsTables(){
 	    $query = [];
 		try{
-	    	$query = $this->pdo->query("SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE';");
+	    	$query = $this->pdo->query("SELECT * FROM  detectors;");
 		}catch(PDOException $e){
 			$this->logger->error("Error getTables: " . $e->getMessage());
 		}
@@ -119,7 +186,11 @@ class DBConnection {
 			return $tables;
 		}
 		foreach($query as $q){
-			$tables[] = $q[0];		
+		    $detector = [];
+		    $detector['name'] = $q['name'];
+		    $detector['id'] = "detector_" . $q['id'];
+			$tables[] = $detector;
+
 		}
 		return $tables;
 	}
@@ -197,20 +268,23 @@ class DBConnection {
 	public function getHits($table, $project, $version, $misuse, $exp){
         $query = [];
 		try{
-			$query = $this->pdo->query("SELECT * from ". $table . " WHERE " . ($exp === "ex2" ? "id=" : "misuse=") . $this->pdo->quote($misuse) . " AND project=" . $this->pdo->quote($project) . " AND version=" . $this->pdo->quote($version) . ";");
+			$query = $this->pdo->query("SELECT * from ". $table . " WHERE exp=" . $this->pdo->quote($exp) ."misuse=". $this->pdo->quote($misuse) . " AND project=" . $this->pdo->quote($project) . " AND version=" . $this->pdo->quote($version) . ";");
 		}catch(PDOException $e){
 			$this->logger->error("Error getHits: " . $e->getMessage());
 		}
 		return $query;
 	}
 
-	public function getPotentialHits($table, $project, $version){
+	public function getPotentialHits($table, $exp, $project, $version){
         $query = [];
 		try{
-			$query = $this->pdo->query("SELECT * from ". $table . " WHERE project=" . $this->pdo->quote($project) . " AND version=" . $this->pdo->quote($version) . ";");
+			$query = $this->pdo->query("SELECT * from ". $table . " WHERE exp=". $this->pdo->quote($exp) . " AND project=" . $this->pdo->quote($project) . " AND version=" . $this->pdo->quote($version) . ";");
 		}catch(PDOException $e){
 			$this->logger->error("Error getPotentialHits: " . $e->getMessage());
 		}
+		if(!$query){
+		    return [];
+        }
 		$result = [];
 		foreach($query as $q){
 			$result[] = $q;
@@ -218,7 +292,7 @@ class DBConnection {
 		return $result;
 	}
 
-	public function getAllReviews($identifier){
+	public function getReviewsByIdentifier($identifier){
         $query = [];
 		try{
 			$query = $this->pdo->query("SELECT name from reviews WHERE identifier=" . $this->pdo->quote($identifier) . ";");
@@ -227,6 +301,16 @@ class DBConnection {
 		}
 		return $query;
 	}
+
+	public function getReviewsByReviwer($reviewer){
+        $query = [];
+        try{
+            $query = $this->pdo->query("SELECT * from reviews WHERE name=" . $this->pdo->quote($reviewer) . ";");
+        }catch(PDOException $e){
+            $this->logger->error("Error getReviewsByReviewer: " . $e->getMessage());
+        }
+        return $query;
+    }
 
 	public function getReviewStatement($identifier, $name, $hit, $comment, $type, $id){
 		return "INSERT INTO reviews (identifier, name, hit, comment, violation_type, id) VALUES (" . $this->pdo->quote($identifier) . "," . $this->pdo->quote($name) . "," . $this->pdo->quote($hit) . "," . $this->pdo->quote($comment) . "," . $this->pdo->quote($type) . "," . $this->pdo->quote($id) .");";

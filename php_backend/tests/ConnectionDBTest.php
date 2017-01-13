@@ -6,6 +6,7 @@ use PHPUnit\Framework\TestCase;
 class ConnectionDBTest extends TestCase{
     protected $obj; 
     protected $db;
+    protected $prefix = 'detector_';
 
     public function getConnection(){
         $pdo = new PDO('sqlite::memory:');
@@ -13,13 +14,18 @@ class ConnectionDBTest extends TestCase{
     }
 
     protected function setUp(){
-        $this->obj = json_decode('{"findings":[{"a":"1", "b":"2", "c":"3", "d":"4", "e":"5"}]}');
+        $this->obj = json_decode('{"findings":[{"a":"1", "b":"2", "c":"3", "d":"4", "misuse":"5"}]}');
         $this->db = new DBConnection($this->getConnection(), new \Monolog\Logger("test"));
+        $statements[] =
+            "CREATE TABLE detectors (id int, name TEXT NOT NULL);";
+        $statements[] =
+            "INSERT INTO detectors (name, id) VALUES ('MuDetect', 1);";
+        $this->db->execStatements($statements);
     }
 
     public function testInsertStatement(){
-        $insert = $this->db->insertStatement('table', 'project', 'version', $this->obj->{"findings"}[0]);
-        $expected = "INSERT INTO table ( identifier, project, version, a, b, c, d, e) VALUES ('project.version','project','version','1','2','3','4','5');";
+        $insert = $this->db->insertStatement('table', 'exp', 'project', 'version', $this->obj->{"findings"}[0]);
+        $expected = "INSERT INTO table ( exp, project, version, a, b, c, d, misuse) VALUES ('exp','project','version','1','2','3','4','5');";
         $this->assertEquals($expected, $insert);
     }
 
@@ -36,15 +42,8 @@ class ConnectionDBTest extends TestCase{
     }
 
     public function testgetTableName(){
-        $name = $this->db->getTableName('ex1', 'icse15', 'mudetect');
-        $expected = 'ex1_icse15_mudetect';
-        $this->assertEquals($expected, $name);
-    }
-
-    public function testgetTableNameWithNull(){
-        $name = $this->db->getTableName('ex1', NULL, 'mudetect');
-        $expected = 'ex1_any_mudetect';
-        $this->assertEquals($expected, $name);
+        $query = $this->db->getTableName('MuDetect');
+        $this->assertEquals($this->prefix . "1", $query);
     }
 
     public function testColumnStatement(){
@@ -55,7 +54,7 @@ class ConnectionDBTest extends TestCase{
 
     public function testCreateTableStatement(){
         $actual = $this->db->createTableStatement('table', $this->obj->{'findings'});
-        $expected = 'CREATE TABLE table(identifier TEXT NOT NULL, project TEXT NOT NULL, version TEXT NOT NULL,a TEXT,b TEXT,c TEXT,d TEXT,e TEXT);';
+        $expected = 'CREATE TABLE table(exp VARCHAR(100) NOT NULL, project VARCHAR(100) NOT NULL, version VARCHAR(100) NOT NULL,a TEXT,b TEXT,c TEXT,d TEXT, misuse VARCHAR(100) NOT NULL, PRIMARY KEY(exp, project, version, misuse));';
         $this->assertEquals($expected, $actual);
     }
 
@@ -111,9 +110,9 @@ class ConnectionDBTest extends TestCase{
         $statements = [];
         $tableName = "testTable";
         $statements[] = $this->db->createTableStatement($tableName, $this->obj->{'findings'});
-        $statements[] = $this->db->insertStatement($tableName, 'project', 'version', $this->obj->{"findings"}[0]);
+        $statements[] = $this->db->insertStatement($tableName, 'exp', 'project', 'version', $this->obj->{"findings"}[0]);
         $this->db->execStatements($statements);
-        $query = $this->db->getPotentialHits($tableName, 'project', 'version');
+        $query = $this->db->getPotentialHits($tableName, 'exp', 'project', 'version');
         $this->assertTrue(count($query) != 0);
     }
 

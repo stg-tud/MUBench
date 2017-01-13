@@ -34,22 +34,22 @@ class SlimTest extends SlimTestCase
     }
 
     public function testEx1WithAnyDataset(){
-        $this->get('/ex1/any');
+        $this->get('/ex1/MuDetect');
         $this->assertEquals('404', $this->response->getStatusCode());
     }
 
     public function testEx1WithAnyDatasetAndMuDetect(){
-        $this->get('/ex1/any/MuDetect');
+        $this->get('/ex1/MuDetect');
         $this->assertEquals('404', $this->response->getStatusCode());
     }
 
     public function testReview(){
-        $this->get('/ex1/any/MuDetect/aclang/5/1');
+        $this->get('/ex1/MuDetect/aclang/5/1');
         $this->assertEquals('404', $this->response->getStatusCode());
     }
 
     public function testReviewer(){
-        $this->get('/ex1/any/MuDetect/aclang/5/1/admin');
+        $this->get('/ex1/MuDetect/aclang/5/1/admin');
         $this->assertEquals('404', $this->response->getStatusCode());
     }
 

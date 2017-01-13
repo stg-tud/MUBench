@@ -31,7 +31,7 @@ class UploadProcessor
 
     public function processData($ex, $obj, $obj_array)
     {
-        $table = $this->db->getTableName($ex, $obj->{'dataset'}, $obj->{'detector'});
+        $table = $this->db->getTableName($obj->{'detector'});
         $this->logger->info("Data for : " . $table);
 
         $project = $obj->{'project'};
@@ -44,8 +44,9 @@ class UploadProcessor
         $columns = $this->db->getTableColumns($table);
 
         $this->handleStats($table, $project, $version, $result, $runtime, $findings);
-        $this->handleTableColumns($table, $project, $version, $obj_columns, $columns, $obj_array);
-        $this->handleFindings($table, $project, $version, $obj_array);
+        $this->handleTableColumns($table, $obj_columns, $columns, $obj_array);
+        $this->logger->info("INSERTING INTO " . $table);
+        $this->handleFindings($table, $ex, $project, $version, $obj_array);
     }
 
     public function handleStats($table, $project, $version, $result, $runtime, $findings)
@@ -57,11 +58,11 @@ class UploadProcessor
         $this->db->execStatements($statements);
     }
 
-    public function handleFindings($table, $project, $version, $obj_array)
+    public function handleFindings($table, $exp, $project, $version, $obj_array)
     {
         $statements = [];
         foreach ($obj_array as $hit) {
-            $statements[] = $this->db->insertStatement($table, $project, $version, $hit);
+            $statements[] = $this->db->insertStatement($table, $exp, $project, $version, $hit);
         }
         $this->logger->info("inserting " . count($statements) . " entries into: " . $table);
         $this->db->execStatements($statements);
@@ -77,7 +78,7 @@ class UploadProcessor
         return $obj;
     }
 
-    public function handleTableColumns($table, $project, $version, $obj_columns, $columns, $obj_array)
+    public function handleTableColumns($table, $obj_columns, $columns, $obj_array)
     {
         $statements = [];
         if (count($columns) == 0) {
