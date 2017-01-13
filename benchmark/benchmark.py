@@ -49,7 +49,7 @@ class Benchmark:
             black_list.extend(config.black_list)
 
         if 'dataset' in config:
-            white_list.extend(get_white_list(join(self.DATASETS_FILE_PATH), config.dataset))
+            white_list.extend(get_white_list(self.DATASETS_FILE_PATH, config.dataset))
 
         self.runner = TaskRunner(Benchmark.DATA_PATH, white_list, black_list)
 
