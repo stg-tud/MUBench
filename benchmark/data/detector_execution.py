@@ -124,7 +124,11 @@ class DetectorExecution:
         raise NotImplementedError
 
     def _load_findings(self):
-        raise NotImplementedError
+        if exists(self._findings_file_path):
+            with open(self._findings_file_path) as stream:
+                return [Finding(data) for data in yaml.load_all(stream) if data]
+        else:
+            return []
 
     def save(self):
         # load and update, since an execution might have written additional fields to the file since initialization
@@ -192,13 +196,6 @@ class MineAndDetectExecution(DetectorExecution):
             self.key_target_classpath, _quote(project_compile.original_classes_path)
         ]
 
-    def _load_findings(self):
-        if exists(self._findings_file_path):
-            with open(self._findings_file_path) as stream:
-                return [Finding(data) for data in yaml.load_all(stream) if data]
-        else:
-            return []
-
 
 class DetectOnlyExecution(DetectorExecution):
     def __init__(self, detector: Detector, version: ProjectVersion, misuse: Misuse, findings_base_path: str,
@@ -221,10 +218,3 @@ class DetectOnlyExecution(DetectorExecution):
             self.key_target_src_path, _quote(project_compile.misuse_source_path),
             self.key_target_classpath, _quote(project_compile.misuse_classes_path)
         ]
-
-    def _load_findings(self):
-        if exists(self._findings_file_path):
-            with open(self._findings_file_path) as stream:
-                return [Finding(data) for data in yaml.load_all(stream) if data]
-        else:
-            return []
