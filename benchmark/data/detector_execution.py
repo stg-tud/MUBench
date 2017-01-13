@@ -4,7 +4,7 @@ from enum import Enum, IntEnum
 from logging import Logger
 from os import makedirs
 from os.path import join, exists
-from typing import Optional, List
+from typing import Optional, List, Dict
 
 from benchmark.data.detector import Detector
 from benchmark.data.finding import Finding
@@ -126,9 +126,14 @@ class DetectorExecution:
     def _load_findings(self):
         if exists(self._findings_file_path):
             with open(self._findings_file_path) as stream:
-                return [Finding(data) for data in yaml.load_all(stream) if data]
+                return [self.__create_finding(data) for data in yaml.load_all(stream) if data]
         else:
             return []
+
+    @staticmethod
+    def __create_finding(data: Dict):
+        data["rank"] = data.pop("id")
+        return Finding(data)
 
     def save(self):
         # load and update, since an execution might have written additional fields to the file since initialization

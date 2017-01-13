@@ -67,8 +67,8 @@ class TestPublishFindingsTask:
         self.test_run.is_success = lambda: True
         self.test_run.get_runtime = lambda: 42
         findings = [
-            _create_finding({"id": "-1-", "misuse": "-p-.-m1-", "detector_specific": "-specific1-"}),
-            _create_finding({"id": "-2-", "misuse": "-p-.-m2-", "detector_specific": "-specific2-"})
+            _create_finding({"rank": "-1-", "misuse": "-p-.-m1-", "detector_specific": "-specific1-"}),
+            _create_finding({"rank": "-2-", "misuse": "-p-.-m2-", "detector_specific": "-specific2-"})
         ]
         self.test_run.get_findings = lambda: findings
         potential_hits = findings[:1]
@@ -91,8 +91,8 @@ class TestPublishFindingsTask:
         self.test_run.is_success = lambda: True
 
         self.test_run.get_potential_hits = lambda: [
-            _create_finding({"id": "-1-"}, file_paths=["-file1-"]),
-            _create_finding({"id": "-2-"}, file_paths=["-file2-"])
+            _create_finding({"rank": "-1-"}, file_paths=["-file1-"]),
+            _create_finding({"rank": "-2-"}, file_paths=["-file2-"])
         ]
 
         self.uut.process_project_version(self.project, self.version)
@@ -103,8 +103,8 @@ class TestPublishFindingsTask:
         self.uut.max_files_per_post = 1
         self.test_run.is_success = lambda: True
         self.test_run.get_potential_hits = lambda: [
-            _create_finding({"id": "-1-"}, file_paths=["-file1-"]),
-            _create_finding({"id": "-2-"}, file_paths=["-file2-"])
+            _create_finding({"rank": "-1-"}, file_paths=["-file1-"]),
+            _create_finding({"rank": "-2-"}, file_paths=["-file2-"])
         ]
 
         self.uut.process_project_version(self.project, self.version)
@@ -117,8 +117,8 @@ class TestPublishFindingsTask:
         self.uut.max_files_per_post = 3
         self.test_run.is_success = lambda: True
         self.test_run.get_potential_hits = lambda: [
-            _create_finding({"id": "-1-"}, file_paths=["-file1-", "-file2-"]),
-            _create_finding({"id": "-2-"}, file_paths=["-file3-", "-file4-"])
+            _create_finding({"rank": "-1-"}, file_paths=["-file1-", "-file2-"]),
+            _create_finding({"rank": "-2-"}, file_paths=["-file3-", "-file4-"])
         ]
 
         self.uut.process_project_version(self.project, self.version)
@@ -127,7 +127,7 @@ class TestPublishFindingsTask:
 
     def test_publish_successful_run_code_snippets(self, post_mock):
         self.test_run.is_success = lambda: True
-        self.test_run.get_potential_hits = lambda: [_create_finding({"id": "42"}, snippets=[Snippet("-code-", 23)])]
+        self.test_run.get_potential_hits = lambda: [_create_finding({"rank": "42"}, snippets=[Snippet("-code-", 23)])]
 
         self.uut.process_project_version(self.project, self.version)
 

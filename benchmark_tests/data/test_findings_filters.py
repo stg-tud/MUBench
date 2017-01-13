@@ -15,7 +15,7 @@ class TestPotentialHits:
 
     def test_no_hit(self):
         self.misuses.append(create_misuse("-m1-"))
-        finding = Finding({"id": "no potential hit"})
+        finding = Finding({"rank": "no potential hit"})
         finding.is_potential_hit = lambda misuse, y: False
 
         potential_hits = self.uut.get_potential_hits([finding])
@@ -24,7 +24,7 @@ class TestPotentialHits:
 
     def test_potential_hit(self):
         self.misuses.append(create_misuse("-m1-"))
-        finding = Finding({"id": ":potential hit for m1:"})
+        finding = Finding({"rank": ":potential hit for m1:"})
         finding.is_potential_hit = lambda misuse, y: misuse == self.misuses[0]
 
         potential_hits = self.uut.get_potential_hits([finding])
@@ -33,7 +33,7 @@ class TestPotentialHits:
 
     def test_potential_hit_for_second_misuse(self):
         self.misuses.extend([create_misuse("-1st-"), create_misuse("-2nd-")])
-        finding = Finding({"id": ":some potential hit for second misuse:"})
+        finding = Finding({"rank": ":some potential hit for second misuse:"})
         finding.is_potential_hit = lambda misuse, y: misuse == self.misuses[1]
 
         potential_hits = self.uut.get_potential_hits([finding])
@@ -52,14 +52,14 @@ class TestAllFindings:
         self.uut = AllFindings(self.detector)
 
     def test_returns_all_findings(self):
-        expected = [Finding({"id": "1", "file": ""}), Finding({"id": "2", "file": ""})]
+        expected = [Finding({"rank": "1", "file": ""}), Finding({"rank": "2", "file": ""})]
 
         actual = self.uut.get_potential_hits(expected)
 
         assert_equals(expected, actual)
 
     def test_limits_number_of_findings(self):
-        all = [Finding({"id": "1"}), Finding({"id": "2"})]
+        all = [Finding({"rank": "1"}), Finding({"rank": "2"})]
         self.uut.limit = 1
 
         actual = self.uut.get_potential_hits(all)
