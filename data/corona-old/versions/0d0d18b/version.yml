@@ -1,6 +1,8 @@
 build:
   classes: build/temp/classes/
   commands:
+  - wget https://archive.apache.org/dist/tomcat/tomcat-7/v7.0.21/bin/apache-tomcat-7.0.21.tar.gz apache-tomcat-7.0.21.tar.gz
+  - tar zxvf apache-tomcat-7.0.21.tar.gz
   - ant init compile
   src: src/
 misuses:
