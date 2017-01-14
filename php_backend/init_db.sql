@@ -40,6 +40,7 @@ PRIMARY KEY(id)
 CREATE TABLE review_findings (
 decision TEXT NOT NULL,
 id int AUTO_INCREMENT,
+rank TEXT NOT NULL,
 review int NOT NULL,
 PRIMARY KEY(id)
 );

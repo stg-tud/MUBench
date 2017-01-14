@@ -82,11 +82,11 @@
             <td>
             <?php if($logged) : ?>
                 <select name="review_hit[<?= htmlspecialchars($exp === "ex2" ? $hit['misuse'] : $hit['rank']); ?>][hit]" size="1" >
-                <?php if($review && $review['hits'][$exp === "ex2" ? $hit['misuse'] : $hit['rank']]["decision"] === "Yes") : ?>
+                    <?php if($review && $review['hits'][$exp === "ex2" ? $hit['misuse'] : $hit['rank']]["decision"] === "Yes") : ?>
                     <option selected="selected" value="Yes" >Yes</option>
-                <?php else : ?>
+                    <?php else : ?>
                     <option value="Yes" >Yes</option>
-                <?php endif;?>
+                    <?php endif;?>
                 <?php if($review && $review['hits'][$exp === "ex2" ? $hit['misuse'] : $hit['rank']]["decision"] === "No") : ?>
                     <option selected="selected" value="No" >No</option>
                 <?php else : ?>
