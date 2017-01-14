@@ -25,6 +25,10 @@ class DataProcessor {
 	    // TODO: use a JOIN for getting all informations with the link tables
 		$query = $this->db->getReview($exp, $detector, $project, $version, $misuse, $reviewer);
 		$findings = $this->db->getReviewFindings($query['id']);
+		if(!$query || !$findings){
+		    return [];
+        }
+		$query['hits'] = [];
 		foreach($findings as $finding){
 		    $finding['types'] = $this->db->getReviewTypes(intval($finding['id']));
 		    $query['hits'][$exp === "ex2" ? $misuse : $finding['rank']] = $finding;
@@ -160,7 +164,7 @@ class DataProcessor {
                                     $review['detector'] = $detector;
                                     $review['project'] = $project;
                                     $review['version'] = $version['version'];
-                                    $review['misuse'] = $ex !== "ex2" ? $hit['misuse'] : $hit['id'];
+                                    $review['misuse'] = $hit['misuse'];
                                     $reviewable[substr($ex, 2)][] = $review;
                                 }
                             }
@@ -185,23 +189,23 @@ class DataProcessor {
         $reviews[2] = [];
         $reviews[3] = [];
         foreach($query as $q){
-            $review = [];
-            $review['exp'] = $q['exp'];
-            if(array_key_exists($q['identifier'], $reviews)){
-                //$reviews[substr($review['exp'],2)][$q['identifier']]['decision'] = $q['hit'];
-                //$reviews[substr($review['exp'],2)][$q['identifier']]['types'] = array_merge($reviews[substr($review['exp'],2,1)][$q['identifier']]['types'], explode(";", $q['violation_types']));
-                continue;
-            }
-            $review['detector'] = $q['detector'];
-            $review['project'] = $q['project'];
-            $review['version'] = $q['version'];
-            $review['misuse'] = $q['misuse'];
-            // TODO: join decision and types
-            $review['decision'] = "TODO";
-            $review['comment'] = $q['comment'];
-            $review['types'] = ["TODO"];
-            $review['name'] = $q['name'];
-            $reviews[substr($review['exp'],2)][$q['identifier']] = $review;
+//            $review = [];
+//            $review['exp'] = $q['exp'];
+//            if(false){
+//                //$reviews[substr($review['exp'],2)][$q['identifier']]['decision'] = $q['hit'];
+//                //$reviews[substr($review['exp'],2)][$q['identifier']]['types'] = array_merge($reviews[substr($review['exp'],2,1)][$q['identifier']]['types'], explode(";", $q['violation_types']));
+//                continue;
+//            }
+//            $review['detector'] = $q['detector'];
+//            $review['project'] = $q['project'];
+//            $review['version'] = $q['version'];
+//            $review['misuse'] = $q['misuse'];
+//            // TODO: join decision and types
+//            $review['decision'] = "TODO";
+//            $review['comment'] = $q['comment'];
+//            $review['types'] = ["TODO"];
+//            $review['name'] = $q['name'];
+//            $reviews[substr($review['exp'],2)][$review['de']] = $review;
         }
         return $reviews;
     }
@@ -211,6 +215,7 @@ class DataProcessor {
 		$stats = $this->db->getAllStats($table);
 		$projects = [];
 		foreach($stats as $s){
+		    $s['hits'] = [];
             foreach($this->db->getPotentialHits($table, $exp, $s['project'], $s['version']) as $hit){
 				if($exp !== "ex2"){
 					$meta = $this->getMetadata($hit['misuse']);

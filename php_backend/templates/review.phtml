@@ -130,7 +130,7 @@
                     <?php if($logged) : ?>
                     <select name="review_hit[<?= htmlspecialchars($exp === "ex2" ? $hit['misuse'] : $hit['rank']); ?>][types][]" size="10" multiple>
                         <?php else : ?>
-                        <select disabled name="review_hit[<?= htmlspecialchars($hit['id']); ?>][types][]" size="10" multiple>
+                        <select disabled name="review_hit[<?= htmlspecialchars($exp === "ex2" ? $hit['misuse'] : $hit['rank']); ?>][types][]" size="10" multiple>
                         <?php endif; ?>
                             <?php $add = true ?>
                             <?php if($review) : ?>

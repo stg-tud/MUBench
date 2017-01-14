@@ -52,7 +52,7 @@ class RoutesHelper
         $review = NULL;
         if ($review_flag && !$logged) {
             $reviewer = $args['reviewer'];
-            if($request->getServerParams()['PHP_AUTH_USER'] && $request->getServerParams()['PHP_AUTH_USER'] === $reviewer){
+            if(array_key_exists('PHP_AUTH_USER', $request->getServerParams()) && $request->getServerParams()['PHP_AUTH_USER'] && $request->getServerParams()['PHP_AUTH_USER'] === $reviewer){
                 $logged = true;
             }
         } else if ($review_flag && $logged) {

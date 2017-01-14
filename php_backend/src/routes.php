@@ -36,9 +36,6 @@ $app->group('/private', function () use ($app, $settings) {
     $app->get('/{exp:ex[1-3]}', function ($request, $response, $args) use ($app, $settings) {
         $exp = $args['exp'];
         $data = $app->data->getDetectors($exp);
-        if(!$data){
-            return $response->withStatus(404);
-        }
         $template = $settings['ex_template'][$exp];
         return $this->renderer->render($response, 'experiment.phtml', array('data' => $data, 'id' => $template['id'], 'title' => $template['title'], 'exp' => $exp, 'logged' => true));
     });
