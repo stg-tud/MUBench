@@ -13,7 +13,6 @@
     <h3>Experiment <?= htmlspecialchars($key); ?></h3>
 <table border="1" cellpadding="5">
     <tr>
-        <th>Dataset</th>
         <th>Detector</th>
         <th>Project</th>
         <th>Version</th>
@@ -25,7 +24,6 @@
     </tr>
     <?php foreach($reviews as $review) : ?>
     <tr>
-        <td><?= htmlspecialchars($review['dataset']); ?></td>
         <td><?= htmlspecialchars($review['detector']); ?></td>
         <td><?= htmlspecialchars($review['project']); ?></td>
         <td><?= htmlspecialchars($review['version']); ?></td>
@@ -37,7 +35,7 @@
                 <?= htmlspecialchars($v); ?><br/>
             <?php endforeach; ?>
         </td>
-        <td><a href="./<?= htmlspecialchars($review['exp']); ?>/<?= htmlspecialchars($review['dataset']); ?>/<?= htmlspecialchars($review['detector']); ?>/<?= htmlspecialchars($review['project']); ?>/<?= htmlspecialchars($review['version']); ?>/<?= htmlspecialchars($review['misuse']); ?>">review</a></td>
+        <td><a href="./<?= htmlspecialchars($review['exp']); ?>/<?= htmlspecialchars($review['detector']); ?>/<?= htmlspecialchars($review['project']); ?>/<?= htmlspecialchars($review['version']); ?>/<?= htmlspecialchars($review['misuse']); ?>">review</a></td>
     </tr>
     <?php endforeach; ?>
 </table>

@@ -27,16 +27,16 @@ class UploadProcessorTest extends TestCase
         $statements[] =
             "CREATE TABLE patterns (misuse TEXT NOT NULL,name TEXT NOT NULL,code TEXT NOT NULL,line TEXT NOT NULL);";
         $statements[] =
-            "CREATE TABLE reviews (identifier TEXT NOT NULL,name TEXT NOT NULL,hit TEXT NOT NULL,comment TEXT NOT NULL,violation_type TEXT NOT NULL,id TEXT NOT NULL);";
+           "CREATE TABLE reviews (exp VARCHAR(100) NOT NULL,detector VARCHAR(100) NOT NULL,project VARCHAR(100) NOT NULL,version VARCHAR(100) NOT NULL,misuse VARCHAR(100) NOT NULL,name TEXT NOT NULL,comment TEXT NOT NULL,id int AUTO_INCREMENT,PRIMARY KEY(id));";
         $statements[] =
             "CREATE TABLE detectors (id int AUTO_INCREMENT, name TEXT NOT NULL);";
         $this->db->execStatements($statements);
         $this->obj =
-            json_decode('{"findings":[{"target_snippets":[{"first_line_number":0, "code":"c"}],"a":"1", "b":"2", "c":"3", "d":"4", "misuse":"5"}], "project":"p", "version":"v", "runtime":"0", "result":"success", "number_of_findings":"1", "dataset":"any", "detector":"mudetect"}');
+            json_decode('{"findings":[{"target_snippets":[{"first_line_number":0, "code":"c"}],"a":"1", "b":"2", "c":"3", "rank":"4", "misuse":"5"}], "project":"p", "version":"v", "runtime":"0", "result":"success", "number_of_findings":"1", "dataset":"any", "detector":"mudetect"}');
         $this->metaObj =
             json_decode('{"misuse":"m.1", "fix":{"diff-url":"url", "description":"desc"}, "description":"d", "violation_types":["1","2"], "location":{"file":"f", "method":"m"}, "patterns":[{"id":"1","snippet":{"code":"c", "first_line":0}}]}');
         $this->reviewObj = array("review_name" => "admin", "review_identifier" => "id", "review_comment" => "test",
-            "review_hit" => array(0 => array("hit" => "Yes", "types" => ["1", "2"])));
+            "review_hit" => array(0 => array("hit" => "Yes", "types" => ["1", "2"])), "review_exp" => "ex1", "review_detector" => "detector1", "review_project" => "project1", "review_version" => "test-version", "review_misuse" => "test-misuse");
         $this->proc = new UploadProcessor($this->db,
             new \Monolog\Logger("test"));
     }
@@ -44,7 +44,7 @@ class UploadProcessorTest extends TestCase
     public function testgetJsonNames()
     {
         $actual = $this->proc->getJsonNames($this->obj->{'findings'});
-        $expected = array('project', 'version', 'target_snippets', 'a', 'b', 'c', 'd', 'misuse');
+        $expected = array('project', 'version', 'target_snippets', 'a', 'b', 'c', 'rank', 'misuse');
         $this->assertEquals($expected, $actual);
     }
 
@@ -96,8 +96,8 @@ class UploadProcessorTest extends TestCase
     public function testProcessReview()
     {
         $this->proc->processReview($this->reviewObj);
-        $query = $this->db->getReview("admin", "id");
-        $this->assertTrue(count($query) == 1);
+        $query = $this->db->getReview($this->reviewObj['review_exp'], $this->reviewObj['review_detector'], $this->reviewObj['review_project'], $this->reviewObj['review_version'], $this->reviewObj['review_misuse'], $this->reviewObj['review_name']);
+        $this->assertEquals($this->reviewObj['review_detector'], $query['detector']);
     }
 
 }

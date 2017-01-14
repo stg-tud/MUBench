@@ -96,11 +96,13 @@ $app->group('/api', function () use ($app) {
         }
         $this->logger->info("uploading data for: " . $project . " version " . $version . " with " . count($hits) . " hits.");
         $app->upload->processData($experiment, $obj, $obj->{'potential_hits'});
-        $app->dir->deleteOldImages($experiment, $obj->{'project'}, $obj->{'version'});
         $files = $request->getUploadedFiles();
         $this->logger->info("received " . count($files) . " files");
-        foreach ($files as $img) {
-            $app->dir->handleImage($experiment, $obj->{'dataset'} ? $obj->{'dataset'} : "any", $obj->{'detector'}, $obj->{'project'}, $obj->{'version'}, $img);
+        if($files) {
+            $app->dir->deleteOldImages($experiment, $obj->{'project'}, $obj->{'version'});
+            foreach ($files as $img) {
+                $app->dir->handleImage($experiment, $obj->{'detector'}, $obj->{'project'}, $obj->{'version'}, $img);
+            }
         }
         return $response->withStatus(200);
     });

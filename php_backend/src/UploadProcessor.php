@@ -17,23 +17,52 @@ class UploadProcessor
     public function processReview($review)
     {
         $name = $review['review_name'];
-        $identifier = $review['review_identifier'];
+        $exp = $review['review_exp'];
+        $detector = $review['review_detector'];
+        $project = $review['review_project'];
+        $version = $review['review_version'];
+        $misuse = $review['review_misuse'];
         $comment = $review['review_comment'];
         $hits = $review['review_hit'];
         $statements = [];
-        $statements[] = $this->db->getReviewDeleteStatement($identifier, $name);
-        foreach ($hits as $key => $value) {
-            $statements[] = $this->db->getReviewStatement($identifier, $name, $value['hit'], $comment,
-                $this->arrayToString($value['types']), $key);
+        $oldReview = $this->db->getReview($exp, $detector, $project, $version, $misuse, $name);
+        if($oldReview){
+            $oldId = intval($oldReview['id']);
+            $oldFindings = $this->db->getReviewFindings($oldId);
+            foreach($oldFindings as $oldFinding){
+                $statements[] = $this->db->getReviewFindingsDeleteStatement(intval($oldFinding['id']));
+                $statements[] = $this->db->getReviewFindingsTypeDelete(intval($oldFinding['id']));
+            }
         }
+
+        $statements[] = $this->db->getReviewDeleteStatement($exp, $detector, $project, $version, $misuse, $name);
+        $statements[] = $this->db->getReviewStatement($exp, $detector, $project, $version, $misuse, $name, $comment);
         $this->db->execStatements($statements);
+        $newReview = $this->db->getReview($exp, $detector, $project, $version, $misuse, $name);
+        if(!$newReview){
+            $this->logger->error("Review not found");
+            return;
+        }
+        $id = intval($newReview['id']);
+        foreach($hits as $key => $hit){
+            $this->db->execStatement($this->db->getReviewFindingStatement($id, $hit['hit'], $key));
+            $findingEntry = $this->db->getReviewFinding($id, $key);
+            if(!$findingEntry){
+                $this->logger->error("finding not found");
+                continue;
+            }
+            $findingId = intval($findingEntry['id']);
+            foreach($hit['types'] as $type){
+                $typeId = $this->db->getTypeIdByName($type);
+                $this->db->execStatement($this->db->addReviewType($findingId, $typeId));
+            }
+        }
     }
 
     public function processData($ex, $obj, $obj_array)
     {
         $table = $this->db->getTableName($obj->{'detector'});
         $this->logger->info("Data for : " . $table);
-
         $project = $obj->{'project'};
         $version = $obj->{'version'};
         $runtime = $obj->{'runtime'};
@@ -45,7 +74,6 @@ class UploadProcessor
 
         $this->handleStats($table, $project, $version, $result, $runtime, $findings);
         $this->handleTableColumns($table, $obj_columns, $columns, $obj_array);
-        $this->logger->info("INSERTING INTO " . $table);
         $this->handleFindings($table, $ex, $project, $version, $obj_array);
     }
 
@@ -60,6 +88,7 @@ class UploadProcessor
 
     public function handleFindings($table, $exp, $project, $version, $obj_array)
     {
+        // TODO: save types in a link table
         $statements = [];
         foreach ($obj_array as $hit) {
             $statements[] = $this->db->insertStatement($table, $exp, $project, $version, $hit);

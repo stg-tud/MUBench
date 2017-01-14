@@ -14,7 +14,7 @@ class ConnectionDBTest extends TestCase{
     }
 
     protected function setUp(){
-        $this->obj = json_decode('{"findings":[{"a":"1", "b":"2", "c":"3", "d":"4", "misuse":"5"}]}');
+        $this->obj = json_decode('{"findings":[{"a":"1", "b":"2", "c":"3", "rank":"4", "misuse":"5"}]}');
         $this->db = new DBConnection($this->getConnection(), new \Monolog\Logger("test"));
         $statements[] =
             "CREATE TABLE detectors (id int, name TEXT NOT NULL);";
@@ -25,7 +25,7 @@ class ConnectionDBTest extends TestCase{
 
     public function testInsertStatement(){
         $insert = $this->db->insertStatement('table', 'exp', 'project', 'version', $this->obj->{"findings"}[0]);
-        $expected = "INSERT INTO table ( exp, project, version, a, b, c, d, misuse) VALUES ('exp','project','version','1','2','3','4','5');";
+        $expected = "INSERT INTO table ( exp, project, version, misuse, a, b, c, rank) VALUES ('exp','project','version','5','1','2','3','4');";
         $this->assertEquals($expected, $insert);
     }
 
@@ -54,7 +54,7 @@ class ConnectionDBTest extends TestCase{
 
     public function testCreateTableStatement(){
         $actual = $this->db->createTableStatement('table', $this->obj->{'findings'});
-        $expected = 'CREATE TABLE table(exp VARCHAR(100) NOT NULL, project VARCHAR(100) NOT NULL, version VARCHAR(100) NOT NULL,a TEXT,b TEXT,c TEXT,d TEXT, misuse VARCHAR(100) NOT NULL, PRIMARY KEY(exp, project, version, misuse));';
+        $expected = 'CREATE TABLE table(exp VARCHAR(100) NOT NULL, project VARCHAR(100) NOT NULL, version VARCHAR(100) NOT NULL, misuse VARCHAR(100) NOT NULL,a TEXT,b TEXT,c TEXT,rank VARCHAR(100), PRIMARY KEY(exp, project, version, misuse, rank));';
         $this->assertEquals($expected, $actual);
     }
 
@@ -94,15 +94,15 @@ class ConnectionDBTest extends TestCase{
         $this->assertEquals($expected, $actual);
     }
 
-    public function testInsertReviewStatement(){
-        $actual = $this->db->getReviewDeleteStatement("test_test", "test");
-        $expected = "DELETE FROM reviews WHERE identifier='test_test' AND name='test';";
+    public function testDeleteReviewStatement(){
+        $actual = $this->db->getReviewDeleteStatement("ex1", "detect1", "proc1", "vers1", "misuse1", "test");
+        $expected = "DELETE FROM reviews WHERE exp='ex1' AND detector='detect1' AND project='proc1' AND version='vers1' AND misuse='misuse1' AND name='test';";
         $this->assertEquals($expected, $actual);
     }
 
-    public function testDeleteReviewStatement(){
-        $actual = $this->db->getReviewStatement("identifier", "name", "hit", "comment", "type", "id");
-        $expected = "INSERT INTO reviews (identifier, name, hit, comment, violation_type, id) VALUES ('identifier','name','hit','comment','type','id');";
+    public function testInsertReviewStatement(){
+        $actual = $this->db->getReviewStatement("ex1", "detect1", "proc1", "vers1", "misuse1", "test", "test-comment");
+        $expected = "INSERT INTO reviews (exp, detector, project, version, misuse, name, comment) VALUES ('ex1','detect1','proc1','vers1','misuse1','test','test-comment');";
         $this->assertEquals($expected, $actual);
     }
 

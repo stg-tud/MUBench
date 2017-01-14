@@ -62,9 +62,9 @@ class RoutesHelper
         $code = $hits ? $hits[0]['target_snippets'] : "code not found";
         $line = $hits ? $hits[0]['line'] : 0;
         $file = $hits ? ($exp == "ex2" ? $hits[0]['file'] : $data['file']) : "file not found";
-        $review = $app->data->getReview($exp, $set, $detector, $project, $version, $misuse, $reviewer);
+        $review = $app->data->getReview($exp, $detector, $project, $version, $misuse, $reviewer);
         return $r->renderer->render($response, 'review.phtml',
-            array('name' => $reviewer, 'review' => $review, 'set' => $set, 'logged' => $logged, 'exp' => $exp,
+            array('name' => $reviewer, 'review' => $review, 'logged' => $logged, 'exp' => $exp,
                 'detector' => $detector, 'version' => $version, 'project' => $project, 'misuse' => $misuse,
                 'desc' => $data['description'], 'fix_desc' => $data['fix_description'], 'diff_url' => $data['diff_url'],
                 'violation_types' => $data['violation_types'],

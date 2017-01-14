@@ -21,17 +21,18 @@ class DataProcessor {
 		}
 	}
 
-	public function getReview($exp, $set, $detector, $project, $version, $misuse, $reviewer){
-		$query = $this->db->getReview($reviewer, $exp . "_" . $set . "_" . $detector . "_" . $project . "_" . $version . "_" . $misuse);
-		$result = [];
-		foreach($query as $q){
-			$q['types'] = explode(";", $q['violation_type']);
-			$result[$q['id']] = $q;
-		}
-		return $result;
+	public function getReview($exp, $detector, $project, $version, $misuse, $reviewer){
+	    // TODO: use a JOIN for getting all informations with the link tables
+		$query = $this->db->getReview($exp, $detector, $project, $version, $misuse, $reviewer);
+		$findings = $this->db->getReviewFindings($query['id']);
+		foreach($findings as $finding){
+		    $finding['types'] = $this->db->getReviewTypes(intval($finding['id']));
+		    $query['hits'][$exp === "ex2" ? $misuse : $finding['rank']] = $finding;
+        }
+		return $query;
 	}
 
-	public function getPatterns($misuse){
+    public function getPatterns($misuse){
 		$query = $this->db->getPattern($misuse);
 		foreach($query as $q){
 			return $q;
@@ -39,6 +40,7 @@ class DataProcessor {
 	}
 
 	public function getHits($detector, $project, $version, $misuse, $exp){
+        // TODO: load types from a link tables
 	    $table = $this->db->getTableName($detector);
 	    if(!$table){
 	        return [];
@@ -76,6 +78,7 @@ class DataProcessor {
 	}
 
 	public function getPrefixTable($prefix, $suffix){
+	    // TODO: remove
 		$tables = $this->db->getTables();
 		$names = array();
 		foreach($tables as $t){
@@ -97,8 +100,8 @@ class DataProcessor {
 		return $names;
 	}
 
-	public function getReviewsMisuse($table, $project, $version, $id){
-		$query = $this->db->getReviewsByIdentifier($table . "_" . $project . "_" . $version . "_" . $id);
+	public function getReviewsMisuse($exp, $detector, $project, $version, $misuse){
+		$query = $this->db->getReviewsByIdentifier($exp, $detector, $project, $version, $misuse);
 		$reviewer = [];
 		if(!$query){
 			return [];
@@ -126,6 +129,7 @@ class DataProcessor {
     }
 
 	public function getTodo($reviewer){
+	    // TODO: fix with new review structure
         $exp = ["ex1", "ex2", "ex2"];
         $reviews = $this->getAllReviews();
         $reviewable = [];
@@ -133,9 +137,8 @@ class DataProcessor {
         $reviewable[2] = [];
         $reviewable[3] = [];
         foreach($exp as $ex){
-            foreach($this->getDatasets($ex) as $dataset){
-                foreach($this->getDetectors($ex . "_" . $dataset) as $detector){
-                    $index = $this->getIndex($ex, $dataset, $detector);
+                foreach($this->getDetectors($ex) as $detector){
+                    $index = $this->getIndex($ex, $detector);
                     foreach($index as $project => $versions){
                         $count = 0;
                         $alreadyReviewed = false;
@@ -144,8 +147,8 @@ class DataProcessor {
                                 $alreadyReviewed = true;
                                 break;
                             }
-                            if(($review['exp'] === $ex && $review['dataset'] === $dataset
-                                && $review['detector'] === $detector && $review['project'] === $project)){
+                            if(($review['exp'] === $ex && $review['detector'] === $detector
+                                && $review['project'] === $project)){
                                 $count++;
                             }
                         }
@@ -154,7 +157,6 @@ class DataProcessor {
                                 foreach($version['hits'] as $hit){
                                     $review = [];
                                     $review['exp'] = $ex;
-                                    $review['dataset'] = $dataset;
                                     $review['detector'] = $detector;
                                     $review['project'] = $project;
                                     $review['version'] = $version['version'];
@@ -166,12 +168,11 @@ class DataProcessor {
                     }
                 }
             }
-        }
         return $reviewable;
     }
 
 	public function getReviewsByReviewer($reviewer){
-	    $query = $this->db->getReviewsByReviwer($reviewer);
+	    $query = $this->db->getReviewsByReviewer($reviewer);
         if(!$query){
             return [];
         }
@@ -185,21 +186,20 @@ class DataProcessor {
         $reviews[3] = [];
         foreach($query as $q){
             $review = [];
-            $ids = explode("_", $q['identifier']);
-            $review['exp'] = $ids[0];
+            $review['exp'] = $q['exp'];
             if(array_key_exists($q['identifier'], $reviews)){
-                $reviews[substr($review['exp'],2)][$q['identifier']]['decision'] = $q['hit'];
-                $reviews[substr($review['exp'],2)][$q['identifier']]['types'] = array_merge($reviews[substr($review['exp'],2,1)][$q['identifier']]['types'], explode(";", $q['violation_types']));
+                //$reviews[substr($review['exp'],2)][$q['identifier']]['decision'] = $q['hit'];
+                //$reviews[substr($review['exp'],2)][$q['identifier']]['types'] = array_merge($reviews[substr($review['exp'],2,1)][$q['identifier']]['types'], explode(";", $q['violation_types']));
                 continue;
             }
-            $review['dataset'] = $ids[1];
-            $review['detector'] = $ids[2];
-            $review['project'] = $ids[3];
-            $review['version'] = $ids[4];
-            $review['misuse'] = $ids[5];
-            $review['decision'] = $q['hit'];
+            $review['detector'] = $q['detector'];
+            $review['project'] = $q['project'];
+            $review['version'] = $q['version'];
+            $review['misuse'] = $q['misuse'];
+            // TODO: join decision and types
+            $review['decision'] = "TODO";
             $review['comment'] = $q['comment'];
-            $review['types'] = explode(";", $q['violation_types']);
+            $review['types'] = ["TODO"];
             $review['name'] = $q['name'];
             $reviews[substr($review['exp'],2)][$q['identifier']] = $review;
         }
@@ -216,13 +216,13 @@ class DataProcessor {
 					$meta = $this->getMetadata($hit['misuse']);
 					$hit['violation_types'] = $meta['violation_types'];
 				}
-				$reviews = $this->getReviewsMisuse($table, $s['project'], $s['version'], $exp === "ex2" ? $hit['id'] : $hit['misuse']);
+				$reviews = $this->getReviewsMisuse($exp, $detector, $s['project'], $s['version'], $hit['misuse']);
 				$hit['reviews'] = $reviews;
 				$add = true;
-                $id = $exp === "ex2" ? $hit['id'] : $hit['misuse'];
+                $id = $hit['misuse'];
 				if(array_key_exists('hits', $s)) {
                     foreach ($s['hits'] as $h) {
-                        if (($exp === "ex2" && $hit['id'] === $h['id']) || ($exp !== "ex2" && $hit['misuse'] === $h['misuse'])) {
+                        if ($hit['misuse'] === $h['misuse']) {
                             $add = false;
                         }
                     }

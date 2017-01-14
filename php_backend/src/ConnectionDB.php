@@ -14,14 +14,18 @@ class DBConnection {
 
 	public function execStatements($statements){
 		foreach($statements as $s){
-			try{
-	    		$status = $this->pdo->exec($s);
-                $this->logger->info("Status execStatement: " . $status . " executing . " . substr($s, 0, 10));
-			}catch(PDOException $e){
-				$this->logger->error("Error execStatement: (" . $e->getMessage() . ") executing " . $s );
-			}
+			$this->execStatement($s);
 		}
 	}
+
+    public function execStatement($statement){
+        try{
+            $status = $this->pdo->exec($statement);
+            $this->logger->info("Status execStatement: " . $status . " executing . " . substr($statement, 0, 10));
+        }catch(PDOException $e){
+            $this->logger->error("Error execStatement: (" . $e->getMessage() . ") executing " . $statement );
+        }
+    }
 
 	public function getTableColumns($table){
 		$sql = $this->columnQuery($table);
@@ -95,15 +99,16 @@ class DBConnection {
 
 	public function createTableStatement($name, $obj){
 	    // exp project version misuse rank (AUTO INCREMENT id)
-		$output = 'CREATE TABLE ' . $name . '(exp VARCHAR(100) NOT NULL, project VARCHAR(100) NOT NULL, version VARCHAR(100) NOT NULL';
+		$output = 'CREATE TABLE ' . $name . '(exp VARCHAR(100) NOT NULL, project VARCHAR(100) NOT NULL, version VARCHAR(100) NOT NULL, misuse VARCHAR(100) NOT NULL';
 		foreach($obj[0] as $key => $value){
-		    if($key === "id" || $key === "misuse"){
-                $output = $output . ", misuse VARCHAR(100) NOT NULL";
+		    if($key === "id" || $key === "misuse") {
+            }else if($key === "rank"){
+                $output = $output . "," . $key . " VARCHAR(100)";
             }else {
                 $output = $output . "," . $key . " TEXT";
             }
 		}
-		$output = $output . ', PRIMARY KEY(exp, project, version, misuse));';
+		$output = $output . ', PRIMARY KEY(exp, project, version, misuse, rank));';
 		return $output;
 	}
 
@@ -122,15 +127,14 @@ class DBConnection {
 	}
 
 	public function insertStatement($table, $exp, $project, $version, $obj){
-		$output = "INSERT INTO " . $table . " ( exp, project, version";
-		$values = " VALUES (" . $this->pdo->quote($exp) . "," . $this->pdo->quote($project) . "," . $this->pdo->quote($version);
+		$output = "INSERT INTO " . $table . " ( exp, project, version, misuse";
+		$values = " VALUES (" . $this->pdo->quote($exp) . "," . $this->pdo->quote($project) . "," . $this->pdo->quote($version) . "," . $this->pdo->quote($exp !== "ex2" ? $obj->{'misuse'} : $obj->{'rank'});
 		foreach($obj as $key => $value){
             if($key === "id" || $key === "misuse"){
-                $output = $output . ", misuse";
             }else {
                 $output = $output . ", " . $key;
+                $values = $values . "," . $this->pdo->quote(is_array($value) ? $this->arrayToString($value) : $value);
             }
-            $values = $values . "," . $this->pdo->quote(is_array($value) ? $this->arrayToString($value) : $value);
         }
 
 		$output = $output . ")";
@@ -255,20 +259,25 @@ class DBConnection {
 		return $query;
 	}
 
-	public function getReview($user, $identifier){
+	public function getReview($exp, $detector, $project, $version, $misuse, $name){
         $query = [];
 		try{
-			$query = $this->pdo->query("SELECT * from reviews WHERE name=" . $this->pdo->quote($user) . " AND identifier=" . $this->pdo->quote($identifier) . ";");
+		    $query = $this->pdo->query("SELECT * from reviews WHERE name=" . $this->pdo->quote($name) . " AND exp=" . $this->pdo->quote($exp) . " AND detector=" . $this->pdo->quote($detector) . " AND project=" . $this->pdo->quote($project) . " AND version=" . $this->pdo->quote($version) . " AND misuse=" . $this->pdo->quote($misuse) .";");
 		}catch(PDOException $e){
 			$this->logger->error("Error getReview: " . $e->getMessage());
 		}
-		return $query;
+        if(!$query){
+            return [];
+        }
+        foreach($query as $q){
+            return  $q;
+        }
 	}
 
 	public function getHits($table, $project, $version, $misuse, $exp){
         $query = [];
 		try{
-			$query = $this->pdo->query("SELECT * from ". $table . " WHERE exp=" . $this->pdo->quote($exp) ."misuse=". $this->pdo->quote($misuse) . " AND project=" . $this->pdo->quote($project) . " AND version=" . $this->pdo->quote($version) . ";");
+			$query = $this->pdo->query("SELECT * from ". $table . " WHERE exp=" . $this->pdo->quote($exp) ." AND misuse=". $this->pdo->quote($misuse) . " AND project=" . $this->pdo->quote($project) . " AND version=" . $this->pdo->quote($version) . ";");
 		}catch(PDOException $e){
 			$this->logger->error("Error getHits: " . $e->getMessage());
 		}
@@ -292,17 +301,17 @@ class DBConnection {
 		return $result;
 	}
 
-	public function getReviewsByIdentifier($identifier){
+	public function getReviewsByIdentifier($exp, $detector, $project, $version, $misuse){
         $query = [];
 		try{
-			$query = $this->pdo->query("SELECT name from reviews WHERE identifier=" . $this->pdo->quote($identifier) . ";");
+			$query = $this->pdo->query("SELECT name from reviews WHERE exp=" . $this->pdo->quote($exp) . " AND detector=" . $this->pdo->quote($detector) . " AND project=" . $this->pdo->quote($project) . " AND version=" . $this->pdo->quote($version) . " AND misuse=" . $this->pdo->quote($misuse) . ";");
 		}catch(PDOException $e){
 			$this->logger->error("Error getAllReviews: " . $e->getMessage());
 		}
 		return $query;
 	}
 
-	public function getReviewsByReviwer($reviewer){
+	public function getReviewsByReviewer($reviewer){
         $query = [];
         try{
             $query = $this->pdo->query("SELECT * from reviews WHERE name=" . $this->pdo->quote($reviewer) . ";");
@@ -312,12 +321,12 @@ class DBConnection {
         return $query;
     }
 
-	public function getReviewStatement($identifier, $name, $hit, $comment, $type, $id){
-		return "INSERT INTO reviews (identifier, name, hit, comment, violation_type, id) VALUES (" . $this->pdo->quote($identifier) . "," . $this->pdo->quote($name) . "," . $this->pdo->quote($hit) . "," . $this->pdo->quote($comment) . "," . $this->pdo->quote($type) . "," . $this->pdo->quote($id) .");";
+	public function getReviewStatement($exp, $detector, $project, $version, $misuse, $name, $comment){
+		return "INSERT INTO reviews (exp, detector, project, version, misuse, name, comment) VALUES (" . $this->pdo->quote($exp) . "," . $this->pdo->quote($detector) . "," . $this->pdo->quote($project) . "," . $this->pdo->quote($version) . "," . $this->pdo->quote($misuse) . "," . $this->pdo->quote($name) . "," . $this->pdo->quote($comment) . ");";
 	}
 
-	public function getReviewDeleteStatement($identifier, $name){
-	    return "DELETE FROM reviews WHERE identifier=" . $this->pdo->quote($identifier) . " AND name=" . $this->pdo->quote($name) . ";";
+	public function getReviewDeleteStatement($exp, $detector, $project, $version, $misuse, $name){
+	    return "DELETE FROM reviews WHERE exp=" . $this->pdo->quote($exp) . " AND detector=" . $this->pdo->quote($detector) . " AND project=" . $this->pdo->quote($project) ." AND version=" . $this->pdo->quote($version) ." AND misuse=" . $this->pdo->quote($misuse) ." AND name=" . $this->pdo->quote($name) . ";";
     }
 
 	public function deleteStatement($table, $project, $version){
@@ -327,4 +336,110 @@ class DBConnection {
 	public function columnQuery($table){
 		return "SELECT column_name FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME=" . $this->pdo->quote($table) . ";";
 	}
+
+	public function getReviewFindingStatement($reviewId, $decision, $rank){
+	    return "INSERT INTO review_findings (decision, review, rank) VALUES(" . $this->pdo->quote($decision) . ", ". $this->pdo->quote($reviewId) . "," . $this->pdo->quote($rank) . ");";
+
+    }
+
+    public function getReviewFinding($id, $rank){
+        $query = [];
+        try{
+            $query = $this->pdo->query("SELECT * from review_findings WHERE review=" . $this->pdo->quote($id) . "AND rank=" . $this->pdo->quote($rank) . ";");
+        }catch(PDOException $e){
+            $this->logger->error("Error getReviewFinding: " . $e->getMessage());
+        }
+        if(!$query){
+            return [];
+        }
+        foreach($query as $q){
+           return $q;
+        }
+    }
+
+    public function getReviewFindings($id){
+        $query = [];
+        try{
+            $query = $this->pdo->query("SELECT * from review_findings WHERE review=" . $this->pdo->quote($id) . ";");
+        }catch(PDOException $e){
+            $this->logger->error("Error getReviewFindings: " . $e->getMessage());
+        }
+        if(!$query){
+            return [];
+        }
+        $result = [];
+        foreach($query as $q){
+            $result[] =  $q;
+        }
+        return $result;
+    }
+
+    public function getTypes(){
+        $query = [];
+        try{
+            $query = $this->pdo->query("SELECT * from types;");
+        }catch(PDOException $e){
+            $this->logger->error("Error getTypes: " . $e->getMessage());
+        }
+        if(!$query){
+            return [];
+        }
+        $result = [];
+        foreach($query as $q){
+            $result[] =  $q;
+        }
+        return $result;
+    }
+
+    public function getTypeIdByName($name){
+        // TODO: make its own query
+        $types = $this->getTypes();
+        foreach($types as $type){
+            if($type['name'] === $name){
+                return $type['id'];
+            }
+        }
+        return 0;
+    }
+
+    public function getTypeNameById($id){
+        // TODO: make its own query
+        $types = $this->getTypes();
+        foreach($types as $type){
+            if($type['id'] === $id){
+                return $type['name'];
+            }
+        }
+        return "unknown";
+    }
+
+    public function getReviewTypes($id){
+        $query = [];
+        $this->logger->info("review_finding ID: " . $id);
+        try{
+            $query = $this->pdo->query("SELECT * from review_types WHERE review=". $this->pdo->quote($id) . ";");
+        }catch(PDOException $e){
+            $this->logger->error("Error getTypes: " . $e->getMessage());
+        }
+        if(!$query){
+            return [];
+        }
+        $result = [];
+        foreach($query as $q){
+            $result[] = $this->getTypeNameById($q['type']);
+        }
+        return $result;
+    }
+
+    public function addReviewType($findingId, $type){
+        return "INSERT INTO review_types (review, type) VALUES (". $this->pdo->quote($findingId). "," . $this->pdo->quote($type). ");";
+    }
+
+    public function getReviewFindingsDeleteStatement($findingId){
+        return "DELETE FROM review_findings WHERE id=" . $this->pdo->quote($findingId) . ";";
+    }
+
+    public function getReviewFindingsTypeDelete($id){
+        return "DELETE FROM review_types WHERE review=" . $this->pdo->quote($id) . ";";
+    }
 }
