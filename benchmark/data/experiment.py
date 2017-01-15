@@ -24,7 +24,7 @@ class Experiment:
             executions = [
                 DetectOnlyExecution(self.detector, version, misuse, self.findings_base_path,
                                     PotentialHits(self.detector, [misuse])) for
-                misuse in version.misuses]
+                misuse in version.misuses if misuse.patterns]
         elif self.id == Experiment.TOP_FINDINGS:
             executions = [
                 MineAndDetectExecution(self.detector, version, self.findings_base_path,

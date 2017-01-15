@@ -4,6 +4,7 @@ from nose.tools import assert_equals, assert_is_instance
 
 from benchmark.data.experiment import Experiment
 from benchmark.data.findings_filters import AllFindings
+from benchmark.data.pattern import Pattern
 from benchmark.data.run import Run
 from benchmark.data.detector_execution import MineAndDetectExecution, DetectOnlyExecution
 from benchmark_tests.test_utils.data_util import create_project, create_version, create_misuse
@@ -18,6 +19,8 @@ class TestExperiment:
         self.version = create_version("-version-", project=self.project)
 
     def test_provided_patterns_run(self):
+        self.version._MISUSES = [create_misuse("-1-", project=self.project, patterns=[Pattern("-base-", "-P1-")])]
+
         experiment = Experiment(Experiment.PROVIDED_PATTERNS, self.detector, "-findings_path-")
 
         run = experiment.get_run(self.version)
@@ -25,6 +28,16 @@ class TestExperiment:
         assert_is_instance(run, Run)
         assert_equals(1, len(run.executions))
         assert_is_instance(run.executions[0], DetectOnlyExecution)
+
+    def test_provided_patterns_run_no_patterns(self):
+        self.version._MISUSES = [create_misuse("-1-", project=self.project, patterns=[])]
+
+        experiment = Experiment(Experiment.PROVIDED_PATTERNS, self.detector, "-findings_path-")
+
+        run = experiment.get_run(self.version)
+
+        assert_is_instance(run, Run)
+        assert_equals(0, len(run.executions))
 
     def test_top_findings_run(self):
         experiment = Experiment(Experiment.TOP_FINDINGS, self.detector, "-findings_path-", 42)
