@@ -1,5 +1,3 @@
-import java.text.ParseException;
-
 public class SupressError {
 	public void misuse(Target target) {
 		byte[] data = null;

@@ -13,7 +13,7 @@ class CheckStartDateForNull {
     DateTime start = (DateTime) pst.nullSafeGet(resultSet, names[0]);
     DateTime end = (DateTime) pst.nullSafeGet(resultSet, names[1]);
     if (start != null && end != null) {
-        new Interval(start, end)
+        new Interval(start, end);
     }
   }
 }

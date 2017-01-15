@@ -9,7 +9,7 @@ class CheckStateNotNull {
   void canRead(ItemData data) throws AccessDeniedException, RepositoryException {
     ItemState state = data.getState();
     if (state != null) {
-        state.getStatus()
+        state.getStatus();
     }
   }
 }
