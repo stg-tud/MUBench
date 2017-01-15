@@ -22,7 +22,7 @@ class Detector:
 
         if exists(md5_file):
             with open(md5_file) as file:
-                md5 = file.read()
+                md5 = file.read().strip()
 
         return md5
 
