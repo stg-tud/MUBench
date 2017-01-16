@@ -87,7 +87,7 @@
                     <?php else : ?>
                     <option value="Yes" >Yes</option>
                     <?php endif;?>
-                <?php if($review && $review['hits'][$exp === "ex2" ? $hit['misuse'] : $hit['rank']]["decision"] === "No") : ?>
+                <?php if(!$review || ($review && $review['hits'][$exp === "ex2" ? $hit['misuse'] : $hit['rank']]["decision"] === "No")) : ?>
                     <option selected="selected" value="No" >No</option>
                 <?php else : ?>
                     <option value="No" >No</option>
