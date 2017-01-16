@@ -277,7 +277,7 @@ class DBConnection {
 	public function getHits($table, $project, $version, $misuse, $exp){
         $query = [];
 		try{
-			$query = $this->pdo->query("SELECT * from ". $table . " WHERE exp=" . $this->pdo->quote($exp) ." AND misuse=". $this->pdo->quote($misuse) . " AND project=" . $this->pdo->quote($project) . " AND version=" . $this->pdo->quote($version) . ";");
+			$query = $this->pdo->query("SELECT * from ". $table . " WHERE exp=" . $this->pdo->quote($exp) ." AND misuse=". $this->pdo->quote($misuse) . " AND project=" . $this->pdo->quote($project) . " AND version=" . $this->pdo->quote($version) . " ORDER BY `rank` * 1 ASC;");
 		}catch(PDOException $e){
 			$this->logger->error("Error getHits: " . $e->getMessage());
 		}
