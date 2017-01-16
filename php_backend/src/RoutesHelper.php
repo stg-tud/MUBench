@@ -19,7 +19,7 @@ class RoutesHelper
         return ob_get_clean();
     }
 
-    public function detect_route($args, $app, $r, $response, $logged)
+    public function detect_route($request, $args, $app, $r, $response, $logged)
     {
         $exp = $args['exp'];
         $detector = $args['detector'];
@@ -31,8 +31,8 @@ class RoutesHelper
             return $response->withStatus(404);
         }
         return $r->renderer->render($response, 'detector.phtml',
-            array('logged' => $logged, 'exp' => $exp, 'detector' => $detector,
-                'projects' => $stats));
+            array('logged' => $logged, 'name' => $request->getServerParams()['PHP_AUTH_USER'],
+                'exp' => $exp, 'detector' => $detector, 'projects' => $stats));
     }
 
     public function review_route($args, $app, $r, $response, $request, $logged, $review_flag)

@@ -16,7 +16,7 @@ $app->get('/{exp:ex[1-3]}', function ($request, $response, $args) use ($app, $se
 });
 
 $app->get('/{exp:ex[1-3]}/{detector}', function ($request, $response, $args) use ($app) {
-	return $app->helper->detect_route($args, $app, $this, $response, false);
+	return $app->helper->detect_route($request, $args, $app, $this, $response, false);
 });
 
 $app->get('/{exp:ex[1-3]}/{detector}/{project}/{version}/{misuse}', function ($request, $response, $args) use ($app) {
@@ -41,7 +41,7 @@ $app->group('/private', function () use ($app, $settings) {
     });
 
     $app->get('/{exp:ex[1-3]}/{detector}', function ($request, $response, $args) use ($app) {
-        return $app->helper->detect_route($args, $app, $this, $response, true);
+        return $app->helper->detect_route($request, $args, $app, $this, $response, true);
     });
 
     $app->post('/review/{exp:ex[1-3]}/{detector}', function ($request, $response, $args) use ($app) {
