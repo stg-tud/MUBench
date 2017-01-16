@@ -1,5 +1,18 @@
 
 
+<?php
+    $columns_to_ignore = array(
+        "target_snippets",
+        "file",
+        "line",
+        "project",
+        "version",
+        "misuse",
+        "identifier",
+        "rank",
+        "exp"
+    );
+?>
         <html>
             <head>
                 <style>
@@ -68,8 +81,9 @@
 
         <tr>
             <th>Hit</th>
+            <th>rank</th>
             <?php foreach($hits[0] as $key => $value) : ?>
-                <?php if(is_string($key) && $key !== "target_snippets" && $key !== "file" && $key !== "line" && $key !== "project" && $key !== "version" && $key !== "misuse" && $key !== "identifier" && $key !== "id" && $key !== "exp")  : ?>
+                <?php if(is_string($key) && !in_array($key, $columns_to_ignore))  : ?>
                 <th><?= htmlspecialchars($key); ?></th>
                 <?php endif; ?>
             <?php endforeach; ?>
@@ -107,8 +121,11 @@
                 <?php endif;?>
             <?php endif;?>
             </td>
+            <td>
+                <?= htmlspecialchars($hit['rank']); ?>
+            </td>
             <?php foreach($hit as $key => $value) : ?>
-                <?php if(is_string($key) && $key !== "target_snippets" && $key !== "exp" && $key !== "id" && $key !== "file" && $key !== "line" && $key !== "project" && $key !== "version" && $key !== "misuse" && $key !== "identifier")  : ?>
+                <?php if(is_string($key) && !in_array($key, $columns_to_ignore))  : ?>
             <td>
                 <?php if(!is_string($value) && is_array($value)) : ?>
                     <ul>
