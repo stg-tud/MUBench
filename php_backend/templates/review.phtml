@@ -76,7 +76,7 @@
         <?php endif; ?> 
 
         <?php if(count($hits) > 0) : ?>
-        <form action="../../../../review/<?= htmlspecialchars($exp); ?>/<?= htmlspecialchars($detector); ?>" method="post" target="">
+        <form action="<?= $review ? "../" : ""; ?>../../../../review/<?= htmlspecialchars($exp); ?>/<?= htmlspecialchars($detector); ?>" method="post" target="">
         <table border="1" cellpadding="5">
         
 
