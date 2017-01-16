@@ -304,7 +304,7 @@ class DBConnection {
 	public function getReviewsByIdentifier($exp, $detector, $project, $version, $misuse){
         $query = [];
 		try{
-			$query = $this->pdo->query("SELECT name from reviews WHERE exp=" . $this->pdo->quote($exp) . " AND detector=" . $this->pdo->quote($detector) . " AND project=" . $this->pdo->quote($project) . " AND version=" . $this->pdo->quote($version) . " AND misuse=" . $this->pdo->quote($misuse) . ";");
+			$query = $this->pdo->query("SELECT name from reviews WHERE exp=" . $this->pdo->quote($exp) . " AND detector=" . $this->pdo->quote($detector) . " AND project=" . $this->pdo->quote($project) . " AND version=" . $this->pdo->quote($version) . " AND misuse=" . $this->pdo->quote($misuse) . " ORDER BY `name`;");
 		}catch(PDOException $e){
 			$this->logger->error("Error getAllReviews: " . $e->getMessage());
 		}
