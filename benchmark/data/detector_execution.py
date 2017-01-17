@@ -55,7 +55,7 @@ class DetectorExecution:
 
         data = {
             "result": None,
-            "runtime": None,
+            "runtime": 0,
             "message": "",
             "md5": None
         }
