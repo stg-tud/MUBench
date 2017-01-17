@@ -23,5 +23,5 @@ def __create_image(dot_graph, working_directory, image_name):
         makedirs(working_directory, exist_ok=True)
         dot_path = image_path + ".dot"
         safe_write(dot_graph, dot_path, append=False)
-        Shell.exec("dot -Tpng -o""{}"" ""{}""".format(image_path, dot_path))
+        Shell.exec("dot -Tpng -o\"{}\" \"{}\"".format(image_path, dot_path))
         remove(dot_path)
