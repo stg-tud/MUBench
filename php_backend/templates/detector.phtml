@@ -83,7 +83,7 @@
                             <?php endif; ?>
                         </td>
                         <td <?php if ($new_project) : ?>class="top"<?php endif; ?>>
-                            <?php if (!$has_reviewed) : ?><a href="<?= $review_url; ?>" class="button">review</a><?php endif; ?></td>
+                            <?php if ($logged && !$has_reviewed) : ?><a href="<?= $review_url; ?>" class="button">review</a><?php endif; ?></td>
                     </tr>
                     <?php $last_version = $version['version']; ?>
                     <?php $last_project = $project; ?>
