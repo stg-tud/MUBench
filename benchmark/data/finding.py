@@ -47,7 +47,7 @@ class Finding(Dict[str, str]):
         return finding_file.endswith(misuse_file)
 
     def __file(self):
-        return self.get("file", None)
+        return self.get("file", "")
 
     def __is_match_by_method(self, misuse_method, method_name_only: bool = False):
         finding_method = self.__method()
@@ -68,28 +68,29 @@ class Finding(Dict[str, str]):
         snippets = []
 
         try:
-            # output comes as:
-            #
-            #   <first-line number>:<declaring type>:<code>
-            #   ===
-            #   <first-line number>:<declaring type>:<code>
-            #
-            target_file = join(source_base_path, self.__file())
-            output = exec_util("MethodExtractor", "\"{}\" \"{}\"".format(target_file, self.__method()))
+            if self.__file() and self.__method():
+                # output comes as:
+                #
+                #   <first-line number>:<declaring type>:<code>
+                #   ===
+                #   <first-line number>:<declaring type>:<code>
+                #
+                target_file = join(source_base_path, self.__file())
+                output = exec_util("MethodExtractor", "\"{}\" \"{}\"".format(target_file, self.__method()))
 
-            # if there's other preceding output, we need to strip it
-            while output and not re.match("^[0-9]+:[^:\n]+:", output):
-                output_lines = output.split("\n", 2)
-                if len(output_lines) > 1:
-                    output = output_lines[1]
-                else:
-                    output = ""
+                # if there's other preceding output, we need to strip it
+                while output and not re.match("^[0-9]+:[^:\n]+:", output):
+                    output_lines = output.split("\n", 2)
+                    if len(output_lines) > 1:
+                        output = output_lines[1]
+                    else:
+                        output = ""
 
-            if output:
-                methods = output.split("\n===\n")
-                for method in methods:
-                    info = method.split(":", 2)
-                    snippets.append(Snippet("""class {} {{\n{}\n}}""".format(info[1], info[2]), int(info[0]) - 1))
+                if output:
+                    methods = output.split("\n===\n")
+                    for method in methods:
+                        info = method.split(":", 2)
+                        snippets.append(Snippet("""class {} {{\n{}\n}}""".format(info[1], info[2]), int(info[0]) - 1))
 
         except CommandFailedError as e:
             snippets.append(Snippet(str(e), 1))
