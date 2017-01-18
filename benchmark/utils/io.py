@@ -19,7 +19,7 @@ def safe_write(content: str, file_path: str, append: bool) -> None:
 
 def safe_open(file_path: str, mode: str, newline: str = None):
     create_file_path(file_path)
-    return open(file_path, mode, newline=newline)
+    return open(file_path, mode, newline=newline, encoding="utf-8")
 
 
 def create_file_path(file_path: str) -> None:
@@ -29,7 +29,7 @@ def create_file_path(file_path: str) -> None:
 def create_file(file_path: str, truncate: bool = False) -> None:
     create_file_path(file_path)
     mode = 'w+' if truncate else 'a+'
-    open(file_path, mode).close()
+    open(file_path, mode, encoding="utf-8").close()
 
 
 def remove_tree(root: str) -> None:
@@ -80,8 +80,8 @@ def write_yaml(data: Dict, file: str = None):
     data = __escape_str(data)
     if file:
         create_file(file)
-        with open(file, "w") as stream:
-            return yaml.dump(data, stream, Dumper=Dumper, default_flow_style=False)
+        with open(file, "w", encoding="utf-8") as stream:
+            return yaml.dump(data, stream, Dumper=Dumper, default_flow_style=False, encoding="utf-8")
     else:
         return yaml.dump(data, Dumper=Dumper, default_flow_style=False)
 
@@ -104,5 +104,10 @@ def __escape_str(data):
 
 
 def read_yaml(file: str):
-    with open(file, "r") as stream:
+    with open(file, "rU", encoding="utf-8") as stream:
         return yaml.load(stream, Loader=Loader)
+
+
+def read_yamls(file: str):
+    with open(file, 'rU', encoding="utf-8") as stream:
+        return yaml.load_all(stream, Loader=Loader)

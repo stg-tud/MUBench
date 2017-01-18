@@ -125,8 +125,8 @@ class DetectorExecution:
 
     def _load_findings(self):
         if exists(self._findings_file_path):
-            with open(self._findings_file_path) as stream:
-                return [self.__create_finding(data) for data in yaml.load_all(stream) if data]
+            with open(self._findings_file_path, 'rU', encoding="utf-8") as stream:
+                return [self.__create_finding(data) for data in (yaml.load_all(stream)) if data]
         else:
             return []
 
