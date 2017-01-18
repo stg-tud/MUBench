@@ -70,8 +70,7 @@ class RoutesHelper
                 'violation_types' => $data['violation_types'],
                 'method' => $method,
                 'file' => $file,
-                'code' => $code, 'line' => $line, 'pattern_code' => $patterns['code'],
-                'pattern_line' => $patterns['line'], 'pattern_name' => $patterns['name'], 'hits' => $hits));
+                'code' => $code, 'line' => $line, 'patterns' => $patterns, 'hits' => $hits));
     }
 
 }

@@ -65,7 +65,12 @@
             <?php endif; ?>
             <td><pre class="prettyprint linenums:<?= htmlspecialchars($line); ?>"><code class="language-java"><?= htmlspecialchars($code); ?></code></pre></td></tr>
             <?php if($exp === "ex1") : ?>
-                <tr><td class="vtop"><b>Pattern Code:</b></td><td><pre class="prettyprint linenums:<?= htmlspecialchars($pattern_line); ?>"><code class="language-java"><?= htmlspecialchars($pattern_code); ?></code></pre></td></tr>
+                    <tr><td class="vtop"><b>Code with Pattern(s):</b></td>
+                        <td>
+                <?php foreach($patterns as $pattern) : ?>
+                    <pre class="prettyprint"><code class="language-java"><?= htmlspecialchars($pattern["code"]); ?></code></pre>
+                <?php endforeach; ?>
+                        </td></tr>
             <?php endif; ?>
         </table>
         <?php if($exp !== "ex2") : ?>

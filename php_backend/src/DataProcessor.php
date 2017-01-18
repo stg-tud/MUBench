@@ -39,7 +39,7 @@ class DataProcessor {
     public function getPatterns($misuse){
 		$query = $this->db->getPattern($misuse);
 		foreach($query as $q){
-			return $q;
+			yield $q;
 		}
 	}
 
