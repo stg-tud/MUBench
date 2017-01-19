@@ -29,7 +29,16 @@ class PublishMetadataTask(ProjectMisuseTask):
         self.__metadata.clear()
 
     def process_project_misuse(self, project: Project, misuse: Misuse):
+        versions = [version for version in project.versions if misuse in version.misuses]
+        if len(versions) == 1:
+            version = versions[0]
+        else:
+            raise UserWarning("misuse {} is assigned to multiple project versions,"
+                              " cannot handle this case!".format(misuse.id))
+
         self.__metadata.append({
+            "project": project.id,
+            "version": version.version_id,
             "misuse": misuse.id,
             "location": misuse.location.__dict__,
             "description": misuse.description,

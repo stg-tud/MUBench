@@ -5,7 +5,7 @@ from nose.tools import assert_equals
 
 from benchmark.data.pattern import Pattern
 from benchmark.tasks.implementations.publish_metadata_task import PublishMetadataTask
-from benchmark_tests.test_utils.data_util import create_misuse, create_project
+from benchmark_tests.test_utils.data_util import create_misuse, create_project, create_version
 
 
 @patch("benchmark.tasks.implementations.publish_metadata_task.post")
@@ -15,7 +15,8 @@ class TestPublishMetadataTask:
         self.project = create_project("-p-")
 
     def test_publish_url(self, post_mock):
-        misuse = create_misuse("-m-")
+        misuse = create_misuse("-m-", project=self.project)
+        create_version("-v-", project=self.project, misuses=[misuse])
 
         task = PublishMetadataTask("http://test.url")
         task.process_project_misuse(self.project, misuse)
@@ -25,7 +26,8 @@ class TestPublishMetadataTask:
 
     @patch("benchmark.tasks.implementations.publish_findings_task.getpass.getpass")
     def test_post_auth_prompt(self, pass_mock, post_mock):
-        misuse = create_misuse("-m-")
+        misuse = create_misuse("-m-", project=self.project)
+        create_version("-v-", project=self.project, misuses=[misuse])
         pass_mock.return_value = "-password-"
 
         task = PublishMetadataTask("http://test.url", "-username-")
@@ -38,7 +40,8 @@ class TestPublishMetadataTask:
 
     @patch("benchmark.tasks.implementations.publish_findings_task.getpass.getpass")
     def test_post_auth_provided(self, pass_mock, post_mock):
-        misuse = create_misuse("-m-")
+        misuse = create_misuse("-m-", project=self.project)
+        create_version("-v-", project=self.project, misuses=[misuse])
         pass_mock.side_effect = UserWarning("should skip prompt")
 
         task = PublishMetadataTask("http://test.url", "-username-", "-password-")
@@ -65,12 +68,15 @@ class TestPublishMetadataTask:
                 "method": "-some.method()-"
             }
         }, project=self.project)
+        create_version("-v-", project=self.project, misuses=[misuse])
 
         task = PublishMetadataTask("http://test.url")
         task.process_project_misuse(self.project, misuse)
         task.end()
 
         assert_equals(post_mock.call_args[0][1], [{
+            "project": self.project.id,
+            "version": "-v-",
             "misuse": misuse.id,
             "description": "-description-",
             "fix": {
@@ -95,6 +101,7 @@ class TestPublishMetadataTask:
             "}"
         open_mock.return_value = StringIO(pattern_code)
         misuse = create_misuse("-m-", project=self.project, patterns=[Pattern("/base/path", "P1.java")])
+        create_version("-v-", project=self.project, misuses=[misuse])
 
         task = PublishMetadataTask("http://test.url")
         task.process_project_misuse(self.project, misuse)
@@ -114,6 +121,7 @@ class TestPublishMetadataTask:
                        "}"
         open_mock.return_value = StringIO(pattern_preamble + pattern_code)
         misuse = create_misuse("-m-", project=self.project, patterns=[Pattern("/", "P1.java")])
+        create_version("-v-", project=self.project, misuses=[misuse])
 
         task = PublishMetadataTask("http://test.url")
         task.process_project_misuse(self.project, misuse)
@@ -126,6 +134,7 @@ class TestPublishMetadataTask:
         pattern_code = "public class P1 {}"
         open_mock.return_value = StringIO(pattern_code + "\n\n\n")
         misuse = create_misuse("-m-", project=self.project, patterns=[Pattern("/", "P1.java")])
+        create_version("-v-", project=self.project, misuses=[misuse])
 
         task = PublishMetadataTask("http://test.url")
         task.process_project_misuse(self.project, misuse)
