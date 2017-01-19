@@ -4,7 +4,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
-public class LateCondition {
+public class CheckInTime {
 	public void pattern(List<String> list) {
 		Map<String, Collection<String>> map = new HashMap<>();
 		for (String entry : list) {
