@@ -79,7 +79,7 @@ class Benchmark:
                                             self.config.review_site_user, self.config.review_site_password))
 
     def _setup_publish_metadata(self):
-        self.runner.add(PublishMetadataTask(self.config.review_site_url,
+        self.runner.add(PublishMetadataTask(Benchmark.COMPILES_PATH, self.config.review_site_url,
                                             self.config.review_site_user, self.config.review_site_password))
 
     def __get_experiment(self):

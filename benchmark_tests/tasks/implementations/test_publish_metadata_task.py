@@ -4,6 +4,7 @@ from unittest.mock import patch
 from nose.tools import assert_equals
 
 from benchmark.data.pattern import Pattern
+from benchmark.data.snippets import Snippet
 from benchmark.tasks.implementations.publish_metadata_task import PublishMetadataTask
 from benchmark_tests.test_utils.data_util import create_misuse, create_project, create_version
 
@@ -18,7 +19,7 @@ class TestPublishMetadataTask:
         misuse = create_misuse("-m-", project=self.project)
         create_version("-v-", project=self.project, misuses=[misuse])
 
-        task = PublishMetadataTask("http://test.url")
+        task = PublishMetadataTask("-compiles-path-", "http://test.url")
         task.process_project_misuse(self.project, misuse)
         task.end()
 
@@ -30,7 +31,7 @@ class TestPublishMetadataTask:
         create_version("-v-", project=self.project, misuses=[misuse])
         pass_mock.return_value = "-password-"
 
-        task = PublishMetadataTask("http://test.url", "-username-")
+        task = PublishMetadataTask("-compiles-path-", "http://test.url", "-username-")
         task.start()  # should ask for password once
         task.process_project_misuse(self.project, misuse)
         task.end()
@@ -44,7 +45,7 @@ class TestPublishMetadataTask:
         create_version("-v-", project=self.project, misuses=[misuse])
         pass_mock.side_effect = UserWarning("should skip prompt")
 
-        task = PublishMetadataTask("http://test.url", "-username-", "-password-")
+        task = PublishMetadataTask("-compiles-path-", "http://test.url", "-username-", "-password-")
         task.start()  # should not ask for password, since already set
         task.process_project_misuse(self.project, misuse)
         task.end()
@@ -52,7 +53,8 @@ class TestPublishMetadataTask:
         assert_equals(post_mock.call_args[1]["username"], "-username-")
         assert_equals(post_mock.call_args[1]["password"], "-password-")
 
-    def test_publishes_metadata(self, post_mock):
+    @patch("benchmark.data.misuse.get_snippets")
+    def test_publishes_metadata(self, snippets_mock, post_mock):
         misuse = create_misuse("-m-", meta={
             "description": "-description-",
             "fix": {
@@ -69,8 +71,9 @@ class TestPublishMetadataTask:
             }
         }, project=self.project)
         create_version("-v-", project=self.project, misuses=[misuse])
+        snippets_mock.return_value = [Snippet("-code-", 42)]
 
-        task = PublishMetadataTask("http://test.url")
+        task = PublishMetadataTask("-compiles-path-", "http://test.url")
         task.process_project_misuse(self.project, misuse)
         task.end()
 
@@ -91,6 +94,7 @@ class TestPublishMetadataTask:
                 "file": "/some/file.java",
                 "method": "-some.method()-"
             },
+            "target_snippets": [{"first_line_number": 42, "code": "-code-"}],
             "patterns": []
         }])
 
@@ -103,7 +107,7 @@ class TestPublishMetadataTask:
         misuse = create_misuse("-m-", project=self.project, patterns=[Pattern("/base/path", "P1.java")])
         create_version("-v-", project=self.project, misuses=[misuse])
 
-        task = PublishMetadataTask("http://test.url")
+        task = PublishMetadataTask("-compiles-path-", "http://test.url")
         task.process_project_misuse(self.project, misuse)
         task.end()
 
@@ -123,7 +127,7 @@ class TestPublishMetadataTask:
         misuse = create_misuse("-m-", project=self.project, patterns=[Pattern("/", "P1.java")])
         create_version("-v-", project=self.project, misuses=[misuse])
 
-        task = PublishMetadataTask("http://test.url")
+        task = PublishMetadataTask("-compiles-path-", "http://test.url")
         task.process_project_misuse(self.project, misuse)
         task.end()
 
@@ -136,7 +140,7 @@ class TestPublishMetadataTask:
         misuse = create_misuse("-m-", project=self.project, patterns=[Pattern("/", "P1.java")])
         create_version("-v-", project=self.project, misuses=[misuse])
 
-        task = PublishMetadataTask("http://test.url")
+        task = PublishMetadataTask("-compiles-path-", "http://test.url")
         task.process_project_misuse(self.project, misuse)
         task.end()
 

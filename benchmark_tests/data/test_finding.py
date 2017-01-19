@@ -3,7 +3,8 @@ from unittest.mock import patch
 
 from nose.tools import assert_equals
 
-from benchmark.data.finding import Finding, Snippet
+from benchmark.data.finding import Finding
+from benchmark.data.snippets import Snippet
 from benchmark.utils.shell import CommandFailedError
 from benchmark_tests.test_utils.data_util import create_misuse
 
@@ -78,7 +79,7 @@ class TestPotentialHit:
         return Finding(finding_data)
 
 
-@patch("benchmark.data.finding.exec_util")
+@patch("benchmark.data.snippets.exec_util")
 class TestTargetCode:
     def test_no_code(self, utils_mock):
         utils_mock.return_value = ""

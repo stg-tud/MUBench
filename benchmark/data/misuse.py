@@ -1,10 +1,12 @@
 import os
-import yaml
 from glob import glob
-from os.path import isdir, isfile, join, basename
+from os.path import isdir, isfile, join
 from typing import Set, List
 
+import yaml
+
 from benchmark.data.pattern import Pattern
+from benchmark.data.snippets import get_snippets, Snippet
 
 
 class Location:
@@ -117,6 +119,9 @@ class Misuse:
         if getattr(self, '_characteristics', None) is None:
             self._characteristics = self._yaml.get('characteristics', [])
         return self._characteristics
+
+    def get_snippets(self, source_base_path: str) -> List[Snippet]:
+        return get_snippets(source_base_path, self.location.file, self.location.method)
 
     def __str__(self):
         return "misuse '{}'".format(self.id)

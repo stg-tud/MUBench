@@ -13,8 +13,10 @@ from benchmark.utils.web_util import post
 
 
 class PublishMetadataTask(ProjectMisuseTask):
-    def __init__(self, review_site_url: str, review_site_user: str="", review_site_password: str=""):
+    def __init__(self, compiles_base_path: str,
+                 review_site_url: str, review_site_user: str="", review_site_password: str=""):
         super().__init__()
+        self.compiles_base_path = compiles_base_path
         self.review_site_url = review_site_url
         self.review_site_user = review_site_user
         self.review_site_password = review_site_password
@@ -47,10 +49,15 @@ class PublishMetadataTask(ProjectMisuseTask):
                 "description": misuse.fix.description,
                 "diff-url": misuse.fix.commit
             },
+            "target_snippets": self.__get_snippets(misuse, version),
             "patterns": self.__get_patterns(misuse)
         })
 
         return self.ok()
+
+    def __get_snippets(self, misuse, version):
+        version_compile = version.get_compile(self.compiles_base_path)
+        return [snippet.__dict__ for snippet in misuse.get_snippets(version_compile.original_sources_path)]
 
     def __get_patterns(self, misuse: Misuse):
         patterns = []

@@ -6,7 +6,8 @@ from nose.tools import assert_equals
 
 from benchmark.data.detector import Detector
 from benchmark.data.experiment import Experiment
-from benchmark.data.finding import SpecializedFinding, Snippet
+from benchmark.data.finding import SpecializedFinding
+from benchmark.data.snippets import Snippet
 from benchmark.data.run import Run
 from benchmark.tasks.implementations.publish_findings_task import PublishFindingsTask
 from benchmark_tests.data.test_misuse import create_misuse
