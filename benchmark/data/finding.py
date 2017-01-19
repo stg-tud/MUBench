@@ -59,7 +59,7 @@ class Finding(Dict[str, str]):
         if "(" not in finding_method:
             finding_method += "("
 
-        return finding_method in misuse_method
+        return misuse_method.startswith(finding_method)
 
     def __method(self):
         return self.get("method", "")

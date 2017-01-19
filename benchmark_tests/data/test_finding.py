@@ -33,6 +33,10 @@ class TestPotentialHit:
         self.misuse.location.method = "method()"
         self.assert_no_potential_hit({"method": "other_method()"})
 
+    def test_differs_on_method_2(self):
+        self.misuse.location.method = "a_method()"
+        self.assert_no_potential_hit({"method": "method()"})
+
     def test_matches_on_method_name(self):
         self.misuse.location.method = "method(A, B)"
         self.assert_potential_hit({"method": "method"})
