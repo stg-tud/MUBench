@@ -80,10 +80,14 @@ public class MethodExtractor {
 		private Stack<String> currentEnclosingType;
 
 		public MethodRetriever(String methodSignature) {
-			this.methodSignature = methodSignature;
+			this.methodSignature = normalize(methodSignature);
 			this.currentEnclosingType = new Stack<>();
 		}
-		
+
+		private static String normalize(String methodSignature) {
+			return methodSignature.replaceAll("[^ (]+\\$", "");
+		}
+
 		@Override
 		public void visit(ClassOrInterfaceDeclaration type, List<MethodCodeFragment> arg) {
 			currentEnclosingType.push(type.getName());

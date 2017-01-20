@@ -67,7 +67,19 @@ public class MethodExtractorTest {
 				
 				"  void m(A<B> a) {}");
 	}
-	
+
+	@Test
+	public void findsMethodWithInnerTypeParameter() throws Exception {
+		testFindsMethod("class C {\n" +
+				"  class I {}\n" +
+				"  void m(I i) {}\n" +
+				"}",
+
+				"m(C$I)",
+
+				"  void m(I i) {}");
+	}
+
 	@Test
 	public void findsConstructorByClassName() throws Exception {
 		testFindsMethod("class C{\n"
