@@ -127,12 +127,12 @@
                     <option value="?" >?</option>
                 <?php endif;?>
                 </select>
+            <?php elseif($review) : ?>
+                <?= htmlspecialchars($review['hits'][$exp === "ex2" ? $hit['misuse'] : $hit['rank']]["decision"]); ?>
+            <?php elseif($name) : ?>
+                No
             <?php else : ?>
-                <?php if($review) : ?>
-                    <?= htmlspecialchars($review['hits'][$exp === "ex2" ? $hit['misuse'] : $hit['rank']]["decision"]); ?>
-                <?php else : ?>
-                    ?
-                <?php endif;?>
+                ?
             <?php endif;?>
             </td>
             <td>
