@@ -68,6 +68,28 @@ public class MethodExtractorTest {
 				"  void m(A<B> a) {}");
 	}
 
+    @Test
+    public void findsMethodWithGenericParameter2() throws Exception {
+        testFindsMethod("class C{\n"
+                        + "  void m(A<B> a) {}\n"
+                        + "}",
+
+                "m(A<B>)",
+
+                "  void m(A<B> a) {}");
+    }
+
+    @Test
+    public void findsMethodWithGenericParameter3() throws Exception {
+        testFindsMethod("class C{\n"
+                        + "  void m(A a) {}\n"
+                        + "}",
+
+                "m(A<B>)",
+
+                "  void m(A a) {}");
+    }
+
 	@Test
 	public void findsMethodWithInnerTypeParameter() throws Exception {
 		testFindsMethod("class C {\n" +

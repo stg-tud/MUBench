@@ -76,6 +76,8 @@ public class MethodExtractor {
 	}
 
 	private static class MethodRetriever extends VoidVisitorAdapter<List<MethodCodeFragment>> {
+		private static final String ctorId = ".ctor";
+
 		private String methodSignature;
 		private Stack<String> currentEnclosingType;
 
@@ -85,6 +87,17 @@ public class MethodExtractor {
 		}
 
 		private static String normalize(String methodSignature) {
+			return removeGenericTypeParameters(removeOuterTypeQualifiers(methodSignature));
+		}
+
+		private static String removeGenericTypeParameters(String methodSignature) {
+			if (methodSignature.startsWith("<init>")) {
+				methodSignature = ctorId + methodSignature.substring(6);
+			}
+			return methodSignature.replaceAll("<[^>]+>", "");
+		}
+
+		private static String removeOuterTypeQualifiers(String methodSignature) {
 			return methodSignature.replaceAll("[^ (]+\\$", "");
 		}
 
@@ -97,7 +110,7 @@ public class MethodExtractor {
 		
 		@Override
 		public void visit(ConstructorDeclaration constructor, List<MethodCodeFragment> matchingMethodsCode) {
-			String signature = getSignature("<init>", constructor.getParameters());
+			String signature = getSignature(ctorId, constructor.getParameters());
 			String altSignature = getSignature(constructor.getName(), constructor.getParameters());
 			if (methodSignature.equals(signature) || methodSignature.equals(altSignature)) {
 				matchingMethodsCode.add(getCode(constructor, c -> c.getDeclarationAsString(), c -> c.getBlock()));
