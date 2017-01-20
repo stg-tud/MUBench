@@ -1,6 +1,7 @@
 package de.tu_darmstadt.stg.mubench.utils;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 import java.io.ByteArrayInputStream;
 
@@ -241,7 +242,11 @@ public class MethodExtractorTest {
 
 	public void testFindsMethod(String input, String methodSignature, String expectedOutput) throws Exception {
 		String output = runUUT(input, methodSignature);
-		String methodCode = output.split(":", 3)[2];
+        String[] data = output.split(":", 3);
+        if (data.length < 3) {
+            fail("No method found.");
+        }
+        String methodCode = data[2];
 		assertEquals(expectedOutput, methodCode);
 	}
 	
