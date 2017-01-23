@@ -417,7 +417,7 @@ class DBConnection {
         $query = [];
         $this->logger->info("review_finding ID: " . $id);
         try{
-            $query = $this->pdo->query("SELECT * from review_types WHERE review=". $this->pdo->quote($id) . ";");
+            $query = $this->pdo->query("SELECT * from review_finding_types WHERE review=". $this->pdo->quote($id) . ";");
         }catch(PDOException $e){
             $this->logger->error("Error getTypes: " . $e->getMessage());
         }
@@ -432,7 +432,7 @@ class DBConnection {
     }
 
     public function addReviewType($findingId, $type){
-        return "INSERT INTO review_types (review, type) VALUES (". $this->pdo->quote($findingId). "," . $this->pdo->quote($type). ");";
+        return "INSERT INTO review_finding_types (review, type) VALUES (". $this->pdo->quote($findingId). "," . $this->pdo->quote($type). ");";
     }
 
     public function getReviewFindingsDeleteStatement($findingId){
@@ -440,6 +440,6 @@ class DBConnection {
     }
 
     public function getReviewFindingsTypeDelete($id){
-        return "DELETE FROM review_types WHERE review=" . $this->pdo->quote($id) . ";";
+        return "DELETE FROM review_finding_types WHERE review=" . $this->pdo->quote($id) . ";";
     }
 }

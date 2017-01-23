@@ -1,18 +1,15 @@
 <?php
 // Routes
-$app->get('/', function ($request, $response, $args) use ($settings) {
-    return $this->renderer->render($response, 'index.phtml', array('experiments' => $settings['ex_template'], 'logged' => false));
+$app->get('/', function ($request, $response, $args) use ($app) {
+    return $app->helper->index_route($request, $args, $app, $this, $response, false);
 });
 
 $app->get('/impressum/', function ($request, $response, $args) use ($app) {
     return $this->renderer->render($response, 'impressum.html');
 });
 
-$app->get('/{exp:ex[1-3]}', function ($request, $response, $args) use ($app, $settings) {
-    $exp = $args['exp'];
-	$data = $app->data->getDetectors($exp);
-	$template = $settings['ex_template'][$exp];
-    return $this->renderer->render($response, 'experiment.phtml', array('data' => $data, 'id' => $template['id'], 'title' => $template['title'], 'exp' => $exp, 'logged' => false));
+$app->get('/{exp:ex[1-3]}', function ($request, $response, $args) use ($app) {
+    return $app->helper->experiment_route($request, $args, $app, $this, $response, false);
 });
 
 $app->get('/{exp:ex[1-3]}/{detector}', function ($request, $response, $args) use ($app) {
@@ -29,15 +26,12 @@ $app->get('/{exp:ex[1-3]}/{detector}/{project}/{version}/{misuse}/{reviewer}', f
 
 $app->group('/private', function () use ($app, $settings) {
 
-    $app->get('/', function ($request, $response, $args) use ($settings) {
-        return $this->renderer->render($response, 'index.phtml', array('experiments' => $settings['ex_template'], "logged" => true));
+    $app->get('/', function ($request, $response, $args) use ($app) {
+        return $app->helper->index_route($request, $args, $app, $this, $response, true);
     });
 
-    $app->get('/{exp:ex[1-3]}', function ($request, $response, $args) use ($app, $settings) {
-        $exp = $args['exp'];
-        $data = $app->data->getDetectors($exp);
-        $template = $settings['ex_template'][$exp];
-        return $this->renderer->render($response, 'experiment.phtml', array('data' => $data, 'id' => $template['id'], 'title' => $template['title'], 'exp' => $exp, 'logged' => true));
+    $app->get('/{exp:ex[1-3]}', function ($request, $response, $args) use ($app) {
+        return $app->helper->experiment_route($request, $args, $app, $this, $response, true);
     });
 
     $app->get('/{exp:ex[1-3]}/{detector}', function ($request, $response, $args) use ($app) {
@@ -87,7 +81,7 @@ $app->group('/api', function () use ($app) {
         $project = $obj->{'project'};
         $version = $obj->{'version'};
         $hits = $obj->{'potential_hits'};
-        if (!$hits || !$project || !$version) {
+        if (!$project || !$version) {
             $this->logger->error("upload failed, could not read data " . dump($obj));
             return $response->withStatus(500);
         }
@@ -96,7 +90,7 @@ $app->group('/api', function () use ($app) {
         $files = $request->getUploadedFiles();
         $this->logger->info("received " . count($files) . " files");
         if($files) {
-            $app->dir->deleteOldImages($experiment, $obj->{'project'}, $obj->{'version'});
+            $app->dir->deleteOldImages($experiment, $obj->{'detector'}, $obj->{'project'}, $obj->{'version'});
             foreach ($files as $img) {
                 $app->dir->handleImage($experiment, $obj->{'detector'}, $obj->{'project'}, $obj->{'version'}, $img);
             }

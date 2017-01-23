@@ -39,5 +39,6 @@ return [
     'upload' => "./upload",
     'users' => [
         "admin" => "pass"
-    ]
+    ],
+    'root_url' => '/'
 ];

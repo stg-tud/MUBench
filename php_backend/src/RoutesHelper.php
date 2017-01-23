@@ -6,10 +6,18 @@ class RoutesHelper
 {
 
     protected $logger;
+    protected $settings;
+    protected $root_url;
+    protected $base_url;
+    protected $private_url;
 
-    public function __construct(Logger $logger)
+    public function __construct(Logger $logger, $settings)
     {
         $this->logger = $logger;
+        $this->settings = $settings;
+        $this->root_url = $settings['root_url'];
+        $this->base_url = $settings['root_url'] . "index.php/";
+        $this->private_url = $this->base_url . "private/";
     }
 
     public function dump($var)
@@ -17,6 +25,17 @@ class RoutesHelper
         ob_start();
         var_dump($var);
         return ob_get_clean();
+    }
+
+    public function index_route($request, $args, $app, $r, $response, $logged){
+        return $r->renderer->render($response, 'index.phtml', array('experiments' => $this->settings['ex_template'], "logged" => $logged, 'base_url' => $this->base_url, 'private_url' => $this->private_url, 'root_url' => $this->root_url));
+    }
+
+    public function experiment_route($request, $args, $app, $r, $response, $logged){
+        $exp = $args['exp'];
+        $data = $app->data->getDetectors($exp);
+        $template = $this->settings['ex_template'][$exp];
+        return $r->renderer->render($response, 'experiment.phtml', array('data' => $data, 'id' => $template['id'], 'title' => $template['title'], 'exp' => $exp, 'logged' => $logged, 'root_url' => $this->root_url, 'private_url' => $this->private_url, 'base_url' => $this->base_url));
     }
 
     public function detect_route($request, $args, $app, $r, $response, $logged)
@@ -32,7 +51,7 @@ class RoutesHelper
         }
         return $r->renderer->render($response, 'detector.phtml',
             array('logged' => $logged, 'name' => $request->getServerParams()['PHP_AUTH_USER'],
-                'exp' => $exp, 'detector' => $detector, 'projects' => $stats));
+                'exp' => $exp, 'detector' => $detector, 'projects' => $stats, 'base_url' => $this->base_url, 'private_url' => $this->private_url));
     }
 
     public function review_route($args, $app, $r, $response, $request, $logged, $review_flag)
@@ -70,7 +89,7 @@ class RoutesHelper
                 'violation_types' => $data['violation_types'],
                 'method' => $method,
                 'file' => $file,
-                'code' => $code, 'line' => $line, 'patterns' => $patterns, 'hits' => $hits));
+                'code' => $code, 'line' => $line, 'patterns' => $patterns, 'hits' => $hits, 'root_url' => $this->root_url, 'base_url' => $this->base_url, 'private_url' => $this->private_url));
     }
 
 }

@@ -13,8 +13,6 @@
         "rank",
         "exp"
     );
-
-    $site_base_url = ($review ? "../" : "") . "../../../../../";
 ?>
         <html>
             <head>
@@ -22,6 +20,7 @@
                     table.fw {width:100%;}
                     .vtop {vertical-align:top}
                     .prettyprint ol.linenums > li { list-style-type: decimal; }
+
                 </style>
                 <script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js?autoload=true&amp;skin=sunburst"></script>
             </head>
@@ -89,7 +88,7 @@
         <?php endif; ?> 
 
         <?php if(count($hits) > 0) : ?>
-        <form action="<?= $site_base_url; ?>index.php/review/<?= htmlspecialchars($exp); ?>/<?= htmlspecialchars($detector); ?>" method="post" target="">
+        <form action="<?= $private_url; ?>review/<?= htmlspecialchars($exp); ?>/<?= htmlspecialchars($detector); ?>" method="post" target="">
         <table border="1" cellpadding="5">
         
 
@@ -110,6 +109,12 @@
             <td>
             <?php if($logged) : ?>
                 <select name="review_hit[<?= htmlspecialchars($exp === "ex2" ? $hit['misuse'] : $hit['rank']); ?>][hit]" size="1" >
+                    <?php if($review && $review['hits'][$exp === "ex2" ? $hit['misuse'] : $hit['rank']]["decision"] === "No") : ?>
+                        <option selected="selected" value="No" >No</option>
+                    <?php else : ?>
+                        <option value="No" >No</option>
+                    <?php endif;?>
+
                     <?php if($review && $review['hits'][$exp === "ex2" ? $hit['misuse'] : $hit['rank']]["decision"] === "Yes") : ?>
                     <option selected="selected" value="Yes" >Yes</option>
                     <?php else : ?>
@@ -121,11 +126,12 @@
                     <option value="No" >No</option>
                 <?php endif;?>
 
-                <?php if($review && $review['hits'][$exp === "ex2" ? $hit['misuse'] : $hit['rank']]["decision"] === "?") : ?>
-                    <option selected="selected" value="?" >?</option>
-                <?php else : ?>
-                    <option value="?" >?</option>
-                <?php endif;?>
+
+                    <?php if($review && $review['hits'][$exp === "ex2" ? $hit['misuse'] : $hit['rank']]["decision"] === "?") : ?>
+                        <option selected="selected" value="?" >?</option>
+                    <?php else : ?>
+                        <option value="?" >?</option>
+                    <?php endif;?>
                 </select>
             <?php elseif($review) : ?>
                 <?= htmlspecialchars($review['hits'][$exp === "ex2" ? $hit['misuse'] : $hit['rank']]["decision"]); ?>
@@ -148,7 +154,7 @@
                         <?php endforeach; ?>
                     </ul>
                 <?php elseif(strpos($value, ".png") !== false) : ?>
-                    <img src="<?= $site_base_url ?>upload/<?= htmlspecialchars($exp); ?>/<?= htmlspecialchars($detector); ?>/<?= htmlspecialchars($project); ?>/<?= htmlspecialchars($version); ?>/<?= htmlspecialchars($hit[$key]); ?>" />
+                    <img src="<?= $root_url ?>upload/<?= htmlspecialchars($exp); ?>/<?= htmlspecialchars($detector); ?>/<?= htmlspecialchars($project); ?>/<?= htmlspecialchars($version); ?>/<?= htmlspecialchars($hit[$key]); ?>" />
                 <?php else : ?>
                     <?= htmlspecialchars($value); ?>
                 <?php endif; ?>

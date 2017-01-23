@@ -26,4 +26,4 @@ $db = new DBConnection($pdo, $logger);
 $app->upload = new UploadProcessor($db, $logger);
 $app->dir = new DirectoryHelper($settings['upload'], $logger);
 $app->data = new DataProcessor($db, $logger);
-$app->helper = new RoutesHelper($logger);
+$app->helper = new RoutesHelper($logger, $settings);

@@ -1,12 +1,12 @@
 <?php if(!$logged) : ?>
     <div>
-        <a href="index.php/private/">Login</a>
+        <a href="<?= htmlspecialchars($private_url); ?>">Login</a>
     </div>
 <?php endif; ?>
 <html>
 <head>
 <title>MUBench Review Page</title>
-<link rel="stylesheet" type="text/css" href="style/style.css" />
+<link rel="stylesheet" type="text/css" href="<?= htmlspecialchars($root_url); ?>style/style.css" />
 </head>
 <body>
 <h1>MUBench Review Page</h1>
@@ -14,10 +14,10 @@
 <ul>
     <?php foreach($experiments as $e) : ?>
         <?php if(!$logged) : ?>
-            <li><a href="index.php/ex<?= htmlspecialchars($e['id']); ?>">Experiment <?= htmlspecialchars($e['id']); ?> - <?= htmlspecialchars($e['title']); ?></a></li>
+            <li><a href="<?= htmlspecialchars($base_url); ?>ex<?= htmlspecialchars($e['id']); ?>">Experiment <?= htmlspecialchars($e['id']); ?> - <?= htmlspecialchars($e['title']); ?></a></li>
         <?php endif; ?>
         <?php if($logged) : ?>
-            <li><a href="./ex<?= htmlspecialchars($e['id']); ?>">Experiment <?= htmlspecialchars($e['id']); ?> - <?= htmlspecialchars($e['title']); ?></a></li>
+            <li><a href="<?= htmlspecialchars($private_url); ?>ex<?= htmlspecialchars($e['id']); ?>">Experiment <?= htmlspecialchars($e['id']); ?> - <?= htmlspecialchars($e['title']); ?></a></li>
         <?php endif; ?>
     <?php endforeach; ?>
 </ul>
@@ -29,7 +29,7 @@
 </div>
 
 <div class="legal">
-<a href="index.php/impressum/">Legal Note / Impressum</a>
+<a href="<?= htmlspecialchars($base_url); ?>impressum/">Legal Note / Impressum</a>
 </div>
 </body>
 </html>

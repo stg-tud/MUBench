@@ -1,5 +1,5 @@
     <?php if(!$logged) : ?>
-        <div><a href="../private/<?= htmlspecialchars($exp); ?>/<?= htmlspecialchars($detector); ?>">Login</a></div>
+        <div><a href="<?= htmlspecialchars($private_url); ?><?= htmlspecialchars($exp); ?>/<?= htmlspecialchars($detector); ?>">Login</a></div>
     <?php endif; ?>
     <h1>Detector: <?= htmlspecialchars($detector); ?></h1>
     <style>
@@ -71,7 +71,7 @@
                             </td>
                         <?php endif; ?>
                         <?php
-                            $review_url = "../" . htmlspecialchars($exp) . "/" . htmlspecialchars($detector) . "/" .
+                            $review_url = ($logged ? htmlspecialchars($private_url) : htmlspecialchars($base_url)) . htmlspecialchars($exp) . "/" . htmlspecialchars($detector) . "/" .
                                 htmlspecialchars($hit['project']) . "/" . htmlspecialchars($hit['version']) . "/" .
                                 htmlspecialchars($hit['misuse']);
                         ?>

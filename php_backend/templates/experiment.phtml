@@ -1,6 +1,6 @@
 <div>
 <?php if(!$logged) : ?>
-        <a href="./private/<?= htmlspecialchars($exp); ?>">Login</a>
+        <a href="<?= htmlspecialchars($private_url); ?><?= htmlspecialchars($exp); ?>">Login</a>
 <?php endif; ?>
 <?php if($logged) : ?>
 
@@ -10,7 +10,7 @@
 <html>
 <head>
 <title>MUBench Review Page - Experiment <?= htmlspecialchars($id); ?></title>
-<link rel="stylesheet" type="text/css" href="/../site/style/style.css" />
+<link rel="stylesheet" type="text/css" href="<?= htmlspecialchars($root_url); ?>style/style.css" />
 </head>
 <body>
 <h1>MUBench Review Page</h1>
@@ -18,7 +18,7 @@
 
 <ul>
 	<?php foreach($data as $d) : ?>
-            <li><a href="./<?= htmlspecialchars($exp); ?>/<?= htmlspecialchars($d); ?>"><?= htmlspecialchars($d); ?></a></li>
+            <li><a href="<?= $logged ? htmlspecialchars($private_url) : htmlspecialchars($base_url); ?><?= htmlspecialchars($exp); ?>/<?= htmlspecialchars($d); ?>"><?= htmlspecialchars($d); ?></a></li>
     <?php endforeach; ?>
 </ul>
 
@@ -29,7 +29,7 @@
 </div>
 
 <div class="legal">
-<a href="/../index.php/impressum/">Legal Note / Impressum</a>
+<a href="<?= htmlspecialchars($base_url); ?>/impressum/">Legal Note / Impressum</a>
 </div>
 </body>
 </html>
