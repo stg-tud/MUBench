@@ -11,7 +11,7 @@ location:
   method: misuse(ByteBuffer)
 fix:
   description: >
-    Add a call to FileChannel.force() or close the channel.
+    Add a call to FileChannel.force() or close() the channel.
 internal: false
 pattern:
 - single object
