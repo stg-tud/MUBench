@@ -43,9 +43,9 @@ CREATE TABLE IF NOT EXISTS `review_findings` (
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=latin1 ;
 
-CREATE TABLE IF NOT EXISTS `review_finding_types` (
+CREATE TABLE IF NOT EXISTS `review_findings_type` (
   `type` int(11) NOT NULL,
-  `review` int(11) NOT NULL
+  `review_finding` int(11) NOT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 CREATE TABLE IF NOT EXISTS `stats` (

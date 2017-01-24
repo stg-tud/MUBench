@@ -23,17 +23,22 @@ class DataProcessor {
 
 	public function getReview($exp, $detector, $project, $version, $misuse, $reviewer){
 		$query = $this->db->getReview($exp, $detector, $project, $version, $misuse, $reviewer);
-		$findings = $this->db->getReviewFindings($query['id']);
-		if(!$query || !$findings){
-		    return [];
-        }
-		$query['hits'] = [];
-		foreach($findings as $finding){
-		    $finding['types'] = $this->db->getReviewTypes(intval($finding['id']));
-		    $query['hits'][$exp === "ex2" ? $misuse : $finding['rank']] = $finding;
-        }
-		return $query;
+		return $this->getReviewInfos($query['id'], $query);
 	}
+
+	public function getReviewInfos($id, $query){
+	    $result = $query;
+	    $findings = $this->db->getReviewFindings($id);
+	    if(!$result || !$findings){
+	        return [];
+        }
+        $result['hits'] = [];
+	    foreach($findings as $finding){
+	        $finding['types'] = $this->db->getReviewTypes(intval($finding['id']));
+            $result['hits'][$finding['rank']] = $finding;
+        }
+        return $result;
+    }
 
     public function getPatterns($misuse){
 		$query = $this->db->getPattern($misuse);
@@ -105,42 +110,39 @@ class DataProcessor {
     }
 
 	public function getTodo($reviewer){
-	    // TODO: fix with new review structure
         $exp = ["ex1", "ex2", "ex2"];
-        $reviews = $this->getAllReviews();
-        $reviewable = [1 => [], 2 => [], 3 => []];
+        $reviewable = [];
         foreach($exp as $ex){
-                foreach($this->getDetectors($ex) as $detector){
-                    $index = $this->getIndex($ex, $detector);
-                    foreach($index as $project => $versions){
-                        $count = 0;
-                        $alreadyReviewed = false;
-                        foreach($reviews[substr($ex, 2)] as $review){
-                            if($review['name'] === $reviewer || count >= 2){
-                                $alreadyReviewed = true;
-                                break;
-                            }
-                            if(($review['exp'] === $ex && $review['detector'] === $detector
-                                && $review['project'] === $project)){
-                                $count++;
-                            }
-                        }
-                        if(!$alreadyReviewed && $count < 2){
-                            foreach($versions as $version){
-                                foreach($version['hits'] as $hit){
-                                    $review = [];
-                                    $review['exp'] = $ex;
-                                    $review['detector'] = $detector;
-                                    $review['project'] = $project;
-                                    $review['version'] = $version['version'];
-                                    $review['misuse'] = $hit['misuse'];
-                                    $reviewable[substr($ex, 2)][] = $review;
+            foreach($this->getDetectors($ex) as $detector){
+                $index = $this->getIndex($ex, $detector);
+                foreach($index as $project => $versions){
+                    foreach($versions as $version) {
+                        foreach ($version['hits'] as $misuse){
+                            $reviewers = $this->getReviewsMisuse($ex, $detector, $project, $version['version'], $misuse['misuse']);
+                            $reviewer = [];
+                            $isReviewed = false;
+                            foreach($reviewers as $r){
+                                if($r === $reviewer){
+                                    $isReviewed = true;
+                                }else{
+                                    $reviewer[] = $r;
                                 }
+                            }
+                            if(count($reviewers) < 2 && !$isReviewed){
+                                $review = [];
+                                $review['exp'] = $ex;
+                                $review['detector'] = $detector;
+                                $review['project'] = $project;
+                                $review['version'] = $version['version'];
+                                $review['misuse'] = $misuse['misuse'];
+                                $review['reviewer'] = $reviewer;
+                                $reviewable[substr($ex, 2)][] = $review;
                             }
                         }
                     }
                 }
             }
+        }
         return $reviewable;
     }
 
@@ -154,29 +156,33 @@ class DataProcessor {
 
     public function unwrapReviews($query){
 	    $reviews = [];
-        $reviews[1] = [];
-        $reviews[2] = [];
-        $reviews[3] = [];
         foreach($query as $q){
-              $review = [];
-              $review['exp'] = $q['exp'];
-//            if(false){
-//                //$reviews[substr($review['exp'],2)][$q['identifier']]['decision'] = $q['hit'];
-//                //$reviews[substr($review['exp'],2)][$q['identifier']]['types'] = array_merge($reviews[substr($review['exp'],2,1)][$q['identifier']]['types'], explode(";", $q['violation_types']));
-//                continue;
-//            }
-//            $review['detector'] = $q['detector'];
-//            $review['project'] = $q['project'];
-//            $review['version'] = $q['version'];
-//            $review['misuse'] = $q['misuse'];
-//            // TODO: join decision and types
-//            $review['decision'] = "TODO";
-//            $review['comment'] = $q['comment'];
-//            $review['types'] = ["TODO"];
-              $review['name'] = $q['name'];
-              $reviews[substr($review['exp'],2)][] = $review;
+            $result = $this->getReviewInfos($q['id'], $q);
+            $review = [];
+            $review['types'] = [];
+            $review['exp'] = $result['exp'];
+            $review['detector'] = $result['detector'];
+            $review['project'] = $result['project'];
+            $review['version'] = $result['version'];
+            $review['comment'] = $result['comment'];
+            $review['misuse'] = $result['misuse'];
+            foreach($result['hits'] as $hit){
+                $review['decision'] = $hit['decision'];
+                $review['types'] = $hit['types'];
+            }
+            $review['name'] = $result['name'];
+            $review['reviewer'] = $this->getReviewsMisuse($review['exp'], $review['detector'], $review['project'], $review['version'], $review['misuse']);
+            $reviews[strval(substr($review['exp'],2))][] = $review;
         }
+        ksort($reviews);
         return $reviews;
+    }
+
+    public function dump($var){
+        ob_start();
+        var_dump($var);
+        $result = ob_get_clean();
+        return $result;
     }
 
 	public function getIndex($exp, $detector){
