@@ -22,7 +22,6 @@ class DataProcessor {
 	}
 
 	public function getReview($exp, $detector, $project, $version, $misuse, $reviewer){
-	    // TODO: use a JOIN for getting all informations with the link tables
 		$query = $this->db->getReview($exp, $detector, $project, $version, $misuse, $reviewer);
 		$findings = $this->db->getReviewFindings($query['id']);
 		if(!$query || !$findings){
@@ -44,7 +43,6 @@ class DataProcessor {
 	}
 
 	public function getHits($detector, $project, $version, $misuse, $exp){
-        // TODO: load types from a link tables
 	    $table = $this->db->getTableName($detector);
 	    if(!$table){
 	        return [];
@@ -64,10 +62,6 @@ class DataProcessor {
         }
 		return $result;
 	}
-	
-	public function getDatasets($prefix){
-		return $this->getPrefixTable($prefix, 1);
-	}
 
 	public function getDetectors($exp){
 		$detectors = $this->db->getDetectorsTables();
@@ -78,30 +72,8 @@ class DataProcessor {
                 $data[] = $detector['name'];
             }
         }
+        asort($data);
         return $data;
-	}
-
-	public function getPrefixTable($prefix, $suffix){
-	    // TODO: remove
-		$tables = $this->db->getTables();
-		$names = array();
-		foreach($tables as $t){
-			if(substr($t,0,strlen($prefix)) === $prefix){
-				$new = explode("_", $t, 3)[$suffix];
-				$add = true;
-				foreach($names as $n){
-					if($n === $new){
-						$add = false;
-						break;
-					}
-				}
-				if($add){
-					$names[] = $new;
-				}
-			}
-		}
-		asort($names);
-		return $names;
 	}
 
 	public function getReviewsMisuse($exp, $detector, $project, $version, $misuse){
@@ -136,10 +108,7 @@ class DataProcessor {
 	    // TODO: fix with new review structure
         $exp = ["ex1", "ex2", "ex2"];
         $reviews = $this->getAllReviews();
-        $reviewable = [];
-        $reviewable[1] = [];
-        $reviewable[2] = [];
-        $reviewable[3] = [];
+        $reviewable = [1 => [], 2 => [], 3 => []];
         foreach($exp as $ex){
                 foreach($this->getDetectors($ex) as $detector){
                     $index = $this->getIndex($ex, $detector);
@@ -189,8 +158,8 @@ class DataProcessor {
         $reviews[2] = [];
         $reviews[3] = [];
         foreach($query as $q){
-//            $review = [];
-//            $review['exp'] = $q['exp'];
+              $review = [];
+              $review['exp'] = $q['exp'];
 //            if(false){
 //                //$reviews[substr($review['exp'],2)][$q['identifier']]['decision'] = $q['hit'];
 //                //$reviews[substr($review['exp'],2)][$q['identifier']]['types'] = array_merge($reviews[substr($review['exp'],2,1)][$q['identifier']]['types'], explode(";", $q['violation_types']));
@@ -204,8 +173,8 @@ class DataProcessor {
 //            $review['decision'] = "TODO";
 //            $review['comment'] = $q['comment'];
 //            $review['types'] = ["TODO"];
-//            $review['name'] = $q['name'];
-//            $reviews[substr($review['exp'],2)][$review['de']] = $review;
+              $review['name'] = $q['name'];
+              $reviews[substr($review['exp'],2)][] = $review;
         }
         return $reviews;
     }

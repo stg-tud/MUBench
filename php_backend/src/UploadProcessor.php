@@ -88,7 +88,6 @@ class UploadProcessor
 
     public function handleFindings($table, $exp, $project, $version, $obj_array)
     {
-        // TODO: save types in a link table
         $statements = [];
         foreach ($obj_array as $hit) {
             $statements[] = $this->db->insertStatement($table, $exp, $project, $version, $hit);

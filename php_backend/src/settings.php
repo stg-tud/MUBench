@@ -32,8 +32,8 @@ return [
     ],
     'db' => [
         'user' => 'root',
-        'password' => 'mubench',
-        'url' => 'localhost',
+        'password' => 'root',
+        'url' => 'localhost:8889',
         'name' => 'mubench'
     ],
     'upload' => "./upload",

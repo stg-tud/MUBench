@@ -375,15 +375,23 @@ class DBConnection {
     }
 
     public function getTypes(){
+        return $this->execQuery("SELECT * from types;");
+    }
+
+    public function execQuery($sql){
         $query = [];
         try{
-            $query = $this->pdo->query("SELECT * from types;");
+            $query = $this->pdo->query($sql);
         }catch(PDOException $e){
             $this->logger->error("Error getTypes: " . $e->getMessage());
         }
         if(!$query){
             return [];
         }
+        return $this->queryToArray($query);
+    }
+
+    public function queryToArray($query){
         $result = [];
         foreach($query as $q){
             $result[] =  $q;
@@ -392,8 +400,7 @@ class DBConnection {
     }
 
     public function getTypeIdByName($name){
-        // TODO: make its own query
-        $types = $this->getTypes();
+        $types = $this->execQuery("SELECT * from types WHERE name=" . $this->pdo->quote($name) . ";");
         foreach($types as $type){
             if($type['name'] === $name){
                 return $type['id'];
@@ -403,8 +410,7 @@ class DBConnection {
     }
 
     public function getTypeNameById($id){
-        // TODO: make its own query
-        $types = $this->getTypes();
+        $types = $this->execQuery("SELECT * from types WHERE id=" . $this->pdo->quote($id) . ";");
         foreach($types as $type){
             if($type['id'] === $id){
                 return $type['name'];
