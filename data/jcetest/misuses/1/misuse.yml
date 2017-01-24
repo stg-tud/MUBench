@@ -1,0 +1,12 @@
+api:
+- javax.crypto.Cipher
+characteristics:
+- missing/condition/value_or_state
+description: >
+  May call multiple Cipher.doFinal(...) on the same instance.
+location:
+  file: com/rhjensen/encryption/AESEncryptor.java
+  method: "encrypt(String plainText)"
+internal: false
+pattern:
+- single object

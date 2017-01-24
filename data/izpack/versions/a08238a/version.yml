@@ -1,0 +1,6 @@
+build:
+  classes: izpack-core/target/classes/
+  commands:
+    - mvn -f ./izpack-core/pom.xml compile
+  src: izpack-core/src/main/java/
+revision: 0a973e711a49641658593176952c41bf2c66713b

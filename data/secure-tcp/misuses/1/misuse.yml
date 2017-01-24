@@ -1,0 +1,12 @@
+api:
+- javax.crypto.Cipher
+characteristics:
+- missing/condition/value_or_state
+description: >
+  Uses DSA.
+location:
+  file: org/network/stcp/server/SecureConnectionHandler.java
+  method: "run()"
+internal: false
+pattern:
+- single object

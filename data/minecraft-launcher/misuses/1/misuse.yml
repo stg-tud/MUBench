@@ -1,0 +1,12 @@
+api:
+- javax.crypto.Cipher
+characteristics:
+- missing/condition/value_or_state
+description: >
+  Uses PBEWithMD5AndDES which is considered unsafe.
+location:
+  file: net/minecraft/launcher/authentication/BaseAuthenticationService.java
+  method: "getCipher(final int mode, final String password)"
+internal: false
+pattern:
+- single object

@@ -1,0 +1,5 @@
+name: IzPack
+repository:
+  type: git
+  url: https://github.com/codehaus/izpack
+url: https://github.com/codehaus/izpack

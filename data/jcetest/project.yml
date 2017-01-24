@@ -1,0 +1,5 @@
+name: JCETest
+repository:
+  type: git
+  url: https://github.com/RichardHJensen/JCETest
+url: https://github.com/RichardHJensen/JCETest
