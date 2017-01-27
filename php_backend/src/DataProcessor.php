@@ -121,23 +121,23 @@ class DataProcessor {
                     foreach($versions as $version) {
                         foreach ($version['hits'] as $misuse){
                             $reviewers = $this->getReviewsMisuse($ex, $detector, $project, $version['version'], $misuse['misuse']);
-                            $reviews = [];
+                            $otherReviewers = [];
                             $isReviewed = false;
                             foreach($reviewers as $r){
                                 if($r === $reviewer){
                                     $isReviewed = true;
                                 }else{
-                                    $reviews[] = $r;
+                                    $otherReviewers[] = $r;
                                 }
                             }
-                            if(!$isReviewed && count($reviews) < 2){
+                            if(!$isReviewed && count($otherReviewers) < 2){
                                 $review = [];
                                 $review['exp'] = $ex;
                                 $review['detector'] = $detector;
                                 $review['project'] = $project;
                                 $review['version'] = $version['version'];
                                 $review['misuse'] = $misuse['misuse'];
-                                $review['reviewer'] = $reviewer;
+                                $review['reviewer'] = $otherReviewers;
                                 $reviewable[substr($ex, 2)][] = $review;
                             }
                         }
@@ -169,7 +169,7 @@ class DataProcessor {
             $review['comment'] = $result['comment'];
             $review['misuse'] = $result['misuse'];
             $decision = [];
-            $dec;
+            $dec = "";
             foreach($result['hits'] as $hit){
                 $decision[] = $hit['decision'];
                 $review['types'] = $hit['types'];
