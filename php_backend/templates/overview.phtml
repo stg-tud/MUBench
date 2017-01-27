@@ -46,7 +46,9 @@
         ?>
         <td>
             <?php foreach($review['reviewer'] as $reviewer) : ?>
-                <a href="<?= $review_url ?>/<?= htmlspecialchars($reviewer); ?>"><?= htmlspecialchars($reviewer); ?></a>
+                <?php if($reviewer !== $name): ?>
+                    <a href="<?= $review_url ?>/<?= htmlspecialchars($reviewer); ?>"><?= htmlspecialchars($reviewer); ?></a>
+                <?php endif; ?>
             <?php endforeach; ?>
         </td>
         <td><a href="<?= $review_url ?>">review</a></td>

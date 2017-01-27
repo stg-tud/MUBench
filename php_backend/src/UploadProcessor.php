@@ -81,7 +81,7 @@ class UploadProcessor
     public function handleStats($table, $project, $version, $result, $runtime, $findings, $exp)
     {
         $statements = [];
-        $statements[] = $this->db->getStatDeleteStatement($table, $project, $version);
+        $statements[] = $this->db->getStatDeleteStatement($exp, $table, $project, $version);
         $statements[] = $this->db->getStatStatement($table, $project, $version, $result, $runtime, $findings, $exp);
         $this->logger->info("deleting and adding new stats for: " . $table);
         $this->db->execStatements($statements);

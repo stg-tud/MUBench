@@ -51,14 +51,13 @@ CREATE TABLE IF NOT EXISTS `review_findings_type` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 CREATE TABLE IF NOT EXISTS `stats` (
-  `id` text NOT NULL,
+  `exp` text NOT NULL,
+  `detector` text NOT NULL,
+  `project` text NOT NULL,
+  `version` text NOT NULL,
   `result` text NOT NULL,
   `runtime` text NOT NULL,
   `number_of_findings` text NOT NULL,
-  `table_id` text NOT NULL,
-  `exp` text NOT NULL,
-  `project` text NOT NULL,
-  `version` text NOT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 CREATE TABLE IF NOT EXISTS `types` (

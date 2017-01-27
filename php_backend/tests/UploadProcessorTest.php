@@ -21,7 +21,7 @@ class UploadProcessorTest extends TestCase
         $this->db = new DBConnection($this->getConnection(), new \Monolog\Logger("test"));
         $statements = [];
         $statements[] =
-            "CREATE TABLE stats (id TEXT NOT NULL, result TEXT NOT NULL, runtime TEXT NOT NULL, number_of_findings TEXT NOT NULL, table_id TEXT NOT NULL, exp TEXT NOT NULL, project TEXT NOT NULL, version TEXT NOT NULL);";
+            "CREATE TABLE stats (result TEXT NOT NULL, runtime TEXT NOT NULL, number_of_findings TEXT NOT NULL, detector TEXT NOT NULL, exp TEXT NOT NULL, project TEXT NOT NULL, version TEXT NOT NULL);";
         $statements[] =
             "CREATE TABLE metadata (misuse TEXT NOT NULL,description TEXT NOT NULL,fix_description TEXT NOT NULL,violation_types TEXT NOT NULL,file TEXT NOT NULL,method TEXT NOT NULL,diff_url TEXT NOT NULL);";
         $statements[] =
@@ -80,7 +80,7 @@ class UploadProcessorTest extends TestCase
     public function testHandleStats()
     {
         $this->proc->handleStats("table", "p", "v", "success", "0", "10", "exp1");
-        $query = $this->db->getAllStats("table");
+        $query = $this->db->getAllStats("exp1", "table");
         $this->assertTrue(count($query) == 1);
     }
 

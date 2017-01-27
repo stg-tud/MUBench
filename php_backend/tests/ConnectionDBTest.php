@@ -84,13 +84,13 @@ class ConnectionDBTest extends TestCase{
 
     public function testGetStatsStateent(){
         $actual = $this->db->getStatStatement('table', 'project', 'version', 'result', 'runtime', 'findings', 'exp');
-        $expected = "INSERT INTO stats (id, result, runtime, number_of_findings, table_id, exp, project, version) VALUES ('table_project_version','result','runtime','findings','table','exp','project','version');";
+        $expected = "INSERT INTO stats (exp, detector, project, version, result, runtime, number_of_findings) VALUES ('exp','table','project','version','result','runtime','findings');";
         $this->assertEquals($expected, $actual);
     }
 
     public function testStatDeleteStatement(){
-        $actual = $this->db->getStatDeleteStatement('table', 'project', 'version');
-        $expected = "DELETE FROM stats WHERE id='table_project_version';";
+        $actual = $this->db->getStatDeleteStatement('exp', 'table', 'project', 'version');
+        $expected = "DELETE FROM stats WHERE exp='exp' AND detector='table' AND project='project' AND version='version';";
         $this->assertEquals($expected, $actual);
     }
 

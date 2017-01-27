@@ -104,7 +104,7 @@
                             </td>
                         <?php endif; ?>
                         <?php
-                            $review_url = ($logged ? htmlspecialchars($private_url) : htmlspecialchars($base_url)) . ($version['number_of_findings'] == "0" ? "view/" : "") . htmlspecialchars($exp) . "/" . htmlspecialchars($detector) . "/" .
+                            $review_url = ($logged ? htmlspecialchars($private_url) : htmlspecialchars($base_url)) . htmlspecialchars($exp) . "/" . htmlspecialchars($detector) . "/" .
                                 htmlspecialchars($hit['project']) . "/" . htmlspecialchars($hit['version']) . "/" .
                                 htmlspecialchars($hit['misuse']);
                         ?>

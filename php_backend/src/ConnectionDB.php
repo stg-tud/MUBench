@@ -58,15 +58,15 @@ class DBConnection {
 	}
 
 	public function deletePatterns($misuse){
-		return "DELETE FROM patterns WHERE misuse='misuse';";
+		return "DELETE FROM patterns WHERE misuse=". $this->pdo->quote($misuse) . ";";
 	}
 
 	public function getStatStatement($table, $project, $version, $result, $runtime, $findings, $exp){
-		return "INSERT INTO stats (id, result, runtime, number_of_findings, table_id, exp, project, version) VALUES (" . $this->pdo->quote($table . "_" . $project . "_" . $version) ."," . $this->pdo->quote($result) . "," . $this->pdo->quote($runtime) . "," . $this->pdo->quote($findings) . "," . $this->pdo->quote($table) . "," . $this->pdo->quote($exp) . ",". $this->pdo->quote($project) . "," . $this->pdo->quote($version) .");";
+		return "INSERT INTO stats (exp, detector, project, version, result, runtime, number_of_findings) VALUES (" . $this->pdo->quote($exp) . "," . $this->pdo->quote($table) . ",". $this->pdo->quote($project) . "," . $this->pdo->quote($version) . "," . $this->pdo->quote($result) . "," . $this->pdo->quote($runtime) . "," . $this->pdo->quote($findings) . ");";
 	}
 
-	public function getStatDeleteStatement($table, $project, $version){
-		return "DELETE FROM stats WHERE id=" . $this->pdo->quote($table . "_" . $project . "_" . $version) .";";
+	public function getStatDeleteStatement($exp, $detector, $project, $version){
+		return "DELETE FROM stats WHERE exp=" . $this->pdo->quote($exp) . " AND detector=" . $this->pdo->quote($detector) . " AND project=" . $this->pdo->quote($project) . " AND version=" . $this->pdo->quote($version)  .";";
 	}
 
 	public function getTableName($detector){
@@ -199,10 +199,10 @@ class DBConnection {
 		return $tables;
 	}
 
-	public function hasStats($detector_table, $exp){
+	public function hasStats($exp, $detector_table){
 	    $query = [];
 	    try{
-	        $query = $this->pdo->query("SELECT * FROM stats WHERE table_id=" . $this->pdo->quote($detector_table) . " AND exp=". $this->pdo->quote($exp) . ";");
+	        $query = $this->pdo->query("SELECT * FROM stats WHERE detector=" . $this->pdo->quote($detector_table) . " AND exp=". $this->pdo->quote($exp) . ";");
         }catch(PDOException $e){
             $this->logger->error("Error hasStats: " . $e->getMessage());
         }
@@ -210,22 +210,10 @@ class DBConnection {
         return count($result) > 0;
     }
 
-	public function getStats($id){
+	public function getAllStats($exp, $detector){
         $query = [];
 		try{
-			$query = $this->pdo->query("SELECT result, runtime, number_of_findings FROM stats WHERE id=" . $this->pdo->quote($id) . ";");
-		}catch(PDOException $e){
-			$this->logger->error("Error getStats: " . $e->getMessage());
-		}
-		foreach($query as $q){
-			return $q;
-		}
-	}
-
-	public function getAllStats($id){
-        $query = [];
-		try{
-			$query = $this->pdo->query("SELECT * FROM stats WHERE table_id=" . $this->pdo->quote($id) . ";");
+			$query = $this->pdo->query("SELECT * FROM stats WHERE detector=" . $this->pdo->quote($detector) . " AND exp=" . $this->pdo->quote($exp) . ";");
 		}catch(PDOException $e){
 			$this->logger->error("Error getAllStats: " . $e->getMessage());
 		}

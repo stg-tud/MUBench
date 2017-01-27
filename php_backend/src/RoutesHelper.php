@@ -40,7 +40,7 @@ class RoutesHelper
 
     public function overview_route($request, $args, $app, $r, $response){
         $reviews = $app->data->getReviewsByReviewer($request->getServerParams()['PHP_AUTH_USER']);
-        return $r->renderer->render($response, 'overview.phtml', array("private_url" => $this->private_url, "experiments" => $reviews));
+        return $r->renderer->render($response, 'overview.phtml', array("name" => $request->getServerParams()['PHP_AUTH_USER'], "private_url" => $this->private_url, "experiments" => $reviews));
     }
 
     public function todo_route($request, $args, $app, $r, $response){

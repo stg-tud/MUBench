@@ -75,8 +75,7 @@ class DataProcessor {
 		$detectors = $this->db->getDetectorsTables();
 		$data = [];
 		foreach($detectors as $detector){
-		    $has = $this->db->hasStats($detector['id'], $exp);
-		    if($this->db->hasFindingForExp($exp, $detector['id']) || $has){
+		    if($this->db->hasStats($exp, $detector['id'])){
                 $data[] = $detector['name'];
             }
         }
@@ -169,10 +168,23 @@ class DataProcessor {
             $review['version'] = $result['version'];
             $review['comment'] = $result['comment'];
             $review['misuse'] = $result['misuse'];
+            $decision = [];
+            $dec;
             foreach($result['hits'] as $hit){
-                $review['decision'] = $hit['decision'];
+                $decision[] = $hit['decision'];
                 $review['types'] = $hit['types'];
             }
+            foreach($decision as $d){
+                if($d == "?"){
+                    $dec = "?";
+                    break;
+                }elseif($d == "Yes"){
+                    $dec = $d;
+                }else{
+                    $dec = $d;
+                }
+            }
+            $review['decision'] = $dec;
             $review['name'] = $result['name'];
             $review['reviewer'] = $this->getReviewsMisuse($review['exp'], $review['detector'], $review['project'], $review['version'], $review['misuse']);
             $reviews[strval(substr($review['exp'],2))][] = $review;
@@ -190,7 +202,7 @@ class DataProcessor {
 
 	public function getIndex($exp, $detector){
 	    $table = $this->db->getDetectorTable($detector);
-		$stats = $this->db->getAllStats($table);
+		$stats = $this->db->getAllStats($exp, $table);
 		$projects = [];
 		foreach($stats as $s){
 		    $s['hits'] = [];
