@@ -21,7 +21,7 @@ class UploadProcessorTest extends TestCase
         $this->db = new DBConnection($this->getConnection(), new \Monolog\Logger("test"));
         $statements = [];
         $statements[] =
-            "CREATE TABLE stats (id TEXT NOT NULL, result TEXT NOT NULL, runtime TEXT NOT NULL, number_of_findings TEXT NOT NULL, exp TEXT NOT NULL, project TEXT NOT NULL, version TEXT NOT NULL);";
+            "CREATE TABLE stats (id TEXT NOT NULL, result TEXT NOT NULL, runtime TEXT NOT NULL, number_of_findings TEXT NOT NULL, table_id TEXT NOT NULL, exp TEXT NOT NULL, project TEXT NOT NULL, version TEXT NOT NULL);";
         $statements[] =
             "CREATE TABLE metadata (misuse TEXT NOT NULL,description TEXT NOT NULL,fix_description TEXT NOT NULL,violation_types TEXT NOT NULL,file TEXT NOT NULL,method TEXT NOT NULL,diff_url TEXT NOT NULL);";
         $statements[] =
@@ -34,11 +34,11 @@ class UploadProcessorTest extends TestCase
         $this->obj =
             json_decode('{"findings":[{"target_snippets":[{"first_line_number":0, "code":"c"}],"a":"1", "b":"2", "c":"3", "rank":"4", "misuse":"5"}], "project":"p", "version":"v", "runtime":"0", "result":"success", "number_of_findings":"1", "dataset":"any", "detector":"mudetect"}');
         $this->metaObj =
-            json_decode('{"misuse":"m.1", "fix":{"diff-url":"url", "description":"desc"}, "description":"d", "violation_types":["1","2"], "location":{"file":"f", "method":"m"}, "patterns":[{"id":"1","snippet":{"code":"c", "first_line":0}}]}');
+            json_decode('{"misuse":"m.1","project":"p1", "version":"v1", "fix":{"diff-url":"url", "description":"desc"}, "description":"d", "violation_types":["1","2"], "location":{"file":"f", "method":"m"}, "patterns":[{"id":"1","snippet":{"code":"c", "first_line":0}}]}');
         $this->reviewObj = array("review_name" => "admin", "review_identifier" => "id", "review_comment" => "test",
             "review_hit" => array(0 => array("hit" => "Yes", "types" => ["1", "2"])), "review_exp" => "ex1", "review_detector" => "detector1", "review_project" => "project1", "review_version" => "test-version", "review_misuse" => "test-misuse");
         $this->proc = new UploadProcessor($this->db,
-            new \Monolog\Logger("test"));
+            new Monolog\Logger('test'));
     }
 
     public function testgetJsonNames()
@@ -79,7 +79,7 @@ class UploadProcessorTest extends TestCase
 
     public function testHandleStats()
     {
-        $this->proc->handleStats("table", "p", "v", "success", "0", "10");
+        $this->proc->handleStats("table", "p", "v", "success", "0", "10", "exp1");
         $query = $this->db->getAllStats("table");
         $this->assertTrue(count($query) == 1);
     }
@@ -87,7 +87,7 @@ class UploadProcessorTest extends TestCase
     public function testHandleMetadata()
     {
         $this->proc->processMetaData($this->metaObj);
-        $query = $this->db->getMetadata("m.1");
+        $query = $this->db->getMetadata("p1", "v1", "m.1");
         $pattern = $this->db->getPattern("m.1");
         $this->assertTrue(count($query) == 1);
         $this->assertTrue(count($pattern) == 1);

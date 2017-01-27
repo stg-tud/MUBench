@@ -45,12 +45,12 @@ class SlimTest extends SlimTestCase
 
     public function testReview(){
         $this->get('/ex1/MuDetect/aclang/5/1');
-        $this->assertEquals('404', $this->response->getStatusCode());
+        $this->assertEquals('200', $this->response->getStatusCode());
     }
 
     public function testReviewer(){
         $this->get('/ex1/MuDetect/aclang/5/1/admin');
-        $this->assertEquals('404', $this->response->getStatusCode());
+        $this->assertEquals('200', $this->response->getStatusCode());
     }
 
 }

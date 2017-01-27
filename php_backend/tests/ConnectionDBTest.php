@@ -65,8 +65,8 @@ class ConnectionDBTest extends TestCase{
     }
 
     public function testInsertMetadata(){
-        $actual = $this->db->insertMetadata('misuse', 'desc', 'fix_desc', 'diff_url', 'violation', 'file', 'method');
-        $expected = "INSERT INTO metadata (misuse, description, fix_description, diff_url, violation_types, file, method) VALUES('misuse','desc','fix_desc','diff_url','violation','file','method');";        
+        $actual = $this->db->insertMetadata('project', 'version', 'misuse', 'desc', 'fix_desc', 'diff_url', 'violation', 'file', 'method');
+        $expected = "INSERT INTO metadata (project, version, misuse, description, fix_description, diff_url, violation_types, file, method) VALUES('project','version','misuse','desc','fix_desc','diff_url','violation','file','method');";
         $this->assertEquals($expected, $actual);
     }
 
@@ -83,8 +83,8 @@ class ConnectionDBTest extends TestCase{
     }
 
     public function testGetStatsStateent(){
-        $actual = $this->db->getStatStatement('table', 'project', 'version', 'result', 'runtime', 'findings');
-        $expected = "INSERT INTO stats (id, result, runtime, number_of_findings, exp, project, version) VALUES ('table_project_version','result','runtime','findings','table','project','version');";
+        $actual = $this->db->getStatStatement('table', 'project', 'version', 'result', 'runtime', 'findings', 'exp');
+        $expected = "INSERT INTO stats (id, result, runtime, number_of_findings, table_id, exp, project, version) VALUES ('table_project_version','result','runtime','findings','table','exp','project','version');";
         $this->assertEquals($expected, $actual);
     }
 

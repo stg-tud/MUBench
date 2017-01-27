@@ -12,8 +12,8 @@ class DataProcessor {
 		$this->logger = $logger;
 	}
 
-	public function getMetadata($misuse){
-		$query = $this->db->getMetadata($misuse);
+	public function getMetadata($project, $version, $misuse){
+		$query = $this->db->getMetadata($project, $version, $misuse);
 		foreach($query as $q){
 			$data = $q;
 			$data['violation_types'] = explode(";", $q['violation_types']);
@@ -23,6 +23,9 @@ class DataProcessor {
 
 	public function getReview($exp, $detector, $project, $version, $misuse, $reviewer){
 		$query = $this->db->getReview($exp, $detector, $project, $version, $misuse, $reviewer);
+		if(!$query){
+		    return [];
+        }
 		return $this->getReviewInfos($query['id'], $query);
 	}
 
@@ -72,8 +75,8 @@ class DataProcessor {
 		$detectors = $this->db->getDetectorsTables();
 		$data = [];
 		foreach($detectors as $detector){
-		    $this->logger->info("DETECTOR: " . $detector['name']);
-		    if($this->db->hasFindingForExp($exp, $detector['id'])){
+		    $has = $this->db->hasStats($detector['id'], $exp);
+		    if($this->db->hasFindingForExp($exp, $detector['id']) || $has){
                 $data[] = $detector['name'];
             }
         }
@@ -119,16 +122,16 @@ class DataProcessor {
                     foreach($versions as $version) {
                         foreach ($version['hits'] as $misuse){
                             $reviewers = $this->getReviewsMisuse($ex, $detector, $project, $version['version'], $misuse['misuse']);
-                            $reviewer = [];
+                            $reviews = [];
                             $isReviewed = false;
                             foreach($reviewers as $r){
                                 if($r === $reviewer){
                                     $isReviewed = true;
                                 }else{
-                                    $reviewer[] = $r;
+                                    $reviews[] = $r;
                                 }
                             }
-                            if(count($reviewers) < 2 && !$isReviewed){
+                            if(!$isReviewed && count($reviews) < 2){
                                 $review = [];
                                 $review['exp'] = $ex;
                                 $review['detector'] = $detector;
@@ -191,26 +194,36 @@ class DataProcessor {
 		$projects = [];
 		foreach($stats as $s){
 		    $s['hits'] = [];
-            foreach($this->db->getPotentialHits($table, $exp, $s['project'], $s['version']) as $hit){
-				if($exp !== "ex2"){
-					$meta = $this->getMetadata($hit['misuse']);
-					$hit['violation_types'] = $meta['violation_types'];
-				}
-				$reviews = $this->getReviewsMisuse($exp, $detector, $s['project'], $s['version'], $hit['misuse']);
-				$hit['reviews'] = $reviews;
-				$add = true;
-                $id = $hit['misuse'];
-				if(array_key_exists('hits', $s)) {
-                    foreach ($s['hits'] as $h) {
-                        if ($hit['misuse'] === $h['misuse']) {
-                            $add = false;
-                        }
-                    }
-                }
-                if ($add) {
+		    $hits = $this->db->getPotentialHits($table, $exp, $s['project'], $s['version']);
+		    $this->logger->info($this->dump($hits));
+		    if(!$hits){
+		        $metahits = $this->db->getMisusesFromMeta($s['project'], $s['version']);
+                foreach($metahits as $hit){
+                    $id = $hit['misuse'];
                     $s['hits'][$id] = $hit;
                 }
-			}
+            }else {
+                foreach ($hits as $hit) {
+                    if ($exp !== "ex2") {
+                        $meta = $this->getMetadata($s['project'], $s['version'], $hit['misuse']);
+                        $hit['violation_types'] = $meta['violation_types'];
+                    }
+                    $reviews = $this->getReviewsMisuse($exp, $detector, $s['project'], $s['version'], $hit['misuse']);
+                    $hit['reviews'] = $reviews;
+                    $add = true;
+                    $id = $hit['misuse'];
+                    if (array_key_exists('hits', $s)) {
+                        foreach ($s['hits'] as $h) {
+                            if ($hit['misuse'] === $h['misuse']) {
+                                $add = false;
+                            }
+                        }
+                    }
+                    if ($add) {
+                        $s['hits'][$id] = $hit;
+                    }
+                }
+            }
 			$projects[$s['project']][$s['version']] = $s;
 		}
 		ksort($projects);

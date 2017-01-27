@@ -29,6 +29,7 @@ class DataProcessorTest extends TestCase
             "CREATE TABLE patterns (misuse TEXT NOT NULL,name TEXT NOT NULL,code TEXT NOT NULL,line TEXT NOT NULL);";
         $statements[] =
             "CREATE TABLE reviews (identifier TEXT NOT NULL,name TEXT NOT NULL,hit TEXT NOT NULL,comment TEXT NOT NULL,violation_type TEXT NOT NULL,id TEXT NOT NULL);";
+        $statements[] =
         $this->db->execStatements($statements);
         $this->obj =
             json_decode('{"findings":[{"target_snippets":[{"first_line_number":0, "code":"c"}],"a":"1", "b":"2", "c":"3", "d":"4", "e":"5"}], "project":"p", "version":"v", "runtime":"0", "result":"success", "number_of_findings":"1", "dataset":"any", "detector":"mudetect"}');

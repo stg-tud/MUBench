@@ -1,9 +1,10 @@
 <div>
 <?php if(!$logged) : ?>
-        <a href="<?= htmlspecialchars($private_url); ?><?= htmlspecialchars($exp); ?>">Login</a>
+        <a href="<?= htmlspecialchars($private_url); ?><?= htmlspecialchars($exp); ?>">login</a>
 <?php endif; ?>
 <?php if($logged) : ?>
-
+    <a href="<?= htmlspecialchars($private_url); ?>overview">overview</a>
+    <a href="<?= htmlspecialchars($private_url); ?>todo">todo</a>
 <?php endif; ?>
 </div>
 
@@ -29,7 +30,7 @@
 </div>
 
 <div class="legal">
-<a href="<?= htmlspecialchars($base_url); ?>/impressum/">Legal Note / Impressum</a>
+<a href="<?= htmlspecialchars($base_url); ?>impressum/">Legal Note / Impressum</a>
 </div>
 </body>
 </html>

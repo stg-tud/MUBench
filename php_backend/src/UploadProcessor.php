@@ -68,20 +68,21 @@ class UploadProcessor
         $runtime = $obj->{'runtime'};
         $result = $obj->{'result'};
         $findings = $obj->{'number_of_findings'};
-        $obj_array = $this->rearrangeCodeSnippets($obj_array);
-        $obj_columns = $this->getJsonNames($obj_array);
+        if(obj_array) {
+            $obj_array = $this->rearrangeCodeSnippets($obj_array);
+            $obj_columns = $this->getJsonNames($obj_array);
+        }
         $columns = $this->db->getTableColumns($table);
-
-        $this->handleStats($table, $project, $version, $result, $runtime, $findings);
+        $this->handleStats($table, $project, $version, $result, $runtime, $findings, $ex);
         $this->handleTableColumns($table, $obj_columns, $columns, $obj_array);
         $this->handleFindings($table, $ex, $project, $version, $obj_array);
     }
 
-    public function handleStats($table, $project, $version, $result, $runtime, $findings)
+    public function handleStats($table, $project, $version, $result, $runtime, $findings, $exp)
     {
         $statements = [];
         $statements[] = $this->db->getStatDeleteStatement($table, $project, $version);
-        $statements[] = $this->db->getStatStatement($table, $project, $version, $result, $runtime, $findings);
+        $statements[] = $this->db->getStatStatement($table, $project, $version, $result, $runtime, $findings, $exp);
         $this->logger->info("deleting and adding new stats for: " . $table);
         $this->db->execStatements($statements);
     }
@@ -139,7 +140,7 @@ class UploadProcessor
         $statements[] = $this->db->deleteMetadata($json->{'misuse'});
         $statements[] = $this->db->deletePatterns($json->{'misuse'});
         $statements[] =
-            $this->db->insertMetadata($json->{'misuse'}, $json->{'description'}, $json->{'fix'}->{'description'},
+            $this->db->insertMetadata($json->{'project'}, $json->{'version'}, $json->{'misuse'}, $json->{'description'}, $json->{'fix'}->{'description'},
                 $json->{'fix'}->{'diff-url'}, $this->arrayToString($json->{'violation_types'}),
                 $json->{'location'}->{'file'}, $json->{'location'}->{'method'});
         foreach ($json->{'patterns'} as $p) {

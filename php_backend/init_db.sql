@@ -7,6 +7,8 @@ CREATE TABLE IF NOT EXISTS `detectors` (
 ) ENGINE=MyISAM  DEFAULT CHARSET=latin1 ;
 
 CREATE TABLE IF NOT EXISTS `metadata` (
+  `project` text NOT NULL,
+  `version` text NOT NULL,
   `misuse` text NOT NULL,
   `description` text NOT NULL,
   `fix_description` text NOT NULL,
@@ -53,6 +55,7 @@ CREATE TABLE IF NOT EXISTS `stats` (
   `result` text NOT NULL,
   `runtime` text NOT NULL,
   `number_of_findings` text NOT NULL,
+  `table_id` text NOT NULL,
   `exp` text NOT NULL,
   `project` text NOT NULL,
   `version` text NOT NULL

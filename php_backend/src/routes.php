@@ -20,6 +20,10 @@ $app->get('/{exp:ex[1-3]}/{detector}/{project}/{version}/{misuse}', function ($r
     return $app->helper->review_route($args, $app, $this, $response, $request, false, false);
 });
 
+$app->get('/view/{exp:ex[1-3]}/{detector}/{project}/{version}/{misuse}', function ($request, $response, $args) use ($app) {
+    return $app->helper->review_route($args, $app, $this, $response, $request, false, false);
+});
+
 $app->get('/{exp:ex[1-3]}/{detector}/{project}/{version}/{misuse}/{reviewer}', function ($request, $response, $args) use ($app) {
     return $app->helper->review_route($args, $app, $this, $response, $request, false, true);
 });
@@ -48,18 +52,20 @@ $app->group('/private', function () use ($app, $settings) {
         return $app->helper->review_route($args, $app, $this, $response, $request, true, true);
     });
 
+    $app->get('/view/{exp:ex[1-3]}/{detector}/{project}/{version}/{misuse}', function ($request, $response, $args) use ($app) {
+        return $app->helper->review_route($args, $app, $this, $response, $request, false, false);
+    });
+
     $app->get('/{exp:ex[1-3]}/{detector}/{project}/{version}/{misuse}/{reviewer}', function ($request, $response, $args) use ($app) {
         return $app->helper->review_route($args, $app, $this, $response, $request, false, true);
     });
 
     $app->get('/overview', function ($request, $response, $args) use ($app){
-        $reviews = $app->data->getReviewsByReviewer($request->getServerParams()['PHP_AUTH_USER']);
-        return $this->renderer->render($response, 'overview.phtml', array("experiments" => $reviews));
+        $app->helper->overview_route($request, $args, $app, $this, $response);
     });
 
     $app->get('/todo', function ($request, $response, $args) use ($app){
-        $reviews = $app->data->getTodo($request->getServerParams()['PHP_AUTH_USER']);
-        return $this->renderer->render($response, 'todo.phtml', array("experiments" => $reviews));
+        $app->helper->todo_route($request, $args, $app, $this, $response);
     });
 });
 

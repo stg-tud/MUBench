@@ -8,6 +8,9 @@
     <script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js?autoload=true&amp;skin=sunburst"></script>
 </head>
 <body>
+<div>
+    <a href="<?= htmlspecialchars($private_url) ?>">back</a>
+</div>
 <h1>Review overview</h1>
 <?php foreach($experiments as $key => $reviews) : ?>
     <h3>Experiment <?= htmlspecialchars($key); ?></h3>
@@ -37,7 +40,7 @@
             <?php endforeach; ?>
         </td>
         <?php
-        $review_url = "./" . htmlspecialchars($review['exp']) . "/" . htmlspecialchars($review['detector']) . "/" .
+        $review_url = htmlspecialchars($private_url) . htmlspecialchars($review['exp']) . "/" . htmlspecialchars($review['detector']) . "/" .
             htmlspecialchars($review['project']) . "/" . htmlspecialchars($review['version']) . "/" .
             htmlspecialchars($review['misuse']);
         ?>
@@ -46,7 +49,7 @@
                 <a href="<?= $review_url ?>/<?= htmlspecialchars($reviewer); ?>"><?= htmlspecialchars($reviewer); ?></a>
             <?php endforeach; ?>
         </td>
-        <td><a href="./<?= htmlspecialchars($review['exp']); ?>/<?= htmlspecialchars($review['detector']); ?>/<?= htmlspecialchars($review['project']); ?>/<?= htmlspecialchars($review['version']); ?>/<?= htmlspecialchars($review['misuse']); ?>">review</a></td>
+        <td><a href="<?= $review_url ?>">review</a></td>
     </tr>
     <?php endforeach; ?>
 </table>

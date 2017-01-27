@@ -1,6 +1,12 @@
-    <?php if(!$logged) : ?>
-        <div><a href="<?= htmlspecialchars($private_url); ?><?= htmlspecialchars($exp); ?>/<?= htmlspecialchars($detector); ?>">Login</a></div>
-    <?php endif; ?>
+    <div>
+        <?php if(!$logged) : ?>
+                <a href="<?= htmlspecialchars($private_url); ?><?= htmlspecialchars($exp); ?>/<?= htmlspecialchars($detector); ?>">Login</a>
+        <?php endif; ?>
+        <?php if($logged) : ?>
+            <a href="<?= htmlspecialchars($private_url); ?>overview">overview</a>
+            <a href="<?= htmlspecialchars($private_url); ?>todo">todo</a>
+        <?php endif; ?>
+    </div>
     <h1>Detector: <?= htmlspecialchars($detector); ?></h1>
     <style>
         body { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; }
@@ -38,7 +44,7 @@
         <?php $last_version = ""; ?>
         <?php foreach($projects as $project => $versions) : ?>
             <?php foreach($versions as $version) : ?>
-                <?php foreach($version['hits'] as $hit) : ?>
+                <?php if (!$version['hits']): ?>
                     <tr>
                         <?php
                         $new_project = (strcmp($last_project, $project) !== 0);
@@ -57,33 +63,60 @@
                         <td class="<?php if ($new_project) : ?>top<?php endif; ?> right">
                             <?= $new_version ? htmlspecialchars(substr($version['runtime'], 0, 4)) . "s" : ""; ?></td>
                         <td <?php if ($new_project) : ?>class="top"<?php endif; ?>>
+                        </td>
+                        <?php if($exp !== "ex2") : ?>
+                            <td <?php if ($new_project) : ?>class="top"<?php endif; ?>>
+                            </td>
+                        <?php endif; ?>
+                        <td <?php if ($new_project) : ?>class="top"<?php endif; ?>>
+                        </td>
+                        <td <?php if ($new_project) : ?>class="top"<?php endif; ?>>
+                        </td>
+                    </tr>
+                    <?php $last_version = $version['version']; ?>
+                    <?php $last_project = $project; ?>
+                <? else: ?>
+
+                <?php foreach($version['hits'] as $hit) : ?>
+                    <tr>
+                        <?php
+                        $new_project = (strcmp($last_project, $project) !== 0);
+                        $new_version = strcmp($last_version, $version['version']) !== 0;
+                        $has_reviewed = array_key_exists('reviews', $hit) && $hit['reviews'] && in_array($name, $hit['reviews']);
+                        ?>
+
+                        <td <?php if ($new_project) : ?>class="top"<?php endif; ?>>
+                            <?= $new_project ? htmlspecialchars($project) : ""; ?></td>
+                        <td <?php if ($new_project) : ?>class="top"<?php endif; ?>>
+                            <?= $new_version ? htmlspecialchars($version['version']) : ""; ?></td>
+                        <td <?php if ($new_project) : ?>class="top"<?php endif; ?>>
+                            <?= $new_version ? htmlspecialchars($version['result']) : ""; ?></td>
+                        <td class="<?php if ($new_project) : ?>top<?php endif; ?> right">
+                            <?= $new_version ? htmlspecialchars($version['number_of_findings']) : ""; ?></td>
+                        <td class="<?php if ($new_project) : ?>top<?php endif; ?> right">
+                            <?= $new_version ? htmlspecialchars(substr($version['runtime'], 0, 4)) . "s" : ""; ?></td>
+                        <td <?php if ($new_project) : ?>class="top"<?php endif; ?>>
                             <?= htmlspecialchars(substr($hit['misuse'], 0, strlen($project)) === $project
                                 ? substr($hit['misuse'], strlen($project) + 1) : $hit['misuse']); ?></td>
                         <?php if($exp !== "ex2") : ?>
                             <td <?php if ($new_project) : ?>class="top"<?php endif; ?>>
-                                <?php if(empty($hit['violation_types'])) : ?>
-                                    unknown
-                                <?php else : ?>
-                                    <?php foreach($hit['violation_types'] as $violation_type) : ?>
-                                        <?= htmlspecialchars($violation_type); ?><br/>
-                                    <?php endforeach; ?>
-                                <?php endif; ?>
+                                unknown
                             </td>
                         <?php endif; ?>
                         <?php
-                            $review_url = ($logged ? htmlspecialchars($private_url) : htmlspecialchars($base_url)) . htmlspecialchars($exp) . "/" . htmlspecialchars($detector) . "/" .
+                            $review_url = ($logged ? htmlspecialchars($private_url) : htmlspecialchars($base_url)) . ($version['number_of_findings'] == "0" ? "view/" : "") . htmlspecialchars($exp) . "/" . htmlspecialchars($detector) . "/" .
                                 htmlspecialchars($hit['project']) . "/" . htmlspecialchars($hit['version']) . "/" .
                                 htmlspecialchars($hit['misuse']);
                         ?>
                         <td <?php if ($new_project) : ?>class="top"<?php endif; ?>>
-                            <?php if($hit['reviews']) : ?>
+                            <?php if(array_key_exists('reviews', $hit) && $hit['reviews']) : ?>
                                 <?php foreach($hit['reviews'] as $reviewer) : ?>
                                     <a href="<?= $review_url ?>/<?= htmlspecialchars($reviewer); ?>"><?= htmlspecialchars($reviewer); ?></a>
                                 <?php endforeach; ?>
                             <?php endif; ?>
                         </td>
                         <td <?php if ($new_project) : ?>class="top"<?php endif; ?>>
-                            <?php if ($logged) : ?>
+                            <?php if ($logged && $version['number_of_findings'] !== "0") : ?>
                                 <?php if (!$has_reviewed) : ?><a href="<?= $review_url; ?>" class="button">review</a><?php endif; ?>
                             <?php else : ?>
                                 <a href="<?= $review_url; ?>" class="button">view</a>
@@ -93,6 +126,7 @@
                     <?php $last_version = $version['version']; ?>
                     <?php $last_project = $project; ?>
                 <?php endforeach; ?>
+        <? endif; ?>
             <?php endforeach; ?>
         <?php endforeach; ?>
         </tbody>

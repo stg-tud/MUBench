@@ -25,6 +25,7 @@
                 <script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js?autoload=true&amp;skin=sunburst"></script>
             </head>
             <body>
+            <a href="<?= htmlspecialchars($private_url) ?><?= htmlspecialchars($exp); ?>/<?= htmlspecialchars($detector); ?>">back to projects</a>
         <h1>Review</h1>
         <table>
             <tr><td><b>Detector:</b></td><td><?= htmlspecialchars($detector); ?></td></tr>
@@ -80,7 +81,9 @@
                         </td></tr>
             <?php endif; ?>
         </table>
-        <?php if($exp !== "ex2") : ?>
+        <?php if($hits) : ?>
+
+            <?php if($exp !== "ex2") : ?>
             <h2>Potential Hits</h2>
             <p>Findings of the detector that identify an anomaly in the same file and method as the known misuse.</p>
         <?php else : ?>
@@ -103,7 +106,6 @@
             <th>violation types</th>
         </tr>
     
-
         <?php foreach($hits as $hit) : ?>
         <tr>
             <td>
@@ -498,7 +500,7 @@
                 </table>
         <?php endif; ?>
         <?php endif; ?>
-        
+        <?php endif; ?>
             </body>
         </html>
     

@@ -38,6 +38,16 @@ class RoutesHelper
         return $r->renderer->render($response, 'experiment.phtml', array('data' => $data, 'id' => $template['id'], 'title' => $template['title'], 'exp' => $exp, 'logged' => $logged, 'root_url' => $this->root_url, 'private_url' => $this->private_url, 'base_url' => $this->base_url));
     }
 
+    public function overview_route($request, $args, $app, $r, $response){
+        $reviews = $app->data->getReviewsByReviewer($request->getServerParams()['PHP_AUTH_USER']);
+        return $r->renderer->render($response, 'overview.phtml', array("private_url" => $this->private_url, "experiments" => $reviews));
+    }
+
+    public function todo_route($request, $args, $app, $r, $response){
+        $reviews = $app->data->getTodo($request->getServerParams()['PHP_AUTH_USER']);
+        return $r->renderer->render($response, 'todo.phtml', array("private_url" => $this->private_url, "experiments" => $reviews));
+    }
+
     public function detect_route($request, $args, $app, $r, $response, $logged)
     {
         $exp = $args['exp'];
@@ -49,8 +59,12 @@ class RoutesHelper
         if(!$stats){
             return $response->withStatus(404);
         }
+        $name = "";
+        if($logged){
+            $name = $request->getServerParams()['PHP_AUTH_USER'];
+        }
         return $r->renderer->render($response, 'detector.phtml',
-            array('logged' => $logged, 'name' => $request->getServerParams()['PHP_AUTH_USER'],
+            array('logged' => $logged, 'name' => $name,
                 'exp' => $exp, 'detector' => $detector, 'projects' => $stats, 'base_url' => $this->base_url, 'private_url' => $this->private_url));
     }
 
@@ -61,12 +75,9 @@ class RoutesHelper
         $project = $args['project'];
         $version = $args['version'];
         $misuse = $args['misuse'];
-        $data = $app->data->getMetadata($misuse);
+        $data = $app->data->getMetadata($project, $version, $misuse);
         $patterns = $app->data->getPatterns($misuse);
         $hits = $app->data->getHits($detector, $project, $version, $misuse, $exp);
-        if(!$hits){
-            return $response->withStatus(404);
-        }
         $reviewer = "";
         $review = NULL;
         if ($review_flag && !$logged) {
