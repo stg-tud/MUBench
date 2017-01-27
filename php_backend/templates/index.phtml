@@ -1,6 +1,6 @@
 <div>
     <?php if(!$logged) : ?>
-        <a href="<?= htmlspecialchars($private_url); ?><?= htmlspecialchars($exp); ?>/<?= htmlspecialchars($detector); ?>">Login</a>
+        <a href="<?= htmlspecialchars($private_url); ?>">Login</a>
     <?php endif; ?>
     <?php if($logged) : ?>
         <a href="<?= htmlspecialchars($private_url); ?>overview">overview</a>
