@@ -1,39 +1,33 @@
-<div>
-    <?php if(!$logged) : ?>
-        <a href="<?= htmlspecialchars($private_url); ?>">Login</a>
-    <?php endif; ?>
-    <?php if($logged) : ?>
-        <a href="<?= htmlspecialchars($private_url); ?>overview">overview</a>
-        <a href="<?= htmlspecialchars($private_url); ?>todo">todo</a>
-    <?php endif; ?>
-</div>
 <html>
-<head>
-<title>MUBench Review Page</title>
-<link rel="stylesheet" type="text/css" href="<?= htmlspecialchars($root_url); ?>style/style.css" />
-</head>
-<body>
-<h1>MUBench Review Page</h1>
+    <head>
+        <title>MUBench Review Page</title>
+        <link rel="stylesheet" type="text/css" href="<?= htmlspecialchars($root_url); ?>style/style.css" />
+    </head>
+    <body>
 
-<ul>
-    <?php foreach($experiments as $e) : ?>
-        <?php if(!$logged) : ?>
-            <li><a href="<?= htmlspecialchars($base_url); ?>ex<?= htmlspecialchars($e['id']); ?>">Experiment <?= htmlspecialchars($e['id']); ?> - <?= htmlspecialchars($e['title']); ?></a></li>
-        <?php endif; ?>
-        <?php if($logged) : ?>
-            <li><a href="<?= htmlspecialchars($private_url); ?>ex<?= htmlspecialchars($e['id']); ?>">Experiment <?= htmlspecialchars($e['id']); ?> - <?= htmlspecialchars($e['title']); ?></a></li>
-        <?php endif; ?>
-    <?php endforeach; ?>
-</ul>
+        <div>
+            <?php if(!$logged) : ?>
+                <a href="<?= htmlspecialchars($private_url); ?>">Login</a>
+            <?php endif; ?>
+            <?php if($logged) : ?>
+                <a href="<?= htmlspecialchars($private_url); ?>overview">overview</a>
+                <a href="<?= htmlspecialchars($private_url); ?>todo">todo</a>
+            <?php endif; ?>
+        </div>
 
-<hr style="margin-top: 2cm;"/>
+        <h1>MUBench Review Page</h1>
 
-<div class="comment">
-<p>(this page was last updated at August 31, 2016)</p>
-</div>
+        <ul>
+        <?php foreach($experiments as $e) : ?>
 
-<div class="legal">
-<a href="<?= htmlspecialchars($base_url); ?>impressum/">Legal Note / Impressum</a>
-</div>
-</body>
+            <?php if(!$logged) : ?>
+                <li><a href="<?= htmlspecialchars($base_url); ?>ex<?= htmlspecialchars($e['id']); ?>">Experiment <?= htmlspecialchars($e['id']); ?> - <?= htmlspecialchars($e['title']); ?></a></li>
+            <?php endif; ?>
+
+            <?php if($logged) : ?>
+                <li><a href="<?= htmlspecialchars($private_url); ?>ex<?= htmlspecialchars($e['id']); ?>">Experiment <?= htmlspecialchars($e['id']); ?> - <?= htmlspecialchars($e['title']); ?></a></li>
+            <?php endif; ?>
+        <?php endforeach; ?>
+        </ul>
+    </body>
 </html>
