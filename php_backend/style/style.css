@@ -78,6 +78,10 @@ ol#breadcrumbs a {
     border-right: 2pt solid white;
 }
 
+ol#breadcrumbs a:hover {
+    background-color: darkgray;
+}
+
 body { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; }
 table { border-spacing: 0; }
 th {
@@ -89,12 +93,12 @@ td { vertical-align: top; padding: 5px; }
 td.top { border-top: 1px solid black; }
 td.right { text-align: right; }
 
-table.potential_hits {
-    border: 1px solid black;
+table.potential_hits th {
+    border: 2px solid black;
 }
 
-table.potential_hits th, table.potential_hits td {
-    border: 1px solid black;
+table.potential_hits td {
+    border: 2px solid grey;
 }
 
 a.button {
