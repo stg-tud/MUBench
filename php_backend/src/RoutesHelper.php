@@ -108,8 +108,8 @@ class RoutesHelper
         $params["base_url"] = htmlspecialchars($this->base_url);
         $params["private_url"] = htmlspecialchars($this->private_url);
         // TODO add auth information here as well
-        $params["experiment"] = $args["exp"];
-        $params["detector"] = $args["detector"];
+        $params["experiment"] = array_key_exists("exp", $args) ? $args["exp"] : null;
+        $params["detector"] = array_key_exists("detector", $args) ? $args["detector"] : null;
         return $r->renderer->render($response, $template, $params);
     }
 }
