@@ -2,7 +2,7 @@
 
 body {
 	width: 600px;
-	font-family: Arial;
+	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
 	font-size: 14px;
 	padding: 20px;
 }
@@ -26,8 +26,7 @@ h2 span {
 h3 {
 	font-weight: bold;
 	font-size: 12pt;
-	margin-bottom:10px;
-	margin:20pt 0 10pt 0;
+	margin: 20pt 0 10pt;
 }
 
 p {
@@ -44,7 +43,7 @@ ul ul {
 
 table {
 	width: 500px;
-	font-family: Arial;
+	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
 	font-size: 14px;
   margin: 20px 0 30px;
   border-top: 2px solid black;
