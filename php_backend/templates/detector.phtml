@@ -1,30 +1,8 @@
-    <div>
-        <?php if(!$logged) : ?>
-                <a href="<?= htmlspecialchars($private_url); ?><?= htmlspecialchars($exp); ?>/<?= htmlspecialchars($detector); ?>">Login</a>
-        <?php endif; ?>
-        <?php if($logged) : ?>
-            <a href="<?= htmlspecialchars($private_url); ?>overview">overview</a>
-            <a href="<?= htmlspecialchars($private_url); ?>todo">todo</a>
-        <?php endif; ?>
-    </div>
-    <h1>Detector: <?= htmlspecialchars($detector); ?></h1>
-    <style>
-        body { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; }
-        table { border-spacing: 0; }
-        th { text-align: left; padding: 5px; }
-        td { vertical-align: top; padding: 5px; }
-        td.top { border-top: 1px solid black; }
-        td.right { text-align: right; }
+<link rel="stylesheet" type="text/css" href="<?= htmlspecialchars($root_url); ?>style/style.css" />
 
-        a.button {
-            -webkit-appearance: button;
-            -moz-appearance: button;
-            appearance: button;
-            text-decoration: none;
-            color: initial;
-            padding: 2px 5px;
-        }
-    </style>
+<?php include "includes/menu.phtml"; ?>
+
+    <h1>Detector: <?= htmlspecialchars($detector); ?></h1>
     <table>
         <thead>
             <tr>

@@ -1,9 +1,25 @@
-<ol id="menu">
-            <?php if(!$logged) : ?>
-    <li><a href="<?= htmlspecialchars($private_url); ?>">Login</a></li>
-<?php endif; ?>
-<?php if($logged) : ?>
-    <li><a href="<?= htmlspecialchars($private_url); ?>overview">overview</a></li>
-    <li><a href="<?= htmlspecialchars($private_url); ?>todo">todo</a></li>
-<?php endif; ?>
-</ol>
+ <div id="header">
+    <ol id="menu">
+        <?php if(!$logged) : ?>
+            <li><a href="<?= $private_url; ?>">Login</a></li>
+        <?php endif; ?>
+
+        <?php if($logged) : ?>
+            <li><a href="<?= $private_url; ?>overview">Review Summary</a></li>
+            <li><a href="<?= $private_url; ?>todo">Open Reviews</a></li>
+        <?php endif; ?>
+    </ol>
+
+    <ol id="breadcrumbs">
+        <?php
+        $url_prefix = $logged ? $private_url : $base_url;
+        ?>
+        <?php if($experiment) : ?>
+            <li><a href="<?= $url_prefix . $experiment ?>"><?= $experiment ?></a></li>
+
+            <?php if($detector) : ?>
+                <li><a href="<?= $url_prefix .$experiment . "/" . $detector ?>"><?= $detector ?></a></li>
+            <?php endif; ?>
+        <?php endif; ?>
+    </ol>
+ </div>

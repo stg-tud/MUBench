@@ -28,24 +28,24 @@ class RoutesHelper
     }
 
     public function index_route($request, $args, $app, $r, $response, $logged){
-        return $this->render($r, $response, 'index.phtml', array('experiments' => $this->settings['ex_template'], "logged" => $logged));
+        return $this->render($r, $args, $response, 'index.phtml', array('experiments' => $this->settings['ex_template'], "logged" => $logged));
     }
 
     public function experiment_route($request, $args, $app, $r, $response, $logged){
         $exp = $args['exp'];
         $data = $app->data->getDetectors($exp);
         $template = $this->settings['ex_template'][$exp];
-        return $this->render($r, $response, 'experiment.phtml', array('data' => $data, 'id' => $template['id'], 'title' => $template['title'], 'exp' => $exp, 'logged' => $logged));
+        return $this->render($r, $args, $response, 'experiment.phtml', array('data' => $data, 'id' => $template['id'], 'title' => $template['title'], 'exp' => $exp, 'logged' => $logged));
     }
 
     public function overview_route($request, $args, $app, $r, $response){
         $reviews = $app->data->getReviewsByReviewer($request->getServerParams()['PHP_AUTH_USER']);
-        return $this->render($r, $response, 'overview.phtml', array("name" => $request->getServerParams()['PHP_AUTH_USER'], "experiments" => $reviews));
+        return $this->render($r, $args, $response, 'overview.phtml', array("name" => $request->getServerParams()['PHP_AUTH_USER'], "experiments" => $reviews));
     }
 
     public function todo_route($request, $args, $app, $r, $response){
         $reviews = $app->data->getTodo($request->getServerParams()['PHP_AUTH_USER']);
-        return $this->render($r, $response, 'todo.phtml', array("experiments" => $reviews));
+        return $this->render($r, $args, $response, 'todo.phtml', array("experiments" => $reviews));
     }
 
     public function detect_route($request, $args, $app, $r, $response, $logged)
@@ -63,7 +63,7 @@ class RoutesHelper
         if($logged){
             $name = $request->getServerParams()['PHP_AUTH_USER'];
         }
-        return $this->render($r, $response, 'detector.phtml',
+        return $this->render($r, $args, $response, 'detector.phtml',
             array('logged' => $logged, 'name' => $name,
                 'exp' => $exp, 'detector' => $detector, 'projects' => $stats));
     }
@@ -93,7 +93,7 @@ class RoutesHelper
         $line = $hits ? $hits[0]['line'] : 0;
         $file = $hits ? ($exp == "ex2" ? $hits[0]['file'] : $data['file']) : "file not found";
         $review = $app->data->getReview($exp, $detector, $project, $version, $misuse, $reviewer);
-        return $this->render($r, $response, 'review.phtml',
+        return $this->render($r, $args, $response, 'review.phtml',
             array('name' => $reviewer, 'review' => $review, 'logged' => $logged, 'exp' => $exp,
                 'detector' => $detector, 'version' => $version, 'project' => $project, 'misuse' => $misuse,
                 'desc' => $data['description'], 'fix_desc' => $data['fix_description'], 'diff_url' => $data['diff_url'],
@@ -103,11 +103,13 @@ class RoutesHelper
                 'code' => $code, 'line' => $line, 'patterns' => $patterns, 'hits' => $hits));
     }
 
-    private function render($app, $response, $template, $params) {
-        $params["root_url"] = $this->root_url;
-        $params["base_url"] = $this->base_url;
-        $params["private_url"] = $this->private_url;
+    private function render($r, $args, $response, $template, $params) {
+        $params["root_url"] = htmlspecialchars($this->root_url);
+        $params["base_url"] = htmlspecialchars($this->base_url);
+        $params["private_url"] = htmlspecialchars($this->private_url);
         // TODO add auth information here as well
-        return $app->renderer->render($response, $template, $params);
+        $params["experiment"] = $args["exp"];
+        $params["detector"] = $args["detector"];
+        return $r->renderer->render($response, $template, $params);
     }
 }

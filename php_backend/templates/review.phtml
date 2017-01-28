@@ -16,16 +16,22 @@
 ?>
         <html>
             <head>
+                <link rel="stylesheet" type="text/css" href="<?= htmlspecialchars($root_url); ?>style/style.css" />
                 <style>
                     table.fw {width:100%;}
                     .vtop {vertical-align:top}
-                    .prettyprint ol.linenums > li { list-style-type: decimal; }
+                    .prettyprint ol.linenums > li {
+                        list-style-type: decimal;
+                        list-style-position: inside;
+                    }
 
                 </style>
                 <script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js?autoload=true&amp;skin=sunburst"></script>
             </head>
             <body>
-            <a href="<?= htmlspecialchars($private_url) ?><?= htmlspecialchars($exp); ?>/<?= htmlspecialchars($detector); ?>">back to projects</a>
+
+            <?php include "includes/menu.phtml"; ?>
+
         <h1>Review</h1>
         <table>
             <tr><td><b>Detector:</b></td><td><?= htmlspecialchars($detector); ?></td></tr>
@@ -92,7 +98,7 @@
 
         <?php if(count($hits) > 0) : ?>
         <form action="<?= $private_url; ?>review/<?= htmlspecialchars($exp); ?>/<?= htmlspecialchars($detector); ?>" method="post" target="">
-        <table border="1" cellpadding="5">
+        <table class="potential_hits">
         
 
         <tr>

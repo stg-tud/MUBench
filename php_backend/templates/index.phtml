@@ -1,7 +1,7 @@
 <html>
     <head>
         <title>MUBench Review Page</title>
-        <link rel="stylesheet" type="text/css" href="<?= htmlspecialchars($root_url); ?>style/style.css" />
+        <link rel="stylesheet" type="text/css" href="<?= $root_url; ?>style/style.css" />
     </head>
     <body>
         <?php include "includes/menu.phtml"; ?>
@@ -10,13 +10,12 @@
 
         <ul>
         <?php foreach($experiments as $e) : ?>
-
             <?php if(!$logged) : ?>
-                <li><a href="<?= htmlspecialchars($base_url); ?>ex<?= htmlspecialchars($e['id']); ?>">Experiment <?= htmlspecialchars($e['id']); ?> - <?= htmlspecialchars($e['title']); ?></a></li>
+                <li><a href="<?= $base_url; ?>ex<?= htmlspecialchars($e['id']); ?>">Experiment <?= htmlspecialchars($e['id']); ?> - <?= htmlspecialchars($e['title']); ?></a></li>
             <?php endif; ?>
 
             <?php if($logged) : ?>
-                <li><a href="<?= htmlspecialchars($private_url); ?>ex<?= htmlspecialchars($e['id']); ?>">Experiment <?= htmlspecialchars($e['id']); ?> - <?= htmlspecialchars($e['title']); ?></a></li>
+                <li><a href="<?= $private_url; ?>ex<?= htmlspecialchars($e['id']); ?>">Experiment <?= htmlspecialchars($e['id']); ?> - <?= htmlspecialchars($e['title']); ?></a></li>
             <?php endif; ?>
         <?php endforeach; ?>
         </ul>

@@ -1,32 +1,20 @@
 @import url(reset.css);
 
 body {
-	width: 600px;
 	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
 	font-size: 14px;
 	padding: 20px;
 }
+
 h1 {
-	font-size: 14pt;
-	margin-bottom:10px;
+	font-size: 160%;
+    font-weight: bolder;
+	margin: 20pt 0 10pt;
 }
 h2 {
-	font-weight: bold;
-	font-size: 16pt;
-
-	margin-bottom: 20px;
-}
-h2 span {
-	display: block;
-	margin-top: 3pt;
-	font-weight: normal;
-	font-style: italic;
-	font-size: 14pt;
-}
-h3 {
-	font-weight: bold;
-	font-size: 12pt;
-	margin: 20pt 0 10pt;
+    font-size: 140%;
+	font-weight: bolder;
+	margin: 20px 0 10pt;
 }
 
 p {
@@ -40,59 +28,80 @@ ul ul {
 	margin-left: 15px;
 }
 
-ol#menu {
+#header {
     display: block;
     width: 100%;
-    margin: 10pt 0 20pt;
-	list-style: none;
-    border-bottom: 1px gray solid;
+    height: 50pt;
+}
+
+ol#menu {
+    float: right;
+    margin: 10pt 10pt 20pt 0;
+	list-style-type: none;
 }
 
 ol#menu li {
-    padding: 3pt;
+    float: left;
 }
 
 ol#menu a {
+    display: block;
+    font-weight: bold;
+    text-decoration: none;
+    padding: 4pt 7pt;
+    background-color: grey;
+    color: white;
+    border-right: 2pt solid white;
+}
+
+ol#menu a:hover {
+    background-color: darkgray;
+}
+
+ol#breadcrumbs {
+    float: left;
+    margin: 10pt 0 20pt;
+    list-style-type: none;
+}
+
+ol#breadcrumbs li {
+    float: left;
+}
+
+ol#breadcrumbs a {
+    display: block;
+    font-weight: bold;
+    text-decoration: none;
+    padding: 4pt 7pt;
+    background-color: grey;
+    color: white;
+    border-right: 2pt solid white;
+}
+
+body { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; }
+table { border-spacing: 0; }
+th {
+    font-weight: bold;
+    text-align: left;
+    padding: 5px;
+}
+td { vertical-align: top; padding: 5px; }
+td.top { border-top: 1px solid black; }
+td.right { text-align: right; }
+
+table.potential_hits {
+    border: 1px solid black;
+}
+
+table.potential_hits th, table.potential_hits td {
+    border: 1px solid black;
+}
+
+a.button {
     -webkit-appearance: button;
     -moz-appearance: button;
     appearance: button;
     text-decoration: none;
     color: initial;
-    padding: 4px 7px;
-}
-
-table {
-	width: 500px;
-	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-	font-size: 14px;
-  margin: 20px 0 30px;
-  border-top: 2px solid black;
-  border-bottom: 2px solid black;
-}
-th {
-  border-bottom: 1px solid black;
-}
-
-.comment {
-	color: #aaa;
-}
-div.comment {
-	color: #aaa;
-	float: left;
-}
-div.comment p {
-	margin: 0;
-	padding: 0;
-}
-
-
-div.footer {
-	margin-top:30pt;	
-}
-div.legal {
-	float: right;
-	text-align: right;
-}
-div.legal a {
-	color: #aaf;
+    padding: 2px 5px;
 }
