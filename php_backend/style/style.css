@@ -34,11 +34,31 @@ p {
 }
 
 ul {
-	list-style-type: disc;
-	list-style-position: inside;
+    list-style: disc inside;
 }
 ul ul {
 	margin-left: 15px;
+}
+
+ol#menu {
+    display: block;
+    width: 100%;
+    margin: 10pt 0 20pt;
+	list-style: none;
+    border-bottom: 1px gray solid;
+}
+
+ol#menu li {
+    padding: 3pt;
+}
+
+ol#menu a {
+    -webkit-appearance: button;
+    -moz-appearance: button;
+    appearance: button;
+    text-decoration: none;
+    color: initial;
+    padding: 4px 7px;
 }
 
 table {

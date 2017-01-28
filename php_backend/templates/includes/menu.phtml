@@ -1,0 +1,9 @@
+<ol id="menu">
+            <?php if(!$logged) : ?>
+    <li><a href="<?= htmlspecialchars($private_url); ?>">Login</a></li>
+<?php endif; ?>
+<?php if($logged) : ?>
+    <li><a href="<?= htmlspecialchars($private_url); ?>overview">overview</a></li>
+    <li><a href="<?= htmlspecialchars($private_url); ?>todo">todo</a></li>
+<?php endif; ?>
+</ol>

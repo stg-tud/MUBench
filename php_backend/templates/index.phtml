@@ -4,16 +4,7 @@
         <link rel="stylesheet" type="text/css" href="<?= htmlspecialchars($root_url); ?>style/style.css" />
     </head>
     <body>
-
-        <div>
-            <?php if(!$logged) : ?>
-                <a href="<?= htmlspecialchars($private_url); ?>">Login</a>
-            <?php endif; ?>
-            <?php if($logged) : ?>
-                <a href="<?= htmlspecialchars($private_url); ?>overview">overview</a>
-                <a href="<?= htmlspecialchars($private_url); ?>todo">todo</a>
-            <?php endif; ?>
-        </div>
+        <?php include "includes/menu.phtml"; ?>
 
         <h1>MUBench Review Page</h1>
 
