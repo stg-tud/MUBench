@@ -14,8 +14,7 @@ class DirectoryHelper {
         $path = $this->buildPath($ex, $detector, $project, $version);
         if(file_exists($path)){
             $it = new RecursiveDirectoryIterator($path, RecursiveDirectoryIterator::SKIP_DOTS);
-            $files = new RecursiveIteratorIterator($it,
-                RecursiveIteratorIterator::CHILD_FIRST);
+            $files = new RecursiveIteratorIterator($it, RecursiveIteratorIterator::CHILD_FIRST);
             foreach($files as $file) {
                 if ($file->isDir()){
                     rmdir($file->getRealPath());
@@ -31,6 +30,9 @@ class DirectoryHelper {
         $path = $this->buildPath($ex, $detector, $project, $version);
 		$file = $path . $img->getClientFilename();
 		$this->logger->info("moving file " . $img->getClientFilename() . " to " . $path);
+        if(file_exists($file)) {
+            unlink($file);
+        }
         mkdir($path, 0745, true);
 		$img->moveTo($file);
 	}

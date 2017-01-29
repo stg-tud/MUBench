@@ -96,7 +96,6 @@ $app->group('/api', function () use ($app) {
         $files = $request->getUploadedFiles();
         $this->logger->info("received " . count($files) . " files");
         if($files) {
-            $app->dir->deleteOldImages($experiment, $obj->{'detector'}, $obj->{'project'}, $obj->{'version'});
             foreach ($files as $img) {
                 $app->dir->handleImage($experiment, $obj->{'detector'}, $obj->{'project'}, $obj->{'version'}, $img);
             }
