@@ -120,6 +120,8 @@ class DataProcessor {
                 foreach($index as $project => $versions){
                     foreach($versions as $version) {
                         foreach ($version['hits'] as $misuse){
+                            if($misuse["no-hit"]) continue;
+
                             $reviewers = $this->getReviewsMisuse($ex, $detector, $project, $version['version'], $misuse['misuse']);
                             $otherReviewers = [];
                             $isReviewed = false;
