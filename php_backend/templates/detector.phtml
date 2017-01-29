@@ -67,7 +67,11 @@
                                     ? substr($hit['misuse'], strlen($project) + 1) : $hit['misuse']); ?></td>
                             <?php if($exp !== "ex2") : ?>
                                 <td class="<?= $border_class ?>">
-                                    unknown
+                                    <? if(is_array($hit["violation_types"])): ?>
+                                        <?= implode("<br/>", $hit["violation_types"]) ?>
+                                    <? else: ?>
+                                        <?= $hit["violation_types"] ?>
+                                    <? endif; ?>
                                 </td>
                             <?php endif; ?>
                             <?php
