@@ -211,6 +211,7 @@ class DataProcessor {
 		    if(!$hits){
 		        $metahits = $this->db->getMisusesFromMeta($s['project'], $s['version']);
                 foreach($metahits as $hit){
+                    $hit["no-hit"] = true;
                     $id = $hit['misuse'];
                     $s['hits'][$id] = $hit;
                 }

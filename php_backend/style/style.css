@@ -93,6 +93,9 @@ td { vertical-align: top; padding: 5px; }
 td.top { border-top: 1px solid black; }
 td.right { text-align: right; }
 
+td.no-hit { color: lightgray; }
+a.no-hit { color: lightgray; }
+
 table.potential_hits th {
     border: 2px solid black;
 }
