@@ -1,27 +1,25 @@
+<?php
+$logged = true;
+?>
 <html>
 <head>
-    <style>
-        table.fw {width:100%;}
-        .vtop {vertical-align:top}
-        .prettyprint ol.linenums > li { list-style-type: decimal; }
-    </style>
-    <script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js?autoload=true&amp;skin=sunburst"></script>
+    <link rel="stylesheet" type="text/css" href="<?= htmlspecialchars($root_url); ?>style/style.css" />
 </head>
 <body>
-<div>
-    <a href="<?= htmlspecialchars($private_url) ?>">back</a>
-</div>
-<h1>Review todo</h1>
+<?php include "includes/menu.phtml" ?>
+
+<h1>Open Reviews</h1>
+
 <?php foreach($experiments as $key => $reviews) : ?>
-    <h3>Experiment <?= htmlspecialchars($key); ?></h3>
-    <table border="1" cellpadding="5">
+    <h2>Experiment <?= htmlspecialchars($key); ?></h2>
+    <table style="width: 600px;">
         <tr>
             <th>Detector</th>
             <th>Project</th>
             <th>Version</th>
             <th>Misuse</th>
             <th>Reviewer</th>
-            <th>Review</th>
+            <th></th>
         </tr>
         <?php foreach($reviews as $review) : ?>
             <tr>
@@ -39,19 +37,10 @@
                         <a href="<?= $review_url ?>/<?= htmlspecialchars($reviewer); ?>"><?= htmlspecialchars($reviewer); ?></a>
                     <?php endforeach; ?>
                 </td>
-                <td><a href="<?= $review_url ?>">review</a></td>
+                <td><a href="<?= $review_url ?>" class="button">review</a></td>
             </tr>
         <?php endforeach; ?>
     </table>
 <?php endforeach; ?>
-<hr style="margin-top: 2cm;"/>
-
-<div class="comment">
-    <p>(this page was last updated at August 31, 2016)</p>
-</div>
-
-<div class="legal">
-    <a href="/../index.php/impressum/">Legal Note / Impressum</a>
-</div>
 </body>
 </html>

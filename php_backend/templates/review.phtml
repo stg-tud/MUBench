@@ -33,7 +33,7 @@
             <?php include "includes/menu.phtml"; ?>
 
         <h1>Review</h1>
-        <table>
+        <table class="invisible">
             <tr><td><b>Detector:</b></td><td><?= htmlspecialchars($detector); ?></td></tr>
             <tr><td><b>Target:</b></td><td>project '<?= htmlspecialchars($project); ?>'' version <?= htmlspecialchars($version); ?></td></tr>
             <?php if($exp !== "ex2") : ?>
@@ -47,7 +47,7 @@
             <h2>Potential Misuse</h2>
             <p>Anomaly identified by the detector. Please review whether this anomaly corresponds to a misuse.</p>
         <?php endif; ?>
-        <table class="fw">
+        <table class="invisible fw">
         <?php if($exp !== "ex2") : ?>
             <tr><td class="vtop"><b>Description:</b></td><td><?= htmlspecialchars($desc); ?></td></tr>
             <tr><td class="vtop"><b>Fix Description:</b></td><td><?= htmlspecialchars($fix_desc); ?>(<a href="<?= htmlspecialchars($diff_url); ?>">see diff</a>)</td></tr>
@@ -472,7 +472,7 @@
        <?php endforeach; ?>
        </table>
          <?php if($logged) :?>
-                <table>
+                <table class="invisible">
                 <tr><td><b>Reviewer Name:</b></td>
                     <td><?= htmlspecialchars($name); ?></td></tr>
                 <tr><td class="vtop"><b>Comment:</b></td>
