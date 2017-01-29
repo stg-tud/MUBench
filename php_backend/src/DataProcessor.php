@@ -112,7 +112,7 @@ class DataProcessor {
     }
 
 	public function getTodo($reviewer){
-        $exp = ["ex1", "ex2", "ex2"];
+        $exp = ["ex1", "ex2", "ex3"];
         $reviewable = [];
         foreach($exp as $ex){
             foreach($this->getDetectors($ex) as $detector){
