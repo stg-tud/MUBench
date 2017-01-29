@@ -1,20 +1,18 @@
+<?php
+$logged = true;
+?>
 <html>
 <head>
-    <style>
-        table.fw {width:100%;}
-        .vtop {vertical-align:top}
-        .prettyprint ol.linenums > li { list-style-type: decimal; }
-    </style>
-    <script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js?autoload=true&amp;skin=sunburst"></script>
+    <link rel="stylesheet" type="text/css" href="<?= htmlspecialchars($root_url); ?>style/style.css" />
 </head>
 <body>
-<div>
-    <a href="<?= htmlspecialchars($private_url) ?>">back</a>
-</div>
-<h1>Review overview</h1>
+<?php include "includes/menu.phtml" ?>
+
+<h1>My Reviews</h1>
+
 <?php foreach($experiments as $key => $reviews) : ?>
-    <h3>Experiment <?= htmlspecialchars($key); ?></h3>
-<table border="1" cellpadding="5">
+    <h2>Experiment <?= htmlspecialchars($key); ?></h2>
+<table>
     <tr>
         <th>Detector</th>
         <th>Project</th>
@@ -23,18 +21,30 @@
         <th>Decision</th>
         <th>Comment</th>
         <th>Types</th>
-        <th>Reviewer</th>
-        <th>Review</th>
+        <th>Other Reviews</th>
+        <th>Actions</th>
     </tr>
+    <?php
+    $last_detector = "";
+    $last_project = "";
+    ?>
     <?php foreach($reviews as $review) : ?>
+        <?php
+        $new_detector = strcmp($last_detector, $review['detector']) !== 0;
+        $new_project = strcmp($last_project, $review["project"]) !== 0;
+        $style_classes = $new_detector || $new_project ? "class=\"top\"" : "";
+
+        $last_detector = $review["detector"];
+        $last_project = $review["project"];
+        ?>
     <tr>
-        <td><?= htmlspecialchars($review['detector']); ?></td>
-        <td><?= htmlspecialchars($review['project']); ?></td>
-        <td><?= htmlspecialchars($review['version']); ?></td>
-        <td><?= htmlspecialchars($review['misuse']); ?></td>
-        <td><?= htmlspecialchars($review['decision']); ?></td>
-        <td><?= htmlspecialchars($review['comment']); ?></td>
-        <td>
+        <td <?= $new_detector ? $style_classes : "" ?>><?= $new_detector ? htmlspecialchars($review['detector']) : "" ?></td>
+        <td <?= $style_classes ?>><?= $new_project ? htmlspecialchars($review['project']) : "" ?></td>
+        <td <?= $style_classes ?>><?= htmlspecialchars($review['version']); ?></td>
+        <td <?= $style_classes ?>><?= htmlspecialchars($review['misuse']); ?></td>
+        <td <?= $style_classes ?>><?= htmlspecialchars($review['decision']); ?></td>
+        <td <?= $style_classes ?>><?= htmlspecialchars($review['comment']); ?></td>
+        <td <?= $style_classes ?>>
             <?php foreach($review['types'] as $v) : ?>
                 <?= htmlspecialchars($v); ?><br/>
             <?php endforeach; ?>
@@ -44,26 +54,18 @@
             htmlspecialchars($review['project']) . "/" . htmlspecialchars($review['version']) . "/" .
             htmlspecialchars($review['misuse']);
         ?>
-        <td>
+        <td <?= $style_classes ?>>
             <?php foreach($review['reviewer'] as $reviewer) : ?>
                 <?php if($reviewer !== $name): ?>
                     <a href="<?= $review_url ?>/<?= htmlspecialchars($reviewer); ?>"><?= htmlspecialchars($reviewer); ?></a>
                 <?php endif; ?>
             <?php endforeach; ?>
         </td>
-        <td><a href="<?= $review_url ?>">review</a></td>
+        <td <?= $style_classes ?>><a href="<?= $review_url ?>" class="button">edit</a></td>
     </tr>
     <?php endforeach; ?>
 </table>
 <?php endforeach; ?>
-<hr style="margin-top: 2cm;"/>
 
-<div class="comment">
-    <p>(this page was last updated at August 31, 2016)</p>
-</div>
-
-<div class="legal">
-    <a href="/../index.php/impressum/">Legal Note / Impressum</a>
-</div>
 </body>
 </html>
