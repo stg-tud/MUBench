@@ -323,7 +323,7 @@ class DBConnection {
 	public function getReviewsByReviewer($reviewer){
         $query = [];
         try{
-            $query = $this->pdo->query("SELECT * from reviews WHERE name=" . $this->pdo->quote($reviewer) . ";");
+            $query = $this->pdo->query("SELECT * from reviews WHERE name=" . $this->pdo->quote($reviewer) . " ORDER BY `exp`, `detector`, `project`, `version`, `misuse`;");
         }catch(PDOException $e){
             $this->logger->error("Error getReviewsByReviewer: " . $e->getMessage());
         }
