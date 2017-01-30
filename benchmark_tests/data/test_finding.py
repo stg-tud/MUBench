@@ -54,14 +54,6 @@ class TestPotentialHit:
         self.misuse.location.method = "method(A)"
         self.assert_potential_hit({"method": "method(p.A)"}, True)
 
-    def test_matches_constructor(self):
-        self.misuse.location.method = "Foo(A, B)"
-        self.assert_potential_hit({"method": "<init>(A, B)"})
-
-    def test_matches_constructor_name_only(self):
-        self.misuse.location.method = "Foo(A)"
-        self.assert_potential_hit({"method": "<init>(p.A)"}, True)
-
     def assert_potential_hit(self, finding_data: Dict[str, str], method_name_only: bool=False):
         finding = self.create_finding(finding_data)
         assert finding.is_potential_hit(self.misuse, method_name_only)

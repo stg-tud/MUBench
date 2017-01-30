@@ -39,10 +39,6 @@ class Finding(Dict[str, str]):
         if "(" not in finding_method:
             finding_method += "("
 
-        # If detector report constructors as <init>, we conservatively assume any method name to match
-        if finding_method.startswith("<init>("):
-            finding_method = misuse_method.split("(", 1)[0] + finding_method[6:]
-
         return misuse_method.startswith(finding_method)
 
     def __method(self):
