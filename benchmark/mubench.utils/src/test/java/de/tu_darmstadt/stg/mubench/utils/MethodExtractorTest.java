@@ -103,6 +103,17 @@ public class MethodExtractorTest {
 	}
 
 	@Test
+	public void findsStaticMethod() throws Exception {
+		testFindsMethod("class C {\n" +
+				"  static void m() {}\n" +
+				"}",
+
+				"m()",
+
+				"  static void m() {}");
+	}
+
+	@Test
 	public void findsConstructorByClassName() throws Exception {
 		testFindsMethod("class C{\n"
 				+ "  C() {}\n"
