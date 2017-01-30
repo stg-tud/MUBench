@@ -66,10 +66,12 @@
                             <?php endif; ?>
                         </td>
                         <td class="<?= $style_classes ?>">
-                            <?php if ($logged && !$hit["no-hit"]) : ?>
-                                <?php if (!$has_reviewed) : ?><a href="<?= $review_url; ?>" class="button">review</a><?php endif; ?>
-                            <?php else : ?>
-                                <a href="<?= $review_url; ?>" class="button">view</a>
+                            <?php
+                            $button_text = $logged && !$hit["no-hit"] ? "review" : "view";
+                            $button_classes = "button" . ($hit["no-hit"] || ($logged && count($hit["reviews"])) >= 2 ? " no-hit" : "")
+                            ?>
+                            <?php if (!$has_reviewed) : ?>
+                                <a href="<?= $review_url; ?>" class="<?= $button_classes ?>"><?= $button_text ?></a>
                             <?php endif; ?>
                         </td>
                     </tr>
