@@ -274,7 +274,7 @@ public class MethodExtractorTest {
 		assertEquals(2, candidates.length);
 	}
 
-	public void testFindsMethod(String input, String methodSignature, String expectedOutput) throws Exception {
+	private void testFindsMethod(String input, String methodSignature, String expectedOutput) throws Exception {
 		String output = runUUT(input, methodSignature);
         String[] data = output.split(":", 3);
         if (data.length < 3) {
@@ -284,7 +284,7 @@ public class MethodExtractorTest {
 		assertEquals(expectedOutput, methodCode);
 	}
 	
-	public void testFindsDeclaringType(String input, String methodSignature, String expectedDeclaringType) throws Exception {
+	private void testFindsDeclaringType(String input, String methodSignature, String expectedDeclaringType) throws Exception {
 		String output = runUUT(input, methodSignature);
 		String declaringType = output.split(":", 3)[1];
 		assertEquals(expectedDeclaringType, declaringType);
@@ -296,7 +296,7 @@ public class MethodExtractorTest {
 		assertEquals(expectedLineNumber, lineNumber);
 	}
 
-	public String runUUT(String input, String methodSignature) throws Exception {
+	private String runUUT(String input, String methodSignature) throws Exception {
 		MethodExtractor methodExtractor = new MethodExtractor();
 		ByteArrayInputStream inputStream = new ByteArrayInputStream(input.getBytes());
 		return methodExtractor.extract(inputStream, methodSignature);
