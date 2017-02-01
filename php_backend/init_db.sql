@@ -60,6 +60,23 @@ CREATE TABLE IF NOT EXISTS `stats` (
   `number_of_findings` text NOT NULL,
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
+CREATE TABLE IF NOT EXISTS `meta_snippets` (
+  `project` text NOT NULL,
+  `version` text NOT NUll,
+  `misuse` text NOT NULL,
+  `snippet` text NOT NULL,
+  `line` int NOT NULL
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+CREATE TABLE IF NOT EXISTS `finding_snipptes` (
+  `detector` text NOT NULL,
+  `project` text NOT NULL,
+  `version` text NOT NUll,
+  `finding` text NOT NULL,
+  `snippet` text NOT NULL,
+  `line` int NOT NULL
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
 CREATE TABLE IF NOT EXISTS `types` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(100) NOT NULL,
