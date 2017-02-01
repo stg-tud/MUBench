@@ -24,7 +24,6 @@
                         list-style-type: decimal;
                         list-style-position: inside;
                     }
-
                 </style>
                 <script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js?autoload=true&amp;skin=sunburst"></script>
             </head>
@@ -73,7 +72,9 @@
             <?php endif; ?>
             <td>
                 <?php if($code) : ?>
-                    <pre class="prettyprint linenums:<?= htmlspecialchars($line); ?>"><code class="language-java"><?= htmlspecialchars($code); ?></code></pre>
+                    <?php foreach($code as $c): ?>
+                    <pre class="prettyprint linenums:<?= htmlspecialchars($c['line']); ?>"><code class="language-java"><?= htmlspecialchars($c['snippet']); ?></code></pre>
+                    <?php endforeach; ?>
                 <?php else : ?>
                     <pre>code unavailable</pre>
                 <?php endif; ?>

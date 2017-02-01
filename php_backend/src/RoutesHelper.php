@@ -76,6 +76,10 @@ class RoutesHelper
         $version = $args['version'];
         $misuse = $args['misuse'];
         $data = $app->data->getMetadata($project, $version, $misuse);
+        $snippets = $app->data->getMetaSnippets($project, $version, $misuse);
+        if($exp === "ex2"){
+            $snippets = $app->data->getFindingSnippets($detector, $project, $version, $misuse);
+        }
         $patterns = $app->data->getPatterns($misuse);
         $hits = $app->data->getHits($detector, $project, $version, $misuse, $exp);
         $reviewer = "";
@@ -89,8 +93,7 @@ class RoutesHelper
             $reviewer = $request->getServerParams()['PHP_AUTH_USER'];
         }
         $method = $hits ? ($exp == "ex2" ? $hits[0]['method'] : $data['method']) : "method not found";
-        $code = $hits ? $hits[0]['target_snippets'] : "code not found";
-        $line = $hits ? $hits[0]['line'] : 0;
+        $code = $snippets ? $snippets : array(array("line" => 1, "snippet" => "code not found"));
         $file = $hits ? ($exp == "ex2" ? $hits[0]['file'] : $data['file']) : "file not found";
         $review = $app->data->getReview($exp, $detector, $project, $version, $misuse, $reviewer);
         return $this->render($r, $args, $response, 'review.phtml',
@@ -100,7 +103,7 @@ class RoutesHelper
                 'violation_types' => $data['violation_types'],
                 'method' => $method,
                 'file' => $file,
-                'code' => $code, 'line' => $line, 'patterns' => $patterns, 'hits' => $hits));
+                'code' => $code, 'patterns' => $patterns, 'hits' => $hits));
     }
 
     private function render($r, $args, $response, $template, $params) {

@@ -24,10 +24,10 @@
                 <?php $new_version = true; ?>
                 <?php foreach($version['hits'] as $hit) : ?>
                     <?php
-                    $has_reviewed = $hit['reviews'] && in_array($name, $hit['reviews']);
+                    $has_reviewed = array_key_exists('reviews', $hit) && $hit['reviews'] && in_array($name, $hit['reviews']);
                     $classes = [];
                     if($new_project) $classes[] = "top";
-                    if($hit["no-hit"]) $classes[] = "no-hit";
+                    if(array_key_exists('no-hit', $hit) && $hit["no-hit"]) $classes[] = "no-hit";
                     $style_classes = implode(" ", $classes);
                     ?>
                     <tr>
@@ -67,8 +67,8 @@
                         </td>
                         <td class="<?= $style_classes ?>">
                             <?php
-                            $button_text = $logged && !$hit["no-hit"] ? "review" : "view";
-                            $button_classes = "button" . ($hit["no-hit"] || ($logged && count($hit["reviews"])) >= 2 ? " no-hit" : "")
+                            $button_text = $logged && (!array_key_exists('no-hit', $hit) || !$hit["no-hit"]) ? "review" : "view";
+                            $button_classes = "button" . ((array_key_exists('no-hit', $hit) && $hit["no-hit"]) || ($logged && count($hit["reviews"])) >= 2 ? " no-hit" : "")
                             ?>
                             <?php if (!$has_reviewed) : ?>
                                 <a href="<?= $review_url; ?>" class="<?= $button_classes ?>"><?= $button_text ?></a>

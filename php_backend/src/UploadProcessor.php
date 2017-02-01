@@ -1,4 +1,5 @@
 <?php
+require_once 'QueryBuilder.php';
 
 use Monolog\Logger;
 
@@ -7,10 +8,12 @@ class UploadProcessor
 
     private $db;
     private $logger;
+    private $query;
 
-    function __construct(DBConnection $db, Logger $logger)
+    function __construct(DBConnection $db, QueryBuilder $queryBuilder, Logger $logger)
     {
         $this->db = $db;
+        $this->query = $queryBuilder;
         $this->logger = $logger;
     }
 
@@ -30,13 +33,13 @@ class UploadProcessor
             $oldId = intval($oldReview['id']);
             $oldFindings = $this->db->getReviewFindings($oldId);
             foreach($oldFindings as $oldFinding){
-                $statements[] = $this->db->getReviewFindingsDeleteStatement(intval($oldFinding['id']));
-                $statements[] = $this->db->getReviewFindingsTypeDelete(intval($oldFinding['id']));
+                $statements[] = $this->query->getReviewFindingsDeleteStatement(intval($oldFinding['id']));
+                $statements[] = $this->query->getReviewFindingsTypeDelete(intval($oldFinding['id']));
             }
         }
 
-        $statements[] = $this->db->getReviewDeleteStatement($exp, $detector, $project, $version, $misuse, $name);
-        $statements[] = $this->db->getReviewStatement($exp, $detector, $project, $version, $misuse, $name, $comment);
+        $statements[] = $this->query->getReviewDeleteStatement($exp, $detector, $project, $version, $misuse, $name);
+        $statements[] = $this->query->getReviewStatement($exp, $detector, $project, $version, $misuse, $name, $comment);
         $this->db->execStatements($statements);
         $newReview = $this->db->getReview($exp, $detector, $project, $version, $misuse, $name);
         if(!$newReview){
@@ -45,7 +48,7 @@ class UploadProcessor
         }
         $id = intval($newReview['id']);
         foreach($hits as $key => $hit){
-            $this->db->execStatement($this->db->getReviewFindingStatement($id, $hit['hit'], $key));
+            $this->db->execStatement($this->query->getReviewFindingStatement($id, $hit['hit'], $key));
             $findingEntry = $this->db->getReviewFinding($id, $key);
             if(!$findingEntry){
                 $this->logger->error("finding not found");
@@ -54,22 +57,23 @@ class UploadProcessor
             $findingId = intval($findingEntry['id']);
             foreach($hit['types'] as $type){
                 $typeId = $this->db->getTypeIdByName($type);
-                $this->db->execStatement($this->db->addReviewType($findingId, $typeId));
+                $this->db->execStatement($this->query->addReviewType($findingId, $typeId));
             }
         }
     }
 
     public function processData($ex, $obj, $obj_array)
     {
-        $table = $this->db->getTableName($obj->{'detector'});
+        $detector = $obj->{'detector'};
+        $table = $this->db->getTableName($detector);
         $this->logger->info("Data for : " . $table);
         $project = $obj->{'project'};
         $version = $obj->{'version'};
         $runtime = $obj->{'runtime'};
         $result = $obj->{'result'};
         $findings = $obj->{'number_of_findings'};
-        if(obj_array) {
-            $obj_array = $this->rearrangeCodeSnippets($obj_array);
+        if($obj_array) {
+            //$obj_array = $this->rearrangeCodeSnippets($obj_array);
             $obj_columns = $this->getJsonNames($obj_array);
         }
         $columns = $this->db->getTableColumns($table);
@@ -81,8 +85,8 @@ class UploadProcessor
     public function handleStats($table, $project, $version, $result, $runtime, $findings, $exp)
     {
         $statements = [];
-        $statements[] = $this->db->getStatDeleteStatement($exp, $table, $project, $version);
-        $statements[] = $this->db->getStatStatement($table, $project, $version, $result, $runtime, $findings, $exp);
+        $statements[] = $this->query->getStatDeleteStatement($exp, $table, $project, $version);
+        $statements[] = $this->query->getStatStatement($table, $project, $version, $result, $runtime, $findings, $exp);
         $this->logger->info("deleting and adding new stats for: " . $table);
         $this->db->execStatements($statements);
     }
@@ -91,20 +95,23 @@ class UploadProcessor
     {
         $statements = [];
         foreach ($obj_array as $hit) {
-            $statements[] = $this->db->insertStatement($table, $exp, $project, $version, $hit);
+            $statements[] = $this->query->insertStatement($table, $exp, $project, $version, $hit);
+            $this->handleTargetSnippets($table, $project, $version, $exp !== "ex2" ? $hit->{'misuse'} : $hit->{'rank'}, $hit->{'target_snippets'});
         }
         $this->logger->info("inserting " . count($statements) . " entries into: " . $table);
         $this->db->execStatements($statements);
     }
 
-    public function rearrangeCodeSnippets($obj)
-    {
-        foreach ($obj as $hit) {
-            $code = $hit->{'target_snippets'};
-            $hit->{'line'} = $code[0]->{'first_line_number'};
-            $hit->{'target_snippets'} = $code[0]->{'code'};
+    public function handleTargetSnippets($detector, $project, $version, $finding, $snippets){
+        $statements = [];
+        if(!$snippets || !is_array($snippets)){
+            return;
         }
-        return $obj;
+        foreach($snippets as $key => $snippet){
+            $statements[] = $this->query->getFindingSnippetStatement($detector, $project, $version, $finding, $snippet->{'code'}, $snippet->{'first_line_number'});
+        }
+        $this->logger->info("saving " . count($statements) . " for " . $detector . "|" . $project . "|" . $version . "|" . $finding);
+        $this->db->execStatements($statements);
     }
 
     public function handleTableColumns($table, $obj_columns, $columns, $obj_array)
@@ -112,7 +119,7 @@ class UploadProcessor
         $statements = [];
         if (count($columns) == 0) {
             $this->logger->info("Creating new table " . $table);
-            $statements[] = $this->db->createTableStatement($table, $obj_array);
+            $statements[] = $this->query->createTableStatement($table, $obj_array);
             $this->db->execStatements($statements);
             return;
         }
@@ -127,7 +134,7 @@ class UploadProcessor
                 }
             }
             if ($add) {
-                $statements[] = $this->db->addColumnStatement($table, $c);
+                $statements[] = $this->query->addColumnStatement($table, $c);
             }
         }
         $this->logger->info("deleting and adding columns for: " . $table);
@@ -136,16 +143,25 @@ class UploadProcessor
 
     public function processMetaData($json)
     {
+        $project = $json->{'project'};
+        $version = $json->{'version'};
+        $misuse = $json->{'misuse'};
         $statements = [];
-        $statements[] = $this->db->deleteMetadata($json->{'misuse'});
-        $statements[] = $this->db->deletePatterns($json->{'misuse'});
+        $statements[] = $this->query->deleteMetadata($json->{'misuse'});
+        $statements[] = $this->query->deletePatterns($json->{'misuse'});
         $statements[] =
-            $this->db->insertMetadata($json->{'project'}, $json->{'version'}, $json->{'misuse'}, $json->{'description'}, $json->{'fix'}->{'description'},
+            $this->query->insertMetadata($project, $version, $misuse, $json->{'description'}, $json->{'fix'}->{'description'},
                 $json->{'fix'}->{'diff-url'}, $this->arrayToString($json->{'violation_types'}),
                 $json->{'location'}->{'file'}, $json->{'location'}->{'method'});
         foreach ($json->{'patterns'} as $p) {
-            $statements[] = $this->db->insertPattern($json->{'misuse'}, $p->{'id'}, $p->{'snippet'}->{'code'},
+            $statements[] = $this->query->insertPattern($misuse, $p->{'id'}, $p->{'snippet'}->{'code'},
                 $p->{'snippet'}->{'first_line'});
+        }
+        if($json->{'target_snippets'}) {
+            foreach ($json->{'target_snippets'} as $snippet) {
+                $statements[] = $this->query->getMetaSnippetStatement($project, $version, $misuse, $snippet->{'code'},
+                    $snippet->{'first_line_number'});
+            }
         }
         $this->db->execStatements($statements);
     }
@@ -165,6 +181,8 @@ class UploadProcessor
         $columns[] = 'project';
         $columns[] = 'version';
         foreach ($obj[0] as $key => $value) {
+            if($key === "target_snippets")
+                continue;
             $columns[] = $key;
         }
         return $columns;

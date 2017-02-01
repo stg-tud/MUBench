@@ -23,7 +23,8 @@ $pdo->setAttribute(PDO::MYSQL_ATTR_USE_BUFFERED_QUERY, true);
 
 $logger = $app->getContainer()['logger'];
 $db = new DBConnection($pdo, $logger);
-$app->upload = new UploadProcessor($db, $logger);
+$queryBuilder = new QueryBuilder($pdo, $logger);
+$app->upload = new UploadProcessor($db, $queryBuilder, $logger);
 $app->dir = new DirectoryHelper($settings['upload'], $logger);
 $app->data = new DataProcessor($db, $logger);
 $app->helper = new RoutesHelper($logger, $settings);

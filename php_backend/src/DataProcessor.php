@@ -21,6 +21,15 @@ class DataProcessor {
 		}
 	}
 
+	public function getMetaSnippets($project, $version, $misuse){
+	    return $this->db->getMetaSnippets($project, $version, $misuse);
+    }
+
+    public function getFindingSnippets($detector, $project, $version, $finding){
+        $table = $this->db->getTableName($detector);
+	    return $this->db->getFindingSnippet($table, $project, $version, $finding);
+    }
+
 	public function getReview($exp, $detector, $project, $version, $misuse, $reviewer){
 		$query = $this->db->getReview($exp, $detector, $project, $version, $misuse, $reviewer);
 		if(!$query){
@@ -120,7 +129,7 @@ class DataProcessor {
                 foreach($index as $project => $versions){
                     foreach($versions as $version) {
                         foreach ($version['hits'] as $misuse){
-                            if($misuse["no-hit"]) continue;
+                            if(array_key_exists('no-hit', $misuse) && $misuse["no-hit"]) continue;
 
                             $reviewers = $this->getReviewsMisuse($ex, $detector, $project, $version['version'], $misuse['misuse']);
                             $otherReviewers = [];
@@ -209,7 +218,6 @@ class DataProcessor {
 		foreach($stats as $s){
 		    $s['hits'] = [];
 		    $hits = $this->db->getPotentialHits($table, $exp, $s['project'], $s['version']);
-		    $this->logger->info($this->dump($hits));
 		    if(!$hits){
 		        $metahits = $this->db->getMisusesFromMeta($s['project'], $s['version']);
                 foreach($metahits as $hit){
