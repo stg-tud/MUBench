@@ -121,6 +121,63 @@ class DataProcessor {
     }
 
     public function getReviewStatus(){
+        $filter = function($ex, $detector, $project, $version, $misuse, $params){
+            $reviews = $this->db->getReviewsByIdentifier($ex, $detector, $project, $version['version'], $misuse['misuse']);
+            $reviewer = $this->getReviewsMisuse($ex, $detector, $project, $version['version'], $misuse['misuse']);
+            $status = "";
+            $decision = "";
+            foreach($reviews as $r){
+                $findings = $this->db->getReviewFindings($r['id']);
+                $reviewerDecision = "";
+                foreach($findings as $finding){
+                    if($reviewerDecision === ""){
+                        $reviewerDecision = $finding['decision'];
+                    }else{
+                        if($reviewerDecision !== $finding['decision'] && ($decision !== "?" && $finding['decision'] !== "?")){
+                            $reviewerDecision = $finding['decision'];
+                        }
+                    }
+                    if($reviewerDecision === "Yes"){
+                        break;
+                    }
+                }
+                if($r['name'] === "resolution"){
+                    $status = "decided";
+                    $decision = $reviewerDecision;
+                    break;
+                }
+                if($status !== ""){
+                    if($decision !== $reviewerDecision){
+                        $decision = "?";
+                        $status = "conflict";
+                        break;
+                    }
+                }else{
+                    $status = "decided";
+                    $decision = $reviewerDecision;
+                }
+            }
+            if(count($reviewer) < 2){
+                $status = "undecided";
+            }
+            if($reviewer) {
+                $review = [];
+                $review['exp'] = $ex;
+                $review['detector'] = $detector;
+                $review['project'] = $project;
+                $review['version'] = $version['version'];
+                $review['misuse'] = $misuse['misuse'];
+                $review['reviewer'] = $reviewer;
+                $review['decision'] = $decision;
+                $review['status'] = $status;
+                return $review;
+            }
+        };
+        return $this->filterAllReviews($filter, array());
+    }
+
+    public function filterAllReviews($filter, $params){
+
         $exp = ["ex1", "ex2", "ex3"];
         $reviewable = [];
         foreach($exp as $ex){
@@ -130,54 +187,8 @@ class DataProcessor {
                     foreach($versions as $version) {
                         foreach ($version['hits'] as $misuse){
                             if(array_key_exists('no-hit', $misuse) && $misuse["no-hit"]) continue;
-                            $reviews = $this->db->getReviewsByIdentifier($ex, $detector, $project, $version['version'], $misuse['misuse']);
-                            $reviewer = $this->getReviewsMisuse($ex, $detector, $project, $version['version'], $misuse['misuse']);
-                            $status = "";
-                            $decision = "";
-                            foreach($reviews as $r){
-                                $findings = $this->db->getReviewFindings($r['id']);
-                                $reviewerDecision = "";
-                                foreach($findings as $finding){
-                                    if($reviewerDecision === ""){
-                                        $reviewerDecision = $finding['decision'];
-                                    }else{
-                                        if($reviewerDecision !== $finding['decision'] && ($decision !== "?" && $finding['decision'] !== "?")){
-                                            $reviewerDecision = $finding['decision'];
-                                        }
-                                    }
-                                    if($reviewerDecision === "Yes"){
-                                        break;
-                                    }
-                                }
-                                if($r['name'] === "resolution"){
-                                    $status = "decided";
-                                    $decision = $reviewerDecision;
-                                    break;
-                                }
-                                if($status !== ""){
-                                    if($decision !== $reviewerDecision){
-                                        $decision = "?";
-                                        $status = "conflict";
-                                        break;
-                                    }
-                                }else{
-                                    $status = "decided";
-                                    $decision = $reviewerDecision;
-                                }
-                            }
-                            if(count($reviewer) < 2){
-                                $status = "undecided";
-                            }
-                            if($reviewer) {
-                                $review = [];
-                                $review['exp'] = $ex;
-                                $review['detector'] = $detector;
-                                $review['project'] = $project;
-                                $review['version'] = $version['version'];
-                                $review['misuse'] = $misuse['misuse'];
-                                $review['reviewer'] = $reviewer;
-                                $review['decision'] = $decision;
-                                $review['status'] = $status;
+                            $review = $filter($ex, $detector, $project, $version, $misuse, $params);
+                            if($review){
                                 $reviewable[substr($ex, 2)][] = $review;
                             }
                         }
@@ -189,42 +200,29 @@ class DataProcessor {
     }
 
 	public function getTodo($reviewer){
-        $exp = ["ex1", "ex2", "ex3"];
-        $reviewable = [];
-        foreach($exp as $ex){
-            foreach($this->getDetectors($ex) as $detector){
-                $index = $this->getIndex($ex, $detector);
-                foreach($index as $project => $versions){
-                    foreach($versions as $version) {
-                        foreach ($version['hits'] as $misuse){
-                            if(array_key_exists('no-hit', $misuse) && $misuse["no-hit"]) continue;
-
-                            $reviewers = $this->getReviewsMisuse($ex, $detector, $project, $version['version'], $misuse['misuse']);
-                            $otherReviewers = [];
-                            $isReviewed = false;
-                            foreach($reviewers as $r){
-                                if($r === $reviewer){
-                                    $isReviewed = true;
-                                }else{
-                                    $otherReviewers[] = $r;
-                                }
-                            }
-                            if(!$isReviewed && count($otherReviewers) < 2){
-                                $review = [];
-                                $review['exp'] = $ex;
-                                $review['detector'] = $detector;
-                                $review['project'] = $project;
-                                $review['version'] = $version['version'];
-                                $review['misuse'] = $misuse['misuse'];
-                                $review['reviewer'] = $otherReviewers;
-                                $reviewable[substr($ex, 2)][] = $review;
-                            }
-                        }
-                    }
+        $filter = function($ex, $detector, $project, $version, $misuse, $params){
+            $reviewers = $this->getReviewsMisuse($ex, $detector, $project, $version['version'], $misuse['misuse']);
+            $otherReviewers = [];
+            $isReviewed = false;
+            foreach($reviewers as $r){
+                if($r === $params['reviewer']){
+                    $isReviewed = true;
+                }else{
+                    $otherReviewers[] = $r;
                 }
             }
-        }
-        return $reviewable;
+            if(!$isReviewed && count($otherReviewers) < 2){
+                $review = [];
+                $review['exp'] = $ex;
+                $review['detector'] = $detector;
+                $review['project'] = $project;
+                $review['version'] = $version['version'];
+                $review['misuse'] = $misuse['misuse'];
+                $review['reviewer'] = $otherReviewers;
+                return $review;
+            }
+        };
+        return $this->filterAllReviews($filter, array("reviewer" => $reviewer));
     }
 
 	public function getReviewsByReviewer($reviewer){
