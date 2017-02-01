@@ -7,7 +7,7 @@ crash: true
 description: >
   Misses to check that there is another element before calling Iterator.next().
 location:
-  file: HasNext.java
+  file: OnlyNext.java
   method: misuse(Collection)
 fix:
   description: >
