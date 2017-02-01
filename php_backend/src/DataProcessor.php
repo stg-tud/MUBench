@@ -120,6 +120,74 @@ class DataProcessor {
         return $this->unwrapReviews($query);
     }
 
+    public function getReviewStatus(){
+        $exp = ["ex1", "ex2", "ex3"];
+        $reviewable = [];
+        foreach($exp as $ex){
+            foreach($this->getDetectors($ex) as $detector){
+                $index = $this->getIndex($ex, $detector);
+                foreach($index as $project => $versions){
+                    foreach($versions as $version) {
+                        foreach ($version['hits'] as $misuse){
+                            if(array_key_exists('no-hit', $misuse) && $misuse["no-hit"]) continue;
+                            $reviews = $this->db->getReviewsByIdentifier($ex, $detector, $project, $version['version'], $misuse['misuse']);
+                            $reviewer = $this->getReviewsMisuse($ex, $detector, $project, $version['version'], $misuse['misuse']);
+                            $status = "";
+                            $decision = "";
+                            foreach($reviews as $r){
+                                $findings = $this->db->getReviewFindings($r['id']);
+                                $reviewerDecision = "";
+                                foreach($findings as $finding){
+                                    if($reviewerDecision === ""){
+                                        $reviewerDecision = $finding['decision'];
+                                    }else{
+                                        if($reviewerDecision !== $finding['decision'] && ($decision !== "?" && $finding['decision'] !== "?")){
+                                            $reviewerDecision = $finding['decision'];
+                                        }
+                                    }
+                                    if($reviewerDecision === "Yes"){
+                                        break;
+                                    }
+                                }
+                                if($r['name'] === "resolution"){
+                                    $status = "decided";
+                                    $decision = $reviewerDecision;
+                                    break;
+                                }
+                                if($status !== ""){
+                                    if($decision !== $reviewerDecision){
+                                        $decision = "?";
+                                        $status = "conflict";
+                                        break;
+                                    }
+                                }else{
+                                    $status = "decided";
+                                    $decision = $reviewerDecision;
+                                }
+                            }
+                            if(count($reviewer) < 2){
+                                $status = "undecided";
+                            }
+                            if($reviewer) {
+                                $review = [];
+                                $review['exp'] = $ex;
+                                $review['detector'] = $detector;
+                                $review['project'] = $project;
+                                $review['version'] = $version['version'];
+                                $review['misuse'] = $misuse['misuse'];
+                                $review['reviewer'] = $reviewer;
+                                $review['decision'] = $decision;
+                                $review['status'] = $status;
+                                $reviewable[substr($ex, 2)][] = $review;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return $reviewable;
+    }
+
 	public function getTodo($reviewer){
         $exp = ["ex1", "ex2", "ex3"];
         $reviewable = [];

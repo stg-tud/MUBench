@@ -27,6 +27,11 @@ class RoutesHelper
         return ob_get_clean();
     }
 
+    public function review_status($request, $args, $app, $r, $response, $logged){
+        $reviews = $app->data->getReviewStatus();
+        return $this->render($r, $args, $response, 'status.phtml', array('experiments' => $reviews));
+    }
+
     public function index_route($request, $args, $app, $r, $response, $logged){
         return $this->render($r, $args, $response, 'index.phtml', array('experiments' => $this->settings['ex_template'], "logged" => $logged));
     }

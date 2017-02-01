@@ -328,7 +328,7 @@ class DBConnection
     {
         $query = [];
         try {
-            $query = $this->pdo->query("SELECT name from reviews WHERE exp=" .
+            $query = $this->pdo->query("SELECT name,id from reviews WHERE exp=" .
                 $this->pdo->quote($exp) .
                 " AND detector=" .
                 $this->pdo->quote($detector) .
@@ -340,7 +340,7 @@ class DBConnection
                 $this->pdo->quote($misuse) .
                 " ORDER BY `name`;");
         } catch (PDOException $e) {
-            $this->logger->error("Error getAllReviews: " . $e->getMessage());
+            $this->logger->error("Error getReviewsByIdentifier: " . $e->getMessage());
         }
         return $query;
     }
