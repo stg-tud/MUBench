@@ -96,7 +96,7 @@ class UploadProcessor
         $statements = [];
         foreach ($obj_array as $hit) {
             $statements[] = $this->query->insertStatement($table, $exp, $project, $version, $hit);
-            $this->handleTargetSnippets($table, $project, $version, $exp !== "ex2" ? $hit->{'misuse'} : $hit->{'rank'}, $hit->{'target_snippets'});
+            $this->handleTargetSnippets($table, $project, $version, strcmp($exp, "ex2") !== 0 ? $hit->{'misuse'} : $hit->{'rank'}, $hit->{'target_snippets'});
         }
         $this->logger->info("inserting " . count($statements) . " entries into: " . $table);
         $this->db->execStatements($statements);

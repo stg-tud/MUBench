@@ -249,4 +249,13 @@ class QueryBuilder
         return $output;
     }
 
+    public function arrayToString($json)
+    {
+        $out = $json[0];
+        for ($i = 1; $i < count($json); $i++) {
+            $out = $out . ';' . $json[$i];
+        }
+        return $out;
+    }
+
 }

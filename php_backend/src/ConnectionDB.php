@@ -94,15 +94,6 @@ class DBConnection
         return $query;
     }
 
-    public function arrayToString($json)
-    {
-        $out = $json[0];
-        for ($i = 1; $i < count($json); $i++) {
-            $out = $out . ';' . $json[$i];
-        }
-        return $out;
-    }
-
     public function getDetectorTable($detector)
     {
         $query = [];
