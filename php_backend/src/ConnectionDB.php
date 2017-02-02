@@ -68,10 +68,10 @@ class DBConnection
             return NULL;
         }
         foreach ($query as $q) {
-            $columns[] = $q[0];
+            $columns[] = $q["id"];
         }
         if (empty($columns)) {
-            $sql = "INSERT INTO detectors (name) VALUES(" . $this->pdo->quote($detector) . ");";
+            $sql = "INSERT INTO detectors (id, name) VALUES (NULL, " . $this->pdo->quote($detector) . ");";
             try {
                 $this->pdo->exec($sql);
             } catch (PDOException $e) {
