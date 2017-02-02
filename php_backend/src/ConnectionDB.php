@@ -515,16 +515,19 @@ class DBConnection
                 $misuses = $this->tryQuery("SELECT * FROM `metadata` " .
                     "WHERE `project` = " . $this->pdo->quote($project_id) .
                     "  AND `version` = " . $this->pdo->quote($version_id) .
-                    "  AND EXISTS (SELECT 1 FROM `patterns` WHERE `patterns`.`misuse` = `metadata`.`misuse`)");
+                    "  AND EXISTS (SELECT 1 FROM `patterns` WHERE `patterns`.`misuse` = `metadata`.`misuse`) " .
+                    "ORDER BY `misuse` * 1, `misuse`");
             } elseif (strcmp($experiment, "ex2") === 0) {
                 $misuses = $this->tryQuery("SELECT `misuse` FROM `" . $detectorTableName . "` " .
                     "WHERE `exp` = " . $this->pdo->quote($experiment) .
                     "  AND `project` = " . $this->pdo->quote($project_id) .
-                    "  AND `version` = " . $this->pdo->quote($version_id));
+                    "  AND `version` = " . $this->pdo->quote($version_id) . " " .
+                    "ORDER BY `misuse` * 1, `misuse`");
             } elseif (strcmp($experiment, "ex3") === 0) {
                 $misuses = $this->tryQuery("SELECT * FROM `metadata` " .
                     "WHERE `project` = " . $this->pdo->quote($project_id) .
-                    "  AND `version` = " . $this->pdo->quote($version_id));
+                    "  AND `version` = " . $this->pdo->quote($version_id) . " " .
+                    "ORDER BY `misuse` * 1, `misuse`");
             }
 
             foreach ($misuses as $key => $misuse) {
