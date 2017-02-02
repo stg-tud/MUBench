@@ -27,12 +27,11 @@
             $version = $run["version"];
             $new_version = true;
             ?>
-            <?php foreach($run['misuses'] as $hit) : ?>
+            <?php foreach($run['misuses'] as $misuse) : /* @var $misuse \MuBench\Misuse */ ?>
                 <?php
-                $has_reviewed = array_key_exists('reviews', $hit) && $hit['reviews'] && in_array($name, $hit['reviews']);
                 $classes = [];
                 if($new_project) $classes[] = "top";
-                if(empty($hit["potential_hits"])) $classes[] = "no-hit";
+                if(!$misuse->hasPotentialHits()) $classes[] = "no-hit";
                 $style_classes = implode(" ", $classes);
                 ?>
                 <tr>
@@ -47,34 +46,28 @@
                     <td class="<?= $style_classes ?> right">
                         <?= $new_version ? htmlspecialchars(substr($run['runtime'], 0, 4)) . "s" : ""; ?></td>
                     <td class="<?= $style_classes ?>">
-                        <?= htmlspecialchars(substr($hit['misuse'], 0, strlen($project)) === $project
-                            ? substr($hit['misuse'], strlen($project) + 1) : $hit['misuse']); ?></td>
+                        <?= htmlspecialchars($misuse->getShortId()); ?></td>
                     <?php if($exp !== "ex2") : ?>
                         <td class="<?= $style_classes ?>">
-                            <? if(is_array($hit["violation_types"])): ?>
-                                <?= implode("<br/>", $hit["violation_types"]) ?>
-                            <? else: ?>
-                                <?= $hit["violation_types"] ?>
-                            <? endif; ?>
+                            <?= implode("<br/>", $misuse->getViolationTypes()) ?>
                         </td>
                     <?php endif; ?>
                     <?php
                         $review_url = ($logged ? htmlspecialchars($private_url) : htmlspecialchars($base_url)) . htmlspecialchars($exp) . "/" . htmlspecialchars($detector) . "/" .
-                            htmlspecialchars($hit['project']) . "/" . htmlspecialchars($hit['version']) . "/" .
-                            htmlspecialchars($hit['misuse']);
+                            htmlspecialchars($project) . "/" . htmlspecialchars($version) . "/" . htmlspecialchars($misuse->id);
                     ?>
                     <td class="<?= $style_classes ?>">
-                        <?php foreach($hit['reviews'] as $review) : ?>
+                        <?php foreach($misuse->getReviews() as $review) : ?>
                             <?php $reviewer_name = htmlspecialchars($review["name"]) ?>
                             <a href="<?= $review_url ?>/<?= $reviewer_name ?>"><?= $reviewer_name ?></a>
                         <?php endforeach; ?>
                     </td>
                     <td class="<?= $style_classes ?>">
                         <?php
-                        $button_text = $logged && !empty($hit["potential_hits"]) ? "review" : "view";
-                        $button_classes = "button" . (empty($hit["potential_hits"]) || ($logged && count($hit["reviews"])) >= 2 ? " no-hit" : "")
+                        $button_text = $logged && $misuse->hasPotentialHits() ? "review" : "view";
+                        $button_classes = "button" . (!$misuse->hasPotentialHits() || ($logged && $misuse->hasSufficientReviews()) ? " no-hit" : "")
                         ?>
-                        <?php if (!$has_reviewed) : ?>
+                        <?php if (!$misuse->hasReviewed($name)) : ?>
                             <a href="<?= $review_url; ?>" class="<?= $button_classes ?>"><?= $button_text ?></a>
                         <?php endif; ?>
                     </td>

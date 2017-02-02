@@ -7,6 +7,7 @@ require_once 'RoutesHelper.php';
 require_once 'QueryBuilder.php';
 
 require_once 'MuBench/Detector.php';
+require_once 'MuBench/Misuse.php';
 
 $app->add(new \Slim\Middleware\HttpBasicAuthentication([
     "path" => ["/api/", "/private/"],

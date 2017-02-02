@@ -2,6 +2,7 @@
 
 use Monolog\Logger;
 use MuBench\Detector;
+use MuBench\Misuse;
 
 class DBConnection
 {
@@ -535,34 +536,44 @@ class DBConnection
                     "  AND `version` = " . $this->pdo->quote($version_id));
             }
 
-            foreach ($misuses as &$misuse) {
+            foreach ($misuses as $key => $misuse) {
                 $misuse_id = $misuse["misuse"];
+                $potential_hits = $this->getPotentialHits2($experiment, $detector, $project_id, $version_id, $misuse_id);
+                $reviews = $this->getReviews($experiment, $detector, $project_id, $version_id, $misuse_id);
 
-                $potential_hits = $this->tryQuery("SELECT * FROM `" . $detectorTableName . "` " .
-                    "WHERE `exp` = " . $this->pdo->quote($experiment) .
-                    "  AND `project` = " . $this->pdo->quote($project_id) .
-                    "  AND `version` = " . $this->pdo->quote($version_id) .
-                    "  AND `misuse`  = " . $this->pdo->quote($misuse_id));
-
-                $misuse["potential_hits"] = $potential_hits;
-
-                $reviews = $this->tryQuery("SELECT * FROM `reviews` " .
-                    "WHERE `exp` = " . $this->pdo->quote($experiment) .
-                    "  AND `detector` = " . $this->pdo->quote($detector->name) .
-                    "  AND `project` = " . $this->pdo->quote($project_id) .
-                    "  AND `version` = " . $this->pdo->quote($version_id) .
-                    "  AND `misuse`  = " . $this->pdo->quote($misuse_id));
-
-                foreach ($reviews as &$review) {
-                    $review["finding_reviews"] = $this->getFindingReviews($review["id"]);
-                }
-                $misuse["reviews"] = $reviews;
+                $misuses[$key] = new Misuse($misuse, $potential_hits, $reviews);
             }
 
             $run["misuses"] = $misuses;
         }
 
         return $runs;
+    }
+
+    public function getDetector($detector_name)
+    {
+        $result = $this->tryQuery("SELECT `id` FROM `detectors` WHERE `name` = " . $this->pdo->quote($detector_name));
+        if (count($result) == 1) {
+            return new Detector($detector_name, $result[0]["id"]);
+        } else {
+            throw new InvalidArgumentException("no such detector '" . $detector_name . "'");
+        }
+    }
+
+    private function getReviews($experiment, Detector $detector, $project_id, $version_id, $misuse_id)
+    {
+        $reviews = $this->tryQuery("SELECT * FROM `reviews` " .
+            "WHERE `exp` = " . $this->pdo->quote($experiment) .
+            "  AND `detector` = " . $this->pdo->quote($detector->name) .
+            "  AND `project` = " . $this->pdo->quote($project_id) .
+            "  AND `version` = " . $this->pdo->quote($version_id) .
+            "  AND `misuse`  = " . $this->pdo->quote($misuse_id));
+
+        foreach ($reviews as &$review) {
+            $review["finding_reviews"] = $this->getFindingReviews($review["id"]);
+        }
+
+        return $reviews;
     }
 
     private function getFindingReviews($review_id)
@@ -583,13 +594,13 @@ class DBConnection
         return $finding_reviews;
     }
 
-    public function getDetector($detector_name)
+    public function getPotentialHits2($experiment, Detector $detector, $project_id, $version_id, $misuse_id)
     {
-        $result = $this->tryQuery("SELECT `id` FROM `detectors` WHERE `name` = " . $this->pdo->quote($detector_name));
-        if (count($result) == 1) {
-            return new Detector($detector_name, $result[0]["id"]);
-        } else {
-            throw new InvalidArgumentException("no such detector '" . $detector_name . "'");
-        }
+        $potential_hits = $this->tryQuery("SELECT * FROM `" . $this->getDetectorTableName($detector) . "` " .
+            "WHERE `exp` = " . $this->pdo->quote($experiment) .
+            "  AND `project` = " . $this->pdo->quote($project_id) .
+            "  AND `version` = " . $this->pdo->quote($version_id) .
+            "  AND `misuse`  = " . $this->pdo->quote($misuse_id));
+        return $potential_hits;
     }
 }
