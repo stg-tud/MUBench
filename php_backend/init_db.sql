@@ -57,7 +57,7 @@ CREATE TABLE IF NOT EXISTS `stats` (
   `version` text NOT NULL,
   `result` text NOT NULL,
   `runtime` text NOT NULL,
-  `number_of_findings` text NOT NULL,
+  `number_of_findings` text NOT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 CREATE TABLE IF NOT EXISTS `meta_snippets` (
