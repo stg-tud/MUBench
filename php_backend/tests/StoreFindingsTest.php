@@ -26,7 +26,8 @@ class StoreFindingsTest extends TestCase
         $upload_processor = new UploadProcessor($db, $queryBuilder, $logger);
         $data_processor = new DataProcessor($db, $logger);
 
-        $data = json_decode(<<<EOD
+        $data = json_decode(
+<<<EOD
         {
             "detector": "-d-",
             "project": "-p-",
