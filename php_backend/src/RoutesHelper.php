@@ -1,6 +1,7 @@
 <?php
 
 use Monolog\Logger;
+use MuBench\Detector;
 
 class RoutesHelper
 {
@@ -68,9 +69,13 @@ class RoutesHelper
         if($logged){
             $name = $request->getServerParams()['PHP_AUTH_USER'];
         }
+
+        $det = $app->data->getDetector($detector);
+        $runs = $app->data->getRuns($det, $exp);
+
         return $this->render($r, $args, $response, 'detector.phtml',
             array('logged' => $logged, 'name' => $name,
-                'exp' => $exp, 'detector' => $detector, 'projects' => $stats));
+                'exp' => $exp, 'detector' => $detector, 'projects' => $stats, 'runs' => $runs));
     }
 
     public function review_route($args, $app, $r, $response, $request, $logged, $review_flag)

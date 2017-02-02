@@ -21,6 +21,17 @@ class DataProcessor {
 		}
 	}
 
+	public function getRuns(\MuBench\Detector $detector, $experiment)
+    {
+        return $this->db->getRuns($detector, $experiment);
+    }
+
+    public function getDetector($detector_name)
+    {
+	    return $this->db->getDetector($detector_name);
+    }
+
+
 	public function getMetaSnippets($project, $version, $misuse){
 	    return $this->db->getMetaSnippets($project, $version, $misuse);
     }

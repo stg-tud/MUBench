@@ -18,68 +18,71 @@
             </tr>
         </thead>
         <tbody>
-        <?php foreach($projects as $project => $versions) : ?>
-            <?php $new_project = true; ?>
-            <?php foreach($versions as $version) : ?>
-                <?php $new_version = true; ?>
-                <?php foreach($version['hits'] as $hit) : ?>
+        <?php $last_project = "" ?>
+        <?php foreach($runs as $run) : ?>
+            <?php
+            $project = $run["project"];
+            $new_project = strcmp($last_project, $run["project"]) !== 0;
+            $last_project = $project;
+            $version = $run["version"];
+            $new_version = true;
+            ?>
+            <?php foreach($run['misuses'] as $hit) : ?>
+                <?php
+                $has_reviewed = array_key_exists('reviews', $hit) && $hit['reviews'] && in_array($name, $hit['reviews']);
+                $classes = [];
+                if($new_project) $classes[] = "top";
+                if(empty($hit["potential_hits"])) $classes[] = "no-hit";
+                $style_classes = implode(" ", $classes);
+                ?>
+                <tr>
+                    <td class="<?= $style_classes ?>">
+                        <?= $new_project ? htmlspecialchars($project) : ""; ?></td>
+                    <td class="<?= $style_classes ?>">
+                        <?= $new_version ? htmlspecialchars($version) : ""; ?></td>
+                    <td class="<?= $style_classes ?>">
+                        <?= $new_version ? htmlspecialchars($run['result']) : ""; ?></td>
+                    <td class="<?= $style_classes ?> right">
+                        <?= $new_version ? htmlspecialchars($run['number_of_findings']) : ""; ?></td>
+                    <td class="<?= $style_classes ?> right">
+                        <?= $new_version ? htmlspecialchars(substr($run['runtime'], 0, 4)) . "s" : ""; ?></td>
+                    <td class="<?= $style_classes ?>">
+                        <?= htmlspecialchars(substr($hit['misuse'], 0, strlen($project)) === $project
+                            ? substr($hit['misuse'], strlen($project) + 1) : $hit['misuse']); ?></td>
+                    <?php if($exp !== "ex2") : ?>
+                        <td class="<?= $style_classes ?>">
+                            <? if(is_array($hit["violation_types"])): ?>
+                                <?= implode("<br/>", $hit["violation_types"]) ?>
+                            <? else: ?>
+                                <?= $hit["violation_types"] ?>
+                            <? endif; ?>
+                        </td>
+                    <?php endif; ?>
                     <?php
-                    $has_reviewed = array_key_exists('reviews', $hit) && $hit['reviews'] && in_array($name, $hit['reviews']);
-                    $classes = [];
-                    if($new_project) $classes[] = "top";
-                    if(array_key_exists('no-hit', $hit) && $hit["no-hit"]) $classes[] = "no-hit";
-                    $style_classes = implode(" ", $classes);
+                        $review_url = ($logged ? htmlspecialchars($private_url) : htmlspecialchars($base_url)) . htmlspecialchars($exp) . "/" . htmlspecialchars($detector) . "/" .
+                            htmlspecialchars($hit['project']) . "/" . htmlspecialchars($hit['version']) . "/" .
+                            htmlspecialchars($hit['misuse']);
                     ?>
-                    <tr>
-                        <td class="<?= $style_classes ?>">
-                            <?= $new_project ? htmlspecialchars($project) : ""; ?></td>
-                        <td class="<?= $style_classes ?>">
-                            <?= $new_version ? htmlspecialchars($version['version']) : ""; ?></td>
-                        <td class="<?= $style_classes ?>">
-                            <?= $new_version ? htmlspecialchars($version['result']) : ""; ?></td>
-                        <td class="<?= $style_classes ?> right">
-                            <?= $new_version ? htmlspecialchars($version['number_of_findings']) : ""; ?></td>
-                        <td class="<?= $style_classes ?> right">
-                            <?= $new_version ? htmlspecialchars(substr($version['runtime'], 0, 4)) . "s" : ""; ?></td>
-                        <td class="<?= $style_classes ?>">
-                            <?= htmlspecialchars(substr($hit['misuse'], 0, strlen($project)) === $project
-                                ? substr($hit['misuse'], strlen($project) + 1) : $hit['misuse']); ?></td>
-                        <?php if($exp !== "ex2") : ?>
-                            <td class="<?= $style_classes ?>">
-                                <? if(is_array($hit["violation_types"])): ?>
-                                    <?= implode("<br/>", $hit["violation_types"]) ?>
-                                <? else: ?>
-                                    <?= $hit["violation_types"] ?>
-                                <? endif; ?>
-                            </td>
-                        <?php endif; ?>
+                    <td class="<?= $style_classes ?>">
+                        <?php foreach($hit['reviews'] as $review) : ?>
+                            <?php $reviewer_name = htmlspecialchars($review["name"]) ?>
+                            <a href="<?= $review_url ?>/<?= $reviewer_name ?>"><?= $reviewer_name ?></a>
+                        <?php endforeach; ?>
+                    </td>
+                    <td class="<?= $style_classes ?>">
                         <?php
-                            $review_url = ($logged ? htmlspecialchars($private_url) : htmlspecialchars($base_url)) . htmlspecialchars($exp) . "/" . htmlspecialchars($detector) . "/" .
-                                htmlspecialchars($hit['project']) . "/" . htmlspecialchars($hit['version']) . "/" .
-                                htmlspecialchars($hit['misuse']);
+                        $button_text = $logged && !empty($hit["potential_hits"]) ? "review" : "view";
+                        $button_classes = "button" . (empty($hit["potential_hits"]) || ($logged && count($hit["reviews"])) >= 2 ? " no-hit" : "")
                         ?>
-                        <td class="<?= $style_classes ?>">
-                            <?php if(array_key_exists('reviews', $hit) && $hit['reviews']) : ?>
-                                <?php foreach($hit['reviews'] as $reviewer) : ?>
-                                    <a href="<?= $review_url ?>/<?= htmlspecialchars($reviewer); ?>"><?= htmlspecialchars($reviewer); ?></a>
-                                <?php endforeach; ?>
-                            <?php endif; ?>
-                        </td>
-                        <td class="<?= $style_classes ?>">
-                            <?php
-                            $button_text = $logged && (!array_key_exists('no-hit', $hit) || !$hit["no-hit"]) ? "review" : "view";
-                            $button_classes = "button" . ((array_key_exists('no-hit', $hit) && $hit["no-hit"]) || ($logged && count($hit["reviews"])) >= 2 ? " no-hit" : "")
-                            ?>
-                            <?php if (!$has_reviewed) : ?>
-                                <a href="<?= $review_url; ?>" class="<?= $button_classes ?>"><?= $button_text ?></a>
-                            <?php endif; ?>
-                        </td>
-                    </tr>
-                    <?php
-                    $new_version = false;
-                    $new_project = false;
-                    ?>
-                <?php endforeach; ?>
+                        <?php if (!$has_reviewed) : ?>
+                            <a href="<?= $review_url; ?>" class="<?= $button_classes ?>"><?= $button_text ?></a>
+                        <?php endif; ?>
+                    </td>
+                </tr>
+                <?php
+                $new_version = false;
+                $new_project = false;
+                ?>
             <?php endforeach; ?>
         <?php endforeach; ?>
         </tbody>

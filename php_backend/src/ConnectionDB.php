@@ -1,6 +1,7 @@
 <?php
 
 use Monolog\Logger;
+use MuBench\Detector;
 
 class DBConnection
 {
@@ -477,5 +478,116 @@ class DBConnection
             $this->logger->error("Error getFindingSnippet: " . $e->getMessage());
         }
         return $this->queryToArray($query);
+    }
+
+
+
+
+
+    private function getDetectorTableName(Detector $detector)
+    {
+        return "detector_" . $detector->id;
+    }
+
+    private function tryQuery($query)
+    {
+        try {
+            $statement = $this->pdo->query($query);
+            $result = [];
+            foreach ($statement as $row) {
+                $result[] = $row;
+            }
+            return $result;
+        } catch (PDOException $e) {
+            $this->logger->error("Failed to '" . $query . "': " . $e->getMessage());
+            return [];
+        }
+    }
+
+    public function getRuns(Detector $detector, $experiment)
+    {
+        $detectorTableName = $this->getDetectorTableName($detector);
+
+        $runs = $this->tryQuery("SELECT * FROM `stats` " .
+            "WHERE `exp` = " . $this->pdo->quote($experiment) .
+            "  AND `detector` LIKE " . $this->pdo->quote($detectorTableName) . " " .
+            "ORDER BY `project`, `version`");
+
+        foreach ($runs as &$run) {
+            $project_id = $run["project"];
+            $version_id = $run["version"];
+
+            if (strcmp($experiment, "ex1") === 0) {
+                $misuses = $this->tryQuery("SELECT * FROM `metadata` " .
+                    "WHERE `project` = " . $this->pdo->quote($project_id) .
+                    "  AND `version` = " . $this->pdo->quote($version_id) .
+                    "  AND EXISTS (SELECT 1 FROM `patterns` WHERE `patterns`.`misuse` = `metadata`.`misuse`)");
+            } elseif (strcmp($experiment, "ex2") === 0) {
+                $misuses = $this->tryQuery("SELECT `misuse` FROM `" . $detectorTableName . "` " .
+                    "WHERE `exp` = " . $this->pdo->quote($experiment) .
+                    "  AND `project` = " . $this->pdo->quote($project_id) .
+                    "  AND `version` = " . $this->pdo->quote($version_id));
+            } elseif (strcmp($experiment, "ex3") === 0) {
+                $misuses = $this->tryQuery("SELECT * FROM `metadata` " .
+                    "WHERE `project` = " . $this->pdo->quote($project_id) .
+                    "  AND `version` = " . $this->pdo->quote($version_id));
+            }
+
+            foreach ($misuses as &$misuse) {
+                $misuse_id = $misuse["misuse"];
+
+                $potential_hits = $this->tryQuery("SELECT * FROM `" . $detectorTableName . "` " .
+                    "WHERE `exp` = " . $this->pdo->quote($experiment) .
+                    "  AND `project` = " . $this->pdo->quote($project_id) .
+                    "  AND `version` = " . $this->pdo->quote($version_id) .
+                    "  AND `misuse`  = " . $this->pdo->quote($misuse_id));
+
+                $misuse["potential_hits"] = $potential_hits;
+
+                $reviews = $this->tryQuery("SELECT * FROM `reviews` " .
+                    "WHERE `exp` = " . $this->pdo->quote($experiment) .
+                    "  AND `detector` = " . $this->pdo->quote($detector->name) .
+                    "  AND `project` = " . $this->pdo->quote($project_id) .
+                    "  AND `version` = " . $this->pdo->quote($version_id) .
+                    "  AND `misuse`  = " . $this->pdo->quote($misuse_id));
+
+                foreach ($reviews as &$review) {
+                    $review["finding_reviews"] = $this->getFindingReviews($review["id"]);
+                }
+                $misuse["reviews"] = $reviews;
+            }
+
+            $run["misuses"] = $misuses;
+        }
+
+        return $runs;
+    }
+
+    private function getFindingReviews($review_id)
+    {
+        $finding_reviews = $this->tryQuery("SELECT * FROM `review_findings` " .
+            "WHERE `review` = " . $this->pdo->quote($review_id));
+
+        foreach ($finding_reviews as &$finding_review) {
+            $violation_types = $this->tryQuery("SELECT `types`.`name` FROM `review_finding_types` " .
+                "INNER JOIN `types` ON `review_finding_types`.`type` = `types`.`id` " .
+                "WHERE `review_finding_types`.`review_finding` = " . $this->pdo->quote($finding_review["id"]));
+
+            $finding_review["violation_types"] = [];
+            foreach ($violation_types as $violation_type) {
+                $finding_review["violation_types"][] = $violation_type["name"];
+            }
+        }
+        return $finding_reviews;
+    }
+
+    public function getDetector($detector_name)
+    {
+        $result = $this->tryQuery("SELECT `id` FROM `detectors` WHERE `name` = " . $this->pdo->quote($detector_name));
+        if (count($result) == 1) {
+            return new Detector($detector_name, $result[0]["id"]);
+        } else {
+            throw new InvalidArgumentException("no such detector '" . $detector_name . "'");
+        }
     }
 }
