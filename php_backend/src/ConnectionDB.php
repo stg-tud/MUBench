@@ -8,11 +8,13 @@ class DBConnection
 
     private $pdo;
     private $logger;
+    private $queryBuilder;
 
     function __construct(PDO $pdo, Logger $logger)
     {
         $this->logger = $logger;
         $this->pdo = $pdo;
+        $this->queryBuilder = new QueryBuilder($pdo, $logger);
     }
 
     public function execStatements($statements)
@@ -34,7 +36,7 @@ class DBConnection
 
     public function getTableColumns($table)
     {
-        $sql = $this->columnQuery($table);
+        $sql = $this->queryBuilder->columnQuery($table);
         $query = [];
         try {
             $query = $this->pdo->query($sql);
