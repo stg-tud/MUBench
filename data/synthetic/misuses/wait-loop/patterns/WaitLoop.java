@@ -1,7 +1,7 @@
 import java.util.Set;
 
 public class WaitLoop {
-	void misuse(Target t) throws InterruptedException {
+	void pattern(Target t) throws InterruptedException {
     synchronized (t) {
       while (t.isAvailable()) {
         t.wait();
