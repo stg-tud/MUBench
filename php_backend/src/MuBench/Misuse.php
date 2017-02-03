@@ -6,16 +6,21 @@ namespace MuBench;
 class ReviewState {
     const NOTHING_TO_REVIEW = 0;
     const NEEDS_REVIEW = 1;
-    const AGREEMENT = 2;
+    const NEEDS_CLARIFICATION = 2;
     const DISAGREEMENT = 3;
-    const RESOLVED = 4;
+    const AGREEMENT_YES = 4;
+    const AGREEMENT_NO = 5;
+    const RESOLVED_YES = 6;
+    const RESOLVED_NO = 7;
 }
+
 
 class Decision {
     const NO = 0;
     const MAYBE = 1;
     const YES = 2;
 }
+
 
 class Misuse
 {
@@ -78,20 +83,42 @@ class Misuse
     {
         if (!$this->hasPotentialHits()) {
             return ReviewState::NOTHING_TO_REVIEW;
-        } else if (count($this->getReviews()) < 2) {
+        } elseif (count($this->getReviews()) < 2) {
             return ReviewState::NEEDS_REVIEW;
         } else {
             $decisions = [];
-            foreach ($this->getReviews() as $review) {
-                $decision = self::getDecision($review);
-                $decisions[$decision] = true;
-            }
-            if (count($decisions) > 1) {
-                return ReviewState::DISAGREEMENT;
+            $byResolution = $this->hasResolutionReview();
+            if ($byResolution) {
+                $decisions[self::getDecision($this->getResolutionReview())] = true;
             } else {
-                return ReviewState::AGREEMENT;
+                foreach ($this->getReviews() as $review) {
+                    $decisions[self::getDecision($review)] = true;
+                }
+            }
+            if (array_key_exists(Decision::MAYBE, $decisions)) {
+                return ReviewState::NEEDS_CLARIFICATION;
+            } elseif (count($decisions) > 1) {
+                return ReviewState::DISAGREEMENT;
+            } elseif (array_key_exists(Decision::YES, $decisions)) {
+                return $byResolution ? ReviewState::RESOLVED_YES : ReviewState::AGREEMENT_YES;
+            } else {
+                return $byResolution ? ReviewState::RESOLVED_NO : ReviewState::AGREEMENT_NO;
             }
         }
+    }
+
+    private function hasResolutionReview()
+    {
+        return $this->getResolutionReview() !== NULL;
+    }
+
+    private function getResolutionReview()
+    {
+        foreach ($this->reviews as $review) {
+            if (strcmp("resolution", $review["name"]) === 0)
+                return $review;
+        }
+        return NULL;
     }
 
     private static function getDecision($review)
@@ -101,7 +128,7 @@ class Misuse
             if (strcmp($finding_review["decision"], "Yes") === 0) {
                 $decision = Decision::YES;
                 break;
-            } else if (strcmp($finding_review["decision"], "Yes") === 0) {
+            } else if (strcmp($finding_review["decision"], "?") === 0) {
                 $decision = Decision::MAYBE;
             }
         }
