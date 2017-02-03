@@ -3,8 +3,6 @@
 namespace MuBench;
 
 
-use Prophecy\Exception\Doubler\MethodNotFoundException;
-
 class ReviewState {
     const NOTHING_TO_REVIEW = 0;
     const NEEDS_REVIEW = 1;
