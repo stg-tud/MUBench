@@ -72,6 +72,7 @@ class UploadProcessor
         $runtime = $obj->{'runtime'};
         $result = $obj->{'result'};
         $findings = $obj->{'number_of_findings'};
+        $obj_columns = [];
         if($obj_array) {
             //$obj_array = $this->rearrangeCodeSnippets($obj_array);
             $obj_columns = $this->getJsonNames($obj_array);
@@ -121,6 +122,9 @@ class UploadProcessor
             $this->logger->info("Creating new table " . $table);
             $statements[] = $this->query->createTableStatement($table, $obj_array);
             $this->db->execStatements($statements);
+            return;
+        }
+        if(!$obj_columns){
             return;
         }
         //$statements[] = $this->db->deleteStatement($table, $project, $version);

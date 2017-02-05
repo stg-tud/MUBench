@@ -3,7 +3,8 @@
 namespace MuBench;
 
 
-class ReviewState {
+class ReviewState
+{
     const NOTHING_TO_REVIEW = 0;
     const NEEDS_REVIEW = 1;
     const NEEDS_CLARIFICATION = 2;
@@ -15,7 +16,8 @@ class ReviewState {
 }
 
 
-class Decision {
+class Decision
+{
     const NO = 0;
     const MAYBE = 1;
     const YES = 2;
@@ -43,7 +45,8 @@ class Misuse
     public function getShortId()
     {
         $project = $this->data["project"];
-        return substr($this->id, 0, strlen($project)) === $project ? substr($this->id, strlen($project) + 1) : $this->id;
+        return substr($this->id, 0, strlen($project)) === $project ? substr($this->id, strlen($project) + 1) :
+            $this->id;
     }
 
     public function getViolationTypes()

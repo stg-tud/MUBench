@@ -222,7 +222,7 @@ class DBConnection
         } catch (PDOException $e) {
             $this->logger->error("Error getMetaSnippets: " . $e->getMessage());
         }
-        return $query;
+        return $this->queryToArray($query);
     }
 
     public function getPattern($misuse)

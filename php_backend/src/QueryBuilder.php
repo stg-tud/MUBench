@@ -205,13 +205,15 @@ class QueryBuilder
         $output = 'CREATE TABLE ' .
             $name .
             '(exp VARCHAR(100) NOT NULL, project VARCHAR(100) NOT NULL, version VARCHAR(100) NOT NULL, misuse VARCHAR(100) NOT NULL';
-        foreach ($obj[0] as $key => $value) {
-            if ($key === "id" || $key === "misuse" || $key === "target_snippets") {
-                continue;
-            } else if ($key === "rank") {
-                $output = $output . "," . $key . " VARCHAR(100)";
-            } else {
-                $output = $output . "," . $key . " TEXT";
+        if($obj) {
+            foreach ($obj[0] as $key => $value) {
+                if ($key === "id" || $key === "misuse" || $key === "target_snippets") {
+                    continue;
+                } else if ($key === "rank") {
+                    $output = $output . "," . $key . " VARCHAR(100)";
+                } else {
+                    $output = $output . "," . $key . " TEXT";
+                }
             }
         }
         $output = $output . ', PRIMARY KEY(exp, project, version, misuse, rank));';
