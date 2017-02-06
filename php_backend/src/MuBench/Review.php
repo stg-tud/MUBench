@@ -32,4 +32,9 @@ class Review
         }
         return $decision;
     }
+
+    public function getComment()
+    {
+        return $this->data["comment"];
+    }
 }

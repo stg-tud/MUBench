@@ -22,9 +22,10 @@ use MuBench\ReviewState;
                 <th>Runtime</th>
                 <th>Misuse</th>
                 <?php if($exp !== "ex2") : ?><th>Violation Types</th><?php endif; ?>
-                <th>Reviewed By</th>
                 <th>Decision</th>
-                <th>Actions</th>
+                <th>Reviews</th>
+                <th>Your Review</th>
+                <th>Your Comment</th>
             </tr>
         </thead>
         <tbody>
@@ -67,25 +68,6 @@ use MuBench\ReviewState;
                             htmlspecialchars($project) . "/" . htmlspecialchars($version) . "/" . htmlspecialchars($misuse->id);
                     ?>
                     <td class="<?= $style_classes ?>">
-                        <ul class="inline">
-                        <?php foreach($misuse->getReviews() as $review) : ?>
-                            <?php $reviewer_name = htmlspecialchars($review->getReviewerName()) ?>
-                            <li style="display:inline"><a href="<?= $review_url ?>/<?= $reviewer_name ?>"><?= $reviewer_name ?></a>
-                            <?php if (strcmp($reviewer_name, $name) === 0): ?>
-                                <?php $your_decision = $misuse->getReview($name)->getDecision() ?>
-                                <?php if ($your_decision == Decision::YES): ?>
-                                    (<i class="fa fa-thumbs-o-up" aria-hidden="true" style="color:green;" title="Your Decision: Yes"></i>)
-                                <?php elseif ($your_decision == Decision::NO): ?>
-                                    (<i class="fa fa-thumbs-o-down" aria-hidden="true" style="color:darkred;" title="Your Decision: No"></i>)
-                                <?php else: ?>
-                                    (<i class="fa fa-question-circle" aria-hidden="true" style="color:blue;" title="Your Decision: Need Clarification"></i>)
-                                <?php endif; ?>
-                            <?php endif; ?>
-                            </li>
-                        <?php endforeach; ?>
-                        </ul>
-                    </td>
-                    <td class="<?= $style_classes ?>">
                         <?php $review_state = $misuse->getReviewState() ?>
                         <?php if ($review_state == ReviewState::NOTHING_TO_REVIEW): ?>
                         <?php elseif ($review_state == ReviewState::NEEDS_REVIEW): ?>
@@ -107,13 +89,36 @@ use MuBench\ReviewState;
                         <?php endif; ?>
                     </td>
                     <td class="<?= $style_classes ?>">
+                        <ul class="inline">
+                            <?php foreach($misuse->getReviews() as $review) : ?>
+                                <?php $reviewer_name = htmlspecialchars($review->getReviewerName()) ?>
+                                <li style="display:inline"><a href="<?= $review_url ?>/<?= $reviewer_name ?>"><?= $reviewer_name ?></a></li>
+                            <?php endforeach; ?>
+                        </ul>
+                    </td>
+                    <td class="<?= $style_classes ?>">
                         <?php
-                        $button_text = $logged ? "review" : "view";
-                        $button_classes = "button" . (!$misuse->hasPotentialHits() || ($logged && $misuse->hasSufficientReviews()) ? " no-hit" : "")
+                        $button_classes = "button" . (!$misuse->hasPotentialHits() || ($logged && $misuse->hasSufficientReviews() || $misuse->hasReviewed($name)) ? " no-hit" : "")
                         ?>
-                        <?php if (!$misuse->hasReviewed($name)) : ?>
-                            <a href="<?= $review_url; ?>" class="<?= $button_classes ?>"><?= $button_text ?></a>
+                        <?php if (!$logged): ?>
+                            <a href="<?= $review_url; ?>" class="<?= $button_classes ?>">view</a>
+                        <?php elseif ($misuse->hasReviewed($name)): ?>
+                            <a href="<?= $review_url ?>" class="<?= $button_classes ?>">edit
+                            <?php $your_decision = $misuse->getReview($name)->getDecision() ?>
+                            <?php if ($your_decision == Decision::YES): ?>
+                                (<i class="fa fa-thumbs-o-up" aria-hidden="true" style="color:green;" title="Yes"></i>)
+                            <?php elseif ($your_decision == Decision::NO): ?>
+                                (<i class="fa fa-thumbs-o-down" aria-hidden="true" style="color:darkred;" title="No"></i>)
+                            <?php else: ?>
+                                (<i class="fa fa-question-circle" aria-hidden="true" style="color:blue;" title="Need Clarification"></i>)
+                            <?php endif; ?>
+                            </a>
+                        <?php else: ?>
+                            <a href="<?= $review_url; ?>" class="<?= $button_classes ?>">review</a>
                         <?php endif; ?>
+                    </td>
+                    <td class="<?= $style_classes ?>" style="max-width: 300px;">
+                        <?= $misuse->hasReviewed($name) ? $misuse->getReview($name)->getComment() : "" ?>
                     </td>
                 </tr>
                 <?php
