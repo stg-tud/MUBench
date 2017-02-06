@@ -1,5 +1,12 @@
-<link rel="stylesheet" type="text/css" href="<?= htmlspecialchars($root_url); ?>style/style.css" />
+<?php use MuBench\ReviewState; ?>
 
+<html>
+<head>
+    <title>MuBench :: Review Site</title>
+    <link rel="stylesheet" type="text/css" href="<?= htmlspecialchars($root_url); ?>style/style.css" />
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+</head>
+<body>
 <?php include "includes/menu.phtml"; ?>
 
     <h1>Detector: <?= htmlspecialchars($detector); ?></h1>
@@ -14,7 +21,8 @@
                 <th>Misuse</th>
                 <?php if($exp !== "ex2") : ?><th>Violation Types</th><?php endif; ?>
                 <th>Reviewed By</th>
-                <th></th>
+                <th>Decision</th>
+                <th>Actions</th>
             </tr>
         </thead>
         <tbody>
@@ -63,8 +71,29 @@
                         <?php endforeach; ?>
                     </td>
                     <td class="<?= $style_classes ?>">
+                        <?php $review_state = $misuse->getReviewState() ?>
+                        <?php if ($review_state == ReviewState::NOTHING_TO_REVIEW): ?>
+                        <?php elseif ($review_state == ReviewState::NEEDS_REVIEW): ?>
+                            <i class="fa fa-search" aria-hidden="true" style="color:red;" title="Needs Review"></i>
+                        <?php elseif ($review_state == ReviewState::NEEDS_CLARIFICATION): ?>
+                            <i class="fa fa-question-circle" aria-hidden="true" style="color:blue;" title="Needs Clarification"></i>
+                        <?php elseif ($review_state == ReviewState::DISAGREEMENT): ?>
+                            <i class="fa fa-exclamation-triangle" aria-hidden="true" style="color:red;" title="Disagreement"></i>
+                        <?php elseif ($review_state == ReviewState::AGREEMENT_YES): ?>
+                            <i class="fa fa-thumbs-o-up" aria-hidden="true" style="color:green;" title="Agreement: Yes"></i>
+                        <?php elseif ($review_state == ReviewState::AGREEMENT_NO): ?>
+                            <i class="fa fa-thumbs-o-down" aria-hidden="true" style="color:darkred;" title="Agreement: No"></i>
+                        <?php elseif ($review_state == ReviewState::RESOLVED_YES): ?>
+                            <i class="fa fa-thumbs-o-up" aria-hidden="true" style="color:green;" title="Resolved: Yes"></i>
+                            (<a href="<?= $review_url ?>/resolution"><i class="fa fa-handshake-o" aria-hidden="true" title="Resolution"></i></a>)
+                        <?php elseif ($review_state == ReviewState::RESOLVED_NO): ?>
+                            <i class="fa fa-thumbs-o-down" aria-hidden="true" style="color:darkred;" title="Resolved: No"></i>
+                            (<a href="<?= $review_url ?>/resolution"><i class="fa fa-handshake-o" aria-hidden="true" title="Resolution"></i></a>)
+                        <?php endif; ?>
+                    </td>
+                    <td class="<?= $style_classes ?>">
                         <?php
-                        $button_text = $logged && $misuse->hasPotentialHits() ? "review" : "view";
+                        $button_text = $logged ? "review" : "view";
                         $button_classes = "button" . (!$misuse->hasPotentialHits() || ($logged && $misuse->hasSufficientReviews()) ? " no-hit" : "")
                         ?>
                         <?php if (!$misuse->hasReviewed($name)) : ?>
@@ -80,3 +109,5 @@
         <?php endforeach; ?>
         </tbody>
     </table>
+</body>
+</html>

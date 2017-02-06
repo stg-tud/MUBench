@@ -104,6 +104,7 @@ class ReviewStateTest extends \PHPUnit\Framework\TestCase
         // Resolution determines the result, even if there are too few reviews and requests for clarification.
         $misuse = new \MuBench\Misuse(["misuse" => "test"], [["rank" => "0"]], [
             ["name" => "sven", "finding_reviews" => ["0" => ["decision" => "?"]]],
+            ["name" => "hoan", "finding_reviews" => ["0" => ["decision" => "Yes"]]],
             ["name" => "resolution", "finding_reviews" => ["0" => ["decision" => "No"]]]
         ]);
 

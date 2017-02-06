@@ -66,20 +66,27 @@ class Misuse
 
     public function hasReviewed($reviewer_name)
     {
+        return $this->getReview($reviewer_name) !== NULL;
+    }
+
+    public function getReview($reviewer_name)
+    {
         foreach ($this->reviews as $review) {
-            if (strcmp($review["name"], $reviewer_name) === 0) return true;
+            if (strcmp($review["name"], $reviewer_name) === 0) return $review;
         }
-        return false;
+        return NULL;
     }
 
     public function getReviews()
     {
-        return $this->reviews;
+        return array_filter($this->reviews, function($review) {
+            return strcmp($review["name"], "resolution") !== 0;
+        });
     }
 
     public function hasSufficientReviews()
     {
-        return count($this->getReviews()) >= 2;
+        return $this->getReviewState() > ReviewState::NEEDS_REVIEW;
     }
 
     public function getReviewState()
