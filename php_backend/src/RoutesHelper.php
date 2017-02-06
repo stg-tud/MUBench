@@ -102,9 +102,9 @@ class RoutesHelper
         } else if ($review_flag && $logged) {
             $reviewer = $request->getServerParams()['PHP_AUTH_USER'];
         }
-        $method = $hits ? ($exp == "ex2" ? $hits[0]['method'] : $data['method']) : "method not found";
+        $method = $exp == "ex2" ? $hits[0]['method'] : $data['method'];
         $code = $snippets ? $snippets : array(array("line" => 1, "snippet" => "code not found"));
-        $file = $hits ? ($exp == "ex2" ? $hits[0]['file'] : $data['file']) : "file not found";
+        $file = $exp == "ex2" ? $hits[0]['file'] : $data['file'];
         $review = $app->data->getReview($exp, $detector, $project, $version, $misuse, $reviewer);
         return $this->render($r, $args, $response, 'review.phtml',
             array('name' => $reviewer, 'review' => $review, 'logged' => $logged, 'exp' => $exp,
