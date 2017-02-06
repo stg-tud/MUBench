@@ -1,5 +1,7 @@
-<?php use MuBench\ReviewState; ?>
-
+<?php
+use MuBench\Decision;
+use MuBench\ReviewState;
+?>
 <html>
 <head>
     <title>MuBench :: Review Site</title>
@@ -65,10 +67,23 @@
                             htmlspecialchars($project) . "/" . htmlspecialchars($version) . "/" . htmlspecialchars($misuse->id);
                     ?>
                     <td class="<?= $style_classes ?>">
+                        <ul class="inline">
                         <?php foreach($misuse->getReviews() as $review) : ?>
-                            <?php $reviewer_name = htmlspecialchars($review["name"]) ?>
-                            <a href="<?= $review_url ?>/<?= $reviewer_name ?>"><?= $reviewer_name ?></a>
+                            <?php $reviewer_name = htmlspecialchars($review->getReviewerName()) ?>
+                            <li style="display:inline"><a href="<?= $review_url ?>/<?= $reviewer_name ?>"><?= $reviewer_name ?></a>
+                            <?php if (strcmp($reviewer_name, $name) === 0): ?>
+                                <?php $your_decision = $misuse->getReview($name)->getDecision() ?>
+                                <?php if ($your_decision == Decision::YES): ?>
+                                    (<i class="fa fa-thumbs-o-up" aria-hidden="true" style="color:green;" title="Your Decision: Yes"></i>)
+                                <?php elseif ($your_decision == Decision::NO): ?>
+                                    (<i class="fa fa-thumbs-o-down" aria-hidden="true" style="color:darkred;" title="Your Decision: No"></i>)
+                                <?php else: ?>
+                                    (<i class="fa fa-question-circle" aria-hidden="true" style="color:blue;" title="Your Decision: Need Clarification"></i>)
+                                <?php endif; ?>
+                            <?php endif; ?>
+                            </li>
                         <?php endforeach; ?>
+                        </ul>
                     </td>
                     <td class="<?= $style_classes ?>">
                         <?php $review_state = $misuse->getReviewState() ?>

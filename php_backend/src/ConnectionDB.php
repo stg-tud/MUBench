@@ -3,6 +3,7 @@
 use Monolog\Logger;
 use MuBench\Detector;
 use MuBench\Misuse;
+use MuBench\Review;
 
 class DBConnection
 {
@@ -563,8 +564,9 @@ class DBConnection
             "  AND `version` = " . $this->pdo->quote($version_id) .
             "  AND `misuse`  = " . $this->pdo->quote($misuse_id));
 
-        foreach ($reviews as &$review) {
+        foreach ($reviews as $key => $review) {
             $review["finding_reviews"] = $this->getFindingReviews($review["id"]);
+            $reviews[$key] = new Review($review);
         }
 
         return $reviews;

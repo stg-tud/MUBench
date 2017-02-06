@@ -124,3 +124,20 @@ a.button {
     color: initial;
     padding: 2pt 5pt;
 }
+
+ul.inline {
+    display: inline;
+    list-style: none;
+}
+
+ul.inline li {
+    display: inline;
+}
+
+ul.inline li:after {
+    content: ", ";
+}
+
+ul.inline li:last-child:after {
+    content: "";
+}

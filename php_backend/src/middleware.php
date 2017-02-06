@@ -8,6 +8,7 @@ require_once 'QueryBuilder.php';
 
 require_once 'MuBench/Detector.php';
 require_once 'MuBench/Misuse.php';
+require_once 'MuBench/Review.php';
 
 $app->add(new \Slim\Middleware\HttpBasicAuthentication([
     "path" => ["/api/", "/private/"],

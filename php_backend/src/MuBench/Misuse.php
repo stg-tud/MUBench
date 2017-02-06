@@ -32,7 +32,12 @@ class Misuse
     private $potential_hits;
     private $reviews;
 
-    public function __construct(array $data, array $potential_hits, array $reviews)
+    /**
+     * @param array $data
+     * @param array $potential_hits
+     * @param Review[] $reviews
+     */
+    public function __construct(array $data, array $potential_hits, $reviews)
     {
         assert(array_key_exists("misuse", $data), "misuse requires id");
 
@@ -72,7 +77,7 @@ class Misuse
     public function getReview($reviewer_name)
     {
         foreach ($this->reviews as $review) {
-            if (strcmp($review["name"], $reviewer_name) === 0) return $review;
+            if (strcmp($review->getReviewerName(), $reviewer_name) === 0) return $review;
         }
         return NULL;
     }
@@ -80,7 +85,7 @@ class Misuse
     public function getReviews()
     {
         return array_filter($this->reviews, function($review) {
-            return strcmp($review["name"], "resolution") !== 0;
+            return strcmp($review->getReviewerName(), "resolution") !== 0;
         });
     }
 
@@ -99,10 +104,10 @@ class Misuse
             $decisions = [];
             $byResolution = $this->hasResolutionReview();
             if ($byResolution) {
-                $decisions[self::getDecision($this->getResolutionReview())] = true;
+                $decisions[$this->getResolutionReview()->getDecision()] = true;
             } else {
                 foreach ($this->getReviews() as $review) {
-                    $decisions[self::getDecision($review)] = true;
+                    $decisions[$review->getDecision()] = true;
                 }
             }
             if (array_key_exists(Decision::MAYBE, $decisions)) {
@@ -119,29 +124,11 @@ class Misuse
 
     private function hasResolutionReview()
     {
-        return $this->getResolutionReview() !== NULL;
+        return $this->hasReviewed("resolution");
     }
 
     private function getResolutionReview()
     {
-        foreach ($this->reviews as $review) {
-            if (strcmp("resolution", $review["name"]) === 0)
-                return $review;
-        }
-        return NULL;
-    }
-
-    private static function getDecision($review)
-    {
-        $decision = Decision::NO;
-        foreach ($review["finding_reviews"] as $finding_review) {
-            if (strcmp($finding_review["decision"], "Yes") === 0) {
-                $decision = Decision::YES;
-                break;
-            } else if (strcmp($finding_review["decision"], "?") === 0) {
-                $decision = Decision::MAYBE;
-            }
-        }
-        return $decision;
+        return $this->getReview("resolution");
     }
 }
