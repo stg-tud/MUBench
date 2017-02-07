@@ -49,7 +49,11 @@
         <table class="invisible fw">
         <?php if($exp !== "ex2") : ?>
             <tr><td class="vtop"><b>Description:</b></td><td><?= htmlspecialchars($desc); ?></td></tr>
-            <tr><td class="vtop"><b>Fix Description:</b></td><td><?= htmlspecialchars($fix_desc); ?>(<a href="<?= htmlspecialchars($diff_url); ?>">see diff</a>)</td></tr>
+            <tr>
+                <td class="vtop"><b>Fix Description:</b></td>
+                <td><?= htmlspecialchars($fix_desc); ?>
+                    <?php if ($diff_url): ?>(<a href="<?= htmlspecialchars($diff_url); ?>">see diff</a>)<?php endif ?>
+                </td></tr>
             <tr><td class="vtop"><b>Violation Types:</b></td><td>
             
             <ul>
