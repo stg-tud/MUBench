@@ -3,7 +3,7 @@ import java.util.List;
 public class TooRestrictive {
 	public void misuse(List<String> l) {
 		for (int i = 1; i < l.size(); i++) {
-			System.out.println("Element #" + i + " is '" + l.get(i -1) + "'");
+			l.get(i - 1); // the last element of this list is never retrieved
 		}
 	}
 }
