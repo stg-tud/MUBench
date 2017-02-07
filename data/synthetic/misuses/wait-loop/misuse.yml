@@ -8,7 +8,7 @@ description: >
   condition waited for.
 location:
   file: WaitMisuse.java
-  method: misuse(Object)
+  method: misuse(Target)
 fix:
   description: >
     Check condition in a loop.
