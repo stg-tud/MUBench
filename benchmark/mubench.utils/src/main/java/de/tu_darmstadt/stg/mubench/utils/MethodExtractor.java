@@ -81,7 +81,7 @@ public class MethodExtractor {
 		private String methodSignature;
 		private Stack<String> currentEnclosingType;
 
-		public MethodRetriever(String methodSignature) {
+		MethodRetriever(String methodSignature) {
 			this.methodSignature = normalize(methodSignature);
 			this.currentEnclosingType = new Stack<>();
 		}
@@ -129,7 +129,7 @@ public class MethodExtractor {
 		
 		private <T extends Node> MethodCodeFragment getCode(T node, Function<T, String> getDeclarationAsString, Function<T, BlockStmt> getBody) {
 			MethodCodeFragment fragment = new MethodCodeFragment();
-			fragment.declaringTypeName = getEnclodingTypeName();
+			fragment.declaringTypeName = getEnclosingTypeName();
 			if (node.hasComment()) {
 				fragment.firstLineNumber = node.getComment().getRange().begin.line;
 			} else {
@@ -139,7 +139,7 @@ public class MethodExtractor {
 			return fragment;
 		}
 		
-		private String getEnclodingTypeName() {
+		private String getEnclosingTypeName() {
 			return Joiner.on(".").join(currentEnclosingType);
 		}
 
