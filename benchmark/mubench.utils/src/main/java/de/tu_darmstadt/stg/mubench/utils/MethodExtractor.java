@@ -129,6 +129,8 @@ public class MethodExtractor {
 
 				typeNestingDepth--;
 			} while (typeNestingDepth >= 0);
+
+			super.visit(constructor, matchingMethodsCode);
 		}
 
 		@Override

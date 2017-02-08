@@ -197,6 +197,21 @@ public class MethodExtractorTest {
 	}
 
 	@Test
+	public void findsMethodInAnonymousClassInConstructor() throws Exception {
+		testFindsMethod("class C {\n"
+						+ "  C() {\n"
+						+ "    new Object() {\n"
+						+ "      void n() {}\n"
+						+ "    };\n"
+						+ "  }\n"
+						+ "}",
+
+				"n()",
+
+				"      void n() {}");
+	}
+
+	@Test
 	public void findsConstructorOfNonStaticInnerClass() throws Exception {
 		testFindsMethod("class C {\n"
 						+ "  class I {\n"
