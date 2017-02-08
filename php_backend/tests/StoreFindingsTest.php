@@ -4,9 +4,11 @@ require_once "src/QueryBuilder.php";
 require_once "src/UploadProcessor.php";
 require_once "src/DataProcessor.php";
 require_once "src/MuBench/Detector.php";
+require_once "src/MuBench/Misuse.php";
 require_once "DatabaseTestCase.php";
 
 use MuBench\Detector;
+use MuBench\Misuse;
 
 class StoreFindingsTest extends DatabaseTestCase
 {
@@ -25,8 +27,8 @@ class StoreFindingsTest extends DatabaseTestCase
                 "target_snippets": [
                     {"first_line_number": 5, "code": "-code-"}
                 ],
-                "-custom1-": "-val1-",
-                "-custom2-": "-val2-"
+                "custom1": "-val1-",
+                "custom2": "-val2-"
             }
         ]
     }
@@ -63,7 +65,7 @@ EOT;
         $upload_processor = new UploadProcessor($this->db, $queryBuilder, $this->logger);
         $data_processor = new DataProcessor($this->db, $this->logger);
 
-        $this->markTestSkipped('must be revisited.');
+        // $this->markTestSkipped('must be revisited.');
 
         $data = json_decode($this->finding_json);
         $upload_processor->processData("ex2", $data, $data->{"potential_hits"});
@@ -78,7 +80,15 @@ EOT;
             "runtime" => "42.1",
             "number_of_findings" => "23",
             "detector" => "detector_1",
-            "misuses" => []
+            "misuses" => [ new Misuse(["misuse" => "0"], [0 => [
+                "exp" => "ex2",
+                "project" => "-p-",
+                "version" => "-v-",
+                "misuse" => "0",
+                "rank" => "0",
+                "custom1" => "-val1-",
+                "custom2" => "-val2-"
+            ]], []) ]
         ];
         self::assertEquals([$expected_run], $runs);
     }
