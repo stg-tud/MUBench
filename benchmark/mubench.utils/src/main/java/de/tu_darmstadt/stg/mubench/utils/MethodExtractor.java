@@ -15,11 +15,9 @@ import com.github.javaparser.JavaParser;
 import com.github.javaparser.ParseException;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Node;
-import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
-import com.github.javaparser.ast.body.ConstructorDeclaration;
-import com.github.javaparser.ast.body.MethodDeclaration;
-import com.github.javaparser.ast.body.Parameter;
+import com.github.javaparser.ast.body.*;
 import com.github.javaparser.ast.stmt.BlockStmt;
+import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 import com.google.common.base.Joiner;
 
@@ -110,11 +108,27 @@ public class MethodExtractor {
 		
 		@Override
 		public void visit(ConstructorDeclaration constructor, List<MethodCodeFragment> matchingMethodsCode) {
-			String signature = getSignature(ctorId, constructor.getParameters());
-			String altSignature = getSignature(constructor.getName(), constructor.getParameters());
-			if (methodSignature.equals(signature) || methodSignature.equals(altSignature)) {
-				matchingMethodsCode.add(getCode(constructor, ConstructorDeclaration::getDeclarationAsString, ConstructorDeclaration::getBlock));
-			}
+			String name = constructor.getName();
+			List<Parameter> parameters = constructor.getParameters();
+
+			int typeNestingDepth = currentEnclosingType.size();
+			do {
+				String signature = getSignature(ctorId, parameters);
+				String altSignature = getSignature(name, parameters);
+
+				if (methodSignature.equals(signature) || methodSignature.equals(altSignature)) {
+					matchingMethodsCode.add(getCode(constructor, ConstructorDeclaration::getDeclarationAsString, ConstructorDeclaration::getBlock));
+					return; // stop when we have a match
+				}
+
+				// if the query method signature was extracted from bytecode and the target contstructor belongs to a
+				// non-static inner class, then the constructor has additional parameters of the surrounding types'
+				// types.
+				if (typeNestingDepth - 2 >= 0)
+					parameters.add(0, new Parameter(new ClassOrInterfaceType(currentEnclosingType.get(typeNestingDepth - 2)), new VariableDeclaratorId("")));
+
+				typeNestingDepth--;
+			} while (typeNestingDepth >= 0);
 		}
 
 		@Override

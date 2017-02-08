@@ -184,7 +184,20 @@ public class MethodExtractorTest {
 				
 				"      void n() {}");
 	}
-	
+
+	@Test
+	public void findsConstructorOfNonStaticInnerClass() throws Exception {
+		testFindsMethod("class C {\n"
+						+ "  class I {\n"
+						+ "    I() {}\n"
+						+ "  }\n"
+						+ "}",
+
+				"I(C)",
+
+				"    I() {}");
+	}
+
 	@Test
 	public void returnsDeclaringType() throws Exception {
 		testFindsDeclaringType("class C {\n"
