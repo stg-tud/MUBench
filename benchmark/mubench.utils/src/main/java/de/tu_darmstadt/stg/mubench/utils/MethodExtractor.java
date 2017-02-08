@@ -179,6 +179,9 @@ public class MethodExtractor {
 					String arrayBrackets = parameter.toString().substring(parameter.toString().indexOf('['));
 					signature.append(arrayBrackets);
 				}
+				if (parameter.isVarArgs()) {
+					signature.append("[]");
+				}
 				first = false;
 			}
 			return signature.append(")").toString();

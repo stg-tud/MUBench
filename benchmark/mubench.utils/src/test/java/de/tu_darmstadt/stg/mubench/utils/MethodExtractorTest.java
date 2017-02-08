@@ -80,6 +80,17 @@ public class MethodExtractorTest {
 	}
 
 	@Test
+	public void findsMethodWithVarArgsParameter() throws Exception {
+		testFindsMethod("class C{\n"
+						+ "  void m(int... is) {}\n"
+						+ "}",
+
+				"m(int[])",
+
+				"  void m(int... is) {}");
+	}
+
+	@Test
 	public void findsMethodWithGenericParameter() throws Exception {
 		testFindsMethod("class C{\n"
 				+ "  void m(A<B> a) {}\n"
