@@ -137,7 +137,6 @@ public class MethodExtractor {
 			if (methodSignature.equals(signature)) {
 				matchingMethodsCode.add(getCode(method, MethodDeclaration::getDeclarationAsString, MethodDeclaration::getBody));
 			}
-			getSignature(method.getName(), method.getParameters());
 			super.visit(method, matchingMethodsCode);
 		}
 		
