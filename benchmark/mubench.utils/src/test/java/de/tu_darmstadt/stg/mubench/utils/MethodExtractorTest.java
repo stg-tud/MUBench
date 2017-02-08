@@ -56,7 +56,29 @@ public class MethodExtractorTest {
 				
 				"  void m(A a, B b) {}");
 	}
-	
+
+	@Test
+	public void findsMethodWithArrayParameter() throws Exception {
+		testFindsMethod("class C{\n"
+				+ "  void m(int[] is) {}\n"
+				+ "}",
+
+				"m(int[])",
+
+				"  void m(int[] is) {}");
+	}
+
+	@Test
+	public void findsMethodWithArrayParameterAlternativeSyntax() throws Exception {
+		testFindsMethod("class C{\n"
+						+ "  void m(int is[]) {}\n"
+						+ "}",
+
+				"m(int[])",
+
+				"  void m(int is[]) {}");
+	}
+
 	@Test
 	public void findsMethodWithGenericParameter() throws Exception {
 		testFindsMethod("class C{\n"
