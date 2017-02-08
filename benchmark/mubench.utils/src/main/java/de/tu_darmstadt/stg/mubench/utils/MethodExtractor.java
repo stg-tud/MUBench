@@ -113,7 +113,7 @@ public class MethodExtractor {
 			String signature = getSignature(ctorId, constructor.getParameters());
 			String altSignature = getSignature(constructor.getName(), constructor.getParameters());
 			if (methodSignature.equals(signature) || methodSignature.equals(altSignature)) {
-				matchingMethodsCode.add(getCode(constructor, c -> c.getDeclarationAsString(), c -> c.getBlock()));
+				matchingMethodsCode.add(getCode(constructor, ConstructorDeclaration::getDeclarationAsString, ConstructorDeclaration::getBlock));
 			}
 		}
 
@@ -121,8 +121,9 @@ public class MethodExtractor {
 		public void visit(MethodDeclaration method, List<MethodCodeFragment> matchingMethodsCode) {
 			String signature = getSignature(method.getName(), method.getParameters());
 			if (methodSignature.equals(signature)) {
-				matchingMethodsCode.add(getCode(method, m -> m.getDeclarationAsString(), m -> m.getBody()));
+				matchingMethodsCode.add(getCode(method, MethodDeclaration::getDeclarationAsString, MethodDeclaration::getBody));
 			}
+			getSignature(method.getName(), method.getParameters());
 			super.visit(method, matchingMethodsCode);
 		}
 		
