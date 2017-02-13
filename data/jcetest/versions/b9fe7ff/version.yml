@@ -1,5 +1,3 @@
-misuses:
-- '1'
 build:
   classes: target/classes/
   commands:

@@ -3,10 +3,10 @@ api:
 characteristics:
 - missing/condition/value_or_state
 description: >
-  May call doFinal on the same instance multiple times.
+  Uses DES which is considered unsafe.
 location:
-  file: com/corona/crypto/AESCypher.java
-  method: "decrypt(final byte[] data)"
+  file: com/corona/crypto/DESCypher.java
+  method: "setEncryptKey(final byte[] key)"
 internal: true
 pattern:
 - single object
