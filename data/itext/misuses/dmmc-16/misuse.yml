@@ -1,0 +1,16 @@
+api:
+- java.util.StringTokenizer
+characteristics:
+- missing/condition/value_or_state
+crash: true
+description: >
+   StringTokenizer.nextToken() is invoked without prior check of hasMoreTokens().
+   Test target method implements a lookup, which may be expected to throw if there
+   is no matching element. However, this is not explicit.
+location:
+  file: com/itextpdf/text/pdf/CJKFont.java
+  method: "getBBox(int)"
+internal: false
+source:
+  name: DMMC
+  url: http://www.monperrus.net/martin/dmmc

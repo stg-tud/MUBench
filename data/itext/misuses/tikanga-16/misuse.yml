@@ -1,0 +1,14 @@
+api:
+- java.util.ArrayList
+characteristics:
+- missing/condition/value_or_state
+crash: true
+description: >
+  ArrayList.get() is invoked without prior check of size().
+location:
+  file: com/itextpdf/text/pdf/PdfPages.java
+  method: "writePageTree()"
+internal: false
+source:
+  name: Tikanga
+  url: https://www.st.cs.uni-saarland.de/models/tikanga/

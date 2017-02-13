@@ -5,9 +5,13 @@ build:
   src: src/main/java/
 misuses:
 - '1'
+- 'dmmc-15'
+- 'dmmc-16'
+- 'dmmc-18'
 - 'dmmc-61'
 - 'dmmc-357'
 - 'dmmc-937'
 - 'jadet-5'
 - 'jadet-9'
+- 'tikanga-16'
 revision: 5090

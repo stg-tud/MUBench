@@ -5,11 +5,9 @@ characteristics:
 crash: true
 description: >
   Iterator.next() is invoked without prior check of hasNext().
-  
-  Is also tikanga-12.
 location:
-  file: com/itextpdf/text/pdf/PdfPKCS7.java
-  method: "PdfPKCS7(byte[], byte[], String)"
+  file: com/google/javascript/jscomp/SimpleDefinitionFinder.java
+  method: "visit(NodeTraversal, Node, Node)"
 internal: false
 source:
   name: DMMC

@@ -6,6 +6,8 @@ build:
   src: src/
 misuses:
 - '2'
+- 'dmmc-11'
+- 'dmmc-13'
 - 'dmmc-1023'
 - 'tikanga-2'
 revision: 43c245f0ff8d409e81e25687e69d34666b7cf26a~1

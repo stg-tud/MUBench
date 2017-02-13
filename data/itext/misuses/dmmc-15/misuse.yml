@@ -1,0 +1,17 @@
+api:
+- java.util.StringTokenizer
+characteristics:
+- missing/condition/value_or_state
+crash: true
+description: >
+   StringTokenizer.nextToken() is invoked without prior check of hasMoreTokens().
+   This usage may be safe from context, since the tokenized value is an RBG color
+   value which has a known number of tokens. However, the usage is unsafe against
+   invalid values and we, therefore, consider it a misuse.
+location:
+  file: com/itextpdf/text/pdf/SimpleBookmark.java
+  method: "iterateOutlines(PdfWriter, PdfIndirectReference, List, boolean)"
+internal: false
+source:
+  name: DMMC
+  url: http://www.monperrus.net/martin/dmmc

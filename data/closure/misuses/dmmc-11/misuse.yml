@@ -4,12 +4,10 @@ characteristics:
 - missing/condition/value_or_state
 crash: true
 description: >
-  Iterator.next() is invoked without prior check of hasNext().
-  
-  Is also tikanga-12.
+  Iterator.next() may be invoked without prior check of hasNext().
 location:
-  file: com/itextpdf/text/pdf/PdfPKCS7.java
-  method: "PdfPKCS7(byte[], byte[], String)"
+  file: com/google/javascript/jscomp/graph/LinkedDirectedGraph.java
+  method: "next()"
 internal: false
 source:
   name: DMMC
