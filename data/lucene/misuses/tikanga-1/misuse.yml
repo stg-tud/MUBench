@@ -8,7 +8,7 @@ description: >
   element in the SegmentInfos instance.
 location:
   file: org/apache/lucene/index/MergeDocIDRemapper.java
-  method: "MergeDocIDRemapper(SegmentInfos, int[][], int[], MergePolicy$OneMerge, int)"
+  method: "MergeDocIDRemapper(SegmentInfos, int[][], int[], OneMerge, int)"
 internal: true
 source:
   name: Tikanga & Jadet
