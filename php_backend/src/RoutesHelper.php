@@ -1,5 +1,7 @@
 <?php
 
+require_once "DBConnection.php";
+
 use Monolog\Logger;
 use MuBench\Detector;
 
@@ -11,20 +13,16 @@ class RoutesHelper
     protected $root_url;
     protected $base_url;
     protected $private_url;
+    protected $db;
 
-    public function __construct(Logger $logger, $settings)
+    public function __construct(Logger $logger, $settings, DBConnection $db)
     {
         $this->logger = $logger;
+        $this->db = $db;
         $this->settings = $settings;
         $this->root_url = $settings['root_url'];
         $this->base_url = $settings['root_url'] . "index.php/";
         $this->private_url = $this->base_url . "private/";
-    }
-
-    public function review_status($request, $args, $app, $r, $response, $logged)
-    {
-        $reviews = $app->data->getReviewStatus();
-        return $this->render($r, $args, $response, 'status.phtml', array('experiments' => $reviews));
     }
 
     public function index_route($request, $args, $app, $r, $response, $logged)
@@ -36,7 +34,7 @@ class RoutesHelper
     public function experiment_route($request, $args, $app, $r, $response, $logged)
     {
         $exp = $args['exp'];
-        $detectors = $app->data->getDetectors2($exp);
+        $detectors = $this->db->getDetectors2($exp);
         $template = $this->settings['ex_template'][$exp];
         return $this->render($r, $args, $response, 'experiment.phtml',
             array('detectors' => $detectors, 'id' => $template['id'], 'title' => $template['title'], 'exp' => $exp,
@@ -45,15 +43,15 @@ class RoutesHelper
 
     public function overview_route($request, $args, $app, $r, $response)
     {
-        $reviews = $app->data->getReviewsByReviewer($request->getServerParams()['PHP_AUTH_USER']);
+        $misuses = $this->db->getAllReviews2($request->getServerParams()['PHP_AUTH_USER']);
         return $this->render($r, $args, $response, 'overview.phtml',
-            array("name" => $request->getServerParams()['PHP_AUTH_USER'], "experiments" => $reviews));
+            array("name" => $request->getServerParams()['PHP_AUTH_USER'], "misuses" => $misuses, "logged" => true));
     }
 
     public function todo_route($request, $args, $app, $r, $response)
     {
-        $reviews = $app->data->getTodo($request->getServerParams()['PHP_AUTH_USER']);
-        return $this->render($r, $args, $response, 'todo.phtml', array("experiments" => $reviews));
+        $misuses = $this->db->getTodo($request->getServerParams()['PHP_AUTH_USER']);
+        return $this->render($r, $args, $response, 'todo.phtml', array("logged" => true, "misuses" => $misuses));
     }
 
     public function detect_route($request, $args, $app, $r, $response, $logged)
@@ -68,8 +66,8 @@ class RoutesHelper
             $name = $request->getServerParams()['PHP_AUTH_USER'];
         }
 
-        $det = $app->data->getDetector($detector);
-        $runs = $app->data->getRuns($det, $exp);
+        $det = $this->db->getDetector($detector);
+        $runs = $this->db->getRuns($det, $exp);
 
         return $this->render($r, $args, $response, 'detector.phtml',
             array('logged' => $logged, 'name' => $name,
@@ -84,8 +82,8 @@ class RoutesHelper
         $version = $args['version'];
         $misuse = $args['misuse'];
 
-        $det = $app->data->getDetector($detector);
-        $misuse = $app->data->getMisuse($exp, $det, $project, $version, $misuse);
+        $det = $this->db->getDetector($detector);
+        $misuse = $this->db->getMisuse($exp, $det, $project, $version, $misuse);
 
         $reviewer = "";
         if ($review_flag && !$logged) {

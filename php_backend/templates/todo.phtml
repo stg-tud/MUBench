@@ -1,45 +1,97 @@
 <?php
-$logged = true;
+use MuBench\Decision;
+use MuBench\ReviewState;
 ?>
 <html>
 <head>
+    <title>MuBench :: Open Reviews</title>
     <link rel="stylesheet" type="text/css" href="<?= htmlspecialchars($root_url); ?>style/style.css" />
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
 </head>
 <body>
-<?php include "includes/menu.phtml" ?>
+<?php include "includes/menu.phtml"; ?>
 
-<h1>Open Reviews</h1>
-
-<?php foreach($experiments as $key => $reviews) : ?>
-    <h2>Experiment <?= htmlspecialchars($key); ?></h2>
-    <table style="width: 600px;">
+<?php foreach($misuses as $experiment => $detectors) : ?>
+    <h1>Experiment: <?= htmlspecialchars($experiment); ?></h1>
+    <table>
+        <thead>
         <tr>
             <th>Detector</th>
             <th>Project</th>
             <th>Version</th>
             <th>Misuse</th>
-            <th>Reviewer</th>
+            <th>Decision</th>
+            <th>Reviews</th>
             <th></th>
         </tr>
-        <?php foreach($reviews as $review) : ?>
+        </thead>
+        <tbody>
+        <?php $last_project = "" ?>
+        <?php foreach($detectors as $detector => $misuses) : ?>
+        <?php foreach($misuses as $misuse) : ?>
+            <?php
+            $project = $misuse->getProject();
+            $new_project = strcmp($last_project, $misuse->getProject()) !== 0;
+            $last_project = $project;
+            $new_version = strcmp($version, $misuse->getVersion()) !== 0;
+            $version = $misuse->getVersion();
+            ?>
+            <?php
+            $classes = [];
+            if($new_project) $classes[] = "top";
+            $style_classes = implode(" ", $classes);
+            ?>
             <tr>
-                <td><?= htmlspecialchars($review['detector']); ?></td>
-                <td><?= htmlspecialchars($review['project']); ?></td>
-                <td><?= htmlspecialchars($review['version']); ?></td>
-                <td><?= htmlspecialchars($review['misuse']); ?></td>
+                <td class="<?= $style_classes ?>">
+                    <?= $new_project ? htmlspecialchars($detector) : ""; ?></td>
+                <td class="<?= $style_classes ?>">
+                    <?= $new_project ? htmlspecialchars($project) : ""; ?></td>
+                <td class="<?= $style_classes ?>">
+                    <?= $new_version ? htmlspecialchars($version) : ""; ?></td>
+                <td class="<?= $style_classes ?>">
+                    <?= htmlspecialchars($misuse->getShortId()); ?></td>
                 <?php
-                $review_url = htmlspecialchars($private_url) . htmlspecialchars($review['exp']) . "/" . htmlspecialchars($review['detector']) . "/" .
-                    htmlspecialchars($review['project']) . "/" . htmlspecialchars($review['version']) . "/" .
-                    htmlspecialchars($review['misuse']);
+                $review_url = ($logged ? htmlspecialchars($private_url) : htmlspecialchars($base_url)) . htmlspecialchars($experiment) . "/" . htmlspecialchars($detector) . "/" .
+                    htmlspecialchars($project) . "/" . htmlspecialchars($version) . "/" . htmlspecialchars($misuse->id);
                 ?>
-                <td>
-                    <?php foreach($review['reviewer'] as $reviewer) : ?>
-                        <a href="<?= $review_url ?>/<?= htmlspecialchars($reviewer); ?>"><?= htmlspecialchars($reviewer); ?></a>
-                    <?php endforeach; ?>
+                <td class="<?= $style_classes ?>">
+                    <?php $review_state = $misuse->getReviewState() ?>
+                    <?php if ($review_state == ReviewState::NOTHING_TO_REVIEW): ?>
+                    <?php elseif ($review_state == ReviewState::NEEDS_REVIEW): ?>
+                        <i class="fa fa-search" aria-hidden="true" style="color:red;" title="Needs Review"></i>
+                    <?php elseif ($review_state == ReviewState::NEEDS_CLARIFICATION): ?>
+                        <i class="fa fa-question-circle" aria-hidden="true" style="color:blue;" title="Needs Clarification"></i>
+                    <?php elseif ($review_state == ReviewState::DISAGREEMENT): ?>
+                        <i class="fa fa-exclamation-triangle" aria-hidden="true" style="color:red;" title="Disagreement"></i>
+                    <?php elseif ($review_state == ReviewState::AGREEMENT_YES): ?>
+                        <i class="fa fa-thumbs-o-up" aria-hidden="true" style="color:green;" title="Agreement: Yes"></i>
+                    <?php elseif ($review_state == ReviewState::AGREEMENT_NO): ?>
+                        <i class="fa fa-thumbs-o-down" aria-hidden="true" style="color:darkred;" title="Agreement: No"></i>
+                    <?php elseif ($review_state == ReviewState::RESOLVED_YES): ?>
+                        <i class="fa fa-thumbs-o-up" aria-hidden="true" style="color:green;" title="Resolved: Yes"></i>
+                        (<a href="<?= $review_url ?>/resolution"><i class="fa fa-handshake-o" aria-hidden="true" title="Resolution"></i></a>)
+                    <?php elseif ($review_state == ReviewState::RESOLVED_NO): ?>
+                        <i class="fa fa-thumbs-o-down" aria-hidden="true" style="color:darkred;" title="Resolved: No"></i>
+                        (<a href="<?= $review_url ?>/resolution"><i class="fa fa-handshake-o" aria-hidden="true" title="Resolution"></i></a>)
+                    <?php endif; ?>
                 </td>
-                <td><a href="<?= $review_url ?>" class="button">review</a></td>
+                <td class="<?= $style_classes ?>">
+                    <ul class="inline">
+                        <?php foreach($misuse->getReviews() as $review) : ?>
+                            <?php $reviewer_name = htmlspecialchars($review->getReviewerName()) ?>
+                            <li style="display:inline"><a href="<?= $review_url ?>/<?= $reviewer_name ?>"><?= $reviewer_name ?></a></li>
+                        <?php endforeach; ?>
+                    </ul>
+                </td>
+                <td><a href="<?= $review_url; ?>" class="button">review</a></td>
             </tr>
+            <?php
+            $new_version = false;
+            $new_project = false;
+            ?>
         <?php endforeach; ?>
+        <?php endforeach; ?>
+        </tbody>
     </table>
 <?php endforeach; ?>
 </body>
