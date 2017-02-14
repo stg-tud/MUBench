@@ -1,5 +1,5 @@
 <?php
-require_once 'ConnectionDB.php';
+require_once 'DBConnection.php';
 require_once 'DirectoryHelper.php';
 require_once 'UploadProcessor.php';
 require_once 'DataProcessor.php';

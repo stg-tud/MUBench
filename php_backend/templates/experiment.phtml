@@ -10,8 +10,8 @@
 <h2>Experiment <?= htmlspecialchars($id); ?> - <?= htmlspecialchars($title); ?></h2>
 
 <ul>
-	<?php foreach($data as $d) : ?>
-            <li><a href="<?= $logged ? htmlspecialchars($private_url) : htmlspecialchars($base_url); ?><?= htmlspecialchars($exp); ?>/<?= htmlspecialchars($d); ?>"><?= htmlspecialchars($d); ?></a></li>
+	<?php foreach($detectors as $detector) : ?>
+            <li><a href="<?= $logged ? htmlspecialchars($private_url) : htmlspecialchars($base_url); ?><?= htmlspecialchars($exp); ?>/<?= htmlspecialchars($detector->name); ?>"><?= htmlspecialchars($detector->name); ?></a></li>
     <?php endforeach; ?>
 </ul>
 

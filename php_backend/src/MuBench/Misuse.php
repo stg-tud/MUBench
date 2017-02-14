@@ -40,23 +40,85 @@ class Misuse
     public function __construct(array $data, array $potential_hits, $reviews)
     {
         assert(array_key_exists("misuse", $data), "misuse requires id");
-
         $this->id = $data["misuse"];
         $this->data = $data;
         $this->potential_hits = $potential_hits;
         $this->reviews = $reviews;
     }
 
+    public function getProject()
+    {
+        if(!array_key_exists("project", $this->data)) return $this->potential_hits[0]["project"];
+        return $this->data["project"];
+    }
+
+    public function getVersion()
+    {
+        if(!array_key_exists("version", $this->data)) return $this->potential_hits[0]["version"];
+        return $this->data["version"];
+    }
+
+    public function getDescription()
+    {
+        return $this->data['description'];
+    }
+
+    public function getFixDescription()
+    {
+        return $this->data['fix_description'];
+    }
+
+    public function hasDiff()
+    {
+        return !empty($this->data['diff_url']);
+    }
+
+    public function getDiff()
+    {
+        return $this->data['diff_url'];
+    }
+
     public function getShortId()
     {
-        $project = $this->data["project"];
+        $project = $this->getProject();
         return substr($this->id, 0, strlen($project)) === $project ? substr($this->id, strlen($project) + 1) :
             $this->id;
+    }
+
+    public function getFile(){
+        if(!array_key_exists("file", $this->data)) return $this->potential_hits[0]["file"];
+        return $this->data['file'];
+    }
+
+    public function getMethod(){
+        if(!array_key_exists("method", $this->data)) return $this->potential_hits[0]["method"];
+        return $this->data['method'];
+    }
+
+    public function hasViolationTypes()
+    {
+        return !empty($this->getViolationTypes());
     }
 
     public function getViolationTypes()
     {
         return explode(";", $this->data["violation_types"]);
+    }
+
+    public function getCode(){
+        return $this->data['snippets'];
+    }
+
+    public function getPatterns(){
+        return $this->data['patterns'];
+    }
+
+    public function hasPatterns(){
+        return !empty($this->getPatterns());
+    }
+
+    public function hasCode(){
+        return !empty($this->getCode());
     }
 
     public function hasPotentialHits()
@@ -67,6 +129,16 @@ class Misuse
     public function getPotentialHits()
     {
         return $this->potential_hits;
+    }
+
+    public function hasSnippets()
+    {
+        return !empty($this->getSnippets());
+    }
+
+    public function getSnippets()
+    {
+        return $this->data['snippets'];
     }
 
     public function hasReviewed($reviewer_name)
@@ -84,7 +156,7 @@ class Misuse
 
     public function getReviews()
     {
-        return array_filter($this->reviews, function($review) {
+        return array_filter($this->reviews, function ($review) {
             return strcmp($review->getReviewerName(), "resolution") !== 0;
         });
     }
@@ -131,4 +203,5 @@ class Misuse
     {
         return $this->getReview("resolution");
     }
+
 }

@@ -1,5 +1,5 @@
 <?php
-require_once 'src/ConnectionDB.php';
+require_once 'src/DBConnection.php';
 require_once 'src/UploadProcessor.php';
 
 use PHPUnit\Framework\TestCase;

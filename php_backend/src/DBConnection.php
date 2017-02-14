@@ -226,15 +226,10 @@ class DBConnection
         return $this->queryToArray($query);
     }
 
-    public function getPattern($misuse)
+    public function getPatterns($misuse)
     {
-        $query = [];
-        try {
-            $query = $this->pdo->query("SELECT * from patterns WHERE misuse=" . $this->pdo->quote($misuse) . ";");
-        } catch (PDOException $e) {
-            $this->logger->error("Error getPattern: " . $e->getMessage());
-        }
-        return $query;
+        $patterns = $this->tryQuery("SELECT name, code, line from patterns WHERE misuse=" . $this->pdo->quote($misuse) . ";");
+        return $patterns;
     }
 
     public function getReview($exp, $detector, $project, $version, $misuse, $name)
@@ -476,9 +471,6 @@ class DBConnection
     }
 
 
-
-
-
     private function getDetectorTableName(Detector $detector)
     {
         return "detector_" . $detector->id;
@@ -513,19 +505,19 @@ class DBConnection
             $version_id = $run["version"];
 
             if (strcmp($experiment, "ex1") === 0) {
-                $misuses = $this->tryQuery("SELECT * FROM `metadata` " .
-                    "WHERE `project` = " . $this->pdo->quote($project_id) .
-                    "  AND `version` = " . $this->pdo->quote($version_id) .
+                $misuses = $this->tryQuery("SELECT * FROM `metadata`" .
+                    "WHERE `metadata`.`project` = " . $this->pdo->quote($project_id) .
+                    "  AND `metadata`.`version` = " . $this->pdo->quote($version_id) .
                     "  AND EXISTS (SELECT 1 FROM `patterns` WHERE `patterns`.`misuse` = `metadata`.`misuse`) " .
-                    "ORDER BY `misuse` * 1, `misuse`");
+                    "   ORDER BY `metadata`.`misuse` * 1, `metadata`.`misuse`");
             } elseif (strcmp($experiment, "ex2") === 0) {
-                $misuses = $this->tryQuery("SELECT `misuse` FROM `" . $detectorTableName . "` " .
-                    "WHERE `exp` = " . $this->pdo->quote($experiment) .
+                $misuses = $this->tryQuery("SELECT `misuse` FROM `" . $detectorTableName . "`" .
+                    "WHERE `" . $detectorTableName . "`.`exp` = " . $this->pdo->quote($experiment) .
                     "  AND `project` = " . $this->pdo->quote($project_id) .
                     "  AND `version` = " . $this->pdo->quote($version_id) . " " .
                     "ORDER BY `misuse` * 1, `misuse`");
             } elseif (strcmp($experiment, "ex3") === 0) {
-                $misuses = $this->tryQuery("SELECT * FROM `metadata` " .
+                $misuses = $this->tryQuery("SELECT * FROM `metadata`" .
                     "WHERE `project` = " . $this->pdo->quote($project_id) .
                     "  AND `version` = " . $this->pdo->quote($version_id) . " " .
                     "ORDER BY `misuse` * 1, `misuse`");
@@ -533,9 +525,15 @@ class DBConnection
 
             foreach ($misuses as $key => $misuse) {
                 $misuse_id = $misuse["misuse"];
-                $potential_hits = $this->getPotentialHits2($experiment, $detector, $project_id, $version_id, $misuse_id);
+                $potential_hits =
+                    $this->getPotentialHits2($experiment, $detector, $project_id, $version_id, $misuse_id);
                 $reviews = $this->getReviews($experiment, $detector, $project_id, $version_id, $misuse_id);
-
+                $snippet = $this->getSnippet($experiment, $detector, $project_id, $version_id, $misuse_id);
+                $misuse["snippets"] = $snippet;
+                if(strcmp($experiment, "ex1") == 0){
+                    $patterns = $this->getPatterns($misuse_id);
+                    $misuse["patterns"] = $patterns;
+                }
                 $misuses[$key] = new Misuse($misuse, $potential_hits, $reviews);
             }
 
@@ -572,16 +570,26 @@ class DBConnection
         return $reviews;
     }
 
+    private function getSnippet($experiment, Detector $detector, $project_id, $version_id, $misuse_id)
+    {
+        $sql =
+            "SELECT line, snippet FROM `meta_snippets` WHERE `project`=" . $this->pdo->quote($project_id) . "AND `version`=" .$this->pdo->quote($version_id) . "AND `misuse`=". $this->pdo->quote($misuse_id);
+        if (strcmp($experiment, "ex2") == 0) {
+            $sql = "SELECT line, snippet FROM `finding_snippets` WHERE `project`=". $this->pdo->quote($project_id) ." AND `version`=". $this->pdo->quote($version_id) ." AND `finding`=". $this->pdo->quote($misuse_id) ." AND `detector`=" . $this->pdo->quote($this->getDetectorTableName($detector));
+        }
+        $snippet = $this->tryQuery($sql);
+        return $snippet;
+    }
+
     private function getFindingReviews($review_id)
     {
         $finding_reviews = $this->tryQuery("SELECT * FROM `review_findings` " .
             "WHERE `review` = " . $this->pdo->quote($review_id));
 
         foreach ($finding_reviews as &$finding_review) {
-            $violation_types = $this->tryQuery("SELECT `types`.`name` FROM `review_finding_types` " .
-                "INNER JOIN `types` ON `review_finding_types`.`type` = `types`.`id` " .
-                "WHERE `review_finding_types`.`review_finding` = " . $this->pdo->quote($finding_review["id"]));
-
+            $violation_types = $this->tryQuery("SELECT `types`.`name` FROM `review_findings_type` " .
+                "INNER JOIN `types` ON `review_findings_type`.`type` = `types`.`id` " .
+                "WHERE `review_findings_type`.`review_finding` = " . $this->pdo->quote($finding_review["id"]));
             $finding_review["violation_types"] = [];
             foreach ($violation_types as $violation_type) {
                 $finding_review["violation_types"][] = $violation_type["name"];
@@ -592,11 +600,45 @@ class DBConnection
 
     public function getPotentialHits2($experiment, Detector $detector, $project_id, $version_id, $misuse_id)
     {
-        $potential_hits = $this->tryQuery("SELECT * FROM `" . $this->getDetectorTableName($detector) . "` " .
-            "WHERE `exp` = " . $this->pdo->quote($experiment) .
-            "  AND `project` = " . $this->pdo->quote($project_id) .
-            "  AND `version` = " . $this->pdo->quote($version_id) .
-            "  AND `misuse`  = " . $this->pdo->quote($misuse_id));
+        $potential_hits = $this->tryQuery("SELECT * FROM `" .
+            $this->getDetectorTableName($detector) .
+            "`" .
+            "WHERE `exp` = " .
+            $this->pdo->quote($experiment) .
+            "  AND `project` = " .
+            $this->pdo->quote($project_id) .
+            "  AND `version` = " .
+            $this->pdo->quote($version_id) .
+            "  AND `misuse`  = " .
+            $this->pdo->quote($misuse_id));
         return $potential_hits;
+    }
+
+    public function getMisuse($experiment, $detector, $project, $version, $misuse){
+        $runs = $this->getRuns($detector, $experiment);
+        foreach($runs as $run){
+            if(strcmp($run['project'], $project) == 0 && strcmp($run['version'], $version) == 0){
+                foreach($run['misuses'] as $m){
+                    if($m->id === $misuse){
+                        return $m;
+                        break;
+                    }
+                }
+                break;
+            }
+        }
+    }
+
+    public function getDetectors2($exp)
+    {
+        $detectors =
+            $this->tryQuery("SELECT `name`, `id` FROM `detectors` WHERE EXISTS (SELECT 1 FROM `stats` WHERE `exp`=" .
+                $this->pdo->quote($exp) .
+                " AND `detector` = CONCAT('detector_', `id`)) ORDER BY `name`");
+        $result = [];
+        foreach ($detectors as $r) {
+            $result[] = new Detector($r['name'], $r['id']);
+        }
+        return $result;
     }
 }

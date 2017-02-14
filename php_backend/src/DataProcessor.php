@@ -31,6 +31,10 @@ class DataProcessor {
 	    return $this->db->getDetector($detector_name);
     }
 
+    public function getDetectors2($exp){
+	    return $this->db->getDetectors2($exp);
+    }
+
 
 	public function getMetaSnippets($project, $version, $misuse){
 	    return $this->db->getMetaSnippets($project, $version, $misuse);
@@ -102,6 +106,10 @@ class DataProcessor {
         asort($data);
         return $data;
 	}
+
+	public function getMisuse($experiment, $detector, $project, $version, $misuse){
+	    return $this->db->getMisuse($experiment, $detector, $project, $version, $misuse);
+    }
 
 	public function getReviewsMisuse($exp, $detector, $project, $version, $misuse){
 		$query = $this->db->getReviewsByIdentifier($exp, $detector, $project, $version, $misuse);

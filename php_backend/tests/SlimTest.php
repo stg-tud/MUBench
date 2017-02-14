@@ -33,24 +33,4 @@ class SlimTest extends SlimTestCase
         $this->assertEquals('404', $this->response->getStatusCode());
     }
 
-    public function testEx1WithAnyDataset(){
-        $this->get('/ex1/MuDetect');
-        $this->assertEquals('404', $this->response->getStatusCode());
-    }
-
-    public function testEx1WithAnyDatasetAndMuDetect(){
-        $this->get('/ex1/MuDetect');
-        $this->assertEquals('404', $this->response->getStatusCode());
-    }
-
-    public function testReview(){
-        $this->get('/ex1/MuDetect/aclang/5/1');
-        $this->assertEquals('200', $this->response->getStatusCode());
-    }
-
-    public function testReviewer(){
-        $this->get('/ex1/MuDetect/aclang/5/1/admin');
-        $this->assertEquals('200', $this->response->getStatusCode());
-    }
-
 }

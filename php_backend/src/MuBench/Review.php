@@ -33,6 +33,22 @@ class Review
         return $decision;
     }
 
+    public function getHitDecision($rank){
+        return $this->getReviewFinding($rank)['decision'];
+    }
+
+    public function getHitViolationTypes($rank){
+        return $this->getReviewFinding($rank)['violation_types'];
+    }
+
+    private function getReviewFinding($rank){
+        foreach ($this->data["finding_reviews"] as $finding_review){
+            if(strcmp($finding_review["rank"], $rank) == 0){
+                return $finding_review;
+            }
+        }
+    }
+
     public function getComment()
     {
         return $this->data["comment"];

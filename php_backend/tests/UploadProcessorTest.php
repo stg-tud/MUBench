@@ -1,5 +1,5 @@
 <?php
-require_once 'src/ConnectionDB.php';
+require_once 'src/DBConnection.php';
 require_once 'src/UploadProcessor.php';
 
 use PHPUnit\Framework\TestCase;
@@ -87,7 +87,7 @@ class UploadProcessorTest extends TestCase
     {
         $this->proc->processMetaData($this->metaObj);
         $query = $this->db->getMetadata("p1", "v1", "m.1");
-        $pattern = $this->db->getPattern("m.1");
+        $pattern = $this->db->getPatterns("m.1");
         $snippets = $this->db->getMetaSnippets("p1", "v1", "m.1");
         $this->assertTrue(count($query) == 1);
         $this->assertTrue(count($pattern) == 1);

@@ -1,6 +1,6 @@
 <?php
 require_once __DIR__ . '/../vendor/autoload.php';
-require_once __DIR__ . '/../src/ConnectionDB.php';
+require_once __DIR__ . '/../src/DBConnection.php';
 require_once __DIR__ . '/../src/DirectoryHelper.php';
 require_once __DIR__ . '/../src/UploadProcessor.php';
 require_once __DIR__ . '/../src/DataProcessor.php';

@@ -20,10 +20,6 @@ $app->get('/{exp:ex[1-3]}/{detector}/{project}/{version}/{misuse}', function ($r
     return $app->helper->review_route($args, $app, $this, $response, $request, false, false);
 });
 
-$app->get('/view/{exp:ex[1-3]}/{detector}/{project}/{version}/{misuse}', function ($request, $response, $args) use ($app) {
-    return $app->helper->review_route($args, $app, $this, $response, $request, false, false);
-});
-
 $app->get('/{exp:ex[1-3]}/{detector}/{project}/{version}/{misuse}/{reviewer}', function ($request, $response, $args) use ($app) {
     return $app->helper->review_route($args, $app, $this, $response, $request, false, true);
 });
@@ -54,10 +50,6 @@ $app->group('/private', function () use ($app, $settings) {
 
     $app->get('/{exp:ex[1-3]}/{detector}/{project}/{version}/{misuse}', function ($request, $response, $args) use ($app) {
         return $app->helper->review_route($args, $app, $this, $response, $request, true, true);
-    });
-
-    $app->get('/view/{exp:ex[1-3]}/{detector}/{project}/{version}/{misuse}', function ($request, $response, $args) use ($app) {
-        return $app->helper->review_route($args, $app, $this, $response, $request, false, false);
     });
 
     $app->get('/{exp:ex[1-3]}/{detector}/{project}/{version}/{misuse}/{reviewer}', function ($request, $response, $args) use ($app) {
