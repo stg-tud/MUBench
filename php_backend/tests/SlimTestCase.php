@@ -3,7 +3,6 @@ require_once __DIR__ . '/../vendor/autoload.php';
 require_once __DIR__ . '/../src/DBConnection.php';
 require_once __DIR__ . '/../src/DirectoryHelper.php';
 require_once __DIR__ . '/../src/UploadProcessor.php';
-require_once __DIR__ . '/../src/DataProcessor.php';
 require_once __DIR__ . '/../src/RoutesHelper.php';
 
 use Slim\Http\Environment;
@@ -76,8 +75,7 @@ class SlimTestCase extends PHPUnit_Framework_TestCase
         $queryBuilder = new QueryBuilder($pdo, $logger);
         $app->upload = new UploadProcessor($db, $queryBuilder, $logger);
         $app->dir = new DirectoryHelper($settings['upload'], $logger);
-        $app->data = new DataProcessor($db, $logger);
-        $app->helper = new RoutesHelper($logger, $settings);
+        $app->helper = new RoutesHelper($logger, $settings, $db);
         // Routes
         require __DIR__ . '/../src/routes.php';
 

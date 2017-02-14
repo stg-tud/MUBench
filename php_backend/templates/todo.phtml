@@ -26,7 +26,7 @@ use MuBench\ReviewState;
         </tr>
         </thead>
         <tbody>
-        <?php $last_project = "" ?>
+        <?php $last_project = ""; $version = ""; ?>
         <?php foreach($detectors as $detector => $misuses) : ?>
         <?php foreach($misuses as $misuse) : ?>
             <?php

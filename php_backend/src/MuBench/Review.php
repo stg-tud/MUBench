@@ -33,6 +33,10 @@ class Review
         return $decision;
     }
 
+    public function hasHitViolationTypes($rank){
+        return !empty($this->getHitViolationTypes($rank));
+    }
+
     public function getHitDecision($rank){
         return $this->getReviewFinding($rank)['decision'];
     }

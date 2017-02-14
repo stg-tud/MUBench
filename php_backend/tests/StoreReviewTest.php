@@ -2,7 +2,6 @@
 
 require_once "src/QueryBuilder.php";
 require_once "src/UploadProcessor.php";
-require_once "src/DataProcessor.php";
 require_once "src/MuBench/Detector.php";
 require_once "src/MuBench/Misuse.php";
 require_once "src/MuBench/Review.php";
@@ -18,7 +17,6 @@ class StoreReviewTest extends DatabaseTestCase
     {
         $queryBuilder = new QueryBuilder($this->pdo, $this->logger);
         $upload_processor = new UploadProcessor($this->db, $queryBuilder, $this->logger);
-        $data_processor = new DataProcessor($this->db, $this->logger);
 
         $data = [
             'review_name' => '-reviewer-',
@@ -46,8 +44,8 @@ class StoreReviewTest extends DatabaseTestCase
         $upload_processor->processMetaData($metadata);
         $upload_processor->processReview($data);
 
-        $detector = $data_processor->getDetector('-d-');
-        $runs = $data_processor->getRuns($detector, 'ex1');
+        $detector = $this->db->getDetector('-d-');
+        $runs = $this->db->getRuns($detector, 'ex1');
 
         $expected_run = [
             "exp" => "ex1",

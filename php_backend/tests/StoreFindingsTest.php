@@ -2,7 +2,6 @@
 
 require_once "src/QueryBuilder.php";
 require_once "src/UploadProcessor.php";
-require_once "src/DataProcessor.php";
 require_once "src/MuBench/Detector.php";
 require_once "src/MuBench/Misuse.php";
 require_once "DatabaseTestCase.php";
@@ -17,12 +16,11 @@ class StoreFindingsTest extends DatabaseTestCase
     {
         $queryBuilder = new QueryBuilder($this->pdo, $this->logger);
         $upload_processor = new UploadProcessor($this->db, $queryBuilder, $this->logger);
-        $data_processor = new DataProcessor($this->db, $this->logger);
 
         $data = json_decode($this->finding_json);
         $upload_processor->processData("ex1", $data, $data->{"potential_hits"});
-        $detector = $data_processor->getDetector("-d-");
-        $runs = $data_processor->getRuns($detector, "ex1");
+        $detector = $this->db->getDetector("-d-");
+        $runs = $this->db->getRuns($detector, "ex1");
 
         $expected_run = [
             "exp" => "ex1",
@@ -42,12 +40,11 @@ class StoreFindingsTest extends DatabaseTestCase
     {
         $queryBuilder = new QueryBuilder($this->pdo, $this->logger);
         $upload_processor = new UploadProcessor($this->db, $queryBuilder, $this->logger);
-        $data_processor = new DataProcessor($this->db, $this->logger);
 
         $data = json_decode($this->finding_json);
         $upload_processor->processData("ex2", $data, $data->{"potential_hits"});
-        $detector = $data_processor->getDetector("-d-");
-        $runs = $data_processor->getRuns($detector, "ex2");
+        $detector = $this->db->getDetector("-d-");
+        $runs = $this->db->getRuns($detector, "ex2");
 
         $expected_run = [
             "exp" => "ex2",
@@ -81,12 +78,11 @@ class StoreFindingsTest extends DatabaseTestCase
     {
         $queryBuilder = new QueryBuilder($this->pdo, $this->logger);
         $upload_processor = new UploadProcessor($this->db, $queryBuilder, $this->logger);
-        $data_processor = new DataProcessor($this->db, $this->logger);
 
         $data = json_decode($this->finding_json);
         $upload_processor->processData("ex3", $data, $data->{"potential_hits"});
-        $detector = $data_processor->getDetector("-d-");
-        $runs = $data_processor->getRuns($detector, "ex3");
+        $detector = $this->db->getDetector("-d-");
+        $runs = $this->db->getRuns($detector, "ex3");
 
         $expected_run = [
             "exp" => "ex3",
@@ -105,14 +101,13 @@ class StoreFindingsTest extends DatabaseTestCase
     function test_get_misuse_ex1(){
         $queryBuilder = new QueryBuilder($this->pdo, $this->logger);
         $upload_processor = new UploadProcessor($this->db, $queryBuilder, $this->logger);
-        $data_processor = new DataProcessor($this->db, $this->logger);
 
         $data = json_decode($this->finding_json);
         $metadata = json_decode($this->metadata_json);
         $upload_processor->processData("ex1", $data, $data->{"potential_hits"});
         $upload_processor->processMetaData($metadata);
-        $detector = $data_processor->getDetector("-d-");
-        $misuse = $data_processor->getMisuse("ex1", $detector, "-p-", "-v-", "-m-");
+        $detector = $this->db->getDetector("-d-");
+        $misuse = $this->db->getMisuse("ex1", $detector, "-p-", "-v-", "-m-");
 
         $expected_misuse = new Misuse(
             [

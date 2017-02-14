@@ -61,47 +61,6 @@ class UploadProcessorTest extends TestCase
         $this->assertEquals($expected, $actual);
     }
 
-    public function testHandleFindings()
-    {
-        $table = "testTable";
-        $project = "p";
-        $version = "v";
-        $exp = "ex1";
-        $findings = $this->obj->{'findings'};
-        $this->proc->handleTableColumns($table, $this->proc->getJsonNames($findings),
-            array(), $findings);
-        $this->proc->handleFindings($table, $exp ,$project, $version, $findings);
-        $query = $this->db->getPotentialHits($table, $exp, $project, $version);
-        $this->assertTrue(count($query) == 1);
-        $this->assertEquals("ex1", $query[0]['exp']);
-    }
-
-    public function testHandleStats()
-    {
-        $this->proc->handleStats("table", "p", "v", "success", "0", "10", "exp1");
-        $query = $this->db->getAllStats("exp1", "table");
-        $this->assertTrue(count($query) == 1);
-    }
-
-    public function testHandleMetadata()
-    {
-        $this->proc->processMetaData($this->metaObj);
-        $query = $this->db->getMetadata("p1", "v1", "m.1");
-        $pattern = $this->db->getPatterns("m.1");
-        $snippets = $this->db->getMetaSnippets("p1", "v1", "m.1");
-        $this->assertTrue(count($query) == 1);
-        $this->assertTrue(count($pattern) == 1);
-        $this->assertTrue(count($snippets) == 1);
-    }
-
-    public function testHandleTargetSnippets(){
-        $this->proc->handleTargetSnippets("detector_1", "p1", "v1", "1", $this->obj->{'findings'}[0]->{'target_snippets'});
-        $snippets = $this->db->getFindingSnippet("detector_1", "p1", "v1", "1");
-        $this->assertTrue(count($snippets) == 1);
-        $this->assertEquals("c", $snippets[0]['snippet']);
-        $this->assertEquals(0, $snippets[0]['line']);
-    }
-
     public function testProcessReview()
     {
         $this->proc->processReview($this->reviewObj);

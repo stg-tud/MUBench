@@ -7,7 +7,11 @@ class DatabaseTestCaseTest extends DatabaseTestCase
 
     function testTablesExist()
     {
-        $tables = $this->db->queryToArray($this->pdo->query("SELECT name FROM sqlite_master WHERE type='table'"));
+        $tables = $this->pdo->query("SELECT name FROM sqlite_master WHERE type='table'");
+        $actual = [];
+        foreach($tables as $t){
+            $actual[] = $t;
+        }
 
         $expectedTables = [
             ['name' => 'detectors'],
@@ -22,12 +26,16 @@ class DatabaseTestCaseTest extends DatabaseTestCase
             ['name' => 'types']
         ];
 
-        self::assertEquals($expectedTables, $tables);
+        self::assertEquals($expectedTables, $actual);
     }
 
     function testTypesInserted()
     {
-        $types = $this->db->queryToArray($this->pdo->query("SELECT name FROM types"));
+        $types = $this->pdo->query("SELECT name FROM types");
+        $actual = [];
+        foreach($types as $t){
+            $actual[] = $t;
+        }
 
         $expectedTypes = [
             ['name' => 'missing/call'],
@@ -53,7 +61,7 @@ class DatabaseTestCaseTest extends DatabaseTestCase
             ['name' => 'superfluous/iteration']
         ];
 
-        self::assertEquals($expectedTypes, $types);
+        self::assertEquals($expectedTypes, $actual);
     }
 
 }

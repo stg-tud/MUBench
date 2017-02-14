@@ -2,7 +2,6 @@
 require_once 'DBConnection.php';
 require_once 'DirectoryHelper.php';
 require_once 'UploadProcessor.php';
-require_once 'DataProcessor.php';
 require_once 'RoutesHelper.php';
 require_once 'QueryBuilder.php';
 
@@ -31,5 +30,4 @@ $db = new DBConnection($pdo, $logger);
 $queryBuilder = new QueryBuilder($pdo, $logger);
 $app->upload = new UploadProcessor($db, $queryBuilder, $logger);
 $app->dir = new DirectoryHelper($settings['upload'], $logger);
-$app->data = new DataProcessor($db, $logger);
-$app->helper = new RoutesHelper($logger, $settings);
+$app->helper = new RoutesHelper($logger, $settings, $db);

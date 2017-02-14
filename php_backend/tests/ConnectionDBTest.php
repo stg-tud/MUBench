@@ -1,7 +1,9 @@
 <?php
 require_once 'src/QueryBuilder.php';
+require_once 'src/MuBench/Detector.php';
 
 use PHPUnit\Framework\TestCase;
+use MuBench\Detector;
 
 class ConnectionDBTest extends TestCase
 {
@@ -35,11 +37,10 @@ class ConnectionDBTest extends TestCase
 
     public function testExecCreateAndInsertTable(){
         $statements = [];
-        $tableName = "testTable";
-        $statements[] = $this->query->createTableStatement($tableName, $this->obj->{'findings'});
-        $statements[] = $this->query->insertStatement($tableName, 'exp', 'project', 'version', $this->obj->{"findings"}[0]);
+        $statements[] = $this->query->createTableStatement("detector_1", $this->obj->{'findings'});
+        $statements[] = $this->query->insertStatement("detector_1", 'exp', 'project', 'version', $this->obj->{"findings"}[0]);
         $this->db->execStatements($statements);
-        $query = $this->db->getPotentialHits($tableName, 'exp', 'project', 'version');
+        $query = $this->db->getPotentialHits('exp', new Detector('MuDetect', 1), 'project', 'version', '5');
         $this->assertTrue(count($query) != 0);
     }
 }

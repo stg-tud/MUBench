@@ -451,7 +451,7 @@
                             <?php endif; ?>
                                 <?php foreach($misuse->getViolationTypes() as $v) : ?>
                                     <?php $add = true ?>
-                                    <?php if($review) : ?>
+                                    <?php if($review && $review->hasHitViolationTypes($hit['rank'])) : ?>
                                         <?php foreach($review->getHitViolationTypes($hit['rank']) as $t) : ?>
                                             <?php if($t === $v) : ?>
                                                 <option selected="selected" value="<?= htmlspecialchars($v); ?>"><?= htmlspecialchars($v); ?></option>

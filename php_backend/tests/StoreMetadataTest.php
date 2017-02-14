@@ -2,7 +2,6 @@
 
 require_once "src/QueryBuilder.php";
 require_once "src/UploadProcessor.php";
-require_once "src/DataProcessor.php";
 require_once "src/MuBench/Misuse.php";
 require_once "DatabaseTestCase.php";
 
@@ -14,7 +13,6 @@ class StoreMetadataTest extends DatabaseTestCase
     {
         $queryBuilder = new QueryBuilder($this->pdo, $this->logger);
         $upload_processor = new UploadProcessor($this->db, $queryBuilder, $this->logger);
-        $data_processor = new DataProcessor($this->db, $this->logger);
 
         $data = json_decode($this->metadata_json);
         $findings = json_decode($this->finding_json);
@@ -22,8 +20,8 @@ class StoreMetadataTest extends DatabaseTestCase
         $upload_processor->processData('ex1', $findings, $findings->{'potential_hits'});
         $upload_processor->processMetaData($data);
 
-        $detector = $data_processor->getDetector('-d-');
-        $runs = $data_processor->getRuns($detector, 'ex1');
+        $detector = $this->db->getDetector('-d-');
+        $runs = $this->db->getRuns($detector, 'ex1');
 
         $expected_run = [
             "exp" => "ex1",

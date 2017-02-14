@@ -2,7 +2,6 @@
 
 require_once "src/QueryBuilder.php";
 require_once "src/UploadProcessor.php";
-require_once "src/DataProcessor.php";
 require_once "src/MuBench/Detector.php";
 require_once "DatabaseTestCase.php";
 
@@ -15,7 +14,6 @@ class StoreDetectorTest extends DatabaseTestCase
     {
         $queryBuilder = new QueryBuilder($this->pdo, $this->logger);
         $upload_processor = new UploadProcessor($this->db, $queryBuilder, $this->logger);
-        $data_processor = new DataProcessor($this->db, $this->logger);
 
         $data = json_decode(
             <<<EOD
@@ -33,7 +31,7 @@ EOD
         );
 
         $upload_processor->processData("ex1", $data, $data->{'potential_hits'});
-        $actual_detector = $data_processor->getDetector("-d-");
+        $actual_detector = $this->db->getDetector("-d-");
         $expected_detector = new Detector("-d-", 1);
 
         self::assertEquals($expected_detector, $actual_detector);

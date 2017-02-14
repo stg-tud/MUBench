@@ -34,7 +34,7 @@ class RoutesHelper
     public function experiment_route($request, $args, $app, $r, $response, $logged)
     {
         $exp = $args['exp'];
-        $detectors = $this->db->getDetectors2($exp);
+        $detectors = $this->db->getDetectors($exp);
         $template = $this->settings['ex_template'][$exp];
         return $this->render($r, $args, $response, 'experiment.phtml',
             array('detectors' => $detectors, 'id' => $template['id'], 'title' => $template['title'], 'exp' => $exp,
@@ -43,7 +43,7 @@ class RoutesHelper
 
     public function overview_route($request, $args, $app, $r, $response)
     {
-        $misuses = $this->db->getAllReviews2($request->getServerParams()['PHP_AUTH_USER']);
+        $misuses = $this->db->getAllReviews($request->getServerParams()['PHP_AUTH_USER']);
         return $this->render($r, $args, $response, 'overview.phtml',
             array("name" => $request->getServerParams()['PHP_AUTH_USER'], "misuses" => $misuses, "logged" => true));
     }
