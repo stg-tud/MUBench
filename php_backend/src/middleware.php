@@ -8,6 +8,7 @@ require_once 'QueryBuilder.php';
 require_once 'MuBench/Detector.php';
 require_once 'MuBench/Misuse.php';
 require_once 'MuBench/Review.php';
+require_once 'MuBench/Results.php';
 
 $app->add(new \Slim\Middleware\HttpBasicAuthentication([
     "path" => ["/api/", "/private/"],
@@ -28,6 +29,7 @@ $pdo->setAttribute(PDO::MYSQL_ATTR_USE_BUFFERED_QUERY, true);
 $logger = $app->getContainer()['logger'];
 $db = new DBConnection($pdo, $logger);
 $queryBuilder = new QueryBuilder($pdo, $logger);
+$app->db = $db;
 $app->upload = new UploadProcessor($db, $queryBuilder, $logger);
 $app->dir = new DirectoryHelper($settings['upload'], $logger);
 $app->helper = new RoutesHelper($logger, $settings, $db);

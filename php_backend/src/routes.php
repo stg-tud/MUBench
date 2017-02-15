@@ -24,6 +24,10 @@ $app->get('/{exp:ex[1-3]}/{detector}/{project}/{version}/{misuse}/{reviewer}', f
     return $app->helper->review_route($args, $app, $this, $response, $request, false, true);
 });
 
+$app->get('/stats', function ($request, $response, $args) use ($app) {
+    return $app->helper->stats_route($this, $response, $args);
+});
+
 $app->group('/private', function () use ($app, $settings) {
 
     $app->get('/', function ($request, $response, $args) use ($app) {

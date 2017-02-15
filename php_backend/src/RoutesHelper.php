@@ -4,6 +4,8 @@ require_once "DBConnection.php";
 
 use Monolog\Logger;
 use MuBench\Detector;
+use MuBench\DetectorResult;
+use MuBench\ExperimentResult;
 
 class RoutesHelper
 {
@@ -95,6 +97,21 @@ class RoutesHelper
         return $this->render($r, $args, $response, 'review.phtml',
             array('logged' => $logged, 'name' => $reviewer, 'exp' => $exp, 'detector' => $detector,
                 'misuse' => $misuse, 'review' => $misuse->getReview($reviewer)));
+    }
+
+    public function stats_route($handler, $response, $args) {
+        $experiment = "ex1";
+        $detectors = $this->db->getDetectors($experiment);
+        $detector_results = array();
+        foreach ($detectors as $detector) {
+            $detector_results[] = new DetectorResult($detector, $this->db->getRuns($detector, $experiment));
+        }
+        $experiment_result = new ExperimentResult($detector_results);
+
+        return $this->render($handler, $args, $response, 'stats.phtml', array(
+            'experiment_results' => $experiment_result,
+            'detector_results' => $detector_results
+            ));
     }
 
     private function isLoggedIn($request, $reviewer)

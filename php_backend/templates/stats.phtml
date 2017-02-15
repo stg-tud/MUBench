@@ -1,0 +1,83 @@
+<?php
+/**
+ * @var $root_url
+ * @var $detector_results array
+ * @var $experiment_results \MuBench\ExperimentResult
+ */
+?>
+<html>
+<head>
+    <link rel="stylesheet" type="text/css" href="<?= htmlspecialchars($root_url); ?>style/style.css"/>
+</head>
+<body>
+<?php include "includes/menu.phtml" ?>
+
+<h1>Statistics</h1>
+
+<h2>Experiment 1</h2>
+
+<table>
+    <thead>
+    <tr>
+        <th></th>
+        <th></th>
+        <th></th>
+        <th></th>
+        <th></th>
+        <th></th>
+        <th colspan="3">Agreements</th>
+        <th colspan="3">Disagreements</th>
+        <th colspan="3">Kappa</th>
+        <th></th>
+        <th></th>
+    </tr>
+    <tr>
+        <th>Detector</th>
+        <th>Projects</th>
+        <th>Synthetics</th>
+        <th>Misuses</th>
+        <th>Potential Hits</th>
+        <th>Open Reviews</th>
+        <th>Yes</th>
+        <th>No</th>
+        <th>Total</th>
+        <th>Yes/No</th>
+        <th>No/Yes</th>
+        <th>Total</th>
+        <th>p<sub>0</sub></th>
+        <th>p<sub>e</sub></th>
+        <th>Score</th>
+        <th>Hits</th>
+        <th>Recall</th>
+    </tr>
+    </thead>
+
+    <?php foreach (array_merge($detector_results, array($experiment_results)) as $results) : /** @var $results \MuBench\RunsResult */ ?>
+    <tbody>
+    <tr>
+        <td><?= method_exists($results, "getDetector") ? $results->getDetector()->name : "Total" ?></td>
+        <td class="right"><?= $results->number_of_projects ?></td>
+        <td class="right"><?= $results->number_of_synthetics ?></td>
+        <td class="right"><?= $results->number_of_misuses ?></td>
+        <td class="right"><?= $results->misuses_to_review ?></td>
+        <td class="right"><?= $results->open_reviews ?></td>
+
+        <td class="right"><?= $results->yes_agreements ?></td>
+        <td class="right"><?= $results->no_agreements ?></td>
+        <td class="right"><?= $results->getNumberOfAgreements() ?></td>
+        <td class="right"><?= $results->yes_no_disagreements ?></td>
+        <td class="right"><?= $results->no_yes_disagreements ?></td>
+        <td class="right"><?= $results->getNumberOfDisagreements() ?></td>
+
+        <td class="right"><?= round($results->getKappaP0(), 3) ?></td>
+        <td class="right"><?= round($results->getKappaPe(), 3) ?></td>
+        <td class="right"><?= round($results->getKappaScore(), 3) ?></td>
+        <td class="right"><?= $results->number_of_hits ?></td>
+        <td class="right"><?= round($results->getRecall() * 100, 1) ?>%</td>
+    </tr>
+    </tbody>
+    <?php endforeach; ?>
+</table>
+
+</body>
+</html>

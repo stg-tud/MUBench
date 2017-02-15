@@ -84,6 +84,11 @@ ol#breadcrumbs a:hover {
 
 body { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; }
 
+sub {
+    vertical-align: sub;
+    font-size: smaller;
+}
+
 table {
     border-spacing: 0;
     border-style: solid none solid;
@@ -100,6 +105,12 @@ th {
     font-weight: bold;
     text-align: left;
     padding: 5px;
+}
+th:empty {
+    border-style: none;
+}
+th[colspan] {
+    text-align: center;
 }
 td { vertical-align: top; padding: 5px; }
 td.top { border-top: 1px solid black; }
