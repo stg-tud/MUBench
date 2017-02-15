@@ -140,6 +140,36 @@ fix:
     - name: a/Client.java
       diff: http://a.com/repo/commits/4711/Client.java
 ```
+
+## Run on Your Project
+
+MUBench is designed to run detectors on the benchmark projects that come with the it. Nevertheless, you can also use MUBench to run a detector on your own code, with a few simple steps:
+
+1. Create the folder `data/<project>/versions/<version>/compile`, with arbitrary names for `project` and `version`.
+2. Copy/move your project code into that `compile` folder.
+3. Create a file `data/<project>/project.yml` with the content:
+    ```
+      name: <Your Project's Display Name>
+      repository:
+        type: synthetic
+    ```
+    This instructs MUBench to use the `compile` folder as the project's "repository". Note that MUBench will copy the entire folder in its compile phase.
+    
+4. Create a file `data/<project>/versions/<version>/version.yml` with the content:
+    ```
+      build:
+        src: "<src-root>"
+        commands:
+          - echo "fake build"
+        classes: "<classes-root>"
+      misuses: []
+      revision: 0
+    ```
+    
+    The values for `src-root`/`classes-root` are the relative paths to the source/classes folders within the `compile` folder. If you pre-build your project and, thus, have the classes already available, you have to use the fake-build command above to satisfy MUBench. If you need to execute any commands in order to build the project, you may list these below the `commands` key. Our Docker container comes with a couple of build tools, such as Maven, Gradle, and Ant, but may not satisfy all your build requirements. If you only want to run detectors that work on source code, such as MuDetect, you can stay with the fake build, too.
+5. Run a detector, e.g., MuDetect, with `./mubench detect MuDetect 2 --only <project>.<version>`.
+6. To upload the results to a review site, run `./mubench publish findings MuDetect 2 --only <project>.<version> -s http://<your-sites.url>/index.php/ -u <username> -p <password>` (this will also run detection, if necessary).
+
 ## Setup MUBench Review Site
 
 Requirements: php5.6, mysql5.6
@@ -147,12 +177,11 @@ Requirements: php5.6, mysql5.6
 PHP Extensions: php5.6xml, php5.6mbstring
 
 1. Run `./build_backend`
-2. Set your database credentials in [`./php_backend/src/settings.php`](https://github.com/stg-tud/MUBench/blob/master/php_backend/src/settings.php)
+2. Set your database credentials and configure your reviewer credentials (`users`) in [`./php_backend/src/settings.php`](https://github.com/stg-tud/MUBench/blob/master/php_backend/src/settings.php)
 3. Upload the contents of `./php_backend` to your webserver
 4. Give read/write permissions on the upload and logs directory
 5. Import [`./php_backend/init_db.sql`](https://github.com/stg-tud/MUBench/blob/master/php_backend/init_db.sql) into your database.
-
-The review site should now be available. Use `your.url/index.php/api/` for sending data via the command-line interface.
+6. Use `./mubench publish X -s http://<your-sites.url>/index.php/` to publish to your review site. Check `./mubench publish -h` for further details.
 
 ## License
 
