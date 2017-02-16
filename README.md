@@ -149,21 +149,21 @@ MUBench is designed to run detectors on the benchmark projects that come with th
 2. Copy/move your project code into that `compile` folder.
 3. Create a file `data/<project>/project.yml` with the content:
     ```
-      name: <Your Project's Display Name>
-      repository:
-        type: synthetic
+    name: <Your Project's Display Name>
+    repository:
+      type: synthetic
     ```
     This instructs MUBench to use the `compile` folder as the project's "repository". Note that MUBench will copy the entire folder in its compile phase.
     
 4. Create a file `data/<project>/versions/<version>/version.yml` with the content:
     ```
-      build:
-        src: "<src-root>"
-        commands:
-          - echo "fake build"
-        classes: "<classes-root>"
-      misuses: []
-      revision: 0
+    build:
+      src: "<src-root>"
+      commands:
+        - echo "fake build"
+      classes: "<classes-root>"
+    misuses: []
+    revision: 0
     ```
     
     The values for `src-root`/`classes-root` are the relative paths to the source/classes folders within the `compile` folder. If you pre-build your project and, thus, have the classes already available, you have to use the fake-build command above to satisfy MUBench. If you need to execute any commands in order to build the project, you may list these below the `commands` key. Our Docker container comes with a couple of build tools, such as Maven, Gradle, and Ant, but may not satisfy all your build requirements. If you only want to run detectors that work on source code, such as MuDetect, you can stay with the fake build, too.
