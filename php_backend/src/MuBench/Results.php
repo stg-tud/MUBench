@@ -156,4 +156,9 @@ abstract class RunsResult
     {
         return $this->number_of_hits / $this->number_of_misuses;
     }
+
+    public function getPrecision()
+    {
+        return $this->number_of_hits / $this->misuses_to_review;
+    }
 }

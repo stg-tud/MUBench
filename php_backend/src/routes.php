@@ -25,7 +25,8 @@ $app->get('/{exp:ex[1-3]}/{detector}/{project}/{version}/{misuse}/{reviewer}', f
 });
 
 $app->get('/stats', function ($request, $response, $args) use ($app) {
-    return $app->helper->stats_route($this, $response, $args);
+    $ex2_review_size = $request->getQueryParam("ex2_review_size", 20);
+    return $app->helper->stats_route($this, $response, $args, $ex2_review_size);
 });
 
 $app->group('/private', function () use ($app, $settings) {

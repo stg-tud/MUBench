@@ -6,6 +6,7 @@ use Monolog\Logger;
 use MuBench\Detector;
 use MuBench\DetectorResult;
 use MuBench\ExperimentResult;
+use MuBench\ReviewState;
 
 class RoutesHelper
 {
@@ -99,19 +100,40 @@ class RoutesHelper
                 'misuse' => $misuse, 'review' => $misuse->getReview($reviewer)));
     }
 
-    public function stats_route($handler, $response, $args) {
-        $experiment = "ex1";
-        $detectors = $this->db->getDetectors($experiment);
-        $detector_results = array();
-        foreach ($detectors as $detector) {
-            $detector_results[] = new DetectorResult($detector, $this->db->getRuns($detector, $experiment));
+    public function stats_route($handler, $response, $args, $ex2_review_size) {
+        $results = array();
+        foreach ($this->settings["ex_template"] as $experiment => $_) {
+            $detectors = $this->db->getDetectors($experiment);
+            $results[$experiment] = array();
+            foreach ($detectors as $detector) {
+                $runs = $this->db->getRuns($detector, $experiment);
+                if (strcmp($experiment, "ex2") === 0) {
+                    // TODO move this functionality to a dedicate experiment class?
+                    foreach ($runs as &$run) {
+                        $misuses = array();
+                        $number_of_misuses = 0;
+                        foreach ($run["misuses"] as $misuse) { /** @var $misuse \MuBench\Misuse */
+                            if ($misuse->getReviewState() != ReviewState::UNRESOLVED) {
+                                $misuses[] = $misuse;
+                                $number_of_misuses++;
+                            }
+
+                            if ($number_of_misuses == $ex2_review_size) {
+                                break;
+                            }
+                        }
+                        $run["misuses"] = $misuses;
+                    }
+                }
+                $results[$experiment][$detector->id] = new DetectorResult($detector, $runs);
+            }
+            $results[$experiment]["total"] = new ExperimentResult($results[$experiment]);
         }
-        $experiment_result = new ExperimentResult($detector_results);
 
         return $this->render($handler, $args, $response, 'stats.phtml', array(
-            'experiment_results' => $experiment_result,
-            'detector_results' => $detector_results
-            ));
+            'results' => $results,
+            'ex2_review_size' => $ex2_review_size)
+        );
     }
 
     private function isLoggedIn($request, $reviewer)
