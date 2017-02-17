@@ -102,7 +102,7 @@ abstract class RunsResult
                     case ReviewState::DISAGREEMENT:
                     case ReviewState::RESOLVED_NO:
                     case ReviewState::RESOLVED_YES:
-                        if ($misuse->getReviews()[0]->getDecision() == Decision::YES) {
+                        if (current($misuse->getReviews())->getDecision() == Decision::YES) {
                             $this->yes_no_disagreements++;
                         } else {
                             $this->no_yes_disagreements++;
