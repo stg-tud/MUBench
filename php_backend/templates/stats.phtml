@@ -55,7 +55,7 @@
     <?php foreach (array_merge($detector_results, array($experiment_results)) as $results) : /** @var $results \MuBench\RunsResult */ ?>
     <tbody>
     <tr>
-        <td><?= method_exists($results, "getDetector") ? $results->getDetector()->name : "Total" ?></td>
+        <td><?= $results->getDisplayName() ?></td>
         <td class="right"><?= $results->number_of_projects ?></td>
         <td class="right"><?= $results->number_of_synthetics ?></td>
         <td class="right"><?= $results->number_of_misuses ?></td>

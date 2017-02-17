@@ -20,9 +20,9 @@ class DetectorResult extends RunsResult {
         $this->runs = $runs;
     }
 
-    public function getDetector()
+    public function getDisplayName()
     {
-        return $this->detector;
+        return $this->detector->name;
     }
 }
 
@@ -39,6 +39,11 @@ class ExperimentResult extends RunsResult {
         $this->number_of_detectors = count($detector_results);
     }
 
+    public function getDisplayName()
+    {
+        return "Total";
+    }
+
     public function getRecall()
     {
         return parent::getRecall() / $this->number_of_detectors;
@@ -46,7 +51,7 @@ class ExperimentResult extends RunsResult {
 }
 
 
-class RunsResult
+abstract class RunsResult
 {
     public $number_of_projects = 0;
     public $number_of_synthetics = 0;
@@ -108,6 +113,8 @@ class RunsResult
         $this->number_of_synthetics = count($synthetics);
         $this->number_of_misuses = count($misuses);
     }
+
+    abstract public function getDisplayName();
 
     public function getNumberOfAgreements()
     {
