@@ -102,13 +102,19 @@ class RoutesHelper
 
     public function stats_route($handler, $response, $args, $ex2_review_size) {
         $results = array();
-        foreach ($this->settings["ex_template"] as $experiment => $_) {
+        foreach (array("ex1", "ex2", "ex3") as $experiment) {
             $detectors = $this->db->getDetectors($experiment);
             $results[$experiment] = array();
             foreach ($detectors as $detector) {
                 $runs = $this->db->getRuns($detector, $experiment);
-                if (strcmp($experiment, "ex2") === 0) {
-                    // TODO move this functionality to a dedicate experiment class?
+                // TODO move this functionality to dedicate experiment classes
+                if (strcmp($experiment, "ex1") === 0) {
+                    $runs_no_synth = array_filter($runs, function ($run) {
+                        return strcmp($run["project"], "synthetic") !== 0;
+                    });
+                    $results[$experiment . "_no_synth"][$detector->id] = new DetectorResult($detector, $runs_no_synth);
+                }
+                elseif (strcmp($experiment, "ex2") === 0) {
                     foreach ($runs as &$run) {
                         $misuses = array();
                         $number_of_misuses = 0;
@@ -126,6 +132,9 @@ class RoutesHelper
                     }
                 }
                 $results[$experiment][$detector->id] = new DetectorResult($detector, $runs);
+            }
+            if (strcmp($experiment, "ex1") === 0) {
+                $results[$experiment . "_no_synth"]["total"] = new ExperimentResult($results[$experiment . "_no_synth"]);
             }
             $results[$experiment]["total"] = new ExperimentResult($results[$experiment]);
         }
