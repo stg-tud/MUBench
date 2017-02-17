@@ -58,6 +58,7 @@ abstract class RunsResult
     public $number_of_misuses = 0;
     public $misuses_to_review = 0;
     public $open_reviews = 0;
+    public $number_of_needs_clarification = 0;
 
     public $yes_agreements = 0;
     public $no_agreements = 0;
@@ -95,6 +96,9 @@ abstract class RunsResult
                     case ReviewState::AGREEMENT_NO:
                         $this->no_agreements++;
                         break;
+                    case ReviewState::NEEDS_CLARIFICATION:
+                        $this->number_of_needs_clarification++;
+                        break;
                     case ReviewState::DISAGREEMENT:
                     case ReviewState::RESOLVED_NO:
                     case ReviewState::RESOLVED_YES:
@@ -106,6 +110,7 @@ abstract class RunsResult
                         if ($reviewState == ReviewState::RESOLVED_YES) {
                             $this->number_of_hits++;
                         }
+                        break;
                 }
             }
         }
