@@ -100,6 +100,17 @@ class ReviewStateTest extends \PHPUnit\Framework\TestCase
         self::assertEquals(\MuBench\ReviewState::RESOLVED_NO, $misuse->getReviewState());
     }
 
+    function test_resolution_unresolved()
+    {
+        $misuse = new \MuBench\Misuse(["misuse" => "test"], [["rank" => "0"]], [
+            new \MuBench\Review(["name" => "sven", "finding_reviews" => ["0" => ["decision" => "Yes"]]]),
+            new \MuBench\Review(["name" => "hoan", "finding_reviews" => ["0" => ["decision" => "No"]]]),
+            new \MuBench\Review(["name" => "resolution", "finding_reviews" => ["0" => ["decision" => "?"]]])
+        ]);
+
+        self::assertEquals(\MuBench\ReviewState::UNRESOLVED, $misuse->getReviewState());
+    }
+
     function test_resolution_is_absolute()
     {
         // Resolution determines the result, even if there are too few reviews and requests for clarification.

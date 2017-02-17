@@ -13,6 +13,7 @@ class ReviewState
     const AGREEMENT_NO = 5;
     const RESOLVED_YES = 6;
     const RESOLVED_NO = 7;
+    const UNRESOLVED = 8;
 }
 
 
@@ -173,23 +174,30 @@ class Misuse
         } elseif (count($this->getReviews()) < 2) {
             return ReviewState::NEEDS_REVIEW;
         } else {
-            $decisions = [];
             $byResolution = $this->hasResolutionReview();
             if ($byResolution) {
-                $decisions[$this->getResolutionReview()->getDecision()] = true;
+                $decision = $this->getResolutionReview()->getDecision();
+                if ($decision == Decision::YES) {
+                    return ReviewState::RESOLVED_YES;
+                } elseif ($decision == Decision::NO) {
+                    return ReviewState::RESOLVED_NO;
+                } else {
+                    return ReviewState::UNRESOLVED;
+                }
             } else {
+                $decisions = [];
                 foreach ($this->getReviews() as $review) {
                     $decisions[$review->getDecision()] = true;
                 }
-            }
-            if (array_key_exists(Decision::MAYBE, $decisions)) {
-                return ReviewState::NEEDS_CLARIFICATION;
-            } elseif (count($decisions) > 1) {
-                return ReviewState::DISAGREEMENT;
-            } elseif (array_key_exists(Decision::YES, $decisions)) {
-                return $byResolution ? ReviewState::RESOLVED_YES : ReviewState::AGREEMENT_YES;
-            } else {
-                return $byResolution ? ReviewState::RESOLVED_NO : ReviewState::AGREEMENT_NO;
+                if (array_key_exists(Decision::MAYBE, $decisions)) {
+                    return ReviewState::NEEDS_CLARIFICATION;
+                } elseif (count($decisions) > 1) {
+                    return ReviewState::DISAGREEMENT;
+                } elseif (array_key_exists(Decision::YES, $decisions)) {
+                    return ReviewState::AGREEMENT_YES;
+                } else {
+                    return ReviewState::AGREEMENT_NO;
+                }
             }
         }
     }
