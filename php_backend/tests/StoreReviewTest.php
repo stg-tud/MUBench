@@ -12,42 +12,36 @@ use MuBench\Review;
 
 class StoreReviewTest extends DatabaseTestCase
 {
-
-    function test_store_review()
-    {
-        $queryBuilder = new QueryBuilder($this->pdo, $this->logger);
-        $upload_processor = new UploadProcessor($this->db, $queryBuilder, $this->logger);
-
-        $data = [
-            'review_name' => '-reviewer-',
-            'review_exp' => 'ex1',
-            'review_detector' => '-d-',
-            'review_project' => '-p-',
-            'review_version' => '-v-',
-            'review_misuse' => '-m-',
-            'review_comment' => '-comment-',
-            'review_hit' => [
-                0 => [
-                    'hit' => 'Yes',
-                    'types' => [
-                        'missing/call'
-                    ]
+    private $data = [
+        'review_name' => '-reviewer-',
+        'review_exp' => 'ex1',
+        'review_detector' => '-d-',
+        'review_project' => '-p-',
+        'review_version' => '-v-',
+        'review_misuse' => '-m-',
+        'review_comment' => '-comment-',
+        'review_hit' => [
+            0 => [
+                'hit' => 'Yes',
+                'types' => [
+                    'missing/call'
                 ]
             ]
-        ];
+        ]
+    ];
 
+    private $expected_run;
 
-        $metadata = json_decode($this->metadata_json);
-        $finding = json_decode($this->finding_json);
+    /**
+     * @var UploadProcessor $upload_processor
+     */
+    private $upload_processor;
 
-        $upload_processor->processData('ex1', $finding, $finding->{'potential_hits'});
-        $upload_processor->processMetaData($metadata);
-        $upload_processor->processReview($data);
+    function setUp()
+    {
+        parent::setUp();
 
-        $detector = $this->db->getDetector('-d-');
-        $runs = $this->db->getRuns($detector, 'ex1');
-
-        $expected_run = [
+        $this->expected_run = [
             "exp" => "ex1",
             "project" => "-p-",
             "version" => "-v-",
@@ -58,17 +52,17 @@ class StoreReviewTest extends DatabaseTestCase
             "misuses" => [
                 new Misuse(
                     [
-                    "misuse" => "-m-",
-                    'project' => '-p-',
-                    'version' => '-v-',
-                    'description' => '-desc-',
-                    'fix_description' => '-fix-desc-',
-                    'violation_types' => 'superfluous/condition/null_check',
-                    'file' => '-f-',
-                    'method' => '-method-',
-                    'diff_url' => '-diff-',
-                    'snippets' => [0 => ['line' => '273', 'snippet' => '-code-']],
-                    'patterns' => [0 => ['name' => '-p-id-', 'code' => '-pattern-code-','line' => '1']]
+                        "misuse" => "-m-",
+                        'project' => '-p-',
+                        'version' => '-v-',
+                        'description' => '-desc-',
+                        'fix_description' => '-fix-desc-',
+                        'violation_types' => 'superfluous/condition/null_check',
+                        'file' => '-f-',
+                        'method' => '-method-',
+                        'diff_url' => '-diff-',
+                        'snippets' => [0 => ['line' => '273', 'snippet' => '-code-']],
+                        'patterns' => [0 => ['name' => '-p-id-', 'code' => '-pattern-code-','line' => '1']]
                     ],
                     [
                         [
@@ -107,7 +101,36 @@ class StoreReviewTest extends DatabaseTestCase
             ]
         ];
 
-        self::assertEquals([$expected_run], $runs);
+        $queryBuilder = new QueryBuilder($this->pdo, $this->logger);
+        $this->upload_processor = new UploadProcessor($this->db, $queryBuilder, $this->logger);
+
+        $metadata = json_decode($this->metadata_json);
+        $finding = json_decode($this->finding_json);
+
+        $this->upload_processor->processData('ex1', $finding, $finding->{'potential_hits'});
+        $this->upload_processor->processMetaData($metadata);
+    }
+
+
+    function test_store_review()
+    {
+        $this->upload_processor->processReview($this->data);
+
+        $detector = $this->db->getDetector('-d-');
+        $runs = $this->db->getRuns($detector, 'ex1');
+        self::assertEquals([$this->expected_run], $runs);
+    }
+
+    function test_update_review()
+    {
+        $this->upload_processor->processReview($this->data);
+        $this->data['review_hit'][0]['hit'] = "No";
+        $this->upload_processor->processReview($this->data);
+
+        $detector = $this->db->getDetector('-d-');
+        $runs = $this->db->getRuns($detector, 'ex1');
+        $review = $runs[0]["misuses"][0]->getReview("-reviewer-");
+        self::assertEquals($review->getDecision(), \MuBench\Decision::NO);
     }
 
 }

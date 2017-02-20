@@ -146,7 +146,12 @@ class DBConnection
         } catch (PDOException $e) {
             $this->logger->error("Error getReviewFindings: " . $e->getMessage());
         }
-        return $this->queryToArray($query);
+
+        $review_findings = [];
+        foreach($query as $t){
+            $review_findings[] = $t;
+        }
+        return $review_findings;
     }
 
     public function getTypes()

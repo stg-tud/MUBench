@@ -8,6 +8,10 @@ class DatabaseTestCase extends TestCase
 
     protected $pdo;
     protected $logger;
+
+    /**
+     * @var DBConnection $db
+     */
     protected $db;
 
     protected $finding_json = <<<EOT
