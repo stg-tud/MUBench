@@ -4,7 +4,7 @@ characteristics:
 - missing/condition/value_or_state
 crash: true
 description: >
-  PdfArray.getPdfObject() is invoked without checking that the contains
+  PdfArray.getPdfObject() is invoked without checking that the array contains
   sufficiently many objects.
 location:
   file: com/itextpdf/text/pdf/PdfStructureTreeRoot.java
