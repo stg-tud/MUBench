@@ -108,13 +108,7 @@ class RoutesHelper
             foreach ($detectors as $detector) {
                 $runs = $this->db->getRuns($detector, $experiment);
                 // TODO move this functionality to dedicate experiment classes
-                if (strcmp($experiment, "ex1") === 0) {
-                    $runs_no_synth = array_filter($runs, function ($run) {
-                        return strcmp($run["project"], "synthetic") !== 0;
-                    });
-                    $results[$experiment . "_no_synth"][$detector->id] = new DetectorResult($detector, $runs_no_synth);
-                }
-                elseif (strcmp($experiment, "ex2") === 0) {
+                if (strcmp($experiment, "ex2") === 0) {
                     foreach ($runs as &$run) {
                         $misuses = array();
                         $number_of_misuses = 0;
@@ -132,9 +126,6 @@ class RoutesHelper
                     }
                 }
                 $results[$experiment][$detector->id] = new DetectorResult($detector, $runs);
-            }
-            if (strcmp($experiment, "ex1") === 0) {
-                $results[$experiment . "_no_synth"]["total"] = new ExperimentResult($results[$experiment . "_no_synth"]);
             }
             $results[$experiment]["total"] = new ExperimentResult($results[$experiment]);
         }

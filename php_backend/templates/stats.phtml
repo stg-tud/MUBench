@@ -165,7 +165,7 @@
         <th colspan="3">Disagreements</th>
         <th colspan="3">Kappa</th>
         <th></th>
-        <th colspan="3">Recall</th>
+        <th></th>
     </tr>
     <tr>
         <th>Detector</th>
@@ -184,17 +184,11 @@
         <th>p<sub>e</sub></th>
         <th>Score</th>
         <th>Hits</th>
-        <th>Absolute</th>
-        <th>Bound</th>
-        <th>Relative</th>
+        <th>Recall</th>
     </tr>
     </thead>
 
     <?php foreach ($results["ex3"] as $key => $result) : /** @var \MuBench\RunsResult $results */ ?>
-        <?php
-        /** @var \MuBench\RunsResult $ex1_result_no_synth */
-        $ex1_result_no_synth = $results["ex1_no_synth"][$key];
-        ?>
         <tbody>
         <tr>
             <td><?= $result->getDisplayName() ?></td>
@@ -216,8 +210,6 @@
             <td class="right"><?= round($result->getKappaScore(), 3) ?></td>
             <td class="right"><?= $result->number_of_hits ?></td>
             <td class="right"><?= round($result->getRecall() * 100, 1) ?>%</td>
-            <td class="right"><?= round($ex1_result_no_synth->getRecall() * 100, 1) ?>%</td>
-            <td class="right"><?= round($result->getRecall() / $ex1_result_no_synth->getRecall() * 100, 1) ?>%</td>
         </tr>
         </tbody>
     <?php endforeach; ?>
