@@ -122,17 +122,17 @@
             <td>
             <?php if($logged) : ?>
                 <select name="review_hit[<?= htmlspecialchars($hit['rank']); ?>][hit]" size="1" >
-                    <?php if($review && $review->getHitDecision($hit['rank']) === "No") : ?>
+                    <?php if($review && strcmp($review->getHitDecision($hit['rank']), "No") === 0) : ?>
                         <option selected="selected" value="No" >No</option>
                     <?php else : ?>
                         <option value="No" >No</option>
                     <?php endif;?>
-                    <?php if($review && $review->getHitDecision($hit['rank']) === "Yes") : ?>
+                    <?php if($review && strcmp($review->getHitDecision($hit['rank']), "Yes") === 0) : ?>
                     <option selected="selected" value="Yes" >Yes</option>
                     <?php else : ?>
                     <option value="Yes" >Yes</option>
                     <?php endif;?>
-                    <?php if($review && $review->getHitDecision($hit['rank']) === "?") : ?>
+                    <?php if($review && strcmp($review->getHitDecision($hit['rank']), "?") === 0) : ?>
                         <option selected="selected" value="?" >?</option>
                     <?php else : ?>
                         <option value="?" >?</option>
