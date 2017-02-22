@@ -17,6 +17,7 @@ class RoutesHelper
     protected $base_url;
     protected $private_url;
     protected $db;
+    protected $user;
 
     public function __construct(Logger $logger, $settings, DBConnection $db)
     {
@@ -26,15 +27,16 @@ class RoutesHelper
         $this->root_url = $settings['root_url'];
         $this->base_url = $settings['root_url'] . "index.php/";
         $this->private_url = $this->base_url . "private/";
+        $this->user = "";
     }
 
-    public function index_route($request, $args, $app, $r, $response, $logged)
+    public function index_route($args, $r, $response, $logged)
     {
         return $this->render($r, $args, $response, 'index.phtml',
             array('experiments' => $this->settings['ex_template'], "logged" => $logged));
     }
 
-    public function experiment_route($request, $args, $app, $r, $response, $logged)
+    public function experiment_route($args, $r, $response, $logged)
     {
         $exp = $args['exp'];
         $detectors = $this->db->getDetectors($exp);
@@ -44,20 +46,20 @@ class RoutesHelper
                 'logged' => $logged));
     }
 
-    public function overview_route($request, $args, $app, $r, $response)
+    public function overview_route($args, $r, $response)
     {
-        $misuses = $this->db->getAllReviews($request->getServerParams()['PHP_AUTH_USER']);
+        $misuses = $this->db->getAllReviews($this->user);
         return $this->render($r, $args, $response, 'overview.phtml',
-            array("name" => $request->getServerParams()['PHP_AUTH_USER'], "misuses" => $misuses, "logged" => true));
+            array("name" => $this->user, "misuses" => $misuses, "logged" => true));
     }
 
-    public function todo_route($request, $args, $app, $r, $response)
+    public function todo_route($args, $r, $response)
     {
-        $misuses = $this->db->getTodo($request->getServerParams()['PHP_AUTH_USER']);
+        $misuses = $this->db->getTodo($this->user);
         return $this->render($r, $args, $response, 'todo.phtml', array("logged" => true, "misuses" => $misuses));
     }
 
-    public function detect_route($request, $args, $app, $r, $response, $logged)
+    public function detect_route($args, $r, $response, $logged)
     {
         $exp = $args['exp'];
         $detector = $args['detector'];
@@ -66,7 +68,7 @@ class RoutesHelper
         }
         $name = "";
         if ($logged) {
-            $name = $request->getServerParams()['PHP_AUTH_USER'];
+            $name = $this->user;
         }
 
         $det = $this->db->getDetector($detector);
@@ -77,7 +79,7 @@ class RoutesHelper
                 'exp' => $exp, 'detector' => $detector, 'runs' => $runs));
     }
 
-    public function review_route($args, $app, $r, $response, $request, $logged, $review_flag)
+    public function review_route($args, $r, $response, $logged, $review_flag)
     {
         $exp = $args['exp'];
         $detector = $args['detector'];
@@ -91,9 +93,9 @@ class RoutesHelper
         $reviewer = "";
         if ($review_flag && !$logged) {
             $reviewer = $args['reviewer'];
-            $logged = $this->isLoggedIn($request, $reviewer);
+            $logged = (strcmp($this->user, $reviewer) === 0);
         } else if ($review_flag && $logged) {
-            $reviewer = $request->getServerParams()['PHP_AUTH_USER'];
+            $reviewer = $this->user;
         }
         return $this->render($r, $args, $response, 'review.phtml',
             array('logged' => $logged, 'name' => $reviewer, 'exp' => $exp, 'detector' => $detector,
@@ -136,25 +138,19 @@ class RoutesHelper
         );
     }
 
-    private function isLoggedIn($request, $reviewer)
-    {
-        if (array_key_exists('PHP_AUTH_USER', $request->getServerParams()) &&
-            $request->getServerParams()['PHP_AUTH_USER'] &&
-            $request->getServerParams()['PHP_AUTH_USER'] === $reviewer
-        ) {
-            return true;
-        }
-        return false;
-    }
-
     private function render($r, $args, $response, $template, $params)
     {
         $params["root_url"] = htmlspecialchars($this->root_url);
         $params["base_url"] = htmlspecialchars($this->base_url);
         $params["private_url"] = htmlspecialchars($this->private_url);
+        $params["user"] = $this->user;
         // TODO add auth information here as well
         $params["experiment"] = array_key_exists("exp", $args) ? $args["exp"] : null;
         $params["detector"] = array_key_exists("detector", $args) ? $args["detector"] : null;
         return $r->renderer->render($response, $template, $params);
+    }
+
+    public function setAuth($user){
+        $this->user = $user;
     }
 }

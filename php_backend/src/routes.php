@@ -5,7 +5,7 @@ require_once "src/Upload/ReviewUploader.php";
 
 // Routes
 $app->get('/', function ($request, $response, $args) use ($app) {
-    return $app->helper->index_route($request, $args, $app, $this, $response, false);
+    return $app->helper->index_route($args, $this, $response, false);
 });
 
 $app->get('/impressum/', function ($request, $response, $args) use ($app) {
@@ -13,19 +13,19 @@ $app->get('/impressum/', function ($request, $response, $args) use ($app) {
 });
 
 $app->get('/{exp:ex[1-3]}', function ($request, $response, $args) use ($app) {
-    return $app->helper->experiment_route($request, $args, $app, $this, $response, false);
+    return $app->helper->experiment_route($args, $this, $response, false);
 });
 
 $app->get('/{exp:ex[1-3]}/{detector}', function ($request, $response, $args) use ($app) {
-	return $app->helper->detect_route($request, $args, $app, $this, $response, false);
+	return $app->helper->detect_route($args, $this, $response, false);
 });
 
 $app->get('/{exp:ex[1-3]}/{detector}/{project}/{version}/{misuse}', function ($request, $response, $args) use ($app) {
-    return $app->helper->review_route($args, $app, $this, $response, $request, false, false);
+    return $app->helper->review_route($args, $this, $response, false, false);
 });
 
 $app->get('/{exp:ex[1-3]}/{detector}/{project}/{version}/{misuse}/{reviewer}', function ($request, $response, $args) use ($app) {
-    return $app->helper->review_route($args, $app, $this, $response, $request, false, true);
+    return $app->helper->review_route($args, $this, $response, false, true);
 });
 
 $app->get('/stats', function ($request, $response, $args) use ($app) {
@@ -36,7 +36,7 @@ $app->get('/stats', function ($request, $response, $args) use ($app) {
 $app->group('/private', function () use ($app, $settings) {
 
     $app->get('/', function ($request, $response, $args) use ($app) {
-        return $app->helper->index_route($request, $args, $app, $this, $response, true);
+        return $app->helper->index_route($args, $this, $response, true);
     });
 
     $app->get('/status', function ($request, $response, $args) use ($app) {
@@ -44,11 +44,11 @@ $app->group('/private', function () use ($app, $settings) {
     });
 
     $app->get('/{exp:ex[1-3]}', function ($request, $response, $args) use ($app) {
-        return $app->helper->experiment_route($request, $args, $app, $this, $response, true);
+        return $app->helper->experiment_route($args, $this, $response, true);
     });
 
     $app->get('/{exp:ex[1-3]}/{detector}', function ($request, $response, $args) use ($app) {
-        return $app->helper->detect_route($request, $args, $app, $this, $response, true);
+        return $app->helper->detect_route($args, $this, $response, true);
     });
 
     $app->post('/review/{exp:ex[1-3]}/{detector}', function ($request, $response, $args) use ($app) {
@@ -59,19 +59,19 @@ $app->group('/private', function () use ($app, $settings) {
     });
 
     $app->get('/{exp:ex[1-3]}/{detector}/{project}/{version}/{misuse}', function ($request, $response, $args) use ($app) {
-        return $app->helper->review_route($args, $app, $this, $response, $request, true, true);
+        return $app->helper->review_route($args, $this, $response, true, true);
     });
 
     $app->get('/{exp:ex[1-3]}/{detector}/{project}/{version}/{misuse}/{reviewer}', function ($request, $response, $args) use ($app) {
-        return $app->helper->review_route($args, $app, $this, $response, $request, false, true);
+        return $app->helper->review_route($args, $this, $response, false, true);
     });
 
     $app->get('/overview', function ($request, $response, $args) use ($app){
-        $app->helper->overview_route($request, $args, $app, $this, $response);
+        $app->helper->overview_route($args, $this, $response);
     });
 
     $app->get('/todo', function ($request, $response, $args) use ($app){
-        $app->helper->todo_route($request, $args, $app, $this, $response);
+        $app->helper->todo_route($args, $this, $response);
     });
 });
 

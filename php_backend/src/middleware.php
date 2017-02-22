@@ -12,7 +12,10 @@ $app->add(new \Slim\Middleware\HttpBasicAuthentication([
     "path" => ["/api/", "/private/"],
     "secure" => false,
     "realm" => "Protected",
-    "users" => $settings['users']
+    "users" => $settings['users'],
+    "callback" => function ($request, $response, $arguments) use ($app){
+        $app->helper->setAuth($request->getServerParams()['PHP_AUTH_USER']);
+    }
 ]));
 
 $servername = $settings['db']['url'];
