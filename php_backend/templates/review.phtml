@@ -102,17 +102,15 @@
                         </td></tr>
             <?php endif; ?>
         </table>
-        <?php if($misuse->hasPotentialHits()) : ?>
+            <form action="<?= $private_url; ?>review/<?= htmlspecialchars($exp); ?>/<?= htmlspecialchars($detector); ?>" method="post" target="">
+            <?php if($misuse->hasPotentialHits()) : ?>
 
             <?php if($exp !== "ex2") : ?>
             <h2>Potential Hits</h2>
             <p>Findings of the detector that identify an anomaly in the same file and method as the known misuse.</p>
         <?php else : ?>
             <h2>Metadata</h2>
-        <?php endif; ?> 
-
-        <?php if($misuse->hasPotentialHits()) : ?>
-        <form action="<?= $private_url; ?>review/<?= htmlspecialchars($exp); ?>/<?= htmlspecialchars($detector); ?>" method="post" target="">
+        <?php endif; ?>
         <table class="potential_hits">
             <?php
             $columns = array_filter(array_keys(current($misuse->getPotentialHits())), function ($key) use ($columns_to_ignore) {
@@ -483,7 +481,8 @@
         </tr>
        <?php endforeach; ?>
        </table>
-         <?php if($logged) :?>
+        <?php endif; ?>
+            <?php if($logged) :?>
                 <table class="invisible">
                 <tr><td><b>Reviewer Name:</b></td>
                     <td><?= htmlspecialchars($name); ?></td></tr>
@@ -516,8 +515,7 @@
                         </td></tr>
                 </table>
         <?php endif; ?>
-        <?php endif; ?>
-        <?php endif; ?>
+
             </body>
         </html>
     

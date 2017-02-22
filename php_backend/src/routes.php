@@ -53,7 +53,7 @@ $app->group('/private', function () use ($app, $settings) {
 
     $app->post('/review/{exp:ex[1-3]}/{detector}', function ($request, $response, $args) use ($app) {
         $obj = $request->getParsedBody();
-        $uploader = new ReviewUplaoder($app->db, $this->loader);
+        $uploader = new ReviewUploader($app->db, $this->logger);
         $uploader->processReview($obj);
         return $response->withRedirect('../../' . $args['exp'] . "/" . $args['detector']);
     });
