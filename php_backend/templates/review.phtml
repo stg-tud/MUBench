@@ -126,7 +126,7 @@
             <th>Hit</th>
             <th>Rank</th>
             <?php foreach($columns as $column) : ?>
-                <th><?= htmlspecialchars($column); ?></th>
+                <th><?= htmlspecialchars(ucwords(str_replace("_", " ", $column))); ?></th>
             <?php endforeach; ?>
             <th>Violation Types</th>
         </tr>
