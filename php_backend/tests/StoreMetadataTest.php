@@ -1,7 +1,7 @@
 <?php
 
-require_once "src/QueryBuilder.php";
-require_once "src/UploadProcessor.php";
+require_once "src/Upload/FindingsUploader.php";
+require_once "src/Upload/MetadataUploader.php";
 require_once "src/MuBench/Misuse.php";
 require_once "DatabaseTestCase.php";
 
@@ -11,14 +11,14 @@ class StoreMetadataTest extends DatabaseTestCase
 {
     function test_store_metadata()
     {
-        $queryBuilder = new QueryBuilder($this->pdo, $this->logger);
-        $upload_processor = new UploadProcessor($this->db, $queryBuilder, $this->logger);
+        $finding_uploader = new FindingsUploader($this->db, $this->logger);
+        $metadata_uploader = new MetadataUploader($this->db, $this->logger);
 
         $data = json_decode($this->metadata_json);
         $findings = json_decode($this->finding_json);
 
-        $upload_processor->processData('ex1', $findings, $findings->{'potential_hits'});
-        $upload_processor->processMetaData($data);
+        $finding_uploader->processData('ex1', $findings, $findings->{'potential_hits'});
+        $metadata_uploader->processMetaData($data);
 
         $detector = $this->db->getDetector('-d-');
         $runs = $this->db->getRuns($detector, 'ex1');

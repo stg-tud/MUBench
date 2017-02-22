@@ -1,7 +1,8 @@
 <?php
 
-require_once "src/QueryBuilder.php";
-require_once "src/UploadProcessor.php";
+require_once "src/Upload/FindingsUploader.php";
+require_once "src/Upload/MetadataUploader.php";
+require_once "src/Upload/ReviewUploader.php";
 require_once "src/MuBench/Detector.php";
 require_once "src/MuBench/Misuse.php";
 require_once "src/MuBench/Review.php";
@@ -31,11 +32,7 @@ class StoreReviewTest extends DatabaseTestCase
     ];
 
     private $expected_run;
-
-    /**
-     * @var UploadProcessor $upload_processor
-     */
-    private $upload_processor;
+    private $review_uploader;
 
     function setUp()
     {
@@ -101,20 +98,22 @@ class StoreReviewTest extends DatabaseTestCase
             ]
         ];
 
-        $queryBuilder = new QueryBuilder($this->pdo, $this->logger);
-        $this->upload_processor = new UploadProcessor($this->db, $queryBuilder, $this->logger);
+        $finding_uploader = new FindingsUploader($this->db, $this->logger);
+        $metadata_uploader = new MetadataUploader($this->db, $this->logger);
 
         $metadata = json_decode($this->metadata_json);
         $finding = json_decode($this->finding_json);
 
-        $this->upload_processor->processData('ex1', $finding, $finding->{'potential_hits'});
-        $this->upload_processor->processMetaData($metadata);
+        $finding_uploader->processData('ex1', $finding, $finding->{'potential_hits'});
+        $metadata_uploader->processMetaData($metadata);
+
+        $this->review_uploader = new ReviewUploader($this->db, $this->logger);
     }
 
 
     function test_store_review()
     {
-        $this->upload_processor->processReview($this->data);
+        $this->review_uploader->processReview($this->data);
 
         $detector = $this->db->getDetector('-d-');
         $runs = $this->db->getRuns($detector, 'ex1');
@@ -123,9 +122,9 @@ class StoreReviewTest extends DatabaseTestCase
 
     function test_update_review()
     {
-        $this->upload_processor->processReview($this->data);
+        $this->review_uploader->processReview($this->data);
         $this->data['review_hit'][0]['hit'] = "No";
-        $this->upload_processor->processReview($this->data);
+        $this->review_uploader->processReview($this->data);
 
         $detector = $this->db->getDetector('-d-');
         $runs = $this->db->getRuns($detector, 'ex1');

@@ -1,4 +1,8 @@
 <?php
+require_once "src/Upload/FindingsUploader.php";
+require_once "src/Upload/MetadataUploader.php";
+require_once "src/Upload/ReviewUploader.php";
+
 // Routes
 $app->get('/', function ($request, $response, $args) use ($app) {
     return $app->helper->index_route($request, $args, $app, $this, $response, false);
@@ -49,7 +53,8 @@ $app->group('/private', function () use ($app, $settings) {
 
     $app->post('/review/{exp:ex[1-3]}/{detector}', function ($request, $response, $args) use ($app) {
         $obj = $request->getParsedBody();
-        $app->upload->processReview($obj);
+        $uploader = new ReviewUplaoder($app->db, $this->loader);
+        $uploader->processReview($obj);
         return $response->withRedirect('../../' . $args['exp'] . "/" . $args['detector']);
     });
 
@@ -93,7 +98,8 @@ $app->group('/api', function () use ($app) {
             return $response->withStatus(500);
         }
         $this->logger->info("uploading data for: " . $project . " version " . $version . " with " . count($hits) . " hits.");
-        $app->upload->processData($experiment, $obj, $obj->{'potential_hits'});
+        $uploader = new FindingsUploader($app->db, $this->logger);
+        $uploader->processData($experiment, $obj, $obj->{'potential_hits'});
         $files = $request->getUploadedFiles();
         $this->logger->info("received " . count($files) . " files");
         if($files) {
@@ -116,8 +122,9 @@ $app->group('/api', function () use ($app) {
             $this->logger->error("upload of metadata failed, object empty: " . dump($request->getBody()));
             return $response->withStatus(500);
         }
+        $uploader = new MetadataUploader($app->db, $this->logger);
         foreach ($obj as $o) {
-            $app->upload->processMetaData($o);
+            $uploader->processMetaData($o);
         }
         return $response->withStatus(200);
     });

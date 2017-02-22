@@ -1,7 +1,7 @@
 <?php
 
-require_once "src/QueryBuilder.php";
-require_once "src/UploadProcessor.php";
+require_once "src/Upload/FindingsUploader.php";
+require_once "src/Upload/MetadataUploader.php";
 require_once "src/MuBench/Detector.php";
 require_once "DatabaseTestCase.php";
 
@@ -12,8 +12,7 @@ class StoreDetectorTest extends DatabaseTestCase
 
     function test_create_detector()
     {
-        $queryBuilder = new QueryBuilder($this->pdo, $this->logger);
-        $upload_processor = new UploadProcessor($this->db, $queryBuilder, $this->logger);
+        $uploader = new FindingsUploader($this->db, $this->logger);
 
         $data = json_decode(
             <<<EOD
@@ -30,7 +29,7 @@ class StoreDetectorTest extends DatabaseTestCase
 EOD
         );
 
-        $upload_processor->processData("ex1", $data, $data->{'potential_hits'});
+        $uploader->processData("ex1", $data, $data->{'potential_hits'});
         $actual_detector = $this->db->getDetector("-d-");
         $expected_detector = new Detector("-d-", 1);
 

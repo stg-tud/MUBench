@@ -16,7 +16,10 @@ class DBConnection
     {
         $this->logger = $logger;
         $this->pdo = $pdo;
-        $this->queryBuilder = new QueryBuilder($pdo, $logger);
+    }
+
+    public function quote($var){
+        return $this->pdo->quote($var);
     }
 
     public function execStatements($statements)
@@ -38,7 +41,7 @@ class DBConnection
 
     public function getTableColumns($table)
     {
-        $sql = $this->queryBuilder->columnQuery($table);
+        $sql = $this->columnQuery($table);
         $query = [];
         try {
             $query = $this->pdo->query($sql);
@@ -53,6 +56,11 @@ class DBConnection
             $columns[] = $q[0];
         }
         return $columns;
+    }
+
+    public function columnQuery($table)
+    {
+        return "SELECT column_name FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME=" . $this->pdo->quote($table) . ";";
     }
 
     public function getTableName($detector)
