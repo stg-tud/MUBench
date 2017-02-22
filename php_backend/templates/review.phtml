@@ -114,17 +114,21 @@
         <?php if($misuse->hasPotentialHits()) : ?>
         <form action="<?= $private_url; ?>review/<?= htmlspecialchars($exp); ?>/<?= htmlspecialchars($detector); ?>" method="post" target="">
         <table class="potential_hits">
+            <?php
+            $columns = array_filter(array_keys(current($misuse->getPotentialHits())), function ($key) use ($columns_to_ignore) {
+                return !in_array($key, $columns_to_ignore);
+            });
+            sort($columns);
+            ?>
         
 
         <tr>
             <th>Hit</th>
-            <th>rank</th>
-            <?php foreach($misuse->getPotentialHits()[0] as $key => $value) : ?>
-                <?php if(is_string($key) && !in_array($key, $columns_to_ignore))  : ?>
-                <th><?= htmlspecialchars($key); ?></th>
-                <?php endif; ?>
+            <th>Rank</th>
+            <?php foreach($columns as $column) : ?>
+                <th><?= htmlspecialchars($column); ?></th>
             <?php endforeach; ?>
-            <th>violation types</th>
+            <th>Violation Types</th>
         </tr>
     
         <?php foreach($misuse->getPotentialHits() as $hit) : ?>
@@ -163,22 +167,20 @@
             <td>
                 <?= htmlspecialchars($hit['rank']); ?>
             </td>
-            <?php foreach($hit as $key => $value) : ?>
-                <?php if(is_string($key) && !in_array($key, $columns_to_ignore))  : ?>
+            <?php foreach($columns as $column) : ?>
             <td>
-                <?php if(strpos($value, ";") !== false) : ?>
+                <?php if(strpos($hit[$column], ";") !== false) : ?>
                     <ul>
-                        <?php foreach(explode(";", $value) as $v) : ?>
+                        <?php foreach(explode(";", $hit[$column]) as $v) : ?>
                             <li><?= htmlspecialchars($v); ?></li>
                         <?php endforeach; ?>
                     </ul>
-                <?php elseif(strpos($value, ".png") !== false) : ?>
-                    <img src="<?= $root_url ?>upload/<?= htmlspecialchars($exp); ?>/<?= htmlspecialchars($detector); ?>/<?= htmlspecialchars($misuse->getProject()); ?>/<?= htmlspecialchars($misuse->getVersion()); ?>/<?= htmlspecialchars($hit[$key]); ?>" />
+                <?php elseif(strpos($hit[$column], ".png") !== false) : ?>
+                    <img src="<?= $root_url ?>upload/<?= htmlspecialchars($exp); ?>/<?= htmlspecialchars($detector); ?>/<?= htmlspecialchars($misuse->getProject()); ?>/<?= htmlspecialchars($misuse->getVersion()); ?>/<?= htmlspecialchars($hit[$column]); ?>" />
                 <?php else : ?>
-                    <?= htmlspecialchars($value); ?>
+                    <?= htmlspecialchars($hit[$column]); ?>
                 <?php endif; ?>
             </td>
-              <?php endif; ?>
             <?php endforeach; ?>
             <td>
                     <?php if($exp === "ex2") : ?>
