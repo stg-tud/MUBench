@@ -19,9 +19,9 @@ class DatabaseTestCaseTest extends DatabaseTestCase
             ['name' => 'metadata'],
             ['name' => 'patterns'],
             ['name' => 'reviews'],
-            ['name' => 'meta_snippets'],
             ['name' => 'review_findings'],
             ['name' => 'review_findings_type'],
+            ['name' => 'meta_snippets'],
             ['name' => 'finding_snippets'],
             ['name' => 'types']
         ];

@@ -70,11 +70,21 @@ EOD;
     function setUp()
     {
         $this->pdo = new PDO('sqlite::memory:');
+        $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         $this->pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
-        $structure_sql = file_get_contents(dirname(__FILE__) . "/../init_db.sql");
-        $this->pdo->exec($structure_sql);
+        $mysql_structure = file_get_contents(dirname(__FILE__) . "/../init_db.sql");
+        $this->pdo->exec($this->mySQLToSQLite($mysql_structure));
         $this->logger = new \Monolog\Logger("test");
         $this->db = new DBConnection($this->pdo, $this->logger);
+    }
+
+    private function mySQLToSQLite($mysql){
+        $sqlite = str_replace("AUTO_INCREMENT", "", $mysql);
+        $sqlite = str_replace("int(11)", "INTEGER", $sqlite);
+        $sqlite = str_replace("UNIQUE KEY `name` (`name`)", "", $sqlite);
+        $sqlite = str_replace("PRIMARY KEY (`id`),", "PRIMARY KEY(`id`)", $sqlite);
+        $sqlite = str_replace(" ENGINE=MyISAM  DEFAULT CHARSET=latin1;", ";", $sqlite);
+        return $sqlite;
     }
 
 }
