@@ -190,6 +190,24 @@ class TestCompile:
 
         assert exists(join(self.misuse_classes_path, "mu.class"))
 
+    def test_copies_misuse_inner_classes(self):
+        def mock_compile(commands: List[str], cwd: str):
+            class_path = join(cwd, "classes")
+            makedirs(class_path, exist_ok=True)
+            create_file(join(class_path, "mu.class"))
+            create_file(join(class_path, "mu$1.class"))
+            create_file(join(class_path, "mu$Inner.class"))
+
+        self.uut._compile = MagicMock(side_effect=mock_compile)
+        create_file(join(self.source_path, "mu.java"))
+        self.version.misuses.append(create_misuse("1", meta={"location": {"file": "mu.java"}}, project=self.project))
+
+        self.uut.process_project_version(self.project, self.version)
+
+        assert exists(join(self.misuse_classes_path, "mu.class"))
+        assert exists(join(self.misuse_classes_path, "mu$1.class"))
+        assert exists(join(self.misuse_classes_path, "mu$Inner.class"))
+
     def test_compiles_patterns(self):
         self.create_misuse_with_pattern("m", "a.java")
 

@@ -1,7 +1,8 @@
 import logging
 import shutil
+from glob import glob
 from os import makedirs
-from os.path import join, exists, dirname
+from os.path import join, exists, dirname, splitext, relpath
 from typing import List, Set
 
 from benchmark.data.misuse import Pattern, Misuse
@@ -160,10 +161,12 @@ class Compile(ProjectVersionTask):
     def __copy_misuse_classes(classes_path, misuses, destination):
         remove_tree(destination)
         for misuse in misuses:
-            file = misuse.location.file.replace(".java", ".class")
-            dst = join(destination, file)
-            makedirs(dirname(dst), exist_ok=True)
-            shutil.copy(join(classes_path, file), dst)
+            basepath = join(classes_path, splitext(misuse.location.file)[0])
+            classes = glob(basepath + ".class") + glob(basepath + "$*.class")
+            for clazz in classes:
+                dst = join(destination, relpath(clazz, classes_path))
+                makedirs(dirname(dst), exist_ok=True)
+                shutil.copy(clazz, dst)
 
     @staticmethod
     def __copy(patterns: Set[Pattern], destination: str):
