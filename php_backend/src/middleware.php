@@ -18,6 +18,17 @@ $app->add(new \Slim\Middleware\HttpBasicAuthentication([
     }
 ]));
 
+$app->add(function ($request, $response, $next) use ($app) {
+    $route = $request->getUri()->getPath();
+
+    if($route && strcmp($route, "") !== 0 && !empty($route)){
+        $app->helper->setRoute($route);
+    }
+
+    $response = $next($request, $response);
+    return $response;
+});
+
 $servername = $settings['db']['url'];
 $dbname = $settings['db']['name'];
 $username = $settings['db']['user'];

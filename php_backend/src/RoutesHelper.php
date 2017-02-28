@@ -18,6 +18,7 @@ class RoutesHelper
     protected $private_url;
     protected $db;
     protected $user;
+    protected $route;
 
     public function __construct(Logger $logger, $settings, DBConnection $db)
     {
@@ -28,6 +29,7 @@ class RoutesHelper
         $this->base_url = $settings['root_url'] . "index.php/";
         $this->private_url = $this->base_url . "private/";
         $this->user = "";
+        $this->route = "";
     }
 
     public function index_route($args, $r, $response, $logged)
@@ -145,6 +147,7 @@ class RoutesHelper
         $params["private_url"] = htmlspecialchars($this->private_url);
         $params["user"] = $this->user;
         // TODO add auth information here as well
+        $params["route_url"] = htmlspecialchars($this->route);
         $params["experiment"] = array_key_exists("exp", $args) ? $args["exp"] : null;
         $params["detector"] = array_key_exists("detector", $args) ? $args["detector"] : null;
         return $r->renderer->render($response, $template, $params);
@@ -152,5 +155,10 @@ class RoutesHelper
 
     public function setAuth($user){
         $this->user = $user;
+    }
+
+    public function setRoute($route){
+        $this->route = $route;
+        $this->logger->info("ROUTE: " . $route);
     }
 }

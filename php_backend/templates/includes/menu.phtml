@@ -1,7 +1,7 @@
  <div id="header">
     <ol id="menu">
         <?php if(!$logged) : ?>
-            <li><a href="<?= $private_url; ?>">Login</a></li>
+            <li><a href="<?= $private_url; ?><?= $route_url; ?>">Login</a></li>
         <?php endif; ?>
 
         <?php if($logged) : ?>
