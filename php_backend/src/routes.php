@@ -37,25 +37,28 @@ $app->get('/stats', function ($request, $response, $args) use ($app) {
 $app->group('/private', function () use ($app, $settings) {
 
     $app->get('/', function ($request, $response, $args) use ($app) {
-        return $app->helper->index_route($args, $this, $response, true);
+        return $app->helper->index_route($args, $this, $response);
     });
 
     $app->get('/status', function ($request, $response, $args) use ($app) {
-        return $app->helper->review_status($request, $args, $app, $this, $response, false);
+        return $app->helper->review_status($request, $args, $app, $this, $response);
     });
 
     $app->get('/{exp:ex[1-3]}', function ($request, $response, $args) use ($app) {
-        return $app->helper->experiment_route($args, $this, $response, true);
+        return $app->helper->experiment_route($args, $this, $response);
     });
 
     $app->get('/{exp:ex[1-3]}/{detector}', function ($request, $response, $args) use ($app) {
-        return $app->helper->detect_route($args, $this, $response, true);
+        return $app->helper->detect_route($args, $this, $response);
     });
 
     $app->post('/review/{exp:ex[1-3]}/{detector}', function ($request, $response, $args) use ($app) {
         $obj = $request->getParsedBody();
         $uploader = new ReviewUploader($app->db, $this->logger);
         $uploader->processReview($obj);
+        if(strcmp($obj["origin"], "") !== 0){
+            return $response->withRedirect('../../../' . $obj["origin"]);
+        }
         return $response->withRedirect('../../' . $args['exp'] . "/" . $args['detector']);
     });
 
@@ -67,11 +70,11 @@ $app->group('/private', function () use ($app, $settings) {
     });
 
     $app->get('/{exp:ex[1-3]}/{detector}/{project}/{version}/{misuse}', function ($request, $response, $args) use ($app) {
-        return $app->helper->review_route($args, $this, $response, true, true);
+        return $app->helper->review_route($args, $this, $response, true);
     });
 
     $app->get('/{exp:ex[1-3]}/{detector}/{project}/{version}/{misuse}/{reviewer}', function ($request, $response, $args) use ($app) {
-        return $app->helper->review_route($args, $this, $response, false, true);
+        return $app->helper->review_route($args, $this, $response, true);
     });
 
     $app->get('/overview', function ($request, $response, $args) use ($app){

@@ -89,7 +89,7 @@
                     <?php foreach($misuse->getCode() as $c): ?>
                     <pre class="prettyprint linenums:<?= htmlspecialchars($c['line']); ?>"><code class="language-java"><?= htmlspecialchars($c['snippet']); ?></code></pre>
                     <?php endforeach; ?>
-                <?php elseif($logged || strcmp($user, $review->getReviewerName()) === 0) : ?>
+                <?php elseif($logged) : ?>
                         <form action="<?= $private_url; ?>snippet" method="post" target="">
                             <input type="hidden" name="exp" value="<?= htmlspecialchars($exp); ?>">
                             <input type="hidden" name="detector" value="<?= htmlspecialchars($detector); ?>">
@@ -146,7 +146,7 @@
         <?php foreach($misuse->getPotentialHits() as $hit) : ?>
         <tr>
             <td>
-            <?php if($logged || strcmp($user, $review->getReviewerName()) === 0) : ?>
+            <?php if(($logged && !$review) ||  ($review && strcmp($user, $review->getReviewerName()) === 0)) : ?>
                 <select name="review_hit[<?= htmlspecialchars($hit['rank']); ?>][hit]" size="1" >
                     <?php if($review && strcmp($review->getHitDecision($hit['rank']), "No") === 0) : ?>
                         <option selected="selected" value="No" >No</option>
@@ -196,7 +196,7 @@
             <?php endforeach; ?>
             <td>
                     <?php if($exp === "ex2") : ?>
-                    <?php if($logged || strcmp($user, $review->getReviewerName()) === 0) : ?>
+                    <?php if(($logged && !$review) ||  ($review && strcmp($user, $review->getReviewerName()) === 0)) : ?>
                     <select name="review_hit[<?= htmlspecialchars($hit['rank']); ?>][types][]" size="10" multiple>
                         <?php else : ?>
                         <select disabled name="review_hit[<?= htmlspecialchars($hit['rank']); ?>][types][]" size="10" multiple>
@@ -468,7 +468,7 @@
                         </select>
                     <?php else : ?>
                         <?php if($misuse->hasViolationTypes()) : ?>
-                            <?php if($logged || strcmp($user, $review->getReviewerName()) === 0) : ?>
+                            <?php if(($logged && !$review) ||  ($review && strcmp($user, $review->getReviewerName()) === 0)) : ?>
                                 <select name="review_hit[<?= htmlspecialchars($hit['rank']); ?>][types][]" size="<?= htmlspecialchars(count($misuse->getViolationTypes())); ?>" multiple>
                             <?php else : ?>
                                 <select disabled name="review_hit[<?= htmlspecialchars($hit['rank']); ?>][types][]" size="<?= htmlspecialchars(count($misuse->getViolationTypes())); ?>" multiple>
@@ -496,7 +496,7 @@
        <?php endforeach; ?>
        </table>
         <?php endif; ?>
-            <?php if($logged || strcmp($user, $review->getReviewerName()) === 0) :?>
+            <?php if(($logged && !$review) ||  ($review && strcmp($user, $review->getReviewerName()) === 0)) :?>
                 <table class="invisible">
                 <tr><td><b>Reviewer Name:</b></td>
                     <td><?= htmlspecialchars($name); ?></td></tr>
@@ -516,6 +516,7 @@
                 <input type="hidden" name="review_project" value="<?= htmlspecialchars($misuse->getProject()); ?>">
                 <input type="hidden" name="review_version" value="<?= htmlspecialchars($misuse->getVersion()); ?>">
                 <input type="hidden" name="review_misuse" value="<?= htmlspecialchars($misuse->id); ?>">
+                <input type="hidden" name="origin" value="<?= htmlspecialchars($origin_route); ?>">
                 <input type="submit" value="Save Review" />
                 </form>
         <?php endif; ?>

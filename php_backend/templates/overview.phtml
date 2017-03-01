@@ -67,10 +67,10 @@ use MuBench\ReviewState;
                         <i class="fa fa-thumbs-o-down" aria-hidden="true" style="color:darkred;" title="Agreement: No"></i>
                     <?php elseif ($review_state == ReviewState::RESOLVED_YES): ?>
                         <i class="fa fa-thumbs-o-up" aria-hidden="true" style="color:green;" title="Resolved: Yes"></i>
-                        (<a href="<?= $review_url ?>/resolution"><i class="fa fa-handshake-o" aria-hidden="true" title="Resolution"></i></a>)
+                        (<a href="<?= $review_url ?>/resolution<?= $origin_param ?>"><i class="fa fa-handshake-o" aria-hidden="true" title="Resolution"></i></a>)
                     <?php elseif ($review_state == ReviewState::RESOLVED_NO): ?>
                         <i class="fa fa-thumbs-o-down" aria-hidden="true" style="color:darkred;" title="Resolved: No"></i>
-                        (<a href="<?= $review_url ?>/resolution"><i class="fa fa-handshake-o" aria-hidden="true" title="Resolution"></i></a>)
+                        (<a href="<?= $review_url ?>/resolution<?= $origin_param ?>"><i class="fa fa-handshake-o" aria-hidden="true" title="Resolution"></i></a>)
                     <?php endif; ?>
                 </td>
                 <td class="<?= $style_classes ?>">
@@ -84,7 +84,7 @@ use MuBench\ReviewState;
                     </ul>
                 </td>
                 <td class="<?= $style_classes ?>">
-                    <a href="<?= $review_url ?>" class="button">edit
+                    <a href="<?= $review_url ?><?= $origin_param ?>" class="button">edit
                         <?php $your_decision = $misuse->getReview($name)->getDecision() ?>
                         <?php if ($your_decision == Decision::YES): ?>
                             (<i class="fa fa-thumbs-o-up" aria-hidden="true" style="color:green;" title="Yes"></i>)

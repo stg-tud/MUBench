@@ -20,6 +20,11 @@ $app->add(new \Slim\Middleware\HttpBasicAuthentication([
 
 $app->add(function ($request, $response, $next) use ($app) {
     $route = $request->getUri()->getPath();
+    $origin = $request->getQueryParams();
+
+    if($origin && !empty($origin && array_key_exists('origin', $origin) && strcmp($origin['origin'], "") !== 0)){
+        $app->helper->setOrigin($origin['origin']);
+    }
 
     if($route && strcmp($route, "") !== 0 && !empty($route)){
         $app->helper->setRoute($route);

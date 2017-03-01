@@ -19,6 +19,7 @@ class RoutesHelper
     protected $db;
     protected $user;
     protected $route;
+    protected $origin;
 
     public function __construct(Logger $logger, $settings, DBConnection $db)
     {
@@ -30,58 +31,54 @@ class RoutesHelper
         $this->private_url = $this->base_url . "private/";
         $this->user = "";
         $this->route = "";
+        $this->origin = "";
     }
 
-    public function index_route($args, $r, $response, $logged)
+    public function index_route($args, $r, $response)
     {
         return $this->render($r, $args, $response, 'index.phtml',
-            array('experiments' => $this->settings['ex_template'], "logged" => $logged));
+            array('experiments' => $this->settings['ex_template']));
     }
 
-    public function experiment_route($args, $r, $response, $logged)
+    public function experiment_route($args, $r, $response)
     {
         $exp = $args['exp'];
         $detectors = $this->db->getDetectors($exp);
         $template = $this->settings['ex_template'][$exp];
         return $this->render($r, $args, $response, 'experiment.phtml',
-            array('detectors' => $detectors, 'id' => $template['id'], 'title' => $template['title'], 'exp' => $exp,
-                'logged' => $logged));
+            array('detectors' => $detectors, 'id' => $template['id'], 'title' => $template['title'], 'exp' => $exp));
     }
 
     public function overview_route($args, $r, $response)
     {
         $misuses = $this->db->getAllReviews($this->user);
         return $this->render($r, $args, $response, 'overview.phtml',
-            array("name" => $this->user, "misuses" => $misuses, "logged" => true));
+            array("name" => $this->user, "misuses" => $misuses));
     }
 
     public function todo_route($args, $r, $response)
     {
         $misuses = $this->db->getTodo($this->user);
-        return $this->render($r, $args, $response, 'todo.phtml', array("logged" => true, "misuses" => $misuses));
+        return $this->render($r, $args, $response, 'todo.phtml', array("misuses" => $misuses));
     }
 
-    public function detect_route($args, $r, $response, $logged)
+    public function detect_route($args, $r, $response)
     {
         $exp = $args['exp'];
         $detector = $args['detector'];
         if (!($exp === "ex1" || $exp === "ex2" || $exp === "ex3") || $detector == "") {
             return $response->withStatus(404);
         }
-        $name = "";
-        if ($logged) {
-            $name = $this->user;
-        }
 
         $det = $this->db->getDetector($detector);
         $runs = $this->db->getRuns($det, $exp);
 
         return $this->render($r, $args, $response, 'detector.phtml',
-            array('logged' => $logged, 'name' => $name,
+            array('name' => $this->user,
                 'exp' => $exp, 'detector' => $detector, 'runs' => $runs));
     }
 
-    public function review_route($args, $r, $response, $logged, $review_flag)
+    public function review_route($args, $r, $response)
     {
         $exp = $args['exp'];
         $detector = $args['detector'];
@@ -92,15 +89,9 @@ class RoutesHelper
         $det = $this->db->getDetector($detector);
         $misuse = $this->db->getMisuse($exp, $det, $project, $version, $misuse);
 
-        $reviewer = "";
-        if ($review_flag && !$logged) {
-            $reviewer = $args['reviewer'];
-            $logged = (strcmp($this->user, $reviewer) === 0);
-        } else if ($review_flag && $logged) {
-            $reviewer = $this->user;
-        }
+        $reviewer = array_key_exists('reviewer', $args) ? $args['reviewer'] : $this->user;
         return $this->render($r, $args, $response, 'review.phtml',
-            array('logged' => $logged, 'name' => $reviewer, 'exp' => $exp, 'detector' => $detector,
+            array('name' => $reviewer, 'exp' => $exp, 'detector' => $detector,
                 'misuse' => $misuse, 'review' => $misuse->getReview($reviewer)));
     }
 
@@ -148,8 +139,11 @@ class RoutesHelper
         $params["user"] = $this->user;
         // TODO add auth information here as well
         $params["route_url"] = htmlspecialchars($this->route);
+        $params["origin_param"] = htmlspecialchars("?origin=" . $this->route);
+        $params["origin_route"] = htmlspecialchars($this->origin);
         $params["experiment"] = array_key_exists("exp", $args) ? $args["exp"] : null;
         $params["detector"] = array_key_exists("detector", $args) ? $args["detector"] : null;
+        $params["logged"] = strcmp($this->user, "") !== 0;
         return $r->renderer->render($response, $template, $params);
     }
 
@@ -158,7 +152,11 @@ class RoutesHelper
     }
 
     public function setRoute($route){
+        if(strcmp($route, "/") == 0) return;
         $this->route = $route;
-        $this->logger->info("ROUTE: " . $route);
+    }
+
+    public function setOrigin($origin){
+        $this->origin = $origin;
     }
 }
