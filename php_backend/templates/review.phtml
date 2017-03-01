@@ -146,7 +146,7 @@
         <?php foreach($misuse->getPotentialHits() as $hit) : ?>
         <tr>
             <td>
-            <?php if(($logged && !$review) ||  ($review && strcmp($user, $review->getReviewerName()) === 0)) : ?>
+            <?php if($logged && $is_reviewer) : ?>
                 <select name="review_hit[<?= htmlspecialchars($hit['rank']); ?>][hit]" size="1" >
                     <?php if($review && strcmp($review->getHitDecision($hit['rank']), "No") === 0) : ?>
                         <option selected="selected" value="No" >No</option>
@@ -196,7 +196,7 @@
             <?php endforeach; ?>
             <td>
                     <?php if($exp === "ex2") : ?>
-                    <?php if(($logged && !$review) ||  ($review && strcmp($user, $review->getReviewerName()) === 0)) : ?>
+                    <?php if($logged && $is_reviewer) : ?>
                     <select name="review_hit[<?= htmlspecialchars($hit['rank']); ?>][types][]" size="10" multiple>
                         <?php else : ?>
                         <select disabled name="review_hit[<?= htmlspecialchars($hit['rank']); ?>][types][]" size="10" multiple>
@@ -468,7 +468,7 @@
                         </select>
                     <?php else : ?>
                         <?php if($misuse->hasViolationTypes()) : ?>
-                            <?php if(($logged && !$review) ||  ($review && strcmp($user, $review->getReviewerName()) === 0)) : ?>
+                            <?php if($logged && $is_reviewer) : ?>
                                 <select name="review_hit[<?= htmlspecialchars($hit['rank']); ?>][types][]" size="<?= htmlspecialchars(count($misuse->getViolationTypes())); ?>" multiple>
                             <?php else : ?>
                                 <select disabled name="review_hit[<?= htmlspecialchars($hit['rank']); ?>][types][]" size="<?= htmlspecialchars(count($misuse->getViolationTypes())); ?>" multiple>
@@ -496,7 +496,7 @@
        <?php endforeach; ?>
        </table>
         <?php endif; ?>
-            <?php if(($logged && !$review) ||  ($review && strcmp($user, $review->getReviewerName()) === 0)) :?>
+            <?php if($logged && $is_reviewer) :?>
                 <table class="invisible">
                 <tr><td><b>Reviewer Name:</b></td>
                     <td><?= htmlspecialchars($name); ?></td></tr>
@@ -520,7 +520,7 @@
                 <input type="submit" value="Save Review" />
                 </form>
         <?php endif; ?>
-        <?php if($review && (!$logged && !strcmp($user, $review->getReviewerName()) === 0)) :?>
+        <?php if($review && !$logged && !is_reviewer) :?>
                 <table class="invisible">
                     <tr><td><b>Reviewer Name:</b></td>
                         <td><?= htmlspecialchars($review->getReviewerName()); ?></td></tr>

@@ -90,9 +90,13 @@ class RoutesHelper
         $misuse = $this->db->getMisuse($exp, $det, $project, $version, $misuse);
 
         $reviewer = array_key_exists('reviewer', $args) ? $args['reviewer'] : $this->user;
+        $review = $misuse->getReview($reviewer);
+
+        $is_reviewer = strcmp($this->user, $reviewer) == 0 || strcmp($reviewer, "resolution") == 0;
+
         return $this->render($r, $args, $response, 'review.phtml',
-            array('name' => $reviewer, 'exp' => $exp, 'detector' => $detector,
-                'misuse' => $misuse, 'review' => $misuse->getReview($reviewer)));
+            array('name' => $reviewer, 'is_reviewer' => $is_reviewer, 'exp' => $exp, 'detector' => $detector,
+                'misuse' => $misuse, 'review' => $review));
     }
 
     public function stats_route($handler, $response, $args, $ex2_review_size) {
