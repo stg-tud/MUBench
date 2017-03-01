@@ -2,6 +2,7 @@
 require_once "src/Upload/FindingsUploader.php";
 require_once "src/Upload/MetadataUploader.php";
 require_once "src/Upload/ReviewUploader.php";
+require_once "src/Upload/SnippetUploader.php";
 
 // Routes
 $app->get('/', function ($request, $response, $args) use ($app) {
@@ -56,6 +57,13 @@ $app->group('/private', function () use ($app, $settings) {
         $uploader = new ReviewUploader($app->db, $this->logger);
         $uploader->processReview($obj);
         return $response->withRedirect('../../' . $args['exp'] . "/" . $args['detector']);
+    });
+
+    $app->post('/snippet', function ($request, $response, $args) use ($app) {
+        $obj = $request->getParsedBody();
+        $uploader = new SnippetUploader($app->db, $this->logger);
+        $uploader->processSnippet($obj);
+        return $response->withRedirect('../' . $obj['path']);
     });
 
     $app->get('/{exp:ex[1-3]}/{detector}/{project}/{version}/{misuse}', function ($request, $response, $args) use ($app) {
