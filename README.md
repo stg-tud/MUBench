@@ -20,9 +20,9 @@ MuBench CI Status: [![MuBench CI Status](https://api.shippable.com/projects/570d
 * ['*MUBench: A Benchmark of API-Misuse Detectors*'](http://sven-amann.de/publications/#ANNNM16)
 * ['*The Misuse Classification*'](http://www.st.informatik.tu-darmstadt.de/artifacts/muc/)
 
-## Run MUBench
+## Install MUBench
 
-### Setup
+### Experiment Pipeline
 
 #### Linux/OSX
 
@@ -42,25 +42,47 @@ MuBench CI Status: [![MuBench CI Status](https://api.shippable.com/projects/570d
 4. `$> docker run --rm -v "%cd:\=/%":/mubench svamann/mubench git clone https://github.com/stg-tud/MUBench.git .`
 5. `$> ./mubench.bat check` (On the first run, this may take some time).
 
-### Benchmark
+### Review Site
 
-MUBench is a benchmark for API-misuse detectors. Run `./mubench -h` for details about how to benchmark detectors.
+#### Server Requirements
 
-MUBench uses the misuses specified in the `data` subfolder. The first time a misuse is used in benchmarking, the repository containing that misuse is cloned. Subsequently, the existing clone is used, such that benchmarking runs offline.
+* PHP 5.6
+* MySQL 5.6
+* PHP Extensions:
+  * php5.6xml
+  * php5.6mbstring
 
-## Benchmark Your Detector
+#### Setup
 
-To benchmark your own detector the following steps are necessary:   
+1. `$> ./build_backend`
+2. Set your database credentials and configure your reviewer credentials (`users`) in [`./php_backend/src/settings.php`](https://github.com/stg-tud/MUBench/blob/master/php_backend/src/settings.php).
+3. Upload the contents of `./php_backend` to your webserver.
+4. Give read/write permissions on the upload and logs directory.
+5. Import [`./php_backend/init_db.sql`](https://github.com/stg-tud/MUBench/blob/master/php_backend/init_db.sql) into your database.
+6. Use `./mubench publish X -s http://<your-sites.url>/index.php/` to publish to your review site. Check `./mubench publish -h` for further details.
 
-1. Create a new subfolder `my-detector` in the [detectors](https://github.com/stg-tud/MUBench/tree/master/detectors) folder. `my-detector` will be the Id used to refer to your detector when running the benchmark.
-2. Add an executable JAR with your detector as `my-detector/my-detector.jar`.<sup>[1](#mubenchcli)</sup>
-3. Run MUBench
-4. Review the results.
-5. Let MUBench summarize the results.
 
-<a name="mubenchcli">1</a>: Your detector jar's entry point is expected to be a [MUBench Runner](#runner).
+## Run MUBench
 
-### <a name="runner" /> MUBench Runner
+MUBench is controlled via the command line. Run `./mubench -h` (`./mubench.bar -h`) for details about the available commands and options.
+
+### Run Experiments
+
+The easiest way to run experiments is to execute
+
+    ./mubench publish findings <D> <E> -s <R> -u <RU> -p <RP>
+
+Where `<D>` is the id of the detector to benchmark, `<E>` is the id of the experiment to run, `<R>` is the URL of your review site, `<RU>` is the user name to access your review site as, and `<RP>` is the respective password.
+
+MUBench will run the detector on the misuses specified in the `data` subfolder. The first time a misuse is used in benchmarking, the repository containing that misuse is cloned (this may take a while). Subsequently, the existing clone is used, such that benchmarking runs offline. Before the first detector is run on a project, MUBench compiles the project (this may take a while). Subsequently, the compiled classes are reused. Then the detector is invoked, and finally the results are published to the review site.
+
+You may run individual benchmark steps. See `./mubench -h` for details.
+
+### Review Findings
+
+We are rebuilding the review site. Please come back in a bit.
+
+### <a name="own-detector" /> Benchmark Your Own Detector
 
 For MUBench to run your detector and interpret its results, your detector's executable needs to comply with MUBench's command-line interface. The easiest way to achieve this is for your entry-point class to extend `MuBenchRunner`, which comes with the Maven dependency [`de.tu-darmstadt.stg:mubench.cli`](https://github.com/stg-tud/MUBench/tree/master/benchmark/mubench.cli) via our repository at `http://www.st.informatik.tu-darmstadt.de/artifacts/mubench/mvn/`.
 
@@ -87,72 +109,13 @@ Currently, Runners should support two run modes:
 
 The `DetectorOutput` is essentially a collection where you add your detector's findings. MUBench expects you to add the findings ordered by the detector's confidence, descending.
 
-### How do I review?
+To register your own detector to MUBench, the following steps are necessary:
 
-We are currently rebuilding the review infrastructure. Please come back for more details in a bit!
+1. Create a new subfolder `my-detector` in the [detectors](https://github.com/stg-tud/MUBench/tree/master/detectors) folder. `my-detector` will be the Id used to refer to your detector when running experiments.
+2. Add the executable JAR with your detector as `my-detector/my-detector.jar`.
+3. Run MUBench as usual.
 
-## Contribute Misuses
-
-To contribute to MUBench, simply use our meta-data template below to describe the API misuse you discovered and send it to [Sven Amann](http://www.stg.tu-darmstadt.de/staff/sven_amann).
-
-```
-source:
-  name: Foo
-  url:  https://foo.com
-project:
-  name: A
-  url:  http://a.com
-  repository: http://a.com/repo/a.git
-report: http://a.com/issues/42
-description: >
-  Client uses T1.foo() before T2.bar().
-location:
-  revision: 4710
-  file: a/Client.java
-  method: m(Foo, int)
-crash:    yes|no
-internal: yes|no
-api:
-  - qualified.library.identifier.T1
-  - qualified.library.identifier.T2
-characteristics:
-  - missing/call
-  - misplaced/call
-  - superfluous/call
-  - missing/condition/null_check
-  - missing/condition/value_or_state
-  - missing/condition/synchronization
-  - missing/condition/context
-  - misplaced/condition/null_check
-  - misplaced/condition/value_or_state
-  - misplaced/condition/synchronization
-  - misplaced/condition/context
-  - superfluous/condition/null_check
-  - superfluous/condition/value_or_state
-  - superfluous/condition/synchronization
-  - superfluous/condition/context
-  - missing/exception_handling
-  - misplaced/exception_handling
-  - superfluous/exception_handling
-  - missing/iteration
-  - misplaced/iteration
-  - superfluous/iteration
-build:
-  src: src/main/java
-  commands:
-    - mvn compile
-  classes: target/classes
-fix:
-  description: >
-    Fix like so...
-  commit: http://a.com/repo/commits/4711
-  revision: 4711
-  files:
-    - name: a/Client.java
-      diff: http://a.com/repo/commits/4711/Client.java
-```
-
-## Run on Your Project
+### Run on Your Project
 
 MUBench is designed to run detectors on the benchmark projects that come with the it. Nevertheless, you can also use MUBench to run a detector on your own code, with a few simple steps:
 
@@ -181,18 +144,23 @@ MUBench is designed to run detectors on the benchmark projects that come with th
 5. Run a detector, e.g., MuDetect, with `./mubench detect MuDetect 2 --only <project>.<version>`.
 6. To upload the results to a review site, run `./mubench publish findings MuDetect 2 --only <project>.<version> -s http://<your-sites.url>/index.php/ -u <username> -p <password>` (this will also run detection, if necessary).
 
-## Setup MUBench Review Site
+## Contribute to MUBench
 
-Requirements: php5.6, mysql5.6
+We want MUBench to grow, so please be welcome to contribute to the dataset and add your detectors to the benchmark.
 
-PHP Extensions: php5.6xml, php5.6mbstring
+### Add Misuses
 
-1. Run `./build_backend`
-2. Set your database credentials and configure your reviewer credentials (`users`) in [`./php_backend/src/settings.php`](https://github.com/stg-tud/MUBench/blob/master/php_backend/src/settings.php)
-3. Upload the contents of `./php_backend` to your webserver
-4. Give read/write permissions on the upload and logs directory
-5. Import [`./php_backend/init_db.sql`](https://github.com/stg-tud/MUBench/blob/master/php_backend/init_db.sql) into your database.
-6. Use `./mubench publish X -s http://<your-sites.url>/index.php/` to publish to your review site. Check `./mubench publish -h` for further details.
+To contribute to the MUBench dataset, please [contact Sven Amann](http://www.stg.tu-darmstadt.de/staff/sven_amann) with details about the misuses. For each misuse, please provide
+
+* A description of the misuse (and its fix).
+* A link to the website of the project you found the misuse in.
+* A link to the project's publicly-readable version-control system, and a commit id to a version with the misuse or, ideally, to the commit that resolves the misuse.
+* The misuse's location (file, method, and misused API).
+* Instructions how to compile the project in the respective version.
+
+### Add Detectors
+
+If you have [a detector set up for running on MUBench](#own-detector), please [contact Sven Amann](http://www.stg.tu-darmstadt.de/staff/sven_amann) to have it added to the benchmark.
 
 ## License
 
