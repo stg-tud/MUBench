@@ -89,49 +89,41 @@ $app->group('/private', function () use ($app, $settings) {
 $app->group('/api', function () use ($app) {
 
     $app->post('/upload/[{experiment:ex[1-3]}]', function ($request, $response, $args) use ($app) {
-        $obj = json_decode($request->getParsedBody());
         $experiment = $args['experiment'];
+        $obj = parseJsonBody($request);
         if (!$obj) {
-            $obj = json_decode($request->getBody());
+            return error_response($response, $this->logger, 400, "empty: " . dump($request->getBody()));
         }
-        if (!$obj) {
-            $obj = json_decode($_POST["data"]);
-        }
-        if (!$obj) {
-            $this->logger->error("upload failed, object empty " . dump($request->getParsedBody()));
-            return $response->withStatus(500);
+        $detector = $obj->{'detector'};
+        if (!$detector) {
+            return error_response($response, $this->logger, 400, "no detector: " . dump($obj));
         }
         $project = $obj->{'project'};
-        $version = $obj->{'version'};
-        $hits = $obj->{'potential_hits'};
-        if (!$project || !$version) {
-            $this->logger->error("upload failed, could not read data " . dump($obj));
-            return $response->withStatus(500);
+        if (!$project) {
+            return error_response($response, $this->logger, 400, "no project: " . dump($obj));
         }
-        $this->logger->info("uploading data for: " . $project . " version " . $version . " with " . count($hits) . " hits.");
+        $version = $obj->{'version'};
+        if (!$version) {
+            return error_response($response, $this->logger, 400, "no version: " . dump($obj));
+        }
+        $hits = $obj->{'potential_hits'};
+        $this->logger->info("received data for '" . $experiment . "', '" . $project . "." . $version . "' with " . count($hits) . " potential hits.");
         $uploader = new FindingsUploader($app->db, $this->logger);
-        $uploader->processData($experiment, $obj, $obj->{'potential_hits'});
+        $uploader->processData($experiment, $obj, $hits);
         $files = $request->getUploadedFiles();
         $this->logger->info("received " . count($files) . " files");
         if($files) {
             foreach ($files as $img) {
-                $app->dir->handleImage($experiment, $obj->{'detector'}, $obj->{'project'}, $obj->{'version'}, $img);
+                $app->dir->handleImage($experiment, $detector, $project, $version, $img);
             }
         }
         return $response->withStatus(200);
     });
 
     $app->post('/upload/metadata', function ($request, $response, $args) use ($app) {
-        $obj = json_decode($request->getBody());
+        $obj = parseJsonBody($request);
         if (!$obj) {
-            $obj = json_decode($request->getParsedBody());
-        }
-        if (!$obj) {
-            $obj = json_decode($_POST["data"]);
-        }
-        if (!$obj) {
-            $this->logger->error("upload of metadata failed, object empty: " . dump($request->getBody()));
-            return $response->withStatus(500);
+            return error_response($response, $this->logger, 400, "empty: " . dump($request->getBody()));
         }
         $uploader = new MetadataUploader($app->db, $this->logger);
         foreach ($obj as $o) {
@@ -141,3 +133,23 @@ $app->group('/api', function () use ($app) {
     });
 
 });
+
+function parseJsonBody($request)
+{
+    $requestBody = $request->getParsedBody();
+    $body = json_decode($requestBody);
+    if ($body) return $body;
+    $body = json_decode($request->getBody());
+    if ($body) return $body;
+    $body = json_decode($_POST["data"]);
+    return $body;
+}
+
+function dump($obj) {
+    return print_r($obj, true);
+}
+
+function error_response($response, $logger, $code, $message) {
+    $logger->error($message);
+    return $response->withStatus($code)->write($message);
+}

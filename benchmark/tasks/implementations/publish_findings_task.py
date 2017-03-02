@@ -3,7 +3,7 @@ import logging
 from typing import List
 from urllib.parse import urljoin
 
-from requests import HTTPError
+from requests import RequestException
 
 from benchmark.data.experiment import Experiment
 from benchmark.data.finding import SpecializedFinding
@@ -81,8 +81,8 @@ class PublishFindingsTask(ProjectVersionTask):
             for potential_hits_slice in self.__slice_by_max_files_per_post(potential_hits):
                 self.__post(project, version, runtime, number_of_findings, result, potential_hits_slice)
             logger.info("Findings published.")
-        except HTTPError as e:
-            logger.error("Failed to publish findings: %s", e)
+        except RequestException as e:
+            logger.error("%d %s: %s", e.response.status_code, e.response.reason, e.response.text)
 
         return self.ok()
 

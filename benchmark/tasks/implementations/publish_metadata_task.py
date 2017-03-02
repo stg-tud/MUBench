@@ -4,7 +4,7 @@ from typing import Dict
 from typing import List
 from urllib.parse import urljoin
 
-from requests import HTTPError
+from requests import RequestException
 
 from benchmark.data.misuse import Misuse
 from benchmark.data.project import Project
@@ -79,6 +79,6 @@ class PublishMetadataTask(ProjectMisuseTask):
         logger.info("Uploading metadata about %r misuses to %s...", len(self.__metadata), url)
         try:
             post(url, self.__metadata, username=self.review_site_user, password=self.review_site_password)
-            logger.info("Metadata successfully published.")
-        except HTTPError as e:
-            logger.error("Failed to publish metadata: %s", e)
+            logger.info("Metadata published.")
+        except RequestException as e:
+            logger.error("%d %s: %s", e.response.status_code, e.response.reason, e.response.text)
