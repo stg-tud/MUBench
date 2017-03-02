@@ -70,12 +70,14 @@ class PublishFindingsTask(ProjectVersionTask):
                 logger.info("Not run on %s.", version)
                 result = "not run"
 
+        logger.info("Extracting target source code...")
         version_compile = version.get_compile(self.compiles_base_path)
         for potential_hit in potential_hits:
             snippets = potential_hit.get_snippets(version_compile.original_sources_path)
             potential_hit["target_snippets"] = [snippet.__dict__ for snippet in snippets]
 
         try:
+            logger.info("Publishing findings...")
             for potential_hits_slice in self.__slice_by_max_files_per_post(potential_hits):
                 self.__post(project, version, runtime, number_of_findings, result, potential_hits_slice)
             logger.info("Findings published.")
