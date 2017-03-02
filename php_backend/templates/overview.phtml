@@ -60,7 +60,7 @@ use MuBench\ReviewState;
                     <?php elseif ($review_state == ReviewState::NEEDS_CLARIFICATION): ?>
                         <i class="fa fa-question-circle" aria-hidden="true" style="color:blue;" title="Needs Clarification"></i>
                     <?php elseif ($review_state == ReviewState::DISAGREEMENT): ?>
-                        <a href="<?= $review_url ?>/resolution"><i class="fa fa-exclamation-triangle" aria-hidden="true" style="color:red;" title="Disagreement"></i></a>
+                        <a href="<?= $review_url ?>/resolution<?= $origin_param ?>"><i class="fa fa-exclamation-triangle" aria-hidden="true" style="color:red;" title="Disagreement"></i></a>
                     <?php elseif ($review_state == ReviewState::AGREEMENT_YES): ?>
                         <i class="fa fa-thumbs-o-up" aria-hidden="true" style="color:green;" title="Agreement: Yes"></i>
                     <?php elseif ($review_state == ReviewState::AGREEMENT_NO): ?>
