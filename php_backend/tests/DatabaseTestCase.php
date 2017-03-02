@@ -82,7 +82,7 @@ EOD;
         $sqlite = str_replace("AUTO_INCREMENT", "", $mysql);
         $sqlite = str_replace("int(11)", "INTEGER", $sqlite);
         $sqlite = str_replace("UNIQUE KEY `name` (`name`)", "", $sqlite);
-        $sqlite = str_replace("PRIMARY KEY (`id`),", "PRIMARY KEY(`id`)", $sqlite);
+        $sqlite = str_replace("PRIMARY KEY (`id`),", "PRIMARY KEY (`id`)", $sqlite);
         $sqlite = str_replace(" ENGINE=MyISAM  DEFAULT CHARSET=latin1;", ";", $sqlite);
         return $sqlite;
     }
