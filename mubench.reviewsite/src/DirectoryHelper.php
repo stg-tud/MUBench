@@ -1,8 +1,18 @@
 <?php
 
+namespace MuBench\ReviewSite;
+
+use Monolog\Logger;
+use RecursiveDirectoryIterator;
+use RecursiveIteratorIterator;
+
 class DirectoryHelper {
 
 	private $root;
+
+    /**
+     * @var Logger $logger
+     */
 	private $logger;
 
 	function __construct($root, $logger){

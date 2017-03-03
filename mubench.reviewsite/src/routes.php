@@ -1,26 +1,16 @@
 <?php
-require_once "src/Upload/FindingsUploader.php";
-require_once "src/Upload/MetadataUploader.php";
-require_once "src/Upload/ReviewUploader.php";
-require_once "src/Upload/SnippetUploader.php";
-require_once "src/route_utils.php";
 
+use MuBench\ReviewSite\Controller\FindingsUploader;
+use MuBench\ReviewSite\Controller\MetadataUploader;
+use MuBench\ReviewSite\Controller\ReviewUploader;
+use MuBench\ReviewSite\Controller\SnippetUploader;
 use Slim\Http\Request;
 use Slim\Http\Response;
-
-/**
- * @var Slim\App $app
- */
 
 // Routes
 $app->get('/',
     function (Request $request, Response $response, array $args) use ($app) {
         return $app->helper->index_route($args, $this, $response, false);
-    });
-
-$app->get('/impressum/',
-    function (Request $request, Response $response, array $args) use ($app) {
-        return $this->renderer->render($response, 'impressum.html');
     });
 
 $app->get('/{exp:ex[1-3]}',

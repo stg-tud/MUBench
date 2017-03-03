@@ -1,12 +1,13 @@
 <?php
 
-require_once "DBConnection.php";
+namespace MuBench\ReviewSite;
 
 use Monolog\Logger;
-use MuBench\Detector;
-use MuBench\DetectorResult;
-use MuBench\ExperimentResult;
-use MuBench\ReviewState;
+use MuBench\ReviewSite\Model\DetectorResult;
+use MuBench\ReviewSite\Model\ExperimentResult;
+use MuBench\ReviewSite\Model\Misuse;
+use MuBench\ReviewSite\Model\ReviewState;
+use Slim\Http\Response;
 
 class RoutesHelper
 {
@@ -62,7 +63,7 @@ class RoutesHelper
         return $this->render($r, $args, $response, 'todo.phtml', array("misuses" => $misuses));
     }
 
-    public function detect_route($args, $r, $response)
+    public function detect_route($args, $r, Response $response)
     {
         $exp = $args['exp'];
         $detector = $args['detector'];
@@ -111,7 +112,7 @@ class RoutesHelper
                     foreach ($runs as &$run) {
                         $misuses = array();
                         $number_of_misuses = 0;
-                        foreach ($run["misuses"] as $misuse) { /** @var $misuse \MuBench\Misuse */
+                        foreach ($run["misuses"] as $misuse) { /** @var $misuse Misuse */
                             if ($misuse->getReviewState() != ReviewState::UNRESOLVED) {
                                 $misuses[] = $misuse;
                                 $number_of_misuses++;

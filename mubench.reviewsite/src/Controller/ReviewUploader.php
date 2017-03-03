@@ -1,5 +1,9 @@
 <?php
+
+namespace MuBench\ReviewSite\Controller;
+
 use Monolog\Logger;
+use MuBench\ReviewSite\DBConnection;
 
 class ReviewUploader
 {

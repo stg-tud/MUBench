@@ -1,24 +1,22 @@
 <?php
-require_once 'DBConnection.php';
-require_once 'DirectoryHelper.php';
-require_once 'RoutesHelper.php';
 
-require_once 'MuBench/Detector.php';
-require_once 'MuBench/Misuse.php';
-require_once 'MuBench/Review.php';
-require_once 'MuBench/Results.php';
+use MuBench\ReviewSite\DBConnection;
+use MuBench\ReviewSite\DirectoryHelper;
+use MuBench\ReviewSite\RoutesHelper;
+use Slim\Http\Request;
+use Slim\Http\Response;
 
 $app->add(new \Slim\Middleware\HttpBasicAuthentication([
     "path" => ["/api/", "/private/"],
     "secure" => false,
     "realm" => "Protected",
     "users" => $settings['users'],
-    "callback" => function ($request, $response, $arguments) use ($app){
+    "callback" => function (Request $request, Response $response, $arguments) use ($app){
         $app->helper->setAuth($request->getServerParams()['PHP_AUTH_USER']);
     }
 ]));
 
-$app->add(function ($request, $response, $next) use ($app) {
+$app->add(function (Request $request, Response $response, $next) use ($app) {
     $route = $request->getUri()->getPath();
     $origin = $request->getQueryParams();
 

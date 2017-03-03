@@ -1,28 +1,6 @@
 <?php
 
-namespace MuBench;
-
-
-class ReviewState
-{
-    const NOTHING_TO_REVIEW = 0;
-    const NEEDS_REVIEW = 1;
-    const NEEDS_CLARIFICATION = 2;
-    const DISAGREEMENT = 3;
-    const AGREEMENT_YES = 4;
-    const AGREEMENT_NO = 5;
-    const RESOLVED_YES = 6;
-    const RESOLVED_NO = 7;
-    const UNRESOLVED = 8;
-}
-
-
-class Decision
-{
-    const NO = 0;
-    const MAYBE = 1;
-    const YES = 2;
-}
+namespace MuBench\ReviewSite\Model;
 
 
 class Misuse
@@ -158,6 +136,7 @@ class Misuse
     public function getReviews()
     {
         return array_filter($this->reviews, function ($review) {
+            /** @var Review $review */
             return strcmp($review->getReviewerName(), "resolution") !== 0;
         });
     }

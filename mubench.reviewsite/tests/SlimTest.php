@@ -1,4 +1,5 @@
 <?php
+
 require_once "SlimTestCase.php";
 
 class SlimTest extends SlimTestCase
@@ -7,12 +8,7 @@ class SlimTest extends SlimTestCase
         $this->get('/');
         $this->assertEquals('200', $this->response->getStatusCode());
     }
-
-    public function testImpressum(){
-        $this->get('/impressum/');
-        $this->assertEquals('200', $this->response->getStatusCode());
-    }
-
+    
     public function testEx1(){
         $this->get('/ex1');
         $this->assertEquals('200', $this->response->getStatusCode());

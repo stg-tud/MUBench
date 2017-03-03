@@ -1,13 +1,14 @@
 <?php
-require_once 'Error.php';
-// DIC configuration
+
+use MuBench\ReviewSite\Error;
+use Slim\Views\PhpRenderer;
 
 $container = $app->getContainer();
 
 // view renderer
 $container['renderer'] = function ($c) {
     $settings = $c->get('settings')['renderer'];
-    return new Slim\Views\PhpRenderer($settings['template_path']);
+    return new PhpRenderer($settings['template_path']);
 };
 
 // monolog
@@ -20,5 +21,5 @@ $container['logger'] = function ($c) {
 };
 
 $container['errorHandler'] = function ($c) {
-    return new App\Handlers\Error($c['logger']);
+    return new Error($c['logger'], $c->get('settings')['settings']['displayErrorDetails']);
 };

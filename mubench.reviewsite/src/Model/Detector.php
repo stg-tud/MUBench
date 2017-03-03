@@ -1,6 +1,6 @@
 <?php
 
-namespace MuBench;
+namespace MuBench\ReviewSite\Model;
 
 
 class Detector

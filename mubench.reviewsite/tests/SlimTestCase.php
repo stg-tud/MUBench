@@ -1,9 +1,8 @@
 <?php
-require_once __DIR__ . '/../vendor/autoload.php';
-require_once __DIR__ . '/../src/DBConnection.php';
-require_once __DIR__ . '/../src/DirectoryHelper.php';
-require_once __DIR__ . '/../src/RoutesHelper.php';
 
+use MuBench\ReviewSite\DBConnection;
+use MuBench\ReviewSite\DirectoryHelper;
+use MuBench\ReviewSite\RoutesHelper;
 use Slim\Http\Environment;
 use Slim\Http\Headers;
 use Slim\Http\Request;

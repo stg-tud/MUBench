@@ -1,13 +1,10 @@
 <?php
 
-require_once "src/Upload/FindingsUploader.php";
-require_once "src/Upload/MetadataUploader.php";
-require_once "src/MuBench/Detector.php";
-require_once "src/MuBench/Misuse.php";
 require_once "DatabaseTestCase.php";
 
-use MuBench\Detector;
-use MuBench\Misuse;
+use MuBench\ReviewSite\Controller\FindingsUploader;
+use MuBench\ReviewSite\Controller\MetadataUploader;
+use MuBench\ReviewSite\Model\Misuse;
 
 class StoreFindingsTest extends DatabaseTestCase
 {

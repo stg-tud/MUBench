@@ -1,13 +1,24 @@
 <?php
-require_once "src/DBConnection.php";
 
+use Monolog\Logger;
+use MuBench\ReviewSite\DBConnection;
 use PHPUnit\Framework\TestCase;
 
 class DatabaseTestCase extends TestCase
 {
-
+    /**
+     * @var PDO $pdo
+     */
     protected $pdo;
+
+    /**
+     * @var Logger $logger
+     */
     protected $logger;
+
+    /**
+     * @var DBConnection $db
+     */
     protected $db;
 
     protected $finding_json = <<<EOT

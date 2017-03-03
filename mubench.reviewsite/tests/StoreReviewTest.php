@@ -1,15 +1,13 @@
 <?php
 
-require_once "src/Upload/FindingsUploader.php";
-require_once "src/Upload/MetadataUploader.php";
-require_once "src/Upload/ReviewUploader.php";
-require_once "src/MuBench/Detector.php";
-require_once "src/MuBench/Misuse.php";
-require_once "src/MuBench/Review.php";
 require_once "DatabaseTestCase.php";
 
-use MuBench\Misuse;
-use MuBench\Review;
+use MuBench\ReviewSite\Controller\FindingsUploader;
+use MuBench\ReviewSite\Controller\MetadataUploader;
+use MuBench\ReviewSite\Controller\ReviewUploader;
+use MuBench\ReviewSite\Model\Decision;
+use MuBench\ReviewSite\Model\Misuse;
+use MuBench\ReviewSite\Model\Review;
 
 class StoreReviewTest extends DatabaseTestCase
 {
@@ -32,6 +30,10 @@ class StoreReviewTest extends DatabaseTestCase
     ];
 
     private $expected_run;
+
+    /**
+     * @var ReviewUploader $review_uploader
+     */
     private $review_uploader;
 
     function setUp()
@@ -128,8 +130,10 @@ class StoreReviewTest extends DatabaseTestCase
 
         $detector = $this->db->getDetector('-d-');
         $runs = $this->db->getRuns($detector, 'ex1');
-        $review = $runs[0]["misuses"][0]->getReview("-reviewer-");
-        self::assertEquals($review->getDecision(), \MuBench\Decision::NO);
+        /** @var Misuse $misuse */
+        $misuse = $runs[0]["misuses"][0];
+        $review = $misuse->getReview("-reviewer-");
+        self::assertEquals($review->getDecision(), Decision::NO);
     }
 
 }

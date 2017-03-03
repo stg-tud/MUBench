@@ -1,6 +1,6 @@
 <?php
 
-require_once('DatabaseTestCase.php');
+require_once 'DatabaseTestCase.php';
 
 class DatabaseTestCaseTest extends DatabaseTestCase
 {

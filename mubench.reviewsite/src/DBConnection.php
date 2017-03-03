@@ -1,16 +1,19 @@
 <?php
 
+namespace MuBench\ReviewSite;
+
+use InvalidArgumentException;
 use Monolog\Logger;
-use MuBench\Detector;
-use MuBench\Misuse;
-use MuBench\Review;
+use MuBench\ReviewSite\Model\Detector;
+use MuBench\ReviewSite\Model\Misuse;
+use MuBench\ReviewSite\Model\Review;
+use PDO;
+use PDOException;
 
 class DBConnection
 {
-
     private $pdo;
     private $logger;
-    private $queryBuilder;
 
     function __construct(PDO $pdo, Logger $logger)
     {
@@ -358,6 +361,7 @@ class DBConnection
                 $runs = $this->getRuns($detector, $exp);
                 foreach($runs as $run){
                     foreach($run['misuses'] as $misuse){
+                        /** @var Misuse $misuse */
                         if($misuse->hasReviewed($reviewer)){
                             $misuses[$exp][$detector->name][] = $misuse;
                         }
@@ -378,6 +382,7 @@ class DBConnection
                 $runs = $this->getRuns($detector, $exp);
                 foreach($runs as $run){
                     foreach($run['misuses'] as $misuse){
+                        /** @var Misuse $misuse */
                         if(!$misuse->hasReviewed($reviewer) && !$misuse->hasSufficientReviews() && $misuse->hasPotentialHits()){
                             $misuses[$exp][$detector->name][] = $misuse;
                         }

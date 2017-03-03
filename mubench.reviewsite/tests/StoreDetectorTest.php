@@ -1,15 +1,12 @@
 <?php
 
-require_once "src/Upload/FindingsUploader.php";
-require_once "src/Upload/MetadataUploader.php";
-require_once "src/MuBench/Detector.php";
 require_once "DatabaseTestCase.php";
 
-use MuBench\Detector;
+use MuBench\ReviewSite\Controller\FindingsUploader;
+use MuBench\ReviewSite\Model\Detector;
 
 class StoreDetectorTest extends DatabaseTestCase
 {
-
     function test_create_detector()
     {
         $uploader = new FindingsUploader($this->db, $this->logger);

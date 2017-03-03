@@ -1,6 +1,6 @@
 <?php
 
-namespace MuBench;
+namespace MuBench\ReviewSite\Model;
 
 
 class Review
@@ -51,6 +51,7 @@ class Review
                 return $finding_review;
             }
         }
+        return null;
     }
 
     public function getComment()

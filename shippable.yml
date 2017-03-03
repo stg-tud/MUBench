@@ -17,9 +17,8 @@ script:
   - cp mubench.dummy/target/Dummy.jar detectors/Dummy/Dummy.jar
   - nosetests --with-xunit --xunit-file=shippable/testresults/nosetests.xml
   - "./mubench.py detect Dummy 1 --only synthetic"
-  - cd mubench.reviewsite
-  - composer install
-  - phpunit --bootstrap vendor/autoload.php tests/
+  - composer install -d mubench.reviewsite --no-interaction
+  - phpunit --bootstrap mubench.reviewsite/vendor/autoload.php mubench.reviewsite/tests/
   
 notifications:
   email:

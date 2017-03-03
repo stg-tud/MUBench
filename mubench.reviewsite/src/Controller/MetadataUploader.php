@@ -1,13 +1,15 @@
 <?php
 
+namespace MuBench\ReviewSite\Controller;
+
 use Monolog\Logger;
+use MuBench\ReviewSite\DBConnection;
 
 class MetadataUploader
 {
 
     private $db;
     private $logger;
-    private $query;
 
     function __construct(DBConnection $db, Logger $logger)
     {

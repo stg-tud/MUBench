@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Handlers;
+namespace MuBench\ReviewSite;
 
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
@@ -10,8 +10,9 @@ final class Error extends \Slim\Handlers\Error
 {
     protected $logger;
 
-    public function __construct(Logger $logger)
+    public function __construct(Logger $logger, $displayErrorDetails)
     {
+        parent::__construct($displayErrorDetails);
         $this->logger = $logger;
     }
 
