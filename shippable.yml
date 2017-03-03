@@ -9,6 +9,7 @@ language: python
 before_script:
   - mkdir -p shippable/testresults
   - sudo chmod +x ./mubench.pipeline/benchmark.py
+  - sudo chmod +x ./mubench.reviewsite/configure.sh
 
 script: 
   # mubench.cli
@@ -26,7 +27,7 @@ script:
   - "./mubench.pipeline/benchmark.py detect Dummy 1 --only synthetic"
   
   # mubench.reviewsite
-  - composer install -d mubench.reviewsite --no-interaction
+  - ./mubench.reviewsite/configure.sh
   - phpunit --bootstrap mubench.reviewsite/vendor/autoload.php mubench.reviewsite/tests/
 
 notifications:
