@@ -1,6 +1,6 @@
-from benchmark.data.detector import Detector
-from benchmark.data.detector_specialising.specialising_util import format_float_value
-from benchmark.data.finding import SpecializedFinding, Finding
+from data.detector import Detector
+from data.detector_specialising.specialising_util import format_float_value
+from data.finding import SpecializedFinding, Finding
 
 
 class Jadet(Detector):

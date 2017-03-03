@@ -1,6 +1,6 @@
-from benchmark.data.detector import Detector
-from benchmark.data.detector_specialising.specialising_util import replace_dot_graph_with_image
-from benchmark.data.finding import Finding, SpecializedFinding
+from data.detector import Detector
+from data.detector_specialising.specialising_util import replace_dot_graph_with_image
+from data.finding import Finding, SpecializedFinding
 
 
 class MuMiner(Detector):

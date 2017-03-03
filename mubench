@@ -5,4 +5,4 @@ realpath() {
 }
 
 SCRIPT_DIR=$(dirname "$(realpath "$0")")
-docker run --rm -v "$SCRIPT_DIR":/mubench svamann/mubench ./mubench.py "$@"
+docker run --rm -v "$SCRIPT_DIR":/mubench svamann/mubench python ./mubench.pipeline/benchmark.py "$@"

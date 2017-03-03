@@ -1,7 +1,7 @@
 from typing import List
 
-from benchmark.data.detector import Detector
-from benchmark.data.finding import Finding, SpecializedFinding
+from data.detector import Detector
+from data.finding import Finding, SpecializedFinding
 
 
 class Dummy(Detector):

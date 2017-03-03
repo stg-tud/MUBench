@@ -7,19 +7,28 @@ build:
 language: python
 
 before_script:
-  - mkdir -p shippable/codecoverage shippable/testresults
-  - sudo chmod +x mubench
+  - mkdir -p shippable/testresults
+  - sudo chmod +x ./mubench.pipeline/benchmark.py
 
 script: 
+  # mubench.cli
   - mvn install -f mubench.cli/pom.xml
+  
+  # mubench.utils
   - mvn verify -f mubench.utils/pom.xml
+  
+  # mubench.dummy
   - mvn verify -f mubench.dummy/pom.xml
   - cp mubench.dummy/target/Dummy.jar detectors/Dummy/Dummy.jar
-  - nosetests --with-xunit --xunit-file=shippable/testresults/nosetests.xml
-  - "./mubench.py detect Dummy 1 --only synthetic"
+  
+  # mubench.pipeline
+  - nosetests -w mubench.pipeline --with-xunit --xunit-file=shippable/testresults/nosetests.xml
+  - "./mubench.pipeline/benchmark.py detect Dummy 1 --only synthetic"
+  
+  # mubench.reviewsite
   - composer install -d mubench.reviewsite --no-interaction
   - phpunit --bootstrap mubench.reviewsite/vendor/autoload.php mubench.reviewsite/tests/
-  
+
 notifications:
   email:
     - mattis.kaemmerer@gmx.de
