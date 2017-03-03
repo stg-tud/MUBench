@@ -11,9 +11,11 @@ before_script:
   - sudo chmod +x mubench
 
 script: 
+  - mvn install -f mubench.cli/pom.xml
+  - mvn verify -f mubench.utils/pom.xml
+  - mvn verify -f mubench.dummy/pom.xml
+  - cp mubench.dummy/target/Dummy.jar detectors/Dummy/Dummy.jar
   - nosetests --with-xunit --xunit-file=shippable/testresults/nosetests.xml
-  - mvn test -f mubench.cli/pom.xml
-  - mvn test -f mubench.utils/pom.xml
   - "./mubench.py detect Dummy 1 --only synthetic"
   - cd php_backend
   - composer install
