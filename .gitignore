@@ -155,6 +155,6 @@ findings/
 reviews/
 results/
 out.log*
-php_backend/upload/
-php_backend/vendor/
-php_backend/composer.phar
+mubench.reviewsite/upload/
+mubench.reviewsite/vendor/
+mubench.reviewsite/composer.phar
