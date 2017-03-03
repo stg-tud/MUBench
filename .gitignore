@@ -152,8 +152,6 @@ hs_err_pid*
 # Benchmark created folders
 checkouts/
 findings/
-reviews/
-results/
 out.log*
 mubench.reviewsite/upload/
 mubench.reviewsite/vendor/
