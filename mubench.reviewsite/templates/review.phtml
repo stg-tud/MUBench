@@ -89,22 +89,35 @@
                     <?php foreach($misuse->getCode() as $c): ?>
                     <pre class="prettyprint linenums:<?= htmlspecialchars($c['line']); ?>"><code class="language-java"><?= htmlspecialchars($c['snippet']); ?></code></pre>
                     <?php endforeach; ?>
-                <?php elseif($logged) : ?>
-                        <form action="<?= $private_url; ?>snippet" method="post" target="">
-                            <input type="hidden" name="exp" value="<?= htmlspecialchars($exp); ?>">
-                            <input type="hidden" name="detector" value="<?= htmlspecialchars($detector); ?>">
-                            <input type="hidden" name="project" value="<?= htmlspecialchars($misuse->getProject()); ?>">
-                            <input type="hidden" name="version" value="<?= htmlspecialchars($misuse->getVersion()); ?>">
-                            <input type="hidden" name="misuse" value="<?= htmlspecialchars($misuse->id); ?>">
-                            <input type="hidden" name="path" value="<?= htmlspecialchars($route_url); ?>">
-                            <label>line</label>
-                            <input type="number" name="line">
-                            <textarea name="snippet" cols="80" rows="5"></textarea>
-                            <input type="submit" value="Save snippet" />
-                        </form>
-                <?php endif; ?>
-                <?php if(!$misuse->hasCode() && !$logged) : ?>
+                <?php elseif(!$misuse->hasCode()) : ?>
                     <pre class="prettyprint"><code class="language-java">code not found</code></pre>
+                    <?php if($logged) : ?>
+                        <input type="button" onclick="show(this);" value="Add code snippet">
+                        <form  id="snippet_form" style="display:none;" action="<?= $private_url; ?>snippet" method="post" target="">
+                            <table>
+                            <tr>
+                                <td>
+                                    <label>Line:</label>
+                                    <input type="number" name="line">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <input type="hidden" name="exp" value="<?= htmlspecialchars($exp); ?>">
+                                    <input type="hidden" name="detector" value="<?= htmlspecialchars($detector); ?>">
+                                    <input type="hidden" name="project" value="<?= htmlspecialchars($misuse->getProject()); ?>">
+                                    <input type="hidden" name="version" value="<?= htmlspecialchars($misuse->getVersion()); ?>">
+                                    <input type="hidden" name="misuse" value="<?= htmlspecialchars($misuse->id); ?>">
+                                    <input type="hidden" name="path" value="<?= htmlspecialchars($route_url); ?>">
+                                    <textarea name="snippet" cols="80" rows="5"></textarea>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><input type="submit" value="Save snippet" /></td>
+                            </tr>
+                            </table>
+                        </form>
+                    <?php endif; ?>
                 <?php endif; ?>
             </td></tr>
             <?php if($exp === "ex1") : ?>
@@ -531,6 +544,16 @@
                 </table>
         <?php endif; ?>
 
+
+            <script>
+                function show(b){
+                    var elem = document.getElementById("snippet_form");
+                    if(elem.style.display === "none"){
+                        elem.style.display = "block";
+                    }
+                    b.type = "hidden";
+                }
+            </script>
             </body>
         </html>
     
