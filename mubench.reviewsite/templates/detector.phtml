@@ -126,6 +126,28 @@ use MuBench\ReviewSite\Model\ReviewState;
                 $new_project = false;
                 ?>
             <?php endforeach; ?>
+            <?php if(!$run["misuses"]) : ?>
+                <tr>
+                    <td class="<?= $style_classes ?>">
+                        <?= $new_project ? htmlspecialchars($project) : ""; ?></td>
+                    <td class="<?= $style_classes ?>">
+                        <?= $new_version ? htmlspecialchars($version) : ""; ?></td>
+                    <td class="<?= $style_classes ?>">
+                        <?= $new_version ? htmlspecialchars($run['result']) : ""; ?></td>
+                    <td class="<?= $style_classes ?> right">
+                        <?= $new_version ? htmlspecialchars($run['number_of_findings']) : ""; ?></td>
+                    <td class="<?= $style_classes ?> right">
+                        <?= $new_version ? htmlspecialchars(substr($run['runtime'], 0, 4)) . "s" : ""; ?></td>
+                    <td class="<?= $style_classes ?>"></td>
+                    <?php if($exp !== "ex2") : ?>
+                        <td class="<?= $style_classes ?>"></td>
+                    <?php endif; ?>
+                    <td class="<?= $style_classes ?>"></td>
+                    <td class="<?= $style_classes ?>"></td>
+                    <td class="<?= $style_classes ?>"></td>
+                    <td class="<?= $style_classes ?>" style="max-width: 300px;"></td>
+                </tr>
+            <?php endif; ?>
         <?php endforeach; ?>
         </tbody>
     </table>
