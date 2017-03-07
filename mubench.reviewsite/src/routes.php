@@ -7,6 +7,8 @@ use MuBench\ReviewSite\Controller\SnippetUploader;
 use Slim\Http\Request;
 use Slim\Http\Response;
 
+require_once "route_utils.php";
+
 // Routes
 $app->get('/',
     function (Request $request, Response $response, array $args) use ($app) {
