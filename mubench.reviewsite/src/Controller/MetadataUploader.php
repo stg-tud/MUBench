@@ -44,63 +44,45 @@ class MetadataUploader
 
     private function deleteMetadata($misuse)
     {
-        return "DELETE FROM metadata WHERE misuse='" . $misuse . "';";
+        return "DELETE FROM `metadata` WHERE `misuse` = " . $this->db->quote($misuse);
     }
 
     private function deletePatterns($misuse)
     {
-        return "DELETE FROM patterns WHERE misuse=" . $this->db->quote($misuse) . ";";
+        return "DELETE FROM `patterns` WHERE `misuse` = " . $this->db->quote($misuse);
     }
 
     private function insertMetadata($project, $version, $misuse, $desc, $fix_desc, $diff_url, $violation, $file, $method)
     {
-        return "INSERT INTO metadata (project, version, misuse, description, fix_description, diff_url, violation_types, file, method) VALUES(" .
-            $this->db->quote($project) .
-            "," .
-            $this->db->quote($version) .
-            "," .
-            $this->db->quote($misuse) .
-            "," .
-            $this->db->quote($desc) .
-            "," .
-            $this->db->quote($fix_desc) .
-            "," .
-            $this->db->quote($diff_url) .
-            "," .
-            $this->db->quote($violation) .
-            "," .
-            $this->db->quote($file) .
-            "," .
-            $this->db->quote($method) .
-            ");";
+        return "INSERT INTO `metadata` (`project`, `version`, `misuse`, `description`, `fix_description`, `diff_url`, `violation_types`, `file`, `method`) VALUES (" .
+            $this->db->quote($project) . "," .
+            $this->db->quote($version) . "," .
+            $this->db->quote($misuse) . "," .
+            $this->db->quote($desc) . "," .
+            $this->db->quote($fix_desc) . "," .
+            $this->db->quote($diff_url) . "," .
+            $this->db->quote($violation) . "," .
+            $this->db->quote($file) . "," .
+            $this->db->quote($method) . ")";
     }
 
     private function insertPattern($misuse, $id, $code, $line)
     {
-        return "INSERT INTO patterns (misuse, name, code, line) VALUES(" .
-            $this->db->quote($misuse) .
-            "," .
-            $this->db->quote($id) .
-            "," .
-            $this->db->quote($code) .
-            "," .
-            $this->db->quote($line) .
-            ");";
+        return "INSERT INTO `patterns` (`misuse`, `name`, `code`, `line`) VALUES (" .
+            $this->db->quote($misuse) . "," .
+            $this->db->quote($id) . "," .
+            $this->db->quote($code) . "," .
+            $this->db->quote($line) . ")";
     }
 
     private function getMetaSnippetStatement($project, $version, $misuse, $snippet, $line)
     {
-        return "INSERT INTO meta_snippets (project, version, misuse, snippet, line) VALUES(" .
-            $this->db->quote($project) .
-            "," .
-            $this->db->quote($version) .
-            "," .
-            $this->db->quote($misuse) .
-            "," .
-            $this->db->quote($snippet) .
-            "," .
-            $this->db->quote($line) .
-            ");";
+        return "INSERT INTO `meta_snippets` (`project`, `version`, `misuse`, `snippet`, `line`) VALUES (" .
+            $this->db->quote($project) . "," .
+            $this->db->quote($version) . "," .
+            $this->db->quote($misuse) . "," .
+            $this->db->quote($snippet) . "," .
+            $this->db->quote($line) . ")";
     }
 
     private function arrayToString($json)

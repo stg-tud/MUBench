@@ -64,69 +64,50 @@ class ReviewUploader
 
     private function getReviewFindingsDeleteStatement($findingId)
     {
-        return "DELETE FROM review_findings WHERE id=" . $this->db->quote($findingId) . ";";
+        return "DELETE FROM `review_findings` WHERE `id` = " . $this->db->quote($findingId);
     }
 
     private function getReviewFindingsTypeDelete($id)
     {
-        return "DELETE FROM review_findings_type WHERE review_finding=" . $this->db->quote($id) . ";";
+        return "DELETE FROM `review_findings_type` WHERE `review_finding` = " . $this->db->quote($id);
     }
 
     private function getReviewDeleteStatement($exp, $detector, $project, $version, $misuse, $name)
     {
-        return "DELETE FROM reviews WHERE exp=" .
-            $this->db->quote($exp) .
-            " AND detector=" .
-            $this->db->quote($detector) .
-            " AND project=" .
-            $this->db->quote($project) .
-            " AND version=" .
-            $this->db->quote($version) .
-            " AND misuse=" .
-            $this->db->quote($misuse) .
-            " AND name=" .
-            $this->db->quote($name) .
-            ";";
+        return "DELETE FROM `reviews` WHERE `exp` = " . $this->db->quote($exp) .
+            " AND `detector` = " . $this->db->quote($detector) .
+            " AND `project` = " . $this->db->quote($project) .
+            " AND `version` = " . $this->db->quote($version) .
+            " AND `misuse` = " . $this->db->quote($misuse) .
+            " AND `name` = " . $this->db->quote($name);
     }
 
     private function getReviewStatement($exp, $detector, $project, $version, $misuse, $name, $comment)
     {
-        return "INSERT INTO reviews (exp, detector, project, version, misuse, name, comment) VALUES (" .
-            $this->db->quote($exp) .
-            "," .
-            $this->db->quote($detector) .
-            "," .
-            $this->db->quote($project) .
-            "," .
-            $this->db->quote($version) .
-            "," .
-            $this->db->quote($misuse) .
-            "," .
-            $this->db->quote($name) .
-            "," .
-            $this->db->quote($comment) .
-            ");";
+        return "INSERT INTO `reviews` (`exp`, `detector`, `project`, `version`, `misuse`, `name`, `comment`) VALUES (" .
+            $this->db->quote($exp) . "," .
+            $this->db->quote($detector) . "," .
+            $this->db->quote($project) . "," .
+            $this->db->quote($version) . "," .
+            $this->db->quote($misuse) . "," .
+            $this->db->quote($name) . "," .
+            $this->db->quote($comment) . ")";
     }
 
     private function getReviewFindingStatement($reviewId, $decision, $rank)
     {
-        return "INSERT INTO review_findings (decision, review, rank) VALUES(" .
-            $this->db->quote($decision) .
-            ", " .
-            $this->db->quote($reviewId) .
-            "," .
-            $this->db->quote($rank) .
-            ");";
+        return "INSERT INTO `review_findings` (`decision`, `review`, `rank`) VALUES (" .
+            $this->db->quote($decision) . ", " .
+            $this->db->quote($reviewId) . "," .
+            $this->db->quote($rank) . ")";
     }
 
 
     private function addReviewType($findingId, $type)
     {
-        return "INSERT INTO review_findings_type (review_finding, type) VALUES (" .
-            $this->db->quote($findingId) .
-            "," .
-            $this->db->quote($type) .
-            ");";
+        return "INSERT INTO `review_findings_type` (`review_finding`, `type`) VALUES (" .
+            $this->db->quote($findingId) . "," .
+            $this->db->quote($type) . ")";
     }
 
 }

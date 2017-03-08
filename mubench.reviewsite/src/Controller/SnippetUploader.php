@@ -10,7 +10,6 @@ class SnippetUploader
 
     private $db;
     private $logger;
-    private $query;
 
     function __construct(DBConnection $db, Logger $logger)
     {
@@ -32,18 +31,12 @@ class SnippetUploader
 
     private function getFindingSnippetStatement($detector, $project, $version, $finding, $snippet, $line)
     {
-        return "INSERT INTO finding_snippets (detector, project, version, finding, snippet, line) VALUES(" .
-            $this->db->quote($detector) .
-            "," .
-            $this->db->quote($project) .
-            "," .
-            $this->db->quote($version) .
-            "," .
-            $this->db->quote($finding) .
-            "," .
-            $this->db->quote($snippet) .
-            "," .
-            $this->db->quote($line) .
-            ");";
+        return "INSERT INTO `finding_snippets` (`detector`, `project`, `version`, `finding`, `snippet`, `line`) VALUES (" .
+            $this->db->quote($detector) . "," .
+            $this->db->quote($project) . "," .
+            $this->db->quote($version) . "," .
+            $this->db->quote($finding) . "," .
+            $this->db->quote($snippet) . "," .
+            $this->db->quote($line) . ")";
     }
 }

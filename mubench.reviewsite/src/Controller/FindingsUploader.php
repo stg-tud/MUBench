@@ -10,7 +10,6 @@ class FindingsUploader
 
     private $db;
     private $logger;
-    private $query;
 
     function __construct(DBConnection $db, Logger $logger)
     {
@@ -117,60 +116,41 @@ class FindingsUploader
 
     private function getStatDeleteStatement($exp, $detector, $project, $version)
     {
-        return "DELETE FROM stats WHERE exp=" .
-            $this->db->quote($exp) .
-            " AND detector=" .
-            $this->db->quote($detector) .
-            " AND project=" .
-            $this->db->quote($project) .
-            " AND version=" .
-            $this->db->quote($version) .
-            ";";
+        return "DELETE FROM `stats` WHERE `exp` = " . $this->db->quote($exp) .
+            " AND `detector` = " . $this->db->quote($detector) .
+            " AND `project` = " . $this->db->quote($project) .
+            " AND `version` = " . $this->db->quote($version);
     }
 
     private function getStatStatement($table, $project, $version, $result, $runtime, $findings, $exp)
     {
-        return "INSERT INTO stats (exp, detector, project, version, result, runtime, number_of_findings) VALUES (" .
-            $this->db->quote($exp) .
-            "," .
-            $this->db->quote($table) .
-            "," .
-            $this->db->quote($project) .
-            "," .
-            $this->db->quote($version) .
-            "," .
-            $this->db->quote($result) .
-            "," .
-            $this->db->quote($runtime) .
-            "," .
-            $this->db->quote($findings) .
-            ");";
+        return "INSERT INTO `stats` (`exp`, `detector`, `project`, `version`, `result`, `runtime`, `number_of_findings`) VALUES (" .
+            $this->db->quote($exp) . "," .
+            $this->db->quote($table) . "," .
+            $this->db->quote($project) . "," .
+            $this->db->quote($version) . "," .
+            $this->db->quote($result) . "," .
+            $this->db->quote($runtime) . "," .
+            $this->db->quote($findings) . ")";
     }
 
     private function insertStatement($table, $exp, $project, $version, $obj)
     {
-        $output = "INSERT INTO " . $table . " ( exp, project, version, misuse";
-        $values = " VALUES (" .
-            $this->db->quote($exp) .
-            "," .
-            $this->db->quote($project) .
-            "," .
-            $this->db->quote($version) .
-            "," .
-            $this->db->quote($exp !== "ex2" ? $obj->{'misuse'} : $obj->{'rank'});
+        $misuse = $exp !== "ex2" ? $obj->{'misuse'} : $obj->{'rank'};
+
+        $columns = array("exp", "project", "version", "misuse");
+        $values = array($exp, $project, $version, $misuse);
         foreach ($obj as $key => $value) {
             if ($key === "id" || $key === "misuse" || $key === "target_snippets") {
                 continue;
             } else {
-                $output = $output . ", " . $key;
-                $values = $values . "," . $this->db->quote(is_array($value) ? $this->arrayToString($value) : $value);
+                $columns[] = $key;
+                $values[] = is_array($value) ? $this->arrayToString($value) : $value;
             }
         }
 
-        $output = $output . ")";
-        $values = $values . ");";
-        $output = $output . $values;
-        return $output;
+        $values = array_map(function ($value) { return $this->db->quote($value); }, $values);
+        return "INSERT INTO `" . $table . "` (`" . implode("`, `", $columns) . "`) VALUES (" . implode(", ", $values) . ")";
     }
 
     private function arrayToString($json)
@@ -184,45 +164,35 @@ class FindingsUploader
 
     public function getFindingSnippetStatement($detector, $project, $version, $finding, $snippet, $line)
     {
-        return "INSERT INTO finding_snippets (detector, project, version, finding, snippet, line) VALUES(" .
-            $this->db->quote($detector) .
-            "," .
-            $this->db->quote($project) .
-            "," .
-            $this->db->quote($version) .
-            "," .
-            $this->db->quote($finding) .
-            "," .
-            $this->db->quote($snippet) .
-            "," .
-            $this->db->quote($line) .
-            ");";
+        return "INSERT INTO `finding_snippets` (`detector`, `project`, `version`, `finding`, `snippet`, `line`) VALUES (" .
+            $this->db->quote($detector) . "," .
+            $this->db->quote($project) . "," .
+            $this->db->quote($version) . "," .
+            $this->db->quote($finding) . "," .
+            $this->db->quote($snippet) . "," .
+            $this->db->quote($line) . ")";
     }
 
-    public function createTableStatement($name, $obj)
+    public function createTableStatement($name, $potential_hits)
     {
         // exp project version misuse rank (AUTO INCREMENT id)
-        $output = 'CREATE TABLE ' .
-            $name .
-            '(exp VARCHAR(100) NOT NULL, project VARCHAR(100) NOT NULL, version VARCHAR(100) NOT NULL, misuse VARCHAR(100) NOT NULL';
-        if($obj) {
-            foreach ($obj[0] as $key => $value) {
-                if ($key === "id" || $key === "misuse" || $key === "target_snippets") {
+        $output = "CREATE TABLE `" . $name . "` (`exp` VARCHAR(100) NOT NULL, `project` VARCHAR(100) NOT NULL," .
+            " `version` VARCHAR(100) NOT NULL, `misuse` VARCHAR(100) NOT NULL, `rank` VARCHAR(100) NOT NULL";
+        if($potential_hits) {
+            foreach ($potential_hits[0] as $key => $value) {
+                if ($key === "id" || $key === "misuse" || $key === "rank" || $key === "target_snippets") {
                     continue;
-                } else if ($key === "rank") {
-                    $output = $output . "," . $key . " VARCHAR(100)";
                 } else {
-                    $output = $output . "," . $key . " TEXT";
+                    $output = $output . ",`" . $key . "` TEXT";
                 }
             }
         }
-        $output = $output . ', PRIMARY KEY(exp, project, version, misuse, rank));';
-        return $output;
+        return $output . ', PRIMARY KEY(`exp`, `project`, `version`, `misuse`, `rank`))';
     }
 
     public function addColumnStatement($table, $column)
     {
-        return 'ALTER TABLE ' . $table . ' ADD ' . $column . ' TEXT;';
+        return 'ALTER TABLE `' . $table . '` ADD `' . $column . '` TEXT;';
     }
 
 }
