@@ -30,7 +30,6 @@ class FindingsUploader
 
         $this->handleStats($table, $project, $version, $result, $runtime, $findings, $ex);
         if($obj_array) {
-
             $this->handleTableColumns($table, $obj_array);
             $this->handleFindings($table, $ex, $project, $version, $obj_array);
         }
@@ -173,24 +172,28 @@ class FindingsUploader
             $this->db->quote($line) . ")";
     }
 
-    public function createTableStatement($name, $potential_hits)
+    private function createTableStatement($name, $potential_hits)
     {
         // exp project version misuse rank (AUTO INCREMENT id)
         $output = "CREATE TABLE `" . $name . "` (`exp` VARCHAR(100) NOT NULL, `project` VARCHAR(100) NOT NULL," .
             " `version` VARCHAR(100) NOT NULL, `misuse` VARCHAR(100) NOT NULL, `rank` VARCHAR(100) NOT NULL";
         if($potential_hits) {
-            foreach ($potential_hits[0] as $key => $value) {
-                if ($key === "id" || $key === "misuse" || $key === "rank" || $key === "target_snippets") {
-                    continue;
-                } else {
-                    $output = $output . ",`" . $key . "` TEXT";
+            $columns = array();
+            foreach ($potential_hits as $potential_hit) {
+                foreach ($potential_hit as $key => $value) {
+                    if ($key === "id" || $key === "misuse" || $key === "rank" || $key === "target_snippets") {
+                        continue;
+                    } else {
+                        $columns["`$key` TEXT"] = 1;
+                    }
                 }
             }
+            $output .= "," . implode(", ", array_keys($columns));
         }
         return $output . ', PRIMARY KEY(`exp`, `project`, `version`, `misuse`, `rank`))';
     }
 
-    public function addColumnStatement($table, $column)
+    private function addColumnStatement($table, $column)
     {
         return 'ALTER TABLE `' . $table . '` ADD `' . $column . '` TEXT;';
     }

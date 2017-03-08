@@ -8,12 +8,37 @@ use MuBench\ReviewSite\Model\Misuse;
 
 class StoreFindingsTest extends DatabaseTestCase
 {
+    private $request_body;
+
+    function setUp()
+    {
+        parent::setUp();
+
+        $this->request_body = [
+            "detector" => "-d-",
+            "project" => "-p-",
+            "version" => "-v-",
+            "result" => "success",
+            "runtime" => 42.1,
+            "number_of_findings" => 23,
+            "potential_hits" => [
+                [
+                    "misuse" => "-m-",
+                    "rank" => 0,
+                    "target_snippets" => [
+                        ["first_line_number" => 5, "code" => "-code-"]
+                    ],
+                    "custom1" => "-val1-",
+                    "custom2" => "-val2-"
+                ]]
+        ];
+    }
 
     function test_store_ex1()
     {
         $uploader = new FindingsUploader($this->db, $this->logger);
 
-        $data = json_decode($this->finding_json);
+        $data = json_decode(json_encode($this->request_body));
         $uploader->processData("ex1", $data, $data->{"potential_hits"});
         $detector = $this->db->getDetector("-d-");
         $runs = $this->db->getRuns($detector, "ex1");
@@ -36,7 +61,7 @@ class StoreFindingsTest extends DatabaseTestCase
     {
         $uploader = new FindingsUploader($this->db, $this->logger);
 
-        $data = json_decode($this->finding_json);
+        $data = json_decode(json_encode($this->request_body));
         $uploader->processData("ex2", $data, $data->{"potential_hits"});
         $detector = $this->db->getDetector("-d-");
         $runs = $this->db->getRuns($detector, "ex2");
@@ -69,11 +94,27 @@ class StoreFindingsTest extends DatabaseTestCase
         self::assertEquals([$expected_run], $runs);
     }
 
+    function test_store_potential_hit_properties() {
+        $uploader = new FindingsUploader($this->db, $this->logger);
+
+        $this->request_body["potential_hits"][] = [
+            "rank" => 1,
+            "target_snippets" => [],
+            "new property" => "-val1-"
+        ];
+        $data = json_decode(json_encode($this->request_body));
+        $uploader->processData("ex2", $data, $data->{"potential_hits"});
+        $detector = $this->db->getDetector("-d-");
+        $runs = $this->db->getRuns($detector, "ex2");
+
+        self::assertEquals($runs[0]["misuses"][1]->getPotentialHits()[0]["new property"], "-val1-");
+    }
+
     function test_store_ex3()
     {
         $uploader = new FindingsUploader($this->db, $this->logger);
 
-        $data = json_decode($this->finding_json);
+        $data = json_decode(json_encode($this->request_body));
         $uploader->processData("ex3", $data, $data->{"potential_hits"});
         $detector = $this->db->getDetector("-d-");
         $runs = $this->db->getRuns($detector, "ex3");
