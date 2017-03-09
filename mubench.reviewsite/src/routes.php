@@ -108,26 +108,27 @@ $app->group('/api', function () use ($app) {
     $app->post('/upload/[{experiment:ex[1-3]}]',
         function (Request $request, Response $response, array $args) use ($app) {
             $experiment = $args['experiment'];
-            $obj = decodeJsonBody($request);
-            if (!$obj) {
+            $run = decodeJsonBody($request);
+            if (!$run) {
                 return error_response($response, $this->logger, 400, "empty: " . print_r($request->getBody(), true));
             }
-            $detector = $obj->{'detector'};
+            $detector = $run->{'detector'};
             if (!$detector) {
-                return error_response($response, $this->logger, 400, "no detector: " . print_r($obj, true));
+                return error_response($response, $this->logger, 400, "no detector: " . print_r($run, true));
             }
-            $project = $obj->{'project'};
+            $project = $run->{'project'};
             if (!$project) {
-                return error_response($response, $this->logger, 400, "no project: " . print_r($obj, true));
+                return error_response($response, $this->logger, 400, "no project: " . print_r($run, true));
             }
-            $version = $obj->{'version'};
+            $version = $run->{'version'};
             if (!$version) {
-                return error_response($response, $this->logger, 400, "no version: " . print_r($obj, true));
+                return error_response($response, $this->logger, 400, "no version: " . print_r($run, true));
             }
-            $hits = $obj->{'potential_hits'};
+            $hits = $run->{'potential_hits'};
             $this->logger->info("received data for '" . $experiment . "', '" . $project . "." . $version . "' with " . count($hits) . " potential hits.");
+
             $uploader = new FindingsUploader($app->db, $this->logger);
-            $uploader->processData($experiment, $obj, $hits);
+            $uploader->processData($experiment, $run, $hits);
             $files = $request->getUploadedFiles();
             $this->logger->info("received " . count($files) . " files");
             if ($files) {
