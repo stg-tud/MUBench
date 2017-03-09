@@ -16,7 +16,7 @@ class StoreMetadataTest extends DatabaseTestCase
         $data = json_decode($this->metadata_json);
         $findings = json_decode($this->finding_json);
 
-        $finding_uploader->processData('ex1', $findings, $findings->{'potential_hits'});
+        $finding_uploader->processData('ex1', $findings);
         $metadata_uploader->processMetaData($data);
 
         $detector = $this->db->getDetector('-d-');

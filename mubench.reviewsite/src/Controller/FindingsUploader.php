@@ -17,7 +17,7 @@ class FindingsUploader
         $this->logger = $logger;
     }
 
-    public function processData($ex, $obj, $obj_array)
+    public function processData($ex, $obj)
     {
         $detector = $obj->{'detector'};
         $table = $this->db->getTableName($detector);

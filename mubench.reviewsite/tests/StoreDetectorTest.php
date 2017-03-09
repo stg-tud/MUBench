@@ -26,7 +26,7 @@ class StoreDetectorTest extends DatabaseTestCase
 EOD
         );
 
-        $uploader->processData("ex1", $data, $data->{'potential_hits'});
+        $uploader->processData("ex1", $data);
         $actual_detector = $this->db->getDetector("-d-");
         $expected_detector = new Detector("-d-", 1);
 

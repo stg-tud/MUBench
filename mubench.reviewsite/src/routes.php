@@ -128,7 +128,7 @@ $app->group('/api', function () use ($app) {
             $this->logger->info("received data for '" . $experiment . "', '" . $project . "." . $version . "' with " . count($hits) . " potential hits.");
 
             $uploader = new FindingsUploader($app->db, $this->logger);
-            $uploader->processData($experiment, $run, $hits);
+            $uploader->processData($experiment, $run);
             $files = $request->getUploadedFiles();
             $this->logger->info("received " . count($files) . " files");
             if ($files) {

@@ -39,7 +39,7 @@ class StoreFindingsTest extends DatabaseTestCase
         $uploader = new FindingsUploader($this->db, $this->logger);
 
         $data = json_decode(json_encode($this->request_body));
-        $uploader->processData("ex1", $data, $data->{"potential_hits"});
+        $uploader->processData("ex1", $data);
         $detector = $this->db->getDetector("-d-");
         $runs = $this->db->getRuns($detector, "ex1");
 
@@ -62,7 +62,7 @@ class StoreFindingsTest extends DatabaseTestCase
         $uploader = new FindingsUploader($this->db, $this->logger);
 
         $data = json_decode(json_encode($this->request_body));
-        $uploader->processData("ex2", $data, $data->{"potential_hits"});
+        $uploader->processData("ex2", $data);
         $detector = $this->db->getDetector("-d-");
         $runs = $this->db->getRuns($detector, "ex2");
 
@@ -103,7 +103,7 @@ class StoreFindingsTest extends DatabaseTestCase
             "new property" => "-val1-"
         ];
         $data = json_decode(json_encode($this->request_body));
-        $uploader->processData("ex2", $data, $data->{"potential_hits"});
+        $uploader->processData("ex2", $data);
         $detector = $this->db->getDetector("-d-");
         $runs = $this->db->getRuns($detector, "ex2");
 
@@ -115,7 +115,7 @@ class StoreFindingsTest extends DatabaseTestCase
         $uploader = new FindingsUploader($this->db, $this->logger);
 
         $data = json_decode(json_encode($this->request_body));
-        $uploader->processData("ex3", $data, $data->{"potential_hits"});
+        $uploader->processData("ex3", $data);
         $detector = $this->db->getDetector("-d-");
         $runs = $this->db->getRuns($detector, "ex3");
 
@@ -139,7 +139,7 @@ class StoreFindingsTest extends DatabaseTestCase
 
         $data = json_decode($this->finding_json);
         $metadata = json_decode($this->metadata_json);
-        $finding_uploader->processData("ex1", $data, $data->{"potential_hits"});
+        $finding_uploader->processData("ex1", $data);
         $metadata_uploader->processMetaData($metadata);
         $detector = $this->db->getDetector("-d-");
         $misuse = $this->db->getMisuse("ex1", $detector, "-p-", "-v-", "-m-");

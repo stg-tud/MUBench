@@ -106,7 +106,7 @@ class StoreReviewTest extends DatabaseTestCase
         $metadata = json_decode($this->metadata_json);
         $finding = json_decode($this->finding_json);
 
-        $finding_uploader->processData('ex1', $finding, $finding->{'potential_hits'});
+        $finding_uploader->processData('ex1', $finding);
         $metadata_uploader->processMetaData($metadata);
 
         $this->review_uploader = new ReviewUploader($this->db, $this->logger);
