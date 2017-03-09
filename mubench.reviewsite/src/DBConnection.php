@@ -44,26 +44,7 @@ class DBConnection
 
     public function getTableColumns($table)
     {
-        $sql = $this->columnQuery($table);
-        $query = [];
-        try {
-            $query = $this->pdo->query($sql);
-        } catch (PDOException $e) {
-            $this->logger->error("Error getTableColumns: " . $e->getMessage());
-        }
-        $columns = array();
-        if (!$query) {
-            return $columns;
-        }
-        foreach ($query as $q) {
-            $columns[] = $q[0];
-        }
-        return $columns;
-    }
-
-    public function columnQuery($table)
-    {
-        return "SELECT `column_name` FROM `INFORMATION_SCHEMA.COLUMNS` WHERE TABLE_NAME=" . $this->pdo->quote($table);
+        return $this->tryQuery("SELECT `column_name` FROM `INFORMATION_SCHEMA.COLUMNS` WHERE TABLE_NAME=" . $this->quote($table));
     }
 
     public function getTableName($detector)
