@@ -17,185 +17,139 @@ class FindingsUploader
         $this->logger = $logger;
     }
 
-    public function processData($ex, $obj)
+    public function processData($ex, $run)
     {
-        $detector = $obj->{'detector'};
+        $detector = $run->{'detector'};
         $table = $this->db->getTableName($detector);
         $this->logger->info("Data for : " . $table);
-        $project = $obj->{'project'};
-        $version = $obj->{'version'};
-        $runtime = $obj->{'runtime'};
-        $result = $obj->{'result'};
-        $findings = $obj->{'number_of_findings'};
+        $project = $run->{'project'};
+        $version = $run->{'version'};
+        $runtime = $run->{'runtime'};
+        $result = $run->{'result'};
+        $number_of_findings = $run->{'number_of_findings'};
+        $potential_hits = $run->{'potential_hits'};
 
-        $this->handleStats($table, $project, $version, $result, $runtime, $findings, $ex);
-        if($obj_array) {
-            $this->handleTableColumns($table, $obj_array);
-            $this->handleFindings($table, $ex, $project, $version, $obj_array);
+        $this->updateRunStatistics($table, $ex, $project, $version, $result, $runtime, $number_of_findings);
+        if($potential_hits) {
+            $this->createOrUpdateFindingsTable($table, $potential_hits);
+            $this->storeFindings($table, $ex, $project, $version, $potential_hits);
         }
     }
 
-    private function handleStats($table, $project, $version, $result, $runtime, $findings, $exp)
+    private function updateRunStatistics($table, $exp, $project, $version, $result, $runtime, $number_of_findings)
     {
-        $statements = [];
-        $statements[] = $this->getStatDeleteStatement($exp, $table, $project, $version);
-        $statements[] = $this->getStatStatement($table, $project, $version, $result, $runtime, $findings, $exp);
-        $this->logger->info("deleting and adding new stats for: " . $table);
-        $this->db->execStatements($statements);
+        $this->logger->info("Update statistics for $exp, $table, $project, $version");
+        $this->deleteOldRunStatistics($table, $exp, $project, $version);
+        $this->insertRunStatistics($table, $exp, $project, $version, $result, $runtime, $number_of_findings);
     }
 
-    private function handleFindings($table, $exp, $project, $version, $obj_array)
+    private function deleteOldRunStatistics($table, $exp, $project, $version)
     {
-        $statements = [];
-        foreach ($obj_array as $hit) {
-            $statements[] = $this->insertStatement($table, $exp, $project, $version, $hit);
-            if(strcmp($exp, "ex2") === 0){
-                $this->handleTargetSnippets($table, $project, $version, strcmp($exp, "ex2") !== 0 ? $hit->{'misuse'} : $hit->{'rank'}, $hit->{'target_snippets'});
-            }
-        }
-        $this->logger->info("inserting " . count($statements) . " entries into: " . $table);
-        $this->db->execStatements($statements);
-    }
-
-    private function handleTargetSnippets($detector, $project, $version, $finding, $snippets){
-        $statements = [];
-        if(!$snippets || !is_array($snippets)){
-            return;
-        }
-        foreach($snippets as $key => $snippet){
-            $statements[] = $this->getFindingSnippetStatement($detector, $project, $version, $finding, $snippet->{'code'}, $snippet->{'first_line_number'});
-        }
-        $this->logger->info("saving " . count($statements) . " for " . $detector . "|" . $project . "|" . $version . "|" . $finding);
-        $this->db->execStatements($statements);
-    }
-
-    private function handleTableColumns($table, $obj_array)
-    {
-        $obj_columns = $this->getJsonNames($obj_array);
-        $columns = $this->db->getTableColumns($table);
-        $statements = [];
-        if (count($columns) == 0) {
-            $this->logger->info("Creating new table " . $table);
-            $statements[] = $this->createTableStatement($table, $obj_array);
-            $this->db->execStatements($statements);
-            return;
-        }
-        if(!$obj_columns){
-            return;
-        }
-        $columns = $this->db->getTableColumns($table);
-        foreach ($obj_columns as $c) {
-            $add = true;
-            foreach ($columns as $oc) {
-                if ($c == $oc) {
-                    $add = false;
-                    break;
-                }
-            }
-            if ($add) {
-                $statements[] = $this->addColumnStatement($table, $c);
-            }
-        }
-        $this->logger->info("deleting and adding columns for: " . $table);
-        $this->db->execStatements($statements);
-    }
-
-    private function getJsonNames($obj)
-    {
-        $columns = array();
-        $columns[] = 'project';
-        $columns[] = 'version';
-        foreach ($obj[0] as $key => $value) {
-            if($key === "target_snippets")
-                continue;
-            $columns[] = $key;
-        }
-        return $columns;
-    }
-
-    private function getStatDeleteStatement($exp, $detector, $project, $version)
-    {
-        return "DELETE FROM `stats` WHERE `exp` = " . $this->db->quote($exp) .
-            " AND `detector` = " . $this->db->quote($detector) .
+        $this->db->execStatement("DELETE FROM `stats` WHERE `exp` = " . $this->db->quote($exp) .
+            " AND `detector` = " . $this->db->quote($table) .
             " AND `project` = " . $this->db->quote($project) .
-            " AND `version` = " . $this->db->quote($version);
+            " AND `version` = " . $this->db->quote($version));
     }
 
-    private function getStatStatement($table, $project, $version, $result, $runtime, $findings, $exp)
+    private function insertRunStatistics($table, $exp, $project, $version, $result, $runtime, $number_of_findings)
     {
-        return "INSERT INTO `stats` (`exp`, `detector`, `project`, `version`, `result`, `runtime`, `number_of_findings`) VALUES (" .
+        $this->db->execStatement("INSERT INTO `stats` (`exp`, `detector`, `project`, `version`, `result`, `runtime`, `number_of_findings`) VALUES (" .
             $this->db->quote($exp) . "," .
             $this->db->quote($table) . "," .
             $this->db->quote($project) . "," .
             $this->db->quote($version) . "," .
             $this->db->quote($result) . "," .
             $this->db->quote($runtime) . "," .
-            $this->db->quote($findings) . ")";
+            $this->db->quote($number_of_findings) . ")");
     }
 
-    private function insertStatement($table, $exp, $project, $version, $obj)
+    private function createOrUpdateFindingsTable($table, $findings)
     {
-        $misuse = $exp !== "ex2" ? $obj->{'misuse'} : $obj->{'rank'};
-
-        $columns = array("exp", "project", "version", "misuse");
-        $values = array($exp, $project, $version, $misuse);
-        foreach ($obj as $key => $value) {
-            if ($key === "id" || $key === "misuse" || $key === "target_snippets") {
-                continue;
-            } else {
-                $columns[] = $key;
-                $values[] = is_array($value) ? $this->arrayToString($value) : $value;
+        $columns = $this->db->getTableColumns($table);
+        if (count($columns) == 0) {
+            $this->createFindingsTable($table);
+            $columns = $this->db->getTableColumns($table);
+        }
+        $this->logger->info("Add columns to findings table " . $table);
+        foreach ($this->getFindingsPropertyNames($findings) as $property) {
+            if (!in_array($property, $columns)) {
+                $this->addColumnToFindingsTable($table, $property);
             }
         }
-
-        $values = array_map(function ($value) { return $this->db->quote($value); }, $values);
-        return "INSERT INTO `" . $table . "` (`" . implode("`, `", $columns) . "`) VALUES (" . implode(", ", $values) . ")";
     }
 
-    private function arrayToString($json)
+    private function createFindingsTable($table)
     {
-        $out = $json[0];
-        for ($i = 1; $i < count($json); $i++) {
-            $out = $out . ';' . $json[$i];
+        $this->logger->info("Create findings table " . $table);
+        $this->db->execStatement("CREATE TABLE `$table` (`exp` VARCHAR(100) NOT NULL, `project` VARCHAR(100) NOT NULL," .
+            " `version` VARCHAR(100) NOT NULL, `misuse` VARCHAR(100) NOT NULL, `rank` VARCHAR(100) NOT NULL," .
+            " PRIMARY KEY(`exp`, `project`, `version`, `misuse`, `rank`))");
+    }
+
+    private function getFindingsPropertyNames($findings)
+    {
+        $properties = [];
+        foreach ($findings as $finding) {
+            $properties = array_merge($properties, array_fill_keys(array_keys(get_object_vars($finding)), 1));
         }
-        return $out;
+        unset($properties["id"]);
+        unset($properties["target_snippets"]);
+        return array_keys($properties);
     }
 
-    public function getFindingSnippetStatement($detector, $project, $version, $finding, $snippet, $line)
+    private function addColumnToFindingsTable($table, $column)
     {
-        return "INSERT INTO `finding_snippets` (`detector`, `project`, `version`, `finding`, `snippet`, `line`) VALUES (" .
+        $this->db->execStatement("ALTER TABLE `$table` ADD `$column` TEXT");
+    }
+
+    private function storeFindings($table, $exp, $project, $version, $findings)
+    {
+        $this->logger->info("Store " . count($findings) . " findings in $table");
+        foreach ($findings as $finding) {
+            $this->storeFinding($table, $exp, $project, $version, $finding);
+            if(strcmp($exp, "ex2") === 0){
+                $this->storeFindingTargetSnippets($table, $project, $version, $finding->{'rank'}, $finding->{'target_snippets'});
+            }
+        }
+    }
+
+    private function storeFinding($table, $exp, $project, $version, $finding)
+    {
+        $values = array("exp" => $exp, "project" => $project, "version" => $version);
+        foreach ($this->getFindingsPropertyNames([$finding]) as $property) {
+            $value = $finding->{$property};
+            $values[$property] = is_array($value) ? $this->arrayToString($value) : $value;
+        }
+        if ($exp === "ex2") {
+            $values["misuse"] = $finding->{'rank'};
+        }
+        $values = array_map(function ($value) { return $this->db->quote($value); }, $values);
+        $this->db->execStatement("INSERT INTO `" . $table .
+            "` (`" . implode("`, `", array_keys($values)) . "`)" .
+            " VALUES (" . implode(", ", $values) . ")");
+    }
+
+    private function arrayToString($array)
+    {
+        return implode(";", $array);
+    }
+
+    private function storeFindingTargetSnippets($detector, $project, $version, $rank, $snippets){
+        $this->logger->info("Store " . count($snippets) . " snippets for $detector, $project, $version, $rank");
+        foreach($snippets as $snippet){
+            $this->storeFindingTargetSnippet($detector, $project, $version, $rank, $snippet->{'code'}, $snippet->{'first_line_number'});
+        }
+    }
+
+    public function storeFindingTargetSnippet($detector, $project, $version, $rank, $snippet, $first_line_number)
+    {
+        $this->db->execStatement("INSERT INTO `finding_snippets` (`detector`, `project`, `version`, `finding`, `snippet`, `line`) VALUES (" .
             $this->db->quote($detector) . "," .
             $this->db->quote($project) . "," .
             $this->db->quote($version) . "," .
-            $this->db->quote($finding) . "," .
+            $this->db->quote($rank) . "," .
             $this->db->quote($snippet) . "," .
-            $this->db->quote($line) . ")";
-    }
-
-    private function createTableStatement($name, $potential_hits)
-    {
-        // exp project version misuse rank (AUTO INCREMENT id)
-        $output = "CREATE TABLE `" . $name . "` (`exp` VARCHAR(100) NOT NULL, `project` VARCHAR(100) NOT NULL," .
-            " `version` VARCHAR(100) NOT NULL, `misuse` VARCHAR(100) NOT NULL, `rank` VARCHAR(100) NOT NULL";
-        if($potential_hits) {
-            $columns = array();
-            foreach ($potential_hits as $potential_hit) {
-                foreach ($potential_hit as $key => $value) {
-                    if ($key === "id" || $key === "misuse" || $key === "rank" || $key === "target_snippets") {
-                        continue;
-                    } else {
-                        $columns["`$key` TEXT"] = 1;
-                    }
-                }
-            }
-            $output .= "," . implode(", ", array_keys($columns));
-        }
-        return $output . ', PRIMARY KEY(`exp`, `project`, `version`, `misuse`, `rank`))';
-    }
-
-    private function addColumnStatement($table, $column)
-    {
-        return 'ALTER TABLE `' . $table . '` ADD `' . $column . '` TEXT;';
+            $this->db->quote($first_line_number) . ")");
     }
 
 }
