@@ -78,8 +78,7 @@ class DBConnection
 
     public function getPatterns($misuse)
     {
-        $patterns = $this->tryQuery("SELECT `name`, `code`, `line` FROM `patterns` WHERE `misuse`=" . $this->pdo->quote($misuse));
-        return $patterns;
+        return $this->tryQuery("SELECT `name`, `code`, `line` FROM `patterns` WHERE `misuse`=" . $this->pdo->quote($misuse));
     }
 
     public function getReview($exp, $detector, $project, $version, $misuse, $name)
