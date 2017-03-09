@@ -71,9 +71,9 @@ class FindingsUploader
             $columns = $this->db->getTableColumns($table);
         }
         $this->logger->info("Add columns to findings table " . $table);
-        foreach ($this->getFindingsPropertyNames($findings) as $property) {
-            if (!in_array($property, $columns)) {
-                $this->addColumnToFindingsTable($table, $property);
+        foreach ($this->getPropertyToColumnNameMapping($findings) as $column) {
+            if (!in_array($column, $columns)) {
+                $this->addColumnToFindingsTable($table, $column);
             }
         }
     }
@@ -86,15 +86,21 @@ class FindingsUploader
             " PRIMARY KEY(`exp`, `project`, `version`, `misuse`, `rank`))");
     }
 
-    private function getFindingsPropertyNames($findings)
+    private function getPropertyToColumnNameMapping($findings)
     {
-        $properties = [];
+        $propertyToColumnNameMapping = [];
         foreach ($findings as $finding) {
-            $properties = array_merge($properties, array_fill_keys(array_keys(get_object_vars($finding)), 1));
+            $properties = array_keys(get_object_vars($finding));
+            foreach ($properties as $property) {
+                // MySQL does not permit column names with more than 64 characters:
+                // https://dev.mysql.com/doc/refman/5.7/en/identifiers.html
+                $column_name = strlen($property) > 64 ? substr($property, 0, 64) : $property;
+                $propertyToColumnNameMapping[$property] = $column_name;
+            }
         }
-        unset($properties["id"]);
-        unset($properties["target_snippets"]);
-        return array_keys($properties);
+        unset($propertyToColumnNameMapping["id"]);
+        unset($propertyToColumnNameMapping["target_snippets"]);
+        return $propertyToColumnNameMapping;
     }
 
     private function addColumnToFindingsTable($table, $column)
@@ -116,9 +122,9 @@ class FindingsUploader
     private function storeFinding($table, $exp, $project, $version, $finding)
     {
         $values = array("exp" => $exp, "project" => $project, "version" => $version);
-        foreach ($this->getFindingsPropertyNames([$finding]) as $property) {
+        foreach ($this->getPropertyToColumnNameMapping([$finding]) as $property => $column) {
             $value = $finding->{$property};
-            $values[$property] = is_array($value) ? $this->arrayToString($value) : $value;
+            $values[$column] = is_array($value) ? $this->arrayToString($value) : $value;
         }
         if ($exp === "ex2") {
             $values["misuse"] = $finding->{'rank'};
