@@ -2,9 +2,12 @@
 /**
  * @var string $root_url the site's root URL
  * @var string $private_url the site's private root URL
+ * @var string $route_url this site's relative URL
+ * @var string $origin_route the relative URL of the referrer site
  *
  * @var bool $logged whether or not the user is logged in
  * @var string $name the user's name
+ * @var bool $is_reviewer whether the user is the author of this review
  *
  * @var string $exp the experiment id
  * @var string $detector the detector's name
@@ -97,8 +100,9 @@
                             <table>
                             <tr>
                                 <td>
-                                    <label>Line:</label>
-                                    <input type="number" name="line">
+                                    <label>Line:
+                                        <input type="number" name="line">
+                                    </label>
                                 </td>
                             </tr>
                             <tr>
@@ -109,7 +113,7 @@
                                     <input type="hidden" name="version" value="<?= htmlspecialchars($misuse->getVersion()); ?>">
                                     <input type="hidden" name="misuse" value="<?= htmlspecialchars($misuse->id); ?>">
                                     <input type="hidden" name="path" value="<?= htmlspecialchars($route_url); ?>">
-                                    <textarea name="snippet" cols="80" rows="5"></textarea>
+                                    <textarea name="snippet" title="Code Snippet" cols="80" rows="5"></textarea>
                                 </td>
                             </tr>
                             <tr>
@@ -160,7 +164,7 @@
         <tr>
             <td>
             <?php if($logged && $is_reviewer) : ?>
-                <select name="review_hit[<?= htmlspecialchars($hit['rank']); ?>][hit]" size="1" >
+                <select name="review_hit[<?= htmlspecialchars($hit['rank']); ?>][hit]" title="Decision" size="1" >
                     <?php if($review && strcmp($review->getHitDecision($hit['rank']), "No") === 0) : ?>
                         <option selected="selected" value="No" >No</option>
                     <?php else : ?>
@@ -209,11 +213,7 @@
             <?php endforeach; ?>
             <td>
                     <?php if($exp === "ex2") : ?>
-                    <?php if($logged && $is_reviewer) : ?>
-                    <select name="review_hit[<?= htmlspecialchars($hit['rank']); ?>][types][]" size="10" multiple>
-                        <?php else : ?>
-                        <select disabled name="review_hit[<?= htmlspecialchars($hit['rank']); ?>][types][]" size="10" multiple>
-                        <?php endif; ?>
+                        <select name="review_hit[<?= htmlspecialchars($hit['rank']); ?>][types][]" title="Violation Types" size="10" multiple <?= ($logged && $is_reviewer) ? "" : "disabled" ?>>
                             <?php $add = true ?>
                             <?php if($review) : ?>
                             <?php foreach($review->getHitViolationTypes($hit['rank']) as $t) : ?>
@@ -482,9 +482,9 @@
                     <?php else : ?>
                         <?php if($misuse->hasViolationTypes()) : ?>
                             <?php if($logged && $is_reviewer) : ?>
-                                <select name="review_hit[<?= htmlspecialchars($hit['rank']); ?>][types][]" size="<?= htmlspecialchars(count($misuse->getViolationTypes())); ?>" multiple>
+                                <select name="review_hit[<?= htmlspecialchars($hit['rank']); ?>][types][]" title="Violation Types" size="<?= htmlspecialchars(count($misuse->getViolationTypes())); ?>" multiple>
                             <?php else : ?>
-                                <select disabled name="review_hit[<?= htmlspecialchars($hit['rank']); ?>][types][]" size="<?= htmlspecialchars(count($misuse->getViolationTypes())); ?>" multiple>
+                                <select disabled name="review_hit[<?= htmlspecialchars($hit['rank']); ?>][types][]" title="Violation Types" size="<?= htmlspecialchars(count($misuse->getViolationTypes())); ?>" multiple>
                             <?php endif; ?>
                                 <?php foreach($misuse->getViolationTypes() as $v) : ?>
                                     <?php $add = true ?>
@@ -511,15 +511,14 @@
         <?php endif; ?>
             <?php if($logged && $is_reviewer) :?>
                 <table class="invisible">
-                <tr><td><b>Reviewer Name:</b></td>
+                <tr><td>Reviewer Name:</td>
                     <td><?= htmlspecialchars($name); ?></td></tr>
-                <tr><td class="vtop"><b>Comment:</b></td>
-
+                <tr><td class="vtop"><label for="review_comment">Comment</label>:</td>
                     <td>
                     <?php if($review) : ?>
-                        <textarea name="review_comment" cols="80" rows="5"><?= htmlspecialchars($review->getComment()); ?></textarea>
+                        <textarea id="review_comment" name="review_comment" cols="80" rows="5"><?= htmlspecialchars($review->getComment()); ?></textarea>
                     <?php else : ?>
-                        <textarea name="review_comment" cols="80" rows="5"></textarea>
+                        <textarea id="review_comment" name="review_comment" cols="80" rows="5"></textarea>
                     <?php endif; ?>
                     </td></tr>
                 </table>
@@ -533,13 +532,13 @@
                 <input type="submit" value="Save Review" />
                 </form>
         <?php endif; ?>
-        <?php if($review && !$logged && !is_reviewer) :?>
+        <?php if($review && !$logged && !$is_reviewer) :?>
                 <table class="invisible">
-                    <tr><td><b>Reviewer Name:</b></td>
+                    <tr><td>Reviewer Name:</td>
                         <td><?= htmlspecialchars($review->getReviewerName()); ?></td></tr>
-                    <tr><td class="vtop"><b>Comment:</b></td>
+                    <tr><td class="vtop"><label for="review_comment">Comment</label>:</td>
                         <td>
-                                <textarea disabled name="review_comment" cols="80" rows="5"><?= htmlspecialchars($review->getComment()); ?></textarea>
+                                <textarea disabled id="review_comment" name="review_comment" cols="80" rows="5"><?= htmlspecialchars($review->getComment()); ?></textarea>
                         </td></tr>
                 </table>
         <?php endif; ?>
