@@ -144,8 +144,21 @@
         <?php endif; ?>
         <table class="potential_hits">
             <?php
-            $columns = array_filter(array_keys(current($misuse->getPotentialHits())), function ($key) use ($columns_to_ignore) {
-                return !in_array($key, $columns_to_ignore);
+            /**
+             * @param string $property the property to check for
+             * @param array $potential_hits the potential hits to check
+             * @return bool true if none of the potential hits has a value for the property, false otherwise
+             */
+            function is_empty($property, $potential_hits)
+            {
+                return array_reduce($potential_hits, function ($carry, $potential_hit) use ($property) {
+                    return $carry && empty($potential_hit[$property]);
+                }, true);
+            }
+
+            $potential_hits = $misuse->getPotentialHits();
+            $columns = array_filter(array_keys(current($potential_hits)), function ($key) use ($columns_to_ignore, $potential_hits) {
+                return !in_array($key, $columns_to_ignore) && !is_empty($key, $potential_hits);
             });
             sort($columns);
             ?>
@@ -160,7 +173,7 @@
             <th>Violation Types</th>
         </tr>
     
-        <?php foreach($misuse->getPotentialHits() as $hit) : ?>
+        <?php foreach($potential_hits as $hit) : ?>
         <tr>
             <td>
             <?php if($logged && $is_reviewer) : ?>
