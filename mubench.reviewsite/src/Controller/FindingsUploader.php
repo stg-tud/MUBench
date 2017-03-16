@@ -81,8 +81,8 @@ class FindingsUploader
     private function createFindingsTable($table)
     {
         $this->logger->info("Create findings table " . $table);
-        $this->db->execStatement("CREATE TABLE `$table` (`exp` VARCHAR(100) NOT NULL, `project` VARCHAR(100) NOT NULL," .
-            " `version` VARCHAR(100) NOT NULL, `misuse` VARCHAR(100) NOT NULL, `rank` VARCHAR(100) NOT NULL," .
+        $this->db->execStatement("CREATE TABLE `$table` (`exp` VARCHAR(10) NOT NULL, `project` VARCHAR(255) NOT NULL," .
+            " `version` VARCHAR(255) NOT NULL, `misuse` VARCHAR(255) NOT NULL, `rank` VARCHAR(10) NOT NULL," .
             " PRIMARY KEY(`exp`, `project`, `version`, `misuse`, `rank`))");
     }
 
