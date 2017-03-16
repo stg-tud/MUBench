@@ -1,3 +1,4 @@
+from base64 import urlsafe_b64encode
 from os import makedirs, remove
 
 from os.path import join, exists
@@ -11,10 +12,14 @@ def format_float_value(finding, float_key):
 
 
 def replace_dot_graph_with_image(finding, key, base_path) -> str:
-    image_name = "f{}-{}.png".format(finding["rank"], key)
+    image_name = "f{}-{}.png".format(finding["rank"], filename_encode(key))
     __create_image(finding[key], base_path, image_name)
     finding[key] = image_name
     return join(base_path, image_name)
+
+
+def filename_encode(key):
+    return urlsafe_b64encode(bytes(key, "utf-8")).decode("utf-8")
 
 
 def __create_image(dot_graph, working_directory, image_name):
