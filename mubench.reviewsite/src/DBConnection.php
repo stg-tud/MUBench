@@ -44,7 +44,11 @@ class DBConnection
 
     public function getTableColumns($table)
     {
-        return $this->tryQuery("SELECT `column_name` FROM `INFORMATION_SCHEMA.COLUMNS` WHERE TABLE_NAME=" . $this->quote($table));
+        if (empty($this->tryQuery("SHOW TABLES LIKE '$table'"))) {
+            return []; // table does not exist
+        } else {
+            return array_keys(current($this->tryQuery("SELECT * FROM `$table` WHERE 1 LIMIT 1")));
+        }
     }
 
     public function getTableName($detector)
