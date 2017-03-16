@@ -127,25 +127,30 @@ use MuBench\ReviewSite\Model\ReviewState;
                 ?>
             <?php endforeach; ?>
             <?php if(!$run["misuses"]) : ?>
+                <?php
+                $classes = ["no-hit"];
+                if($new_project) $classes[] = "top";
+                $style_classes = implode(" ", $classes);
+                ?>
                 <tr>
-                    <td class="top no-hit">
+                    <td class="<?= $style_classes ?>">
                         <?= $new_project ? htmlspecialchars($project) : ""; ?></td>
-                    <td class="top no-hit">
+                    <td class="<?= $style_classes ?>">
                         <?= $new_version ? htmlspecialchars($version) : ""; ?></td>
-                    <td class="top no-hit">
+                    <td class="<?= $style_classes ?>">
                         <?= $new_version ? htmlspecialchars($run['result']) : ""; ?></td>
-                    <td class="top no-hit right">
+                    <td class="<?= $style_classes ?> right">
                         <?= $new_version ? htmlspecialchars($run['number_of_findings']) : ""; ?></td>
-                    <td class="top no-hit right">
+                    <td class="<?= $style_classes ?> right">
                         <?= $new_version ? htmlspecialchars(substr($run['runtime'], 0, 4)) . "s" : ""; ?></td>
-                    <td class="top no-hit"></td>
+                    <td class="<?= $style_classes ?>"></td>
                     <?php if($exp !== "ex2") : ?>
-                        <td class="top no-hit"></td>
+                        <td class="<?= $style_classes ?>"></td>
                     <?php endif; ?>
-                    <td class="top no-hit"></td>
-                    <td class="top no-hit"></td>
-                    <td class="top no-hit"></td>
-                    <td class="top no-hit" style="max-width: 300px;"></td>
+                    <td class="<?= $style_classes ?>"></td>
+                    <td class="<?= $style_classes ?>"></td>
+                    <td class="<?= $style_classes ?>"></td>
+                    <td class="<?= $style_classes ?>" style="max-width: 300px;"></td>
                 </tr>
             <?php endif; ?>
         <?php endforeach; ?>
