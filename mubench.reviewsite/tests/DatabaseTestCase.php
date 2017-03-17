@@ -81,8 +81,6 @@ EOD;
     function setUp()
     {
         $this->pdo = new PDO('sqlite::memory:');
-        $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        $this->pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
         $mysql_structure = file_get_contents(dirname(__FILE__) . "/../init_db.sql");
         $this->pdo->exec($this->mySQLToSQLite($mysql_structure));
         $this->logger = new \Monolog\Logger("test");

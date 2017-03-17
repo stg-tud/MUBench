@@ -65,11 +65,8 @@ class SlimTestCase extends PHPUnit_Framework_TestCase
         // Set up dependencies
         require __DIR__ . '/../src/dependencies.php';
 
-        $pdo = new PDO('sqlite::memory:');
-        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-
         $logger = $app->getContainer()['logger'];
-        $db = new DBConnection($pdo, $logger);
+        $db = new DBConnection(new PDO('sqlite::memory:'), $logger);
         $app->dir = new DirectoryHelper($settings['upload'], $logger);
         $app->helper = new RoutesHelper($logger, $settings, $db);
         // Routes
