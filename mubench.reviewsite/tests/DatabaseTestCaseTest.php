@@ -20,7 +20,7 @@ class DatabaseTestCaseTest extends DatabaseTestCase
             ['name' => 'patterns'],
             ['name' => 'reviews'],
             ['name' => 'review_findings'],
-            ['name' => 'review_findings_type'],
+            ['name' => 'review_findings_types'],
             ['name' => 'meta_snippets'],
             ['name' => 'finding_snippets'],
             ['name' => 'types']

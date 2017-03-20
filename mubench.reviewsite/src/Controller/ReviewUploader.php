@@ -41,7 +41,7 @@ class ReviewUploader
             foreach ($this->db->getReviewFindings($reviewId) as $finding) {
                 $findingId = intval($finding['id']);
                 $this->db->table('review_findings')->where('id', $findingId)->delete();
-                $this->db->table('review_finding_types')->where('review_finding', $findingId)->delete();
+                $this->db->table('review_findings_types')->where('review_finding', $findingId)->delete();
             }
         }
     }
@@ -56,7 +56,7 @@ class ReviewUploader
             $findingId = $this->db->last_insert_id();
             foreach ($hit['types'] as $type) {
                 $typeId = $this->db->getTypeIdByName($type);
-                $this->db->table('review_finding_types')->insert(['review_finding' => $findingId, 'type' => $typeId]);
+                $this->db->table('review_findings_types')->insert(['review_finding' => $findingId, 'type' => $typeId]);
             }
         }
     }

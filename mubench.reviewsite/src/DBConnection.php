@@ -187,8 +187,8 @@ class DBConnection
         $finding_reviews = $this->table('review_findings')->where('review', $review_id)->get();
 
         foreach ($finding_reviews as &$finding_review) {
-            $violation_types = $this->table('review_finding_types')
-                ->innerJoin('types', 'review_finding_types.type', '=', 'types.id')->select('name')
+            $violation_types = $this->table('review_findings_types')
+                ->innerJoin('types', 'review_findings_types.type', '=', 'types.id')->select('name')
                 ->where('review_finding', $finding_review['id'])->get();
             $finding_review["violation_types"] = [];
             foreach ($violation_types as $violation_type) {
