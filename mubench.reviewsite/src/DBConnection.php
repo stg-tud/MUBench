@@ -57,9 +57,9 @@ class DBConnection
         return $this->table('patterns')->select(['name', 'code', 'line'])->where('misuse', $misuse)->get();
     }
 
-    public function getReview($exp, $detector, $project, $version, $misuse, $name)
+    public function getReview($exp, Detector $detector, $project, $version, $misuse, $name)
     {
-        return $this->table('reviews')->where('name', $name)->where('exp', $exp)->where('detector', $detector)
+        return $this->table('reviews')->where('name', $name)->where('exp', $exp)->where('detector', $detector->id)
             ->where('project', $project)->where('version', $version)->where('misuse', $misuse)->first();
     }
 
@@ -143,7 +143,7 @@ class DBConnection
     private function getReviews($experiment, Detector $detector, $project_id, $version_id, $misuse_id)
     {
         $reviews = $this->table('reviews')
-            ->where('exp', $experiment)->where('detector', $detector->name)->where('project', $project_id)
+            ->where('exp', $experiment)->where('detector', $detector->id)->where('project', $project_id)
             ->where('version', $version_id)->where('misuse', $misuse_id)->get();
 
         foreach ($reviews as $key => $review) {

@@ -30,6 +30,7 @@ class StoreReviewTest extends DatabaseTestCase
     ];
 
     private $expected_run;
+    private $detector;
 
     /**
      * @var ReviewUploader $review_uploader
@@ -40,6 +41,7 @@ class StoreReviewTest extends DatabaseTestCase
     {
         parent::setUp();
 
+        $this->detector = $this->db->getOrCreateDetector('-d-');
         $this->expected_run = [
             "exp" => "ex1",
             "project" => "-p-",
@@ -47,7 +49,7 @@ class StoreReviewTest extends DatabaseTestCase
             "result" => "success",
             "runtime" => "42.1",
             "number_of_findings" => "23",
-            "detector" => null,
+            "detector" => $this->detector->id,
             "misuses" => [
                 new Misuse(
                     [
@@ -78,7 +80,7 @@ class StoreReviewTest extends DatabaseTestCase
                         new Review([
                             'name' => '-reviewer-',
                             'exp' => 'ex1',
-                            'detector' => '-d-',
+                            'detector' => $this->detector->id,
                             'project' => '-p-',
                             'version' => '-v-',
                             'misuse' => '-m-',
@@ -117,10 +119,8 @@ class StoreReviewTest extends DatabaseTestCase
     {
         $this->review_uploader->processReview($this->data);
 
-        $detector = $this->db->getOrCreateDetector('-d-');
-        $runs = $this->db->getRuns($detector, 'ex1');
+        $runs = $this->db->getRuns($this->detector, 'ex1');
 
-        $this->expected_run["detector"] = $detector->id;
         self::assertEquals([$this->expected_run], $runs);
     }
 
@@ -130,8 +130,7 @@ class StoreReviewTest extends DatabaseTestCase
         $this->data['review_hit'][0]['hit'] = "No";
         $this->review_uploader->processReview($this->data);
 
-        $detector = $this->db->getOrCreateDetector('-d-');
-        $runs = $this->db->getRuns($detector, 'ex1');
+        $runs = $this->db->getRuns($this->detector, 'ex1');
         /** @var Misuse $misuse */
         $misuse = $runs[0]["misuses"][0];
         $review = $misuse->getReview("-reviewer-");
