@@ -48,12 +48,10 @@ class ReviewUploader
 
     private function saveReview($exp, $detector, $project, $version, $misuse, $name, $comment, $hits)
     {
-        $this->db->table('reviews')->insert(['exp' => $exp,'detector' => $detector, 'project' => $project,
+        $reviewId = $this->db->table('reviews')->insert(['exp' => $exp,'detector' => $detector, 'project' => $project,
             'version' => $version, 'misuse' => $misuse, 'name' => $name, 'comment' => $comment]);
-        $reviewId = $this->db->last_insert_id();
         foreach ($hits as $key => $hit) {
-            $this->db->table('review_findings')->insert(['review' => $reviewId, 'rank' => $key, 'decision' => $hit['hit']]);
-            $findingId = $this->db->last_insert_id();
+            $findingId = $this->db->table('review_findings')->insert(['review' => $reviewId, 'rank' => $key, 'decision' => $hit['hit']]);
             foreach ($hit['types'] as $type) {
                 $typeId = $this->db->getTypeIdByName($type);
                 $this->db->table('review_findings_types')->insert(['review_finding' => $findingId, 'type' => $typeId]);
