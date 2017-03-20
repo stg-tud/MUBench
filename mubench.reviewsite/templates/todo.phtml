@@ -1,5 +1,17 @@
 <?php
 use MuBench\ReviewSite\Model\ReviewState;
+
+/**
+ * @var string $root_url the site's root URL
+ * @var string $base_url the site's base URL
+ * @var string $private_url the site's private root URL
+ * @var string $origin_param the relative URL of the referrer site
+ *
+ * @var bool $logged whether or not the user is logged in
+ * @var string $name the user's name
+ *
+ * @var array $misuses
+ */
 ?>
 <html>
 <head>
@@ -27,7 +39,7 @@ use MuBench\ReviewSite\Model\ReviewState;
         <tbody>
         <?php $last_project = ""; $version = ""; ?>
         <?php foreach($detectors as $detector => $misuses) : ?>
-        <?php foreach($misuses as $misuse) : ?>
+        <?php foreach($misuses as $misuse) : /** @var \MuBench\ReviewSite\Model\Misuse $misuse */ ?>
             <?php
             $project = $misuse->getProject();
             $new_project = strcmp($last_project, $misuse->getProject()) !== 0;
@@ -76,7 +88,7 @@ use MuBench\ReviewSite\Model\ReviewState;
                 </td>
                 <td class="<?= $style_classes ?>">
                     <ul class="inline">
-                        <?php foreach($misuse->getReviews() as $review) : ?>
+                        <?php foreach($misuse->getReviews() as $review) : /** @var \MuBench\ReviewSite\Model\Review $review */ ?>
                             <?php $reviewer_name = htmlspecialchars($review->getReviewerName()) ?>
                             <li style="display:inline"><a href="<?= $review_url ?>/<?= $reviewer_name ?>"><?= $reviewer_name ?></a></li>
                         <?php endforeach; ?>
