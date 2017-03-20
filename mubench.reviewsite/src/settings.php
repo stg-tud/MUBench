@@ -39,9 +39,7 @@ return [
         'charset'   => 'utf8',
         'collation' => 'utf8_unicode_ci',
         'prefix'    => 'mubench_',
-        'options'   => array(
-            PDO::MYSQL_ATTR_USE_BUFFERED_QUERY => true,
-        )
+        'options'   => []
     ],
     'upload' => "./upload",
     'users' => [
