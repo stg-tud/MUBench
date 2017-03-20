@@ -13,4 +13,14 @@ class Detector
         $this->id = $id;
         $this->name = $name;
     }
+
+    public function getTableName()
+    {
+        return "detector_" . $this->id;
+    }
+
+    function __toString()
+    {
+        return $this->name;
+    }
 }

@@ -21,10 +21,14 @@ class SnippetUploader
         if (!$finding["snippet"]) {
             return;
         }
-        $detector_table = $this->db->getTableName($finding['detector']);
-        $this->logger->info("saving snippet for " . $finding['detector'] . ", " . $finding['project'] . ", " . $finding['version'] . ", " . $finding['misuse']);
-        $this->db->table('finding_snippets')->insert(['detector' => $detector_table,
-            'project' => $finding['project'], 'version' => $finding['version'], 'finding' => $finding['misuse'],
-            'snippet' => $finding['snippet'], 'line' => $finding['line']]);
+        $detector = $this->db->getOrCreateDetector($finding['detector']);
+        $project = $finding['project'];
+        $version = $finding['version'];
+        $misuse = $finding['misuse'];
+        $snippet = $finding['snippet'];
+        $line = $finding['line'];
+        $this->logger->info("saving snippet for $detector, " . $project . ", " . $version . ", " . $misuse);
+        $this->db->table('finding_snippets')->insert(['detector' => $detector->id, 'project' => $project,
+            'version' => $version, 'finding' => $misuse, 'snippet' => $snippet, 'line' => $line]);
     }
 }

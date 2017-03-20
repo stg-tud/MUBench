@@ -47,7 +47,7 @@ class StoreReviewTest extends DatabaseTestCase
             "result" => "success",
             "runtime" => "42.1",
             "number_of_findings" => "23",
-            "detector" => "detector_1",
+            "detector" => null,
             "misuses" => [
                 new Misuse(
                     [
@@ -117,8 +117,10 @@ class StoreReviewTest extends DatabaseTestCase
     {
         $this->review_uploader->processReview($this->data);
 
-        $detector = $this->db->getDetector('-d-');
+        $detector = $this->db->getOrCreateDetector('-d-');
         $runs = $this->db->getRuns($detector, 'ex1');
+
+        $this->expected_run["detector"] = $detector->id;
         self::assertEquals([$this->expected_run], $runs);
     }
 
@@ -128,7 +130,7 @@ class StoreReviewTest extends DatabaseTestCase
         $this->data['review_hit'][0]['hit'] = "No";
         $this->review_uploader->processReview($this->data);
 
-        $detector = $this->db->getDetector('-d-');
+        $detector = $this->db->getOrCreateDetector('-d-');
         $runs = $this->db->getRuns($detector, 'ex1');
         /** @var Misuse $misuse */
         $misuse = $runs[0]["misuses"][0];

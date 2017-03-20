@@ -27,7 +27,7 @@ EOD
         );
 
         $uploader->processData("ex1", $data);
-        $actual_detector = $this->db->getDetector("-d-");
+        $actual_detector = $this->db->getOrCreateDetector("-d-");
         $expected_detector = new Detector("-d-", 1);
 
         self::assertEquals($expected_detector, $actual_detector);

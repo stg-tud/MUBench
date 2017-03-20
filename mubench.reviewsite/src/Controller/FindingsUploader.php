@@ -4,6 +4,7 @@ namespace MuBench\ReviewSite\Controller;
 
 use Monolog\Logger;
 use MuBench\ReviewSite\DBConnection;
+use MuBench\ReviewSite\Model\Detector;
 
 class FindingsUploader
 {
@@ -17,11 +18,10 @@ class FindingsUploader
         $this->logger = $logger;
     }
 
-    public function processData($ex, $run)
+    public function processData($exp, $run)
     {
-        $detector = $run->{'detector'};
-        $table = $this->db->getTableName($detector);
-        $this->logger->info("Data for : " . $table);
+        $detector = $this->db->getOrCreateDetector($run->{'detector'});
+        $this->logger->info("Data for : " . $detector->name);
         $project = $run->{'project'};
         $version = $run->{'version'};
         $runtime = $run->{'runtime'};
@@ -29,51 +29,64 @@ class FindingsUploader
         $number_of_findings = $run->{'number_of_findings'};
         $potential_hits = $run->{'potential_hits'};
 
-        $this->updateRunStatistics($table, $ex, $project, $version, $result, $runtime, $number_of_findings);
+        $this->updateRunStatistics($exp, $detector, $project, $version, $result, $runtime, $number_of_findings);
         if($potential_hits) {
-            $this->createOrUpdateFindingsTable($table, $potential_hits);
-            $this->storeFindings($table, $ex, $project, $version, $potential_hits);
+            $this->createOrUpdateFindingsTable($detector, $potential_hits);
+            $this->storeFindings($exp, $detector, $project, $version, $potential_hits);
         }
     }
 
-    private function updateRunStatistics($table, $exp, $project, $version, $result, $runtime, $number_of_findings)
+    private function updateRunStatistics($exp, Detector $detector, $project, $version, $result, $runtime, $number_of_findings)
     {
-        $this->logger->info("Update statistics for $exp, $table, $project, $version");
-        $this->deleteOldRunStatistics($table, $exp, $project, $version);
-        $this->insertRunStatistics($table, $exp, $project, $version, $result, $runtime, $number_of_findings);
+        $this->logger->info("Update statistics for $exp, $detector, $project, $version");
+        $this->deleteOldRunStatistics($exp, $detector, $project, $version);
+        $this->insertRunStatistics($exp, $detector, $project, $version, $result, $runtime, $number_of_findings);
     }
 
-    private function deleteOldRunStatistics($table, $exp, $project, $version)
+    private function deleteOldRunStatistics($exp, Detector $detector, $project, $version)
     {
-        $this->db->table('stats')->where('exp', $exp)->where('detector', $table)->where('project', $project)->where('version', $version)->delete();
+        $this->db->table('stats')->where('exp', $exp)->where('detector', $detector->id)
+            ->where('project', $project)->where('version', $version)->delete();
     }
 
-    private function insertRunStatistics($table, $exp, $project, $version, $result, $runtime, $number_of_findings)
+    private function insertRunStatistics($exp, Detector $detector, $project, $version, $result, $runtime, $number_of_findings)
     {
-        $this->db->table('stats')->insert(['exp' => $exp, 'detector' => $table, 'project' => $project, 'version' => $version, 'result' => $result, 'runtime' => $runtime, 'number_of_findings' => $number_of_findings]);
+        $this->db->table('stats')->insert(['exp' => $exp, 'detector' => $detector->id, 'project' => $project,
+            'version' => $version, 'result' => $result, 'runtime' => $runtime,
+            'number_of_findings' => $number_of_findings]);
     }
 
-    private function createOrUpdateFindingsTable($table, $findings)
+    private function createOrUpdateFindingsTable(Detector $detector, $findings)
     {
-        $columns = $this->db->getTableColumns($table);
-        if (count($columns) == 0) {
-            $this->createFindingsTable($table);
-            $columns = ['exp', 'project', 'version', 'misuse', 'rank'];
+        $propertyColumns = $this->getDetectorFindingPropertyColumnNames($detector);
+        if (count($propertyColumns) == 0) {
+            $this->createFindingsTable($detector);
+            $propertyColumns = ['exp', 'project', 'version', 'misuse', 'rank'];
         }
-        $this->logger->info("Add columns to findings table " . $table);
+        $this->logger->info("Add columns to findings table " . $detector);
         foreach ($this->getPropertyToColumnNameMapping($findings) as $column) {
-            if (!in_array($column, $columns)) {
-                $this->addColumnToFindingsTable($table, $column);
+            if (!in_array($column, $propertyColumns)) {
+                $this->addColumnToFindingsTable($detector, $column);
             }
         }
     }
 
-    private function createFindingsTable($table)
+    private function getDetectorFindingPropertyColumnNames(Detector $detector)
     {
-        $this->logger->info("Create findings table " . $table);
-        $this->db->create_table($table, ['`exp` VARCHAR(10) NOT NULL', '`project` VARCHAR(255) NOT NULL',
-            '`version` VARCHAR(255) NOT NULL', '`misuse` VARCHAR(255) NOT NULL', '`rank` VARCHAR(10) NOT NULL',
-            'PRIMARY KEY(`exp`, `project`, `version`, `misuse`, `rank`)']);
+        try {
+            $finding = $this->db->table($detector->getTableName())->first();
+            return get_object_vars($finding);
+        } catch (\Exception $e) {
+            return []; // table does not exist
+        }
+    }
+
+    private function createFindingsTable(Detector $detector)
+    {
+        $this->logger->info("Create findings table for $detector");
+        $this->db->create_table($detector->getTableName(), ['`exp` VARCHAR(10) NOT NULL',
+            '`project` VARCHAR(255) NOT NULL', '`version` VARCHAR(255) NOT NULL', '`misuse` VARCHAR(255) NOT NULL',
+            '`rank` VARCHAR(10) NOT NULL', 'PRIMARY KEY(`exp`, `project`, `version`, `misuse`, `rank`)']);
     }
 
     private function getPropertyToColumnNameMapping($findings)
@@ -93,23 +106,23 @@ class FindingsUploader
         return $propertyToColumnNameMapping;
     }
 
-    private function addColumnToFindingsTable($table, $column)
+    private function addColumnToFindingsTable(Detector $detector, $column)
     {
-        $this->db->add_column($table, "`$column` TEXT");
+        $this->db->add_column($detector->getTableName(), "`$column` TEXT");
     }
 
-    private function storeFindings($table, $exp, $project, $version, $findings)
+    private function storeFindings($exp, Detector $detector, $project, $version, $findings)
     {
-        $this->logger->info("Store " . count($findings) . " findings in $table");
+        $this->logger->info("Store " . count($findings) . " findings of $detector");
         foreach ($findings as $finding) {
-            $this->storeFinding($table, $exp, $project, $version, $finding);
+            $this->storeFinding($exp, $detector, $project, $version, $finding);
             if(strcmp($exp, "ex2") === 0){
-                $this->storeFindingTargetSnippets($table, $project, $version, $finding->{'rank'}, $finding->{'target_snippets'});
+                $this->storeFindingTargetSnippets($project, $detector, $version, $finding->{'rank'}, $finding->{'target_snippets'});
             }
         }
     }
 
-    private function storeFinding($table, $exp, $project, $version, $finding)
+    private function storeFinding($exp, Detector $detector, $project, $version, $finding)
     {
         $values = array("exp" => $exp, "project" => $project, "version" => $version);
         foreach ($this->getPropertyToColumnNameMapping([$finding]) as $property => $column) {
@@ -119,7 +132,7 @@ class FindingsUploader
         if ($exp === "ex2") {
             $values["misuse"] = $finding->{'rank'};
         }
-        $this->db->table($table)->insert($values);
+        $this->db->table($detector->getTableName())->insert($values);
     }
 
     private function arrayToString($array)
@@ -127,16 +140,13 @@ class FindingsUploader
         return implode(";", $array);
     }
 
-    private function storeFindingTargetSnippets($detector, $project, $version, $rank, $snippets){
+    private function storeFindingTargetSnippets($project, Detector $detector, $version, $rank, $snippets){
         $this->logger->info("Store " . count($snippets) . " snippets for $detector, $project, $version, $rank");
-        foreach($snippets as $snippet){
-            $this->storeFindingTargetSnippet($detector, $project, $version, $rank, $snippet->{'code'}, $snippet->{'first_line_number'});
+        foreach($snippets as $snippet) {
+            $this->db->table('finding_snippets')->insert(['detector' => $detector->id, 'project' => $project,
+                'version' => $version, 'finding' => $rank, 'snippet' => $snippet->{'code'},
+                'line' => $snippet->{'first_line_number'}]);
         }
-    }
-
-    public function storeFindingTargetSnippet($detector, $project, $version, $rank, $snippet, $first_line_number)
-    {
-        $this->db->table('finding_snippets')->insert(['detector' => $detector, 'project' => $project, 'version' => $version, 'finding' => $rank, 'snippet' => $snippet, 'line' => $first_line_number]);
     }
 
 }

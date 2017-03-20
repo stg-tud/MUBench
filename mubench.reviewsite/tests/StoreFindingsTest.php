@@ -40,7 +40,7 @@ class StoreFindingsTest extends DatabaseTestCase
 
         $data = json_decode(json_encode($this->request_body));
         $uploader->processData("ex1", $data);
-        $detector = $this->db->getDetector("-d-");
+        $detector = $this->db->getOrCreateDetector("-d-");
         $runs = $this->db->getRuns($detector, "ex1");
 
         $expected_run = [
@@ -50,7 +50,7 @@ class StoreFindingsTest extends DatabaseTestCase
             "result" => "success",
             "runtime" => "42.1",
             "number_of_findings" => "23",
-            "detector" => "detector_1",
+            "detector" => $detector->id,
             "misuses" => []
         ];
 
@@ -63,7 +63,7 @@ class StoreFindingsTest extends DatabaseTestCase
 
         $data = json_decode(json_encode($this->request_body));
         $uploader->processData("ex2", $data);
-        $detector = $this->db->getDetector("-d-");
+        $detector = $this->db->getOrCreateDetector("-d-");
         $runs = $this->db->getRuns($detector, "ex2");
 
         $expected_run = [
@@ -73,7 +73,7 @@ class StoreFindingsTest extends DatabaseTestCase
             "result" => "success",
             "runtime" => "42.1",
             "number_of_findings" => "23",
-            "detector" => "detector_1",
+            "detector" => $detector->id,
             "misuses" => [
                 new Misuse(
                     ["misuse" => "0", "snippets" => [0 => ["line" => "5", "snippet" => "-code-"]]],
@@ -104,7 +104,7 @@ class StoreFindingsTest extends DatabaseTestCase
         ];
         $data = json_decode(json_encode($this->request_body));
         $uploader->processData("ex2", $data);
-        $detector = $this->db->getDetector("-d-");
+        $detector = $this->db->getOrCreateDetector("-d-");
         $runs = $this->db->getRuns($detector, "ex2");
 
         self::assertEquals($runs[0]["misuses"][1]->getPotentialHits()[0]["new property"], "-val1-");
@@ -116,7 +116,7 @@ class StoreFindingsTest extends DatabaseTestCase
 
         $data = json_decode(json_encode($this->request_body));
         $uploader->processData("ex3", $data);
-        $detector = $this->db->getDetector("-d-");
+        $detector = $this->db->getOrCreateDetector("-d-");
         $runs = $this->db->getRuns($detector, "ex3");
 
         $expected_run = [
@@ -126,7 +126,7 @@ class StoreFindingsTest extends DatabaseTestCase
             "result" => "success",
             "runtime" => "42.1",
             "number_of_findings" => "23",
-            "detector" => "detector_1",
+            "detector" => $detector->id,
             "misuses" => []
         ];
 
@@ -141,7 +141,7 @@ class StoreFindingsTest extends DatabaseTestCase
         $metadata = json_decode($this->metadata_json);
         $finding_uploader->processData("ex1", $data);
         $metadata_uploader->processMetaData($metadata);
-        $detector = $this->db->getDetector("-d-");
+        $detector = $this->db->getOrCreateDetector("-d-");
         $misuse = $this->db->getMisuse("ex1", $detector, "-p-", "-v-", "-m-");
 
         $expected_misuse = new Misuse(

@@ -19,7 +19,7 @@ class StoreMetadataTest extends DatabaseTestCase
         $finding_uploader->processData('ex1', $findings);
         $metadata_uploader->processMetaData($data);
 
-        $detector = $this->db->getDetector('-d-');
+        $detector = $this->db->getOrCreateDetector('-d-');
         $runs = $this->db->getRuns($detector, 'ex1');
 
         $expected_run = [
@@ -29,7 +29,7 @@ class StoreMetadataTest extends DatabaseTestCase
             "result" => "success",
             "runtime" => "42.1",
             "number_of_findings" => "23",
-            "detector" => "detector_1",
+            "detector" => $detector->id,
             "misuses" => [
                 new Misuse(
                     [

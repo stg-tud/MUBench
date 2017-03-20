@@ -52,29 +52,6 @@ class DBConnection
         return $this->query_builder->pdo()->lastInsertId();
     }
 
-    public function getTableColumns($table)
-    {
-        try {
-            $finding = $this->table($table)->first();
-            $this->logger->error(print_r($finding, true));
-            return get_object_vars($finding);
-        } catch (\Exception $e) {
-            return []; // table does not exist
-        }
-    }
-
-    public function getTableName($detector)
-    {
-        $results = $this->table('detectors')->select('id')->where('name', $detector)->first();
-        if ($results) {
-            $detector_id = $results["id"];
-        } else {
-            $detector_id = $this->table('detectors')->insert(['name' => $detector]);
-            $this->logger->info("Insert detector '$detector' with id $detector_id.");
-        }
-        return "detector_$detector_id";
-    }
-
     public function getPatterns($misuse)
     {
         return $this->table('patterns')->select(['name', 'code', 'line'])->where('misuse', $misuse)->get();
@@ -101,16 +78,9 @@ class DBConnection
         return $this->table('types')->where('name', $name)->first()['id'];
     }
 
-    private function getDetectorTableName(Detector $detector)
-    {
-        return "detector_" . $detector->id;
-    }
-
     public function getRuns(Detector $detector, $exp)
     {
-        $detector_table = $this->getDetectorTableName($detector);
-
-        $runs = $this->table('stats')->where('exp', $exp)->where('detector', $detector_table)->orderBy(['project', 'version'])->get();
+        $runs = $this->table('stats')->where('exp', $exp)->where('detector', $detector->id)->orderBy(['project', 'version'])->get();
 
         foreach ($runs as &$run) {
             $project_id = $run["project"];
@@ -122,7 +92,7 @@ class DBConnection
                 $query = $this->table('metadata')->select('metadata.*')
                     ->innerJoin('patterns', 'metadata.misuse', '=', 'patterns.misuse');
             } elseif (strcmp($exp, "ex2") === 0) {
-                $query = $this->table($detector_table)->select('misuse')->where('exp', $exp);
+                $query = $this->table($detector->getTableName())->select('misuse')->where('exp', $exp);
             } else { // if (strcmp($exp, "ex3") === 0)
                 $query = $this->table('metadata');
             }
@@ -148,14 +118,26 @@ class DBConnection
         return $runs;
     }
 
-    public function getDetector($detector_name)
+    public function getOrCreateDetector($detector_name)
     {
         $detector_data = $this->table('detectors')->select('id')->where('name', $detector_name)->first();
         if ($detector_data) {
-            return new Detector($detector_name, $detector_data['id']);
+            $detector_id = $detector_data['id'];
         } else {
-            throw new InvalidArgumentException("no such detector '" . $detector_name . "'");
+            $detector_id = $this->table('detectors')->insert(['name' => $detector_name]);
         }
+        return new Detector($detector_name, $detector_id);
+    }
+
+    public function getDetectors($exp)
+    {
+        $detectors = [];
+        foreach ($this->table('stats')->selectDistinct('detector')->where('exp', $exp)->get() as $value) {
+            $detector_id = $value['detector'];
+            $detector_name = $this->table('detectors')->select('name')->where('id', $detector_id)->first()['name'];
+            $detectors[] = new Detector($detector_name, $detector_id);
+        }
+        return $detectors;
     }
 
     private function getReviews($experiment, Detector $detector, $project_id, $version_id, $misuse_id)
@@ -175,7 +157,7 @@ class DBConnection
     private function getSnippet($experiment, Detector $detector, $project_id, $version_id, $misuse_id)
     {
         if (strcmp($experiment, "ex2") == 0) {
-            $query = $this->table('finding_snippets')->where('finding', $misuse_id)->where('detector', $this->getDetectorTableName($detector));
+            $query = $this->table('finding_snippets')->where('finding', $misuse_id)->where('detector', $detector->id);
         } else {
             $query = $this->table('meta_snippets')->where('misuse', $misuse_id);
         }
@@ -200,7 +182,7 @@ class DBConnection
 
     public function getPotentialHits($experiment, Detector $detector, $project_id, $version_id, $misuse_id)
     {
-        return $this->table($this->getDetectorTableName($detector))
+        return $this->table($detector->getTableName())
             ->where('exp', $experiment)->where('project', $project_id)
             ->where('version', $version_id)->where('misuse', $misuse_id)->get();
     }
@@ -218,17 +200,6 @@ class DBConnection
                 break;
             }
         }
-    }
-
-    public function getDetectors($exp)
-    {
-        $exists = $this->table('stats')->select($this->query_builder->raw("1"))->where('exp', $exp)->where('detector', $this->query_builder->raw("CONCAT('detector_', `id`)"))->getQuery()->getRawSql();
-        $detectors = $this->table('detectors')->select(['name', 'id'])->where($this->query_builder->raw("EXISTS(" . $exists . ")"))->orderBy('name')->get();
-        $result = [];
-        foreach ($detectors as $r) {
-            $result[] = new Detector($r['name'], $r['id']);
-        }
-        return $result;
     }
 
     public function getAllReviews($reviewer){

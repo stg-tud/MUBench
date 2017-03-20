@@ -71,7 +71,7 @@ class RoutesHelper
             return $response->withStatus(404);
         }
 
-        $det = $this->db->getDetector($detector);
+        $det = $this->db->getOrCreateDetector($detector);
         $runs = $this->db->getRuns($det, $exp);
 
         return $this->render($r, $args, $response, 'detector.phtml',
@@ -87,7 +87,7 @@ class RoutesHelper
         $version = $args['version'];
         $misuse = $args['misuse'];
 
-        $det = $this->db->getDetector($detector);
+        $det = $this->db->getOrCreateDetector($detector);
         $misuse = $this->db->getMisuse($exp, $det, $project, $version, $misuse);
 
         $reviewer = array_key_exists('reviewer', $args) ? $args['reviewer'] : $this->user;
