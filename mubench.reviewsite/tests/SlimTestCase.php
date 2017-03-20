@@ -1,6 +1,5 @@
 <?php
 
-use MuBench\ReviewSite\DBConnection;
 use MuBench\ReviewSite\DirectoryHelper;
 use MuBench\ReviewSite\RoutesHelper;
 use Slim\Http\Environment;
@@ -10,13 +9,18 @@ use Slim\Http\RequestBody;
 use Slim\Http\Response;
 use Slim\Http\Uri;
 
-class SlimTestCase extends PHPUnit_Framework_TestCase
+class SlimTestCase extends DatabaseTestCase
 {
-
     protected $app;
 
+    /** @var Request */
+    protected $request;
+
+    /** @var Response */
+    protected $response;
+
     public function setUp(){
-        // Run app
+        parent::setUp();
         $this->app = $this->getSlimInstance();
     }
 
@@ -66,9 +70,8 @@ class SlimTestCase extends PHPUnit_Framework_TestCase
         require __DIR__ . '/../src/dependencies.php';
 
         $logger = $app->getContainer()['logger'];
-        $db = new DBConnection(new PDO('sqlite::memory:'), $logger);
         $app->dir = new DirectoryHelper($settings['upload'], $logger);
-        $app->helper = new RoutesHelper($logger, $settings, $db);
+        $app->helper = new RoutesHelper($logger, $settings, $this->db);
         // Routes
         require __DIR__ . '/../src/routes.php';
 

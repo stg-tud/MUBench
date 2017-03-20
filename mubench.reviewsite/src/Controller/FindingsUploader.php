@@ -45,22 +45,12 @@ class FindingsUploader
 
     private function deleteOldRunStatistics($table, $exp, $project, $version)
     {
-        $this->db->execStatement("DELETE FROM `stats` WHERE `exp` = " . $this->db->quote($exp) .
-            " AND `detector` = " . $this->db->quote($table) .
-            " AND `project` = " . $this->db->quote($project) .
-            " AND `version` = " . $this->db->quote($version));
+        $this->db->table('stats')->where('exp', $exp)->where('detector', $table)->where('project', $project)->where('version', $version)->delete();
     }
 
     private function insertRunStatistics($table, $exp, $project, $version, $result, $runtime, $number_of_findings)
     {
-        $this->db->execStatement("INSERT INTO `stats` (`exp`, `detector`, `project`, `version`, `result`, `runtime`, `number_of_findings`) VALUES (" .
-            $this->db->quote($exp) . "," .
-            $this->db->quote($table) . "," .
-            $this->db->quote($project) . "," .
-            $this->db->quote($version) . "," .
-            $this->db->quote($result) . "," .
-            $this->db->quote($runtime) . "," .
-            $this->db->quote($number_of_findings) . ")");
+        $this->db->table('stats')->insert(['exp' => $exp, 'detector' => $table, 'project' => $project, 'version' => $version, 'result' => $result, 'runtime' => $runtime, 'number_of_findings' => $number_of_findings]);
     }
 
     private function createOrUpdateFindingsTable($table, $findings)
@@ -68,7 +58,7 @@ class FindingsUploader
         $columns = $this->db->getTableColumns($table);
         if (count($columns) == 0) {
             $this->createFindingsTable($table);
-            $columns = $this->db->getTableColumns($table);
+            $columns = ['exp', 'project', 'version', 'misuse', 'rank'];
         }
         $this->logger->info("Add columns to findings table " . $table);
         foreach ($this->getPropertyToColumnNameMapping($findings) as $column) {
@@ -81,9 +71,9 @@ class FindingsUploader
     private function createFindingsTable($table)
     {
         $this->logger->info("Create findings table " . $table);
-        $this->db->execStatement("CREATE TABLE `$table` (`exp` VARCHAR(10) NOT NULL, `project` VARCHAR(255) NOT NULL," .
-            " `version` VARCHAR(255) NOT NULL, `misuse` VARCHAR(255) NOT NULL, `rank` VARCHAR(10) NOT NULL," .
-            " PRIMARY KEY(`exp`, `project`, `version`, `misuse`, `rank`))");
+        $this->db->create_table($table, ['`exp` VARCHAR(10) NOT NULL', '`project` VARCHAR(255) NOT NULL',
+            '`version` VARCHAR(255) NOT NULL', '`misuse` VARCHAR(255) NOT NULL', '`rank` VARCHAR(10) NOT NULL',
+            'PRIMARY KEY(`exp`, `project`, `version`, `misuse`, `rank`)']);
     }
 
     private function getPropertyToColumnNameMapping($findings)
@@ -105,7 +95,7 @@ class FindingsUploader
 
     private function addColumnToFindingsTable($table, $column)
     {
-        $this->db->execStatement("ALTER TABLE `$table` ADD `$column` TEXT");
+        $this->db->add_column($table, "`$column` TEXT");
     }
 
     private function storeFindings($table, $exp, $project, $version, $findings)
@@ -129,10 +119,7 @@ class FindingsUploader
         if ($exp === "ex2") {
             $values["misuse"] = $finding->{'rank'};
         }
-        $values = array_map(function ($value) { return $this->db->quote($value); }, $values);
-        $this->db->execStatement("INSERT INTO `" . $table .
-            "` (`" . implode("`, `", array_keys($values)) . "`)" .
-            " VALUES (" . implode(", ", $values) . ")");
+        $this->db->table($table)->insert($values);
     }
 
     private function arrayToString($array)
@@ -149,13 +136,7 @@ class FindingsUploader
 
     public function storeFindingTargetSnippet($detector, $project, $version, $rank, $snippet, $first_line_number)
     {
-        $this->db->execStatement("INSERT INTO `finding_snippets` (`detector`, `project`, `version`, `finding`, `snippet`, `line`) VALUES (" .
-            $this->db->quote($detector) . "," .
-            $this->db->quote($project) . "," .
-            $this->db->quote($version) . "," .
-            $this->db->quote($rank) . "," .
-            $this->db->quote($snippet) . "," .
-            $this->db->quote($first_line_number) . ")");
+        $this->db->table('finding_snippets')->insert(['detector' => $detector, 'project' => $project, 'version' => $version, 'finding' => $rank, 'snippet' => $snippet, 'line' => $first_line_number]);
     }
 
 }

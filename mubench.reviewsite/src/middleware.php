@@ -32,13 +32,7 @@ $app->add(function (Request $request, Response $response, $next) use ($app) {
     return $response;
 });
 
-$servername = $settings['db']['url'];
-$dbname = $settings['db']['name'];
-$username = $settings['db']['user'];
-$password = $settings['db']['password'];
-
 $logger = $app->getContainer()['logger'];
-$db = new DBConnection(new PDO("mysql:host=$servername;dbname=$dbname", $username, $password), $logger);
-$app->db = $db;
+$app->db = new DBConnection(new \Pixie\Connection($settings['db']['driver'], $settings['db']), $logger);
 $app->dir = new DirectoryHelper($settings['upload'], $logger);
-$app->helper = new RoutesHelper($logger, $settings, $db);
+$app->helper = new RoutesHelper($logger, $settings, $app->db);

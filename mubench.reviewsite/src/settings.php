@@ -31,10 +31,17 @@ return [
         ]
     ],
     'db' => [
-        'user' => 'root',
-        'password' => 'root',
-        'url' => 'localhost:8889',
-        'name' => 'mubench'
+        'driver'    => 'mysql',
+        'host'      => 'localhost',
+        'database'  => 'database',
+        'username'  => 'username',
+        'password'  => 'password',
+        'charset'   => 'utf8',
+        'collation' => 'utf8_unicode_ci',
+        'prefix'    => 'mubench_',
+        'options'   => array(
+            PDO::MYSQL_ATTR_USE_BUFFERED_QUERY => true,
+        )
     ],
     'upload' => "./upload",
     'users' => [

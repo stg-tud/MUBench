@@ -8,154 +8,97 @@ use MuBench\ReviewSite\Model\Detector;
 use MuBench\ReviewSite\Model\Misuse;
 use MuBench\ReviewSite\Model\Review;
 use PDO;
-use PDOException;
+use Pixie\Connection;
+use Pixie\QueryBuilder\QueryBuilderHandler;
 
 class DBConnection
 {
-    private $pdo;
+    /** @var QueryBuilderHandler */
+    private $query_builder;
+
+    /** @var Logger */
     private $logger;
 
-    function __construct(PDO $pdo, Logger $logger)
+    function __construct(Connection $connection, Logger $logger)
     {
+        $this->query_builder = $connection->getQueryBuilder();
         $this->logger = $logger;
-        $this->pdo = $pdo;
-        $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        $this->pdo->setAttribute(PDO::MYSQL_ATTR_USE_BUFFERED_QUERY, true);
-        $this->pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
     }
 
-    public function quote($var){
-        return $this->pdo->quote($var);
-    }
-
-    public function execStatements($statements)
+    /**
+     * @param string $table_name
+     * @return QueryBuilderHandler
+     */
+    public function table($table_name)
     {
-        foreach ($statements as $s) {
-            $this->execStatement($s);
-        }
+        /** @noinspection PhpParamsInspection */
+        return $this->query_builder->table($table_name)->setFetchMode(PDO::FETCH_ASSOC);
     }
 
-    public function execStatement($statement)
+    public function create_table($table_name, array $columns)
     {
-        try {
-            $status = $this->pdo->exec($statement);
-            $this->logger->info("Status execStatement: " . $status . " executing . " . substr($statement, 0, 10));
-        } catch (PDOException $e) {
-            $this->logger->error("Error execStatement: (" . $e->getMessage() . ") executing " . $statement);
-        }
+        $table_name = $this->query_builder->addTablePrefix($table_name);
+        $this->query_builder->pdo()->exec("CREATE TABLE $table_name (" . implode(",", $columns) . ")");
+    }
+
+    public function add_column($table_name, $column)
+    {
+        $table_name = $this->query_builder->addTablePrefix($table_name);
+        $this->query_builder->pdo()->exec("ALTER TABLE $table_name ADD $column");
+    }
+
+    public function last_insert_id()
+    {
+        return $this->query_builder->pdo()->lastInsertId();
     }
 
     public function getTableColumns($table)
     {
-        if (empty($this->tryQuery("SHOW TABLES LIKE '$table'"))) {
+        try {
+            $finding = $this->table($table)->first();
+            $this->logger->error(print_r($finding, true));
+            return get_object_vars($finding);
+        } catch (\Exception $e) {
             return []; // table does not exist
-        } else {
-            return array_keys(current($this->tryQuery("SELECT * FROM `$table` WHERE 1 LIMIT 1")));
         }
     }
 
     public function getTableName($detector)
     {
-        $query = [];
-        $sql = "SELECT `id` from `detectors` WHERE `name`=" . $this->pdo->quote($detector);
-        try {
-            $query = $this->pdo->query($sql);
-        } catch (PDOException $e) {
-            $this->logger->error("Error getTableName: " . $e->getMessage());
-        }
-        $columns = array();
-        if (!$query) {
-            return NULL;
-        }
-        foreach ($query as $q) {
-            $columns[] = $q["id"];
-        }
-        if (empty($columns)) {
-            $sql = "INSERT INTO `detectors` (`id`, `name`) VALUES (NULL, " . $this->pdo->quote($detector) . ")";
-            try {
-                $this->pdo->exec($sql);
-            } catch (PDOException $e) {
-                $this->logger->error("Error getTableName creating new entry: " . $e->getMessage());
-            }
-            return $this->getTableName($detector);
+        $results = $this->table('detectors')->select('id')->where('name', $detector)->first();
+        if ($results) {
+            $detector_id = $results["id"];
         } else {
-            return "detector_" . $columns[0];
+            $detector_id = $this->table('detectors')->insert(['name' => $detector]);
+            $this->logger->info("Insert detector '$detector' with id $detector_id.");
         }
+        return "detector_$detector_id";
     }
 
     public function getPatterns($misuse)
     {
-        return $this->tryQuery("SELECT `name`, `code`, `line` FROM `patterns` WHERE `misuse`=" . $this->pdo->quote($misuse));
+        return $this->table('patterns')->select(['name', 'code', 'line'])->where('misuse', $misuse)->get();
     }
 
     public function getReview($exp, $detector, $project, $version, $misuse, $name)
     {
-        $query = [];
-        try {
-            $query = $this->pdo->query("SELECT * FROM `reviews` WHERE `name`=" . $this->pdo->quote($name) .
-                " AND `exp` = " . $this->pdo->quote($exp) .
-                " AND `detector` = " . $this->pdo->quote($detector) .
-                " AND `project` = " . $this->pdo->quote($project) .
-                " AND `version` = " . $this->pdo->quote($version) .
-                " AND `misuse` = " . $this->pdo->quote($misuse));
-        } catch (PDOException $e) {
-            $this->logger->error("Error getReview: " . $e->getMessage());
-        }
-        if (!$query) {
-            return [];
-        }
-        foreach ($query as $q) {
-            return $q;
-        }
+        return $this->table('reviews')->where('name', $name)->where('exp', $exp)->where('detector', $detector)
+            ->where('project', $project)->where('version', $version)->where('misuse', $misuse)->first();
     }
 
     public function getReviewFinding($id, $rank)
     {
-        $query = [];
-        try {
-            $query = $this->pdo->query("SELECT * FROM `review_findings` WHERE `review`=" . $this->pdo->quote($id) .
-                " AND `rank`=" . $this->pdo->quote($rank));
-        } catch (PDOException $e) {
-            $this->logger->error("Error getReviewFinding: " . $e->getMessage());
-        }
-        if (!$query) {
-            return [];
-        }
-        foreach ($query as $q) {
-            return $q;
-        }
+        return $this->table('review_findings')->where('review', $id)->where('rank', $rank)->first();
     }
 
     public function getReviewFindings($id)
     {
-        $query = [];
-        try {
-            $query = $this->pdo->query("SELECT * FROM `review_findings` WHERE `review`=" . $this->pdo->quote($id));
-        } catch (PDOException $e) {
-            $this->logger->error("Error getReviewFindings: " . $e->getMessage());
-        }
-
-        $review_findings = [];
-        foreach($query as $t){
-            $review_findings[] = $t;
-        }
-        return $review_findings;
-    }
-
-    public function getTypes()
-    {
-        return $this->tryQuery("SELECT * FROM `types`;");
+        return $this->table('review_findings')->where('review', $id)->get();
     }
 
     public function getTypeIdByName($name)
     {
-        $types = $this->tryQuery("SELECT * FROM `types` WHERE `name`=" . $this->pdo->quote($name));
-        foreach ($types as $type) {
-            if ($type['name'] === $name) {
-                return $type['id'];
-            }
-        }
-        return 0;
+        return $this->table('types')->where('name', $name)->first()['id'];
     }
 
     private function getDetectorTableName(Detector $detector)
@@ -163,61 +106,36 @@ class DBConnection
         return "detector_" . $detector->id;
     }
 
-    private function tryQuery($query)
+    public function getRuns(Detector $detector, $exp)
     {
-        try {
-            $statement = $this->pdo->query($query);
-            $result = [];
-            foreach ($statement as $row) {
-                $result[] = $row;
-            }
-            return $result;
-        } catch (PDOException $e) {
-            $this->logger->error("Failed to '" . $query . "': " . $e->getMessage());
-            return [];
-        }
-    }
+        $detector_table = $this->getDetectorTableName($detector);
 
-    public function getRuns(Detector $detector, $experiment)
-    {
-        $detectorTableName = $this->getDetectorTableName($detector);
-
-        $runs = $this->tryQuery("SELECT * FROM `stats` " .
-            "WHERE `exp` = " . $this->pdo->quote($experiment) .
-            "  AND `detector` LIKE " . $this->pdo->quote($detectorTableName) . " " .
-            "ORDER BY `project`, `version`");
+        $runs = $this->table('stats')->where('exp', $exp)->where('detector', $detector_table)->orderBy(['project', 'version'])->get();
 
         foreach ($runs as &$run) {
             $project_id = $run["project"];
             $version_id = $run["version"];
 
-            if (strcmp($experiment, "ex1") === 0) {
-                $misuses = $this->tryQuery("SELECT * FROM `metadata`" .
-                    "WHERE `metadata`.`project` = " . $this->pdo->quote($project_id) .
-                    "  AND `metadata`.`version` = " . $this->pdo->quote($version_id) .
-                    "  AND EXISTS (SELECT 1 FROM `patterns` WHERE `patterns`.`misuse` = `metadata`.`misuse`) " .
-                    "   ORDER BY `metadata`.`misuse` * 1, `metadata`.`misuse`");
-            } elseif (strcmp($experiment, "ex2") === 0) {
-                $misuses = $this->tryQuery("SELECT `misuse` FROM `" . $detectorTableName . "`" .
-                    "WHERE `" . $detectorTableName . "`.`exp` = " . $this->pdo->quote($experiment) .
-                    "  AND `project` = " . $this->pdo->quote($project_id) .
-                    "  AND `version` = " . $this->pdo->quote($version_id) . " " .
-                    "ORDER BY `misuse` * 1, `misuse`");
-            } elseif (strcmp($experiment, "ex3") === 0) {
-                $misuses = $this->tryQuery("SELECT * FROM `metadata`" .
-                    "WHERE `project` = " . $this->pdo->quote($project_id) .
-                    "  AND `version` = " . $this->pdo->quote($version_id) . " " .
-                    "ORDER BY `misuse` * 1, `misuse`");
+            $misuse_column = 'misuse';
+            if (strcmp($exp, "ex1") === 0) {
+                $misuse_column = $this->query_builder->addTablePrefix('metadata.misuse');
+                $query = $this->table('metadata')->select('metadata.*')
+                    ->innerJoin('patterns', 'metadata.misuse', '=', 'patterns.misuse');
+            } elseif (strcmp($exp, "ex2") === 0) {
+                $query = $this->table($detector_table)->select('misuse')->where('exp', $exp);
+            } else { // if (strcmp($exp, "ex3") === 0)
+                $query = $this->table('metadata');
             }
+            $misuses = $query->where('project', $project_id)->where('version', $version_id)
+                ->orderBy($this->query_builder->raw("$misuse_column * 1,"), $misuse_column)->get();
 
             foreach ($misuses as $key => $misuse) {
                 $misuse_id = $misuse["misuse"];
-                $potential_hits =
-                    $this->getPotentialHits($experiment, $detector, $project_id, $version_id, $misuse_id);
-                $reviews = $this->getReviews($experiment, $detector, $project_id, $version_id, $misuse_id);
-                $snippet = $this->getSnippet($experiment, $detector, $project_id, $version_id, $misuse_id);
+                $potential_hits = $this->getPotentialHits($exp, $detector, $project_id, $version_id, $misuse_id);
+                $reviews = $this->getReviews($exp, $detector, $project_id, $version_id, $misuse_id);
+                $snippet = $this->getSnippet($exp, $detector, $project_id, $version_id, $misuse_id);
                 $misuse["snippets"] = $snippet;
-                if(strcmp($experiment, "ex1") == 0){
+                if(strcmp($exp, "ex1") == 0){
                     $patterns = $this->getPatterns($misuse_id);
                     $misuse["patterns"] = $patterns;
                 }
@@ -232,9 +150,9 @@ class DBConnection
 
     public function getDetector($detector_name)
     {
-        $result = $this->tryQuery("SELECT `id` FROM `detectors` WHERE `name` = " . $this->pdo->quote($detector_name));
-        if (count($result) == 1) {
-            return new Detector($detector_name, $result[0]["id"]);
+        $detector_data = $this->table('detectors')->select('id')->where('name', $detector_name)->first();
+        if ($detector_data) {
+            return new Detector($detector_name, $detector_data['id']);
         } else {
             throw new InvalidArgumentException("no such detector '" . $detector_name . "'");
         }
@@ -242,12 +160,9 @@ class DBConnection
 
     private function getReviews($experiment, Detector $detector, $project_id, $version_id, $misuse_id)
     {
-        $reviews = $this->tryQuery("SELECT * FROM `reviews` " .
-            "WHERE `exp` = " . $this->pdo->quote($experiment) .
-            "  AND `detector` = " . $this->pdo->quote($detector->name) .
-            "  AND `project` = " . $this->pdo->quote($project_id) .
-            "  AND `version` = " . $this->pdo->quote($version_id) .
-            "  AND `misuse`  = " . $this->pdo->quote($misuse_id));
+        $reviews = $this->table('reviews')
+            ->where('exp', $experiment)->where('detector', $detector->name)->where('project', $project_id)
+            ->where('version', $version_id)->where('misuse', $misuse_id)->get();
 
         foreach ($reviews as $key => $review) {
             $review["finding_reviews"] = $this->getFindingReviews($review["id"]);
@@ -259,29 +174,22 @@ class DBConnection
 
     private function getSnippet($experiment, Detector $detector, $project_id, $version_id, $misuse_id)
     {
-        $sql =
-            "SELECT `line`, `snippet` FROM `meta_snippets` WHERE `project`=" . $this->pdo->quote($project_id) .
-            " AND `version`=" .$this->pdo->quote($version_id) .
-            " AND `misuse`=". $this->pdo->quote($misuse_id);
         if (strcmp($experiment, "ex2") == 0) {
-            $sql = "SELECT `line`, `snippet` FROM `finding_snippets` WHERE `project`=". $this->pdo->quote($project_id) .
-                " AND `version`=". $this->pdo->quote($version_id) .
-                " AND `finding`=". $this->pdo->quote($misuse_id) .
-                " AND `detector`=" . $this->pdo->quote($this->getDetectorTableName($detector));
+            $query = $this->table('finding_snippets')->where('finding', $misuse_id)->where('detector', $this->getDetectorTableName($detector));
+        } else {
+            $query = $this->table('meta_snippets')->where('misuse', $misuse_id);
         }
-        $snippet = $this->tryQuery($sql);
-        return $snippet;
+        return $query->select(['line', 'snippet'])->where('project', $project_id)->where('version', $version_id)->get();
     }
 
     private function getFindingReviews($review_id)
     {
-        $finding_reviews = $this->tryQuery("SELECT * FROM `review_findings` " .
-            "WHERE `review` = " . $this->pdo->quote($review_id));
+        $finding_reviews = $this->table('review_findings')->where('review', $review_id)->get();
 
         foreach ($finding_reviews as &$finding_review) {
-            $violation_types = $this->tryQuery("SELECT `types`.`name` FROM `review_findings_type` " .
-                "INNER JOIN `types` ON `review_findings_type`.`type` = `types`.`id` " .
-                "WHERE `review_findings_type`.`review_finding` = " . $this->pdo->quote($finding_review["id"]));
+            $violation_types = $this->table('review_finding_types')
+                ->innerJoin('types', 'review_finding_types.type', '=', 'types.id')->select('name')
+                ->where('review_finding', $finding_review['id'])->get();
             $finding_review["violation_types"] = [];
             foreach ($violation_types as $violation_type) {
                 $finding_review["violation_types"][] = $violation_type["name"];
@@ -292,12 +200,9 @@ class DBConnection
 
     public function getPotentialHits($experiment, Detector $detector, $project_id, $version_id, $misuse_id)
     {
-        $potential_hits = $this->tryQuery("SELECT * FROM `" . $this->getDetectorTableName($detector) . "` " .
-            "WHERE `exp` = " . $this->pdo->quote($experiment) .
-            "  AND `project` = " . $this->pdo->quote($project_id) .
-            "  AND `version` = " . $this->pdo->quote($version_id) .
-            "  AND `misuse` = " . $this->pdo->quote($misuse_id));
-        return $potential_hits;
+        return $this->table($this->getDetectorTableName($detector))
+            ->where('exp', $experiment)->where('project', $project_id)
+            ->where('version', $version_id)->where('misuse', $misuse_id)->get();
     }
 
     public function getMisuse($experiment, $detector, $project, $version, $misuse){
@@ -317,10 +222,8 @@ class DBConnection
 
     public function getDetectors($exp)
     {
-        $detectors =
-            $this->tryQuery("SELECT `name`, `id` FROM `detectors` WHERE EXISTS (" .
-                "SELECT 1 FROM `stats` WHERE `exp`=" . $this->pdo->quote($exp) . " AND `detector` = CONCAT('detector_', `id`)" .
-                ") ORDER BY `name`");
+        $exists = $this->table('stats')->select($this->query_builder->raw("1"))->where('exp', $exp)->where('detector', $this->query_builder->raw("CONCAT('detector_', `id`)"))->getQuery()->getRawSql();
+        $detectors = $this->table('detectors')->select(['name', 'id'])->where($this->query_builder->raw("EXISTS(" . $exists . ")"))->orderBy('name')->get();
         $result = [];
         foreach ($detectors as $r) {
             $result[] = new Detector($r['name'], $r['id']);

@@ -3,12 +3,11 @@
 use Monolog\Logger;
 use MuBench\ReviewSite\DBConnection;
 use PHPUnit\Framework\TestCase;
+use Pixie\QueryBuilder\QueryBuilderHandler;
 
 class DatabaseTestCase extends TestCase
 {
-    /**
-     * @var PDO $pdo
-     */
+    /** @var QueryBuilderHandler pdo */
     protected $pdo;
 
     /**
@@ -80,11 +79,12 @@ EOD;
 
     function setUp()
     {
-        $this->pdo = new PDO('sqlite::memory:');
+        $connection = new \Pixie\Connection('sqlite', ['driver' => 'sqlite', 'database' => ':memory:']);
+        $this->pdo = $connection->getQueryBuilder();
         $mysql_structure = file_get_contents(dirname(__FILE__) . "/../init_db.sql");
-        $this->pdo->exec($this->mySQLToSQLite($mysql_structure));
+        $this->pdo->pdo()->exec($this->mySQLToSQLite($mysql_structure));
         $this->logger = new \Monolog\Logger("test");
-        $this->db = new DBConnection($this->pdo, $this->logger);
+        $this->db = new DBConnection($connection, $this->logger);
     }
 
     private function mySQLToSQLite($mysql){

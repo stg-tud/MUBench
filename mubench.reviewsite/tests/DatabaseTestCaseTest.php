@@ -7,7 +7,7 @@ class DatabaseTestCaseTest extends DatabaseTestCase
 
     function testTablesExist()
     {
-        $tables = $this->pdo->query("SELECT name FROM sqlite_master WHERE type='table'");
+        $tables = $this->table('sqlite_master')->select('name')->where('type', '=', 'table')->get();
         $actual = [];
         foreach($tables as $t){
             $actual[] = $t;
@@ -31,7 +31,7 @@ class DatabaseTestCaseTest extends DatabaseTestCase
 
     function testTypesInserted()
     {
-        $types = $this->pdo->query("SELECT name FROM types");
+        $types = $this->table('types')->select('name')->get();
         $actual = [];
         foreach($types as $t){
             $actual[] = $t;
@@ -64,4 +64,8 @@ class DatabaseTestCaseTest extends DatabaseTestCase
         self::assertEquals($expectedTypes, $actual);
     }
 
+    private function table($table)
+    {
+        return $this->pdo->table($table)->setFetchMode(PDO::FETCH_ASSOC);
+    }
 }
