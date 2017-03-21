@@ -37,14 +37,14 @@ class DBConnection
 
     public function create_table($table_name, array $columns)
     {
-        $table_name = $this->query_builder->addTablePrefix($table_name);
-        $this->query_builder->pdo()->exec("CREATE TABLE $table_name (" . implode(",", $columns) . ")");
+        $table_name = $this->getQualifiedName($table_name);
+        $this->query_builder->pdo()->exec("CREATE TABLE `$table_name` (" . implode(",", $columns) . ")");
     }
 
     public function add_column($table_name, $column)
     {
-        $table_name = $this->query_builder->addTablePrefix($table_name);
-        $this->query_builder->pdo()->exec("ALTER TABLE $table_name ADD $column");
+        $table_name = $this->getQualifiedName($table_name);
+        $this->query_builder->pdo()->exec("ALTER TABLE `$table_name` ADD $column");
     }
 
     public function last_insert_id()
@@ -88,7 +88,7 @@ class DBConnection
 
             $misuse_column = 'misuse';
             if (strcmp($exp, "ex1") === 0) {
-                $misuse_column = $this->query_builder->addTablePrefix('metadata.misuse');
+                $misuse_column = $this->getQualifiedName('metadata.misuse');
                 $query = $this->table('metadata')->select('metadata.*')
                     ->innerJoin('patterns', 'metadata.misuse', '=', 'patterns.misuse');
             } elseif (strcmp($exp, "ex2") === 0) {
@@ -242,6 +242,11 @@ class DBConnection
 
         }
         return $misuses;
+    }
+
+    private function getQualifiedName($table_name)
+    {
+        return $this->query_builder->addTablePrefix($table_name, false);
     }
 
 }
