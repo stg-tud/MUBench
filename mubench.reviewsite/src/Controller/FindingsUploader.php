@@ -98,6 +98,8 @@ class FindingsUploader
                 // MySQL does not permit column names with more than 64 characters:
                 // https://dev.mysql.com/doc/refman/5.7/en/identifiers.html
                 $column_name = strlen($property) > 64 ? substr($property, 0, 64) : $property;
+                // Remove . from column names, since it may be confused with a table-qualified name.
+                $column_name = str_replace('.', ':', $column_name);
                 $propertyToColumnNameMapping[$property] = $column_name;
             }
         }
