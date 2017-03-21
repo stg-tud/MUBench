@@ -2,7 +2,6 @@
 
 namespace MuBench\ReviewSite;
 
-use InvalidArgumentException;
 use Monolog\Logger;
 use MuBench\ReviewSite\Model\Detector;
 use MuBench\ReviewSite\Model\Misuse;
@@ -101,7 +100,9 @@ class DBConnection
 
             foreach ($misuses as $key => $misuse) {
                 $misuse_id = $misuse["misuse"];
+                /** @var array $potential_hits */
                 $potential_hits = $this->getPotentialHits($exp, $detector, $project_id, $version_id, $misuse_id);
+                /** @var array $reviews */
                 $reviews = $this->getReviews($exp, $detector, $project_id, $version_id, $misuse_id);
                 $snippet = $this->getSnippet($exp, $detector, $project_id, $version_id, $misuse_id);
                 $misuse["snippets"] = $snippet;
