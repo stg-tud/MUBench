@@ -74,10 +74,10 @@ class FindingsUploader
     private function getDetectorFindingPropertyColumnNames(Detector $detector)
     {
         try {
-            $finding = $this->db->table($detector->getTableName())->first();
-            return get_object_vars($finding);
+            /** @noinspection PhpParamsInspection */
+            return array_keys($this->db->table($detector->getTableName())->first());
         } catch (\Exception $e) {
-            return []; // table does not exist
+            return []; // table does not exist (we always insert immediately after creation, so it cannot be empty)
         }
     }
 
