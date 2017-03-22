@@ -42,6 +42,15 @@ MuBench CI Status: [![MuBench CI Status](https://api.shippable.com/projects/570d
 4. `$> docker run --rm -v "%cd:\=/%":/mubench svamann/mubench git clone https://github.com/stg-tud/MUBench.git .`
 5. `$> ./mubench.bat check` (On the first run, this may take some time).
 
+#### Computing Resources
+
+Docker limits the computing resources available to a docker run. You can adjust this in the advanced preferences. Our recommendations are
+
+* CPUs: &ge;2
+* Memory: &ge;8.0 GB
+
+Remember that you may also have to provide more memory to the JVM for the detector run, for example, by passing `--java-options Xmx8G` to the pipeline invocation.
+
 ### Review Site
 
 #### Server Requirements
