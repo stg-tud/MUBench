@@ -133,10 +133,10 @@ class DBConnection
     public function getDetectors($exp)
     {
         $detectors = [];
-        foreach ($this->table('stats')->selectDistinct('detector')->where('exp', $exp)->get() as $value) {
-            $detector_id = $value['detector'];
-            $detector_name = $this->table('detectors')->select('name')->where('id', $detector_id)->first()['name'];
-            $detectors[] = new Detector($detector_name, $detector_id);
+        foreach ($this->table('detectors')->orderBy('name')->get() as $detector) {
+            if ($this->table('stats')->where('detector', $detector['id'])->where('exp', $exp)->first()) {
+                $detectors[] = new Detector($detector['name'], $detector['id']);
+            }
         }
         return $detectors;
     }
