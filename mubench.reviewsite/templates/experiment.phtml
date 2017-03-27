@@ -1,13 +1,14 @@
 <html>
 <head>
 <title>MUBench Review Page - Experiment <?= htmlspecialchars($id); ?></title>
-<link rel="stylesheet" type="text/css" href="<?= htmlspecialchars($root_url); ?>style/style.css" />
+<link rel="stylesheet" type="text/css" href="<?= $root_url; ?>style/style.css" />
 </head>
 <body>
 <?php include "includes/menu.phtml"; ?>
 
-<h1>MUBench Review Page</h1>
-<h2>Experiment <?= htmlspecialchars($id); ?> - <?= htmlspecialchars($title); ?></h2>
+<h1>Experiment <?= htmlspecialchars($id); ?> - <?= htmlspecialchars($title); ?></h1>
+
+<h2>Detectors</h2>
 
 <ul>
 	<?php foreach($detectors as $detector) : ?>
