@@ -77,6 +77,12 @@ $app->group('/private', function () use ($app, $settings) {
             return $app->helper->review_route($args, $this, $response, true);
         });
 
+    $app->get('/stats',
+        function (Request $request, Response $response, array $args) use ($app) {
+            $ex2_review_size = $request->getQueryParam("ex2_review_size", 20);
+            return $app->helper->stats_route($this, $response, $args, $ex2_review_size);
+        });
+
     $app->get('/overview',
         function (Request $request, Response $response, array $args) use ($app) {
             $app->helper->overview_route($args, $this, $response);
