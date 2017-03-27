@@ -15,11 +15,6 @@ $app->get('/',
         return $app->helper->index_route($args, $this, $response, false);
     });
 
-$app->get('/{exp:ex[1-3]}',
-    function (Request $request, Response $response, array $args) use ($app) {
-        return $app->helper->experiment_route($args, $this, $response, false);
-    });
-
 $app->get('/{exp:ex[1-3]}/{detector}',
     function (Request $request, Response $response, array $args) use ($app) {
         return $app->helper->detect_route($args, $this, $response, false);
@@ -46,11 +41,6 @@ $app->group('/private', function () use ($app, $settings) {
     $app->get('/',
         function (Request $request, Response $response, array $args) use ($app) {
             return $app->helper->index_route($args, $this, $response);
-        });
-
-    $app->get('/{exp:ex[1-3]}',
-        function (Request $request, Response $response, array $args) use ($app) {
-            return $app->helper->experiment_route($args, $this, $response);
         });
 
     $app->get('/{exp:ex[1-3]}/{detector}',
