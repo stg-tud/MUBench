@@ -1,0 +1,35 @@
+<?php
+/**
+ * @var string $user the logged in user, if any
+ *
+ * @var string $site_base_url
+ * @var string $public_url_prefix
+ * @var string $private_url_prefix
+ * @var string $url_prefix the public or private url prefix, depending on whether the user is logged in
+ *
+ * @var string $path the current route path
+ * @var string $origin_param url parameter that carries the $path
+ * @var string $origin_path referrer path
+ *
+ * @var array $experiments all experiments (Experiment)
+ * @var array $detectors detectors (Detector) with results per experiment
+ * @var Experiment $experiment the selected experiment, if any
+ * @var Detector $detector the selected detector, if any
+ */
+use MuBench\ReviewSite\Model\Detector;
+use MuBench\ReviewSite\Model\Experiment;
+?>
+<li>
+    <span>E<?= $experiment->getNumber() ?>: <?= $experiment->getTitle() ?></span>
+    <ul>
+    <?php if ($detectors[$experiment->getId()]) : ?>
+        <?php $this_det = $detector ?>
+        <?php foreach ($detectors[$experiment->getId()] as $detector) : ?>
+            <li><a href="<?= $url_prefix . $experiment->getId() . "/" . $detector->name ?>"><?= $detector->name ?></a></li>
+        <?php endforeach; ?>
+        <?php $detector = $this_det ?>
+    <?php else: ?>
+        <li><span>No Results</span></li>
+    <?php endif ?>
+    </ul>
+</li>

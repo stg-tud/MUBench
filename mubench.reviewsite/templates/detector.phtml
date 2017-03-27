@@ -1,17 +1,40 @@
 <?php
+/**
+ * @var string $user the logged in user, if any
+ *
+ * @var string $site_base_url
+ * @var string $public_url_prefix
+ * @var string $private_url_prefix
+ * @var string $url_prefix the public or private url prefix, depending on whether the user is logged in
+ *
+ * @var string $path the current route path
+ * @var string $origin_param url parameter that carries the $path
+ * @var string $origin_path referrer path
+ *
+ * @var array $experiments all experiments (Experiment)
+ * @var array $detectors detectors (Detector) with results per experiment
+ * @var Experiment $experiment the selected experiment, if any
+ * @var Detector $detector the selected detector, if any
+ *
+ * @var array $runs the detectors experiment runs
+ */
+use MuBench\ReviewSite\Model\Detector;
+use MuBench\ReviewSite\Model\Experiment;
 use MuBench\ReviewSite\Model\Decision;
+use MuBench\ReviewSite\Model\Review;
 use MuBench\ReviewSite\Model\ReviewState;
 ?>
 <html>
 <head>
     <title>MuBench :: Review Site</title>
-    <link rel="stylesheet" type="text/css" href="<?= htmlspecialchars($root_url); ?>style/style.css" />
+    <link rel="stylesheet" type="text/css" href="<?= $site_base_url ?>style/style.css" />
     <link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
 </head>
 <body>
 <?php include "includes/menu.phtml"; ?>
 
-    <h1>Detector: <?= htmlspecialchars($detector); ?></h1>
+    <h1>Experiment <?= $experiment->getNumber() ?>: <?= htmlspecialchars($experiment->getTitle()) ?></h1>
+    <h2>Detector: <?= htmlspecialchars($detector->name); ?></h2>
     <table>
         <thead>
             <tr>
@@ -21,7 +44,7 @@ use MuBench\ReviewSite\Model\ReviewState;
                 <th># of Findings</th>
                 <th>Runtime</th>
                 <th>Misuse</th>
-                <?php if($exp !== "ex2") : ?><th>Violation Types</th><?php endif; ?>
+                <?php if($experiment->getId() !== "ex2") : ?><th>Violation Types</th><?php endif ?>
                 <th>Decision</th>
                 <th>Reviews</th>
                 <th>Your Review</th>
@@ -58,13 +81,13 @@ use MuBench\ReviewSite\Model\ReviewState;
                         <?= $new_version ? htmlspecialchars(substr($run['runtime'], 0, 4)) . "s" : ""; ?></td>
                     <td class="<?= $style_classes ?>">
                         <?= htmlspecialchars($misuse->getShortId()); ?></td>
-                    <?php if($exp !== "ex2") : ?>
+                    <?php if($experiment->getId() !== "ex2") : ?>
                         <td class="<?= $style_classes ?>">
                             <?= implode("<br/>", $misuse->getViolationTypes()) ?>
                         </td>
                     <?php endif; ?>
                     <?php
-                        $review_url = ($logged ? htmlspecialchars($private_url) : htmlspecialchars($base_url)) . htmlspecialchars($exp) . "/" . htmlspecialchars($detector) . "/" .
+                        $review_url = $url_prefix . htmlspecialchars($experiment->getId()) . "/" . htmlspecialchars($detector->name) . "/" .
                             htmlspecialchars($project) . "/" . htmlspecialchars($version) . "/" . htmlspecialchars($misuse->id);
                     ?>
                     <td class="<?= $style_classes ?>">
@@ -90,7 +113,7 @@ use MuBench\ReviewSite\Model\ReviewState;
                     </td>
                     <td class="<?= $style_classes ?>">
                         <ul class="inline">
-                            <?php foreach($misuse->getReviews() as $review) : ?>
+                            <?php foreach($misuse->getReviews() as $review) : /** @var Review $review */ ?>
                                 <?php $reviewer_name = htmlspecialchars($review->getReviewerName()) ?>
                                 <li style="display:inline"><a href="<?= $review_url ?>/<?= $reviewer_name ?>"><?= $reviewer_name ?></a></li>
                             <?php endforeach; ?>
@@ -98,13 +121,13 @@ use MuBench\ReviewSite\Model\ReviewState;
                     </td>
                     <td class="<?= $style_classes ?>">
                         <?php
-                        $button_classes = "button" . (!$misuse->hasPotentialHits() || ($logged && $misuse->hasSufficientReviews() || $misuse->hasReviewed($name)) ? " no-hit" : "")
+                        $button_classes = "button" . (!$misuse->hasPotentialHits() || ($user && $misuse->hasSufficientReviews() || $misuse->hasReviewed($user)) ? " no-hit" : "")
                         ?>
-                        <?php if (!$logged): ?>
+                        <?php if (!$user): ?>
                             <a href="<?= $review_url; ?>" class="<?= $button_classes ?>">view</a>
-                        <?php elseif ($misuse->hasReviewed($name)): ?>
+                        <?php elseif ($misuse->hasReviewed($user)): ?>
                             <a href="<?= $review_url ?>" class="<?= $button_classes ?>">edit
-                            <?php $your_decision = $misuse->getReview($name)->getDecision() ?>
+                            <?php $your_decision = $misuse->getReview($user)->getDecision() ?>
                             <?php if ($your_decision == Decision::YES): ?>
                                 (<i class="fa fa-thumbs-o-up" aria-hidden="true" style="color:green;" title="Yes"></i>)
                             <?php elseif ($your_decision == Decision::NO): ?>
@@ -118,7 +141,7 @@ use MuBench\ReviewSite\Model\ReviewState;
                         <?php endif; ?>
                     </td>
                     <td class="<?= $style_classes ?>" style="max-width: 300px;">
-                        <?= $misuse->hasReviewed($name) ? $misuse->getReview($name)->getComment() : "" ?>
+                        <?= $misuse->hasReviewed($user) ? $misuse->getReview($user)->getComment() : "" ?>
                     </td>
                 </tr>
                 <?php
@@ -144,9 +167,7 @@ use MuBench\ReviewSite\Model\ReviewState;
                     <td class="<?= $style_classes ?> right">
                         <?= $new_version ? htmlspecialchars(substr($run['runtime'], 0, 4)) . "s" : ""; ?></td>
                     <td class="<?= $style_classes ?>"></td>
-                    <?php if($exp !== "ex2") : ?>
-                        <td class="<?= $style_classes ?>"></td>
-                    <?php endif; ?>
+                    <?php if ($experiment->getId() !== "ex2"): ?><td class="<?= $style_classes ?>"></td><?php endif ?>
                     <td class="<?= $style_classes ?>"></td>
                     <td class="<?= $style_classes ?>"></td>
                     <td class="<?= $style_classes ?>"></td>

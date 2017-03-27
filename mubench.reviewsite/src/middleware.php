@@ -21,11 +21,11 @@ $app->add(function (Request $request, Response $response, $next) use ($app) {
     $origin = $request->getQueryParams();
 
     if($origin && !empty($origin && array_key_exists('origin', $origin) && strcmp($origin['origin'], "") !== 0)){
-        $app->helper->setOrigin($origin['origin']);
+        $app->helper->setOriginPath($origin['origin']);
     }
 
     if($route && strcmp($route, "") !== 0 && !empty($route)){
-        $app->helper->setRoute($route);
+        $app->helper->setPath($route);
     }
 
     $response = $next($request, $response);

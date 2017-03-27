@@ -1,22 +1,27 @@
 <?php
-use MuBench\ReviewSite\Model\ReviewState;
-
 /**
- * @var string $root_url the site's root URL
- * @var string $base_url the site's base URL
- * @var string $private_url the site's private root URL
- * @var string $origin_param the relative URL of the referrer site
+ * @var string $user the logged in user, if any
  *
- * @var bool $logged whether or not the user is logged in
- * @var string $name the user's name
+ * @var string $site_base_url
+ * @var string $public_url_prefix
+ * @var string $private_url_prefix
+ * @var string $url_prefix the public or private url prefix, depending on whether the user is logged in
  *
+ * @var string $path the current route path
+ * @var string $origin_param url parameter that carries the $path
+ * @var string $origin_path referrer path
+ *
+ * @var array $experiments all experiments (Experiment)
+ * @var array $detectors detectors (Detector) with results per experiment
  * @var array $misuses
  */
+use MuBench\ReviewSite\Model\ReviewState;
+
 ?>
 <html>
 <head>
     <title>MuBench :: Open Reviews</title>
-    <link rel="stylesheet" type="text/css" href="<?= htmlspecialchars($root_url); ?>style/style.css" />
+    <link rel="stylesheet" type="text/css" href="<?= $site_base_url ?>style/style.css" />
     <link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
 </head>
 <body>
@@ -62,7 +67,7 @@ use MuBench\ReviewSite\Model\ReviewState;
                 <td class="<?= $style_classes ?>">
                     <?= htmlspecialchars($misuse->getShortId()); ?></td>
                 <?php
-                $review_url = ($logged ? htmlspecialchars($private_url) : htmlspecialchars($base_url)) . htmlspecialchars($experiment) . "/" . htmlspecialchars($detector) . "/" .
+                $review_url = $url_prefix . htmlspecialchars($experiment) . "/" . htmlspecialchars($detector) . "/" .
                     htmlspecialchars($project) . "/" . htmlspecialchars($version) . "/" . htmlspecialchars($misuse->id);
                 ?>
                 <td class="<?= $style_classes ?>">

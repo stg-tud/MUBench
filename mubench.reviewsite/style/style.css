@@ -52,55 +52,100 @@ ul ul {
     margin-right: 10pt;
 }
 
-ol#menu {
-    float: right;
-    margin: 10pt 10pt 20pt 0;
-	list-style-type: none;
+nav ol {
+    counter-reset: item;
+    list-style-type: decimal;
+    padding: 0;
+    margin: 0;
+    width: 100%;
 }
 
-ol#menu li {
-    float: left;
-}
-
-ol#menu a {
+nav ol li {
     display: block;
-    font-weight: bold;
-    text-decoration: none;
-    padding: 4pt 7pt;
-    background-color: grey;
-    color: white;
-    border-right: 2pt solid white;
-}
-
-ol#menu a:hover {
-    background-color: darkgray;
-}
-
-ol#breadcrumbs {
+    position: relative;
     float: left;
-    margin: 10pt 0 20pt;
+    background: lightgrey;
+    min-width: 160px;
+    margin-right: 5pt;
+    margin-bottom: 5pt;
+    cursor: pointer;
+}
+
+nav ol li.right {
+    float: right;
+}
+
+nav ol li span {
+    display: block;
+    padding: .5em;
+    white-space: nowrap;
+    color: black;
+    font-weight: bold;
+}
+
+nav ol li a {
+    display: block;
+    padding: .5em;
+    text-decoration: none;
+    white-space: nowrap;
+    color: black;
+    font-weight: bold;
+}
+
+nav ol li:hover { background: gray; }
+
+nav li ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    background: gray;
+    display: none;
+}
+
+nav li:hover > ul {
+    display: block;
+    position: absolute;
+}
+
+nav li:hover li {
+    float: none;
+}
+
+nav li:hover li:hover { background: gray; }
+
+nav ol:before,
+nav ol:after {
+    content: " "; /* 1 */
+    display: table; /* 2 */
+}
+
+nav ol:after { clear: both; }
+
+ul#experiments {
     list-style-type: none;
 }
 
-ol#breadcrumbs li {
+ul#experiments > li {
     float: left;
+    min-width: 25%;
+    padding: 15pt;
+    margin: 5pt;
+    border: 1px solid grey;
 }
 
-ol#breadcrumbs a {
-    display: block;
+ul#experiments span {
     font-weight: bold;
-    text-decoration: none;
-    padding: 4pt 7pt;
-    background-color: grey;
-    color: white;
-    border-right: 2pt solid white;
 }
 
-ol#breadcrumbs a:hover {
-    background-color: darkgray;
+ul#experiments ul {
+    list-style-type: circle;
+    margin-top: 10pt;
 }
 
-body { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; }
+ul#experiments ul li {
+    display: block;
+    padding: 5pt;
+}
 
 sub {
     vertical-align: sub;
@@ -169,4 +214,10 @@ ul.inline li:after {
 
 ul.inline li:last-child:after {
     content: "";
+}
+
+table.fw {width:100%;}
+.vtop {vertical-align:top}
+.prettyprint ol.linenums > li {
+    list-style: decimal inside;
 }

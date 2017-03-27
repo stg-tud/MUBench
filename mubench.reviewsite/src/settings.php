@@ -16,20 +16,6 @@ return [
             'level' => \Monolog\Logger::DEBUG,
         ],
     ],
-    'ex_template' => [
-        "ex1" => [
-        "title" => "Detect Only",
-        "id" => "1"
-        ],
-        "ex2" => [
-        "title" => "All Findings",
-        "id" => "2"
-        ],
-        "ex3" => [
-        "title" => "Benchmark",
-        "id" => "3"
-        ]
-    ],
     'db' => [
         'driver'    => 'mysql',
         'host'      => 'localhost',
@@ -46,5 +32,5 @@ return [
         "admin" => "pass",
         "admin2" => "pass"
     ],
-    'root_url' => '/'
+    'site_base_url' => '/'
 ];

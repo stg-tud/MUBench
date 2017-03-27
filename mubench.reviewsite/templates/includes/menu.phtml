@@ -1,47 +1,48 @@
 <?php
 /**
- * @var boolean $logged whether the user is logged in or not
- * @var string $base_url the site's public base url
- * @var string $private_url the site's private base url
- * @var string $route_url the current route path
+ * @var string $user the logged in user, if any
  *
- * @var string $experiment the id of the experiment currently displayed, if any
- * @var string $detector the id of the detector currently displayed, if any
+ * @var string $site_base_url
+ * @var string $public_url_prefix
+ * @var string $private_url_prefix
+ * @var string $url_prefix the public or private url prefix, depending on whether the user is logged in
+ *
+ * @var string $path the current route path
+ * @var string $origin_param url parameter that carries the $path
+ * @var string $origin_path referrer path
+ *
+ * @var array $experiments all experiments (Experiment)
+ * @var array $detectors detectors (Detector) with results per experiment
+ * @var Experiment $experiment the selected experiment, if any
+ * @var Detector $detector the selected detector, if any
  */
+use MuBench\ReviewSite\Model\Detector;
+use MuBench\ReviewSite\Model\Experiment;
+
 ?>
 <div id="header">
     <div id="title">
         <a href="https://github.com/stg-tud/MUBench" title="MUBench Project">
-            <img id="logo" src="<?= $root_url ?>/assets/images/mubench_logo.png" />
+            <img id="logo" src="<?= $site_base_url ?>/assets/images/mubench_logo.png" />
         </a>
-        <a href="<?= $root_url ?>" title="Home">
-            Review<br/>Site
-        </a>
+        <a href="<?= $url_prefix ?>" title="Home">Review<br/>Site</a>
     </div>
 
-    <ol id="menu">
-        <?php if(!$logged) : ?>
-            <li><a href="<?= $private_url; ?><?= $route_url; ?>">Login</a></li>
-        <?php endif; ?>
+    <nav role="navigation">
+        <ol>
+            <?php $this_exp = $experiment ?>
+            <?php foreach ($experiments as $experiment): ?>
+                <?php include "menu-experiment.phtml" ?>
+            <?php endforeach ?>
+            <?php $experiment = $this_exp ?>
+            <li><a href="<?= $public_url_prefix ?>stats">Statistics</a></li>
 
-        <?php if($logged) : ?>
-            <li><a href="<?= $private_url; ?>overview">My Reviews</a></li>
-            <li><a href="<?= $private_url; ?>todo">Open Reviews</a></li>
-        <?php endif; ?>
-
-        <li><a href="<?= $base_url; ?>stats">Statistics</a></li>
-    </ol>
-
-    <ol id="breadcrumbs">
-        <?php
-        $url_prefix = $logged ? $private_url : $base_url;
-        ?>
-        <?php if($experiment) : ?>
-            <li><a href="<?= $url_prefix . $experiment ?>"><?= $experiment ?></a></li>
-
-            <?php if($detector) : ?>
-                <li><a href="<?= $url_prefix .$experiment . "/" . $detector ?>"><?= $detector ?></a></li>
+            <?php if($user) : ?>
+                <li class="right"><a href="<?= $private_url_prefix ?>overview">My Reviews</a></li>
+                <li class="right"><a href="<?= $private_url_prefix ?>todo">Open Reviews</a></li>
+            <?php else: ?>
+                <li class="right"><a href="<?= $private_url_prefix . $path ?>">Login</a></li>
             <?php endif; ?>
-        <?php endif; ?>
-    </ol>
+        </ol>
+    </nav>
 </div>

@@ -1,22 +1,48 @@
+<?php
+/**
+ * @var string $user the logged in user, if any
+ *
+ * @var string $site_base_url
+ * @var string $public_url_prefix
+ * @var string $private_url_prefix
+ * @var string $url_prefix the public or private url prefix, depending on whether the user is logged in
+ *
+ * @var string $path the current route path
+ * @var string $origin_param url parameter that carries the $path
+ * @var string $origin_path referrer path
+ *
+ * @var array $experiments all experiments (Experiment)
+ * @var array $detectors detectors (Detector) with results per experiment
+ * @var Experiment $experiment the selected experiment, if any
+ * @var Detector $detector the selected detector, if any
+ */
+use MuBench\ReviewSite\Model\Detector;
+use MuBench\ReviewSite\Model\Experiment;
+
+?>
 <html>
     <head>
-        <title>MUBench Review Page</title>
-        <link rel="stylesheet" type="text/css" href="<?= $root_url; ?>style/style.css" />
+        <title>MUBench Review Site</title>
+        <link rel="stylesheet" type="text/css" href="<?= $site_base_url; ?>style/style.css" />
     </head>
     <body>
-        <?php include "includes/menu.phtml"; ?>
+        <?php include "includes/menu.phtml" ?>
 
         <h1>Experiments</h1>
 
-        <ul>
-        <?php foreach($experiments as $e) : ?>
-            <?php if(!$logged) : ?>
-                <li><a href="<?= $base_url; ?>ex<?= htmlspecialchars($e['id']); ?>">Experiment <?= htmlspecialchars($e['id']); ?> - <?= htmlspecialchars($e['title']); ?></a></li>
-            <?php endif; ?>
-
-            <?php if($logged) : ?>
-                <li><a href="<?= $private_url; ?>ex<?= htmlspecialchars($e['id']); ?>">Experiment <?= htmlspecialchars($e['id']); ?> - <?= htmlspecialchars($e['title']); ?></a></li>
-            <?php endif; ?>
+        <ul id="experiments">
+        <?php foreach($experiments as $experiment) : ?>
+            <li><span>Experiment <?= $experiment->getNumber() ?>: <?= htmlspecialchars($experiment->getTitle()) ?></span>
+                <ul>
+                <?php if ($detectors[$experiment->getId()]): ?>
+                    <?php foreach ($detectors[$experiment->getId()] as $detector): ?>
+                        <li><a href="<?= $url_prefix . $experiment->getId() . "/" . $detector->name ?>"><?= $detector->name ?></a></li>
+                    <?php endforeach ?>
+                <?php else: ?>
+                    <li>No Results</li>
+                <?php endif ?>
+                </ul>
+            </li>
         <?php endforeach; ?>
         </ul>
     </body>

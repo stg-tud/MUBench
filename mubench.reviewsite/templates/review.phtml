@@ -1,19 +1,27 @@
 <?php
 /**
- * @var string $root_url the site's root URL
- * @var string $private_url the site's private root URL
- * @var string $route_url this site's relative URL
- * @var string $origin_route the relative URL of the referrer site
+ * @var string $user the logged in user, if any
  *
- * @var bool $logged whether or not the user is logged in
- * @var string $name the user's name
- * @var bool $is_reviewer whether the user is the author of this review
+ * @var string $site_base_url
+ * @var string $public_url_prefix
+ * @var string $private_url_prefix
+ * @var string $url_prefix the public or private url prefix, depending on whether the user is logged in
  *
- * @var string $exp the experiment id
- * @var string $detector the detector's name
+ * @var string $path the current route path
+ * @var string $origin_param url parameter that carries the $path
+ * @var string $origin_path referrer path
+ *
+ * @var array $experiments all experiments (Experiment)
+ * @var array $detectors detectors (Detector) with results per experiment
+ * @var Experiment $experiment the selected experiment, if any
+ * @var Detector $detector the selected detector, if any
+ *
  * @var \MuBench\ReviewSite\Model\Misuse $misuse
  * @var \MuBench\ReviewSite\Model\Review $review
+ * @var bool $is_reviewer whether the user is the author of this review
  */
+use MuBench\ReviewSite\Model\Detector;
+use MuBench\ReviewSite\Model\Experiment;
 
     $columns_to_ignore = array(
         "target_snippets",
@@ -30,25 +38,18 @@
 ?>
         <html>
             <head>
-                <link rel="stylesheet" type="text/css" href="<?= htmlspecialchars($root_url); ?>style/style.css" />
-                <style>
-                    table.fw {width:100%;}
-                    .vtop {vertical-align:top}
-                    .prettyprint ol.linenums > li {
-                        list-style: decimal inside;
-                    }
-                </style>
+                <link rel="stylesheet" type="text/css" href="<?= $site_base_url ?>style/style.css" />
                 <script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js?autoload=true&amp;skin=sunburst"></script>
             </head>
             <body>
 
-            <?php include "includes/menu.phtml"; ?>
+            <?php include "includes/menu.phtml" ?>
 
         <h1>Review</h1>
         <table class="invisible">
             <tr><td><b>Detector:</b></td><td><?= htmlspecialchars($detector); ?></td></tr>
             <tr><td><b>Target:</b></td><td>project '<?= htmlspecialchars($misuse->getProject()); ?>' version <?= htmlspecialchars($misuse->getVersion()); ?></td></tr>
-            <?php if($exp !== "ex2") : ?>
+            <?php if($experiment->getId() !== "ex2") : ?>
                 <tr><td><b>Misuse:</b></td><td>misuse '<?= htmlspecialchars($misuse->getShortId()); ?>'</td></tr>
             <?php endif; ?>
         </table>
@@ -94,9 +95,9 @@
                     <?php endforeach; ?>
                 <?php elseif(!$misuse->hasCode()) : ?>
                     <pre class="prettyprint"><code class="language-java">code not found</code></pre>
-                    <?php if($logged) : ?>
+                    <?php if($user) : ?>
                         <input type="button" onclick="show(this);" value="Add code snippet">
-                        <form  id="snippet_form" style="display:none;" action="<?= $private_url; ?>snippet" method="post" target="">
+                        <form  id="snippet_form" style="display:none;" action="<?= $private_url_prefix; ?>snippet" method="post" target="">
                             <table>
                             <tr>
                                 <td>
@@ -112,7 +113,7 @@
                                     <input type="hidden" name="project" value="<?= htmlspecialchars($misuse->getProject()); ?>">
                                     <input type="hidden" name="version" value="<?= htmlspecialchars($misuse->getVersion()); ?>">
                                     <input type="hidden" name="misuse" value="<?= htmlspecialchars($misuse->id); ?>">
-                                    <input type="hidden" name="path" value="<?= htmlspecialchars($route_url); ?>">
+                                    <input type="hidden" name="path" value="<?= htmlspecialchars($path); ?>">
                                     <textarea name="snippet" title="Code Snippet" cols="80" rows="5"></textarea>
                                 </td>
                             </tr>
@@ -133,7 +134,7 @@
                         </td></tr>
             <?php endif; ?>
         </table>
-            <form action="<?= $private_url; ?>review/<?= htmlspecialchars($exp); ?>/<?= htmlspecialchars($detector); ?>" method="post" target="">
+            <form action="<?= $private_url_prefix; ?>review/<?= htmlspecialchars($exp); ?>/<?= htmlspecialchars($detector); ?>" method="post" target="">
             <?php if($misuse->hasPotentialHits()) : ?>
 
             <?php if($exp !== "ex2") : ?>
@@ -176,7 +177,7 @@
         <?php foreach($potential_hits as $hit) : ?>
         <tr>
             <td>
-            <?php if($logged && $is_reviewer) : ?>
+            <?php if($user && $is_reviewer) : ?>
                 <select name="review_hit[<?= htmlspecialchars($hit['rank']); ?>][hit]" title="Decision" size="1" >
                     <?php if($review && strcmp($review->getHitDecision($hit['rank']), "No") === 0) : ?>
                         <option selected="selected" value="No" >No</option>
@@ -200,7 +201,7 @@
                 <? else : ?>
                     <?= htmlspecialchars($review->getHitDecision($hit['rank'])); ?>
                 <?php endif; ?>
-            <?php elseif($name) : ?>
+            <?php elseif($user) : ?>
                 No
             <?php else : ?>
                 ?
@@ -218,7 +219,7 @@
                         <?php endforeach; ?>
                     </ul>
                 <?php elseif(strpos($hit[$column], ".png") !== false) : ?>
-                    <img src="<?= $root_url ?>upload/<?= htmlspecialchars($exp); ?>/<?= htmlspecialchars($detector); ?>/<?= htmlspecialchars($misuse->getProject()); ?>/<?= htmlspecialchars($misuse->getVersion()); ?>/<?= htmlspecialchars($hit[$column]); ?>" />
+                    <img src="<?= $site_base_url ?>upload/<?= htmlspecialchars($exp); ?>/<?= htmlspecialchars($detector); ?>/<?= htmlspecialchars($misuse->getProject()); ?>/<?= htmlspecialchars($misuse->getVersion()); ?>/<?= htmlspecialchars($hit[$column]); ?>" />
                 <?php else : ?>
                     <?= htmlspecialchars($hit[$column]); ?>
                 <?php endif; ?>
@@ -226,7 +227,7 @@
             <?php endforeach; ?>
             <td>
                     <?php if($exp === "ex2") : ?>
-                        <select name="review_hit[<?= htmlspecialchars($hit['rank']); ?>][types][]" title="Violation Types" size="10" multiple <?= ($logged && $is_reviewer) ? "" : "disabled" ?>>
+                        <select name="review_hit[<?= htmlspecialchars($hit['rank']); ?>][types][]" title="Violation Types" size="10" multiple <?= ($user && $is_reviewer) ? "" : "disabled" ?>>
                             <?php $add = true ?>
                             <?php if($review) : ?>
                             <?php foreach($review->getHitViolationTypes($hit['rank']) as $t) : ?>
@@ -494,7 +495,7 @@
                         </select>
                     <?php else : ?>
                         <?php if($misuse->hasViolationTypes()) : ?>
-                            <?php if($logged && $is_reviewer) : ?>
+                            <?php if($user && $is_reviewer) : ?>
                                 <select name="review_hit[<?= htmlspecialchars($hit['rank']); ?>][types][]" title="Violation Types" size="<?= htmlspecialchars(count($misuse->getViolationTypes())); ?>" multiple>
                             <?php else : ?>
                                 <select disabled name="review_hit[<?= htmlspecialchars($hit['rank']); ?>][types][]" title="Violation Types" size="<?= htmlspecialchars(count($misuse->getViolationTypes())); ?>" multiple>
@@ -522,10 +523,10 @@
        <?php endforeach; ?>
        </table>
         <?php endif; ?>
-            <?php if($logged && $is_reviewer) :?>
+            <?php if($user && $is_reviewer) :?>
                 <table class="invisible">
                 <tr><td>Reviewer Name:</td>
-                    <td><?= htmlspecialchars($name); ?></td></tr>
+                    <td><?= htmlspecialchars($user); ?></td></tr>
                 <tr><td class="vtop"><label for="review_comment">Comment</label>:</td>
                     <td>
                     <?php if($review) : ?>
@@ -535,17 +536,17 @@
                     <?php endif; ?>
                     </td></tr>
                 </table>
-                <input type="hidden" name="review_name" value="<?= htmlspecialchars($name); ?>"/>
+                <input type="hidden" name="review_name" value="<?= htmlspecialchars($user); ?>"/>
                 <input type="hidden" name="review_exp" value="<?= htmlspecialchars($exp); ?>">
                 <input type="hidden" name="review_detector" value="<?= htmlspecialchars($detector); ?>">
                 <input type="hidden" name="review_project" value="<?= htmlspecialchars($misuse->getProject()); ?>">
                 <input type="hidden" name="review_version" value="<?= htmlspecialchars($misuse->getVersion()); ?>">
                 <input type="hidden" name="review_misuse" value="<?= htmlspecialchars($misuse->id); ?>">
-                <input type="hidden" name="origin" value="<?= htmlspecialchars($origin_route); ?>">
+                <input type="hidden" name="origin" value="<?= htmlspecialchars($origin_path); ?>">
                 <input type="submit" value="Save Review" />
                 </form>
         <?php endif; ?>
-        <?php if($review && !$logged && !$is_reviewer) :?>
+        <?php if($review && !$user && !$is_reviewer) :?>
                 <table class="invisible">
                     <tr><td>Reviewer Name:</td>
                         <td><?= htmlspecialchars($review->getReviewerName()); ?></td></tr>
