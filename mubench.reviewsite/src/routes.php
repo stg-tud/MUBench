@@ -48,11 +48,6 @@ $app->group('/private', function () use ($app, $settings) {
             return $app->helper->index_route($args, $this, $response);
         });
 
-    $app->get('/status',
-        function (Request $request, Response $response, array $args) use ($app) {
-            return $app->helper->review_status($request, $args, $app, $this, $response);
-        });
-
     $app->get('/{exp:ex[1-3]}',
         function (Request $request, Response $response, array $args) use ($app) {
             return $app->helper->experiment_route($args, $this, $response);
