@@ -51,26 +51,6 @@ Docker limits the computing resources available to a docker run. You can adjust 
 
 Remember that you may also have to provide more memory to the JVM for the detector run, for example, by passing `--java-options Xmx8G` to the pipeline invocation.
 
-### Review Site
-
-#### Server Requirements
-
-* PHP 5.6
-* MySQL 5.6
-* PHP Extensions:
-  * php5.6xml
-  * php5.6mbstring
-
-#### Setup
-
-1. `$> ./build_backend`
-2. Set your database credentials and configure your reviewer credentials (`users`) in [`./php_backend/src/settings.php`](https://github.com/stg-tud/MUBench/blob/master/mubench.reviewsite/src/settings.php).
-3. Upload the contents of `./php_backend` to your webserver.
-4. Give read/write permissions on the upload and logs directory.
-5. Import [`./php_backend/init_db.sql`](https://github.com/stg-tud/MUBench/blob/master/mubench.reviewsite/init_db.sql) into your database.
-6. Use `./mubench publish X -s http://<your-sites.url>/index.php/` to publish to your review site. Check `./mubench publish -h` for further details.
-
-
 ## Run MUBench
 
 MUBench is controlled via the command line. Run `./mubench -h` (`./mubench.bar -h`) for details about the available commands and options.
@@ -89,73 +69,11 @@ You may run individual benchmark steps. See `./mubench -h` for details.
 
 ### Review Findings
 
-We are rebuilding the review site. Please come back in a bit.
-
-### <a name="own-detector" /> Benchmark Your Own Detector
-
-For MUBench to run your detector and interpret its results, your detector's executable needs to comply with MUBench's command-line interface. The easiest way to achieve this is for your entry-point class to extend `MuBenchRunner`, which comes with the Maven dependency [`de.tu-darmstadt.stg:mubench.cli`](https://github.com/stg-tud/MUBench/tree/master/mubench.cli) via our repository at `http://www.st.informatik.tu-darmstadt.de/artifacts/mubench/mvn/`.
-
-A typical MUBench Runner looks like this:
-
-    public class XYRunner extends MuBenchRunner {
-      public static void main(String[] args) {
-        new XYRunner().run(args);
-      }
-      
-      void detectOnly(CodePath patternPath, CodePath targetPath, DetectorOutput output) throws Exception {
-        ...
-      }
-      
-      void mineAndDetect(CodePath trainingAndTargetPath, DetectorOutput output) throws Exception {
-        ...
-      }
-    }
-
-Currently, Runners should support two run modes:
-
-1. "Detect Only"-mode, where the detector is provided with hand-crafted patterns (a one-method class implementing the correct usage) and some target code to find violations of these patterns in. All input is provided as Java source code and corresponding Bytecode.
-2. "Mine and Detect"-mode, where the detector should mine its own patterns in the provided code base and find violations in that same code base. Again, input is provided as source code and corresponding Bytecode.
-
-The `DetectorOutput` is essentially a collection where you add your detector's findings. MUBench expects you to add the findings ordered by the detector's confidence, descending.
-
-To register your own detector to MUBench, the following steps are necessary:
-
-1. Create a new subfolder `my-detector` in the [detectors](https://github.com/stg-tud/MUBench/tree/master/detectors) folder. `my-detector` will be the Id used to refer to your detector when running experiments.
-2. Add the executable JAR with your detector as `my-detector/my-detector.jar`.
-3. Run MUBench as usual.
-
-### Run on Your Project
-
-MUBench is designed to run detectors on the benchmark projects that come with the it. Nevertheless, you can also use MUBench to run a detector on your own code, with a few simple steps:
-
-1. Create the folder `data/<project>/versions/<version>/compile`, with arbitrary names for `project` and `version`.
-2. Copy/move your project code into that `compile` folder.
-3. Create a file `data/<project>/project.yml` with the content:
-    ```
-    name: <Your Project's Display Name>
-    repository:
-      type: synthetic
-    ```
-    This instructs MUBench to use the `compile` folder as the project's "repository". Note that MUBench will copy the entire folder in its compile phase.
-    
-4. Create a file `data/<project>/versions/<version>/version.yml` with the content:
-    ```
-    build:
-      src: "<src-root>"
-      commands:
-        - echo "fake build"
-      classes: "<classes-root>"
-    misuses: []
-    revision: 0
-    ```
-    
-    The values for `src-root`/`classes-root` are the relative paths to the source/classes folders within the `compile` folder. If you pre-build your project and, thus, have the classes already available, you have to use the fake-build command above to satisfy MUBench. If you need to execute any commands in order to build the project, you may list these below the `commands` key. Our Docker container comes with a couple of build tools, such as Maven, Gradle, and Ant, but may not satisfy all your build requirements. If you only want to run detectors that work on source code, such as MuDetect, you can stay with the fake build, too.
-5. Run a detector, e.g., MuDetect, with `./mubench detect MuDetect 2 --only <project>.<version>`.
-6. To upload the results to a review site, run `./mubench publish findings MuDetect 2 --only <project>.<version> -s http://<your-sites.url>/index.php/ -u <username> -p <password>` (this will also run detection, if necessary).
+We are rebuilding the [review site](https://github.com/stg-tud/MUBench/tree/master/mubench.reviewsite). Please come back in a bit.
 
 ## Contribute to MUBench
 
-We want MUBench to grow, so please be welcome to contribute to the dataset and add your detectors to the benchmark.
+We want MUBench to grow, so please be welcome to contribute to the dataset and [add your detectors](https://github.com/stg-tud/MUBench/tree/master/mubench.cli) to the benchmark.
 
 ### Add Misuses
 
