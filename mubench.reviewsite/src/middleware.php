@@ -35,4 +35,4 @@ $app->add(function (Request $request, Response $response, $next) use ($app) {
 $logger = $app->getContainer()['logger'];
 $app->db = new DBConnection(new \Pixie\Connection($settings['db']['driver'], $settings['db']), $logger);
 $app->dir = new DirectoryHelper($settings['upload'], $logger);
-$app->helper = new RoutesHelper($logger, $settings, $app->db);
+$app->helper = new RoutesHelper($logger, $settings['site_base_url'], $app->db);

@@ -71,7 +71,7 @@ class SlimTestCase extends DatabaseTestCase
 
         $logger = $app->getContainer()['logger'];
         $app->dir = new DirectoryHelper($settings['upload'], $logger);
-        $app->helper = new RoutesHelper($logger, $settings, $this->db);
+        $app->helper = new RoutesHelper($logger, $settings['site_base_url'], $this->db);
         // Routes
         require __DIR__ . '/../src/routes.php';
 

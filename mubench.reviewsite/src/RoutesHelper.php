@@ -14,7 +14,6 @@ class RoutesHelper
 {
 
     protected $logger;
-    protected $settings;
     protected $site_base_url;
     protected $public_url_prefix;
     protected $private_url_prefix;
@@ -23,12 +22,11 @@ class RoutesHelper
     protected $path;
     protected $origin_path;
 
-    public function __construct(Logger $logger, $settings, DBConnection $db)
+    public function __construct(Logger $logger, $site_base_url, DBConnection $db)
     {
         $this->logger = $logger;
         $this->db = $db;
-        $this->settings = $settings;
-        $this->site_base_url = $settings['site_base_url'];
+        $this->site_base_url = $site_base_url;
         $this->public_url_prefix = $this->site_base_url . "index.php/";
         $this->private_url_prefix = $this->public_url_prefix . "private/";
         $this->user = "";
