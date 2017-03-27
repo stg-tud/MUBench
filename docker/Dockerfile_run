@@ -33,6 +33,16 @@ RUN make
 RUN make install
 
 # python setup
+RUN apt-get -y install gcc
+RUN apt-get -y install build-essential
+ADD http://pyyaml.org/download/libyaml/yaml-0.1.7.tar.gz /libyaml/
+WORKDIR /libyaml
+RUN tar xvf yaml-0.1.7.tar.gz
+WORKDIR /libyaml/yaml-0.1.7
+RUN ./configure
+RUN make
+RUN make install
+
 RUN apt-get install python3.5 python3.5-dev
 RUN pip install virtualenv
 RUN virtualenv -p python3.5 $HOME/venv/3.5
