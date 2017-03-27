@@ -82,7 +82,11 @@ class PublishFindingsTask(ProjectVersionTask):
                 self.__post(project, version, runtime, number_of_findings, result, potential_hits_slice)
             logger.info("Findings published.")
         except RequestException as e:
-            logger.error("%d %s: %s", e.response.status_code, e.response.reason, e.response.text)
+            response = e.response
+            if response:
+                logger.error("ERROR: %d %s: %s", response.status_code, response.reason, response.text)
+            else:
+                logger.error("ERROR: %s", e)
 
         return self.ok()
 

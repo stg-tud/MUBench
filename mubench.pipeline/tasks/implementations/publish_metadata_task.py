@@ -81,4 +81,8 @@ class PublishMetadataTask(ProjectMisuseTask):
             post(url, self.__metadata, username=self.review_site_user, password=self.review_site_password)
             logger.info("Metadata published.")
         except RequestException as e:
-            logger.error("%d %s: %s", e.response.status_code, e.response.reason, e.response.text)
+            response = e.response
+            if response:
+                logger.error("ERROR: %d %s: %s", response.status_code, response.reason, response.text)
+            else:
+                logger.error("ERROR: %s", e)
