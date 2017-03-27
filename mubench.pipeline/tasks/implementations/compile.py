@@ -155,7 +155,69 @@ class Compile(ProjectVersionTask):
     def _compile(commands: List[str], project_dir: str) -> None:
         logger = logging.getLogger("compile.tasks.exec")
         for command in commands:
-            Shell.exec(command, cwd=project_dir, logger=logger)
+            if command.startswith("mvn "):
+                command = "mvn dependency:build-classpath " + command[4:]
+                output = Shell.exec(command, cwd=project_dir,logger=logger)
+                dependencies = Compile._parse_maven_classpath(output)
+                Compile._copy_classpath(dependencies, project_dir)
+            elif command.startswith("ant "):
+                command += " -debug -verbose"
+                output = Shell.exec(command, cwd=project_dir,logger=logger)
+                dependencies = Compile._parse_ant_classpath(output)
+                Compile._copy_classpath(dependencies, project_dir)
+            elif command.startswith("gradle "):
+                output = Shell.exec(command,cwd=project_dir,logger=logger)
+                shutil.copy('data/classpath.gradle', project_dir)
+                output = Shell.exec("gradle :printClasspath -b classpath.gradle", cwd=project_dir, logger=logger)
+                dependencies = Compile._parse_gradle_classpath(output)
+                Compile._copy_classpath(dependencies, project_dir)
+            else:
+                Shell.exec(command, cwd=project_dir, logger=logger)
+
+    @staticmethod
+    def _parse_maven_classpath(shell_output: str) -> List[str]:
+        search_str = "Dependencies classpath:\n"
+        offset = len(search_str)
+        start_idx = shell_output.find(search_str)
+        end_idx = shell_output.find("[INFO]", start_idx)
+        classpath = shell_output[start_idx + offset:end_idx]
+        if "\n" in classpath:
+            classpath = classpath.replace("\n", "")
+        return classpath.split(":")
+
+    @staticmethod
+    def _parse_ant_classpath(shell_output: str) -> List[str]:
+        start_str = "[javac] '-classpath'\n"
+        end_str = "[javac] '"
+        offset_start = len(start_str)
+        offset_end = len(end_str)
+        start_idx = shell_output.find(start_str)
+        line_idx = shell_output.find(end_str, start_idx + offset_start)
+        line_end_idx = shell_output.find("'\n", line_idx+offset_end)+2
+        classpath = shell_output[line_idx+offset_end:line_end_idx]
+        filtered_deps = []
+        for dep in classpath.split(":"):
+            if "'\n" in dep:
+                dep = dep[:2]
+            if ".jar" in dep:
+                filtered_deps.append(dep)
+        return filtered_deps
+
+    @staticmethod
+    def _parse_gradle_classpath(shell_output: str) -> List[str]:
+        start_idx = shell_output.find("\n")
+        end_idx = shell_output.find("\n\nB", start_idx)
+        classpath = shell_output[start_idx+1:end_idx]
+        return classpath.split("\n")
+
+    @staticmethod
+    def _copy_classpath(dependencies: str, project_dir: str):
+        dependencies_dir = project_dir[:-5] + "dependencies"
+        remove_tree(dependencies_dir)
+        makedirs(dirname(dependencies_dir + "/"), exist_ok=True)
+        for dependency in dependencies:
+            shutil.copy(dependency, dependencies_dir)
+
 
     @staticmethod
     def __copy_misuse_classes(classes_path, misuses, destination):

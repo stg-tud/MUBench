@@ -4,7 +4,7 @@ from os.path import join, exists, dirname, relpath
 from shutil import rmtree
 from tempfile import mkdtemp
 from typing import List
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, patch
 
 from nose.tools import assert_equals
 
@@ -47,6 +47,12 @@ class TestCompile:
         self.pattern_sources_path = join(self.base_path, "patterns-src")
         self.pattern_classes_path = join(self.base_path, "patterns-classes")
 
+        self.uut = Compile(self.checkout_base_path, self.checkout_base_path, False)
+
+    def teardown(self):
+        rmtree(self.temp_dir, ignore_errors=True)
+
+    def mock_with_fake_compile(self):
         def mock_compile(commands: List[str], cwd: str):
             source_path = join(cwd, self.source_dir)
             class_path = join(cwd, "classes")
@@ -58,13 +64,10 @@ class TestCompile:
                     create_file(join(class_path, package, file))
                     print("fake compile: {}".format(join(class_path, package, file)))
 
-        self.uut = Compile(self.checkout_base_path, self.checkout_base_path, False)
         self.uut._compile = MagicMock(side_effect=mock_compile)
 
-    def teardown(self):
-        rmtree(self.temp_dir, ignore_errors=True)
-
     def test_copies_original_sources(self):
+        self.mock_with_fake_compile()
         create_file(join(self.source_path, "a.file"))
 
         self.uut.process_project_version(self.project, self.version)
@@ -72,6 +75,7 @@ class TestCompile:
         assert exists(join(self.original_sources_path, "a.file"))
 
     def test_copies_misuse_sources(self):
+        self.mock_with_fake_compile()
         create_file(join(self.source_path, "mu.file"))
         self.version.misuses.append(create_misuse("1", meta={"location": {"file": "mu.file"}}, project=self.project))
 
@@ -80,6 +84,7 @@ class TestCompile:
         assert exists(join(self.misuse_source_path, "mu.file"))
 
     def test_skips_copy_of_original_sources_if_copy_exists(self):
+        self.mock_with_fake_compile()
         makedirs(self.original_sources_path)
         create_file(join(self.source_path, "b.file"))
 
@@ -88,6 +93,7 @@ class TestCompile:
         assert not exists(join(self.original_sources_path, "b.file"))
 
     def test_forces_copy_of_original_sources(self):
+        self.mock_with_fake_compile()
         makedirs(self.original_sources_path)
         create_file(join(self.source_path, "a.file"))
         self.uut.force_compile = True
@@ -97,6 +103,7 @@ class TestCompile:
         assert exists(join(self.original_sources_path, "a.file"))
 
     def test_forces_clean_copy_of_original_sources(self):
+        self.mock_with_fake_compile()
         create_file(join(self.original_sources_path, "old.file"))
         self.uut.force_compile = True
 
@@ -105,6 +112,7 @@ class TestCompile:
         assert not exists(join(self.original_sources_path, "old.file"))
 
     def test_copies_pattern_sources(self):
+        self.mock_with_fake_compile()
         self.create_misuse_with_pattern("m", "a.java")
 
         self.uut.process_project_version(self.project, self.version)
@@ -112,6 +120,7 @@ class TestCompile:
         assert exists(join(self.pattern_sources_path, "m", "a.java"))
 
     def test_skips_copy_of_pattern_sources_if_copy_exists(self):
+        self.mock_with_fake_compile()
         self.create_misuse_with_pattern("m", "a.java")
         makedirs(join(self.pattern_sources_path, "m"))
 
@@ -120,6 +129,7 @@ class TestCompile:
         assert not exists(join(self.pattern_sources_path, "m", "a.java"))
 
     def test_forces_copy_of_pattern_sources(self):
+        self.mock_with_fake_compile()
         self.create_misuse_with_pattern("m", "a.java")
         makedirs(join(self.pattern_sources_path, "m"))
         self.uut.force_compile = True
@@ -129,6 +139,7 @@ class TestCompile:
         assert exists(join(self.pattern_sources_path, "m", "a.java"))
 
     def test_skips_copy_of_pattern_sources_if_no_pattern(self):
+        self.mock_with_fake_compile()
         self.create_misuse_with_pattern("mwp", "a.java")
         makedirs(join(self.pattern_sources_path, "mwp"))
         self.version._MISUSES.append(create_misuse("mwop", project=self.project))
@@ -138,6 +149,7 @@ class TestCompile:
         assert not exists(join(self.pattern_sources_path, "mwp", "a.java"))
 
     def test_skips_if_no_config(self):
+        self.mock_with_fake_compile()
         del self.version._YAML["build"]
 
         response = self.uut.process_project_version(self.project, self.version)
@@ -145,6 +157,7 @@ class TestCompile:
         assert_equals([self.version.id], response)
 
     def test_passes_compile_commands(self):
+        self.mock_with_fake_compile()
         self.version._YAML["build"]["commands"] = ["a", "b"]
 
         self.uut.process_project_version(self.project, self.version)
@@ -152,6 +165,7 @@ class TestCompile:
         self.uut._compile.assert_called_with(["a", "b"], self.build_path)
 
     def test_copies_additional_sources(self):
+        self.mock_with_fake_compile()
         create_file(join(self.version_path, "compile", "additional.file"))
 
         self.uut.process_project_version(self.project, self.version)
@@ -159,6 +173,7 @@ class TestCompile:
         assert exists(join(self.build_path, "additional.file"))
 
     def test_skips_compile_if_classes_exist(self):
+        self.mock_with_fake_compile()
         makedirs(self.original_classes_path)
         create_file(join(self.source_path, "some.file"))
 
@@ -167,6 +182,7 @@ class TestCompile:
         assert not exists(join(self.original_classes_path, "some.file"))
 
     def test_forces_compile(self):
+        self.mock_with_fake_compile()
         makedirs(self.original_classes_path)
         create_file(join(self.source_path, "some.file"))
         self.uut.force_compile = True
@@ -176,6 +192,7 @@ class TestCompile:
         assert exists(join(self.original_classes_path, "some.file"))
 
     def test_skips_on_build_error(self):
+        self.mock_with_fake_compile()
         self.uut._compile.side_effect = CommandFailedError("-cmd-", "-error message-")
 
         response = self.uut.process_project_version(self.project, self.version)
@@ -183,6 +200,7 @@ class TestCompile:
         assert_equals([self.version.id], response)
 
     def test_copies_misuse_classes(self):
+        self.mock_with_fake_compile()
         create_file(join(self.source_path, "mu.java"))
         self.version.misuses.append(create_misuse("1", meta={"location": {"file": "mu.java"}}, project=self.project))
 
@@ -191,6 +209,7 @@ class TestCompile:
         assert exists(join(self.misuse_classes_path, "mu.class"))
 
     def test_copies_misuse_inner_classes(self):
+        self.mock_with_fake_compile()
         def mock_compile(commands: List[str], cwd: str):
             class_path = join(cwd, "classes")
             makedirs(class_path, exist_ok=True)
@@ -209,6 +228,7 @@ class TestCompile:
         assert exists(join(self.misuse_classes_path, "mu$Inner.class"))
 
     def test_compiles_patterns(self):
+        self.mock_with_fake_compile()
         self.create_misuse_with_pattern("m", "a.java")
 
         self.uut.process_project_version(self.project, self.version)
@@ -216,13 +236,22 @@ class TestCompile:
         assert exists(join(self.pattern_classes_path, "m", "a.class"))
 
     def test_compiles_patterns_in_package(self):
+        self.mock_with_fake_compile()
         self.create_misuse_with_pattern("m", join("a", "b.java"))
 
         self.uut.process_project_version(self.project, self.version)
 
         assert exists(join(self.pattern_classes_path, "m", "a", "b.class"))
 
+    @patch("tasks.implementations.compile.Shell.exec")
+    def test_compile_with_maven(self, mockShell):
+        self.version._YAML["build"]["commands"] = ["mvn build"]
+
+        self.uut.process_project_version(self.project, self.version)
+        assert_equals(mockShell.mock_calls[0][1], ("mvn dependency:build-classpath build",))
+
     def test_skips_compile_patterns_if_pattern_classes_exist(self):
+        self.mock_with_fake_compile()
         self.create_misuse_with_pattern("m", "a.java")
         makedirs(join(self.pattern_classes_path, "m"))
 
@@ -231,6 +260,7 @@ class TestCompile:
         assert not exists(join(self.pattern_classes_path, "m", "a.class"))
 
     def test_forces_compile_patterns(self):
+        self.mock_with_fake_compile()
         self.create_misuse_with_pattern("m", "a.java")
         makedirs(join(self.pattern_classes_path, "m"))
         self.uut.force_compile = True
@@ -240,6 +270,7 @@ class TestCompile:
         assert exists(join(self.pattern_classes_path, "m", "a.class"))
 
     def test_skips_compile_patterns_if_no_pattern(self):
+        self.mock_with_fake_compile()
         self.create_misuse_with_pattern("mwp", "a.java")
         makedirs(join(self.pattern_classes_path, "mwp"))
         self.version._MISUSES.append(create_misuse("mwop", project=self.project))
