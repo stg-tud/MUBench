@@ -1,4 +1,24 @@
- <div id="header">
+<?php
+/**
+ * @var boolean $logged whether the user is logged in or not
+ * @var string $base_url the site's public base url
+ * @var string $private_url the site's private base url
+ * @var string $route_url the current route path
+ *
+ * @var string $experiment the id of the experiment currently displayed, if any
+ * @var string $detector the id of the detector currently displayed, if any
+ */
+?>
+<div id="header">
+    <div id="title">
+        <a href="https://github.com/stg-tud/MUBench" title="MUBench Project">
+            <img id="logo" src="<?= $root_url ?>/assets/images/mubench_logo.png" />
+        </a>
+        <a href="<?= $root_url ?>" title="Home">
+            Review<br/>Site
+        </a>
+    </div>
+
     <ol id="menu">
         <?php if(!$logged) : ?>
             <li><a href="<?= $private_url; ?><?= $route_url; ?>">Login</a></li>
@@ -25,4 +45,4 @@
             <?php endif; ?>
         <?php endif; ?>
     </ol>
- </div>
+</div>
