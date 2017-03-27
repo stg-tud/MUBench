@@ -79,6 +79,7 @@ class DBConnection
 
     public function getRuns(Detector $detector, $exp)
     {
+        /** @var array $runs */
         $runs = $this->table('stats')->where('exp', $exp)->where('detector', $detector->id)->orderBy(['project', 'version'])->get();
 
         foreach ($runs as &$run) {
@@ -193,14 +194,15 @@ class DBConnection
         foreach($runs as $run){
             if(strcmp($run['project'], $project) == 0 && strcmp($run['version'], $version) == 0){
                 foreach($run['misuses'] as $m){
+                    /** @var Misuse $m */
                     if($m->id === $misuse){
                         return $m;
-                        break;
                     }
                 }
                 break;
             }
         }
+        throw new \InvalidArgumentException("no such misuse $experiment, $detector, $project, $version, $misuse");
     }
 
     public function getAllReviews($reviewer){
