@@ -4,6 +4,7 @@
  * @var $results array
  * @var $ex2_review_size int max number of reviews (per project) to include in statistics
  */
+use MuBench\ReviewSite\Model\RunsResult;
 ?>
 <html>
 <head>
@@ -54,7 +55,7 @@
     </tr>
     </thead>
 
-    <?php foreach ($results["ex1"] as $result) : /** @var $result \MuBench\RunsResult */ ?>
+    <?php foreach ($results["ex1"] as $result) : /** @var $result RunsResult */ ?>
         <tbody>
         <tr>
             <td><?= $result->getDisplayName() ?></td>
@@ -124,7 +125,7 @@
     </tr>
     </thead>
 
-    <?php foreach ($results["ex2"] as $result) : /** @var $result \MuBench\RunsResult */ ?>
+    <?php foreach ($results["ex2"] as $result) : /** @var $result RunsResult */ ?>
         <tbody>
         <tr>
             <td><?= $result->getDisplayName() ?></td>
@@ -188,7 +189,7 @@
     </tr>
     </thead>
 
-    <?php foreach ($results["ex3"] as $key => $result) : /** @var \MuBench\RunsResult $results */ ?>
+    <?php foreach ($results["ex3"] as $key => $result) : /** @var RunsResult $results */ ?>
         <tbody>
         <tr>
             <td><?= $result->getDisplayName() ?></td>
