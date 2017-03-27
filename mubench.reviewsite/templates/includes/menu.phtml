@@ -36,7 +36,6 @@
         <?php
         $url_prefix = $logged ? $private_url : $base_url;
         ?>
-        <li><a href="<?= $url_prefix ?>">Home</a></li>
         <?php if($experiment) : ?>
             <li><a href="<?= $url_prefix . $experiment ?>"><?= $experiment ?></a></li>
 
