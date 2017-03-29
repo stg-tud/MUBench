@@ -57,22 +57,27 @@ nav ol {
     list-style-type: decimal;
     padding: 0;
     margin: 0;
-    width: 100%;
 }
 
 nav ol li {
     display: block;
     position: relative;
     float: left;
-    background: lightgrey;
     min-width: 160px;
-    margin-right: 5pt;
-    margin-bottom: 5pt;
+    margin: 0 5pt 5pt 0;
     cursor: pointer;
+    background: white;
+    border: 1px solid grey;
 }
 
 nav ol li.right {
     float: right;
+}
+
+nav ol li.active {
+    background: lightgrey;
+    font-style: italic;
+    border-width: 2px;
 }
 
 nav ol li span {
@@ -92,13 +97,12 @@ nav ol li a {
     font-weight: bold;
 }
 
-nav ol li:hover { background: gray; }
+nav ol li:hover { background: lightgrey; }
 
 nav li ul {
     list-style: none;
     padding: 0;
     margin: 0;
-    background: gray;
     display: none;
 }
 
@@ -109,9 +113,8 @@ nav li:hover > ul {
 
 nav li:hover li {
     float: none;
+    margin: 0;
 }
-
-nav li:hover li:hover { background: gray; }
 
 nav ol:before,
 nav ol:after {

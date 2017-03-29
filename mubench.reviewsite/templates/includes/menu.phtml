@@ -35,11 +35,14 @@ use MuBench\ReviewSite\Model\Experiment;
                 <?php include "menu-experiment.phtml" ?>
             <?php endforeach ?>
             <?php $experiment = $this_exp ?>
-            <li><a href="<?= $public_url_prefix ?>stats">Statistics</a></li>
+            <li class="<?= strpos($path, "/stats") !== false ? "active" : "" ?>">
+                <a href="<?= $public_url_prefix ?>stats">Statistics</a></li>
 
             <?php if($user) : ?>
-                <li class="right"><a href="<?= $private_url_prefix ?>overview">My Reviews</a></li>
-                <li class="right"><a href="<?= $private_url_prefix ?>todo">Open Reviews</a></li>
+                <li class="right <?= strpos($path, "/overview") !== false ? "active" : "" ?>">
+                    <a href="<?= $private_url_prefix ?>overview">My Reviews</a></li>
+                <li class="right <?= strpos($path, "/todo") !== false ? "active" : "" ?>">
+                    <a href="<?= $private_url_prefix ?>todo">Open Reviews</a></li>
             <?php else: ?>
                 <li class="right"><a href="<?= $private_url_prefix . $path ?>">Login</a></li>
             <?php endif; ?>
