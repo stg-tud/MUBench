@@ -1,18 +1,18 @@
 <?php
 
+use Interop\Container\ContainerInterface;
+use MuBench\ReviewSite\DBConnection;
 use MuBench\ReviewSite\Error;
 use Slim\Views\PhpRenderer;
 
 $container = $app->getContainer();
 
-// view renderer
-$container['renderer'] = function ($c) {
+$container['renderer'] = function (ContainerInterface $c) {
     $settings = $c->get('settings')['renderer'];
     return new PhpRenderer($settings['template_path']);
 };
 
-// monolog
-$container['logger'] = function ($c) {
+$container['logger'] = function (ContainerInterface $c) {
     $settings = $c->get('settings')['logger'];
     $logger = new Monolog\Logger($settings['name']);
     $logger->pushProcessor(new Monolog\Processor\UidProcessor());
@@ -24,6 +24,12 @@ $container['logger'] = function ($c) {
     return $logger;
 };
 
-$container['errorHandler'] = function ($c) {
+$container['errorHandler'] = function (ContainerInterface $c) {
     return new Error($c['logger'], $c->get('settings')['settings']['displayErrorDetails']);
+};
+
+$container['database'] = function (ContainerInterface $c) {
+    $settings = $c->get('db');
+    $logger = $c->get('logger');
+    return new DBConnection(new \Pixie\Connection($settings['driver'], $settings), $logger);
 };

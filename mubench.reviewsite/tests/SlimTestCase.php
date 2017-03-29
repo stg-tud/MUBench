@@ -61,18 +61,12 @@ class SlimTestCase extends DatabaseTestCase
     }
 
     public function getSlimInstance(){
-        // Prepare a mock environment
-        // Instantiate the app
         $settings = require __DIR__ . '/../src/settings.php';
         $app = new \Slim\App($settings);
 
-        // Set up dependencies
         require __DIR__ . '/../src/dependencies.php';
-
-        $logger = $app->getContainer()['logger'];
-        $app->dir = new DirectoryHelper($settings['upload'], $logger);
-        $app->helper = new RoutesHelper($logger, $settings['site_base_url'], $this->db);
-        // Routes
+        $container = $app->getContainer();
+        $container['database'] = function () { return $this->db; };
         require __DIR__ . '/../src/routes.php';
 
         return $app;

@@ -1,103 +1,44 @@
 <?php
+/** @var \Slim\App $app */
 
 use MuBench\ReviewSite\Controller\FindingsUploader;
 use MuBench\ReviewSite\Controller\MetadataUploader;
 use MuBench\ReviewSite\Controller\ReviewUploader;
 use MuBench\ReviewSite\Controller\SnippetUploader;
+use MuBench\ReviewSite\DBConnection;
+use MuBench\ReviewSite\DirectoryHelper;
+use MuBench\ReviewSite\Model\Experiment;
+use MuBench\ReviewSite\RoutesHelper;
 use Slim\Http\Request;
 use Slim\Http\Response;
 
 require_once "route_utils.php";
 
-// Routes
-$app->get('/',
-    function (Request $request, Response $response, array $args) use ($app) {
-        return $app->helper->index_route($args, $this, $response, false);
-    });
+$logger = $app->getContainer()['logger'];
+$database = $app->getContainer()['database'];
+$renderer = $app->getContainer()['renderer'];
+// TODO rename RoutesHelper to ResultsViewController
+$routesHelper = new RoutesHelper($database, $renderer, $logger, $settings['upload'], $settings['site_base_url']);
 
-$app->get('/{exp:ex[1-3]}/{detector}',
-    function (Request $request, Response $response, array $args) use ($app) {
-        return $app->helper->detect_route($args, $this, $response, false);
-    });
+$app->get('/', [$routesHelper, 'index']);
+$app->get('/{exp:ex[1-3]}/{detector}', [$routesHelper, 'detector']);
+$app->get('/{exp:ex[1-3]}/{detector}/{project}/{version}/{misuse}', [$routesHelper, 'review']);
+$app->get('/{exp:ex[1-3]}/{detector}/{project}/{version}/{misuse}/{reviewer}', [$routesHelper, 'review']);
+$app->get('/stats', [$routesHelper, 'stats']);
 
-$app->get('/{exp:ex[1-3]}/{detector}/{project}/{version}/{misuse}',
-    function (Request $request, Response $response, array $args) use ($app) {
-        return $app->helper->review_route($args, $this, $response, false, false);
-    });
-
-$app->get('/{exp:ex[1-3]}/{detector}/{project}/{version}/{misuse}/{reviewer}',
-    function (Request $request, Response $response, array $args) use ($app) {
-        return $app->helper->review_route($args, $this, $response, false, true);
-    });
-
-$app->get('/stats',
-    function (Request $request, Response $response, array $args) use ($app) {
-        $ex2_review_size = $request->getQueryParam("ex2_review_size", 20);
-        return $app->helper->stats_route($this, $response, $args, $ex2_review_size);
-    });
-
-$app->group('/private', function () use ($app, $settings) {
-
-    $app->get('/',
-        function (Request $request, Response $response, array $args) use ($app) {
-            return $app->helper->index_route($args, $this, $response);
-        });
-
-    $app->get('/{exp:ex[1-3]}/{detector}',
-        function (Request $request, Response $response, array $args) use ($app) {
-            return $app->helper->detect_route($args, $this, $response);
-        });
-
-    $app->post('/review/{exp:ex[1-3]}/{detector}',
-        function (Request $request, Response $response, array $args) use ($app) {
-            $obj = $request->getParsedBody();
-            $uploader = new ReviewUploader($app->db, $this->logger);
-            $uploader->processReview($obj);
-            if (strcmp($obj["origin"], "") !== 0) {
-                return $response->withRedirect('../../../' . $obj["origin"]);
-            }
-            return $response->withRedirect('../../' . $args['exp'] . "/" . $args['detector']);
-        });
-
-    $app->post('/snippet',
-        function (Request $request, Response $response, array $args) use ($app) {
-            $obj = $request->getParsedBody();
-            $uploader = new SnippetUploader($app->db, $this->logger);
-            $uploader->processSnippet($obj);
-            return $response->withRedirect('../' . $obj['path']);
-        });
-
-    $app->get('/{exp:ex[1-3]}/{detector}/{project}/{version}/{misuse}',
-        function (Request $request, Response $response, array $args) use ($app) {
-            return $app->helper->review_route($args, $this, $response, true);
-        });
-
-    $app->get('/{exp:ex[1-3]}/{detector}/{project}/{version}/{misuse}/{reviewer}',
-        function (Request $request, Response $response, array $args) use ($app) {
-            return $app->helper->review_route($args, $this, $response, true);
-        });
-
-    $app->get('/stats',
-        function (Request $request, Response $response, array $args) use ($app) {
-            $ex2_review_size = $request->getQueryParam("ex2_review_size", 20);
-            return $app->helper->stats_route($this, $response, $args, $ex2_review_size);
-        });
-
-    $app->get('/overview',
-        function (Request $request, Response $response, array $args) use ($app) {
-            $app->helper->overview_route($args, $this, $response);
-        });
-
-    $app->get('/todo',
-        function (Request $request, Response $response, array $args) use ($app) {
-            $app->helper->todo_route($args, $this, $response);
-        });
+$app->group('/private', function () use ($app, $routesHelper, $database) {
+    $app->get('/', [$routesHelper, 'index']);
+    $app->get('/{exp:ex[1-3]}/{detector}', [$routesHelper, 'detector']);
+    $app->get('/{exp:ex[1-3]}/{detector}/{project}/{version}/{misuse}', [$routesHelper, 'review']);
+    $app->get('/{exp:ex[1-3]}/{detector}/{project}/{version}/{misuse}/{reviewer}', [$routesHelper, 'review']);
+    $app->get('/stats', [$routesHelper, 'stats']);
+    $app->get('/overview', [$routesHelper, 'overview']);
+    $app->get('/todo', [$routesHelper, 'todos']);
 });
 
-$app->group('/api', function () use ($app) {
-
-    $app->post('/upload/[{experiment:ex[1-3]}]',
-        function (Request $request, Response $response, array $args) use ($app) {
+$app->group('/api/upload', function () use ($app, $settings, $database) {
+    $app->post('/[{experiment:ex[1-3]}]',
+        function (Request $request, Response $response, array $args) use ($settings, $database) {
             $experiment = $args['experiment'];
             $run = decodeJsonBody($request);
             if (!$run) {
@@ -118,29 +59,48 @@ $app->group('/api', function () use ($app) {
             $hits = $run->{'potential_hits'};
             $this->logger->info("received data for '" . $experiment . "', '" . $project . "." . $version . "' with " . count($hits) . " potential hits.");
 
-            $uploader = new FindingsUploader($app->db, $this->logger);
+            $uploader = new FindingsUploader($database, $this->logger);
             $uploader->processData($experiment, $run);
             $files = $request->getUploadedFiles();
             $this->logger->info("received " . count($files) . " files");
             if ($files) {
+                $directoryHelper = new DirectoryHelper($settings['upload'], $this->logger);
                 foreach ($files as $img) {
-                    $app->dir->handleImage($experiment, $detector, $project, $version, $img);
+                    $directoryHelper->handleImage($experiment, $detector, $project, $version, $img);
                 }
             }
             return $response->withStatus(200);
         });
 
-    $app->post('/upload/metadata',
-        function (Request $request, Response $response, array $args) use ($app) {
+    $app->post('/metadata',
+        function (Request $request, Response $response, array $args) use ($database) {
             $obj = decodeJsonBody($request);
             if (!$obj) {
                 return error_response($response, $this->logger, 400, "empty: " . print_r($request->getBody(), true));
             }
-            $uploader = new MetadataUploader($app->db, $this->logger);
+            $uploader = new MetadataUploader($database, $this->logger);
             foreach ($obj as $o) {
                 $uploader->processMetaData($o);
             }
             return $response->withStatus(200);
         });
 
+    $app->post('/review/{exp:ex[1-3]}/{detector}',
+        function (Request $request, Response $response, array $args) use ($database) {
+            $obj = $request->getParsedBody();
+            $uploader = new ReviewUploader($database, $this->logger);
+            $uploader->processReview($obj);
+            if (strcmp($obj["origin"], "") !== 0) {
+                return $response->withRedirect('../../../' . $obj["origin"]);
+            }
+            return $response->withRedirect('../../' . $args['exp'] . "/" . $args['detector']);
+        });
+
+    $app->post('/snippet',
+        function (Request $request, Response $response, array $args) use ($database) {
+            $obj = $request->getParsedBody();
+            $uploader = new SnippetUploader($database, $this->logger);
+            $uploader->processSnippet($obj);
+            return $response->withRedirect('../' . $obj['path']);
+        });
 });

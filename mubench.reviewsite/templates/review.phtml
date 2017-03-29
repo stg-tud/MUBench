@@ -5,6 +5,8 @@
  * @var string $site_base_url
  * @var string $public_url_prefix
  * @var string $private_url_prefix
+ * @var string $api_url_prefix
+ * @var string $uploads_url_prefix
  * @var string $url_prefix the public or private url prefix, depending on whether the user is logged in
  *
  * @var string $path the current route path
@@ -47,13 +49,13 @@ use MuBench\ReviewSite\Model\Experiment;
 
         <h1>Review</h1>
         <table class="invisible">
-            <tr><td><b>Detector:</b></td><td><?= htmlspecialchars($detector); ?></td></tr>
+            <tr><td><b>Detector:</b></td><td><?= htmlspecialchars($detector->name); ?></td></tr>
             <tr><td><b>Target:</b></td><td>project '<?= htmlspecialchars($misuse->getProject()); ?>' version <?= htmlspecialchars($misuse->getVersion()); ?></td></tr>
             <?php if($experiment->getId() !== "ex2") : ?>
                 <tr><td><b>Misuse:</b></td><td>misuse '<?= htmlspecialchars($misuse->getShortId()); ?>'</td></tr>
             <?php endif; ?>
         </table>
-        <?php if($exp !== "ex2") : ?>
+        <?php if($experiment->getId() !== "ex2") : ?>
             <h2>Misuse Details</h2>
             <p>Details about the known misuse from the MUBench dataset.</p>
         <?php else : ?>
@@ -61,7 +63,7 @@ use MuBench\ReviewSite\Model\Experiment;
             <p>Anomaly identified by the detector. Please review whether this anomaly corresponds to a misuse.</p>
         <?php endif; ?>
         <table class="invisible fw">
-        <?php if($exp !== "ex2") : ?>
+        <?php if($experiment->getId() !== "ex2") : ?>
             <tr><td class="vtop"><b>Description:</b></td><td><?= htmlspecialchars($misuse->getDescription()); ?></td></tr>
             <tr>
                 <td class="vtop"><b>Fix Description:</b></td>
@@ -83,7 +85,7 @@ use MuBench\ReviewSite\Model\Experiment;
             <tr><td><b>In File:</b></td><td><?= htmlspecialchars($misuse->getFile()); ?></td></tr>
             <tr><td><b>In Method:</b></td><td><?= htmlspecialchars($misuse->getMethod()); ?></td></tr>
             <tr>
-            <?php if($exp !== "ex2") : ?>
+            <?php if($experiment->getId() !== "ex2") : ?>
                 <td class="vtop"><b>Code with Misuse:</b></td>
             <?php else : ?>
                 <td class="vtop"><b>Code with Finding:</b></td>
@@ -97,7 +99,7 @@ use MuBench\ReviewSite\Model\Experiment;
                     <pre class="prettyprint"><code class="language-java">code not found</code></pre>
                     <?php if($user) : ?>
                         <input type="button" onclick="show(this);" value="Add code snippet">
-                        <form  id="snippet_form" style="display:none;" action="<?= $private_url_prefix; ?>snippet" method="post" target="">
+                        <form  id="snippet_form" style="display:none;" action="<?= $api_url_prefix ?>upload/snippet" method="post" target="">
                             <table>
                             <tr>
                                 <td>
@@ -108,8 +110,8 @@ use MuBench\ReviewSite\Model\Experiment;
                             </tr>
                             <tr>
                                 <td>
-                                    <input type="hidden" name="exp" value="<?= htmlspecialchars($exp); ?>">
-                                    <input type="hidden" name="detector" value="<?= htmlspecialchars($detector); ?>">
+                                    <input type="hidden" name="exp" value="<?= htmlspecialchars($experiment->getId()); ?>">
+                                    <input type="hidden" name="detector" value="<?= htmlspecialchars($detector->name); ?>">
                                     <input type="hidden" name="project" value="<?= htmlspecialchars($misuse->getProject()); ?>">
                                     <input type="hidden" name="version" value="<?= htmlspecialchars($misuse->getVersion()); ?>">
                                     <input type="hidden" name="misuse" value="<?= htmlspecialchars($misuse->id); ?>">
@@ -125,7 +127,7 @@ use MuBench\ReviewSite\Model\Experiment;
                     <?php endif; ?>
                 <?php endif; ?>
             </td></tr>
-            <?php if($exp === "ex1") : ?>
+            <?php if($experiment->getId() === "ex1") : ?>
                     <tr><td class="vtop"><b>Code with Pattern(s):</b></td>
                         <td>
                 <?php foreach($misuse->getPatterns() as $pattern) : ?>
@@ -134,10 +136,10 @@ use MuBench\ReviewSite\Model\Experiment;
                         </td></tr>
             <?php endif; ?>
         </table>
-            <form action="<?= $private_url_prefix; ?>review/<?= htmlspecialchars($exp); ?>/<?= htmlspecialchars($detector); ?>" method="post" target="">
+            <form action="<?= $api_url_prefix; ?>upload/review/<?= htmlspecialchars($experiment->getId()); ?>/<?= htmlspecialchars($detector->name); ?>" method="post" target="">
             <?php if($misuse->hasPotentialHits()) : ?>
 
-            <?php if($exp !== "ex2") : ?>
+            <?php if($experiment->getId() !== "ex2") : ?>
             <h2>Potential Hits</h2>
             <p>Findings of the detector that identify an anomaly in the same file and method as the known misuse.</p>
         <?php else : ?>
@@ -219,14 +221,14 @@ use MuBench\ReviewSite\Model\Experiment;
                         <?php endforeach; ?>
                     </ul>
                 <?php elseif(strpos($hit[$column], ".png") !== false) : ?>
-                    <img src="<?= $site_base_url ?>upload/<?= htmlspecialchars($exp); ?>/<?= htmlspecialchars($detector); ?>/<?= htmlspecialchars($misuse->getProject()); ?>/<?= htmlspecialchars($misuse->getVersion()); ?>/<?= htmlspecialchars($hit[$column]); ?>" />
+                    <img src="<?= $uploads_url_prefix . "/" . htmlspecialchars($experiment->getId()); ?>/<?= htmlspecialchars($detector->name); ?>/<?= htmlspecialchars($misuse->getProject()); ?>/<?= htmlspecialchars($misuse->getVersion()); ?>/<?= htmlspecialchars($hit[$column]); ?>" />
                 <?php else : ?>
                     <?= htmlspecialchars($hit[$column]); ?>
                 <?php endif; ?>
             </td>
             <?php endforeach; ?>
             <td>
-                    <?php if($exp === "ex2") : ?>
+                    <?php if($experiment->getId() === "ex2") : ?>
                         <select name="review_hit[<?= htmlspecialchars($hit['rank']); ?>][types][]" title="Violation Types" size="10" multiple <?= ($user && $is_reviewer) ? "" : "disabled" ?>>
                             <?php $add = true ?>
                             <?php if($review) : ?>
@@ -537,8 +539,8 @@ use MuBench\ReviewSite\Model\Experiment;
                     </td></tr>
                 </table>
                 <input type="hidden" name="review_name" value="<?= htmlspecialchars($user); ?>"/>
-                <input type="hidden" name="review_exp" value="<?= htmlspecialchars($exp); ?>">
-                <input type="hidden" name="review_detector" value="<?= htmlspecialchars($detector); ?>">
+                <input type="hidden" name="review_exp" value="<?= htmlspecialchars($experiment->getId()); ?>">
+                <input type="hidden" name="review_detector" value="<?= htmlspecialchars($detector->name); ?>">
                 <input type="hidden" name="review_project" value="<?= htmlspecialchars($misuse->getProject()); ?>">
                 <input type="hidden" name="review_version" value="<?= htmlspecialchars($misuse->getVersion()); ?>">
                 <input type="hidden" name="review_misuse" value="<?= htmlspecialchars($misuse->id); ?>">
