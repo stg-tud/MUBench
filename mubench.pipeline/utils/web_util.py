@@ -2,6 +2,7 @@ import getpass
 import hashlib
 import json
 import shutil
+from contextlib import ExitStack
 from typing import List
 from urllib.request import urlopen
 from os import remove
@@ -87,10 +88,11 @@ def post(url: str, data: object, file_paths: List[str] = None, username: str="",
             password = getpass.getpass("Enter password for '{}': ".format(username))
         request["auth"] = (username, password)
 
-    if file_paths:
-        request["data"] = {"data": request["data"]}
-        files = [(basename(path), (basename(path), open(path, 'rb'), "image/png")) for path in file_paths]
-        request["files"] = files
+    with ExitStack() as es:
+        if file_paths:
+            request["data"] = {"data": request["data"]}
+            request["files"] = [
+                (basename(path), (basename(path), es.enter_context(open(path, 'rb')), 'image/png')) for path in file_paths]
 
-    response = requests.post(**request)
-    response.raise_for_status()
+        response = requests.post(**request)
+        response.raise_for_status()
