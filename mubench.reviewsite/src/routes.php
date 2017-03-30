@@ -86,21 +86,23 @@ $app->group('/api/upload', function () use ($app, $settings, $database) {
         });
 
     $app->post('/review/{exp:ex[1-3]}/{detector}',
-        function (Request $request, Response $response, array $args) use ($database) {
+        function (Request $request, Response $response, array $args) use ($database, $settings) {
             $obj = $request->getParsedBody();
             $uploader = new ReviewUploader($database, $this->logger);
             $uploader->processReview($obj);
+            $site_base_url = $settings['site_base_url'];
             if (strcmp($obj["origin"], "") !== 0) {
-                return $response->withRedirect('../../../' . $obj["origin"]);
+                return $response->withRedirect("{$site_base_url}index.php/{$obj["origin"]}");
+            } else {
+                return $response->withRedirect("{$site_base_url}index.php/private/{$args['exp']}/{$args['detector']}");
             }
-            return $response->withRedirect('../../' . $args['exp'] . "/" . $args['detector']);
         });
 
     $app->post('/snippet',
-        function (Request $request, Response $response, array $args) use ($database) {
+        function (Request $request, Response $response, array $args) use ($database, $settings) {
             $obj = $request->getParsedBody();
             $uploader = new SnippetUploader($database, $this->logger);
             $uploader->processSnippet($obj);
-            return $response->withRedirect('../' . $obj['path']);
+            return $response->withRedirect("{$settings['site_base_url']}index.php/{$obj['path']}");
         });
 });

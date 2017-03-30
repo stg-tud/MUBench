@@ -136,7 +136,7 @@ use MuBench\ReviewSite\Model\Experiment;
                         </td></tr>
             <?php endif; ?>
         </table>
-            <form action="<?= $api_url_prefix; ?>upload/review/<?= htmlspecialchars($experiment->getId()); ?>/<?= htmlspecialchars($detector->name); ?>" method="post" target="">
+            <form action="<?= "{$api_url_prefix}upload/review/{$experiment->getId()}/{$detector->name}" ?>" method="post" target="">
             <?php if($misuse->hasPotentialHits()) : ?>
 
             <?php if($experiment->getId() !== "ex2") : ?>
