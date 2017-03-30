@@ -186,7 +186,8 @@ class DBConnection
     {
         return $this->table($detector->getTableName())
             ->where('exp', $experiment)->where('project', $project_id)
-            ->where('version', $version_id)->where('misuse', $misuse_id)->get();
+            ->where('version', $version_id)->where('misuse', $misuse_id)
+            ->orderBy($this->query_builder->raw("`rank` * 1"))->get();
     }
 
     public function getMisuse($experiment, $detector, $project, $version, $misuse){
