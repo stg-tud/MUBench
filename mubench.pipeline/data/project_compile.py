@@ -11,6 +11,7 @@ class ProjectCompile:
     MISUSE_CLASSES_DIR = "misuse-classes"
     PATTERN_SOURCE_DIR = "patterns-src"
     PATTERN_CLASSES_DIR = "patterns-classes"
+    DEPENDENCY_DIR = "dependency"
 
     def __init__(self, base_path: str, misuses: List[Misuse]):
         self.base_path = base_path
@@ -22,6 +23,7 @@ class ProjectCompile:
         self.misuse_classes_path = join(self.base_path, ProjectCompile.MISUSE_CLASSES_DIR)
         self.pattern_sources_base_path = join(self.base_path, ProjectCompile.PATTERN_SOURCE_DIR)
         self.pattern_classes_base_path = join(self.base_path, ProjectCompile.PATTERN_CLASSES_DIR)
+        self.dependency_base_path = join(self.base_path, ProjectCompile.DEPENDENCY_DIR)
 
     def needs_copy_sources(self):
         return not isdir(self.original_sources_path)

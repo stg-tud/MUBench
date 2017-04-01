@@ -46,6 +46,7 @@ class TestCompile:
         self.misuse_classes_path = join(self.base_path, "misuse-classes")
         self.pattern_sources_path = join(self.base_path, "patterns-src")
         self.pattern_classes_path = join(self.base_path, "patterns-classes")
+        self.dep_path = join(self.base_path, "dependency")
 
         self.uut = Compile(self.checkout_base_path, self.checkout_base_path, False)
 
@@ -53,7 +54,7 @@ class TestCompile:
         rmtree(self.temp_dir, ignore_errors=True)
 
     def mock_with_fake_compile(self):
-        def mock_compile(commands: List[str], cwd: str):
+        def mock_compile(commands: List[str], cwd: str, dep_dir: str):
             source_path = join(cwd, self.source_dir)
             class_path = join(cwd, "classes")
             makedirs(class_path, exist_ok=True)
@@ -162,7 +163,7 @@ class TestCompile:
 
         self.uut.process_project_version(self.project, self.version)
 
-        self.uut._compile.assert_called_with(["a", "b"], self.build_path)
+        self.uut._compile.assert_called_with(["a", "b"], self.build_path, self.dep_path)
 
     def test_copies_additional_sources(self):
         self.mock_with_fake_compile()
@@ -210,7 +211,7 @@ class TestCompile:
 
     def test_copies_misuse_inner_classes(self):
         self.mock_with_fake_compile()
-        def mock_compile(commands: List[str], cwd: str):
+        def mock_compile(commands: List[str], cwd: str, dep_dir: str):
             class_path = join(cwd, "classes")
             makedirs(class_path, exist_ok=True)
             create_file(join(class_path, "mu.class"))
@@ -249,6 +250,20 @@ class TestCompile:
 
         self.uut.process_project_version(self.project, self.version)
         assert_equals(mockShell.mock_calls[0][1], ("mvn dependency:build-classpath build",))
+
+    @patch("tasks.implementations.compile.Shell.exec")
+    def test_compile_with_maven(self, mockShell):
+        self.version._YAML["build"]["commands"] = ["ant "]
+
+        self.uut.process_project_version(self.project, self.version)
+        assert_equals(mockShell.mock_calls[0][1], ("ant -debug -verbose",))
+
+    @patch("tasks.implementations.compile.Shell.exec")
+    def test_compile_with_maven(self, mockShell):
+        self.version._YAML["build"]["commands"] = ["gradle "]
+
+        self.uut.process_project_version(self.project, self.version)
+        assert_equals(mockShell.mock_calls[1][1], ("gradle :printClasspath -b classpath.gradle",))
 
     def test_skips_compile_patterns_if_pattern_classes_exist(self):
         self.mock_with_fake_compile()

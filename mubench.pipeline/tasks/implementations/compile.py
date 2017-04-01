@@ -1,5 +1,6 @@
 import logging
 import shutil
+import os
 from glob import glob
 from os import makedirs
 from os.path import join, exists, dirname, splitext, relpath
@@ -68,7 +69,7 @@ class Compile(ProjectVersionTask):
         else:
             try:
                 logger.info("Compiling project...")
-                self._compile(version.compile_commands, build_path)
+                self._compile(version.compile_commands, build_path, project_compile.dependency_base_path)
                 logger.debug("Copying project classes...")
                 self.__clean_copy(classes_path, project_compile.original_classes_path)
                 self.__copy_misuse_classes(classes_path, version.misuses, project_compile.misuse_classes_path)
@@ -110,7 +111,7 @@ class Compile(ProjectVersionTask):
                 logger.debug("Copying patterns to source directory...")
                 self.__copy(version.patterns, sources_path)
                 logger.info("Compiling patterns...")
-                self._compile(version.compile_commands, build_path)
+                self._compile(version.compile_commands, build_path, project_compile.dependency_base_path)
                 logger.debug("Copying pattern classes...")
                 self.__copy_pattern_classes(version.misuses, classes_path, project_compile)
             except FileNotFoundError as e:
@@ -152,25 +153,25 @@ class Compile(ProjectVersionTask):
             copy_tree(additional_sources, checkout_dir)
 
     @staticmethod
-    def _compile(commands: List[str], project_dir: str) -> None:
+    def _compile(commands: List[str], project_dir: str, dep_dir: str) -> None:
         logger = logging.getLogger("compile.tasks.exec")
         for command in commands:
             if command.startswith("mvn "):
                 command = "mvn dependency:build-classpath " + command[4:]
                 output = Shell.exec(command, cwd=project_dir,logger=logger)
                 dependencies = Compile._parse_maven_classpath(output)
-                Compile._copy_classpath(dependencies, project_dir)
+                Compile._copy_classpath(dependencies, dep_dir)
             elif command.startswith("ant "):
                 command += " -debug -verbose"
                 output = Shell.exec(command, cwd=project_dir,logger=logger)
                 dependencies = Compile._parse_ant_classpath(output)
-                Compile._copy_classpath(dependencies, project_dir)
+                Compile._copy_classpath(dependencies, dep_dir)
             elif command.startswith("gradle "):
-                output = Shell.exec(command,cwd=project_dir,logger=logger)
-                shutil.copy('data/classpath.gradle', project_dir)
+                Shell.exec(command,cwd=project_dir,logger=logger)
+                shutil.copy(os.path.dirname(__file__) + '/classpath.gradle', project_dir)
                 output = Shell.exec("gradle :printClasspath -b classpath.gradle", cwd=project_dir, logger=logger)
                 dependencies = Compile._parse_gradle_classpath(output)
-                Compile._copy_classpath(dependencies, project_dir)
+                Compile._copy_classpath(dependencies, dep_dir)
             else:
                 Shell.exec(command, cwd=project_dir, logger=logger)
 
@@ -211,12 +212,11 @@ class Compile(ProjectVersionTask):
         return classpath.split("\n")
 
     @staticmethod
-    def _copy_classpath(dependencies: str, project_dir: str):
-        dependencies_dir = project_dir[:-5] + "dependencies"
-        remove_tree(dependencies_dir)
-        makedirs(dirname(dependencies_dir + "/"), exist_ok=True)
+    def _copy_classpath(dependencies: List[str], dep_dir: str):
+        remove_tree(dep_dir)
+        makedirs(dirname(dep_dir + "/"), exist_ok=True)
         for dependency in dependencies:
-            shutil.copy(dependency, dependencies_dir)
+            shutil.copy(dependency, dep_dir)
 
 
     @staticmethod
