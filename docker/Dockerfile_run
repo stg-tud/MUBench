@@ -26,6 +26,7 @@ RUN apt-get -y install build-essential
 ADD http://pyyaml.org/download/libyaml/yaml-0.1.7.tar.gz /libyaml/
 WORKDIR /libyaml
 RUN tar xvf yaml-0.1.7.tar.gz
+RUN rm yaml-0.1.7.tar.gz
 WORKDIR /libyaml/yaml-0.1.7
 RUN ./configure
 RUN make
@@ -36,7 +37,7 @@ RUN apt-get install python3.5 python3.5-dev
 RUN pip install virtualenv
 RUN virtualenv -p python3.5 $HOME/venv/3.5
 ENV PATH /root/venv/3.5/bin:$PATH
-RUN pip install nose requests
+RUN pip install nose pyyaml requests
 
 # mubench dependencies
 RUN apt-get install subversion
@@ -60,6 +61,8 @@ RUN update-alternatives --set javac "$JAVA_HOME/bin/javac"
 RUN update-alternatives --set javaws "$JAVA_HOME/jre/bin/javaws"
 
 RUN apt-get clean
+RUN apt-get remove build-essential
+RUN apt-get remove gcc
 RUN apt-get autoclean
 RUN apt-get autoremove
 
