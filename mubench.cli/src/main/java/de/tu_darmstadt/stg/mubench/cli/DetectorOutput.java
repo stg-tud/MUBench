@@ -40,13 +40,13 @@ public class DetectorOutput {
 		return finding;
 	}
 
-	public String addRunInformation(String key, String value) {
-		return (String) runInformation.put(key, value);
+	public void addRunInformation(String key, String value) {
+		runInformation.put(key, value);
 	}
 
 	@SuppressWarnings("unchecked")
-	public List<String> addRunInformation(String key, List<String> value) {
-		return (List<String>) runInformation.put(key, value);
+	public void addRunInformation(String key, Iterable<String> values) {
+		runInformation.put(key, values);
 	}
 
 	void write() throws IOException {
