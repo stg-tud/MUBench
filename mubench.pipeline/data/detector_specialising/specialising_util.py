@@ -12,7 +12,7 @@ def format_float_value(finding, float_key):
 
 
 def replace_dot_graph_with_image(finding, key, base_path) -> str:
-    image_name = "f{}-{}.png".format(finding["rank"], filename_encode(key))
+    image_name = "f{}-{}.svg".format(finding["rank"], filename_encode(key))
     __create_image(finding[key], base_path, image_name)
     finding[key] = image_name
     return join(base_path, image_name)
@@ -28,5 +28,5 @@ def __create_image(dot_graph, working_directory, image_name):
         makedirs(working_directory, exist_ok=True)
         dot_path = image_path + ".dot"
         safe_write(dot_graph, dot_path, append=False)
-        Shell.exec("dot -Tpng -o'{}' '{}'".format(image_path, dot_path))
+        Shell.exec("dot -Tsvg -o'{}' '{}'".format(image_path, dot_path))
         remove(dot_path)

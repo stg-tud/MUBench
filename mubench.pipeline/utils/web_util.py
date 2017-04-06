@@ -1,6 +1,7 @@
 import getpass
 import hashlib
 import json
+import mimetypes
 import shutil
 from contextlib import ExitStack
 from typing import List
@@ -91,8 +92,14 @@ def post(url: str, data: object, file_paths: List[str] = None, username: str="",
     with ExitStack() as es:
         if file_paths:
             request["data"] = {"data": request["data"]}
-            request["files"] = [
-                (basename(path), (basename(path), es.enter_context(open(path, 'rb')), 'image/png')) for path in file_paths]
+            request["files"] = [__create_file_tuple(path, es) for path in file_paths]
 
         response = requests.post(**request)
         response.raise_for_status()
+
+
+def __create_file_tuple(path: str, es: ExitStack):
+    filename = basename(path)
+    file_handle = es.enter_context(open(path, 'rb'))
+    mime_type = mimetypes.guess_type(path)[0]
+    return filename, (filename, file_handle, mime_type)

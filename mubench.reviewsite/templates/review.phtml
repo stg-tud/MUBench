@@ -220,8 +220,8 @@ use MuBench\ReviewSite\Model\Experiment;
                             <li><?= htmlspecialchars($v); ?></li>
                         <?php endforeach; ?>
                     </ul>
-                <?php elseif(strpos($hit[$column], ".png") !== false) : ?>
-                    <img src="<?= $uploads_url_prefix . "/" . htmlspecialchars($experiment->getId()); ?>/<?= htmlspecialchars($detector->name); ?>/<?= htmlspecialchars($misuse->getProject()); ?>/<?= htmlspecialchars($misuse->getVersion()); ?>/<?= htmlspecialchars($hit[$column]); ?>" />
+                <?php elseif(strlen($hit[$column]) > 4 && in_array(substr($hit[$column], -4), [".png", ".svg"])) : ?>
+                    <img src="<?= "{$uploads_url_prefix}/{$experiment->getId()}/{$detector->name}/{$misuse->getProject()}/{$misuse->getVersion()}/{$hit[$column]}" ?>" />
                 <?php else : ?>
                     <?= htmlspecialchars($hit[$column]); ?>
                 <?php endif; ?>
