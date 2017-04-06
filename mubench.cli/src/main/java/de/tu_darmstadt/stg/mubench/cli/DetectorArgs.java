@@ -9,16 +9,18 @@ public class DetectorArgs {
 	private final String trainingClassPath;
 	private final String targetSrcPath;
 	private final String targetClassPath;
+	private final String dependencyClassPath;
 	private final DetectorMode detectorMode;
 
 	public DetectorArgs(String findingsFile, String runFile, DetectorMode detectorMode, String trainingSrcPath,
-			String trainingClassPath, String targetSrcPath, String targetClassPath) {
+			String trainingClassPath, String targetSrcPath, String targetClassPath, String dependencyClassPath) {
 		this.findingsFile = findingsFile;
 		this.runFile = runFile;
 		this.trainingSrcPath = trainingSrcPath;
 		this.trainingClassPath = trainingClassPath;
 		this.targetSrcPath = targetSrcPath;
 		this.targetClassPath = targetClassPath;
+		this.dependencyClassPath = dependencyClassPath;
 		this.detectorMode = detectorMode;
 	}
 
@@ -62,6 +64,12 @@ public class DetectorArgs {
 		if (targetClassPath == null)
 			throw new FileNotFoundException("target classpath not provided");
 		return targetClassPath;
+	}
+
+	public String[] getDependencyClassPath() throws FileNotFoundException {
+		if (dependencyClassPath == null)
+			throw new FileNotFoundException("dependency classpath not provided");
+		return dependencyClassPath.split(":");
 	}
 
 	public CodePath getTargetPath() throws FileNotFoundException {

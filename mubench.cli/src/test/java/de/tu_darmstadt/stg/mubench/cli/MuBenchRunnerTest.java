@@ -25,18 +25,27 @@ public class MuBenchRunnerTest {
 	@Test
 	public void invokesDetectOnly() throws Exception {
 		MuBenchRunner runner = spy(MuBenchRunner.class);
-		
-		runner.run(new DetectorArgs(tmpFile, tmpFile, DetectorMode.DETECT_ONLY, ":trainingSrc:", ":trainingClass:", ":targetSrc:", ":targetClass:"));
-		
-		verify(runner).detectOnly(eq(new CodePath(":trainingSrc:", ":trainingClass:")), eq(new CodePath(":targetSrc:", ":targetClass:")), any(DetectorOutput.class));
+
+		runner.run(new DetectorArgs(tmpFile, tmpFile, DetectorMode.DETECT_ONLY, ":trainingSrc:", ":trainingClass:",
+				":targetSrc:", ":targetClass:", "dep.jar"));
+
+		verify(runner).detectOnly(
+				eq(new CodePath(":trainingSrc:", ":trainingClass:")),
+				eq(new CodePath(":targetSrc:", ":targetClass:")),
+				eq(new String[] {"dep.jar"}),
+				any(DetectorOutput.class));
 	}
 	
 	@Test
 	public void invokesMineAndDetect() throws Exception {
 		MuBenchRunner runner = spy(MuBenchRunner.class);
-		
-		runner.run(new DetectorArgs(tmpFile, tmpFile, DetectorMode.MINE_AND_DETECT, ":trainingSrc:", ":trainingClass:", ":targetSrc:", ":targetClass:"));
-		
-		verify(runner).mineAndDetect(eq(new CodePath(":targetSrc:", ":targetClass:")), any(DetectorOutput.class));
+
+		runner.run(new DetectorArgs(tmpFile, tmpFile, DetectorMode.MINE_AND_DETECT, ":trainingSrc:", ":trainingClass:",
+				":targetSrc:", ":targetClass:", "dep.jar"));
+
+		verify(runner).mineAndDetect(
+				eq(new CodePath(":targetSrc:", ":targetClass:")),
+				eq(new String[] {"dep.jar"}),
+				any(DetectorOutput.class));
 	}
 }

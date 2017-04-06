@@ -1,5 +1,6 @@
 package de.tu_darmstadt.stg.mubench.cli;
 
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 
 import java.io.FileNotFoundException;
@@ -8,87 +9,88 @@ import org.junit.Test;
 
 public class DetectorArgsTest {
 	
+	private DetectorArgs FULL_ARGS = new DetectorArgs("findings.yml", "run.yml", DetectorMode.DETECT_ONLY,
+			"/tr/src", "/tr/classes", "/ta/src", "/ta/classes", "-dep:classpath-");
+
+	private DetectorArgs EMPTY_ARGS = new DetectorArgs(null, null, null, null, null, null, null, null);
+
 	@Test
 	public void getTrainingSrcPath() throws FileNotFoundException {
-		DetectorArgs uut = new DetectorArgs("findings.yml", "run.yml", DetectorMode.DETECT_ONLY, "src", "", "", "");
-		assertEquals("src", uut.getTrainingSrcPath());
+		assertEquals("/tr/src", FULL_ARGS.getTrainingSrcPath());
 	}
 
 	@Test
 	public void getTrainingClassPath() throws FileNotFoundException {
-		DetectorArgs uut = new DetectorArgs("findings.yml", "run.yml", DetectorMode.DETECT_ONLY, "", "classes", "", "");
-		assertEquals("classes", uut.getTrainingClassPath());
+		assertEquals("/tr/classes", FULL_ARGS.getTrainingClassPath());
 	}
 	
 	@Test
 	public void getTargetSrcPath() throws FileNotFoundException {
-		DetectorArgs uut = new DetectorArgs("findings.yml", "run.yml", DetectorMode.DETECT_ONLY, "", "", "src", "");
-		assertEquals("src", uut.getTargetSrcPath());
+		assertEquals("/ta/src", FULL_ARGS.getTargetSrcPath());
 	}
 
 	@Test
 	public void getTargetClassPath() throws FileNotFoundException {
-		DetectorArgs uut = new DetectorArgs("", "run.yml", DetectorMode.DETECT_ONLY, "", "", "", "classes");
-		assertEquals("classes", uut.getTargetClassPath());
+		assertEquals("/ta/classes", FULL_ARGS.getTargetClassPath());
+	}
+
+	@Test
+	public void getDepClassPath() throws FileNotFoundException {
+		assertArrayEquals(new String[] {"-dep", "classpath-"}, FULL_ARGS.getDependencyClassPath());
 	}
 
 	@Test
 	public void getFindingsFileTest() throws FileNotFoundException {
-		DetectorArgs uut = new DetectorArgs("findings.yml", "run.yml", DetectorMode.DETECT_ONLY, "", "", "", "");
-		assertEquals("findings.yml", uut.getFindingsFile());
+		assertEquals("findings.yml", FULL_ARGS.getFindingsFile());
 	}
 	
 	@Test
 	public void getRunFileTest() throws FileNotFoundException {
-		DetectorArgs uut = new DetectorArgs("", "run.yml", DetectorMode.DETECT_ONLY, "", "", "", "");
-		assertEquals("run.yml", uut.getRunFile());
+		assertEquals("run.yml", FULL_ARGS.getRunFile());
 	}
 	
 	@Test
 	public void getDetectorModeTest() throws FileNotFoundException {
-		DetectorArgs uut = new DetectorArgs("", "run.yml", DetectorMode.DETECT_ONLY, "", "", "", "");
-		assertEquals(DetectorMode.DETECT_ONLY, uut.getDetectorMode());
+		assertEquals(DetectorMode.DETECT_ONLY, FULL_ARGS.getDetectorMode());
 	}
 	
 	@Test(expected = FileNotFoundException.class)
 	public void throwsOnNoFindingsFile() throws FileNotFoundException {
-		DetectorArgs uut = new DetectorArgs(null, null, null, null, null, null, null);
-		uut.getFindingsFile();
+		EMPTY_ARGS.getFindingsFile();
 	}
 	
 	@Test(expected = FileNotFoundException.class)
 	public void throwsOnNoRunFile() throws FileNotFoundException {
-		DetectorArgs uut = new DetectorArgs(null, null, null, null, null, null, null);
-		uut.getRunFile();
+		EMPTY_ARGS.getRunFile();
 	}
 
 	@Test(expected = FileNotFoundException.class)
 	public void throwsOnNoDetectorMode() throws FileNotFoundException {
-		DetectorArgs uut = new DetectorArgs(null, null, null, null, null, null, null);
-		uut.getDetectorMode();
+		EMPTY_ARGS.getDetectorMode();
 	}
 	
 	@Test(expected = FileNotFoundException.class)
 	public void throwsOnNoTrainingSrcPath() throws FileNotFoundException {
-		DetectorArgs uut = new DetectorArgs(null, null, null, null, null, null, null);
-		uut.getTrainingSrcPath();
+		EMPTY_ARGS.getTrainingSrcPath();
 	}
 	
 	@Test(expected = FileNotFoundException.class)
 	public void throwsOnNoTrainingClassPath() throws FileNotFoundException {
-		DetectorArgs uut = new DetectorArgs(null, null, null, null, null, null, null);
-		uut.getTrainingClassPath();
+		EMPTY_ARGS.getTrainingClassPath();
 	}
 	
 	@Test(expected = FileNotFoundException.class)
 	public void throwsOnNoTargetSrcPath() throws FileNotFoundException {
-		DetectorArgs uut = new DetectorArgs(null, null, null, null, null, null, null);
-		uut.getTargetSrcPath();
+		EMPTY_ARGS.getTargetSrcPath();
 	}
 	
 	@Test(expected = FileNotFoundException.class)
 	public void throwsOnNoTargetClassPath() throws FileNotFoundException {
-		DetectorArgs uut = new DetectorArgs(null, null, null, null, null, null, null);
-		uut.getTargetClassPath();
+		EMPTY_ARGS.getTargetClassPath();
+	}
+
+	@Test(expected = FileNotFoundException.class)
+	public void throwsOnNoDepClassPath() throws FileNotFoundException {
+		EMPTY_ARGS.getDependencyClassPath();
 	}
 }

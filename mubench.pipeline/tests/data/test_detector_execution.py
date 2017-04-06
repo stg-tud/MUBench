@@ -182,7 +182,8 @@ class TestDetectOnlyExecution:
                                       'training_src_path "{}" '.format(training_src_path) +
                                       'training_classpath "{}" '.format(training_classpath) +
                                       'target_src_path "{}" '.format(target_src_path) +
-                                      'target_classpath "{}"'.format(target_classpath),
+                                      'target_classpath "{}" '.format(target_classpath) +
+                                      'dep_classpath ""',
                                       logger=self.logger,
                                       timeout=42)
 
@@ -220,6 +221,7 @@ class TestMineAndDetectExecution:
                                       'run_info "{}" '.format(run_info) +
                                       'detector_mode "0" ' +
                                       'target_src_path "{}" '.format(target_src_path) +
-                                      'target_classpath "{}"'.format(target_classpath),
+                                      'target_classpath "{}" '.format(target_classpath) +
+                                      'dep_classpath ""',
                                       logger=self.logger,
                                       timeout=42)

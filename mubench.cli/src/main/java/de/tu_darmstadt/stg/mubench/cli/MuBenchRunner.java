@@ -27,17 +27,17 @@ public abstract class MuBenchRunner {
 	protected void run(DetectorMode detectorMode, DetectorArgs args, DetectorOutput output) throws Exception {
 		switch (detectorMode) {
 		case DETECT_ONLY:
-			detectOnly(args.getTrainingPath(), args.getTargetPath(), output);
+			detectOnly(args.getTrainingPath(), args.getTargetPath(), args.getDependencyClassPath(), output);
 			break;
 		case MINE_AND_DETECT:
-			mineAndDetect(args.getTargetPath(), output);
+			mineAndDetect(args.getTargetPath(), args.getDependencyClassPath(), output);
 			break;
 		default:
 			throw new IllegalArgumentException("Unsupported runmode: " + detectorMode);
 		}
 	}
 
-	protected abstract void detectOnly(CodePath patternPath, CodePath targetPath, DetectorOutput output) throws Exception;
+	protected abstract void detectOnly(CodePath patternPath, CodePath targetPath, String[] dependencyClassPath, DetectorOutput output) throws Exception;
 
-	protected abstract void mineAndDetect(CodePath trainingAndTargetPath, DetectorOutput output) throws Exception;
+	protected abstract void mineAndDetect(CodePath trainingAndTargetPath, String[] dependencyClassPath, DetectorOutput output) throws Exception;
 }

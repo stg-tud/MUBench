@@ -1,3 +1,4 @@
+import os
 from os.path import join, isdir
 from typing import List
 
@@ -23,7 +24,7 @@ class ProjectCompile:
         self.misuse_classes_path = join(self.base_path, ProjectCompile.MISUSE_CLASSES_DIR)
         self.pattern_sources_base_path = join(self.base_path, ProjectCompile.PATTERN_SOURCE_DIR)
         self.pattern_classes_base_path = join(self.base_path, ProjectCompile.PATTERN_CLASSES_DIR)
-        self.dependency_base_path = join(self.base_path, ProjectCompile.DEPENDENCY_DIR)
+        self.dependencies_path = join(self.base_path, ProjectCompile.DEPENDENCY_DIR)
 
     def needs_copy_sources(self):
         return not isdir(self.original_sources_path)
@@ -54,3 +55,9 @@ class ProjectCompile:
 
     def get_pattern_classes_path(self, misuse: Misuse):
         return join(self.pattern_classes_base_path, misuse.misuse_id)
+
+    def get_dependency_classpath(self):
+        if isdir(self.dependencies_path):
+            return ":".join([file for file in os.listdir(self.dependencies_path) if file.endswith(".jar")])
+        else:
+            return ""

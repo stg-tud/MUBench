@@ -8,6 +8,7 @@ public class ArgParser {
 	public static final String keyTrainingClassPath = "training_classpath";
 	public static final String keyTargetSrcPath = "target_src_path";
 	public static final String keyTargetClassPath = "target_classpath";
+	public static final String keyDepClassPath = "dep_classpath";
 
 	public static DetectorArgs parse(String[] args) {
 		String findingsFile = null;
@@ -17,6 +18,7 @@ public class ArgParser {
 		String trainingClassPath = null;
 		String targetSrcPath = null;
 		String targetClassPath = null;
+		String dependencyClassPath = null;
 
 		for (int i = 0; i < args.length; i += 2) {
 			String arg = args[i];
@@ -41,6 +43,9 @@ public class ArgParser {
 			case keyTargetClassPath:
 				targetClassPath = next_arg;
 				break;
+			case keyDepClassPath:
+				dependencyClassPath = next_arg;
+				break;
 			case keyDetectorMode:
 				if (next_arg.equals("0")) {
 					detectorMode = DetectorMode.MINE_AND_DETECT;
@@ -62,8 +67,9 @@ public class ArgParser {
 		System.out.println("TrainingClassPath : " + trainingClassPath);
 		System.out.println("TargetSrcPath : " + targetSrcPath);
 		System.out.println("TargetClassPath : " + targetClassPath);
+		System.out.println("DepClassPath: " + dependencyClassPath);
 
-		return new DetectorArgs(findingsFile, runFile, detectorMode, trainingSrcPath, trainingClassPath, 
-				targetSrcPath, targetClassPath);
+		return new DetectorArgs(findingsFile, runFile, detectorMode, trainingSrcPath, trainingClassPath, targetSrcPath,
+				targetClassPath, dependencyClassPath);
 	}
 }

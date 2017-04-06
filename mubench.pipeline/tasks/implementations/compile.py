@@ -69,7 +69,7 @@ class Compile(ProjectVersionTask):
         else:
             try:
                 logger.info("Compiling project...")
-                self._compile(version.compile_commands, build_path, project_compile.dependency_base_path)
+                self._compile(version.compile_commands, build_path, project_compile.dependencies_path)
                 logger.debug("Copying project classes...")
                 self.__clean_copy(classes_path, project_compile.original_classes_path)
                 self.__copy_misuse_classes(classes_path, version.misuses, project_compile.misuse_classes_path)
@@ -111,7 +111,7 @@ class Compile(ProjectVersionTask):
                 logger.debug("Copying patterns to source directory...")
                 self.__copy(version.patterns, sources_path)
                 logger.info("Compiling patterns...")
-                self._compile(version.compile_commands, build_path, project_compile.dependency_base_path)
+                self._compile(version.compile_commands, build_path, project_compile.dependencies_path)
                 logger.debug("Copying pattern classes...")
                 self.__copy_pattern_classes(version.misuses, classes_path, project_compile)
             except FileNotFoundError as e:

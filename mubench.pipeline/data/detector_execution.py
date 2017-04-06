@@ -42,6 +42,7 @@ class DetectorExecution:
     key_training_classpath = "training_classpath"
     key_target_src_path = "target_src_path"
     key_target_classpath = "target_classpath"
+    key_dependency_classpath = "dep_classpath"
 
     def __init__(self, run_mode: DetectorMode, detector: Detector, version: ProjectVersion, findings_base_path: str,
                  findings_filter: FindingsFilter):
@@ -198,7 +199,8 @@ class MineAndDetectExecution(DetectorExecution):
             self.key_run_file, _quote(self._run_file_path),
             self.key_detector_mode, _quote(self._run_mode_detector_argument),
             self.key_target_src_path, _quote(project_compile.original_sources_path),
-            self.key_target_classpath, _quote(project_compile.original_classes_path)
+            self.key_target_classpath, _quote(project_compile.original_classes_path),
+            self.key_dependency_classpath, _quote(project_compile.get_dependency_classpath())
         ]
 
 
@@ -221,5 +223,6 @@ class DetectOnlyExecution(DetectorExecution):
             self.key_training_src_path, _quote(project_compile.get_pattern_source_path(self.misuse)),
             self.key_training_classpath, _quote(project_compile.get_pattern_classes_path(self.misuse)),
             self.key_target_src_path, _quote(project_compile.misuse_source_path),
-            self.key_target_classpath, _quote(project_compile.misuse_classes_path)
+            self.key_target_classpath, _quote(project_compile.misuse_classes_path),
+            self.key_dependency_classpath, _quote(project_compile.get_dependency_classpath())
         ]
