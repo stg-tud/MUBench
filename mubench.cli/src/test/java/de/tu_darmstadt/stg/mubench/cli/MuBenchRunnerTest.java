@@ -22,30 +22,28 @@ public class MuBenchRunnerTest {
 		tmpFile = folder.newFile().getAbsolutePath();
 	}
 
+    private DetectorArgs createArgs(DetectorMode mode) {
+        return new DetectorArgs(tmpFile, tmpFile, mode, ":trainingSrc:", ":trainingClass:",
+                ":targetSrc:", ":targetClass:", "dep.jar");
+    }
+
 	@Test
 	public void invokesDetectOnly() throws Exception {
 		MuBenchRunner runner = spy(MuBenchRunner.class);
+        DetectorArgs args = createArgs(DetectorMode.DETECT_ONLY);
 
-		runner.run(new DetectorArgs(tmpFile, tmpFile, DetectorMode.DETECT_ONLY, ":trainingSrc:", ":trainingClass:",
-				":targetSrc:", ":targetClass:", "dep.jar"));
+        runner.run(args);
 
-		verify(runner).detectOnly(
-				eq(new CodePath(":trainingSrc:", ":trainingClass:")),
-				eq(new CodePath(":targetSrc:", ":targetClass:")),
-				eq(new String[] {"dep.jar"}),
-				any(DetectorOutput.class));
+		verify(runner).detectOnly(eq(args), any(DetectorOutput.class));
 	}
 
 	@Test
 	public void invokesMineAndDetect() throws Exception {
 		MuBenchRunner runner = spy(MuBenchRunner.class);
+        DetectorArgs args = createArgs(DetectorMode.MINE_AND_DETECT);
 
-		runner.run(new DetectorArgs(tmpFile, tmpFile, DetectorMode.MINE_AND_DETECT, ":trainingSrc:", ":trainingClass:",
-				":targetSrc:", ":targetClass:", "dep.jar"));
+		runner.run(args);
 
-		verify(runner).mineAndDetect(
-				eq(new CodePath(":targetSrc:", ":targetClass:")),
-				eq(new String[] {"dep.jar"}),
-				any(DetectorOutput.class));
+		verify(runner).mineAndDetect(eq(args), any(DetectorOutput.class));
 	}
 }
