@@ -1,9 +1,11 @@
 package main;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.LinkedList;
 
 import de.tu_darmstadt.stg.mubench.cli.CodePath;
+import de.tu_darmstadt.stg.mubench.cli.DetectorArgs;
 import de.tu_darmstadt.stg.mubench.cli.DetectorOutput;
 import de.tu_darmstadt.stg.mubench.cli.MuBenchRunner;
 
@@ -12,13 +14,15 @@ public class Main extends MuBenchRunner {
 	public static void main(String[] args) throws Exception {
 		new Main().run(args);
 	}
-	
-	protected void mineAndDetect(CodePath trainingAndTargetPath, DetectorOutput output) {
-		dummyMine(output, trainingAndTargetPath.srcPath);
+
+	@Override
+	protected void mineAndDetect(DetectorArgs args, DetectorOutput output) throws FileNotFoundException {
+		dummyMine(output, args.getTargetPath().srcPath);
 	}
-	
-	protected void detectOnly(CodePath patternPath, CodePath targetPath, DetectorOutput output) {
-		dummyMine(output, targetPath.srcPath);
+
+	@Override
+	protected void detectOnly(DetectorArgs args, DetectorOutput output) throws FileNotFoundException {
+		dummyMine(output, args.getTargetPath().srcPath);
 	}
 
 	private void dummyMine(DetectorOutput output, String targetPath) {
@@ -27,13 +31,13 @@ public class Main extends MuBenchRunner {
 		}
 	}
 
-	public static LinkedList<File> listFiles(String directoryName) {
+	private static LinkedList<File> listFiles(String directoryName) {
 		LinkedList<File> files = new LinkedList<File>();
 		File directory = new File(directoryName);
 
 		// get all the files from a directory
 		File[] fList = directory.listFiles();
-		for (File file : fList) {
+        for (File file : fList) {
 			if (file.isFile()) {
 				files.add(file);
 			} else if (file.isDirectory()) {
