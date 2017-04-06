@@ -15,7 +15,7 @@ package de.tu_darmstadt.stg.mubench.cli;
  */
 public abstract class MuBenchRunner {
 	public void run(String[] args) throws Exception {
-		run(ArgParser.parse(args));
+		run(DetectorArgs.parse(args));
 	}
 
 	protected void run(DetectorArgs args) throws Exception {

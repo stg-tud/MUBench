@@ -3,6 +3,82 @@ package de.tu_darmstadt.stg.mubench.cli;
 import java.io.FileNotFoundException;
 
 public class DetectorArgs {
+	static final String keyFindingsFile = "target";
+	static final String keyRunFile = "run_info";
+	static final String keyDetectorMode = "detector_mode";
+	static final String keyTrainingSrcPath = "training_src_path";
+	static final String keyTrainingClassPath = "training_classpath";
+	static final String keyTargetSrcPath = "target_src_path";
+	static final String keyTargetClassPath = "target_classpath";
+	static final String keyDependenciesClassPath = "dep_classpath";
+
+	static DetectorArgs parse(String[] args) {
+		String findingsFile = null;
+		String runFile = null;
+		DetectorMode detectorMode = null;
+		String patternSrcPath = null;
+		String patternClassPath = null;
+		String targetSrcPath = null;
+		String targetClassPath = null;
+		String dependencyClassPath = null;
+
+		for (int i = 0; i < args.length; i += 2) {
+			String arg = args[i];
+			String next_arg = args[i + 1];
+
+			switch (arg) {
+				case keyFindingsFile:
+					findingsFile = next_arg;
+					break;
+				case keyRunFile:
+					runFile = next_arg;
+					break;
+				case keyTrainingSrcPath:
+					patternSrcPath = next_arg;
+					break;
+				case keyTrainingClassPath:
+					patternClassPath = next_arg;
+					break;
+				case keyTargetSrcPath:
+					targetSrcPath = next_arg;
+					break;
+				case keyTargetClassPath:
+					targetClassPath = next_arg;
+					break;
+				case keyDependenciesClassPath:
+					dependencyClassPath = next_arg;
+					break;
+				case keyDetectorMode:
+                    switch (next_arg) {
+                        case "0":
+                            detectorMode = DetectorMode.MINE_AND_DETECT;
+                            break;
+                        case "1":
+                            detectorMode = DetectorMode.DETECT_ONLY;
+                            break;
+                        default:
+                            throw new IllegalArgumentException("Unknown detector mode " + next_arg);
+                    }
+					break;
+				default:
+					throw new IllegalArgumentException("Unknown key " + arg);
+			}
+		}
+
+		System.out.println("FindingsFile : " + findingsFile);
+		System.out.println("RunFile : " + runFile);
+		System.out.println("DetectorMode : " + detectorMode);
+		System.out.println("TrainingSrcPath : " + patternSrcPath);
+		System.out.println("TrainingClassPath : " + patternClassPath);
+		System.out.println("TargetSrcPath : " + targetSrcPath);
+		System.out.println("TargetClassPath : " + targetClassPath);
+		System.out.println("DepClassPath: " + dependencyClassPath);
+
+		return new DetectorArgs(findingsFile, runFile, detectorMode, patternSrcPath, patternClassPath, targetSrcPath,
+				targetClassPath, dependencyClassPath);
+	}
+
+
 	private final String findingsFile;
 	private final String runFile;
 	private final String trainingSrcPath;
