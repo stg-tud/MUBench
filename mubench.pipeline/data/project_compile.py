@@ -11,7 +11,7 @@ class ProjectCompile:
     MISUSE_CLASSES_DIR = "misuse-classes"
     PATTERN_SOURCE_DIR = "patterns-src"
     PATTERN_CLASSES_DIR = "patterns-classes"
-    DEPENDENCY_DIR = "dependency"
+    DEPENDENCY_DIR = "dependencies"
 
     def __init__(self, base_path: str, misuses: List[Misuse]):
         self.base_path = base_path

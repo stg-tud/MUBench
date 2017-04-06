@@ -46,7 +46,7 @@ class TestCompile:
         self.misuse_classes_path = join(self.base_path, "misuse-classes")
         self.pattern_sources_path = join(self.base_path, "patterns-src")
         self.pattern_classes_path = join(self.base_path, "patterns-classes")
-        self.dep_path = join(self.base_path, "dependency")
+        self.dep_path = join(self.base_path, "dependencies")
 
         self.uut = Compile(self.checkout_base_path, self.checkout_base_path, False)
 
