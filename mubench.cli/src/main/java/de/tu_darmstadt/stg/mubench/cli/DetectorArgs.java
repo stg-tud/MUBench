@@ -142,12 +142,6 @@ public class DetectorArgs {
 		return targetClassPath;
 	}
 
-	public String[] getDependencyClassPath() throws FileNotFoundException {
-		if (dependencyClassPath == null)
-			throw new FileNotFoundException("dependency classpath not provided");
-		return dependencyClassPath.split(":");
-	}
-
 	public CodePath getTargetPath() throws FileNotFoundException {
 		return new CodePath(getTargetSrcPath(), getTargetClassPath());
 	}
@@ -156,4 +150,7 @@ public class DetectorArgs {
 		return new CodePath(getPatternSrcPath(), getPatternClassPath());
 	}
 
+    public String[] getDependencyClassPath() throws FileNotFoundException {
+        return dependencyClassPath == null ? new String[0] : dependencyClassPath.split(":");
+    }
 }

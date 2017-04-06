@@ -89,8 +89,8 @@ public class DetectorArgsTest {
 		EMPTY_ARGS.getTargetClassPath();
 	}
 
-	@Test(expected = FileNotFoundException.class)
-	public void throwsOnNoDepClassPath() throws FileNotFoundException {
-		EMPTY_ARGS.getDependencyClassPath();
+	@Test
+	public void noDependencyClassPath() throws FileNotFoundException {
+		assertArrayEquals(new String[0], EMPTY_ARGS.getDependencyClassPath());
 	}
 }
