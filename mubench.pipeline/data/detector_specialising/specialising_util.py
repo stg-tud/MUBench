@@ -27,6 +27,8 @@ def __create_image(dot_graph, working_directory, image_name):
     if not exists(image_path):
         makedirs(working_directory, exist_ok=True)
         dot_path = image_path + ".dot"
+        #can be used to restrict iterations during graph layouting
+        #dot_graph = dot_graph.replace("\n", "\nnslimit=100;\n",1)
         safe_write(dot_graph, dot_path, append=False)
         Shell.exec("dot -v -Tsvg -o'{}' '{}'".format(image_path, dot_path))
         remove(dot_path)
