@@ -7,12 +7,7 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
@@ -31,21 +26,41 @@ public class DetectorOutput {
 		runInformationFile = new File(runInformationFilePath);
 	}
 
+	/**
+	 * @return directory to write additional output to, e.g., for debugging purposes.
+	 * @throws FileNotFoundException if the path cannot be determined
+	 */
 	@SuppressWarnings("unused")
     public String getAdditionalOutputPath() throws FileNotFoundException {
 		return findingsFile.getParent();
 	}
 
+    /**
+     * Add a finding to the output.
+     * @param file the finding's file location
+     * @param method the findings's method location
+     * @return the new finding
+     */
 	public DetectorFinding add(String file, String method) {
 		DetectorFinding finding = new DetectorFinding(findings.size(), file, method);
 		findings.add(finding);
 		return finding;
 	}
 
+    /**
+     * Add data about the detector run to the output.
+     * @param key identifier of the data
+     * @param value value of the data
+     */
 	public void addRunInformation(String key, String value) {
 		runInformation.put(key, value);
 	}
 
+    /**
+     * Add data about the detector run to the output.
+     * @param key identifier of the data
+     * @param values values of the data
+     */
 	@SuppressWarnings({"unchecked", "unused"})
 	public void addRunInformation(String key, Iterable<String> values) {
 		runInformation.put(key, values);
