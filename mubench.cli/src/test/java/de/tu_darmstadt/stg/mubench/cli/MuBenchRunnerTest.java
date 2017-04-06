@@ -15,12 +15,12 @@ import org.junit.rules.TemporaryFolder;
 public class MuBenchRunnerTest {
 	@Rule
 	public TemporaryFolder folder = new TemporaryFolder();
-	private String tmpFile;
+    private String tmpFile;
 
-	@Before
+    @Before
 	public void setup() throws IOException {
-		tmpFile = folder.newFile().getAbsolutePath();
-	}
+        tmpFile = folder.newFile().getAbsolutePath();
+    }
 
     private DetectorArgs createArgs(DetectorMode mode) {
         return new DetectorArgs(tmpFile, tmpFile, mode, ":trainingSrc:", ":trainingClass:",
