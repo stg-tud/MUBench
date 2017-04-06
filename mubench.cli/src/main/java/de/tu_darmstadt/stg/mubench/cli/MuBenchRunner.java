@@ -13,7 +13,9 @@ package de.tu_darmstadt.stg.mubench.cli;
  * }
  * </code></pre>
  */
+@SuppressWarnings("WeakerAccess")
 public abstract class MuBenchRunner {
+	@SuppressWarnings("unused")
 	public void run(String[] args) throws Exception {
 		run(DetectorArgs.parse(args));
 	}

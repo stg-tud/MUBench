@@ -2,6 +2,7 @@ package de.tu_darmstadt.stg.mubench.cli;
 
 import java.io.FileNotFoundException;
 
+@SuppressWarnings("WeakerAccess")
 public class DetectorArgs {
 	static final String keyFindingsFile = "target";
 	static final String keyRunFile = "run_info";
@@ -88,7 +89,7 @@ public class DetectorArgs {
 	private final String dependencyClassPath;
 	private final DetectorMode detectorMode;
 
-	public DetectorArgs(String findingsFile, String runFile, DetectorMode detectorMode, String patternSrcPath,
+	DetectorArgs(String findingsFile, String runFile, DetectorMode detectorMode, String patternSrcPath,
                  String patternClassPath, String targetSrcPath, String targetClassPath, String dependencyClassPath) {
 		this.findingsFile = findingsFile;
 		this.runFile = runFile;
@@ -100,43 +101,43 @@ public class DetectorArgs {
 		this.detectorMode = detectorMode;
 	}
 
-	public String getFindingsFile() throws FileNotFoundException {
+	String getFindingsFile() throws FileNotFoundException {
 		if (findingsFile == null)
 			throw new FileNotFoundException("findings file not provided");
 		return findingsFile;
 	}
 
-	public String getRunFile() throws FileNotFoundException {
+	String getRunFile() throws FileNotFoundException {
 		if (runFile == null)
 			throw new FileNotFoundException("run file not provided");
 		return runFile;
 	}
 
-	public DetectorMode getDetectorMode() throws FileNotFoundException {
+	DetectorMode getDetectorMode() throws FileNotFoundException {
 		if (detectorMode == null)
 			throw new FileNotFoundException("detector mode not provided");
 		return detectorMode;
 	}
 
-	public String getPatternSrcPath() throws FileNotFoundException {
+	String getPatternSrcPath() throws FileNotFoundException {
 		if (patternSrcPath == null)
 			throw new FileNotFoundException("training source path not provided");
 		return patternSrcPath;
 	}
 
-	public String getPatternClassPath() throws FileNotFoundException {
+	String getPatternClassPath() throws FileNotFoundException {
 		if (patternClassPath == null)
 			throw new FileNotFoundException("training classpath not provided");
 		return patternClassPath;
 	}
 
-	public String getTargetSrcPath() throws FileNotFoundException {
+	String getTargetSrcPath() throws FileNotFoundException {
 		if (targetSrcPath == null)
 			throw new FileNotFoundException("target source path not provided");
 		return targetSrcPath;
 	}
 
-	public String getTargetClassPath() throws FileNotFoundException {
+	String getTargetClassPath() throws FileNotFoundException {
 		if (targetClassPath == null)
 			throw new FileNotFoundException("target classpath not provided");
 		return targetClassPath;

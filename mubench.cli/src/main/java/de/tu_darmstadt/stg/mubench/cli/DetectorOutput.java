@@ -17,6 +17,7 @@ import java.util.Map;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
 
+@SuppressWarnings("WeakerAccess")
 public class DetectorOutput {
 	private final File findingsFile;
 	private final File runInformationFile;
@@ -30,7 +31,8 @@ public class DetectorOutput {
 		runInformationFile = new File(runInformationFilePath);
 	}
 
-	public String getAdditionalOutputPath() throws FileNotFoundException {
+	@SuppressWarnings("unused")
+    public String getAdditionalOutputPath() throws FileNotFoundException {
 		return findingsFile.getParent();
 	}
 
@@ -44,7 +46,7 @@ public class DetectorOutput {
 		runInformation.put(key, value);
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({"unchecked", "unused"})
 	public void addRunInformation(String key, Iterable<String> values) {
 		runInformation.put(key, values);
 	}

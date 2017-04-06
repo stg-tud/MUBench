@@ -6,6 +6,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+@SuppressWarnings("WeakerAccess")
 public class DetectorFinding {
 	private static final String keyId = "id";
 	private static final String keyFile = "file";

@@ -1,5 +1,6 @@
 package de.tu_darmstadt.stg.mubench.cli;
 
+@SuppressWarnings("WeakerAccess")
 public class CodePath {
 	public final String srcPath;
 	public final String classPath;
