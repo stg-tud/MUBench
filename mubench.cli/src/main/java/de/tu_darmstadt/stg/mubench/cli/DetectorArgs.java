@@ -143,14 +143,28 @@ public class DetectorArgs {
 		return targetClassPath;
 	}
 
+    /**
+     * @return path to the source and class files to check for misuses. The code under this path may also be used for
+     * training the detector.
+     * @throws FileNotFoundException if either path was not provided in the runner invocation
+     */
 	public CodePath getTargetPath() throws FileNotFoundException {
 		return new CodePath(getTargetSrcPath(), getTargetClassPath());
 	}
 
+    /**
+     * @return path to the source and class files of the patterns for particular misuses. Should be used to extract the
+     * patterns in detect-only mode.
+     * @throws FileNotFoundException if either path was not provided in the runner invocation, e.g., if the runner is
+     * invoked in mine-and-detect mode.
+     */
 	public CodePath getPatternPath() throws FileNotFoundException {
 		return new CodePath(getPatternSrcPath(), getPatternClassPath());
 	}
 
+    /**
+     * @return a classpath referencing the dependencies of the code in the {@link #getTargetPath()}.
+     */
     public String[] getDependencyClassPath() throws FileNotFoundException {
         return dependencyClassPath == null ? new String[0] : dependencyClassPath.split(":");
     }
