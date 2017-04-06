@@ -8,7 +8,7 @@ import java.io.FileNotFoundException;
 import org.junit.Test;
 
 public class DetectorArgsTest {
-	
+
 	private DetectorArgs FULL_ARGS = new DetectorArgs("findings.yml", "run.yml", DetectorMode.DETECT_ONLY,
 			"/tr/src", "/tr/classes", "/ta/src", "/ta/classes", "-dep:classpath-");
 
@@ -23,7 +23,7 @@ public class DetectorArgsTest {
 	public void getTrainingClassPath() throws FileNotFoundException {
 		assertEquals("/tr/classes", FULL_ARGS.getTrainingClassPath());
 	}
-	
+
 	@Test
 	public void getTargetSrcPath() throws FileNotFoundException {
 		assertEquals("/ta/src", FULL_ARGS.getTargetSrcPath());
@@ -43,22 +43,22 @@ public class DetectorArgsTest {
 	public void getFindingsFileTest() throws FileNotFoundException {
 		assertEquals("findings.yml", FULL_ARGS.getFindingsFile());
 	}
-	
+
 	@Test
 	public void getRunFileTest() throws FileNotFoundException {
 		assertEquals("run.yml", FULL_ARGS.getRunFile());
 	}
-	
+
 	@Test
 	public void getDetectorModeTest() throws FileNotFoundException {
 		assertEquals(DetectorMode.DETECT_ONLY, FULL_ARGS.getDetectorMode());
 	}
-	
+
 	@Test(expected = FileNotFoundException.class)
 	public void throwsOnNoFindingsFile() throws FileNotFoundException {
 		EMPTY_ARGS.getFindingsFile();
 	}
-	
+
 	@Test(expected = FileNotFoundException.class)
 	public void throwsOnNoRunFile() throws FileNotFoundException {
 		EMPTY_ARGS.getRunFile();
@@ -68,22 +68,22 @@ public class DetectorArgsTest {
 	public void throwsOnNoDetectorMode() throws FileNotFoundException {
 		EMPTY_ARGS.getDetectorMode();
 	}
-	
+
 	@Test(expected = FileNotFoundException.class)
 	public void throwsOnNoTrainingSrcPath() throws FileNotFoundException {
 		EMPTY_ARGS.getTrainingSrcPath();
 	}
-	
+
 	@Test(expected = FileNotFoundException.class)
 	public void throwsOnNoTrainingClassPath() throws FileNotFoundException {
 		EMPTY_ARGS.getTrainingClassPath();
 	}
-	
+
 	@Test(expected = FileNotFoundException.class)
 	public void throwsOnNoTargetSrcPath() throws FileNotFoundException {
 		EMPTY_ARGS.getTargetSrcPath();
 	}
-	
+
 	@Test(expected = FileNotFoundException.class)
 	public void throwsOnNoTargetClassPath() throws FileNotFoundException {
 		EMPTY_ARGS.getTargetClassPath();

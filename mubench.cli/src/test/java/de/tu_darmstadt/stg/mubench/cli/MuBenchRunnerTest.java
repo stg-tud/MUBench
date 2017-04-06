@@ -12,16 +12,16 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
-public class MuBenchRunnerTest {	
+public class MuBenchRunnerTest {
 	@Rule
 	public TemporaryFolder folder = new TemporaryFolder();
 	private String tmpFile;
-	
+
 	@Before
 	public void setup() throws IOException {
 		tmpFile = folder.newFile().getAbsolutePath();
 	}
-	
+
 	@Test
 	public void invokesDetectOnly() throws Exception {
 		MuBenchRunner runner = spy(MuBenchRunner.class);
@@ -35,7 +35,7 @@ public class MuBenchRunnerTest {
 				eq(new String[] {"dep.jar"}),
 				any(DetectorOutput.class));
 	}
-	
+
 	@Test
 	public void invokesMineAndDetect() throws Exception {
 		MuBenchRunner runner = spy(MuBenchRunner.class);

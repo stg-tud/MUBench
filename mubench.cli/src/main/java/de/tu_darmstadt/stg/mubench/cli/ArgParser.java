@@ -61,7 +61,7 @@ public class ArgParser {
 		}
 
 		System.out.println("FindingsFile : " + findingsFile);
-		System.out.println("RunFile : " + runFile);		
+		System.out.println("RunFile : " + runFile);
 		System.out.println("DetectorMode : " + detectorMode);
 		System.out.println("TrainingSrcPath : " + trainingSrcPath);
 		System.out.println("TrainingClassPath : " + trainingClassPath);

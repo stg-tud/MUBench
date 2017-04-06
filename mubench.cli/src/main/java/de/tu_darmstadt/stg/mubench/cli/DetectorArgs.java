@@ -29,7 +29,7 @@ public class DetectorArgs {
 			throw new FileNotFoundException("findings file not provided");
 		return findingsFile;
 	}
-	
+
 	public String getRunFile() throws FileNotFoundException {
 		if (runFile == null)
 			throw new FileNotFoundException("run file not provided");
