@@ -27,7 +27,7 @@ public abstract class MuBenchRunner {
 	protected void run(DetectorMode detectorMode, DetectorArgs args, DetectorOutput output) throws Exception {
 		switch (detectorMode) {
 		case DETECT_ONLY:
-			detectOnly(args.getTrainingPath(), args.getTargetPath(), args.getDependencyClassPath(), output);
+			detectOnly(args.getPatternPath(), args.getTargetPath(), args.getDependencyClassPath(), output);
 			break;
 		case MINE_AND_DETECT:
 			mineAndDetect(args.getTargetPath(), args.getDependencyClassPath(), output);

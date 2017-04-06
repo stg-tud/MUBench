@@ -31,8 +31,8 @@ public class ParseDetectorArgsTest {
 	public void parseTrainingPaths() throws FileNotFoundException {
 		DetectorArgs actual = DetectorArgs.parse(
 				new String[] { DetectorArgs.keyTrainingSrcPath, "psrc", DetectorArgs.keyTrainingClassPath, "pclasspath" });
-		assertEquals("psrc", actual.getTrainingSrcPath());
-		assertEquals("pclasspath", actual.getTrainingClassPath());
+		assertEquals("psrc", actual.getPatternSrcPath());
+		assertEquals("pclasspath", actual.getPatternClassPath());
 	}
 
 	@Test

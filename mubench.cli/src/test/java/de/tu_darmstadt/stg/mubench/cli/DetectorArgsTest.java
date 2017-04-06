@@ -16,12 +16,12 @@ public class DetectorArgsTest {
 
 	@Test
 	public void getTrainingSrcPath() throws FileNotFoundException {
-		assertEquals("/tr/src", FULL_ARGS.getTrainingSrcPath());
+		assertEquals("/tr/src", FULL_ARGS.getPatternSrcPath());
 	}
 
 	@Test
 	public void getTrainingClassPath() throws FileNotFoundException {
-		assertEquals("/tr/classes", FULL_ARGS.getTrainingClassPath());
+		assertEquals("/tr/classes", FULL_ARGS.getPatternClassPath());
 	}
 
 	@Test
@@ -71,12 +71,12 @@ public class DetectorArgsTest {
 
 	@Test(expected = FileNotFoundException.class)
 	public void throwsOnNoTrainingSrcPath() throws FileNotFoundException {
-		EMPTY_ARGS.getTrainingSrcPath();
+		EMPTY_ARGS.getPatternSrcPath();
 	}
 
 	@Test(expected = FileNotFoundException.class)
 	public void throwsOnNoTrainingClassPath() throws FileNotFoundException {
-		EMPTY_ARGS.getTrainingClassPath();
+		EMPTY_ARGS.getPatternClassPath();
 	}
 
 	@Test(expected = FileNotFoundException.class)

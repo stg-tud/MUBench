@@ -81,19 +81,19 @@ public class DetectorArgs {
 
 	private final String findingsFile;
 	private final String runFile;
-	private final String trainingSrcPath;
-	private final String trainingClassPath;
+	private final String patternSrcPath;
+	private final String patternClassPath;
 	private final String targetSrcPath;
 	private final String targetClassPath;
 	private final String dependencyClassPath;
 	private final DetectorMode detectorMode;
 
-	public DetectorArgs(String findingsFile, String runFile, DetectorMode detectorMode, String trainingSrcPath,
-			String trainingClassPath, String targetSrcPath, String targetClassPath, String dependencyClassPath) {
+	public DetectorArgs(String findingsFile, String runFile, DetectorMode detectorMode, String patternSrcPath,
+                 String patternClassPath, String targetSrcPath, String targetClassPath, String dependencyClassPath) {
 		this.findingsFile = findingsFile;
 		this.runFile = runFile;
-		this.trainingSrcPath = trainingSrcPath;
-		this.trainingClassPath = trainingClassPath;
+		this.patternSrcPath = patternSrcPath;
+		this.patternClassPath = patternClassPath;
 		this.targetSrcPath = targetSrcPath;
 		this.targetClassPath = targetClassPath;
 		this.dependencyClassPath = dependencyClassPath;
@@ -118,16 +118,16 @@ public class DetectorArgs {
 		return detectorMode;
 	}
 
-	public String getTrainingSrcPath() throws FileNotFoundException {
-		if (trainingSrcPath == null)
+	public String getPatternSrcPath() throws FileNotFoundException {
+		if (patternSrcPath == null)
 			throw new FileNotFoundException("training source path not provided");
-		return trainingSrcPath;
+		return patternSrcPath;
 	}
 
-	public String getTrainingClassPath() throws FileNotFoundException {
-		if (trainingClassPath == null)
+	public String getPatternClassPath() throws FileNotFoundException {
+		if (patternClassPath == null)
 			throw new FileNotFoundException("training classpath not provided");
-		return trainingClassPath;
+		return patternClassPath;
 	}
 
 	public String getTargetSrcPath() throws FileNotFoundException {
@@ -152,8 +152,8 @@ public class DetectorArgs {
 		return new CodePath(getTargetSrcPath(), getTargetClassPath());
 	}
 
-	public CodePath getTrainingPath() throws FileNotFoundException {
-		return new CodePath(getTrainingSrcPath(), getTrainingClassPath());
+	public CodePath getPatternPath() throws FileNotFoundException {
+		return new CodePath(getPatternSrcPath(), getPatternClassPath());
 	}
 
 }
