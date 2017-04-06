@@ -54,7 +54,7 @@ public class DetectorOutput {
 		writeRunInformation();
 	}
 
-	private void writeFindings() throws IOException, UnsupportedEncodingException, FileNotFoundException {
+	private void writeFindings() throws IOException {
 		try (Writer writer = new OutputStreamWriter(new FileOutputStream(findingsFile), "UTF-8")) {
 			DumperOptions options = new DumperOptions();
 			options.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
@@ -71,7 +71,7 @@ public class DetectorOutput {
 		return content.iterator();
 	}
 
-	private void writeRunInformation() throws UnsupportedEncodingException, FileNotFoundException, IOException {
+	private void writeRunInformation() throws IOException {
 		try (Writer writer = new OutputStreamWriter(new FileOutputStream(runInformationFile), "UTF-8")) {
 			DumperOptions options = new DumperOptions();
 			options.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
