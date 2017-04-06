@@ -108,11 +108,11 @@ class TestPost:
         mock_file = io.StringIO("-file-content-")
         open_mock.return_value = mock_file
 
-        post("-url-", "-data-", file_paths=["/fake/file/path"])
+        post("-url-", "-data-", file_paths=["/fake/file/path.png"])
 
         args = post_mock.call_args
         assert_equals(args[1]["data"], {"data": '"-data-"'})
-        assert_equals(args[1]["files"], [("path", ("path", mock_file, "image/png"))])
+        assert_equals(args[1]["files"], [("path.png", ("path.png", mock_file, "image/png"))])
 
     @patch("utils.web_util.getpass.getpass")
     def test_post_with_auth(self, pass_mock, post_mock):
