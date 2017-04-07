@@ -161,7 +161,7 @@ class Compile(ProjectVersionTask):
                 output = Shell.exec(command, cwd=project_dir,logger=logger)
                 dependencies = Compile._parse_maven_classpath(output)
                 Compile._copy_classpath(dependencies, dep_dir)
-            elif command.startswith("ant "):
+            elif command.startswith("ant"):
                 command += " -debug -verbose"
                 output = Shell.exec(command, cwd=project_dir,logger=logger)
                 dependencies = Compile._parse_ant_classpath(output)
@@ -177,39 +177,42 @@ class Compile(ProjectVersionTask):
 
     @staticmethod
     def _parse_maven_classpath(shell_output: str) -> List[str]:
-        search_str = "Dependencies classpath:\n"
-        offset = len(search_str)
-        start_idx = shell_output.find(search_str)
-        end_idx = shell_output.find("[INFO]", start_idx)
-        classpath = shell_output[start_idx + offset:end_idx]
-        if "\n" in classpath:
-            classpath = classpath.replace("\n", "")
+        # shell_output looks like:
+        # [INFO] Dependencies classpath:
+        # /path/dep1.jar:/path/dep2.jar
+
+        classpath_preamble = "Dependencies classpath:"
+        classpath_start_idx = shell_output.find(classpath_preamble) + len(classpath_preamble)
+        classpath_end_idx = shell_output.find("[INFO]", classpath_start_idx)
+        classpath = shell_output[classpath_start_idx:classpath_end_idx].strip()
         return classpath.split(":")
 
     @staticmethod
     def _parse_ant_classpath(shell_output: str) -> List[str]:
-        start_str = "[javac] '-classpath'\n"
-        end_str = "[javac] '"
-        offset_start = len(start_str)
-        offset_end = len(end_str)
-        start_idx = shell_output.find(start_str)
-        line_idx = shell_output.find(end_str, start_idx + offset_start)
-        line_end_idx = shell_output.find("'\n", line_idx+offset_end)+2
-        classpath = shell_output[line_idx+offset_end:line_end_idx]
-        filtered_deps = []
-        for dep in classpath.split(":"):
-            if "'\n" in dep:
-                dep = dep[:2]
-            if ".jar" in dep:
-                filtered_deps.append(dep)
-        return filtered_deps
+        # shell_output looks like:
+        #   [javac] '-classpath'
+        #   [javac] '/project/build:/path/dep1.jar:/path/dep2.jar'
+
+        classpath_preamble = "[javac] '-classpath'"
+        classpath_preamble_end_idx = shell_output.find(classpath_preamble) + len(classpath_preamble)
+        classpath_start_idx = shell_output.find("'", classpath_preamble_end_idx) + 1
+        classpath_end_idx = shell_output.find("'", classpath_start_idx)
+        classpath = shell_output[classpath_start_idx:classpath_end_idx]
+        return classpath.split(":")[1:]
 
     @staticmethod
     def _parse_gradle_classpath(shell_output: str) -> List[str]:
-        start_idx = shell_output.find("\n")
-        end_idx = shell_output.find("\n\nB", start_idx)
-        classpath = shell_output[start_idx+1:end_idx]
-        return classpath.split("\n")
+        # shell_output looks like:
+        # :printClasspath
+        # /path/dependency1.jar
+        # /path/dependency2.jar
+        #
+        # BUILD SUCCESSFUL
+
+        lines = shell_output.splitlines()
+        first_dependency_idx = next(i for i, line in enumerate(lines) if line == ":printClasspath") + 1
+        first_empty_line_idx = next(i for i, line in enumerate(lines) if not line)
+        return lines[first_dependency_idx:first_empty_line_idx]
 
     @staticmethod
     def _copy_classpath(dependencies: List[str], dep_dir: str):

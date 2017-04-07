@@ -4,9 +4,9 @@ from os.path import join, exists, dirname, relpath
 from shutil import rmtree
 from tempfile import mkdtemp
 from typing import List
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock, patch, call
 
-from nose.tools import assert_equals
+from nose.tools import assert_equals, assert_in
 
 from data.pattern import Pattern
 from tasks.implementations.compile import Compile
@@ -244,26 +244,67 @@ class TestCompile:
 
         assert exists(join(self.pattern_classes_path, "m", "a", "b.class"))
 
+    @patch("tasks.implementations.compile.shutil.copy")
     @patch("tasks.implementations.compile.Shell.exec")
-    def test_compile_with_maven(self, mockShell):
+    def test_compile_with_maven(self, shell_mock, copy_mock):
         self.version._YAML["build"]["commands"] = ["mvn build"]
+        shell_mock.return_value = """
+[INFO] --- maven-dependency-plugin:2.8:build-classpath (default-cli) @ testproject ---
+[INFO] Dependencies classpath:
+/path/dependency1.jar:/path/dependency2.jar
+[INFO] ------------------------------------------------------------------------"""
 
         self.uut.process_project_version(self.project, self.version)
-        assert_equals(mockShell.mock_calls[0][1], ("mvn dependency:build-classpath build",))
+        assert_equals(shell_mock.mock_calls[0][1], ("mvn dependency:build-classpath build",))
+        assert_in(call("/path/dependency1.jar", self.dep_path), copy_mock.mock_calls)
+        assert_in(call("/path/dependency2.jar", self.dep_path), copy_mock.mock_calls)
 
+    @patch("tasks.implementations.compile.shutil.copy")
     @patch("tasks.implementations.compile.Shell.exec")
-    def test_compile_with_maven(self, mockShell):
-        self.version._YAML["build"]["commands"] = ["ant "]
+    def test_compile_with_maven_no_dependencies(self, shell_mock, copy_mock):
+        self.version._YAML["build"]["commands"] = ["mvn build"]
+        shell_mock.return_value = """
+[INFO] --- maven-dependency-plugin:2.8:build-classpath (default-cli) @ testproject ---
+[INFO] Dependencies classpath:
+
+[INFO] ------------------------------------------------------------------------"""
 
         self.uut.process_project_version(self.project, self.version)
-        assert_equals(mockShell.mock_calls[0][1], ("ant -debug -verbose",))
+        assert_equals(shell_mock.mock_calls[0][1], ("mvn dependency:build-classpath build",))
 
+    @patch("tasks.implementations.compile.shutil.copy")
     @patch("tasks.implementations.compile.Shell.exec")
-    def test_compile_with_maven(self, mockShell):
+    def test_compile_with_ant(self, shell_mock, copy_mock):
+        self.version._YAML["build"]["commands"] = ["ant"]
+        shell_mock.return_value = """[javac] Compilation arguments:
+[javac] '-d'
+[javac] '/project/build'
+[javac] '-classpath'
+[javac] '/project/build:/path/dependency1.jar:/path/dependency2.jar'"""
+
+        self.uut.process_project_version(self.project, self.version)
+        assert_equals(shell_mock.mock_calls[0][1], ("ant -debug -verbose",))
+        assert_in(call("/path/dependency1.jar", self.dep_path), copy_mock.mock_calls)
+        assert_in(call("/path/dependency2.jar", self.dep_path), copy_mock.mock_calls)
+
+    @patch("tasks.implementations.compile.shutil.copy")
+    @patch("tasks.implementations.compile.Shell.exec")
+    def test_compile_with_gradle(self, shell_mock, copy_mock):
+        self.version._YAML["build"]["commands"] = ["gradle build"]
+        shell_mock.return_value = ":printClasspath\n/path/dependency1.jar\n/path/dependency2.jar\n\nBUILD SUCCESSFUL"
+
+        self.uut.process_project_version(self.project, self.version)
+        assert_equals(shell_mock.mock_calls[1][1], ("gradle :printClasspath -b classpath.gradle",))
+        assert_in(call("/path/dependency1.jar", self.dep_path), copy_mock.mock_calls)
+        assert_in(call("/path/dependency2.jar", self.dep_path), copy_mock.mock_calls)
+
+    @patch("tasks.implementations.compile.shutil.copy")
+    @patch("tasks.implementations.compile.Shell.exec")
+    def test_compile_with_gradle_no_dependencies(self, shell_mock, copy_mock):
         self.version._YAML["build"]["commands"] = ["gradle "]
+        shell_mock.return_value = ":printClasspath\n\nBUILD SUCCESSFUL"
 
         self.uut.process_project_version(self.project, self.version)
-        assert_equals(mockShell.mock_calls[1][1], ("gradle :printClasspath -b classpath.gradle",))
 
     def test_skips_compile_patterns_if_pattern_classes_exist(self):
         self.mock_with_fake_compile()
