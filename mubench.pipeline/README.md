@@ -4,8 +4,6 @@
 
 MUBench is controlled via the command line. Run `./mubench -h` (`./mubench.bar -h`) for details about the available commands and options.
 
-MuBench CI Status: [![MuBench CI Status](https://api.shippable.com/projects/570d22d52a8192902e1bfa79/badge?branch=master)](https://app.shippable.com/projects/570d22d52a8192902e1bfa79)
-
 #### Computing Resources
 
 Docker limits the computing resources available to a docker run. You can adjust this in the advanced preferences. Our recommendations are
