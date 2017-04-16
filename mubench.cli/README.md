@@ -2,13 +2,11 @@
 
 # MUBench : Benchmarking
 
-The MUBench dataset is an [MSR 2016 Data Showcase](http://2016.msrconf.org/#/data) and an benchmarking pipeline for API-misuse detectors. Please feel free to [contact Sven Amann](http://www.stg.tu-darmstadt.de/staff/sven_amann), if you have any questions.
+If you have a detector set up for running on MUBench, please [contact Sven Amann](http://www.stg.tu-darmstadt.de/staff/sven_amann) to have it added to the benchmark.
 
 MuBench CI Status: [![MuBench CI Status](https://api.shippable.com/projects/570d22d52a8192902e1bfa79/badge?branch=master)](https://app.shippable.com/projects/570d22d52a8192902e1bfa79)
 
-If you have a detector set up for running on MUBench, please [contact Sven Amann](http://www.stg.tu-darmstadt.de/staff/sven_amann) to have it added to the benchmark.
-
-### <a name="own-detector" /> Benchmark Your Own Detector
+### Benchmark Your Own Detector
 
 For MUBench to run your detector and interpret its results, your detector's executable needs to comply with MUBench's command-line interface. The easiest way to achieve this is for your entry-point class to extend `MuBenchRunner`, which comes with the Maven dependency [`de.tu-darmstadt.stg:mubench.cli`](https://github.com/stg-tud/MUBench/tree/master/mubench.cli) via our repository at `http://www.st.informatik.tu-darmstadt.de/artifacts/mubench/mvn/`.
 

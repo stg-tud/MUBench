@@ -2,7 +2,7 @@
 
 # MUBench : Pipeline
 
-The MUBench dataset is an [MSR 2016 Data Showcase](http://2016.msrconf.org/#/data) and an benchmarking pipeline for API-misuse detectors. Please feel free to [contact Sven Amann](http://www.stg.tu-darmstadt.de/staff/sven_amann), if you have any questions.
+MUBench is controlled via the command line. Run `./mubench -h` (`./mubench.bar -h`) for details about the available commands and options.
 
 MuBench CI Status: [![MuBench CI Status](https://api.shippable.com/projects/570d22d52a8192902e1bfa79/badge?branch=master)](https://app.shippable.com/projects/570d22d52a8192902e1bfa79)
 
@@ -15,9 +15,6 @@ Docker limits the computing resources available to a docker run. You can adjust 
 
 Remember that you may also have to provide more memory to the JVM for the detector run, for example, by passing `--java-options Xmx8G` to the pipeline invocation.
 
-## Run MUBench
-
-MUBench is controlled via the command line. Run `./mubench -h` (`./mubench.bar -h`) for details about the available commands and options.
 
 ### Run Experiments
 

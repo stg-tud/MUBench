@@ -2,9 +2,9 @@
 
 # MUBench : Review Site
 
-MuBench CI Status: [![MuBench CI Status](https://api.shippable.com/projects/570d22d52a8192902e1bfa79/badge?branch=master)](https://app.shippable.com/projects/570d22d52a8192902e1bfa79)
-
 We are rebuilding the review site. Please come back in a bit.
+
+MuBench CI Status: [![MuBench CI Status](https://api.shippable.com/projects/570d22d52a8192902e1bfa79/badge?branch=master)](https://app.shippable.com/projects/570d22d52a8192902e1bfa79)
 
 #### Server Requirements
 

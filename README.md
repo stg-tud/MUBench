@@ -44,19 +44,20 @@ MuBench CI Status: [![MuBench CI Status](https://api.shippable.com/projects/570d
 
 ## Use
 
-* [Pipeline](mubench.pipeline/README.md)
-* [Review Site](mubench.reviewsite/README.md)
-* [Detectors](mubench.cli/README.md)
+* [Pipeline](mubench.pipeline/)
+* [Review Site](mubench.reviewsite/)
+* [Detectors](mubench.cli/)
+* [Misuses](mubench.pipeline/)
 
 ## Contribute to MUBench
 
-We want MUBench to grow, so please be welcome to contribute to the dataset and [add your detectors](mubench.cli/README.md) to the benchmark.
+We want MUBench to grow, so please be welcome to contribute to the [dataset](mubench.pipeline/) and [add your detectors](mubench.cli/) to the benchmark.
 
 ## License
 
-All software provided in this repository is subject to the [CRAPL license](https://github.com/stg-tud/MUBench/tree/master/CRAPL-LICENSE.txt).
+All software provided in this repository is subject to the [CRAPL license](CRAPL-LICENSE.txt).
 
-The detectors included in MuBench are subject to the licensing of their respective creators. See the information in [the detectors' folders](https://github.com/stg-tud/MUBench/tree/master/detectors).
+The detectors included in MuBench are subject to the licensing of their respective creators. See the information in [the detectors' folders](detectors).
 
 The projects referenced in the MuBench dataset are subject to their respective licenses.
 
