@@ -158,22 +158,54 @@ class Compile(ProjectVersionTask):
         for command in commands:
             if command.startswith("mvn "):
                 command = "mvn dependency:build-classpath " + command[4:]
-                output = Shell.exec(command, cwd=project_dir,logger=logger)
+                output = Shell.exec(command, cwd=project_dir, logger=logger)
                 dependencies = Compile._parse_maven_classpath(output)
                 Compile._copy_classpath(dependencies, dep_dir)
             elif command.startswith("ant"):
                 command += " -debug -verbose"
-                output = Shell.exec(command, cwd=project_dir,logger=logger)
+                output = Shell.exec(command, cwd=project_dir, logger=logger)
                 dependencies = Compile._parse_ant_classpath(output)
                 Compile._copy_classpath(dependencies, dep_dir)
             elif command.startswith("gradle "):
-                Shell.exec(command,cwd=project_dir,logger=logger)
-                shutil.copy(os.path.dirname(__file__) + '/classpath.gradle', project_dir)
-                output = Shell.exec("gradle :printClasspath -b classpath.gradle", cwd=project_dir, logger=logger)
+                Shell.exec(command, cwd=project_dir, logger=logger)
+                buildfile_dir, classpath_cmd = Compile._parse_buildfile_dir(command)
+                shutil.copy(os.path.dirname(__file__) + '/classpath.gradle', project_dir + "/" + buildfile_dir)
+                output = Shell.exec(classpath_cmd, cwd=project_dir, logger=logger)
                 dependencies = Compile._parse_gradle_classpath(output)
                 Compile._copy_classpath(dependencies, dep_dir)
             else:
                 Shell.exec(command, cwd=project_dir, logger=logger)
+
+    @staticmethod
+    def _parse_buildfile_dir(command):
+        # parsing for "-p" or "--project-dir" in gradle command
+        # and adjusting printClasspath command with it
+        # gradle :printClasspath -b buildfile_dir/classpath.gradle
+
+        args = command.split()
+        buildfile_dir = ""
+        if "-p" in args or "--project-dir" in args:
+            # dir is one index behind "-p" or "--project-dir" in args
+            last_index = 0
+            if "--project-dir" in args:
+                last_index = args.index("--project-dir") + 1
+            else:
+                last_index = args.index("-p") + 1
+            buildfile_dir += args[last_index]
+
+            # add rest of dir name if not even amount of " or ' in dir name (dirs with spaces are wrapped)
+            while buildfile_dir.count('"') % 2 is not 0 or buildfile_dir.count('\'') % 2 is not 0:
+                last_index += 1
+                buildfile_dir += " " + args[last_index]
+
+        # remove ' or " and add / if missing
+        buildfile_dir = buildfile_dir.replace("'", "")
+        buildfile_dir = buildfile_dir.replace("\"", "")
+        if buildfile_dir is not "" and not buildfile_dir.endswith("/"):
+            buildfile_dir += "/"
+
+        cmd = "gradle :printClasspath -b '" + buildfile_dir + "classpath.gradle'"
+        return buildfile_dir, cmd
 
     @staticmethod
     def _parse_maven_classpath(shell_output: str) -> List[str]:
@@ -220,7 +252,6 @@ class Compile(ProjectVersionTask):
         makedirs(dirname(dep_dir + "/"), exist_ok=True)
         for dependency in dependencies:
             shutil.copy(dependency, dep_dir)
-
 
     @staticmethod
     def __copy_misuse_classes(classes_path, misuses, destination):

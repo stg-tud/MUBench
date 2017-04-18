@@ -294,7 +294,41 @@ class TestCompile:
         shell_mock.return_value = ":printClasspath\n/path/dependency1.jar\n/path/dependency2.jar\n\nBUILD SUCCESSFUL"
 
         self.uut.process_project_version(self.project, self.version)
-        assert_equals(shell_mock.mock_calls[1][1], ("gradle :printClasspath -b classpath.gradle",))
+        assert_equals(shell_mock.mock_calls[1][1], ("gradle :printClasspath -b 'classpath.gradle'",))
+        assert_in(call("/path/dependency1.jar", self.dep_path), copy_mock.mock_calls)
+        assert_in(call("/path/dependency2.jar", self.dep_path), copy_mock.mock_calls)
+
+    @patch("tasks.implementations.compile.shutil.copy")
+    @patch("tasks.implementations.compile.Shell.exec")
+    def test_compile_with_gradle_project_dir_parameter(self, shell_mock, copy_mock):
+        self.version._YAML["build"]["commands"] = ["gradle build -p /testdir/"]
+        shell_mock.return_value = ":printClasspath\n/path/dependency1.jar\n/path/dependency2.jar\n\nBUILD SUCCESSFUL"
+
+        self.uut.process_project_version(self.project, self.version)
+        assert_equals(shell_mock.mock_calls[1][1], ("gradle :printClasspath -b '/testdir/classpath.gradle'",))
+        assert_in(call("/path/dependency1.jar", self.dep_path), copy_mock.mock_calls)
+        assert_in(call("/path/dependency2.jar", self.dep_path), copy_mock.mock_calls)
+
+    @patch("tasks.implementations.compile.shutil.copy")
+    @patch("tasks.implementations.compile.Shell.exec")
+    def test_compile_with_gradle_project_dir_parameter_spaces(self, shell_mock, copy_mock):
+        self.version._YAML["build"]["commands"] = ["gradle build -p \"/test dir/\""]
+        shell_mock.return_value = ":printClasspath\n/path/dependency1.jar\n/path/dependency2.jar\n\nBUILD SUCCESSFUL"
+
+        self.uut.process_project_version(self.project, self.version)
+        assert_equals(shell_mock.mock_calls[1][1], ("gradle :printClasspath -b '/test dir/classpath.gradle'",))
+        assert_in(call("/path/dependency1.jar", self.dep_path), copy_mock.mock_calls)
+        assert_in(call("/path/dependency2.jar", self.dep_path), copy_mock.mock_calls)
+
+    @patch("tasks.implementations.compile.shutil.copy")
+    @patch("tasks.implementations.compile.Shell.exec")
+    def test_compile_with_gradle_project_dir_parameter_spaces2(self, shell_mock, copy_mock):
+        self.version._YAML["build"]["commands"] = ["gradle build -p '/test dir'"]
+        shell_mock.return_value = ":printClasspath\n/path/dependency1.jar\n/path/dependency2.jar\n\nBUILD SUCCESSFUL"
+
+        self.uut.process_project_version(self.project, self.version)
+        assert_equals(shell_mock.mock_calls[1][1],
+                      ("gradle :printClasspath -b '/test dir/classpath.gradle'",))
         assert_in(call("/path/dependency1.jar", self.dep_path), copy_mock.mock_calls)
         assert_in(call("/path/dependency2.jar", self.dep_path), copy_mock.mock_calls)
 
