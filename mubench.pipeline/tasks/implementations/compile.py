@@ -171,7 +171,7 @@ class Compile(ProjectVersionTask):
                 Shell.exec(command, cwd=project_dir, logger=logger)
                 buildfile_dir = Compile.__parse_buildfile_dir(command)
                 shutil.copy(os.path.join(os.path.dirname(__file__), 'classpath.gradle'), os.path.join(project_dir, buildfile_dir))
-                command = "gradle :printClasspath -b '" + buildfile_dir + "classpath.gradle'"
+                command = "gradle :printClasspath -b '{}'".format(os.path.join(buildfile_dir, "classpath.gradle"))
                 output = Shell.exec(command, cwd=project_dir, logger=logger)
                 dependencies = Compile.__parse_gradle_classpath(output)
                 Compile._copy_classpath(dependencies, dep_dir)
@@ -183,21 +183,17 @@ class Compile(ProjectVersionTask):
         # parsing for "-p" or "--project-dir" in gradle command
         # and adjusting printClasspath command with it
         # gradle :printClasspath -b buildfile_dir/classpath.gradle
-
         args = shlex.split(command)
         buildfile_dir = ""
 
         # dir is one index behind "-p" or "--project-dir" in args
+        # remove ' or " and add / if missing
         if "-p" in args:
             buildfile_dir = args[args.index("-p")+1]
+            buildfile_dir.strip("'\"")
         elif "--project-dir" in args:
             buildfile_dir = args[args.index("--project-dir") + 1]
-
-        # remove ' or " and add / if missing
-        buildfile_dir = buildfile_dir.replace("'", "")
-        buildfile_dir = buildfile_dir.replace("\"", "")
-        if buildfile_dir is not "" and not buildfile_dir.endswith("/"):
-            buildfile_dir += "/"
+            buildfile_dir.strip("'\"")
 
         return buildfile_dir
 
