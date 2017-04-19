@@ -2,7 +2,7 @@
 
 # MUBench : Pipeline
 
-MUBench is controlled via the command line. Run `./mubench -h` (`./mubench.bar -h`) for details about the available commands and options.
+MUBench is controlled via the command line. Run `./mubench -h` (`./mubench.bat -h`) for details about the available commands and options.
 
 #### Computing Resources
 
@@ -35,15 +35,3 @@ To contribute to the MUBench dataset, please [contact Sven Amann](http://www.stg
 * A link to the project's publicly-readable version-control system, and a commit id to a version with the misuse or, ideally, to the commit that resolves the misuse.
 * The misuse's location (file, method, and misused API).
 * Instructions how to compile the project in the respective version.
-
-## License
-
-All software provided in this repository is subject to the [CRAPL license](https://github.com/stg-tud/MUBench/tree/master/CRAPL-LICENSE.txt).
-
-The detectors included in MuBench are subject to the licensing of their respective creators. See the information in [the detectors' folders](https://github.com/stg-tud/MUBench/tree/master/detectors).
-
-The projects referenced in the MuBench dataset are subject to their respective licenses.
-
-The project artwork is subject to the [Creative Commons Attribution-ShareAlike 4.0 International (CC BY-SA 4.0)](https://creativecommons.org/licenses/by-sa/4.0/).
-
-
