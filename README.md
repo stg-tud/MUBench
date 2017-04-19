@@ -44,10 +44,10 @@ MuBench CI Status: [![MuBench CI Status](https://api.shippable.com/projects/570d
 
 ## Use
 
-* [Pipeline](mubench.pipeline/)
-* [Review Site](mubench.reviewsite/)
-* [Detectors](mubench.cli/)
-* [Misuses](mubench.pipeline/)
+* [Use the Benchmark Pipeline](mubench.pipeline/)
+* [Setup a Review Site](mubench.reviewsite/)
+* [Add Your Own Detector](mubench.cli/)
+* [Add Your Own Project or Misuse Examples](data/)
 
 ## Contribute to MUBench
 
