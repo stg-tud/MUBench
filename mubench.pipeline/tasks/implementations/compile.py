@@ -1,6 +1,7 @@
 import logging
 import shutil
 import os
+import shlex
 from glob import glob
 from os import makedirs
 from os.path import join, exists, dirname, splitext, relpath
@@ -159,20 +160,20 @@ class Compile(ProjectVersionTask):
             if command.startswith("mvn "):
                 command = "mvn dependency:build-classpath " + command[4:]
                 output = Shell.exec(command, cwd=project_dir, logger=logger)
-                dependencies = Compile._parse_maven_classpath(output)
+                dependencies = Compile.__parse_maven_classpath(output)
                 Compile._copy_classpath(dependencies, dep_dir)
             elif command.startswith("ant"):
                 command += " -debug -verbose"
                 output = Shell.exec(command, cwd=project_dir, logger=logger)
-                dependencies = Compile._parse_ant_classpath(output)
+                dependencies = Compile.__parse_ant_classpath(output)
                 Compile._copy_classpath(dependencies, dep_dir)
             elif command.startswith("gradle "):
                 Shell.exec(command, cwd=project_dir, logger=logger)
-                buildfile_dir = Compile._parse_buildfile_dir(command)
+                buildfile_dir = Compile.__parse_buildfile_dir(command)
                 shutil.copy(os.path.join(os.path.dirname(__file__), 'classpath.gradle'), os.path.join(project_dir, buildfile_dir))
                 command = "gradle :printClasspath -b '" + buildfile_dir + "classpath.gradle'"
                 output = Shell.exec(command, cwd=project_dir, logger=logger)
-                dependencies = Compile._parse_gradle_classpath(output)
+                dependencies = Compile.__parse_gradle_classpath(output)
                 Compile._copy_classpath(dependencies, dep_dir)
             else:
                 Shell.exec(command, cwd=project_dir, logger=logger)
@@ -183,21 +184,14 @@ class Compile(ProjectVersionTask):
         # and adjusting printClasspath command with it
         # gradle :printClasspath -b buildfile_dir/classpath.gradle
 
-        args = command.split()
+        args = shlex.split(command)
         buildfile_dir = ""
-        if "-p" in args or "--project-dir" in args:
-            # dir is one index behind "-p" or "--project-dir" in args
-            last_index = 0
-            if "--project-dir" in args:
-                last_index = args.index("--project-dir") + 1
-            else:
-                last_index = args.index("-p") + 1
-            buildfile_dir += args[last_index]
 
-            # add rest of dir name if not even amount of " or ' in dir name (dirs with spaces are wrapped)
-            while buildfile_dir.count('"') % 2 is not 0 or buildfile_dir.count('\'') % 2 is not 0:
-                last_index += 1
-                buildfile_dir += " " + args[last_index]
+        # dir is one index behind "-p" or "--project-dir" in args
+        if "-p" in args:
+            buildfile_dir = args[args.index("-p")+1]
+        elif "--project-dir" in args:
+            buildfile_dir = args[args.index("--project-dir") + 1]
 
         # remove ' or " and add / if missing
         buildfile_dir = buildfile_dir.replace("'", "")

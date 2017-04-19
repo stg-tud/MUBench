@@ -319,7 +319,7 @@ class TestCompile:
     @patch("tasks.implementations.compile.shutil.copy")
     @patch("tasks.implementations.compile.Shell.exec")
     def test_compile_with_gradle_project_dir_parameter_single_quote(self, shell_mock, copy_mock):
-        self.version._YAML["build"]["commands"] = ["gradle build -p '/test dir'"]
+        self.version._YAML["build"]["commands"] = ["gradle build --project-dir '/test dir'"]
         shell_mock.return_value = ":printClasspath\n/path/dependency1.jar\n/path/dependency2.jar\n\nBUILD SUCCESSFUL"
 
         self.uut.process_project_version(self.project, self.version)
