@@ -168,16 +168,17 @@ class Compile(ProjectVersionTask):
                 Compile._copy_classpath(dependencies, dep_dir)
             elif command.startswith("gradle "):
                 Shell.exec(command, cwd=project_dir, logger=logger)
-                buildfile_dir, classpath_cmd = Compile._parse_buildfile_dir(command)
-                shutil.copy(os.path.dirname(__file__) + '/classpath.gradle', project_dir + "/" + buildfile_dir)
-                output = Shell.exec(classpath_cmd, cwd=project_dir, logger=logger)
+                buildfile_dir = Compile._parse_buildfile_dir(command)
+                shutil.copy(os.path.join(os.path.dirname(__file__), 'classpath.gradle'), os.path.join(project_dir, buildfile_dir))
+                command = "gradle :printClasspath -b '" + buildfile_dir + "classpath.gradle'"
+                output = Shell.exec(command, cwd=project_dir, logger=logger)
                 dependencies = Compile._parse_gradle_classpath(output)
                 Compile._copy_classpath(dependencies, dep_dir)
             else:
                 Shell.exec(command, cwd=project_dir, logger=logger)
 
     @staticmethod
-    def _parse_buildfile_dir(command):
+    def __parse_buildfile_dir(command):
         # parsing for "-p" or "--project-dir" in gradle command
         # and adjusting printClasspath command with it
         # gradle :printClasspath -b buildfile_dir/classpath.gradle
@@ -204,11 +205,10 @@ class Compile(ProjectVersionTask):
         if buildfile_dir is not "" and not buildfile_dir.endswith("/"):
             buildfile_dir += "/"
 
-        cmd = "gradle :printClasspath -b '" + buildfile_dir + "classpath.gradle'"
-        return buildfile_dir, cmd
+        return buildfile_dir
 
     @staticmethod
-    def _parse_maven_classpath(shell_output: str) -> List[str]:
+    def __parse_maven_classpath(shell_output: str) -> List[str]:
         # shell_output looks like:
         # [INFO] Dependencies classpath:
         # /path/dep1.jar:/path/dep2.jar
@@ -220,7 +220,7 @@ class Compile(ProjectVersionTask):
         return classpath.split(":")
 
     @staticmethod
-    def _parse_ant_classpath(shell_output: str) -> List[str]:
+    def __parse_ant_classpath(shell_output: str) -> List[str]:
         # shell_output looks like:
         #   [javac] '-classpath'
         #   [javac] '/project/build:/path/dep1.jar:/path/dep2.jar'
@@ -233,7 +233,7 @@ class Compile(ProjectVersionTask):
         return classpath.split(":")[1:]
 
     @staticmethod
-    def _parse_gradle_classpath(shell_output: str) -> List[str]:
+    def __parse_gradle_classpath(shell_output: str) -> List[str]:
         # shell_output looks like:
         # :printClasspath
         # /path/dependency1.jar
