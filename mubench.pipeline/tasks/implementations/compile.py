@@ -180,20 +180,13 @@ class Compile(ProjectVersionTask):
 
     @staticmethod
     def __parse_buildfile_dir(command):
-        # parsing for "-p" or "--project-dir" in gradle command
-        # and adjusting printClasspath command with it
-        # gradle :printClasspath -b buildfile_dir/classpath.gradle
         args = shlex.split(command)
         buildfile_dir = ""
 
-        # dir is one index behind "-p" or "--project-dir" in args
-        # remove ' or " and add / if missing
         if "-p" in args:
             buildfile_dir = args[args.index("-p")+1]
-            buildfile_dir.strip("'\"")
         elif "--project-dir" in args:
             buildfile_dir = args[args.index("--project-dir") + 1]
-            buildfile_dir.strip("'\"")
 
         return buildfile_dir
 
