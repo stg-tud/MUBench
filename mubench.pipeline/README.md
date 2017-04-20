@@ -4,7 +4,7 @@
 
 MUBench is controlled via the command line. Run `./mubench -h` (`./mubench.bat -h`) for details about the available commands and options.
 
-#### Computing Resources
+## Computing Resources
 
 Docker limits the computing resources available to a docker run. You can adjust this in the advanced preferences. Our recommendations are
 
@@ -14,7 +14,7 @@ Docker limits the computing resources available to a docker run. You can adjust 
 Remember that you may also have to provide more memory to the JVM for the detector run, for example, by passing `--java-options Xmx8G` to the pipeline invocation.
 
 
-### Run Experiments
+## Run Experiments
 
 The easiest way to run experiments is to execute
 
@@ -25,13 +25,3 @@ Where `<D>` is the id of the detector to benchmark, `<E>` is the id of the exper
 MUBench will run the detector on the misuses specified in the `data` subfolder. The first time a misuse is used in benchmarking, the repository containing that misuse is cloned (this may take a while). Subsequently, the existing clone is used, such that benchmarking runs offline. Before the first detector is run on a project, MUBench compiles the project (this may take a while). Subsequently, the compiled classes are reused. Then the detector is invoked, and finally the results are published to the review site.
 
 You may run individual benchmark steps. See `./mubench -h` for details.
-
-### Add Misuses
-
-To contribute to the MUBench dataset, please [contact Sven Amann](http://www.stg.tu-darmstadt.de/staff/sven_amann) with details about the misuses. For each misuse, please provide
-
-* A description of the misuse (and its fix).
-* A link to the website of the project you found the misuse in.
-* A link to the project's publicly-readable version-control system, and a commit id to a version with the misuse or, ideally, to the commit that resolves the misuse.
-* The misuse's location (file, method, and misused API).
-* Instructions how to compile the project in the respective version.
