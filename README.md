@@ -20,18 +20,16 @@ MuBench CI Status: [![MuBench CI Status](https://api.shippable.com/projects/570d
 * ['*MUBench: A Benchmark of API-Misuse Detectors*'](http://sven-amann.de/publications/#ANNNM16)
 * ['*The Misuse Classification*'](http://www.st.informatik.tu-darmstadt.de/artifacts/muc/)
 
-## Install MUBench
+## Install
 
-### Experiment Pipeline
-
-#### Linux/OSX
+### Linux/OSX
 
 1. Install [Docker](https://www.docker.com/products/overview#/install_the_platform).
 2. `$> cd /mubench/install/path/`
 3. `$> docker run --rm -v $PWD:/mubench svamann/mubench git clone https://github.com/stg-tud/MUBench.git .`
 4. `$> ./mubench check` (On the first run, this may take some time.)
 
-#### Windows
+### Windows
 
 1. Install [Docker](https://www.docker.com/products/overview#/install_the_platform).
 2. `$> cd X:\mubench\install\path\`
@@ -44,14 +42,14 @@ MuBench CI Status: [![MuBench CI Status](https://api.shippable.com/projects/570d
 
 ## Use
 
-* [Use the Benchmark Pipeline](mubench.pipeline/)
 * [Setup a Review Site](mubench.reviewsite/)
+* [Run Benchmark Experiments](mubench.pipeline/)
 * [Add Your Own Detector](mubench.cli/)
 * [Add Your Own Project or Misuse Examples](data/)
 
-## Contribute to MUBench
+## Contribute
 
-We want MUBench to grow, so please be welcome to contribute to the [dataset](mubench.pipeline/) and [add your detectors](mubench.cli/) to the benchmark.
+We want MUBench to grow, so please be welcome to contribute to the [dataset](data/) and [add your detectors](mubench.cli/) to the benchmark.
 
 ## License
 
