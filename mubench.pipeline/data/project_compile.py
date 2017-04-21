@@ -58,6 +58,6 @@ class ProjectCompile:
 
     def get_dependency_classpath(self):
         if isdir(self.dependencies_path):
-            return ":".join([file for file in os.listdir(self.dependencies_path) if file.endswith(".jar")])
+            return ":".join([join(self.dependencies_path, file) for file in os.listdir(self.dependencies_path) if file.endswith(".jar")])
         else:
             return ""
