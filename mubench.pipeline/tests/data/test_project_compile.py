@@ -22,4 +22,4 @@ class TestDependencyClasspath:
 
         cp = pc.get_dependency_classpath()
 
-        assert_equals(cp, "foo.jar:bar.jar")
+        assert_equals(cp, "/base/dependencies/foo.jar:/base/dependencies/bar.jar")
