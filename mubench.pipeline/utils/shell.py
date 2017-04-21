@@ -18,9 +18,8 @@ class Shell:
             if "Linux" in platform() and timeout is not None:
                 command = "timeout {} {}".format(timeout + 60, command)
 
-            cmd = run(command, cwd=cwd, stdout=PIPE, stderr=STDOUT, shell=True, check=True, timeout=timeout)
-            output = cmd.stdout.decode(encoding)
-            logger.debug(output[:-1])
+            output = Shell.__exec(command, cwd, timeout, encoding)
+            logger.debug(output)
             return output
         except CalledProcessError as e:
             raise CommandFailedError(e.cmd, e.output.decode(encoding))
@@ -30,6 +29,15 @@ class Shell:
     @staticmethod
     def __get_encoding():
         return locale.getpreferredencoding()
+
+    @staticmethod
+    def __exec(command, cwd, timeout, encoding):
+        cmd = run(command, cwd=cwd, stdout=PIPE, stderr=STDOUT, shell=True, check=True, timeout=timeout)
+        try:
+            output = cmd.stdout.decode(encoding)
+        except MemoryError:
+            output = "Too much output to process..."
+        return output
 
     @staticmethod
     def try_exec(command: str, cwd: str = os.getcwd(), logger=logging.getLogger(__name__),
