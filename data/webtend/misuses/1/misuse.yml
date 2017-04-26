@@ -3,7 +3,7 @@ api:
 characteristics:
 - missing/condition/value_or_state
 description: >
-  Uses AES with default mode and padding which is considered a bad practice since the default values may vary between providers.
+  Uses AES with default mode and padding which is considered a bad practice.
 location:
   file: webtend/webtend/utils/Crypto.java
   method: "encryptAES(String value, String privateKey)"

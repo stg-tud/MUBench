@@ -3,7 +3,7 @@ api:
 characteristics:
 - missing/condition/value_or_state
 description: >
-  Uses DSA.
+  Uses DSA with defaults which is considered a bad practice.
 location:
   file: org/network/stcp/server/SecureConnectionHandler.java
   method: "run()"

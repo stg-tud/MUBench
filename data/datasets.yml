@@ -1,4 +1,5 @@
 crypto:
+- apdplat.1
 - alfresco-android-app.1
 - chensun.1
 - chensun.2
@@ -10,13 +11,14 @@ crypto:
 - drftpd3-extended.1
 - drftpd3-extended.2
 - ekool.1
-- freerapid-plugins.1
 - infosec-3.1
 - jclouds.1
+- minecraft-launcher.1
 - progin5.1
 - property-management-76260865.1
 - red5-server.1
 - red5-server.2
+- saavn.1
 - secure-tcp.1
 - synthetic.aes-ecb-mode
 - synthetic.static-key
@@ -24,6 +26,7 @@ crypto:
 - warwalk.1
 - webtend.1
 - webtend.2
+- yapps.1
 
 ###
 ### Datasets that group misuses by the source we identified them from.
