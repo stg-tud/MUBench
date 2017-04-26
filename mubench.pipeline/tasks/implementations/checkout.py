@@ -27,14 +27,14 @@ class Checkout(ProjectVersionTask):
             return self.skip(version)
 
         try:
+            if self.force_checkout:
+                checkout.delete()
             checkout_exists = checkout.exists()
             logger.debug("Checkout exists = %r", checkout_exists)
-            if checkout_exists and not self.force_checkout:
+            if checkout_exists:
                 logger.debug("Already checked out %s.", version)
             else:
                 logger.info("Fetching %s from %s...", version, checkout)
-                if self.force_checkout:
-                    checkout.delete()
                 checkout.create()
 
             return self.ok()

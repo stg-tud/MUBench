@@ -56,7 +56,7 @@ class TestCheckout(unittest.TestCase):
         assert_equals([self.version.id], response)
 
     def test_force_checkout(self):
-        self.checkout.exists = MagicMock(return_value=True)
+        self.checkout.exists = MagicMock(return_value=False)  # should delete before check
         self.uut.force_checkout = True
 
         self.uut.process_project_version(self.project, self.version)
