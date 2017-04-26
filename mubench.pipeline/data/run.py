@@ -16,8 +16,12 @@ class Run:
 
     def get_potential_hits(self) -> List[SpecializedFinding]:
         potential_hits = []
+        rank = 0
         for execution in self.executions:
-            potential_hits.extend(execution.potential_hits)
+            for potential_hit in execution.potential_hits:
+                potential_hit["rank"] = rank
+                potential_hits.append(potential_hit)
+                rank += 1
         return potential_hits
 
     def get_number_of_findings(self) -> int:

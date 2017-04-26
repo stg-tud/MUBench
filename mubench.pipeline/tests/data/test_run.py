@@ -64,14 +64,17 @@ class TestRun:
 
     def test_get_potential_hits(self):
         execution1 = MagicMock()
-        execution1.potential_hits = ["finding1", "finding2"]
+        execution1.potential_hits = [{"rank": 0, "name": "finding1"}, {"rank": 1, "name": "finding2"}]
         execution2 = MagicMock()
-        execution2.potential_hits = ["finding3"]
+        execution2.potential_hits = [{"rank": 0, "name": "finding3"}]
         run = Run([execution1, execution2])
 
         potential_hits = run.get_potential_hits()
 
-        assert_equals(potential_hits, ["finding1", "finding2", "finding3"])
+        assert_equals(potential_hits, [
+            {"rank": 0, "name": "finding1"},
+            {"rank": 1, "name": "finding2"},
+            {"rank": 2, "name": "finding3"}])
 
     def test_get_number_of_findings(self):
         execution1 = MagicMock()
