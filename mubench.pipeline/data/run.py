@@ -20,11 +20,11 @@ class Run:
             potential_hits.extend(execution.potential_hits)
         return potential_hits
 
-    def get_findings(self) -> List[Finding]:
-        findings = []
+    def get_number_of_findings(self) -> int:
+        number_of_findings = 0
         for execution in self.executions:
-            findings.extend(execution.findings)
-        return findings
+            number_of_findings += execution.number_of_findings
+        return number_of_findings
 
     def get_runtime(self):
         runtime = 0

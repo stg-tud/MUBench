@@ -52,7 +52,7 @@ class PublishFindingsTask(ProjectVersionTask):
             logger.info("Preparing findings in %s...", version)
 
             result = "success"
-            number_of_findings = len(detector_run.get_findings())
+            number_of_findings = detector_run.get_number_of_findings()
             potential_hits = detector_run.get_potential_hits()
 
             logger.info("Found %s potential hits.", len(potential_hits))

@@ -100,15 +100,19 @@ class DetectorExecution:
     @property
     def potential_hits(self):
         if not self.__POTENTIAL_HITS:
-            potential_hits = self.findings_filter.get_potential_hits(self.findings)
+            potential_hits = self.findings_filter.get_potential_hits(self.__findings)
             self.__POTENTIAL_HITS = self.detector.specialize_findings(self._get_findings_path(), potential_hits)
         return self.__POTENTIAL_HITS
 
     @property
-    def findings(self) -> List[Finding]:
+    def __findings(self) -> List[Finding]:
         if not self.__FINDINGS:
             self.__FINDINGS = self._load_findings()
         return self.__FINDINGS
+
+    @property
+    def number_of_findings(self):
+        return len(self.__findings)
 
     @property
     def _run_file_path(self):

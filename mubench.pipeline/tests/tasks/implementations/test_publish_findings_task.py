@@ -66,12 +66,11 @@ class TestPublishFindingsTask:
     def test_publish_successful_run(self, post_mock):
         self.test_run.is_success = lambda: True
         self.test_run.get_runtime = lambda: 42
-        findings = [
+        potential_hits = [
             _create_finding({"rank": "-1-", "misuse": "-p-.-m1-", "detector_specific": "-specific1-"}),
             _create_finding({"rank": "-2-", "misuse": "-p-.-m2-", "detector_specific": "-specific2-"})
         ]
-        self.test_run.get_findings = lambda: findings
-        potential_hits = findings[:1]
+        self.test_run.get_number_of_findings = lambda: 5
         self.test_run.get_potential_hits = lambda: potential_hits
 
         self.uut.process_project_version(self.project, self.version)
@@ -83,7 +82,7 @@ class TestPublishFindingsTask:
             "version": self.version.version_id,
             "result": "success",
             "runtime": 42.0,
-            "number_of_findings": 2,
+            "number_of_findings": 5,
             "potential_hits": potential_hits
         })
 
