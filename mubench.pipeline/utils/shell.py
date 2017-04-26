@@ -45,7 +45,8 @@ class Shell:
         try:
             Shell.exec(command, cwd=cwd, logger=logger, timeout=timeout)
             return True
-        except CommandFailedError:
+        except CommandFailedError as e:
+            logger.debug(e)
             return False
 
 
