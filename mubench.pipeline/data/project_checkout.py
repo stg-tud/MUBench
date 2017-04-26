@@ -159,7 +159,7 @@ class SVNProjectCheckout(ProjectCheckout):
         self.checkout_dir = join(self.base_path, name, version, "checkout")
 
     def create(self) -> None:
-        self._logger.debug("Create chackout directory %s", self.checkout_dir)
+        self._logger.debug("Create checkout directory %s", self.checkout_dir)
         makedirs(self.checkout_dir, exist_ok=True)
         self._logger.debug("Checkout from %s", self.url)
         Shell.exec("svn checkout \"{}@{}\" .".format(self.url, self.revision), cwd=self.checkout_dir)
