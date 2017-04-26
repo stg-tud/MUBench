@@ -163,6 +163,7 @@ class SVNProjectCheckout(ProjectCheckout):
         makedirs(self.checkout_dir, exist_ok=True)
         self._logger.debug("Checkout from %s", self.url)
         Shell.exec("svn checkout \"{}@{}\" .".format(self.url, self.revision), cwd=self.checkout_dir)
+        Shell.exec("svn upgrade", cwd=self.checkout_dir)
 
     def exists(self) -> bool:
         return exists(self.checkout_dir) and Shell.try_exec("svn info", cwd=self.checkout_dir)
