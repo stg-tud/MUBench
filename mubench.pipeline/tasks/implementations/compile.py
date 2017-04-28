@@ -62,7 +62,7 @@ class Compile(ProjectVersionTask):
                 return self.skip(version)
 
         if not version.compile_commands:
-            logger.warn("Skipping compilation: not configured.")
+            logger.warning("Skipping compilation: not configured.")
             return self.skip(version)
 
         if not needs_compile:
