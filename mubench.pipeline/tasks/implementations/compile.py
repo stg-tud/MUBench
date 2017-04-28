@@ -216,7 +216,7 @@ class Compile(ProjectVersionTask):
         classpath_start_idx = shell_output.find("'", classpath_preamble_end_idx) + 1
         classpath_end_idx = shell_output.find("'", classpath_start_idx)
         classpath = shell_output[classpath_start_idx:classpath_end_idx]
-        return classpath.split(":")[1:]
+        return classpath.split(":")
 
     @staticmethod
     def __parse_gradle_classpath(shell_output: str) -> List[str]:
@@ -235,9 +235,10 @@ class Compile(ProjectVersionTask):
     @staticmethod
     def _copy_classpath(dependencies: List[str], dep_dir: str):
         remove_tree(dep_dir)
-        makedirs(dirname(dep_dir + "/"), exist_ok=True)
+        makedirs(dep_dir, exist_ok=True)
         for dependency in dependencies:
-            shutil.copy(dependency, dep_dir)
+            if not os.path.isdir(dependency):
+                shutil.copy(dependency, dep_dir)
 
     @staticmethod
     def __copy_misuse_classes(classes_path, misuses, destination):
