@@ -193,15 +193,17 @@ class Compile(ProjectVersionTask):
 
     @staticmethod
     def __parse_maven_classpath(shell_output: str) -> List[str]:
-        # shell_output looks like:
+        # shell_output looks like (possibly multiple times, once for each Maven module):
         # [INFO] Dependencies classpath:
         # /path/dep1.jar:/path/dep2.jar
 
-        classpath_preamble = "Dependencies classpath:"
-        classpath_start_idx = shell_output.find(classpath_preamble) + len(classpath_preamble)
-        classpath_end_idx = shell_output.find("[INFO]", classpath_start_idx)
-        classpath = shell_output[classpath_start_idx:classpath_end_idx].strip()
-        return classpath.split(":")
+        classpath = []
+        lines = shell_output.splitlines()
+        for line in [lines[i + 1].strip() for i, line in enumerate(lines) if "Dependencies classpath:" in line]:
+            if line:
+                classpath.extend(line.split(":"))
+
+        return classpath
 
     @staticmethod
     def __parse_ant_classpath(shell_output: str) -> List[str]:

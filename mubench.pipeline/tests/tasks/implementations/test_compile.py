@@ -261,6 +261,25 @@ class TestCompile:
 
     @patch("tasks.implementations.compile.shutil.copy")
     @patch("tasks.implementations.compile.Shell.exec")
+    def test_compile_with_maven_multi_modules(self, shell_mock, copy_mock):
+        self.version._YAML["build"]["commands"] = ["mvn build"]
+        shell_mock.return_value = """
+    [INFO] --- maven-dependency-plugin:2.8:build-classpath (default-cli) @ module1 ---
+    [INFO] Dependencies classpath:
+    /path/dependency1.jar
+    [INFO] ------------------------------------------------------------------------
+    [INFO] --- maven-dependency-plugin:2.8:build-classpath (default-cli) @ module2 ---
+    [INFO] Dependencies classpath:
+    /path/dependency2.jar
+    [INFO] ------------------------------------------------------------------------"""
+
+        self.uut.process_project_version(self.project, self.version)
+        assert_equals(shell_mock.mock_calls[0][1], ("mvn dependency:build-classpath build",))
+        assert_in(call("/path/dependency1.jar", self.dep_path), copy_mock.mock_calls)
+        assert_in(call("/path/dependency2.jar", self.dep_path), copy_mock.mock_calls)
+
+    @patch("tasks.implementations.compile.shutil.copy")
+    @patch("tasks.implementations.compile.Shell.exec")
     def test_compile_with_maven_no_dependencies(self, shell_mock, copy_mock):
         self.version._YAML["build"]["commands"] = ["mvn build"]
         shell_mock.return_value = """
