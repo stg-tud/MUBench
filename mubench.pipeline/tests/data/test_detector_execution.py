@@ -168,6 +168,7 @@ class TestDetectOnlyExecution:
         training_classpath = join("-compiles-", "-project-", "-version-", "patterns-classes", "-misuse-")
         target_src_path = join("-compiles-", "-project-", "-version-", "misuse-src")
         target_classpath = join("-compiles-", "-project-", "-version-", "misuse-classes")
+        original_classpath = join("-compiles-", "-project-", "-version-", "original-classes")
         dependencies_classpath = "dep1.jar:dep2.jar"
         get_dependencies_classpath_mock.return_value = dependencies_classpath
 
@@ -181,7 +182,7 @@ class TestDetectOnlyExecution:
                                            'training_classpath "{}" '.format(training_classpath) +
                                            'target_src_path "{}" '.format(target_src_path) +
                                            'target_classpath "{}" '.format(target_classpath) +
-                                           'dep_classpath "{}"'.format(dependencies_classpath),
+                                           'dep_classpath "{}"'.format(original_classpath + ":" + dependencies_classpath),
                                            logger=self.logger,
                                            timeout=42)
 
