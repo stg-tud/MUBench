@@ -235,6 +235,6 @@ class DetectOnlyExecution(DetectorExecution):
     def __get_dependency_classpath(project_compile):
         dependency_classpath = project_compile.get_dependency_classpath()
         if dependency_classpath:
-            return project_compile.original_classes_path + ":" + dependency_classpath
+            return project_compile.original_classpath + ":" + dependency_classpath
         else:
-            return project_compile.original_classes_path
+            return project_compile.original_classpath

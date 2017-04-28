@@ -170,7 +170,7 @@ class TestDetectOnlyExecution:
         training_classpath = join(compiles_path, "patterns-classes", "-misuse-")
         target_src_path = join(compiles_path, "misuse-src")
         target_classpath = join(compiles_path, "misuse-classes")
-        original_classpath = join(compiles_path, "original-classes")
+        original_classpath = join(compiles_path, "original-classes.jar")
         dependencies_classpath = "-dependencies-classpath-"
         get_dependencies_classpath_mock.return_value = dependencies_classpath
 

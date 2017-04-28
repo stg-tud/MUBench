@@ -20,6 +20,7 @@ class ProjectCompile:
 
         self.original_sources_path = join(self.base_path, ProjectCompile.ORIGINAL_SOURCE_DIR)
         self.original_classes_path = join(self.base_path, ProjectCompile.ORIGINAL_CLASSES_DIR)
+        self.original_classpath = self.original_classes_path + ".jar"
         self.misuse_source_path = join(self.base_path, ProjectCompile.MISUSE_SOURCE_DIR)
         self.misuse_classes_path = join(self.base_path, ProjectCompile.MISUSE_CLASSES_DIR)
         self.pattern_sources_base_path = join(self.base_path, ProjectCompile.PATTERN_SOURCE_DIR)

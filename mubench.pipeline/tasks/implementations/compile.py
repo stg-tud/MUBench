@@ -73,6 +73,7 @@ class Compile(ProjectVersionTask):
                 self._compile(version.compile_commands, build_path, project_compile.dependencies_path)
                 logger.debug("Copying project classes...")
                 self.__clean_copy(classes_path, project_compile.original_classes_path)
+                self.__create_jar(project_compile.original_classes_path, project_compile.original_classpath)
                 self.__copy_misuse_classes(classes_path, version.misuses, project_compile.misuse_classes_path)
             except CommandFailedError as e:
                 logger.error("Compilation failed: %s", e)
@@ -262,3 +263,8 @@ class Compile(ProjectVersionTask):
                 new_name = join(pattern_classes_path, pattern_class_file_name)
                 makedirs(dirname(new_name), exist_ok=True)
                 shutil.copy(join(classes_path, pattern_class_file_name), new_name)
+
+    @staticmethod
+    def __create_jar(classes_path, jar_path):
+        zip_path = shutil.make_archive(jar_path, 'zip', classes_path)
+        os.rename(zip_path, jar_path)
