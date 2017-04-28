@@ -162,14 +162,16 @@ class TestDetectOnlyExecution:
 
     def test_execute_per_misuse(self, get_dependencies_classpath_mock, shell_mock):
         jar = self.detector.jar_path
-        target = join("-findings-", "detect_only", "StubDetector", "-project-", "-version-", "-misuse-", "findings.yml")
-        run_info = join("-findings-", "detect_only", "StubDetector", "-project-", "-version-", "-misuse-", "run.yml")
-        training_src_path = join("-compiles-", "-project-", "-version-", "patterns-src", "-misuse-")
-        training_classpath = join("-compiles-", "-project-", "-version-", "patterns-classes", "-misuse-")
-        target_src_path = join("-compiles-", "-project-", "-version-", "misuse-src")
-        target_classpath = join("-compiles-", "-project-", "-version-", "misuse-classes")
-        original_classpath = join("-compiles-", "-project-", "-version-", "original-classes")
-        dependencies_classpath = "dep1.jar:dep2.jar"
+        findings_path = join("-findings-", "detect_only", "StubDetector", "-project-", "-version-", "-misuse-")
+        target = join(findings_path, "findings.yml")
+        run_info = join(findings_path, "run.yml")
+        compiles_path = join("-compiles-", "-project-", "-version-")
+        training_src_path = join(compiles_path, "patterns-src", "-misuse-")
+        training_classpath = join(compiles_path, "patterns-classes", "-misuse-")
+        target_src_path = join(compiles_path, "misuse-src")
+        target_classpath = join(compiles_path, "misuse-classes")
+        original_classpath = join(compiles_path, "original-classes")
+        dependencies_classpath = "-dependencies-classpath-"
         get_dependencies_classpath_mock.return_value = dependencies_classpath
 
         self.uut.execute("-compiles-", 42, self.logger)
@@ -204,11 +206,13 @@ class TestMineAndDetectExecution:
 
     def test_execute(self, get_dependencies_classpath_mock, shell_mock):
         jar = self.detector.jar_path
-        target = join("-findings-", "mine_and_detect", "StubDetector", "-project-", "-version-", "findings.yml")
-        run_info = join("-findings-", "mine_and_detect", "StubDetector", "-project-", "-version-", "run.yml")
-        target_src_path = join("-compiles-", "-project-", "-version-", "original-src")
-        target_classpath = join("-compiles-", "-project-", "-version-", "original-classes")
-        dependencies_classpath = "dep1.jar:dep2.jar"
+        findings_path = join("-findings-", "mine_and_detect", "StubDetector", "-project-", "-version-")
+        target = join(findings_path, "findings.yml")
+        run_info = join(findings_path, "run.yml")
+        compiles_path = join("-compiles-", "-project-", "-version-")
+        target_src_path = join(compiles_path, "original-src")
+        target_classpath = join(compiles_path, "original-classes")
+        dependencies_classpath = "-dependencies-classpath-"
         get_dependencies_classpath_mock.return_value = dependencies_classpath
 
         self.uut.execute("-compiles-", 42, self.logger)
