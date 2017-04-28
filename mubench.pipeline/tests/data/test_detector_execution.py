@@ -2,7 +2,7 @@ import logging
 from os.path import join
 from tempfile import mkdtemp
 from unittest import mock
-from unittest.mock import MagicMock, PropertyMock
+from unittest.mock import MagicMock, PropertyMock, patch
 
 from nose.tools import assert_equals
 
@@ -144,6 +144,7 @@ class TestDetectorExecution:
         self.uut.save.assert_called_with()
 
 
+@patch("data.detector_execution.Shell")
 class TestDetectOnlyExecution:
     # noinspection PyAttributeOutsideInit
     def setup(self):
@@ -154,17 +155,11 @@ class TestDetectOnlyExecution:
 
         self.logger = logging.getLogger("test")
 
-        self.__orig_shell_exec = Shell.exec
-        Shell.exec = MagicMock()
-
         self.uut = DetectOnlyExecution(self.detector, self.version, self.misuse, self.findings_base_path,
                                        PotentialHits(self.detector, self.misuse))
         self.uut.save = MagicMock()
 
-    def teardown(self):
-        Shell.exec = self.__orig_shell_exec
-
-    def test_execute_per_misuse(self):
+    def test_execute_per_misuse(self, shell_mock):
         jar = self.detector.jar_path
         target = join("-findings-", "detect_only", "StubDetector", "-project-", "-version-", "-misuse-", "findings.yml")
         run_info = join("-findings-", "detect_only", "StubDetector", "-project-", "-version-", "-misuse-", "run.yml")
@@ -175,19 +170,20 @@ class TestDetectOnlyExecution:
 
         self.uut.execute("-compiles-", 42, self.logger)
 
-        Shell.exec.assert_called_with('java -jar "{}" '.format(jar) +
-                                      'target "{}" '.format(target) +
-                                      'run_info "{}" '.format(run_info) +
-                                      'detector_mode "1" ' +
-                                      'training_src_path "{}" '.format(training_src_path) +
-                                      'training_classpath "{}" '.format(training_classpath) +
-                                      'target_src_path "{}" '.format(target_src_path) +
-                                      'target_classpath "{}" '.format(target_classpath) +
-                                      'dep_classpath ""',
-                                      logger=self.logger,
-                                      timeout=42)
+        shell_mock.exec.assert_called_with('java -jar "{}" '.format(jar) +
+                                           'target "{}" '.format(target) +
+                                           'run_info "{}" '.format(run_info) +
+                                           'detector_mode "1" ' +
+                                           'training_src_path "{}" '.format(training_src_path) +
+                                           'training_classpath "{}" '.format(training_classpath) +
+                                           'target_src_path "{}" '.format(target_src_path) +
+                                           'target_classpath "{}" '.format(target_classpath) +
+                                           'dep_classpath ""',
+                                           logger=self.logger,
+                                           timeout=42)
 
 
+@patch("data.detector_execution.Shell")
 class TestMineAndDetectExecution:
     # noinspection PyAttributeOutsideInit
     def setup(self):
@@ -197,17 +193,11 @@ class TestMineAndDetectExecution:
 
         self.logger = logging.getLogger("test")
 
-        self.__orig_shell_exec = Shell.exec
-        Shell.exec = MagicMock()
-
         self.uut = MineAndDetectExecution(self.detector, self.version, self.findings_base_path,
                                           AllFindings(self.detector))
         self.uut.save = MagicMock
 
-    def teardown(self):
-        Shell.exec = self.__orig_shell_exec
-
-    def test_execute(self):
+    def test_execute(self, shell_mock):
         jar = self.detector.jar_path
         target = join("-findings-", "mine_and_detect", "StubDetector", "-project-", "-version-", "findings.yml")
         run_info = join("-findings-", "mine_and_detect", "StubDetector", "-project-", "-version-", "run.yml")
@@ -216,12 +206,12 @@ class TestMineAndDetectExecution:
 
         self.uut.execute("-compiles-", 42, self.logger)
 
-        Shell.exec.assert_called_with('java -jar "{}" '.format(jar) +
-                                      'target "{}" '.format(target) +
-                                      'run_info "{}" '.format(run_info) +
-                                      'detector_mode "0" ' +
-                                      'target_src_path "{}" '.format(target_src_path) +
-                                      'target_classpath "{}" '.format(target_classpath) +
-                                      'dep_classpath ""',
-                                      logger=self.logger,
-                                      timeout=42)
+        shell_mock.exec.assert_called_with('java -jar "{}" '.format(jar) +
+                                           'target "{}" '.format(target) +
+                                           'run_info "{}" '.format(run_info) +
+                                           'detector_mode "0" ' +
+                                           'target_src_path "{}" '.format(target_src_path) +
+                                           'target_classpath "{}" '.format(target_classpath) +
+                                           'dep_classpath ""',
+                                           logger=self.logger,
+                                           timeout=42)
