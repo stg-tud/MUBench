@@ -145,6 +145,7 @@ class TestDetectorExecution:
 
 
 @patch("data.detector_execution.Shell")
+@patch("data.project_compile.ProjectCompile.get_dependency_classpath")
 class TestDetectOnlyExecution:
     # noinspection PyAttributeOutsideInit
     def setup(self):
@@ -159,7 +160,7 @@ class TestDetectOnlyExecution:
                                        PotentialHits(self.detector, self.misuse))
         self.uut.save = MagicMock()
 
-    def test_execute_per_misuse(self, shell_mock):
+    def test_execute_per_misuse(self, get_dependencies_classpath_mock, shell_mock):
         jar = self.detector.jar_path
         target = join("-findings-", "detect_only", "StubDetector", "-project-", "-version-", "-misuse-", "findings.yml")
         run_info = join("-findings-", "detect_only", "StubDetector", "-project-", "-version-", "-misuse-", "run.yml")
@@ -167,6 +168,8 @@ class TestDetectOnlyExecution:
         training_classpath = join("-compiles-", "-project-", "-version-", "patterns-classes", "-misuse-")
         target_src_path = join("-compiles-", "-project-", "-version-", "misuse-src")
         target_classpath = join("-compiles-", "-project-", "-version-", "misuse-classes")
+        dependencies_classpath = "dep1.jar:dep2.jar"
+        get_dependencies_classpath_mock.return_value = dependencies_classpath
 
         self.uut.execute("-compiles-", 42, self.logger)
 
@@ -178,12 +181,13 @@ class TestDetectOnlyExecution:
                                            'training_classpath "{}" '.format(training_classpath) +
                                            'target_src_path "{}" '.format(target_src_path) +
                                            'target_classpath "{}" '.format(target_classpath) +
-                                           'dep_classpath ""',
+                                           'dep_classpath "{}"'.format(dependencies_classpath),
                                            logger=self.logger,
                                            timeout=42)
 
 
 @patch("data.detector_execution.Shell")
+@patch("data.project_compile.ProjectCompile.get_dependency_classpath")
 class TestMineAndDetectExecution:
     # noinspection PyAttributeOutsideInit
     def setup(self):
@@ -197,12 +201,14 @@ class TestMineAndDetectExecution:
                                           AllFindings(self.detector))
         self.uut.save = MagicMock
 
-    def test_execute(self, shell_mock):
+    def test_execute(self, get_dependencies_classpath_mock, shell_mock):
         jar = self.detector.jar_path
         target = join("-findings-", "mine_and_detect", "StubDetector", "-project-", "-version-", "findings.yml")
         run_info = join("-findings-", "mine_and_detect", "StubDetector", "-project-", "-version-", "run.yml")
         target_src_path = join("-compiles-", "-project-", "-version-", "original-src")
         target_classpath = join("-compiles-", "-project-", "-version-", "original-classes")
+        dependencies_classpath = "dep1.jar:dep2.jar"
+        get_dependencies_classpath_mock.return_value = dependencies_classpath
 
         self.uut.execute("-compiles-", 42, self.logger)
 
@@ -212,6 +218,6 @@ class TestMineAndDetectExecution:
                                            'detector_mode "0" ' +
                                            'target_src_path "{}" '.format(target_src_path) +
                                            'target_classpath "{}" '.format(target_classpath) +
-                                           'dep_classpath ""',
+                                           'dep_classpath "{}"'.format(dependencies_classpath),
                                            logger=self.logger,
                                            timeout=42)
