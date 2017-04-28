@@ -84,14 +84,13 @@ class TestCompile:
 
         assert exists(join(self.misuse_source_path, "mu.file"))
 
-    def test_skips_copy_of_original_sources_if_copy_exists(self):
+    def test_copies_pattern_sources(self):
         self.mock_with_fake_compile()
-        makedirs(self.original_sources_path)
-        create_file(join(self.source_path, "b.file"))
+        self.create_misuse_with_pattern("m", "a.java")
 
         self.uut.process_project_version(self.project, self.version)
 
-        assert not exists(join(self.original_sources_path, "b.file"))
+        assert exists(join(self.pattern_sources_path, "m", "a.java"))
 
     def test_forces_copy_of_original_sources(self):
         self.mock_with_fake_compile()
@@ -112,23 +111,6 @@ class TestCompile:
 
         assert not exists(join(self.original_sources_path, "old.file"))
 
-    def test_copies_pattern_sources(self):
-        self.mock_with_fake_compile()
-        self.create_misuse_with_pattern("m", "a.java")
-
-        self.uut.process_project_version(self.project, self.version)
-
-        assert exists(join(self.pattern_sources_path, "m", "a.java"))
-
-    def test_skips_copy_of_pattern_sources_if_copy_exists(self):
-        self.mock_with_fake_compile()
-        self.create_misuse_with_pattern("m", "a.java")
-        makedirs(join(self.pattern_sources_path, "m"))
-
-        self.uut.process_project_version(self.project, self.version)
-
-        assert not exists(join(self.pattern_sources_path, "m", "a.java"))
-
     def test_forces_copy_of_pattern_sources(self):
         self.mock_with_fake_compile()
         self.create_misuse_with_pattern("m", "a.java")
@@ -138,16 +120,6 @@ class TestCompile:
         self.uut.process_project_version(self.project, self.version)
 
         assert exists(join(self.pattern_sources_path, "m", "a.java"))
-
-    def test_skips_copy_of_pattern_sources_if_no_pattern(self):
-        self.mock_with_fake_compile()
-        self.create_misuse_with_pattern("mwp", "a.java")
-        makedirs(join(self.pattern_sources_path, "mwp"))
-        self.version._MISUSES.append(create_misuse("mwop", project=self.project))
-
-        self.uut.process_project_version(self.project, self.version)
-
-        assert not exists(join(self.pattern_sources_path, "mwp", "a.java"))
 
     def test_skips_if_no_config(self):
         self.mock_with_fake_compile()
@@ -186,6 +158,7 @@ class TestCompile:
         self.mock_with_fake_compile()
         makedirs(self.original_classes_path)
         create_file(join(self.source_path, "some.file"))
+        makedirs(self.pattern_classes_path)
         self.uut.force_compile = True
 
         self.uut.process_project_version(self.project, self.version)
@@ -353,34 +326,16 @@ class TestCompile:
 
         self.uut.process_project_version(self.project, self.version)
 
-    def test_skips_compile_patterns_if_pattern_classes_exist(self):
-        self.mock_with_fake_compile()
-        self.create_misuse_with_pattern("m", "a.java")
-        makedirs(join(self.pattern_classes_path, "m"))
-
-        self.uut.process_project_version(self.project, self.version)
-
-        assert not exists(join(self.pattern_classes_path, "m", "a.class"))
-
     def test_forces_compile_patterns(self):
         self.mock_with_fake_compile()
         self.create_misuse_with_pattern("m", "a.java")
+        makedirs(self.original_classes_path)
         makedirs(join(self.pattern_classes_path, "m"))
         self.uut.force_compile = True
 
         self.uut.process_project_version(self.project, self.version)
 
         assert exists(join(self.pattern_classes_path, "m", "a.class"))
-
-    def test_skips_compile_patterns_if_no_pattern(self):
-        self.mock_with_fake_compile()
-        self.create_misuse_with_pattern("mwp", "a.java")
-        makedirs(join(self.pattern_classes_path, "mwp"))
-        self.version._MISUSES.append(create_misuse("mwop", project=self.project))
-
-        self.uut.process_project_version(self.project, self.version)
-
-        assert not exists(join(self.pattern_classes_path, "mwp", "a.class"))
 
     def create_misuse_with_pattern(self, misuse_id, pattern_file):
         misuse = create_misuse(misuse_id, project=self.project)

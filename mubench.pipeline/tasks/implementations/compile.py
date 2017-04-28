@@ -44,21 +44,28 @@ class Compile(ProjectVersionTask):
         needs_compile = project_compile.needs_compile() or self.force_compile
 
         if needs_copy_sources or needs_compile:
-            logger.debug("Copying to build directory...")
+            logger.debug("Copying checkout to build directory...")
             checkout_path = version.get_checkout(self.checkouts_base_path).checkout_dir
             self.__clean_copy(checkout_path, build_path)
             logger.debug("Copying additional resources...")
             self.__copy_additional_compile_sources(version, build_path)
 
         if not needs_copy_sources:
-            logger.debug("Already copied project source.")
+            logger.debug("Already copied source.")
         else:
             try:
-                logger.info("Copying project sources...")
+                logger.info("Copying sources...")
+                logger.debug("Copying project sources...")
                 self.__clean_copy(sources_path, project_compile.original_sources_path)
+                logger.debug("Copying misuse sources...")
                 self.__copy_misuse_sources(sources_path, version.misuses, project_compile.misuse_source_path)
+                logger.info("Copying pattern sources...")
+                self.__copy_pattern_sources(version.misuses, project_compile)
             except IOError as e:
-                logger.error("Failed to copy project sources: %s", e)
+                remove_tree(project_compile.original_sources_path)
+                remove_tree(project_compile.misuse_source_path)
+                remove_tree(project_compile.pattern_sources_base_path)
+                logger.error("Failed to copy sources: %s", e)
                 return self.skip(version)
 
         if not version.compile_commands:
@@ -66,62 +73,28 @@ class Compile(ProjectVersionTask):
             return self.skip(version)
 
         if not needs_compile:
-            logger.info("Already compiled project.")
+            logger.debug("Already compiled project.")
         else:
             try:
                 logger.info("Compiling project...")
-                self._compile(version.compile_commands, build_path, project_compile.dependencies_path)
-                logger.debug("Copying project classes...")
-                self.__clean_copy(classes_path, project_compile.original_classes_path)
-                self.__create_jar(project_compile.original_classes_path, project_compile.original_classpath)
-                self.__copy_misuse_classes(classes_path, version.misuses, project_compile.misuse_classes_path)
-            except CommandFailedError as e:
-                logger.error("Compilation failed: %s", e)
-                return self.skip(version)
-            except FileNotFoundError as e:
-                logger.error("Failed to copy classes: %s", e)
-                return self.skip(version)
-
-        if not version.patterns:
-            logger.info("Skipping pattern compilation: no patterns.")
-            return self.ok()
-
-        needs_copy_pattern_sources = project_compile.needs_copy_pattern_sources() or self.force_compile
-        needs_compile_patterns = project_compile.needs_compile_patterns() or self.force_compile
-
-        if needs_copy_pattern_sources or needs_compile_patterns:
-            logger.debug("Copying to build directory...")
-            checkout_path = version.get_checkout(self.checkouts_base_path).checkout_dir
-            self.__clean_copy(checkout_path, build_path)
-            logger.debug("Copying additional resources...")
-            self.__copy_additional_compile_sources(version, build_path)
-
-        if not needs_copy_pattern_sources:
-            logger.debug("Already copied pattern sources.")
-        else:
-            try:
-                logger.info("Copying pattern sources...")
-                self.__copy_pattern_sources(version.misuses, project_compile)
-            except IOError as e:
-                logger.error("Failed to copy pattern sources: %s", e)
-                return self.skip(version)
-
-        if not needs_compile_patterns:
-            logger.info("Already compiled patterns.")
-        else:
-            try:
                 logger.debug("Copying patterns to source directory...")
                 self.__copy(version.patterns, sources_path)
-                logger.info("Compiling patterns...")
                 self._compile(version.compile_commands, build_path, project_compile.dependencies_path)
-                logger.debug("Copying pattern classes...")
+                logger.debug("Move pattern classes...")
                 self.__copy_pattern_classes(version.misuses, classes_path, project_compile)
-            except FileNotFoundError as e:
+                self.__remove_patter_classes(version.misuses, classes_path)
+                logger.debug("Copy project classes...")
+                self.__clean_copy(classes_path, project_compile.original_classes_path)
+                logger.debug("Create project jar...")
+                self.__create_jar(project_compile.original_classes_path, project_compile.original_classpath)
+                logger.debug("Copy misuse classes...")
+                self.__copy_misuse_classes(classes_path, version.misuses, project_compile.misuse_classes_path)
+            except Exception as e:
+                logger.error("Compilation failed: %s", e)
                 remove_tree(project_compile.pattern_classes_base_path)
-                logger.error("Compilation failed: %s", e)
-                return self.skip(version)
-            except CommandFailedError as e:
-                logger.error("Compilation failed: %s", e)
+                remove_tree(project_compile.original_classpath)
+                remove_tree(project_compile.original_classpath)
+                remove_tree(project_compile.misuse_classes_path)
                 return self.skip(version)
 
         return self.ok()
@@ -266,6 +239,16 @@ class Compile(ProjectVersionTask):
                 new_name = join(pattern_classes_path, pattern_class_file_name)
                 makedirs(dirname(new_name), exist_ok=True)
                 shutil.copy(join(classes_path, pattern_class_file_name), new_name)
+
+    @staticmethod
+    def __remove_patter_classes(misuses: List[Misuse], classes_path: str):
+        for misuse in misuses:
+            for pattern in misuse.patterns:
+                pattern_class_file_name = pattern.relative_path_without_extension + ".class"
+                try:
+                    os.remove(join(classes_path, pattern_class_file_name))
+                except OSError:
+                    pass
 
     @staticmethod
     def __create_jar(classes_path, jar_path):

@@ -28,24 +28,26 @@ class ProjectCompile:
         self.dependencies_path = join(self.base_path, ProjectCompile.DEPENDENCY_DIR)
 
     def needs_copy_sources(self):
-        return not isdir(self.original_sources_path)
+        if not isdir(self.original_sources_path):
+            return True
 
-    def needs_copy_pattern_sources(self):
         for misuse in self.misuses:
             if self.__needs_copy_pattern_sources(misuse):
                 return True
+
         return False
 
     def __needs_copy_pattern_sources(self, misuse: Misuse):
         return misuse.patterns and not isdir(self.get_pattern_source_path(misuse))
 
     def needs_compile(self):
-        return not isdir(self.original_classes_path)
+        if not isdir(self.original_classes_path):
+            return True
 
-    def needs_compile_patterns(self):
         for misuse in self.misuses:
             if self.__needs_compile_patterns(misuse):
                 return True
+
         return False
 
     def __needs_compile_patterns(self, misuse: Misuse):
