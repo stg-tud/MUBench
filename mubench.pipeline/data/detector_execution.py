@@ -220,7 +220,6 @@ class DetectOnlyExecution(DetectorExecution):
                     self.version.project_id, self.version.version_id, self.misuse.misuse_id)
 
     def _get_detector_arguments(self, project_compile: ProjectCompile):
-        dependency_classpath = project_compile.original_classes_path + ":" + project_compile.get_dependency_classpath()
         return [
             self.key_findings_file, _quote(self._findings_file_path),
             self.key_run_file, _quote(self._run_file_path),
@@ -229,5 +228,13 @@ class DetectOnlyExecution(DetectorExecution):
             self.key_training_classpath, _quote(project_compile.get_pattern_classes_path(self.misuse)),
             self.key_target_src_path, _quote(project_compile.misuse_source_path),
             self.key_target_classpath, _quote(project_compile.misuse_classes_path),
-            self.key_dependency_classpath, _quote(dependency_classpath)
+            self.key_dependency_classpath, _quote(self.__get_dependency_classpath(project_compile))
         ]
+
+    @staticmethod
+    def __get_dependency_classpath(project_compile):
+        dependency_classpath = project_compile.get_dependency_classpath()
+        if dependency_classpath:
+            return project_compile.original_classes_path + ":" + dependency_classpath
+        else:
+            return project_compile.original_classes_path
