@@ -48,7 +48,7 @@ use MuBench\ReviewSite\Model\Experiment;
                 <style>
                     <?php foreach($misuse->getPotentialHits() as $hit) : ?>
                         <?php foreach($misuse->getCode() as $c) : ?>
-                            <?php if($hit['startline']) : ?>
+                            <?php if(array_key_exists('startline', $hit)) : ?>
                                 li:nth-child(<?= htmlspecialchars(abs($c['line'] - $hit['startline'])); ?>):before {
                                     content: " ";
                                     background-color: red;

@@ -40,6 +40,6 @@ class SnippetUploader
         $snippet = $finding['snippet'];
         $this->logger->info("deleting snippet for $detector, " . $project . ", " . $version . ", " . $misuse);
         $this->db->table('finding_snippets')->where('detector', $detector->id)->where('project', $project)->where(
-            'version', $version)->where('finding', $misuse)->where('snippet', $snippet)->delete();
+            'version', $version)->where('finding', $misuse)->where('snippet', '<=', $snippet)->delete();
     }
 }
