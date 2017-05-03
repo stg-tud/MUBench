@@ -98,7 +98,7 @@ $app->group('/api/upload', function () use ($app, $settings, $database) {
             }
         });
 
-    $app->post('/delete/snippet',
+    $app->post('/delete/snippet/{exp:ex[1-3]}/{detector}',
         function (Request $request, Response $response, array $args) use ($database, $settings) {
             $obj = $request->getParsedBody();
             $site_base_url = $settings['site_base_url'];
