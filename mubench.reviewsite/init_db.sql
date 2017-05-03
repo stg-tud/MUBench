@@ -66,7 +66,6 @@ CREATE TABLE IF NOT EXISTS `meta_snippets` (
   `misuse` text NOT NULL,
   `snippet` text NOT NULL,
   `line` int NOT NULL,
-  `startline` int
 ) ENGINE=MyISAM  DEFAULT CHARSET=latin1;
 
 CREATE TABLE IF NOT EXISTS `finding_snippets` (
@@ -76,7 +75,6 @@ CREATE TABLE IF NOT EXISTS `finding_snippets` (
   `finding` text NOT NULL,
   `snippet` text NOT NULL,
   `line` int NOT NULL,
-  `startline` int
 ) ENGINE=MyISAM  DEFAULT CHARSET=latin1;
 
 CREATE TABLE IF NOT EXISTS `types` (
