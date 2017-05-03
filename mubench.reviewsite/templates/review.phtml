@@ -35,13 +35,25 @@ use MuBench\ReviewSite\Model\Experiment;
         "misuse",
         "identifier",
         "rank",
-        "exp"
+        "exp",
+        "firstline"
     );
 ?>
         <html>
             <head>
                 <link rel="stylesheet" type="text/css" href="<?= $site_base_url ?>style/style.css" />
                 <script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js?autoload=true&amp;skin=sunburst"></script>
+                <style>
+                    <?php foreach($misuse->getCode() as $c): ?>
+                        <?php if($c['startline']) : ?>
+                            li:nth-child(<?= htmlspecialchars($c['line'] - $c['startline']); ?>):before {
+                                content: " ";
+                                background-color: red;
+                                border-radius: 50%;
+                            }
+                        <?php endif; ?>
+                    <?php endforeach; ?>
+                </style>
             </head>
             <body>
 
