@@ -4,6 +4,7 @@ require_once "DatabaseTestCase.php";
 
 use MuBench\ReviewSite\Controller\FindingsUploader;
 use MuBench\ReviewSite\Controller\MetadataUploader;
+use MuBench\ReviewSite\Controller\SnippetUploader;
 use MuBench\ReviewSite\Model\Misuse;
 
 class StoreFindingsTest extends DatabaseTestCase
@@ -170,6 +171,54 @@ class StoreFindingsTest extends DatabaseTestCase
             []);
 
         self::assertEquals($expected_misuse, $misuse);
+    }
+
+    function test_delete_snippet()
+    {
+        $uploader = new FindingsUploader($this->db, $this->logger);
+
+        $data = json_decode(json_encode($this->request_body));
+        $uploader->processData("ex2", $data);
+
+        $snippet_uploader = new SnippetUploader($this->db, $this->logger);
+        $snippet_uploader->deleteSnippet([
+            "detector" => "-d-",
+            "project" => "-p-",
+            "version" => "-v-",
+            "misuse" => "0",
+            "snippet" => "-code-",
+            "line" => 5
+        ]);
+
+        $detector = $this->db->getOrCreateDetector("-d-");
+        $runs = $this->db->getRuns($detector, "ex2");
+
+        $expected_run = [
+            "exp" => "ex2",
+            "project" => "-p-",
+            "version" => "-v-",
+            "result" => "success",
+            "runtime" => "42.1",
+            "number_of_findings" => "23",
+            "detector" => $detector->id,
+            "misuses" => [
+                new Misuse(
+                    ["misuse" => "0", "snippets" => []],
+                    [0 => [
+                        "exp" => "ex2",
+                        "project" => "-p-",
+                        "version" => "-v-",
+                        "misuse" => "0",
+                        "rank" => "0",
+                        "custom1" => "-val1-",
+                        "custom2" => "-val2-"
+                    ]
+                    ],
+                    []
+                )
+            ]
+        ];
+        self::assertEquals([$expected_run], $runs);
     }
 
 }

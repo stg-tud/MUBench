@@ -102,7 +102,11 @@ $app->group('/api/upload', function () use ($app, $settings, $database) {
         function (Request $request, Response $response, array $args) use ($database, $settings) {
             $obj = $request->getParsedBody();
             $site_base_url = $settings['site_base_url'];
-            $uploader = new SnippetUploader($database, $this->logger);
+            $exp = $args['exp'];
+            $uploader = new MetadataUploader($database, $this->logger);
+            if(strcmp($exp, "ex2") === 0){
+                $uploader = new SnippetUploader($database, $this->logger);
+            }
             $uploader->deleteSnippet($obj);
             if (strcmp($obj["path"], "") !== 0) {
                 return $response->withRedirect("{$site_base_url}index.php/{$obj["path"]}");
