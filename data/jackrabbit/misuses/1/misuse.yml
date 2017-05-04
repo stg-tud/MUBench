@@ -4,7 +4,7 @@ characteristics:
 - missing/condition/null_check
 crash: true
 description: >
-  ItemDate.getState() may be null.
+  ItemData.getState() may be null.
 location:
   file: org/apache/jackrabbit/core/ItemManager.java
   method: "canRead(ItemData, Path)"
