@@ -45,7 +45,7 @@ To use the MUBench pipeline, you need to [Setup a Review Site](mubench.reviewsit
 
 ## Contribute
 
-We want MUBench to grow, so please be welcome to [Add Your Own Project or Misuse to the Dataset](data/) or [Add Your Own your Detector](mubench.cli/) to the benchmark.
+We want MUBench to grow, so please be welcome to [Add Your Own Project or Misuse to the Dataset](data/) or [Add Your Own Detector](mubench.cli/) to the benchmark.
 
 ## License
 
