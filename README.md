@@ -18,7 +18,6 @@ MuBench CI Status: [![MuBench CI Status](https://api.shippable.com/projects/570d
 ## Publications
 
 * ['*MUBench: A Benchmark of API-Misuse Detectors*'](http://sven-amann.de/publications/#ANNNM16)
-* ['*The Misuse Classification*'](http://www.st.informatik.tu-darmstadt.de/artifacts/muc/)
 
 ## Install
 
@@ -27,7 +26,7 @@ MuBench CI Status: [![MuBench CI Status](https://api.shippable.com/projects/570d
 1. Install [Docker](https://www.docker.com/products/overview#/install_the_platform).
 2. `$> cd /mubench/install/path/`
 3. `$> docker run --rm -v $PWD:/mubench svamann/mubench git clone https://github.com/stg-tud/MUBench.git .`
-4. `$> ./mubench check` (On the first run, this may take some time.)
+4. `$> ./mubench check`
 
 ### Windows
 
@@ -38,18 +37,15 @@ MuBench CI Status: [![MuBench CI Status](https://api.shippable.com/projects/570d
   2. Open the "Shared Drives" tab.
   3. Ensure that the X-drive is selected and apply.
 4. `$> docker run --rm -v "%cd:\=/%":/mubench svamann/mubench git clone https://github.com/stg-tud/MUBench.git .`
-5. `$> ./mubench.bat check` (On the first run, this may take some time).
+5. `$> ./mubench.bat check`
 
 ## Use
 
-* [Setup a Review Site](mubench.reviewsite/)
-* [Run Benchmark Experiments](mubench.pipeline/)
-* [Add Your Own Detector](mubench.cli/)
-* [Add Your Own Project or Misuse Examples](data/)
+To use the MUBench pipeline, you need to [Setup a Review Site](mubench.reviewsite/) for MUBench to publish detector results to. Afterwards, you can [Run Benchmark Experiments](mubench.pipeline/).
 
 ## Contribute
 
-We want MUBench to grow, so please be welcome to contribute to the [dataset](data/) and [add your detectors](mubench.cli/) to the benchmark.
+We want MUBench to grow, so please be welcome to [Add Your Own Project or Misuse to the Dataset](data/) or [Add Your Own your Detector](mubench.cli/) to the benchmark.
 
 ## License
 
