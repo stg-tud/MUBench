@@ -1,38 +1,43 @@
 <img align="right" width="320" height="320" alt="MUBench Logo" src="https://raw.githubusercontent.com/stg-tud/MUBench/master/meta/logo.png" />
 
-# MUBench : Benchmarking
+# MUBench : Detector Interface
 
-If you have a detector set up for running on MUBench, please [contact Sven Amann](http://www.stg.tu-darmstadt.de/staff/sven_amann) to have it added to the benchmark.
+Setting up your own detector for evaluation in MUBench is simple:
 
-### Benchmark Your Own Detector
+1. Implement a [MUBench Runner](#runner) for your detector.
+2. Place an executable JAR with your runner as its entry point in `detectors/my-detector/my-detector.jar`.
+3. Optionally create `detectors/my-detector/my-detector.py` for any post processing on the detector findings (see the other detectors for examples).
+4. [Run Benchmarking Experiments](../mubench.pipeline/) using `my-detector` as the detector id.
 
-For MUBench to run your detector and interpret its results, your detector's executable needs to comply with MUBench's command-line interface. The easiest way to achieve this is for your entry-point class to extend `MuBenchRunner`, which comes with the Maven dependency [`de.tu-darmstadt.stg:mubench.cli`](https://github.com/stg-tud/MUBench/tree/master/mubench.cli) via our repository at `http://www.st.informatik.tu-darmstadt.de/artifacts/mubench/mvn/`.
+If you have a detector set up for running on MUBench, please [contact Sven Amann](http://www.stg.tu-darmstadt.de/staff/sven_amann) to publish it with the benchmark. Feel free to do so as well, if you have questions or require assistance.
 
-A typical MUBench Runner looks like this:
+## Runner
 
-    public class XYRunner extends MuBenchRunner {
+To interface with MUBench, all you need to implement the `MuBenchRunner` interface, which comes with the Maven dependency `de.tu-darmstadt.stg:mubench.cli` via our repository at http://www.st.informatik.tu-darmstadt.de/artifacts/mubench/mvn/ (check [the pom.xml](pom.xml) for the most-recent version).
+
+A typical runner looks like this:
+
+    public class MyRunner extends MuBenchRunner {
       public static void main(String[] args) {
-        new XYRunner().run(args);
+        new MyRunner().run(args);
       }
       
-      void detectOnly(CodePath patternPath, CodePath targetPath, DetectorOutput output) throws Exception {
-        ...
+      @Override
+      protected void detectOnly(DetectorArgs args, DetectorOutput output) throws Exception {
+        // Run detector in Experiment 1 configuration...
       }
       
-      void mineAndDetect(CodePath trainingAndTargetPath, DetectorOutput output) throws Exception {
-        ...
+      @Override
+      protected void mineAndDetect(DetectorArgs args, DetectorOutput output) throws Exception {
+        // Run detector in Experiment 2/3 configuration...
       }
     }
 
-Currently, Runners should support two run modes:
+It supports two run modes:
 
-1. "Detect Only"-mode, where the detector is provided with hand-crafted patterns (a one-method class implementing the correct usage) and some target code to find violations of these patterns in. All input is provided as Java source code and corresponding Bytecode.
-2. "Mine and Detect"-mode, where the detector should mine its own patterns in the provided code base and find violations in that same code base. Again, input is provided as source code and corresponding Bytecode.
+1. "Detect Only" (Experiment 1), where the detector is provided with hand-crafted patterns (a one-method class implementing the correct usage) and some target code to find violations of these patterns in.
+2. "Mine and Detect" (Experiment 2/3), where the detector should mine its own patterns in the provided codebase and find violations in that same codebase.
 
-The `DetectorOutput` is essentially a collection where you add your detector's findings. MUBench expects you to add the findings ordered by the detector's confidence, descending.
+In either mode, the `DetectorArgs` provide all input as both the Java source code and the corresponding Bytecode. Additionally, it provides the classpath of all the code's dependencies.
 
-To register your own detector to MUBench, the following steps are necessary:
-
-1. Create a new subfolder `my-detector` in the [detectors](https://github.com/stg-tud/MUBench/tree/master/detectors) folder. `my-detector` will be the Id used to refer to your detector when running experiments.
-2. Add the executable JAR with your detector as `my-detector/my-detector.jar`.
-3. Run MUBench as usual.
+The `DetectorOutput` is essentially a collection where you add your detector's findings, specifying their file and method location and any other property that may assist manuel reviews of the findings. MUBench expects you to add the findings ordered by the detector's confidence, descending. You may also output general statistics about the detector run.
