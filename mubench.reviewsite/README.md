@@ -23,4 +23,4 @@ The [MUBench Pipeline](../mubench.pipeline) publishes the detectors' results to 
 
 ## Use
 
-`$> ./mubench publish X -s http://<your-sites.url>/index.php/` publishes experiment results to your review site. Check `./mubench publish -h` for further details.
+`$> ./mubench publish X -s http://<your-sites.url>/index.php/` publishes experiment results to your review site. Check [Run Benchmark Experiments](../mubench.pipeline/) and `./mubench publish -h` for further details.
