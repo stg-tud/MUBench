@@ -17,7 +17,7 @@ MuBench CI Status: [![MuBench CI Status](https://api.shippable.com/projects/570d
 
 ## Publications
 
-* ['*MUBench: A Benchmark of API-Misuse Detectors*'](http://sven-amann.de/publications/#ANNNM16)
+* ['*MUBench: A Benchmark of API-Misuse Detectors*'](http://sven-amann.de/publications/2016-05-MSR-MUBench-dataset.html)
 
 ## Install
 
