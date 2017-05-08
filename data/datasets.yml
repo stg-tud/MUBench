@@ -24,11 +24,10 @@ icse16ex1:
 - httpclient.444
 - httpclient.452
 - itext.5091
+- jackrabbit.1601
 - jackrabbit.1678
 - jackrabbit.1694
-- jackrabbit.1601
 - jackrabbit.1750
-- jackrabbit.1738
 - jfreechart.2183
 - jfreechart.164
 - jfreechart.2266
@@ -62,11 +61,10 @@ icse16ex3:
 - httpclient.444
 - httpclient.452
 - itext.5091
+- jackrabbit.1601
 - jackrabbit.1678
 - jackrabbit.1694
-- jackrabbit.1601
 - jackrabbit.1750
-- jackrabbit.1738
 - jfreechart.2183
 - jfreechart.164
 - jfreechart.2266
