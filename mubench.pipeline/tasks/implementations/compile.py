@@ -132,7 +132,7 @@ class Compile(ProjectVersionTask):
         logger = logging.getLogger("compile.tasks.exec")
         for command in commands:
             if command.startswith("mvn "):
-                command = "mvn dependency:build-classpath " + command[4:]
+                command = "mvn dependency:build-classpath -DincludeScope=compile " + command[4:]
                 output = Shell.exec(command, cwd=project_dir, logger=logger)
                 dependencies = Compile.__parse_maven_classpath(output)
                 Compile._copy_classpath(dependencies, dep_dir)
