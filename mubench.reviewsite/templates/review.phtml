@@ -109,15 +109,10 @@ use MuBench\ReviewSite\Model\Experiment;
             <td>
                 <?php if($misuse->hasCode()) : ?>
                     <?php foreach($misuse->getCode() as $c): ?>
-                        <?php if(sizeof($misuse->getCode()) >= 2 && $user) : ?>
+                        <?php if(sizeof($misuse->getCode()) >= 2 && $user && strcmp($experiment->getId(), "ex2") === 0) : ?>
                             <form id="delete_snippet_form" action="<?= "{$api_url_prefix}upload/delete/snippet/{$experiment->getId()}/{$detector->name}" ?>" method="post" target="">
-                                <input type="hidden" name="detector" value="<?= htmlspecialchars($detector->name); ?>">
-                                <input type="hidden" name="project" value="<?= htmlspecialchars($misuse->getProject()); ?>">
-                                <input type="hidden" name="version" value="<?= htmlspecialchars($misuse->getVersion()); ?>">
-                                <input type="hidden" name="misuse" value="<?= htmlspecialchars($misuse->id); ?>">
+                                <input type="hidden" name="id" value="<?= htmlspecialchars($c['id']); ?>">
                                 <input type="hidden" name="path" value="<?= htmlspecialchars($path); ?>">
-                                <input type="hidden" name="snippet" value="<?= htmlspecialchars($c['snippet']); ?>">
-                                <input type="hidden" name="line" value="<?= htmlspecialchars($c['line']); ?>">
                                 <button style="border:none;background-color:white;position:absolute;right:5px" type="submit"><i class="fa fa-trash"></i></button>
                             </form>
                         <?php endif; ?>

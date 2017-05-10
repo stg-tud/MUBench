@@ -69,6 +69,7 @@ CREATE TABLE IF NOT EXISTS `meta_snippets` (
 ) ENGINE=MyISAM  DEFAULT CHARSET=latin1;
 
 CREATE TABLE IF NOT EXISTS `finding_snippets` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `detector` text NOT NULL,
   `project` text NOT NULL,
   `version` text NOT NUll,
