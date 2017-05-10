@@ -3,7 +3,7 @@ from os.path import exists
 from typing import Optional, List
 from urllib.error import URLError
 
-from data.experiments import Experiment
+from data.experiments import Experiment, ProvidedPatternsExperiment
 from data.project import Project
 from data.project_version import ProjectVersion
 from requirements import JavaRequirement
@@ -74,7 +74,7 @@ class Detect(ProjectVersionTask):
         elif run.is_success():
             logger.info("Successful previous %s. Skipping.", run)
             return self.ok()
-        elif self.experiment.id == Experiment.PROVIDED_PATTERNS and not version.patterns:
+        elif self.experiment.id == ProvidedPatternsExperiment.ID and not version.patterns:
             logger.info("No patterns to run with. Skipping.")
             return self.skip(version)
 

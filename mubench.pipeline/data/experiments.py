@@ -9,47 +9,62 @@ from data.findings_filters import PotentialHits, AllFindings
 
 
 class Experiment:
-    PROVIDED_PATTERNS = "ex1"
-    TOP_FINDINGS = "ex2"
-    BENCHMARK = "ex3"
-
-    def __init__(self, experiment_id: str, detector: Detector, findings_base_path: str, limit: int = 0):
+    def __init__(self, experiment_id: str, detector: Detector, findings_base_path: str):
         self.id = experiment_id
         self.detector = detector
         self.findings_base_path = findings_base_path
-        self.limit = limit
 
     def get_run(self, version: ProjectVersion) -> Run:
-        if self.id == Experiment.PROVIDED_PATTERNS:
-            executions = [
-                DetectOnlyExecution(self.detector, version, misuse, self.findings_base_path,
-                                    PotentialHits(self.detector, [misuse])) for
-                misuse in version.misuses if misuse.patterns]
-        elif self.id == Experiment.TOP_FINDINGS:
-            executions = [
-                MineAndDetectExecution(self.detector, version, self.findings_base_path,
-                                       AllFindings(self.detector, self.limit))]
-        elif self.id == Experiment.BENCHMARK:
-            executions = [MineAndDetectExecution(self.detector, version, self.findings_base_path,
-                                                 PotentialHits(self.detector, version.misuses))]
-        else:
-            executions = []
-
-        return Run(executions)
-
-    def get_review_dir(self, version: ProjectVersion, misuse: Misuse = None):
-        if self.id == Experiment.TOP_FINDINGS:
-            return join(version.project_id, version.version_id)
-        else:
-            return join(version.project_id, version.version_id, misuse.misuse_id)
+        raise NotImplementedError()
 
     def __str__(self):
-        if self.id == Experiment.PROVIDED_PATTERNS:
-            return "experiment 1 (provided patterns)"
-        elif self.id == Experiment.TOP_FINDINGS:
-            if self.limit:
-                return "experiment 2 (top-{} findings)".format(self.limit)
-            else:
-                return "experiment 2 (all findings)"
-        elif self.id == Experiment.BENCHMARK:
-            return "experiment 3 (benchmark)"
+        raise NotImplementedError()
+
+
+class ProvidedPatternsExperiment(Experiment):
+    ID = "ex1"
+
+    def __init__(self, detector: Detector, findings_base_path: str):
+        super().__init__(ProvidedPatternsExperiment.ID, detector, findings_base_path)
+
+    def get_run(self, version: ProjectVersion):
+        return Run([self.__create_execution(version, misuse) for misuse in version.misuses if misuse.patterns])
+
+    def __create_execution(self, version, misuse):
+        findings_filter = PotentialHits(self.detector, [misuse])
+        return DetectOnlyExecution(self.detector, version, misuse, self.findings_base_path, findings_filter)
+
+    def __str__(self):
+        return "experiment 1 (provided patterns)"
+
+
+class TopFindingsExperiment(Experiment):
+    ID = "ex2"
+
+    def __init__(self, detector: Detector, findings_base_path: str, limit: int = 0):
+        super().__init__(TopFindingsExperiment.ID, detector, findings_base_path)
+        self.limit = limit
+
+    def get_run(self, version: ProjectVersion):
+        findings_filter = AllFindings(self.detector, self.limit)
+        return Run([MineAndDetectExecution(self.detector, version, self.findings_base_path, findings_filter)])
+
+    def __str__(self):
+        if self.limit:
+            return "experiment 2 (top-{} findings)".format(self.limit)
+        else:
+            return "experiment 2 (all findings)"
+
+
+class BenchmarkExperiment(Experiment):
+    ID = "ex2"
+
+    def __init__(self, detector: Detector, findings_base_path: str):
+        super().__init__(BenchmarkExperiment.ID, detector, findings_base_path)
+
+    def get_run(self, version: ProjectVersion):
+        findings_filter = PotentialHits(self.detector, version.misuses)
+        return Run([MineAndDetectExecution(self.detector, version, self.findings_base_path, findings_filter)])
+
+    def __str__(self):
+        return "experiment 3 (benchmark)"

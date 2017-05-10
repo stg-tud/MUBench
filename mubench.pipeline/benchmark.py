@@ -4,19 +4,18 @@ import logging.handlers
 import os
 import sys
 from datetime import datetime
-from os import listdir, makedirs
-from os.path import join, realpath, isdir, exists, abspath, dirname
+from os import makedirs
+from os.path import join, exists, abspath, dirname
 
 from data.detectors import find_detector, get_available_detector_ids
+from data.experiments import ProvidedPatternsExperiment, TopFindingsExperiment, BenchmarkExperiment
+from requirements import check_all_requirements
+from task_runner import TaskRunner
 from tasks.implementations import stats
 from tasks.implementations.checkout import Checkout
 from tasks.implementations.compile import Compile
 from tasks.implementations.detect import Detect
-
-from data.experiments import Experiment
-from requirements import check_all_requirements
 from tasks.implementations.info import Info
-from task_runner import TaskRunner
 from tasks.implementations.publish_findings_task import PublishFindingsTask
 from tasks.implementations.publish_metadata_task import PublishMetadataTask
 from utils import command_line_util
@@ -86,16 +85,16 @@ class Benchmark:
                                             self.config.review_site_user, self.config.review_site_password))
 
     def __get_experiment(self):
-        ex_ids = {
-            1: Experiment.PROVIDED_PATTERNS,
-            2: Experiment.TOP_FINDINGS,
-            3: Experiment.BENCHMARK
-        }
-        try:
-            limit = self.config.limit
-        except AttributeError:
-            limit = 0
-        return Experiment(ex_ids.get(self.config.experiment), self.__get_detector(), Benchmark.FINDINGS_PATH, limit)
+        if self.config.experiment == 1:
+            return ProvidedPatternsExperiment(self.__get_detector(), Benchmark.FINDINGS_PATH)
+        elif self.config.experiment == 2:
+            try:
+                limit = self.config.limit
+            except AttributeError:
+                limit = 0
+            return TopFindingsExperiment(self.__get_detector(), Benchmark.FINDINGS_PATH, limit)
+        elif self.config.experiment == 3:
+            return BenchmarkExperiment(self.__get_detector(), Benchmark.FINDINGS_PATH)
 
     def __get_detector(self):
         try:

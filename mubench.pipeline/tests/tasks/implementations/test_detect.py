@@ -7,7 +7,7 @@ from unittest.mock import MagicMock, ANY
 from nose.tools import assert_equals
 
 from data.detector_execution import MineAndDetectExecution
-from data.experiments import Experiment
+from data.experiments import Experiment, ProvidedPatternsExperiment
 from data.findings_filters import AllFindings
 from data.run import Run
 from tasks.implementations.detect import Detect
@@ -31,7 +31,7 @@ class TestDetect:
                                                          AllFindings(self.detector))
         self.test_run = Run([self.test_run_execution])
         self.test_run.execute = MagicMock(return_value="test execution successful")
-        self.experiment = Experiment(Experiment.TOP_FINDINGS, self.detector, self.findings_path)
+        self.experiment = Experiment("mock experiment", self.detector, self.findings_path)
         self.experiment.get_run = lambda v: self.test_run
         self.uut = Detect(self.compiles_path, self.experiment, None, False)
 
@@ -75,7 +75,7 @@ class TestDetect:
         assert_equals([], response)
 
     def test_skips_detect_only_if_no_patterns_are_available(self):
-        self.experiment.id = Experiment.PROVIDED_PATTERNS
+        self.experiment.id = ProvidedPatternsExperiment.ID
 
         response = self.uut.process_project_version(self.project, self.version)
 
@@ -91,7 +91,7 @@ class TestDetectorDownload:
         self.findings_path = join(self.temp_dir, "findings")
 
         detector = StubDetector()
-        experiment = Experiment(Experiment.PROVIDED_PATTERNS, detector, self.findings_path)
+        experiment = Experiment("mock experiment", detector, self.findings_path)
         self.uut = Detect(self.compiles_path, experiment, None, False)
         self.uut._download = MagicMock(return_value=True)
 

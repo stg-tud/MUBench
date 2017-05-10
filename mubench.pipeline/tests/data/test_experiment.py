@@ -1,12 +1,10 @@
-from os.path import join
-
 from nose.tools import assert_equals, assert_is_instance
 
-from data.experiments import Experiment
+from data.detector_execution import MineAndDetectExecution, DetectOnlyExecution
+from data.experiments import ProvidedPatternsExperiment, TopFindingsExperiment, BenchmarkExperiment
 from data.findings_filters import AllFindings
 from data.pattern import Pattern
 from data.run import Run
-from data.detector_execution import MineAndDetectExecution, DetectOnlyExecution
 from tests.data.stub_detector import StubDetector
 from tests.test_utils.data_util import create_project, create_version, create_misuse
 
@@ -21,7 +19,7 @@ class TestExperiment:
     def test_provided_patterns_run(self):
         self.version._MISUSES = [create_misuse("-1-", project=self.project, patterns=[Pattern("-base-", "-P1-")])]
 
-        experiment = Experiment(Experiment.PROVIDED_PATTERNS, self.detector, "-findings_path-")
+        experiment = ProvidedPatternsExperiment(self.detector, "-findings_path-")
 
         run = experiment.get_run(self.version)
 
@@ -32,7 +30,7 @@ class TestExperiment:
     def test_provided_patterns_run_no_patterns(self):
         self.version._MISUSES = [create_misuse("-1-", project=self.project, patterns=[])]
 
-        experiment = Experiment(Experiment.PROVIDED_PATTERNS, self.detector, "-findings_path-")
+        experiment = ProvidedPatternsExperiment(self.detector, "-findings_path-")
 
         run = experiment.get_run(self.version)
 
@@ -40,7 +38,7 @@ class TestExperiment:
         assert_equals(0, len(run.executions))
 
     def test_top_findings_run(self):
-        experiment = Experiment(Experiment.TOP_FINDINGS, self.detector, "-findings_path-", 42)
+        experiment = TopFindingsExperiment(self.detector, "-findings_path-", 42)
 
         run = experiment.get_run(self.version)
 
@@ -51,7 +49,7 @@ class TestExperiment:
         assert_equals(42, run.executions[0].findings_filter.limit)
 
     def test_benchmark_run(self):
-        experiment = Experiment(Experiment.BENCHMARK, self.detector, "-findings_path-")
+        experiment = BenchmarkExperiment(self.detector, "-findings_path-")
 
         run = experiment.get_run(self.version)
 
