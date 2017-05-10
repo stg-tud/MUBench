@@ -5,7 +5,7 @@ from urllib.parse import urljoin
 
 from requests import RequestException
 
-from data.experiment import Experiment
+from data.experiments import Experiment
 from data.finding import SpecializedFinding
 from data.project import Project
 from data.project_version import ProjectVersion

@@ -2,7 +2,7 @@ from os.path import join
 
 from nose.tools import assert_equals, assert_is_instance
 
-from data.experiment import Experiment
+from data.experiments import Experiment
 from data.findings_filters import AllFindings
 from data.pattern import Pattern
 from data.run import Run

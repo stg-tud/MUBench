@@ -7,7 +7,7 @@ from unittest.mock import MagicMock, ANY
 from nose.tools import assert_equals
 
 from data.detector_execution import MineAndDetectExecution
-from data.experiment import Experiment
+from data.experiments import Experiment
 from data.findings_filters import AllFindings
 from data.run import Run
 from tasks.implementations.detect import Detect

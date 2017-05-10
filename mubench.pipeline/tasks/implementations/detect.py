@@ -3,7 +3,7 @@ from os.path import exists
 from typing import Optional, List
 from urllib.error import URLError
 
-from data.experiment import Experiment
+from data.experiments import Experiment
 from data.project import Project
 from data.project_version import ProjectVersion
 from requirements import JavaRequirement

@@ -13,7 +13,7 @@ from tasks.implementations.checkout import Checkout
 from tasks.implementations.compile import Compile
 from tasks.implementations.detect import Detect
 
-from data.experiment import Experiment
+from data.experiments import Experiment
 from requirements import check_all_requirements
 from tasks.implementations.info import Info
 from task_runner import TaskRunner

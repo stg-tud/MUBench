@@ -4,7 +4,7 @@ from unittest.mock import MagicMock, patch
 from nose.tools import assert_equals
 
 from data.detector import Detector
-from data.experiment import Experiment
+from data.experiments import Experiment
 from data.finding import SpecializedFinding
 from data.snippets import Snippet
 from data.run import Run
