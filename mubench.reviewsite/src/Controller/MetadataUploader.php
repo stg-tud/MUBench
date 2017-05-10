@@ -37,18 +37,6 @@ class MetadataUploader
         }
     }
 
-    public function deleteSnippet($finding)
-    {
-        $project = $finding['project'];
-        $version = $finding['version'];
-        $misuse = $finding['misuse'];
-        $snippet = $finding['snippet'];
-        $line = $finding['line'];
-        $this->logger->info("deleting snippet for " . $project . ", " . $version . ", " . $misuse);
-        $query = $this->db->table('meta_snippets')->where('project', $project)->where(
-            'version', $version)->where('misuse', $misuse)->where('snippet', '<=', $snippet)->where('line', $line)->delete();
-    }
-
     private function deleteMetadata($misuse)
     {
         $this->db->table('metadata')->where('misuse', $misuse)->delete();
