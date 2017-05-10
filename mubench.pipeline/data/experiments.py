@@ -57,7 +57,7 @@ class TopFindingsExperiment(Experiment):
 
 
 class BenchmarkExperiment(Experiment):
-    ID = "ex2"
+    ID = "ex3"
 
     def __init__(self, detector: Detector, findings_base_path: str):
         super().__init__(BenchmarkExperiment.ID, detector, findings_base_path)
