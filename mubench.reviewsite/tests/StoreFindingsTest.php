@@ -186,32 +186,8 @@ class StoreFindingsTest extends DatabaseTestCase
         $detector = $this->db->getOrCreateDetector("-d-");
         $runs = $this->db->getRuns($detector, "ex2");
 
-        $expected_run = [
-            "exp" => "ex2",
-            "project" => "-p-",
-            "version" => "-v-",
-            "result" => "success",
-            "runtime" => "42.1",
-            "number_of_findings" => "23",
-            "detector" => $detector->id,
-            "misuses" => [
-                new Misuse(
-                    ["misuse" => "0", "snippets" => []],
-                    [0 => [
-                        "exp" => "ex2",
-                        "project" => "-p-",
-                        "version" => "-v-",
-                        "misuse" => "0",
-                        "rank" => "0",
-                        "custom1" => "-val1-",
-                        "custom2" => "-val2-"
-                    ]
-                    ],
-                    []
-                )
-            ]
-        ];
-        self::assertEquals([$expected_run], $runs);
+
+        self::assertFalse($runs[0]["misuses"][0]->hasCode());
     }
 
 }
