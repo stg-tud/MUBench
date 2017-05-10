@@ -75,7 +75,8 @@ CREATE TABLE IF NOT EXISTS `finding_snippets` (
   `version` text NOT NUll,
   `finding` text NOT NULL,
   `snippet` text NOT NULL,
-  `line` int NOT NULL
+  `line` int NOT NULL,
+  PRIMARY KEY (`id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=latin1;
 
 CREATE TABLE IF NOT EXISTS `types` (
