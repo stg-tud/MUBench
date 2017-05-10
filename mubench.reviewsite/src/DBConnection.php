@@ -158,12 +158,14 @@ class DBConnection
 
     private function getSnippet($experiment, Detector $detector, $project_id, $version_id, $misuse_id)
     {
+        $columns = ['line', 'snippet'];
         if (strcmp($experiment, "ex2") == 0) {
             $query = $this->table('finding_snippets')->where('finding', $misuse_id)->where('detector', $detector->id);
+            $columns[] = 'id';
         } else {
             $query = $this->table('meta_snippets')->where('misuse', $misuse_id);
         }
-        return $query->select(['line', 'snippet', 'id'])->where('project', $project_id)->where('version', $version_id)->get();
+        return $query->select($columns)->where('project', $project_id)->where('version', $version_id)->get();
     }
 
     private function getFindingReviews($review_id)
