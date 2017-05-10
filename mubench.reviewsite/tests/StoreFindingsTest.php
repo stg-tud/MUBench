@@ -77,7 +77,7 @@ class StoreFindingsTest extends DatabaseTestCase
             "detector" => $detector->id,
             "misuses" => [
                 new Misuse(
-                    ["misuse" => "0", "snippets" => [0 => ["line" => "5", "snippet" => "-code-"]]],
+                    ["misuse" => "0", "snippets" => [0 => ["line" => "5", "snippet" => "-code-", "id" => "1"]]],
                     [0 => [
                         "exp" => "ex2",
                         "project" => "-p-",
@@ -181,14 +181,7 @@ class StoreFindingsTest extends DatabaseTestCase
         $uploader->processData("ex2", $data);
 
         $snippet_uploader = new SnippetUploader($this->db, $this->logger);
-        $snippet_uploader->deleteSnippet([
-            "detector" => "-d-",
-            "project" => "-p-",
-            "version" => "-v-",
-            "misuse" => "0",
-            "snippet" => "-code-",
-            "line" => 5
-        ]);
+        $snippet_uploader->deleteSnippet("1");
 
         $detector = $this->db->getOrCreateDetector("-d-");
         $runs = $this->db->getRuns($detector, "ex2");
