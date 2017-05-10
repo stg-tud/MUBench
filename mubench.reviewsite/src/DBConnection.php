@@ -163,7 +163,7 @@ class DBConnection
         } else {
             $query = $this->table('meta_snippets')->where('misuse', $misuse_id);
         }
-        return $query->select(['line', 'snippet'])->where('project', $project_id)->where('version', $version_id)->get();
+        return $query->select(['line', 'snippet', 'id'])->where('project', $project_id)->where('version', $version_id)->get();
     }
 
     private function getFindingReviews($review_id)

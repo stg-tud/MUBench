@@ -32,16 +32,9 @@ class SnippetUploader
             'version' => $version, 'finding' => $misuse, 'snippet' => $snippet, 'line' => $line]);
     }
 
-    public function deleteSnippet($finding)
+    public function deleteSnippet($finding_id)
     {
-        $detector = $this->db->getOrCreateDetector($finding['detector']);
-        $project = $finding['project'];
-        $version = $finding['version'];
-        $misuse = $finding['misuse'];
-        $snippet = $finding['snippet'];
-        $line = $finding['line'];
-        $this->logger->info("deleting snippet for $detector, " . $project . ", " . $version . ", " . $misuse);
-        $this->db->table('finding_snippets')->where('detector', $detector->id)->where('project', $project)->where(
-            'version', $version)->where('finding', $misuse)->where('snippet', '<=', $snippet)->where('line', $line)->delete();
+        $this->logger->info("deleting snippet with id: " . $finding_id);
+        $this->db->table('finding_snippets')->where('id', $finding_id)->delete();
     }
 }
