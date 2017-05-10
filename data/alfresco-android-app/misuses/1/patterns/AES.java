@@ -23,7 +23,7 @@ public class AES {
 			SecureRandom prng = new SecureRandom();
 			prng.nextBytes(iv);
 
-			Cipher cipher = Cipher.getInstance("AES/CBC/NoPadding");
+			Cipher cipher = Cipher.getInstance("AES/CBC/PKCS7Padding");
 			cipher.init(Cipher.ENCRYPT_MODE, secretKey, 
 					new IvParameterSpec(iv));
 
@@ -52,7 +52,7 @@ public class AES {
 
 	public void decrypt(byte[] cipherText, SecretKey secretKey, byte[] iv){
 		try {
-			Cipher cipher = Cipher.getInstance("AES/CBC/NoPadding");
+			Cipher cipher = Cipher.getInstance("AES/CBC/PKCS7Padding");
 			cipher.init(Cipher.DECRYPT_MODE, secretKey, new IvParameterSpec(iv));
 			byte[] byteDecryptedText = cipher.doFinal(cipherText);
 			String decryptedText = new String(byteDecryptedText);
