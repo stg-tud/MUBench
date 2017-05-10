@@ -105,7 +105,7 @@ class DBConnection
                 $potential_hits = $this->getPotentialHits($exp, $detector, $project_id, $version_id, $misuse_id);
                 /** @var array $reviews */
                 $reviews = $this->getReviews($exp, $detector, $project_id, $version_id, $misuse_id);
-                $snippet = $this->getSnippet($exp, $detector, $project_id, $version_id, $misuse_id);
+                $snippet = $this->getSnippets($exp, $detector, $project_id, $version_id, $misuse_id);
                 $misuse["snippets"] = $snippet;
                 if(strcmp($exp, "ex1") == 0){
                     $patterns = $this->getPatterns($misuse_id);
@@ -156,7 +156,7 @@ class DBConnection
         return $reviews;
     }
 
-    private function getSnippet($experiment, Detector $detector, $project_id, $version_id, $misuse_id)
+    private function getSnippets($experiment, Detector $detector, $project_id, $version_id, $misuse_id)
     {
         $columns = ['line', 'snippet'];
         if (strcmp($experiment, "ex2") == 0) {
