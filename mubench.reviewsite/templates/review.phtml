@@ -49,7 +49,7 @@ use MuBench\ReviewSite\Model\Experiment;
                     <?php foreach($misuse->getPotentialHits() as $hit) : ?>
                         <?php if(array_key_exists('startline', $hit)) : ?>
                             <?php foreach($misuse->getSnippets() as $snippet) : ?>
-                                    li:nth-child(<?= htmlspecialchars(abs($snippet['line'] - $hit['startline'])); ?>):before {
+                                    li:nth-child(<?= htmlspecialchars(abs($snippet['line'] - $hit['startline'] + 1)); ?>):before {
                                         content: " ";
                                         background-color: red;
                                         border-radius: 50%;
