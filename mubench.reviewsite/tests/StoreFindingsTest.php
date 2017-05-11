@@ -187,7 +187,7 @@ class StoreFindingsTest extends DatabaseTestCase
         $runs = $this->db->getRuns($detector, "ex2");
 
 
-        self::assertFalse($runs[0]["misuses"][0]->hasCode());
+        self::assertFalse($runs[0]["misuses"][0]->hasSnippets());
     }
 
 }

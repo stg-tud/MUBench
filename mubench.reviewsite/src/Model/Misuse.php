@@ -84,7 +84,7 @@ class Misuse
         return explode(";", $this->data["violation_types"]);
     }
 
-    public function getCode(){
+    public function getSnippets(){
         return $this->data['snippets'];
     }
 
@@ -96,8 +96,8 @@ class Misuse
         return !empty($this->getPatterns());
     }
 
-    public function hasCode(){
-        return !empty($this->getCode());
+    public function hasSnippets(){
+        return !empty($this->getSnippets());
     }
 
     public function hasPotentialHits()
@@ -108,16 +108,6 @@ class Misuse
     public function getPotentialHits()
     {
         return $this->potential_hits;
-    }
-
-    public function hasSnippets()
-    {
-        return !empty($this->getSnippets());
-    }
-
-    public function getSnippets()
-    {
-        return $this->data['snippets'];
     }
 
     public function hasReviewed($reviewer_name)
