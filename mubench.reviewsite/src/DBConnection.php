@@ -105,15 +105,14 @@ class DBConnection
                 $potential_hits = $this->getPotentialHits($exp, $detector, $project_id, $version_id, $misuse_id);
                 /** @var array $reviews */
                 $reviews = $this->getReviews($exp, $detector, $project_id, $version_id, $misuse_id);
-                $snippet = $this->getSnippets($exp, $detector, $project_id, $version_id, $misuse_id);
-                $misuse["snippets"] = $snippet;
+                $snippets = $this->getSnippets($exp, $detector, $project_id, $version_id, $misuse_id);
+                $misuse["snippets"] = $snippets;
                 if(strcmp($exp, "ex1") == 0){
                     $patterns = $this->getPatterns($misuse_id);
                     $misuse["patterns"] = $patterns;
                 }
                 $misuses[$key] = new Misuse($misuse, $potential_hits, $reviews);
             }
-
             $run["misuses"] = $misuses;
         }
 

@@ -36,7 +36,7 @@ use MuBench\ReviewSite\Model\Experiment;
         "identifier",
         "rank",
         "exp",
-        "firstline"
+        "startline"
     );
 ?>
         <html>
@@ -47,15 +47,15 @@ use MuBench\ReviewSite\Model\Experiment;
                 <script src="http://cdn.rawgit.com/ariutta/svg-pan-zoom/master/dist/svg-pan-zoom.min.js"></script>
                 <style>
                     <?php foreach($misuse->getPotentialHits() as $hit) : ?>
-                        <?php foreach($misuse->getCode() as $snippet) : ?>
-                            <?php if(array_key_exists('startline', $hit)) : ?>
-                                li:nth-child(<?= htmlspecialchars(abs($snippet['line'] - $hit['startline'])); ?>):before {
-                                    content: " ";
-                                    background-color: red;
-                                    border-radius: 50%;
-                                }
-                            <?php endif; ?>
-                        <?php endforeach; ?>
+                        <?php if(array_key_exists('startline', $hit)) : ?>
+                            <?php foreach($misuse->getSnippets() as $snippet) : ?>
+                                    li:nth-child(<?= htmlspecialchars(abs($snippet['line'] - $hit['startline'])); ?>):before {
+                                        content: " ";
+                                        background-color: red;
+                                        border-radius: 50%;
+                                    }
+                            <?php endforeach; ?>
+                        <?php endif; ?>
                     <?php endforeach; ?>
                 </style>
             </head>
@@ -107,9 +107,9 @@ use MuBench\ReviewSite\Model\Experiment;
                 <td class="vtop"><b>Code with Finding:</b></td>
             <?php endif; ?>
             <td>
-                <?php if($misuse->hasCode()) : ?>
-                    <?php $multiple_snippets = (sizeof($misuse->getCode()) >= 2 && $user && strcmp($experiment->getId(), "ex2") === 0); ?>
-                    <?php foreach($misuse->getCode() as $snippet): ?>
+                <?php if($misuse->hasSnippets()) : ?>
+                    <?php $multiple_snippets = (sizeof($misuse->getSnippets()) >= 2 && $user && strcmp($experiment->getId(), "ex2") === 0); ?>
+                    <?php foreach($misuse->getSnippets() as $snippet): ?>
                         <?php if($multiple_snippets): ?>
                             <form id="delete_snippet_form" action="<?= "{$api_url_prefix}upload/delete/snippet/{$experiment->getId()}/{$detector->name}" ?>" method="post" target="">
                                 <input type="hidden" name="id" value="<?= htmlspecialchars($snippet['id']); ?>">
@@ -119,7 +119,7 @@ use MuBench\ReviewSite\Model\Experiment;
                         <?php endif; ?>
                         <pre class="prettyprint linenums:<?= htmlspecialchars($snippet['line']); ?>"><code class="language-java"><?= htmlspecialchars($snippet['snippet']); ?></code></pre>
                     <?php endforeach; ?>
-                <?php elseif(!$misuse->hasCode()) : ?>
+                <?php else : ?>
                     <pre class="prettyprint"><code class="language-java">code not found</code></pre>
                     <?php if($user) : ?>
                         <input type="button" onclick="show(this);" value="Add code snippet">
@@ -249,7 +249,7 @@ use MuBench\ReviewSite\Model\Experiment;
                     <object id="<?= $object_id ?>" type="image/svg+xml" data="<?= "{$uploads_url_prefix}/{$experiment->getId()}/{$detector->name}/{$misuse->getProject()}/{$misuse->getVersion()}/{$hit[$column]}" ?>" style="width: 300px; height: 300px;"></object>
                     <script>
                         document.getElementById("<?= $object_id ?>").onload = function() {
-                            svgPanZoom("#<?= $column ?><?= $hit['rank'] ?>", {
+                            svgPanZoom("#<?= $object_id ?>", {
                                 zoomEnabled: true
                             });
                         };
