@@ -50,16 +50,7 @@ public class DetectorArgs {
 					dependencyClassPath = next_arg;
 					break;
 				case keyDetectorMode:
-                    switch (next_arg) {
-                        case "0":
-                            detectorMode = DetectorMode.MINE_AND_DETECT;
-                            break;
-                        case "1":
-                            detectorMode = DetectorMode.DETECT_ONLY;
-                            break;
-                        default:
-                            throw new IllegalArgumentException("Unknown detector mode " + next_arg);
-                    }
+                    detectorMode = DetectorMode.fromCode(next_arg);
 					break;
 				default:
 					throw new IllegalArgumentException("Unknown key " + arg);
