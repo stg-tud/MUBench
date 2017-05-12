@@ -14,13 +14,10 @@ before_script:
 script: 
   # mubench.cli
   - mvn install -f mubench.cli/pom.xml
+  - cp mubench.cli/target/DemoDetector.jar detectors/DemoDetector/DemoDetector.jar
   
   # mubench.utils
   - mvn verify -f mubench.utils/pom.xml
-  
-  # mubench.dummy
-  - mvn verify -f mubench.dummy/pom.xml
-  - cp mubench.dummy/target/Dummy.jar detectors/Dummy/Dummy.jar
   
   # mubench.pipeline
   - nosetests -w mubench.pipeline --with-xunit --xunit-file=shippable/testresults/nosetests.xml
