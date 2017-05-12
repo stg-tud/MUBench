@@ -10,66 +10,70 @@ import java.nio.file.Path;
 /**
  * Implement a concrete runner like this:
  * <pre><code>
- * public class XYRunner extends MuBenchRunner {
+ * public class XYRunner {
  *   public static void main(String[] args) {
- *   	new XYRunner().run(args);
+ *     new MuBenchRunner().
+ *       .withDetectOnlyStrategy(DetectorArgs as -> List&lt;Violation&gt;()) // detection using provided patterns
+ *       .withMineAndDetectStrategy(DetectorArgs as -> List&lt;Violation&gt;()) // detected using own patterns
+ *       .run(args);
  *   }
- *   
- *   // Run-Mode Implementations
- *   ...
  * }
  * </code></pre>
  */
 @SuppressWarnings("WeakerAccess")
-public abstract class MuBenchRunner {
-	@SuppressWarnings("unused")
-	public void run(String[] args) throws Exception {
-		run(DetectorArgs.parse(args));
-	}
+public class MuBenchRunner {
+    private DetectionStrategy detectOnlyStrategy;
+    private DetectionStrategy mineAndDetectStrategy;
 
-	/**
-	 * Runs this runner with the given arguments.
-	 */
-	protected void run(DetectorArgs args) throws Exception {
-		DetectorOutput output = new DetectorOutput();
-		run(args, output);
-		report(output.getFindings(), args.getFindingsFile());
-		report(output.getRunInfo(), args.getRunInfoFile());
-	}
+    /**
+     * @param detectOnlyStrategy    Run detection in detect-only mode. Should use {@link DetectorArgs#getPatternPath()}
+     *                              to extract patterns and identify respective violations in
+     *                              {@link DetectorArgs#getTargetPath()}.
+     */
+    public MuBenchRunner withDetectOnlyStrategy(DetectionStrategy detectOnlyStrategy) {
+        this.detectOnlyStrategy = detectOnlyStrategy;
+        return this;
+    }
 
-	/**
-	 * Runs this runner with the given arguments. Results written to output are persisted after return.
-	 */
-	protected void run(DetectorArgs args, DetectorOutput output) throws Exception {
-		switch (args.getDetectorMode()) {
-		case DETECT_ONLY:
-			detectOnly(args, output);
-			break;
-		case MINE_AND_DETECT:
-			mineAndDetect(args, output);
-			break;
-		default:
-			throw new IllegalArgumentException("Unsupported run mode: " + args.getDetectorMode());
-		}
-	}
+    /**
+     * @param mineAndDetectStrategy Run detection in mine-and-detect mode. Should identify misuses in
+     *                              {@link DetectorArgs#getTargetPath()}. May use {@link DetectorArgs#getTargetPath()}
+     *                              for pattern mining.
+     */
+    public MuBenchRunner withMineAndDetectStrategy(DetectionStrategy mineAndDetectStrategy) {
+        this.mineAndDetectStrategy = mineAndDetectStrategy;
+        return this;
+    }
 
-	/**
-	 * Runs this detector in detect-only mode. Should use {@link DetectorArgs#getPatternPath()} to extract patterns and
-	 * identify respective violations in {@link DetectorArgs#getTargetPath()}. Results written to output are persisted
-	 * after return.
-	 */
-	protected abstract void detectOnly(DetectorArgs args, DetectorOutput output) throws Exception;
+    @SuppressWarnings("unused")
+    public void run(String[] args) throws Exception {
+        DetectorArgs detectorArgs = DetectorArgs.parse(args);
+        DetectorOutput output = detect(detectorArgs);
+        report(output.getFindings(), detectorArgs.getFindingsFile());
+        report(output.getRunInfo(), detectorArgs.getRunInfoFile());
+    }
 
-	/**
-	 * Runs this detector in mine-and-detect mode. Should identify misuses in {@link DetectorArgs#getTargetPath()}. May
-	 * use {@link DetectorArgs#getTargetPath()} for pattern mining. Results written to output are persisted after
-	 * return.
-	 */
-	protected abstract void mineAndDetect(DetectorArgs args, DetectorOutput output) throws Exception;
+    protected DetectorOutput detect(DetectorArgs args) throws Exception {
+        switch (args.getDetectorMode()) {
+            case DETECT_ONLY:
+                return detect(detectOnlyStrategy, args);
+            case MINE_AND_DETECT:
+                return detect(mineAndDetectStrategy, args);
+            default:
+                throw new IllegalArgumentException("Unsupported run mode: " + args.getDetectorMode());
+        }
+    }
 
-	protected void report(YamlEntity entity, Path findingsFile) throws IOException {
-		try (OutputStream os = Files.newOutputStream(findingsFile)) {
-			entity.write(os);
-		}
-	}
+    private DetectorOutput detect(DetectionStrategy strategy, DetectorArgs args) throws Exception {
+        if (strategy == null) {
+            throw new UnsupportedOperationException("detector mode not supported");
+        }
+        return strategy.detectViolations(args);
+    }
+
+    protected void report(YamlEntity entity, Path findingsFile) throws IOException {
+        try (OutputStream os = Files.newOutputStream(findingsFile)) {
+            entity.write(os);
+        }
+    }
 }
