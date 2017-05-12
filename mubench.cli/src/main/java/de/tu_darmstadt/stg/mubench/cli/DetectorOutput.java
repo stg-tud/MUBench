@@ -52,12 +52,12 @@ public class DetectorOutput {
             return this;
         }
 
-        public DetectorOutput andWithFindings(List<DetectorFinding> violations) {
+        public DetectorOutput withFindings(List<DetectorFinding> violations) {
             return new DetectorOutput(runInfo, violations);
         }
 
-        public <V> DetectorOutput andWithFindings(List<V> violations, Function<V, DetectorFinding> mapper) {
-            return andWithFindings(violations.stream().map(mapper).collect(Collectors.toList()));
+        public <V> DetectorOutput withFindings(List<V> violations, Function<V, DetectorFinding> mapper) {
+            return withFindings(violations.stream().map(mapper).collect(Collectors.toList()));
         }
     }
 }

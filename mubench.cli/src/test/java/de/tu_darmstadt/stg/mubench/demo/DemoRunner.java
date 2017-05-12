@@ -30,7 +30,7 @@ public class DemoRunner {
 
             return createOutput()
                     .withRunInfo("runtime", endTime - startTime)
-                    .andWithFindings(violations, this::toDetectorFinding);
+                    .withFindings(violations, this::toDetectorFinding);
         }
 
         private List<DemoViolation> detectViolations(Path targetSourcePath) throws IOException {

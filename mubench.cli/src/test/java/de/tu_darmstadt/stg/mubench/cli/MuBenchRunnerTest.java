@@ -27,7 +27,7 @@ public class MuBenchRunnerTest {
         String[] args = createArgs(DetectorMode.DETECT_ONLY);
         MuBenchRunner runner = new MuBenchRunner()
                 .withDetectOnlyStrategy(detectorArgs ->
-                        DetectorOutput.create().andWithFindings(
+                        DetectorOutput.create().withFindings(
                                 Collections.singletonList(new DetectorFinding(":file:", ":method:"))));
 
         runner.run(args);
@@ -40,7 +40,7 @@ public class MuBenchRunnerTest {
         String[] args = createArgs(DetectorMode.MINE_AND_DETECT);
         MuBenchRunner runner = new MuBenchRunner()
                 .withMineAndDetectStrategy(detectorArgs ->
-                        DetectorOutput.create().andWithFindings(
+                        DetectorOutput.create().withFindings(
                                 Collections.singletonList(new DetectorFinding(":file:", ":method:"))));
 
         runner.run(args);
@@ -53,7 +53,7 @@ public class MuBenchRunnerTest {
         String[] args = createArgs(DetectorMode.DETECT_ONLY);
         MuBenchRunner runner = new MuBenchRunner()
                 .withDetectOnlyStrategy(detectorArgs ->
-                        DetectorOutput.create().withRunInfo(":key:", ":value:").andWithFindings(Collections.emptyList()));
+                        DetectorOutput.create().withRunInfo(":key:", ":value:").withFindings(Collections.emptyList()));
 
         runner.run(args);
 
