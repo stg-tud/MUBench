@@ -1,6 +1,8 @@
 package de.tu_darmstadt.stg.mubench.cli;
 
 import java.io.FileNotFoundException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 @SuppressWarnings("WeakerAccess")
 public class DetectorArgs {
@@ -72,7 +74,7 @@ public class DetectorArgs {
 
 
 	private final String findingsFile;
-	private final String runFile;
+	private final String runInfoFile;
 	private final String patternSrcPath;
 	private final String patternClassPath;
 	private final String targetSrcPath;
@@ -80,10 +82,10 @@ public class DetectorArgs {
 	private final String dependencyClassPath;
 	private final DetectorMode detectorMode;
 
-	DetectorArgs(String findingsFile, String runFile, DetectorMode detectorMode, String patternSrcPath,
-                 String patternClassPath, String targetSrcPath, String targetClassPath, String dependencyClassPath) {
+	DetectorArgs(String findingsFile, String runInfoFile, DetectorMode detectorMode, String patternSrcPath,
+				 String patternClassPath, String targetSrcPath, String targetClassPath, String dependencyClassPath) {
 		this.findingsFile = findingsFile;
-		this.runFile = runFile;
+		this.runInfoFile = runInfoFile;
 		this.patternSrcPath = patternSrcPath;
 		this.patternClassPath = patternClassPath;
 		this.targetSrcPath = targetSrcPath;
@@ -92,16 +94,16 @@ public class DetectorArgs {
 		this.detectorMode = detectorMode;
 	}
 
-	String getFindingsFile() throws FileNotFoundException {
+	Path getFindingsFile() throws FileNotFoundException {
 		if (findingsFile == null)
 			throw new FileNotFoundException("findings file not provided");
-		return findingsFile;
+		return Paths.get(findingsFile);
 	}
 
-	String getRunFile() throws FileNotFoundException {
-		if (runFile == null)
+	Path getRunInfoFile() throws FileNotFoundException {
+		if (runInfoFile == null)
 			throw new FileNotFoundException("run file not provided");
-		return runFile;
+		return Paths.get(runInfoFile);
 	}
 
 	DetectorMode getDetectorMode() throws FileNotFoundException {

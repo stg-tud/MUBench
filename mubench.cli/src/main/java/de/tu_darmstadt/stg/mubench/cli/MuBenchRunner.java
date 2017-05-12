@@ -24,7 +24,7 @@ public abstract class MuBenchRunner {
 	 * Runs this runner with the given arguments.
 	 */
 	protected void run(DetectorArgs args) throws Exception {
-		DetectorOutput output = new DetectorOutput(args.getFindingsFile(), args.getRunFile());
+		DetectorOutput output = new DetectorOutput(args.getFindingsFile().toString(), args.getRunInfoFile().toString());
 		run(args, output);
 		output.write();
 	}
