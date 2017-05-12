@@ -106,6 +106,14 @@ public class DetectorArgs {
 		return Paths.get(runInfoFile);
 	}
 
+	/**
+	 * @return directory to write additional output to, e.g., for debugging purposes.
+	 */
+	@SuppressWarnings("unused")
+	public Path getAdditionalOutputPath() throws FileNotFoundException {
+		return getFindingsFile().getParent();
+	}
+
 	DetectorMode getDetectorMode() throws FileNotFoundException {
 		if (detectorMode == null)
 			throw new FileNotFoundException("detector mode not provided");

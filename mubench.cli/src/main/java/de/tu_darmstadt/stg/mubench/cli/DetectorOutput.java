@@ -26,14 +26,6 @@ public class DetectorOutput {
 		runInformationFile = new File(runInformationFilePath);
 	}
 
-	/**
-	 * @return directory to write additional output to, e.g., for debugging purposes.
-	 * @throws FileNotFoundException if the path cannot be determined
-	 */
-	@SuppressWarnings("unused")
-    public String getAdditionalOutputPath() throws FileNotFoundException {
-		return findingsFile.getParent();
-	}
 
     /**
      * Add a finding to the output.
