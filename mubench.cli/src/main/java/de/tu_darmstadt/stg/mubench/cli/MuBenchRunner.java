@@ -1,5 +1,12 @@
 package de.tu_darmstadt.stg.mubench.cli;
 
+import de.tu_darmstadt.stg.yaml.YamlEntity;
+
+import java.io.IOException;
+import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+
 /**
  * Implement a concrete runner like this:
  * <pre><code>
@@ -24,9 +31,10 @@ public abstract class MuBenchRunner {
 	 * Runs this runner with the given arguments.
 	 */
 	protected void run(DetectorArgs args) throws Exception {
-		DetectorOutput output = new DetectorOutput(args.getFindingsFile().toString(), args.getRunInfoFile().toString());
+		DetectorOutput output = new DetectorOutput();
 		run(args, output);
-		output.write();
+		report(output.getFindings(), args.getFindingsFile());
+		report(output.getRunInfo(), args.getRunInfoFile());
 	}
 
 	/**
@@ -58,4 +66,10 @@ public abstract class MuBenchRunner {
 	 * return.
 	 */
 	protected abstract void mineAndDetect(DetectorArgs args, DetectorOutput output) throws Exception;
+
+	protected void report(YamlEntity entity, Path findingsFile) throws IOException {
+		try (OutputStream os = Files.newOutputStream(findingsFile)) {
+			entity.write(os);
+		}
+	}
 }
