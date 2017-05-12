@@ -9,15 +9,7 @@ import java.util.stream.Collectors;
 public interface DetectionStrategy {
     DetectorOutput detectViolations(DetectorArgs args) throws Exception;
 
-    default DetectorOutput output(List<DetectorFinding> violations) {
-        return new DetectorOutput(violations);
-    }
-
-    default DetectorOutput output(YamlObject runInfo, List<DetectorFinding> violations) {
-        return new DetectorOutput(runInfo, violations);
-    }
-
-    default <V> List<DetectorFinding> map(List<V> violations, Function<V, DetectorFinding> mapper) {
-        return violations.stream().map(mapper).collect(Collectors.toList());
+    default DetectorOutput.Builder createOutput() {
+        return DetectorOutput.create();
     }
 }

@@ -1,20 +1,21 @@
 package de.tu_darmstadt.stg.mubench.cli;
 
 import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import de.tu_darmstadt.stg.yaml.YamlCollection;
 import de.tu_darmstadt.stg.yaml.YamlObject;
 
-@SuppressWarnings("WeakerAccess")
 public class DetectorOutput {
-	private final YamlCollection findings = new YamlCollection();
-	private final YamlObject runInfo;
+    private final YamlCollection findings = new YamlCollection();
+    private final YamlObject runInfo;
 
-    public DetectorOutput(List<DetectorFinding> findings) {
-        this(new YamlObject(), findings);
+    static Builder create() {
+        return new Builder();
     }
 
-    public DetectorOutput(YamlObject runInfo, List<DetectorFinding> findings) {
+    DetectorOutput(YamlObject runInfo, List<DetectorFinding> findings) {
         this.runInfo = runInfo;
         this.findings.appendDocuments(findings);
     }
@@ -25,5 +26,38 @@ public class DetectorOutput {
 
     YamlObject getRunInfo() {
         return runInfo;
+    }
+
+    @SuppressWarnings({"WeakerAccess", "SameParameterValue", "unused"})
+    public static class Builder {
+        private YamlObject runInfo = new YamlObject();
+
+        public Builder withRunInfo(String key, String value) {
+            runInfo.put(key, value);
+            return this;
+        }
+
+        public Builder withRunInfo(String key, Number value) {
+            runInfo.put(key, value);
+            return this;
+        }
+
+        public Builder withRunInfo(String key, Iterable<String> value) {
+            runInfo.put(key, value);
+            return this;
+        }
+
+        public Builder withRunInfo(String key, YamlObject value) {
+            runInfo.put(key, value);
+            return this;
+        }
+
+        public DetectorOutput andWithFindings(List<DetectorFinding> violations) {
+            return new DetectorOutput(runInfo, violations);
+        }
+
+        public <V> DetectorOutput andWithFindings(List<V> violations, Function<V, DetectorFinding> mapper) {
+            return andWithFindings(violations.stream().map(mapper).collect(Collectors.toList()));
+        }
     }
 }

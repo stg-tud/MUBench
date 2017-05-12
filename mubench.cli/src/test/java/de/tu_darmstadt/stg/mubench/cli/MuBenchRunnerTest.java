@@ -1,12 +1,10 @@
 package de.tu_darmstadt.stg.mubench.cli;
 
-import de.tu_darmstadt.stg.yaml.YamlObject;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.Collections;
 
 import static de.tu_darmstadt.stg.yaml.IsStringWithLinesMatcher.containsLines;
@@ -28,7 +26,9 @@ public class MuBenchRunnerTest {
     public void invokesDetectOnlyStrategy() throws Exception {
         String[] args = createArgs(DetectorMode.DETECT_ONLY);
         MuBenchRunner runner = new MuBenchRunner()
-                .withDetectOnlyStrategy(detectorArgs -> findingsOutput(new DetectorFinding(":file:", ":method:")));
+                .withDetectOnlyStrategy(detectorArgs ->
+                        DetectorOutput.create().andWithFindings(
+                                Collections.singletonList(new DetectorFinding(":file:", ":method:"))));
 
         runner.run(args);
 
@@ -37,9 +37,11 @@ public class MuBenchRunnerTest {
 
     @Test
     public void invokesMineAndDetectOnlyStrategy() throws Exception {
-        MuBenchRunner runner = new MuBenchRunner()
-                .withMineAndDetectStrategy(detectorArgs -> findingsOutput(new DetectorFinding(":file:", ":method:")));
         String[] args = createArgs(DetectorMode.MINE_AND_DETECT);
+        MuBenchRunner runner = new MuBenchRunner()
+                .withMineAndDetectStrategy(detectorArgs ->
+                        DetectorOutput.create().andWithFindings(
+                                Collections.singletonList(new DetectorFinding(":file:", ":method:"))));
 
         runner.run(args);
 
@@ -50,20 +52,12 @@ public class MuBenchRunnerTest {
     public void reportsRunInfo() throws Exception {
         String[] args = createArgs(DetectorMode.DETECT_ONLY);
         MuBenchRunner runner = new MuBenchRunner()
-                .withDetectOnlyStrategy(detectorArgs -> runInfoOutput(new YamlObject() {{
-                    put(":key:", ":value:");
-                }}));
+                .withDetectOnlyStrategy(detectorArgs ->
+                        DetectorOutput.create().withRunInfo(":key:", ":value:").andWithFindings(Collections.emptyList()));
 
         runner.run(args);
 
         assertThat(DetectorArgs.parse(args).getRunInfoFile(), containsLines("':key:': ':value:'"));
     }
 
-    private static DetectorOutput findingsOutput(DetectorFinding... findings) {
-        return new DetectorOutput(Arrays.asList(findings));
-    }
-
-    private static DetectorOutput runInfoOutput(YamlObject runInfo) {
-        return new DetectorOutput(runInfo, Collections.emptyList());
-    }
 }

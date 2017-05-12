@@ -1,7 +1,6 @@
 package de.tu_darmstadt.stg.mubench.demo;
 
 import de.tu_darmstadt.stg.mubench.cli.*;
-import de.tu_darmstadt.stg.yaml.YamlObject;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -24,18 +23,14 @@ public class DemoRunner {
         public DetectorOutput detectViolations(DetectorArgs args) throws Exception {
             long startTime = System.currentTimeMillis();
 
-            // Perform the detection on the target(s)
             Path targetSourcePath = Paths.get(args.getTargetPath().srcPath);
             List<DemoViolation> violations = detectViolations(targetSourcePath);
 
             long endTime = System.currentTimeMillis();
 
-            // Collect run statistics
-            YamlObject runInfo = new YamlObject() {{
-                put("runtime", endTime - startTime);
-            }};
-
-            return output(runInfo, map(violations, this::toDetectorFinding));
+            return createOutput()
+                    .withRunInfo("runtime", endTime - startTime)
+                    .andWithFindings(violations, this::toDetectorFinding);
         }
 
         private List<DemoViolation> detectViolations(Path targetSourcePath) throws IOException {
