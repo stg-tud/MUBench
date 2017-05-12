@@ -13,19 +13,6 @@ public class DetectorFinding {
 	private static final String keyMethod = "method";
 
 	private final HashMap<String, Object> content;
-
-	/**
-	 * Determines the java-file name from a fully-qualified class name.
-	 * @param fqn the fully-qualified name
-	 * @return the corresponding java-file name
-	 */
-	public static String convertFQNtoFileName(String fqn) {
-		int endOfOuterTypeName = fqn.indexOf('$');
-		if (endOfOuterTypeName > -1) {
-			fqn = fqn.substring(0, endOfOuterTypeName);
-		}
-		return fqn.replace('.', '/') + ".java";
-	}
 	
 	DetectorFinding(int id, String file, String method) {
 		content = new LinkedHashMap<>();

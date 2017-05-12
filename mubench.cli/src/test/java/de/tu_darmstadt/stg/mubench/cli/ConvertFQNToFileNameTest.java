@@ -7,16 +7,16 @@ import org.junit.Test;
 public class ConvertFQNToFileNameTest {
 	@Test
 	public void convertsType() {
-		assertEquals("p/C.java", DetectorFinding.convertFQNtoFileName("p.C"));
+		assertEquals("p/C.java", new FullyQualifiedName("p.C").toSourceFileName());
 	}
 	
 	@Test
 	public void convertsInnerType() {
-		assertEquals("p/C.java", DetectorFinding.convertFQNtoFileName("p.C$I"));
+		assertEquals("p/C.java", new FullyQualifiedName("p.C$I").toSourceFileName());
 	}
 	
 	@Test
 	public void convertsGlobalType() {
-		assertEquals("C.java", DetectorFinding.convertFQNtoFileName("C"));
+		assertEquals("C.java", new FullyQualifiedName("C").toSourceFileName());
 	}
 }
