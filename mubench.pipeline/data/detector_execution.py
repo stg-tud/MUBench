@@ -81,14 +81,13 @@ class DetectorExecution:
         return self.__get_run_info("md5", None)
 
     def execute(self, compile_base_path: str, timeout: Optional[int], logger: Logger):
-        detector_invocation = ["java"] + self.detector.java_options + ["-jar", _quote(self.detector.jar_path)]
-        command = detector_invocation + self._get_detector_arguments(self.version.get_compile(compile_base_path))
-        command = " ".join(command)
+        detector_args = self._get_detector_arguments(self.version.get_compile(compile_base_path))
+        java_interface = JavaInterfaceV0(self.detector.jar_path, self.detector.java_options)
 
         start = time.time()
         message = ""
         try:
-            Shell.exec(command, logger=logger, timeout=timeout)
+            java_interface.execute(timeout, logger, self.version, compile_base_path, detector_args) 
             result = Result.success
         except CommandFailedError as e:
             logger.error("Detector failed: %s", e)
@@ -154,7 +153,7 @@ class DetectorExecution:
     def _get_findings_path(self):
         raise NotImplementedError
 
-    def _get_detector_arguments(self, project_compile: ProjectCompile):
+    def _get_command(self, project_compile: ProjectCompile):
         raise NotImplementedError
 
     def _load_findings(self):
@@ -234,3 +233,25 @@ class DetectOnlyExecution(DetectorExecution):
             self.key_target_classpath, _quote(project_compile.misuse_classes_path),
             self.key_dependency_classpath, _quote(project_compile.get_full_classpath())
         ]
+
+class JavaInterface:
+    def __init__(self, jar_path: str, java_options: List[str]):
+        self.jar_path = jar_path
+        self.java_options = java_options
+
+    def execute(self, version: ProjectVersion, compile_base_path:str,
+                detector_arguments: Dict[str, str]):
+        raise NotImplementedError
+
+class JavaInterfaceV0(JavaInterface):
+    def execute(self, timeout: Optional[int], logger:Logger, version: ProjectVersion, compile_base_path: str,
+                detector_arguments: Dict[str, str]):
+        command = self._get_command(version, compile_base_path, detector_arguments)
+        Shell.exec(command, logger=logger, timeout=timeout)
+
+    def _get_command(self, version: ProjectVersion, compile_base_path: str,
+                     detector_arguments: Dict[str, str]):
+        detector_invocation = ["java"] + self.java_options + ["-jar", _quote(self.jar_path)]
+        command = detector_invocation + detector_arguments
+        command = " ".join(command)
+        return command
