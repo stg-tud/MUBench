@@ -15,13 +15,26 @@ class JavaInterface:
 
     @staticmethod
     def get(cli_version: str, jar_path: str, java_options: List[str]) -> 'JavaInterface':
-        return JavaInterfaceV0(jar_path, java_options)
+        interfaces = JavaInterface.__subclasses__()
+        matching_interfaces = [i for i in interfaces if i.version() == cli_version]
+        if matching_interfaces:
+            return matching_interfaces[0](jar_path, java_options)
+        else:
+            raise ValueError("No Java interface available for version " + cli_version)
+
+    @staticmethod
+    def version() -> str:
+        raise NotImplementedError
 
     def execute(self, version: ProjectVersion, detector_arguments: Dict[str, str],
                 timeout: Optional[int], logger: Logger):
         raise NotImplementedError
 
-class JavaInterfaceV0(JavaInterface):
+class JavaInterfaceV20170406(JavaInterface):
+    @staticmethod
+    def version() -> str:
+        return "20170406"
+
     def execute(self, version: ProjectVersion, detector_arguments: Dict[str, str],
                 timeout: Optional[int], logger: Logger):
         command = self._get_command(version, detector_arguments)
