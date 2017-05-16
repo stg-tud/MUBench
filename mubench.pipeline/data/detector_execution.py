@@ -82,12 +82,11 @@ class DetectorExecution:
 
     def execute(self, compile_base_path: str, timeout: Optional[int], logger: Logger):
         detector_args = self._get_detector_arguments(self.version.get_compile(compile_base_path))
-        java_interface = JavaInterfaceV0(self.detector.jar_path, self.detector.java_options)
 
         start = time.time()
         message = ""
         try:
-            java_interface.execute(timeout, logger, self.version, compile_base_path, detector_args) 
+            self.detector.java_interface.execute(self.version, detector_args, timeout, logger) 
             result = Result.success
         except CommandFailedError as e:
             logger.error("Detector failed: %s", e)
@@ -233,25 +232,3 @@ class DetectOnlyExecution(DetectorExecution):
             self.key_target_classpath, _quote(project_compile.misuse_classes_path),
             self.key_dependency_classpath, _quote(project_compile.get_full_classpath())
         ]
-
-class JavaInterface:
-    def __init__(self, jar_path: str, java_options: List[str]):
-        self.jar_path = jar_path
-        self.java_options = java_options
-
-    def execute(self, version: ProjectVersion, compile_base_path:str,
-                detector_arguments: Dict[str, str]):
-        raise NotImplementedError
-
-class JavaInterfaceV0(JavaInterface):
-    def execute(self, timeout: Optional[int], logger:Logger, version: ProjectVersion, compile_base_path: str,
-                detector_arguments: Dict[str, str]):
-        command = self._get_command(version, compile_base_path, detector_arguments)
-        Shell.exec(command, logger=logger, timeout=timeout)
-
-    def _get_command(self, version: ProjectVersion, compile_base_path: str,
-                     detector_arguments: Dict[str, str]):
-        detector_invocation = ["java"] + self.java_options + ["-jar", _quote(self.jar_path)]
-        command = detector_invocation + detector_arguments
-        command = " ".join(command)
-        return command
