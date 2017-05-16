@@ -7,7 +7,7 @@ from data.java_interface import JavaInterface
 class Detector:
     BASE_URL = "http://www.st.informatik.tu-darmstadt.de/artifacts/mubench/detectors"
 
-    def __init__(self, detectors_path: str, detector_id: str, java_options: List[str], cli_version: str = "v20170406"):
+    def __init__(self, detectors_path: str, detector_id: str, java_options: List[str], cli_version: str = "20170406"):
         self.id = detector_id
         self.base_name = detector_id.split("_", 1)[0]
 
