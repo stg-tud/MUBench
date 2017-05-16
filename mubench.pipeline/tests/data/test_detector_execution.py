@@ -164,7 +164,7 @@ class TestDetectorExecutionLoadFindings:
 
 
 @patch("data.detector_execution.write_yaml")
-@patch("data.detector_execution.Shell")
+@patch("data.java_interface.Shell")
 @patch("data.project_compile.ProjectCompile.get_dependency_classpath")
 class TestDetectOnlyExecution:
     # noinspection PyAttributeOutsideInit
@@ -209,7 +209,7 @@ class TestDetectOnlyExecution:
 
 
 @patch("data.detector_execution.write_yaml")
-@patch("data.detector_execution.Shell")
+@patch("data.java_interface.Shell")
 @patch("data.project_compile.ProjectCompile.get_dependency_classpath")
 class TestMineAndDetectExecution:
     # noinspection PyAttributeOutsideInit
