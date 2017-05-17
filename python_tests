@@ -1,9 +1,0 @@
-#!/bin/bash
-
-realpath() {
-    [[ $1 = /* ]] && echo "$1" || echo "$PWD/${1#./}"
-}
-
-SCRIPT_DIR=$(dirname "$(realpath "$0")")
-
-docker run --rm -v "$SCRIPT_DIR":/mubench svamann/mubench nosetests -w mubench.pipeline/
