@@ -95,8 +95,6 @@ class TestDetectorExecution:
 
         self.logger = logging.getLogger("test")
 
-        self.detector.java_interface.execute = MagicMock()
-
         self.uut = DetectorExecutionTestImpl(DetectorMode.detect_only, self.detector, self.version,
                                              self.findings_base_path, AllFindings())
 
