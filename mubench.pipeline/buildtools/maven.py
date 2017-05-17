@@ -1,4 +1,3 @@
-import codecs
 import os
 
 
@@ -30,7 +29,7 @@ class Project:
 
     @staticmethod
     def __get_package_names(java_file_path):
-        with codecs.open(java_file_path, 'r', 'utf-8') as f:
+        with open(java_file_path, 'r', encoding='utf-8', errors='ignore') as f:
             try:
                 package_declaration = next(line for line in f.readlines() if "package " in line)  # type: str
                 package_name_start = package_declaration.find("package ") + 8
