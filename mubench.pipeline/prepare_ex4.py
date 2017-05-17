@@ -33,7 +33,7 @@ def prepare_example_projects(projects: List[GitHubProject], metadata_path: str):
         data.append({
             "id": project.id,
             "url": project.repository_url,
-            "path": checkout.checkout_dir,
+            "path": os.path.relpath(checkout.checkout_dir, MUBENCH_ROOT_PATH),
             "source_paths": Project(checkout.checkout_dir).get_sources_paths()
         })
 
