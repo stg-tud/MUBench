@@ -1,3 +1,4 @@
+from collections import OrderedDict
 from enum import Enum, IntEnum
 from logging import Logger
 from typing import Optional, List, Dict
@@ -7,6 +8,14 @@ from utils.shell import Shell
 
 def _quote(value: str):
     return "\"{}\"".format(value)
+
+def _as_list(dictionary: Dict) -> List:
+    l = list()
+    for key, value in dictionary.items():
+        l.append(key)
+        l.append(value)
+    return l
+
 
 class RunnerInterface:
     def __init__(self, jar_path: str, java_options: List[str]):
@@ -54,24 +63,24 @@ class RunnerInterfaceV20170406(RunnerInterface):
 
     @staticmethod
     def _filter_args(args: Dict[str, str], logger: Logger) -> Dict[str, str]:
-        valid_args = dict()
+        valid_args = OrderedDict()
         for key, value in args.items():
             if key in RunnerInterfaceV20170406._VALID_KEYS:
                 valid_args[key] = value
             else:
                 logger.debug("Detector uses legacy CLI: argument %s with value %s will not be passed to the detector.", key, value)
-        return valid_args 
+        return valid_args
 
     def _get_command(self, version: ProjectVersion, detector_arguments: Dict[str, str]) -> str:
         detector_invocation = ["java"] + self.java_options + ["-jar", _quote(self.jar_path)]
         detector_arguments = self._get_cli_args(detector_arguments)
-        command = detector_invocation + detector_arguments
+        command = detector_invocation + _as_list(detector_arguments)
         command = " ".join(command)
         return command
 
     @staticmethod
-    def _get_cli_args(detector_arguments: Dict[str, str]) -> List[str]:
-        args = []
+    def _get_cli_args(detector_arguments: Dict[str, str]) -> Dict[str, str]:
+        args = OrderedDict()
         for key, value in detector_arguments.items():
-            args.append("{} {}".format(key, _quote(value)))
-        return sorted(args)
+            args[key] = _quote(value)
+        return args
