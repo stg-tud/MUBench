@@ -204,7 +204,7 @@ class MineAndDetectExecution(DetectorExecution):
             self.key_detector_mode, _quote(self._run_mode_detector_argument),
             self.key_target_src_path, _quote(project_compile.original_sources_path),
             self.key_target_classpath, _quote(project_compile.original_classes_path),
-            self.key_dependency_classpath, _quote(project_compile.get_dependency_classpath())
+            self.key_dependency_classpath, _quote(project_compile.get_full_classpath())
         ]
 
 
@@ -228,13 +228,5 @@ class DetectOnlyExecution(DetectorExecution):
             self.key_training_classpath, _quote(project_compile.get_pattern_classes_path(self.misuse)),
             self.key_target_src_path, _quote(project_compile.misuse_source_path),
             self.key_target_classpath, _quote(project_compile.misuse_classes_path),
-            self.key_dependency_classpath, _quote(self.__get_dependency_classpath(project_compile))
+            self.key_dependency_classpath, _quote(project_compile.get_full_classpath())
         ]
-
-    @staticmethod
-    def __get_dependency_classpath(project_compile):
-        dependency_classpath = project_compile.get_dependency_classpath()
-        if dependency_classpath:
-            return project_compile.original_classpath + ":" + dependency_classpath
-        else:
-            return project_compile.original_classpath

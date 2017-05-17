@@ -184,7 +184,7 @@ class TestDetectOnlyExecution:
                                            'training_classpath "{}" '.format(training_classpath) +
                                            'target_src_path "{}" '.format(target_src_path) +
                                            'target_classpath "{}" '.format(target_classpath) +
-                                           'dep_classpath "{}"'.format(original_classpath + ":" + dependencies_classpath),
+                                           'dep_classpath "{}:{}"'.format(dependencies_classpath, original_classpath),
                                            logger=self.logger,
                                            timeout=42)
 
@@ -212,6 +212,7 @@ class TestMineAndDetectExecution:
         compiles_path = join("-compiles-", "-project-", "-version-")
         target_src_path = join(compiles_path, "original-src")
         target_classpath = join(compiles_path, "original-classes")
+        original_classpath = join(compiles_path, "original-classes.jar")
         dependencies_classpath = "-dependencies-classpath-"
         get_dependencies_classpath_mock.return_value = dependencies_classpath
 
@@ -223,6 +224,6 @@ class TestMineAndDetectExecution:
                                            'detector_mode "0" ' +
                                            'target_src_path "{}" '.format(target_src_path) +
                                            'target_classpath "{}" '.format(target_classpath) +
-                                           'dep_classpath "{}"'.format(dependencies_classpath),
+                                           'dep_classpath "{}:{}"'.format(dependencies_classpath, original_classpath),
                                            logger=self.logger,
                                            timeout=42)
