@@ -1,6 +1,8 @@
 import csv
 import os
+import traceback
 
+import sys
 from typing import List
 
 from boa.BOA import BOA, GitHubProject
@@ -52,3 +54,4 @@ with open(INDEX_PATH) as index:
             print("[WARN] {}".format(warning))
         except Exception as error:
             print("[ERROR] {}".format(error))
+            traceback.print_exc(file=sys.stdout)
