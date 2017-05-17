@@ -43,3 +43,7 @@ MUBench runs the detectors on the projects/misuses specified in the [MUBench Dat
 ### Advanced Use
 
 You may run individual benchmark steps or select subsets of the entire dataset. See `./mubench -h` for details.
+
+### Default Configuration
+
+You can specify a default run configuration as shown in the example [config file](../default.example.config). All command line arguments that have a "--" specifier can be set in the configuration file. For example to specify the username "--username" has to be used, not "-u".
