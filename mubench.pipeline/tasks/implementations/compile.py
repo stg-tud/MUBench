@@ -165,7 +165,7 @@ class Compile(ProjectVersionTask):
         return buildfile_dir
 
     @staticmethod
-    def __parse_maven_classpath(shell_output: str) -> List[str]:
+    def __parse_maven_classpath(shell_output: str) -> Set[str]:
         # shell_output looks like (possibly multiple times, once for each Maven module):
         # [INFO] Dependencies classpath:
         # /path/dep1.jar:/path/dep2.jar
@@ -179,7 +179,7 @@ class Compile(ProjectVersionTask):
         return classpath
 
     @staticmethod
-    def __parse_ant_classpath(shell_output: str) -> List[str]:
+    def __parse_ant_classpath(shell_output: str) -> Set[str]:
         # shell_output looks like:
         #   [javac] '-classpath'
         #   [javac] '/project/build:/path/dep1.jar:/path/dep2.jar'
@@ -192,7 +192,7 @@ class Compile(ProjectVersionTask):
         return classpath.split(":")
 
     @staticmethod
-    def __parse_gradle_classpath(shell_output: str) -> List[str]:
+    def __parse_gradle_classpath(shell_output: str) -> Set[str]:
         # shell_output looks like:
         # :printClasspath
         # /path/dependency1.jar
@@ -206,12 +206,19 @@ class Compile(ProjectVersionTask):
         return lines[first_dependency_idx:first_empty_line_idx]
 
     @staticmethod
-    def _copy_classpath(dependencies: List[str], dep_dir: str):
+    def _copy_classpath(dependencies: Set[str], dep_dir: str):
         remove_tree(dep_dir)
         makedirs(dep_dir, exist_ok=True)
         for dependency in dependencies:
             if not os.path.isdir(dependency):
                 shutil.copy(dependency, dep_dir)
+            elif dependency.endswith("classes"):
+                # dependency is a classes directory
+                # cutoff /target/classes to name jar
+                dep_name = os.path.basename(os.path.dirname(os.path.dirname(dependency)))
+                Compile.__create_jar(dependency, os.path.join(dep_dir, dep_name + ".jar"))
+
+
 
     @staticmethod
     def __copy_misuse_classes(classes_path, misuses, destination):
