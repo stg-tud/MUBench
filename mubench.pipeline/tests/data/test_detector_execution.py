@@ -24,7 +24,7 @@ class DetectorExecutionTestImpl(DetectorExecution):
         pass
 
     def _get_detector_arguments(self, project_compile: ProjectCompile):
-        return []
+        return dict()
 
 
 class TestExecutionState:
@@ -95,14 +95,10 @@ class TestDetectorExecution:
 
         self.logger = logging.getLogger("test")
 
-        self.__orig_shell_exec = Shell.exec
-        Shell.exec = MagicMock()
+        self.detector.java_interface.execute = MagicMock()
 
         self.uut = DetectorExecutionTestImpl(DetectorMode.detect_only, self.detector, self.version,
                                              self.findings_base_path, AllFindings())
-
-    def teardown(self):
-        Shell.exec = self.__orig_shell_exec
 
     def test_execute_sets_success(self, write_yaml_mock):
         self.uut.execute("-compiles-", 42, self.logger)
@@ -110,14 +106,14 @@ class TestDetectorExecution:
         assert_equals(Result.success, self.uut.result)
 
     def test_execute_sets_error(self, write_yaml_mock):
-        Shell.exec = MagicMock(side_effect=CommandFailedError("-cmd-", "-out-"))
+        self.detector.java_interface.execute = MagicMock(side_effect=CommandFailedError("-cmd-", "-out-"))
 
         self.uut.execute("-compiles-", 42, self.logger)
 
         assert_equals(Result.error, self.uut.result)
 
     def test_execute_captures_error_output(self, write_yaml_mock):
-        Shell.exec = MagicMock(side_effect=CommandFailedError("-cmd-", "-out-"))
+        self.detector.java_interface.execute = MagicMock(side_effect=CommandFailedError("-cmd-", "-out-"))
 
         self.uut.execute("-compiles-", 42, self.logger)
 
@@ -125,7 +121,7 @@ class TestDetectorExecution:
 
     def test_execute_cuts_output_if_too_long(self, write_yaml_mock):
         long_output = "\n".join(["line " + str(i) for i in range(1, 8000)])
-        Shell.exec = MagicMock(side_effect=CommandFailedError("-cmd-", long_output))
+        self.detector.java_interface.execute = MagicMock(side_effect=CommandFailedError("-cmd-", long_output))
 
         self.uut.execute("-compiles-", 42, self.logger)
 
@@ -133,7 +129,7 @@ class TestDetectorExecution:
         assert_equals(5000, len(str.splitlines(self.uut.message)))
 
     def test_execute_sets_timeout(self, write_yaml_mock):
-        Shell.exec = MagicMock(side_effect=TimeoutError())
+        self.detector.java_interface.execute = MagicMock(side_effect=TimeoutError())
 
         self.uut.execute("-compiles-", 42, self.logger)
 
@@ -164,7 +160,6 @@ class TestDetectorExecutionLoadFindings:
 
 
 @patch("data.detector_execution.write_yaml")
-@patch("data.java_interface.Shell")
 @patch("data.project_compile.ProjectCompile.get_dependency_classpath")
 class TestDetectOnlyExecution:
     # noinspection PyAttributeOutsideInit
@@ -179,8 +174,7 @@ class TestDetectOnlyExecution:
         self.uut = DetectOnlyExecution(self.detector, self.version, self.misuse, self.findings_base_path,
                                        PotentialHits(self.misuse))
 
-    def test_execute_per_misuse(self, get_dependencies_classpath_mock, shell_mock, write_yaml_mock):
-        jar = self.detector.jar_path
+    def test_execute_per_misuse(self, get_dependencies_classpath_mock, write_yaml_mock):
         findings_path = join("-findings-", "detect_only", "StubDetector", "-project-", "-version-", "-misuse-")
         target = join(findings_path, "findings.yml")
         run_info = join(findings_path, "run.yml")
@@ -195,21 +189,22 @@ class TestDetectOnlyExecution:
 
         self.uut.execute("-compiles-", 42, self.logger)
 
-        shell_mock.exec.assert_called_with('java -jar "{}" '.format(jar) +
-                                           'target "{}" '.format(target) +
-                                           'run_info "{}" '.format(run_info) +
-                                           'detector_mode "1" ' +
-                                           'training_src_path "{}" '.format(training_src_path) +
-                                           'training_classpath "{}" '.format(training_classpath) +
-                                           'target_src_path "{}" '.format(target_src_path) +
-                                           'target_classpath "{}" '.format(target_classpath) +
-                                           'dep_classpath "{}:{}"'.format(dependencies_classpath, original_classpath),
-                                           logger=self.logger,
-                                           timeout=42)
+        self.detector.java_interface.execute.assert_called_with(
+            self.version,
+            {
+                'target' : target,
+                'run_info' : run_info,
+                'detector_mode' : "1",
+                'training_src_path' : training_src_path,
+                'training_classpath' : training_classpath,
+                'target_src_path' : target_src_path,
+                'target_classpath' : target_classpath,
+                'dep_classpath' : dependencies_classpath + ":" + original_classpath
+            },
+            42, self.logger)
 
 
 @patch("data.detector_execution.write_yaml")
-@patch("data.java_interface.Shell")
 @patch("data.project_compile.ProjectCompile.get_dependency_classpath")
 class TestMineAndDetectExecution:
     # noinspection PyAttributeOutsideInit
@@ -223,7 +218,7 @@ class TestMineAndDetectExecution:
         self.uut = MineAndDetectExecution(self.detector, self.version, self.findings_base_path,
                                           AllFindings())
 
-    def test_execute(self, get_dependencies_classpath_mock, shell_mock, write_yaml_mock):
+    def test_execute(self, get_dependencies_classpath_mock, write_yaml_mock):
         jar = self.detector.jar_path
         findings_path = join("-findings-", "mine_and_detect", "StubDetector", "-project-", "-version-")
         target = join(findings_path, "findings.yml")
@@ -237,12 +232,14 @@ class TestMineAndDetectExecution:
 
         self.uut.execute("-compiles-", 42, self.logger)
 
-        shell_mock.exec.assert_called_with('java -jar "{}" '.format(jar) +
-                                           'target "{}" '.format(target) +
-                                           'run_info "{}" '.format(run_info) +
-                                           'detector_mode "0" ' +
-                                           'target_src_path "{}" '.format(target_src_path) +
-                                           'target_classpath "{}" '.format(target_classpath) +
-                                           'dep_classpath "{}:{}"'.format(dependencies_classpath, original_classpath),
-                                           logger=self.logger,
-                                           timeout=42)
+        self.detector.java_interface.execute.assert_called_with(
+                self.version,
+                {
+                    'target': target,
+                    'run_info': run_info,
+                    'detector_mode': "0",
+                    'target_src_path': target_src_path,
+                    'target_classpath': target_classpath,
+                    'dep_classpath': '{}:{}'.format(dependencies_classpath, original_classpath)
+                },
+                42, self.logger)
