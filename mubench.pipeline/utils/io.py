@@ -104,10 +104,13 @@ def __escape_str(data):
 
 
 def read_yaml(file: str):
-    with open(file, "rU", encoding="utf-8") as stream:
-        return yaml.load(stream, Loader=Loader)
+    return __read_yaml(file, yaml.load)
 
 
 def read_yamls(file: str):
+    return __read_yaml(file, yaml.load_all)
+
+
+def __read_yaml(file, load):
     with open(file, 'rU', encoding="utf-8") as stream:
-        return yaml.load_all(stream, Loader=Loader)
+        return load(stream, Loader=Loader)
