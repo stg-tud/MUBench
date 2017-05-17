@@ -1,8 +1,8 @@
 from unittest.mock import MagicMock
 
-from data.java_interface import JavaInterface
+from data.runner_interface import RunnerInterface
 
-class JavaInterfaceTestImpl(JavaInterface):
+class RunnerInterfaceTestImpl(RunnerInterface):
     TEST_VERSION = "V_TEST"
 
     def __init__(self, jar_path, java_options):
@@ -11,4 +11,4 @@ class JavaInterfaceTestImpl(JavaInterface):
 
     @staticmethod
     def version() -> str:
-        return JavaInterfaceTestImpl.TEST_VERSION
+        return RunnerInterfaceTestImpl.TEST_VERSION

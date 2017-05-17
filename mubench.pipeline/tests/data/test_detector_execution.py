@@ -106,14 +106,14 @@ class TestDetectorExecution:
         assert_equals(Result.success, self.uut.result)
 
     def test_execute_sets_error(self, write_yaml_mock):
-        self.detector.java_interface.execute = MagicMock(side_effect=CommandFailedError("-cmd-", "-out-"))
+        self.detector.runner_interface.execute = MagicMock(side_effect=CommandFailedError("-cmd-", "-out-"))
 
         self.uut.execute("-compiles-", 42, self.logger)
 
         assert_equals(Result.error, self.uut.result)
 
     def test_execute_captures_error_output(self, write_yaml_mock):
-        self.detector.java_interface.execute = MagicMock(side_effect=CommandFailedError("-cmd-", "-out-"))
+        self.detector.runner_interface.execute = MagicMock(side_effect=CommandFailedError("-cmd-", "-out-"))
 
         self.uut.execute("-compiles-", 42, self.logger)
 
@@ -121,7 +121,7 @@ class TestDetectorExecution:
 
     def test_execute_cuts_output_if_too_long(self, write_yaml_mock):
         long_output = "\n".join(["line " + str(i) for i in range(1, 8000)])
-        self.detector.java_interface.execute = MagicMock(side_effect=CommandFailedError("-cmd-", long_output))
+        self.detector.runner_interface.execute = MagicMock(side_effect=CommandFailedError("-cmd-", long_output))
 
         self.uut.execute("-compiles-", 42, self.logger)
 
@@ -129,7 +129,7 @@ class TestDetectorExecution:
         assert_equals(5000, len(str.splitlines(self.uut.message)))
 
     def test_execute_sets_timeout(self, write_yaml_mock):
-        self.detector.java_interface.execute = MagicMock(side_effect=TimeoutError())
+        self.detector.runner_interface.execute = MagicMock(side_effect=TimeoutError())
 
         self.uut.execute("-compiles-", 42, self.logger)
 
@@ -189,7 +189,7 @@ class TestDetectOnlyExecution:
 
         self.uut.execute("-compiles-", 42, self.logger)
 
-        self.detector.java_interface.execute.assert_called_with(
+        self.detector.runner_interface.execute.assert_called_with(
             self.version,
             {
                 'target' : target,
@@ -232,7 +232,7 @@ class TestMineAndDetectExecution:
 
         self.uut.execute("-compiles-", 42, self.logger)
 
-        self.detector.java_interface.execute.assert_called_with(
+        self.detector.runner_interface.execute.assert_called_with(
                 self.version,
                 {
                     'target': target,
