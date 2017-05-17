@@ -2,7 +2,7 @@ from os import makedirs, chmod, remove, listdir, readlink, symlink
 from os.path import dirname, exists, isfile, join, isdir, basename, islink
 from shutil import rmtree, copy
 from stat import S_IWRITE
-from typing import Dict
+from typing import Dict, List
 
 import yaml
 try:
@@ -77,13 +77,21 @@ yaml.add_representer(__MultilineString, __multiline_string_presenter)
 
 
 def write_yaml(data: Dict, file: str = None):
+    return __write_yaml(data, yaml.dump, file)
+
+
+def write_yamls(data: List[Dict], file: str = None):
+    return __write_yaml(data, yaml.dump_all, file)
+
+
+def __write_yaml(data, dump, file):
     data = __escape_str(data)
     if file:
         create_file(file)
         with open(file, "w", encoding="utf-8") as stream:
-            return yaml.dump(data, stream, Dumper=Dumper, default_flow_style=False, encoding="utf-8")
+            return dump(data, stream, Dumper=Dumper, default_flow_style=False, encoding="utf-8")
     else:
-        return yaml.dump(data, Dumper=Dumper, default_flow_style=False)
+        return dump(data, Dumper=Dumper, default_flow_style=False)
 
 
 def __escape_str(data):
