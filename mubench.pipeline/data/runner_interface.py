@@ -8,14 +8,14 @@ from utils.shell import Shell
 def _quote(value: str):
     return "\"{}\"".format(value)
 
-class JavaInterface:
+class RunnerInterface:
     def __init__(self, jar_path: str, java_options: List[str]):
         self.jar_path = jar_path
         self.java_options = java_options
 
     @staticmethod
-    def get(cli_version: str, jar_path: str, java_options: List[str]) -> 'JavaInterface':
-        interfaces = JavaInterface.__subclasses__()
+    def get(cli_version: str, jar_path: str, java_options: List[str]) -> 'RunnerInterface':
+        interfaces = RunnerInterface.__subclasses__()
         matching_interfaces = [i for i in interfaces if i.version() == cli_version]
         if matching_interfaces:
             return matching_interfaces[0](jar_path, java_options)
@@ -30,7 +30,7 @@ class JavaInterface:
                 timeout: Optional[int], logger: Logger):
         raise NotImplementedError
 
-class JavaInterfaceV20170406(JavaInterface):
+class RunnerInterfaceV20170406(RunnerInterface):
     _VALID_KEYS = [
         "target",
         "run_info",
@@ -44,7 +44,7 @@ class JavaInterfaceV20170406(JavaInterface):
 
     @staticmethod
     def version() -> str:
-        return "20170406"
+        return "v20170406"
 
     def execute(self, version: ProjectVersion, detector_arguments: Dict[str, str],
                 timeout: Optional[int], logger: Logger):
@@ -56,7 +56,7 @@ class JavaInterfaceV20170406(JavaInterface):
     def _filter_args(args: Dict[str, str], logger: Logger) -> Dict[str, str]:
         valid_args = dict()
         for key, value in args.items():
-            if key in JavaInterfaceV20170406._VALID_KEYS:
+            if key in RunnerInterfaceV20170406._VALID_KEYS:
                 valid_args[key] = value
             else:
                 logger.debug("Detector uses legacy CLI: argument %s with value %s will not be passed to the detector.", key, value)

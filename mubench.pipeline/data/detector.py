@@ -2,7 +2,7 @@ from os.path import join, exists
 from typing import Optional, List
 
 from data.finding import Finding, SpecializedFinding
-from data.java_interface import JavaInterface
+from data.runner_interface import RunnerInterface
 
 class Detector:
     BASE_URL = "http://www.st.informatik.tu-darmstadt.de/artifacts/mubench/detectors"
@@ -15,7 +15,7 @@ class Detector:
         self.jar_path = join(self.path, self.base_name + ".jar")
         self.jar_url = "{}/{}/{}.jar".format(Detector.BASE_URL, cli_version, self.base_name)
         self.md5_path = join(self.path, self.base_name + ".md5")
-        self.java_interface = JavaInterface.get(cli_version, self.jar_path, java_options)
+        self.runner_interface = RunnerInterface.get(cli_version, self.jar_path, java_options)
 
     @property
     def md5(self) -> Optional[str]:

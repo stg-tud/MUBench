@@ -6,25 +6,25 @@ from unittest.mock import MagicMock, PropertyMock, patch
 
 from nose.tools import assert_equals, assert_true
 
-from data.java_interface import JavaInterface, JavaInterfaceV20170406
+from data.runner_interface import RunnerInterface, RunnerInterfaceV20170406
 from tests.data.stub_detector import StubDetector
 from utils.io import remove_tree, write_yaml
 from utils.shell import Shell, CommandFailedError
 from tests.test_utils.data_util import create_misuse, create_version, create_project
-from tests.test_utils.java_interface_test_impl import JavaInterfaceTestImpl
+from tests.test_utils.runner_interface_test_impl import RunnerInterfaceTestImpl
 
-class TestJavaInterface:
+class TestRunnerInterface:
     def test_get_interface_version(self):
-        actual = JavaInterface.get(JavaInterfaceTestImpl.TEST_VERSION, "", dict())
-        assert_true(isinstance(actual, JavaInterfaceTestImpl))
+        actual = RunnerInterface.get(RunnerInterfaceTestImpl.TEST_VERSION, "", dict())
+        assert_true(isinstance(actual, RunnerInterfaceTestImpl))
 
-@patch("data.java_interface.Shell")
-class TestJavaInterfaceV20170406:
+@patch("data.runner_interface.Shell")
+class TestRunnerInterfaceV20170406:
     # noinspection PyAttributeOutsideInit
     def setup(self):
-        self.uut = JavaInterfaceV20170406("-detector-", [])
+        self.uut = RunnerInterfaceV20170406("-detector-", [])
         self.logger = logging.getLogger("test")
-        self.version = create_version("-version")
+        self.version = create_version("-version-")
 
     def test_execute_per_misuse(self, shell_mock):
         jar = "-detector-"
@@ -39,7 +39,7 @@ class TestJavaInterfaceV20170406:
         original_classpath = join(compiles_path, "original-classes.jar")
         dependencies_classpath = "-dependencies-classpath-"
 
-        uut = JavaInterfaceV20170406(jar, [])
+        uut = RunnerInterfaceV20170406(jar, [])
 
         uut.execute(self.version,
             {
@@ -67,7 +67,7 @@ class TestJavaInterfaceV20170406:
 
     def test_filters_incompatible_args(self, shell_mock):
         jar = "-detector-"
-        uut = JavaInterfaceV20170406(jar, [])
+        uut = RunnerInterfaceV20170406(jar, [])
 
         uut.execute(self.version, {"-incompatible-" : "-value-"}, timeout=42, logger=self.logger)
 
