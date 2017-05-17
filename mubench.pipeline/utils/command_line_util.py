@@ -2,6 +2,7 @@ from argparse import ArgumentParser, HelpFormatter, ArgumentTypeError
 from operator import attrgetter
 
 from typing import List, Any
+from utils.io import read_yaml
 
 
 class SortingHelpFormatter(HelpFormatter):
@@ -132,7 +133,7 @@ def __add_publish_subprocess(available_detectors: List[str], available_datasets:
             raise ArgumentTypeError("invalid value: {} (choose from [1,500])".format(limit))
         return limit
 
-    findings_parser.add_argument('--limit', type=upload_limit, default=50, metavar='n', dest="limit",
+    findings_parser.add_argument('--limit', type=upload_limit, default=get_default('--limit', 50), metavar='n', dest="limit",
                                  help="publish only a specified number of potential hits. From [1,500]; default 50.")
 
     metadata_parser = publish_subparsers.add_parser("metadata", formatter_class=SortingHelpFormatter,
@@ -156,21 +157,31 @@ def __add_stats_subprocess(available_scripts: List[str], available_datasets: Lis
 
 
 def __setup_misuse_filter_arguments(parser: ArgumentParser, available_datasets: List[str]):
-    parser.add_argument('--only', metavar='X', nargs='+', dest='white_list', default=[],
+    parser.add_argument('--only', metavar='X', nargs='+', dest='white_list', default=get_default('--only', []),
                         help="process only projects or project versions whose names are given")
-    parser.add_argument('--skip', metavar='Y', nargs='+', dest='black_list', default=[],
+    parser.add_argument('--skip', metavar='Y', nargs='+', dest='black_list', default=get_default('--skip', []),
                         help="skip all projects or project versions whose names are given")
-    parser.add_argument('--dataset', metavar='DATASET', dest='dataset', default=None, choices=available_datasets,
-                        help="process only misuses in the specified data set")
+    parser.add_argument('--dataset', metavar='DATASET', dest='dataset', default=get_default('--dataset', None),
+                        choices=available_datasets, help="process only misuses in the specified data set")
 
+def get_default(parameter: str, default):
+    print(parameter)
+    try:
+        config = read_yaml("./default.config")
+    except FileNotFoundError:
+        return default
+    if parameter in config:
+        print(config[parameter])
+        return config[parameter]
+    return default
 
 def __setup_checkout_arguments(parser: ArgumentParser):
-    parser.add_argument('--force-checkout', dest='force_checkout', action='store_true', default=False,
+    parser.add_argument('--force-checkout', dest='force_checkout', action='store_true', default=get_default('--force-checkout', False),
                         help="force a clean checkout, deleting any existing files")
 
 
 def __setup_compile_arguments(parser: ArgumentParser):
-    parser.add_argument('--force-compile', dest='force_compile', action='store_true', default=False,
+    parser.add_argument('--force-compile', dest='force_compile', action='store_true', default=get_default('--force-compile', False),
                         help="force a clean compilation")
 
 
@@ -179,23 +190,23 @@ def __setup_detector_arguments(parser: ArgumentParser, available_detectors: List
                         choices=available_detectors)
     parser.add_argument('experiment', help="configures the detector for the experiment", type=int,
                         choices=[1, 2, 3])
-    parser.add_argument('--force-detect', dest='force_detect', action='store_true', default=False,
+    parser.add_argument('--force-detect', dest='force_detect', action='store_true', default=get_default('--force-detect', False),
                         help="force a clean detection, deleting the any previous findings")
-    parser.add_argument('--timeout', type=int, default=None, metavar='s',
+    parser.add_argument('--timeout', type=int, default=get_default('--timeout', None), metavar='s',
                         help="abort detection after the provided number of seconds")
-    parser.add_argument('--java-options', metavar='option', nargs='+', dest='java_options', default=[],
+    parser.add_argument('--java-options', metavar='option', nargs='+', dest='java_options', default=get_default('--java-options', []),
                         help="pass options to the java subprocess running the detector "
                              "(example: `--java-options Xmx4G` runs `java -Xmx4G`)")
 
 
 def __setup_publish_arguments(parser: ArgumentParser) -> None:
-    parser.add_argument("-s", "--review-site", required=True, metavar="URL", dest="review_site_url",
+    parser.add_argument("-s", "--review-site", required=True, metavar="URL", dest="review_site_url", default=get_default('--review-site', None),
                         help="use the specified review site")
-    parser.add_argument("-u", "--username", metavar="USER", dest="review_site_user", default=None,
+    parser.add_argument("-u", "--username", metavar="USER", dest="review_site_user", default=get_default('--username', None),
                         help="use the specified user to authenticate with the review site."
                              " If a user is provided, but no password,"
                              " you will be prompted for the password before publication.")
-    parser.add_argument("-p", "--password", metavar="PASS", dest="review_site_password", default=None,
+    parser.add_argument("-p", "--password", metavar="PASS", dest="review_site_password", default=get_default('--password', None),
                         help="use the specified password for authenticating as the specified user."
                              " If a user is provided, but no password,"
                              " you will be prompted for the password before publication.")
