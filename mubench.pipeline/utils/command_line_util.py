@@ -18,9 +18,11 @@ class CaseInsensitiveChoices(list):
         return any([element for element in self if element.lower() == other.lower()])
 
 
-def get_command_line_parser(available_detectors: List[str], available_scripts: List[str]) -> ArgumentParser:
+def get_command_line_parser(available_detectors: List[str], available_scripts: List[str],
+                            available_datasets: List[str]) -> ArgumentParser:
     available_detectors = CaseInsensitiveChoices(available_detectors)
     available_scripts = CaseInsensitiveChoices(available_scripts)
+    available_datasets = CaseInsensitiveChoices(available_datasets)
 
     parser = ArgumentParser(
         description="Run MUBench, the benchmark for API-misuse detectors.",
@@ -32,18 +34,19 @@ def get_command_line_parser(available_detectors: List[str], available_scripts: L
         dest='task')
 
     __add_check_subprocess(subparsers)
-    __add_info_subprocess(subparsers)
-    __add_checkout_subprocess(subparsers)
-    __add_compile_subprocess(subparsers)
-    __add_detect_subprocess(available_detectors, subparsers)
-    __add_publish_subprocess(available_detectors, subparsers)
-    __add_stats_subprocess(available_scripts, subparsers)
+    __add_info_subprocess(available_datasets, subparsers)
+    __add_checkout_subprocess(available_datasets, subparsers)
+    __add_compile_subprocess(available_datasets, subparsers)
+    __add_detect_subprocess(available_detectors, available_datasets, subparsers)
+    __add_publish_subprocess(available_detectors, available_datasets, subparsers)
+    __add_stats_subprocess(available_scripts, available_datasets, subparsers)
 
     return parser
 
 
-def parse_args(args: List[str], available_detectors: List[str], available_scripts: List[str]) -> Any:
-    parser = get_command_line_parser(available_detectors, available_scripts)
+def parse_args(args: List[str], available_detectors: List[str], available_scripts: List[str],
+               available_datasets: List[str]) -> Any:
+    parser = get_command_line_parser(available_detectors, available_scripts, available_datasets)
 
     # remove first arg which always contains the script name
     args = args[1:]
@@ -61,49 +64,49 @@ def __add_check_subprocess(subparsers) -> None:
                           description="Validate whether the environment meets the prerequisites to run MUBench.")
 
 
-def __add_info_subprocess(subparsers) -> None:
+def __add_info_subprocess(available_datasets: List[str], subparsers) -> None:
     parser = subparsers.add_parser('info', formatter_class=SortingHelpFormatter,
                                    help="Show info about projects, project versions, and misuses in MUBench.",
                                    description="Show info about projects, project versions, and misuses in MUBench.")
-    __setup_misuse_filter_arguments(parser)
+    __setup_misuse_filter_arguments(parser, available_datasets)
 
 
-def __add_checkout_subprocess(subparsers) -> None:
+def __add_checkout_subprocess(available_datasets: List[str], subparsers) -> None:
     checkout_parser = subparsers.add_parser('checkout', formatter_class=SortingHelpFormatter,
                                             help="Clone the project versions with the misuses "
                                                  "from the MUBench dataset.",
                                             description="Clone the project versions with the misuses "
                                                         "from the MUBench dataset.",
                                             epilog="The clones will be created below `checkouts/`.")  # type: ArgumentParser
-    __setup_misuse_filter_arguments(checkout_parser)
+    __setup_misuse_filter_arguments(checkout_parser, available_datasets)
     __setup_checkout_arguments(checkout_parser)
 
 
-def __add_compile_subprocess(subparsers) -> None:
+def __add_compile_subprocess(available_datasets: List[str], subparsers) -> None:
     compile_parser = subparsers.add_parser('compile', formatter_class=SortingHelpFormatter,
                                            help="Compile the projects and the patterns. "
                                                 "Run `checkout`, if necessary.",
                                            description="Compile the projects and patterns. "
                                                        "Run `checkout`, if necessary.",
                                            epilog="Compilation data is store below `checkouts/`.")  # type: ArgumentParser
-    __setup_misuse_filter_arguments(compile_parser)
+    __setup_misuse_filter_arguments(compile_parser, available_datasets)
     __setup_compile_arguments(compile_parser)
     __setup_checkout_arguments(compile_parser)
 
 
-def __add_detect_subprocess(available_detectors: List[str], subparsers) -> None:
+def __add_detect_subprocess(available_detectors: List[str], available_datasets: List[str], subparsers) -> None:
     detect_parser = subparsers.add_parser('detect', formatter_class=SortingHelpFormatter,
                                           help="Run a detector on the checkouts. Run `compile`, if necessary. ",
                                           description="Run a detector on the checkouts. Run `compile`, if necessary. "
                                                       "Run `detect -h` to see a list of available detectors.",
                                           epilog="The findings are written to `findings/`.")  # type: ArgumentParser
-    __setup_misuse_filter_arguments(detect_parser)
+    __setup_misuse_filter_arguments(detect_parser, available_datasets)
     __setup_detector_arguments(detect_parser, available_detectors)
     __setup_checkout_arguments(detect_parser)
     __setup_compile_arguments(detect_parser)
 
 
-def __add_publish_subprocess(available_detectors: List[str], subparsers) -> None:
+def __add_publish_subprocess(available_detectors: List[str], available_datasets: List[str], subparsers) -> None:
     publish_parser = subparsers.add_parser('publish', formatter_class=SortingHelpFormatter,
                                           help="Tasks to publish data to a review site.",
                                           description="Tasks to publish data to a review site.")  # type: ArgumentParser
@@ -117,7 +120,7 @@ def __add_publish_subprocess(available_detectors: List[str], subparsers) -> None
                                                          "Run `detect`, if necessary.",
                                                     description="Publish detection findings to the review site. "
                                                                 "Run `detect`, if necessary.")  # type: ArgumentParser
-    __setup_misuse_filter_arguments(findings_parser)
+    __setup_misuse_filter_arguments(findings_parser, available_datasets)
     __setup_detector_arguments(findings_parser, available_detectors)
     __setup_checkout_arguments(findings_parser)
     __setup_compile_arguments(findings_parser)
@@ -138,26 +141,26 @@ def __add_publish_subprocess(available_detectors: List[str], subparsers) -> None
                                                     description="Publish misuse metadata to the review site. "
                                                                 "Run `checkout`, if necessary.")  # type: ArgumentParser
 
-    __setup_misuse_filter_arguments(metadata_parser)
+    __setup_misuse_filter_arguments(metadata_parser, available_datasets)
     __setup_checkout_arguments(metadata_parser)
     __setup_publish_arguments(metadata_parser)
 
 
-def __add_stats_subprocess(available_scripts: List[str], subparsers) -> None:
+def __add_stats_subprocess(available_scripts: List[str], available_datasets: List[str], subparsers) -> None:
     stats_parser = subparsers.add_parser('stats', formatter_class=SortingHelpFormatter,
                                          description="Calculate statistics using the given script",
                                          help="Calculate statistics using the given script")  # type: ArgumentParser
     stats_parser.add_argument('script', help="the calculation strategy to use (case insensitive)",
                               choices=available_scripts)
-    __setup_misuse_filter_arguments(stats_parser)
+    __setup_misuse_filter_arguments(stats_parser, available_datasets)
 
 
-def __setup_misuse_filter_arguments(parser: ArgumentParser):
+def __setup_misuse_filter_arguments(parser: ArgumentParser, available_datasets: List[str]):
     parser.add_argument('--only', metavar='X', nargs='+', dest='white_list', default=[],
                         help="process only projects or project versions whose names are given")
     parser.add_argument('--skip', metavar='Y', nargs='+', dest='black_list', default=[],
                         help="skip all projects or project versions whose names are given")
-    parser.add_argument('--dataset', metavar='DATASET', dest='dataset', default=None,
+    parser.add_argument('--dataset', metavar='DATASET', dest='dataset', default=None, choices=available_datasets,
                         help="process only misuses in the specified data set")
 
 
