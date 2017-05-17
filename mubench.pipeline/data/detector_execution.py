@@ -16,10 +16,6 @@ from utils.io import write_yaml, remove_tree, read_yaml_if_exists, open_yamls_if
 from utils.shell import Shell, CommandFailedError
 
 
-def _quote(value: str):
-    return "\"{}\"".format(value)
-
-
 class Result(Enum):
     error = 0
     success = 1
@@ -86,7 +82,7 @@ class DetectorExecution:
         start = time.time()
         message = ""
         try:
-            self.detector.java_interface.execute(self.version, detector_args, timeout, logger) 
+            self.detector.java_interface.execute(self.version, detector_args, timeout, logger)
             result = Result.success
         except CommandFailedError as e:
             logger.error("Detector failed: %s", e)
@@ -200,14 +196,14 @@ class MineAndDetectExecution(DetectorExecution):
                     self.version.project_id, self.version.version_id)
 
     def _get_detector_arguments(self, project_compile: ProjectCompile):
-        return [
-            self.key_findings_file, _quote(self._findings_file_path),
-            self.key_run_file, _quote(self._run_file_path),
-            self.key_detector_mode, _quote(self._run_mode_detector_argument),
-            self.key_target_src_path, _quote(project_compile.original_sources_path),
-            self.key_target_classpath, _quote(project_compile.original_classes_path),
-            self.key_dependency_classpath, _quote(project_compile.get_full_classpath())
-        ]
+        return {
+            self.key_findings_file : self._findings_file_path,
+            self.key_run_file : self._run_file_path,
+            self.key_detector_mode : self._run_mode_detector_argument,
+            self.key_target_src_path : project_compile.original_sources_path,
+            self.key_target_classpath : project_compile.original_classes_path,
+            self.key_dependency_classpath : project_compile.get_full_classpath()
+        }
 
 
 class DetectOnlyExecution(DetectorExecution):
@@ -222,13 +218,13 @@ class DetectOnlyExecution(DetectorExecution):
                     self.version.project_id, self.version.version_id, self.misuse.misuse_id)
 
     def _get_detector_arguments(self, project_compile: ProjectCompile):
-        return [
-            self.key_findings_file, _quote(self._findings_file_path),
-            self.key_run_file, _quote(self._run_file_path),
-            self.key_detector_mode, _quote(self._run_mode_detector_argument),
-            self.key_training_src_path, _quote(project_compile.get_pattern_source_path(self.misuse)),
-            self.key_training_classpath, _quote(project_compile.get_pattern_classes_path(self.misuse)),
-            self.key_target_src_path, _quote(project_compile.misuse_source_path),
-            self.key_target_classpath, _quote(project_compile.misuse_classes_path),
-            self.key_dependency_classpath, _quote(project_compile.get_full_classpath())
-        ]
+        return {
+            self.key_findings_file : self._findings_file_path,
+            self.key_run_file : self._run_file_path,
+            self.key_detector_mode : self._run_mode_detector_argument,
+            self.key_training_src_path : project_compile.get_pattern_source_path(self.misuse),
+            self.key_training_classpath : project_compile.get_pattern_classes_path(self.misuse),
+            self.key_target_src_path : project_compile.misuse_source_path,
+            self.key_target_classpath : project_compile.misuse_classes_path,
+            self.key_dependency_classpath : project_compile.get_full_classpath()
+        }
