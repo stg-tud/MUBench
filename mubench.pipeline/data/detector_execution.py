@@ -49,6 +49,7 @@ class DetectorExecution:
         self.run_mode = run_mode
         self.detector = detector
         self.version = version
+        self._findings_filter = findings_filter
         self._findings_base_path = findings_base_path
         self._findings_file_path = join(self._get_findings_path(), self.FINDINGS_FILE)
         self.__FINDINGS = None
@@ -66,7 +67,6 @@ class DetectorExecution:
         self.message = data["message"]
         self._detector_md5 = data["md5"]
 
-        self.findings_filter = findings_filter
 
     def execute(self, compile_base_path: str, timeout: Optional[int], logger: Logger):
         detector_invocation = ["java"] + self.detector.java_options + ["-jar", _quote(self.detector.jar_path)]
@@ -100,7 +100,7 @@ class DetectorExecution:
     @property
     def potential_hits(self):
         if not self.__POTENTIAL_HITS:
-            potential_hits = self.findings_filter.get_potential_hits(self.__findings)
+            potential_hits = self._findings_filter.get_potential_hits(self.__findings)
             self.__POTENTIAL_HITS = self.detector.specialize_findings(self._get_findings_path(), potential_hits)
         return self.__POTENTIAL_HITS
 
@@ -155,7 +155,7 @@ class DetectorExecution:
         remove_tree(self._get_findings_path())
         makedirs(self._get_findings_path(), exist_ok=True)
         DetectorExecution.__init__(self, self.run_mode, self.detector, self.version, self._findings_base_path,
-                                   self.findings_filter)
+                                   self._findings_filter)
 
     def is_success(self):
         return self.result == Result.success

@@ -2,7 +2,7 @@ from nose.tools import assert_equals, assert_is_instance
 
 from data.detector_execution import MineAndDetectExecution, DetectOnlyExecution
 from data.experiments import ProvidedPatternsExperiment, TopFindingsExperiment, BenchmarkExperiment
-from data.findings_filters import AllFindings
+from data.findings_filters import AllFindings, PotentialHits
 from data.pattern import Pattern
 from data.run import Run
 from tests.data.stub_detector import StubDetector
@@ -26,6 +26,7 @@ class TestExperiment:
         assert_is_instance(run, Run)
         assert_equals(1, len(run.executions))
         assert_is_instance(run.executions[0], DetectOnlyExecution)
+        assert_is_instance(run.executions[0]._findings_filter, PotentialHits)
 
     def test_provided_patterns_run_no_patterns(self):
         self.version._MISUSES = [create_misuse("-1-", project=self.project, patterns=[])]
@@ -45,8 +46,8 @@ class TestExperiment:
         assert_is_instance(run, Run)
         assert_equals(1, len(run.executions))
         assert_is_instance(run.executions[0], MineAndDetectExecution)
-        assert_is_instance(run.executions[0].findings_filter, AllFindings)
-        assert_equals(42, run.executions[0].findings_filter.limit)
+        assert_is_instance(run.executions[0]._findings_filter, AllFindings)
+        assert_equals(42, run.executions[0]._findings_filter.limit)
 
     def test_benchmark_run(self):
         experiment = BenchmarkExperiment(self.detector, "-findings_path-")
