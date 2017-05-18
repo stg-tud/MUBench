@@ -51,7 +51,6 @@ class DetectorExecution:
         self.version = version
         self._findings_filter = findings_filter
         self._findings_base_path = findings_base_path
-        self._findings_file_path = join(self._get_findings_path(), self.FINDINGS_FILE)
         self.__FINDINGS = None
         self.__POTENTIAL_HITS = None
         self.__run_info = None
@@ -143,6 +142,10 @@ class DetectorExecution:
     @property
     def _run_file_path(self):
         return join(self._get_findings_path(), self.RUN_FILE)
+
+    @property
+    def _findings_file_path(self):
+        return join(self._get_findings_path(), self.FINDINGS_FILE)
 
     @property
     def _run_mode_detector_argument(self):
