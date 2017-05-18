@@ -163,6 +163,7 @@ class TestDetectorExecutionLoadFindings:
         ])
 
 
+@patch("data.detector_execution.write_yaml")
 @patch("data.detector_execution.Shell")
 @patch("data.project_compile.ProjectCompile.get_dependency_classpath")
 class TestDetectOnlyExecution:
@@ -177,9 +178,8 @@ class TestDetectOnlyExecution:
 
         self.uut = DetectOnlyExecution(self.detector, self.version, self.misuse, self.findings_base_path,
                                        PotentialHits(self.misuse))
-        self.uut.save = MagicMock()
 
-    def test_execute_per_misuse(self, get_dependencies_classpath_mock, shell_mock):
+    def test_execute_per_misuse(self, get_dependencies_classpath_mock, shell_mock, write_yaml_mock):
         jar = self.detector.jar_path
         findings_path = join("-findings-", "detect_only", "StubDetector", "-project-", "-version-", "-misuse-")
         target = join(findings_path, "findings.yml")
@@ -208,6 +208,7 @@ class TestDetectOnlyExecution:
                                            timeout=42)
 
 
+@patch("data.detector_execution.write_yaml")
 @patch("data.detector_execution.Shell")
 @patch("data.project_compile.ProjectCompile.get_dependency_classpath")
 class TestMineAndDetectExecution:
@@ -221,9 +222,8 @@ class TestMineAndDetectExecution:
 
         self.uut = MineAndDetectExecution(self.detector, self.version, self.findings_base_path,
                                           AllFindings())
-        self.uut.save = MagicMock
 
-    def test_execute(self, get_dependencies_classpath_mock, shell_mock):
+    def test_execute(self, get_dependencies_classpath_mock, shell_mock, write_yaml_mock):
         jar = self.detector.jar_path
         findings_path = join("-findings-", "mine_and_detect", "StubDetector", "-project-", "-version-")
         target = join(findings_path, "findings.yml")
