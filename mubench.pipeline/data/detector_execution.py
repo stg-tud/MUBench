@@ -158,12 +158,13 @@ class DetectorExecution:
         raise NotImplementedError
 
     def _load_findings(self):
-        return [self.__create_finding(data) for data in read_yamls_if_exists(self._findings_file_path) if data]
+        findings = read_yamls_if_exists(self._findings_file_path)
+        return [self.__create_finding(rank, data) for rank, data in enumerate(findings) if data]
 
     @staticmethod
-    def __create_finding(data: Dict):
-        data["rank"] = data.pop("id")
-        return Finding(data)
+    def __create_finding(rank: int, finding_data: Dict):
+        finding_data["rank"] = rank
+        return Finding(finding_data)
 
     def reset(self):
         remove_tree(self._get_findings_path())

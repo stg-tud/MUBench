@@ -7,7 +7,8 @@ from unittest.mock import MagicMock, PropertyMock, patch, ANY
 from nose.tools import assert_equals
 
 from data.detector_execution import DetectOnlyExecution, MineAndDetectExecution, Result, DetectorExecution, DetectorMode
-from data.findings_filters import PotentialHits, AllFindings
+from data.finding import Finding
+from data.findings_filters import PotentialHits, AllFindings, FindingsFilter
 from data.project_compile import ProjectCompile
 from tests.data.stub_detector import StubDetector
 from utils.io import remove_tree, write_yaml
@@ -145,6 +146,21 @@ class TestDetectorExecution:
             {'result': 'success', 'message': '', 'md5': None, 'runtime': ANY},
             file='-findings-/run.yml'
         )
+
+
+class TestDetectorExecutionLoadFindings:
+    @patch("data.detector_execution.read_yamls_if_exists")
+    def test_adds_rank(self, read_yamls_mock):
+        read_yamls_mock.return_value = [{"name": "f1"}, {"name": "f2"}]
+        execution = DetectorExecution(DetectorMode.mine_and_detect, None, None, "-findings-base-path-", FindingsFilter())
+        execution._get_findings_path = lambda: ""
+
+        findings = execution._load_findings()
+
+        assert_equals(findings, [
+            Finding({"name": "f1", "rank": 0}),
+            Finding({"name": "f2", "rank": 1})
+        ])
 
 
 @patch("data.detector_execution.Shell")
