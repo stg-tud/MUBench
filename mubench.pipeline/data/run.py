@@ -16,12 +16,17 @@ class Run:
 
     def get_potential_hits(self) -> List[SpecializedFinding]:
         potential_hits = []
-        rank = 0
+        previous_execution_min_rank = 0
         for execution in self.executions:
+            min_rank = previous_execution_min_rank
             for potential_hit in execution.potential_hits:
+                rank = int(potential_hit["rank"])
+                if rank < min_rank:
+                    rank += previous_execution_min_rank
                 potential_hit["rank"] = rank
                 potential_hits.append(potential_hit)
-                rank += 1
+                min_rank = rank + 1
+            previous_execution_min_rank = min_rank
         return potential_hits
 
     def get_number_of_findings(self) -> int:

@@ -62,11 +62,11 @@ class TestRun:
 
         assert run.is_success()
 
-    def test_get_potential_hits(self):
+    def test_get_potential_hits_ensures_unique_rank(self):
         execution1 = MagicMock()
         execution1.potential_hits = [{"rank": 0, "name": "finding1"}, {"rank": 1, "name": "finding2"}]
         execution2 = MagicMock()
-        execution2.potential_hits = [{"rank": 0, "name": "finding3"}]
+        execution2.potential_hits = [{"rank": 0, "name": "finding3"}, {"rank": 1, "name": "finding4"}]
         run = Run([execution1, execution2])
 
         potential_hits = run.get_potential_hits()
@@ -74,7 +74,20 @@ class TestRun:
         assert_equals(potential_hits, [
             {"rank": 0, "name": "finding1"},
             {"rank": 1, "name": "finding2"},
-            {"rank": 2, "name": "finding3"}])
+            {"rank": 2, "name": "finding3"},
+            {"rank": 3, "name": "finding4"}])
+
+    def test_get_potential_hits_preserves_rank(self):
+        execution = MagicMock()
+        execution.potential_hits = [{"rank": 42, "name": "f1"}, {"rank": 1337, "name": "f2"}]
+        run = Run([execution])
+
+        potential_hits = run.get_potential_hits()
+
+        assert_equals(potential_hits, [
+            {"rank": 42, "name": "f1"},
+            {"rank": 1337, "name": "f2"}
+        ])
 
     def test_get_number_of_findings(self):
         execution1 = MagicMock()
