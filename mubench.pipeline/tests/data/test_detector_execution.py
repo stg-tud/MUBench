@@ -2,7 +2,7 @@ import logging
 from os.path import join
 from tempfile import mkdtemp
 from unittest import mock
-from unittest.mock import MagicMock, PropertyMock, patch
+from unittest.mock import MagicMock, PropertyMock, patch, ANY
 
 from nose.tools import assert_equals
 
@@ -84,6 +84,7 @@ class TestExecutionState:
                                   self.version.project_id, self.version.version_id, DetectorExecution.RUN_FILE))
 
 
+@patch("data.detector_execution.write_yaml")
 class TestDetectorExecution:
     # noinspection PyAttributeOutsideInit
     def setup(self):
@@ -98,31 +99,30 @@ class TestDetectorExecution:
 
         self.uut = DetectorExecutionTestImpl(DetectorMode.detect_only, self.detector, self.version,
                                              self.findings_base_path, AllFindings())
-        self.uut.save = MagicMock()
 
     def teardown(self):
         Shell.exec = self.__orig_shell_exec
 
-    def test_execute_sets_success(self):
+    def test_execute_sets_success(self, write_yaml_mock):
         self.uut.execute("-compiles-", 42, self.logger)
 
         assert_equals(Result.success, self.uut.result)
 
-    def test_execute_sets_error(self):
+    def test_execute_sets_error(self, write_yaml_mock):
         Shell.exec = MagicMock(side_effect=CommandFailedError("-cmd-", "-out-"))
 
         self.uut.execute("-compiles-", 42, self.logger)
 
         assert_equals(Result.error, self.uut.result)
 
-    def test_execute_captures_error_output(self):
+    def test_execute_captures_error_output(self, write_yaml_mock):
         Shell.exec = MagicMock(side_effect=CommandFailedError("-cmd-", "-out-"))
 
         self.uut.execute("-compiles-", 42, self.logger)
 
         assert_equals("Failed to execute '-cmd-': -out-", self.uut.message)
 
-    def test_execute_cuts_output_if_too_long(self):
+    def test_execute_cuts_output_if_too_long(self, write_yaml_mock):
         long_output = "\n".join(["line " + str(i) for i in range(1, 8000)])
         Shell.exec = MagicMock(side_effect=CommandFailedError("-cmd-", long_output))
 
@@ -131,17 +131,20 @@ class TestDetectorExecution:
         print(self.uut.message)
         assert_equals(5000, len(str.splitlines(self.uut.message)))
 
-    def test_execute_sets_timeout(self):
+    def test_execute_sets_timeout(self, write_yaml_mock):
         Shell.exec = MagicMock(side_effect=TimeoutError())
 
         self.uut.execute("-compiles-", 42, self.logger)
 
         assert_equals(Result.timeout, self.uut.result)
 
-    def test_saves_after_execution(self):
+    def test_saves_after_execution(self, write_yaml_mock):
         self.uut.execute("-compiles-", 42, self.logger)
 
-        self.uut.save.assert_called_with()
+        write_yaml_mock.assert_called_with(
+            {'result': 'success', 'message': '', 'md5': None, 'runtime': ANY},
+            file='-findings-/run.yml'
+        )
 
 
 @patch("data.detector_execution.Shell")

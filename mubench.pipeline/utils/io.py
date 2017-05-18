@@ -115,6 +115,10 @@ def read_yaml(file: str):
     return __read_yaml(file, yaml.load)
 
 
+def read_yaml_if_exists(file: str):
+    return read_yaml(file) if exists(file) else {}
+
+
 def read_yamls(file: str):
     return __read_yaml(file, yaml.load_all)
 

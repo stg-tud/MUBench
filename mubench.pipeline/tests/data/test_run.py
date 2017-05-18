@@ -2,7 +2,7 @@ import logging
 from os.path import join
 from shutil import rmtree
 from tempfile import mkdtemp
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, patch, PropertyMock
 
 from nose.tools import assert_equals
 
@@ -33,32 +33,36 @@ class TestRun:
         rmtree(self.temp_dir)
         Shell.exec = self.__orig_shell_exec
 
-    def test_not_run(self):
+    @patch("data.detector_execution.DetectorExecution.result", new_callable=PropertyMock)
+    def test_not_run(self, result_mock):
         execution = MineAndDetectExecution(self.detector, self.version, self.findings_path, FindingsFilter())
+        result_mock.return_value = None
         run = Run([execution])
-        execution.result = None
 
         assert not run.is_success()
         assert not run.is_failure()
 
-    def test_error(self):
+    @patch("data.detector_execution.DetectorExecution.result", new_callable=PropertyMock)
+    def test_error(self, result_mock):
         execution = MineAndDetectExecution(self.detector, self.version, self.findings_path, FindingsFilter())
+        result_mock.return_value = Result.error
         run = Run([execution])
-        execution.result = Result.error
 
         assert run.is_error()
 
-    def test_timeout(self):
+    @patch("data.detector_execution.DetectorExecution.result", new_callable=PropertyMock)
+    def test_timeout(self, result_mock):
         execution = MineAndDetectExecution(self.detector, self.version, self.findings_path, FindingsFilter())
+        result_mock.return_value = Result.timeout
         run = Run([execution])
-        execution.result = Result.timeout
 
         assert run.is_timeout()
 
-    def test_success(self):
+    @patch("data.detector_execution.DetectorExecution.result", new_callable=PropertyMock)
+    def test_success(self, result_mock):
         execution = MineAndDetectExecution(self.detector, self.version, self.findings_path, FindingsFilter())
+        result_mock.return_value = Result.success
         run = Run([execution])
-        execution.result = Result.success
 
         assert run.is_success()
 
