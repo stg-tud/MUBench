@@ -123,6 +123,10 @@ def read_yamls(file: str):
     return __read_yaml(file, yaml.load_all)
 
 
+def read_yamls_if_exists(file: str):
+    return read_yamls(file) if exists(file) else []
+
+
 def __read_yaml(file, load):
     with open(file, 'rU', encoding="utf-8") as stream:
         return load(stream, Loader=Loader)

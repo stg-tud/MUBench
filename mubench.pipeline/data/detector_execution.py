@@ -1,9 +1,9 @@
 import time
-import yaml
 from enum import Enum, IntEnum
 from logging import Logger
 from os import makedirs
-from os.path import join, exists
+from os.path import join
+
 from typing import Optional, List, Dict
 
 from data.detector import Detector
@@ -12,7 +12,7 @@ from data.findings_filters import FindingsFilter
 from data.misuse import Misuse
 from data.project_compile import ProjectCompile
 from data.project_version import ProjectVersion
-from utils.io import write_yaml, remove_tree, read_yaml_if_exists
+from utils.io import write_yaml, remove_tree, read_yaml_if_exists, read_yamls_if_exists
 from utils.shell import Shell, CommandFailedError
 
 
@@ -158,11 +158,7 @@ class DetectorExecution:
         raise NotImplementedError
 
     def _load_findings(self):
-        if exists(self._findings_file_path):
-            with open(self._findings_file_path, 'rU', encoding="utf-8") as stream:
-                return [self.__create_finding(data) for data in (yaml.load_all(stream)) if data]
-        else:
-            return []
+        return [self.__create_finding(data) for data in read_yamls_if_exists(self._findings_file_path) if data]
 
     @staticmethod
     def __create_finding(data: Dict):
