@@ -41,10 +41,6 @@ class Run:
             runtime += execution.runtime
         return runtime / len(self.executions)
 
-    def save(self):
-        for execution in self.executions:
-            execution.save()
-
     def reset(self):
         for execution in self.executions:
             execution.reset()
