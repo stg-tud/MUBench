@@ -7,16 +7,12 @@ from data.misuse import Misuse
 
 
 class FindingsFilter:
-    def __init__(self, detector: Detector):
-        self.detector = detector
-
     def get_potential_hits(self, findings: List[Finding]):
         raise NotImplementedError()
 
 
 class PotentialHits(FindingsFilter):
-    def __init__(self, detector: Detector, misuses: List[Misuse]):
-        super().__init__(detector)
+    def __init__(self, misuses: List[Misuse]):
         self.misuses = misuses
 
     def get_potential_hits(self, findings: List[Finding]):
@@ -40,8 +36,7 @@ class PotentialHits(FindingsFilter):
 
 
 class AllFindings(FindingsFilter):
-    def __init__(self, detector: Detector, limit: int = 0):
-        super().__init__(detector)
+    def __init__(self, limit: int = 0):
         self.limit = limit
 
     def get_potential_hits(self, findings: List[Finding]) -> List[SpecializedFinding]:

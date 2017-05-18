@@ -7,7 +7,7 @@ from unittest.mock import MagicMock
 from nose.tools import assert_equals
 
 from data.detector_execution import MineAndDetectExecution, Result
-from data.findings_filters import AllFindings
+from data.findings_filters import FindingsFilter
 from data.run import Run
 from tests.data.stub_detector import StubDetector
 from tests.test_utils.data_util import create_misuse, create_version, create_project
@@ -34,7 +34,7 @@ class TestRun:
         Shell.exec = self.__orig_shell_exec
 
     def test_not_run(self):
-        execution = MineAndDetectExecution(self.detector, self.version, self.findings_path, AllFindings(self.detector))
+        execution = MineAndDetectExecution(self.detector, self.version, self.findings_path, FindingsFilter())
         run = Run([execution])
         execution.result = None
 
@@ -42,21 +42,21 @@ class TestRun:
         assert not run.is_failure()
 
     def test_error(self):
-        execution = MineAndDetectExecution(self.detector, self.version, self.findings_path, AllFindings(self.detector))
+        execution = MineAndDetectExecution(self.detector, self.version, self.findings_path, FindingsFilter())
         run = Run([execution])
         execution.result = Result.error
 
         assert run.is_error()
 
     def test_timeout(self):
-        execution = MineAndDetectExecution(self.detector, self.version, self.findings_path, AllFindings(self.detector))
+        execution = MineAndDetectExecution(self.detector, self.version, self.findings_path, FindingsFilter())
         run = Run([execution])
         execution.result = Result.timeout
 
         assert run.is_timeout()
 
     def test_success(self):
-        execution = MineAndDetectExecution(self.detector, self.version, self.findings_path, AllFindings(self.detector))
+        execution = MineAndDetectExecution(self.detector, self.version, self.findings_path, FindingsFilter())
         run = Run([execution])
         execution.result = Result.success
 

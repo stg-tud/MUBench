@@ -11,7 +11,7 @@ class TestPotentialHits:
     def setup(self):
         self.detector = StubDetector()
         self.misuses = []
-        self.uut = PotentialHits(self.detector, self.misuses)
+        self.uut = PotentialHits(self.misuses)
 
     def test_no_hit(self):
         self.misuses.append(create_misuse("-m1-"))
@@ -49,7 +49,7 @@ class TestAllFindings:
         self.misuse = create_misuse("-m1-")
         self.misuses = [self.misuse, create_misuse("-m2-")]
 
-        self.uut = AllFindings(self.detector)
+        self.uut = AllFindings()
 
     def test_returns_all_findings(self):
         expected = [Finding({"rank": "1", "file": ""}), Finding({"rank": "2", "file": ""})]

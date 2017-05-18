@@ -31,7 +31,7 @@ class ProvidedPatternsExperiment(Experiment):
         return Run([self.__create_execution(version, misuse) for misuse in version.misuses if misuse.patterns])
 
     def __create_execution(self, version, misuse):
-        findings_filter = PotentialHits(self.detector, [misuse])
+        findings_filter = PotentialHits([misuse])
         return DetectOnlyExecution(self.detector, version, misuse, self.findings_base_path, findings_filter)
 
     def __str__(self):
@@ -46,7 +46,7 @@ class TopFindingsExperiment(Experiment):
         self.limit = limit
 
     def get_run(self, version: ProjectVersion):
-        findings_filter = AllFindings(self.detector, self.limit)
+        findings_filter = AllFindings(self.limit)
         return Run([MineAndDetectExecution(self.detector, version, self.findings_base_path, findings_filter)])
 
     def __str__(self):
@@ -63,7 +63,7 @@ class BenchmarkExperiment(Experiment):
         super().__init__(BenchmarkExperiment.ID, detector, findings_base_path)
 
     def get_run(self, version: ProjectVersion):
-        findings_filter = PotentialHits(self.detector, version.misuses)
+        findings_filter = PotentialHits(version.misuses)
         return Run([MineAndDetectExecution(self.detector, version, self.findings_base_path, findings_filter)])
 
     def __str__(self):

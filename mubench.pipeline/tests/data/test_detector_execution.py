@@ -37,7 +37,7 @@ class TestExecutionState:
         self.findings_base_path = "-findings-"
 
         self.uut = DetectorExecutionTestImpl(DetectorMode.detect_only, self.detector, self.version,
-                                             self.findings_base_path, AllFindings(self.detector))
+                                             self.findings_base_path, AllFindings())
 
     def teardown(self):
         remove_tree(self.temp_dir)
@@ -48,7 +48,7 @@ class TestExecutionState:
             detector = StubDetector()
 
             uut = DetectorExecutionTestImpl(DetectorMode.detect_only, detector, self.version, self.findings_base_path,
-                                            AllFindings(detector))
+                                            AllFindings())
 
             assert uut.is_outdated()
 
@@ -72,7 +72,7 @@ class TestExecutionState:
     def test_load(self):
         self.write_run_file({"result": "success", "runtime": "23.42", "message": "-arbitrary text-"})
 
-        execution = MineAndDetectExecution(self.detector, self.version, self.findings_path, AllFindings(self.detector))
+        execution = MineAndDetectExecution(self.detector, self.version, self.findings_path, AllFindings())
 
         assert execution.is_success()
         assert_equals(execution.runtime, "23.42")
@@ -97,7 +97,7 @@ class TestDetectorExecution:
         Shell.exec = MagicMock()
 
         self.uut = DetectorExecutionTestImpl(DetectorMode.detect_only, self.detector, self.version,
-                                             self.findings_base_path, AllFindings(self.detector))
+                                             self.findings_base_path, AllFindings())
         self.uut.save = MagicMock()
 
     def teardown(self):
@@ -157,7 +157,7 @@ class TestDetectOnlyExecution:
         self.logger = logging.getLogger("test")
 
         self.uut = DetectOnlyExecution(self.detector, self.version, self.misuse, self.findings_base_path,
-                                       PotentialHits(self.detector, self.misuse))
+                                       PotentialHits(self.misuse))
         self.uut.save = MagicMock()
 
     def test_execute_per_misuse(self, get_dependencies_classpath_mock, shell_mock):
@@ -201,7 +201,7 @@ class TestMineAndDetectExecution:
         self.logger = logging.getLogger("test")
 
         self.uut = MineAndDetectExecution(self.detector, self.version, self.findings_base_path,
-                                          AllFindings(self.detector))
+                                          AllFindings())
         self.uut.save = MagicMock
 
     def test_execute(self, get_dependencies_classpath_mock, shell_mock):

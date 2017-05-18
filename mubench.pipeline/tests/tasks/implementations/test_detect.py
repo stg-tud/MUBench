@@ -8,7 +8,7 @@ from nose.tools import assert_equals
 
 from data.detector_execution import MineAndDetectExecution
 from data.experiments import Experiment, ProvidedPatternsExperiment
-from data.findings_filters import AllFindings
+from data.findings_filters import FindingsFilter
 from data.run import Run
 from tasks.implementations.detect import Detect
 from tests.data.stub_detector import StubDetector
@@ -28,7 +28,7 @@ class TestDetect:
         self.version = create_version("-version-", project=self.project)
         self.detector = StubDetector()
         self.test_run_execution = MineAndDetectExecution(self.detector, self.version, self.findings_path,
-                                                         AllFindings(self.detector))
+                                                         FindingsFilter())
         self.test_run = Run([self.test_run_execution])
         self.test_run.execute = MagicMock(return_value="test execution successful")
         self.experiment = Experiment("mock experiment", self.detector, self.findings_path)
