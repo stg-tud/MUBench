@@ -46,4 +46,4 @@ You may run individual benchmark steps or select subsets of the entire dataset. 
 
 ### Default Configuration
 
-You can specify a default run configuration as shown in the example [config file](../default.example.config). All command line arguments that have a "--" specifier can be set in the configuration file. For example to specify the username "--username" has to be used, not "-u".
+You can specify a default run configuration as shown in the example [config file](../default.example.config). All command line arguments can be used by their fullname. If a configuration file is present, the values set in this file are used if they are not specified in the command line call.
