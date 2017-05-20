@@ -12,7 +12,7 @@ from data.findings_filters import FindingsFilter
 from data.misuse import Misuse
 from data.project_compile import ProjectCompile
 from data.project_version import ProjectVersion
-from utils.io import write_yaml, remove_tree, read_yaml_if_exists, read_yamls_if_exists
+from utils.io import write_yaml, remove_tree, read_yaml_if_exists, open_yamls_if_exists
 from utils.shell import Shell, CommandFailedError
 
 
@@ -158,8 +158,8 @@ class DetectorExecution:
         raise NotImplementedError
 
     def _load_findings(self):
-        findings = read_yamls_if_exists(self._findings_file_path)
-        return [self.__create_finding(rank, data) for rank, data in enumerate(findings) if data]
+        with open_yamls_if_exists(self._findings_file_path) as findings:
+            return [self.__create_finding(rank, data) for rank, data in enumerate(findings) if data]
 
     @staticmethod
     def __create_finding(rank: int, finding_data: Dict):

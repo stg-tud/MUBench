@@ -112,21 +112,31 @@ def __escape_str(data):
 
 
 def read_yaml(file: str):
-    return __read_yaml(file, yaml.load)
+    with open(file, 'rU', encoding="utf-8") as stream:
+        return yaml.load(stream, Loader=Loader)
 
 
 def read_yaml_if_exists(file: str):
     return read_yaml(file) if exists(file) else {}
 
 
-def read_yamls(file: str):
-    return __read_yaml(file, yaml.load_all)
+class open_yamls:
+    def __init__(self, filename: str):
+        self.filename = filename
+        self._file = None
+
+    def __enter__(self):
+        self._file = open(self.filename, 'rU', encoding="utf-8")
+        return yaml.load_all(self._file)
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self._file.close()
 
 
-def read_yamls_if_exists(file: str):
-    return read_yamls(file) if exists(file) else []
+class open_yamls_if_exists(open_yamls):
+    def __enter__(self):
+        return open_yamls.__enter__(self) if exists(self.filename) else []
 
-
-def __read_yaml(file, load):
-    with open(file, 'rU', encoding="utf-8") as stream:
-        return load(stream, Loader=Loader)
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        if self._file:
+            open_yamls.__exit__(self, exc_type, exc_val, exc_tb)

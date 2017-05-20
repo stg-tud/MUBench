@@ -149,9 +149,9 @@ class TestDetectorExecution:
 
 
 class TestDetectorExecutionLoadFindings:
-    @patch("data.detector_execution.read_yamls_if_exists")
+    @patch("data.detector_execution.open_yamls_if_exists")
     def test_adds_rank(self, read_yamls_mock):
-        read_yamls_mock.return_value = [{"name": "f1"}, {"name": "f2"}]
+        read_yamls_mock.return_value.__enter__.return_value = [{"name": "f1"}, {"name": "f2"}]
         execution = DetectorExecution(DetectorMode.mine_and_detect, None, None, "-findings-base-path-", FindingsFilter())
         execution._get_findings_path = lambda: ""
 
