@@ -8,12 +8,11 @@ from utils.io import safe_write
 
 
 class TestDetector:
-    def test_md5_no_whitespace(self):
+    def setup(self):
         temp_dir = mkdtemp(prefix="mubench-detector_")
-        md5_path = join(temp_dir, "test.md5")
-        safe_write("-test-md5-", md5_path, append=False)
+        self.detector = Detector(temp_dir, "-detector-", [])
+        self.md5_path = join(temp_dir, "-detector-", "-detector-.md5")
 
-        detector = Detector("-path-", "id", [])
-        detector.md5_path = md5_path
-
-        assert_equals("-test-md5-", detector.md5)
+    def test_md5_no_whitespace(self):
+        safe_write("-md5-", self.md5_path, append=False)
+        assert_equals("-md5-", self.detector.md5)
