@@ -29,7 +29,7 @@ class RunnerInterface:
         if matching_interfaces:
             return matching_interfaces[0](jar_path, java_options)
         else:
-            raise ValueError("No Java interface available for version " + cli_version)
+            raise ValueError("No Runner interface available for version " + cli_version)
 
     @staticmethod
     def version() -> str:
