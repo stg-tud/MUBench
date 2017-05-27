@@ -79,7 +79,7 @@ class Compile(ProjectVersionTask):
                 logger.info("Compiling project...")
                 logger.debug("Copying patterns to source directory...")
                 self.__copy(version.patterns, sources_path)
-                self._compile(version.compile_commands, build_path, project_compile.dependencies_path)
+                self._compile(version.compile_commands, build_path, project_compile.dependencies_path, self.checkouts_base_path)
                 logger.debug("Move pattern classes...")
                 self.__copy_pattern_classes(version.misuses, classes_path, project_compile)
                 self.__remove_patter_classes(version.misuses, classes_path)
@@ -128,19 +128,19 @@ class Compile(ProjectVersionTask):
             copy_tree(additional_sources, checkout_dir)
 
     @staticmethod
-    def _compile(commands: List[str], project_dir: str, dep_dir: str) -> None:
+    def _compile(commands: List[str], project_dir: str, dep_dir: str, checkout_base_path: str) -> None:
         logger = logging.getLogger("compile.tasks.exec")
         for command in commands:
             if command.startswith("mvn "):
                 command = "mvn dependency:build-classpath -DincludeScope=compile " + command[4:]
                 output = Shell.exec(command, cwd=project_dir, logger=logger)
                 dependencies = Compile.__parse_maven_classpath(output)
-                Compile._copy_classpath(dependencies, dep_dir)
+                Compile._copy_classpath(dependencies, dep_dir, checkout_base_path)
             elif command.startswith("ant"):
                 command += " -debug -verbose"
                 output = Shell.exec(command, cwd=project_dir, logger=logger)
                 dependencies = Compile.__parse_ant_classpath(output)
-                Compile._copy_classpath(dependencies, dep_dir)
+                Compile._copy_classpath(dependencies, dep_dir, checkout_base_path)
             elif command.startswith("gradle "):
                 Shell.exec(command, cwd=project_dir, logger=logger)
                 buildfile_dir = Compile.__parse_buildfile_dir(command)
@@ -148,7 +148,7 @@ class Compile(ProjectVersionTask):
                 command = "gradle :printClasspath -b '{}'".format(os.path.join(buildfile_dir, "classpath.gradle"))
                 output = Shell.exec(command, cwd=project_dir, logger=logger)
                 dependencies = Compile.__parse_gradle_classpath(output)
-                Compile._copy_classpath(dependencies, dep_dir)
+                Compile._copy_classpath(dependencies, dep_dir, checkout_base_path)
             else:
                 Shell.exec(command, cwd=project_dir, logger=logger)
 
@@ -206,17 +206,18 @@ class Compile(ProjectVersionTask):
         return lines[first_dependency_idx:first_empty_line_idx]
 
     @staticmethod
-    def _copy_classpath(dependencies: Set[str], dep_dir: str):
+    def _copy_classpath(dependencies: Set[str], dep_dir: str, checkout_base_path: str):
         remove_tree(dep_dir)
         makedirs(dep_dir, exist_ok=True)
         for dependency in dependencies:
-            if not os.path.isdir(dependency):
-                shutil.copy(dependency, dep_dir)
-            elif dependency.endswith("classes"):
+            if os.path.isdir(dependency):
                 # dependency is a classes directory
-                # cutoff /target/classes to name jar
-                dep_name = os.path.basename(os.path.dirname(os.path.dirname(dependency)))
+                dep_name = os.path.relpath(dependency, checkout_base_path)
+                dep_name = dep_name.replace('/', '-')
                 Compile.__create_jar(dependency, os.path.join(dep_dir, dep_name + ".jar"))
+            else:
+                shutil.copy(dependency, dep_dir)
+
 
 
 
