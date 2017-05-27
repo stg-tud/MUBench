@@ -54,7 +54,7 @@ class TestCompile:
         rmtree(self.temp_dir, ignore_errors=True)
 
     def mock_with_fake_compile(self):
-        def mock_compile(commands: List[str], cwd: str, dep_dir: str):
+        def mock_compile(commands: List[str], cwd: str, dep_dir: str, checkout_dir: str):
             source_path = join(cwd, self.source_dir)
             class_path = join(cwd, "classes")
             makedirs(class_path, exist_ok=True)
@@ -135,7 +135,7 @@ class TestCompile:
 
         self.uut.process_project_version(self.project, self.version)
 
-        self.uut._compile.assert_called_with(["a", "b"], self.build_path, self.dep_path)
+        self.uut._compile.assert_called_with(["a", "b"], self.build_path, self.dep_path, self.checkout_base_path)
 
     def test_copies_additional_sources(self):
         self.mock_with_fake_compile()
@@ -184,7 +184,7 @@ class TestCompile:
 
     def test_copies_misuse_inner_classes(self):
         self.mock_with_fake_compile()
-        def mock_compile(commands: List[str], cwd: str, dep_dir: str):
+        def mock_compile(commands: List[str], cwd: str, dep_dir: str, checkout_dir: str):
             class_path = join(cwd, "classes")
             makedirs(class_path, exist_ok=True)
             create_file(join(class_path, "mu.class"))
