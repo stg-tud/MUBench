@@ -1,8 +1,7 @@
 import logging
 from os.path import join
 from tempfile import mkdtemp
-from unittest import mock
-from unittest.mock import MagicMock, PropertyMock, patch, ANY
+from unittest.mock import MagicMock, patch, ANY
 
 from nose.tools import assert_equals
 
@@ -11,9 +10,9 @@ from data.finding import Finding
 from data.findings_filters import PotentialHits, AllFindings, FindingsFilter
 from data.project_compile import ProjectCompile
 from tests.data.stub_detector import StubDetector
-from utils.io import remove_tree, write_yaml
-from utils.shell import Shell, CommandFailedError
 from tests.test_utils.data_util import create_misuse, create_version, create_project
+from utils.io import remove_tree
+from utils.shell import CommandFailedError
 
 
 class DetectorExecutionTestImpl(DetectorExecution):
@@ -27,6 +26,7 @@ class DetectorExecutionTestImpl(DetectorExecution):
         return dict()
 
 
+@patch("data.detector_execution.read_yaml_if_exists")
 class TestExecutionState:
     # noinspection PyAttributeOutsideInit
     def setup(self):
@@ -43,46 +43,39 @@ class TestExecutionState:
     def teardown(self):
         remove_tree(self.temp_dir)
 
-    def test_run_outdated(self):
-        with mock.patch('tests.data.stub_detector.StubDetector.md5', new_callable=PropertyMock) as mock_md5:
-            mock_md5.return_value = "-md5-"
-            detector = StubDetector()
+    def test_run_outdated(self, read_run_info):
+        self.detector.md5 = "-md5-"
+        read_run_info.return_value = {"md5": "-old-md5-"}
 
-            uut = DetectorExecutionTestImpl(DetectorMode.detect_only, detector, self.version, self.findings_base_path,
-                                            AllFindings())
+        uut = DetectorExecutionTestImpl(DetectorMode.detect_only, self.detector, self.version, self.findings_base_path,
+                                        AllFindings())
 
-            assert uut.is_outdated()
+        assert uut.is_outdated()
 
-    def test_run_up_to_date(self):
-        self.uut._detector_md5 = self.detector.md5
+    def test_run_up_to_date(self, read_run_info):
+        self.detector.md5 = "-md5-"
+        read_run_info.return_value = {"md5": "-md5-"}
 
         assert not self.uut.is_outdated()
 
-    def test_error_is_failure(self):
-        self.uut.is_error = lambda: True
-        self.uut.is_timeout = lambda: False
+    def test_error_is_failure(self, read_run_info):
+        read_run_info.return_value = {"result": "error"}
 
         assert self.uut.is_failure()
 
-    def test_timeout_is_failure(self):
-        self.uut.is_timeout = lambda: True
-        self.uut.is_error = lambda: False
+    def test_timeout_is_failure(self, read_run_info):
+        read_run_info.return_value = {"result": "timeout"}
 
         assert self.uut.is_failure()
 
-    def test_load(self):
-        self.write_run_file({"result": "success", "runtime": "23.42", "message": "-arbitrary text-"})
+    def test_load(self, read_run_info):
+        read_run_info.return_value = {"result": "success", "runtime": "23.42", "message": "-arbitrary text-"}
 
         execution = MineAndDetectExecution(self.detector, self.version, self.findings_path, AllFindings())
 
         assert execution.is_success()
         assert_equals(execution.runtime, "23.42")
         assert_equals(execution.message, "-arbitrary text-")
-
-    def write_run_file(self, run_data):
-        write_yaml(run_data, join(self.findings_path,
-                                  DetectorMode.mine_and_detect.name, self.detector.id,
-                                  self.version.project_id, self.version.version_id, DetectorExecution.RUN_FILE))
 
 
 @patch("data.detector_execution.write_yaml")
@@ -137,7 +130,7 @@ class TestDetectorExecution:
         self.uut.execute("-compiles-", 42, self.logger)
 
         write_yaml_mock.assert_called_with(
-            {'result': 'success', 'message': '', 'md5': None, 'runtime': ANY},
+            {'result': 'success', 'message': '', 'md5': self.detector.md5, 'runtime': ANY},
             file='-findings-/run.yml'
         )
 
