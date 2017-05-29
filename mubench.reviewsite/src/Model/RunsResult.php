@@ -25,13 +25,17 @@ abstract class RunsResult
         $misuses = array();
         $synthetics = array();
         foreach ($runs as $run) {
+            if (strcmp($run["result"], "success") !== 0) {
+                continue;
+            }
             if (strcmp($run["project"], "synthetic") === 0) {
                 $synthetics[$run["version"]] = 1;
             } else {
                 $projects[$run["project"] . "." . $run["version"]] = 1;
             }
 
-            foreach ($run["misuses"] as $misuse) { /** @var $misuse Misuse */
+            foreach ($run["misuses"] as $misuse) {
+                /** @var $misuse Misuse */
                 $misuses[$run["project"] . "." . $misuse->id] = 1;
                 if ($misuse->hasPotentialHits()) {
                     $this->misuses_to_review++;
