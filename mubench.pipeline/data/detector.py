@@ -1,32 +1,38 @@
 from os.path import join, exists
-from typing import Optional, List
+from typing import Dict, Optional, List
 
 from data.finding import Finding, SpecializedFinding
 from data.runner_interface import RunnerInterface
+from utils.io import read_yaml
 
 class Detector:
     BASE_URL = "http://www.st.informatik.tu-darmstadt.de/artifacts/mubench/detectors"
+    RELEASES_FILE = "releases.yml"
 
-    def __init__(self, detectors_path: str, detector_id: str, java_options: List[str], cli_version: str = "v20170406"):
+    def __init__(self, detectors_path: str, detector_id: str, java_options: List[str]):
         self.id = detector_id
         self.base_name = detector_id.split("_", 1)[0]
-
         self.path = join(detectors_path, self.id)
+
+        releases_index_path = join(self.path, Detector.RELEASES_FILE)
+        release_info = self._get_release_info(releases_index_path)
+        self.release_tag = release_info.get("tag", "latest")
+        self.md5 = release_info.get("md5", None)
+        self.cli_version = release_info.get("cli_version", None)
+
         self.jar_path = join(self.path, self.base_name + ".jar")
-        self.jar_url = "{}/{}/{}.jar".format(Detector.BASE_URL, cli_version, self.base_name)
-        self.md5_path = join(self.path, self.base_name + ".md5")
-        self.runner_interface = RunnerInterface.get(cli_version, self.jar_path, java_options)
+        self.jar_url = "{}/{}/{}.jar".format(Detector.BASE_URL, self.cli_version, self.base_name)
+        if self.cli_version:
+            self.runner_interface = RunnerInterface.get(self.cli_version, self.jar_path, java_options)
+        else:
+            self.runner_interface = None
 
-    @property
-    def md5(self) -> Optional[str]:
-        md5_file = self.md5_path
-        md5 = None
-
-        if exists(md5_file):
-            with open(md5_file) as file:
-                md5 = file.read().strip()
-
-        return md5
+    def _get_release_info(self, releases_index_file_path: str) -> Dict[str, str]:
+        if exists(releases_index_file_path):
+            releases = read_yaml(releases_index_file_path)
+            if len(releases) > 0:
+                return releases[0]
+        return dict()
 
     def specialize_findings(self, findings_path: str, findings: List[Finding]) -> List[SpecializedFinding]:
         return [self._specialize_finding(findings_path, finding) for finding in findings]
