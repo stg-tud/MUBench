@@ -228,7 +228,7 @@ class DBConnection
         return $misuses;
     }
 
-    public function getTodo($reviewer){
+    public function getTodo($reviewer, $max_reviews){
         $experiment = ["ex1", "ex2", "ex3"];
         $misuses = [];
         foreach($experiment as $exp){
@@ -236,10 +236,18 @@ class DBConnection
             foreach($detectors as $detector){
                 $runs = $this->getRuns($detector, $exp);
                 foreach($runs as $run){
+                    $index = 0;
                     foreach($run['misuses'] as $misuse){
+                        if($index > $max_reviews){
+                            break;
+                        }
                         /** @var Misuse $misuse */
                         if(!$misuse->hasReviewed($reviewer) && !$misuse->hasSufficientReviews() && $misuse->hasPotentialHits()){
                             $misuses[$exp][$detector->name][] = $misuse;
+                        }
+                        if($misuse->isDistinctReviewState())
+                        {
+                            $index++;
                         }
                     }
                 }

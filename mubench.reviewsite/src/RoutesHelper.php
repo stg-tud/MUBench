@@ -19,14 +19,16 @@ class RoutesHelper
     private $logger;
     private $site_base_url;
     private $upload_path;
+    private $max_reviews;
 
-    public function __construct(DBConnection $db, PhpRenderer $renderer, Logger $logger, $upload_path, $site_base_url)
+    public function __construct(DBConnection $db, PhpRenderer $renderer, Logger $logger, $upload_path, $site_base_url, $max_reviews)
     {
         $this->db = $db;
         $this->renderer = $renderer;
         $this->logger = $logger;
         $this->site_base_url = $site_base_url;
         $this->upload_path = $upload_path;
+        $this->max_reviews = $max_reviews;
     }
 
     public function index(Request $request, Response $response, array $args) {
@@ -34,9 +36,25 @@ class RoutesHelper
     }
 
     public function detector(Request $request, Response $response, array $args) {
+        $max_reviews = $request->getQueryParam("max_reviews", $this->max_reviews);
         $detector = $this->db->getOrCreateDetector($args['detector']);
-        $runs = $this->db->getRuns($detector, $args['exp']);
-        return $this->render($this, $request, $response, $args, 'detector.phtml', ['runs' => $runs]);
+        $runs = [];
+        foreach($this->db->getRuns($detector, $args['exp']) as $run){
+            $index = 0;
+            $misuses = [];
+            foreach($run['misuses'] as $misuse){
+                if($index >= $max_reviews){
+                    break;
+                }
+                $misuses[] = $misuse;
+                if($misuse->isDistinctReviewState()){
+                    $index++;
+                }
+            }
+            $run['misuses'] = $misuses;
+            $runs[] = $run;
+        }
+        return $this->render($this, $request, $response, $args, 'detector.phtml', ['max_reviews' => $max_reviews, 'runs' => $runs]);
     }
 
     public function review(Request $request, Response $response, array $args)
@@ -52,7 +70,7 @@ class RoutesHelper
     }
 
     public function stats(Request $request, Response $response, array $args) {
-        $ex2_review_size = $request->getQueryParam("ex2_review_size", 20);
+        $ex2_review_size = $request->getQueryParam("ex2_review_size", $this->max_reviews);
         $results = array();
         foreach (array("ex1", "ex2", "ex3") as $experiment) {
             $detectors = $this->db->getDetectors($experiment);
@@ -88,12 +106,13 @@ class RoutesHelper
 
     public function overview(Request $request, Response $response, array $args) {
         $reviews = $this->db->getAllReviews($this->getUser($request));
-        return $this->render($this, $request, $response, $args, 'overview.phtml', ["misuses" => $reviews]);
+        return $this->render($this, $request, $response, $args, 'overview.phtml', ['misuses' => $reviews]);
     }
 
     public function todos(Request $request, Response $response, array $args) {
-        $todos = $this->db->getTodo($this->getUser($request));
-        return $this->render($this, $request, $response, $args, 'todo.phtml', ["misuses" => $todos]);
+        $max_reviews = $request->getQueryParam("max_reviews", $this->max_reviews);
+        $todos = $this->db->getTodo($this->getUser($request), $max_reviews);
+        return $this->render($this, $request, $response, $args, 'todo.phtml', ['max_reviews' => $max_reviews, 'misuses' => $todos]);
     }
 
     private function render($handler, Request $request, Response $response, array $args, $template, array $params)
