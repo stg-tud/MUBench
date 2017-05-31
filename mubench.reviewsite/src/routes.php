@@ -18,7 +18,7 @@ $logger = $app->getContainer()['logger'];
 $database = $app->getContainer()['database'];
 $renderer = $app->getContainer()['renderer'];
 // TODO rename RoutesHelper to ResultsViewController
-$routesHelper = new RoutesHelper($database, $renderer, $logger, $settings['upload'], $settings['site_base_url']);
+$routesHelper = new RoutesHelper($database, $renderer, $logger, $settings['upload'], $settings['site_base_url'], $settings['max_reviews']);
 
 $app->get('/', [$routesHelper, 'index']);
 $app->get('/{exp:ex[1-3]}/{detector}', [$routesHelper, 'detector']);
