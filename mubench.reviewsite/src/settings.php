@@ -32,5 +32,6 @@ return [
         "admin" => "pass",
         "admin2" => "pass"
     ],
-    'site_base_url' => '/'
+    'site_base_url' => '/',
+    'max_reviews' => '20'
 ];
