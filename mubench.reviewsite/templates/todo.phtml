@@ -29,6 +29,11 @@ use MuBench\ReviewSite\Model\ReviewState;
 
 <?php foreach($misuses as $experiment => $detectors) : ?>
     <h1>Experiment: <?= htmlspecialchars($experiment); ?></h1>
+    <form action="" method="get">
+        <label for="max_reviews">Max. Reviews per Project</label>:
+        <input type="text" id="max_reviews" name="max_reviews" value="<?= $max_reviews ?>" />
+        <input type="submit" value="update" />
+    </form>
     <table>
         <thead>
         <tr>
