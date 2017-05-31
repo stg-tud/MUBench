@@ -79,7 +79,7 @@ class Compile(ProjectVersionTask):
                 logger.info("Compiling project...")
                 logger.debug("Copying patterns to source directory...")
                 self.__copy(version.patterns, sources_path)
-                self._compile(version.compile_commands, build_path, project_compile.dependencies_path, self.checkouts_base_path)
+                self._compile(version.compile_commands, build_path, project_compile.dependencies_path, self.compiles_base_path)
                 logger.debug("Move pattern classes...")
                 self.__copy_pattern_classes(version.misuses, classes_path, project_compile)
                 self.__remove_patter_classes(version.misuses, classes_path)
@@ -213,7 +213,7 @@ class Compile(ProjectVersionTask):
             if os.path.isdir(dependency):
                 # dependency is a classes directory
                 dep_name = os.path.relpath(dependency, checkout_base_path)
-                dep_name = dep_name.replace('/', '-')
+                dep_name = dep_name.replace(os.sep, '-')
                 Compile.__create_jar(dependency, os.path.join(dep_dir, dep_name + ".jar"))
             else:
                 shutil.copy(dependency, dep_dir)
