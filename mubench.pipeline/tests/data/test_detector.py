@@ -45,6 +45,13 @@ class TestDetector:
         self.setup_releases([dict()])
         assert_equals(None, self.detector.cli_version)
 
+    def test_download_url(self):
+        test_version = RunnerInterfaceTestImpl.TEST_VERSION
+        self.setup_releases([{"tag": "-tag-", "cli_version": test_version}])
+
+        expected_url = "{}/-tag-/{}/{}.jar".format(Detector.BASE_URL, test_version, self.detector.id)
+        assert_equals(expected_url, self.detector.jar_url)
+
     def setup_releases(self, releases):
         detector_id = "-detector-"
         releases_index = join(self.temp_dir, detector_id, Detector.RELEASES_FILE)
