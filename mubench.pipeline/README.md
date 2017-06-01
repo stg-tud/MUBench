@@ -46,4 +46,4 @@ You may run individual benchmark steps or select subsets of the entire dataset. 
 
 ### Default Configuration
 
-You can specify a default run configuration as shown in the example [config file](../default.example.config). All command line arguments can be used by their fullname. If a configuration file is present, the values set in this file are used if they are not specified in the command line call.
+You can specify defaults for command-line arguments by creating a `./default.config`. The file follows [the YAML format](http://yaml.org/). Values for all command-line arguments that begin with `--` can be speficied by using their respective full name as a key. To set command-line flags by default, set their value to `True`. For an example configuration, see [the default.example.config](../default.example.config). Argument values specified on the command line always take precedence over respective default values.
