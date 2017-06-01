@@ -22,6 +22,7 @@ class TestCompile:
         self.project_path = join(self.temp_dir, "project")
         self.version_path = join(self.project_path, "versions", "v0")
         self.checkout_base_path = join(self.temp_dir, "checkouts")
+        self.compile_base_path = self.checkout_base_path
 
         self.source_dir = "src"
         self.project = create_project(self.project_path, meta={"repository": {"type": "git", "url": "-url-"}})
@@ -48,13 +49,13 @@ class TestCompile:
         self.pattern_classes_path = join(self.base_path, "patterns-classes")
         self.dep_path = join(self.base_path, "dependencies")
 
-        self.uut = Compile(self.checkout_base_path, self.checkout_base_path, False)
+        self.uut = Compile(self.checkout_base_path, self.compile_base_path, False)
 
     def teardown(self):
         rmtree(self.temp_dir, ignore_errors=True)
 
     def mock_with_fake_compile(self):
-        def mock_compile(commands: List[str], cwd: str, dep_dir: str, checkout_dir: str):
+        def mock_compile(commands: List[str], cwd: str, dep_dir: str, compile_base_path: str):
             source_path = join(cwd, self.source_dir)
             class_path = join(cwd, "classes")
             makedirs(class_path, exist_ok=True)
@@ -135,7 +136,7 @@ class TestCompile:
 
         self.uut.process_project_version(self.project, self.version)
 
-        self.uut._compile.assert_called_with(["a", "b"], self.build_path, self.dep_path, self.checkout_base_path)
+        self.uut._compile.assert_called_with(["a", "b"], self.build_path, self.dep_path, self.compile_base_path)
 
     def test_copies_additional_sources(self):
         self.mock_with_fake_compile()
@@ -184,7 +185,7 @@ class TestCompile:
 
     def test_copies_misuse_inner_classes(self):
         self.mock_with_fake_compile()
-        def mock_compile(commands: List[str], cwd: str, dep_dir: str, checkout_dir: str):
+        def mock_compile(commands: List[str], cwd: str, dep_dir: str, compile_base_path: str):
             class_path = join(cwd, "classes")
             makedirs(class_path, exist_ok=True)
             create_file(join(class_path, "mu.class"))
