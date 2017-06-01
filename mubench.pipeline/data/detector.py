@@ -21,7 +21,7 @@ class Detector:
         self.cli_version = release_info.get("cli_version", None)
 
         self.jar_path = join(self.path, self.base_name + ".jar")
-        self.jar_url = "{}/{}/{}.jar".format(Detector.BASE_URL, self.cli_version, self.base_name)
+        self.jar_url = "{}/{}/{}/{}.jar".format(Detector.BASE_URL, self.release_tag, self.cli_version, self.base_name)
         if self.cli_version:
             self.runner_interface = RunnerInterface.get(self.cli_version, self.jar_path, java_options)
         else:
