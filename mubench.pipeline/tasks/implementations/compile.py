@@ -170,13 +170,13 @@ class Compile(ProjectVersionTask):
         # [INFO] Dependencies classpath:
         # /path/dep1.jar:/path/dep2.jar
 
-        classpath = []
+        classpath = set()
         lines = shell_output.splitlines()
         for line in [lines[i + 1].strip() for i, line in enumerate(lines) if "Dependencies classpath:" in line]:
             if line:
-                classpath.extend(line.split(":"))
+                classpath.update(line.split(":"))
 
-        return set(classpath)
+        return classpath
 
     @staticmethod
     def __parse_ant_classpath(shell_output: str) -> Set[str]:
