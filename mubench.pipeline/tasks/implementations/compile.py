@@ -184,12 +184,15 @@ class Compile(ProjectVersionTask):
         #   [javac] '-classpath'
         #   [javac] '/project/build:/path/dep1.jar:/path/dep2.jar'
 
-        classpath_preamble = "[javac] '-classpath'"
-        classpath_preamble_end_idx = shell_output.find(classpath_preamble) + len(classpath_preamble)
-        classpath_start_idx = shell_output.find("'", classpath_preamble_end_idx) + 1
-        classpath_end_idx = shell_output.find("'", classpath_start_idx)
-        classpath = shell_output[classpath_start_idx:classpath_end_idx]
-        return set(classpath.split(":"))
+        classpath = set()
+        lines = shell_output.splitlines()
+        for line in [lines[i + 1] for i, line in enumerate(lines) if "[javac] '-classpath'" in line]:
+            if line:
+                classpath_start_idx = line.find("'") + 1
+                classpath_end_idx = line.find("'", classpath_start_idx)
+                classpath.update(line[classpath_start_idx:classpath_end_idx].split(":"))
+
+        return classpath
 
     @staticmethod
     def __parse_gradle_classpath(shell_output: str) -> Set[str]:

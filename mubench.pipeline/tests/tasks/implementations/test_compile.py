@@ -273,7 +273,23 @@ class TestCompile:
 [javac] '-d'
 [javac] '/project/build'
 [javac] '-classpath'
-[javac] '/project/build:/path/dependency1.jar:/path/dependency2.jar'"""
+[javac] '/project/build/classes:/path/dependency1.jar:/path/dependency2.jar'"""
+
+        self.uut.process_project_version(self.project, self.version)
+        assert_equals(shell_mock.mock_calls[0][1], ("ant -debug -verbose",))
+        assert_in(call("/path/dependency2.jar", self.dep_path), copy_mock.mock_calls)
+        assert_in(call("/path/dependency1.jar", self.dep_path), copy_mock.mock_calls)
+
+    @patch("tasks.implementations.compile.shutil.copy")
+    @patch("tasks.implementations.compile.Shell.exec")
+    def test_compile_with_ant_multi_build(self, shell_mock, copy_mock):
+        self.version._YAML["build"]["commands"] = ["ant"]
+        shell_mock.return_value = """[javac] Compilation arguments:
+    [javac] '-classpath'
+    [javac] '/project/build:/path/dependency1.jar'
+     --- some intermediate output ---
+    [javac] '-classpath'
+    [javac] '/path/dependency2.jar'"""
 
         self.uut.process_project_version(self.project, self.version)
         assert_equals(shell_mock.mock_calls[0][1], ("ant -debug -verbose",))
