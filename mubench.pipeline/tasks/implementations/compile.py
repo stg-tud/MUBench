@@ -218,9 +218,6 @@ class Compile(ProjectVersionTask):
             else:
                 shutil.copy(dependency, dep_dir)
 
-
-
-
     @staticmethod
     def __copy_misuse_classes(classes_path, misuses, destination):
         remove_tree(destination)
