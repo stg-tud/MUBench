@@ -1,2 +1,5 @@
-- cli_version: v20170406 
+- cli_version: 0.0.8
+  md5: f043d6216c693cbed49619bc4392b808
+- tag: FSE17
+  cli_version: 0.0.8 
   md5: f043d6216c693cbed49619bc4392b808
