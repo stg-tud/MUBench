@@ -82,7 +82,7 @@ class DetectorExecution:
         start = time.time()
         message = ""
         try:
-            self.detector.runner_interface.execute(self.version, detector_args, timeout, logger)
+            self.detector.execute(self.version, detector_args, timeout, logger)
             result = Result.success
         except CommandFailedError as e:
             logger.error("Detector failed: %s", e)

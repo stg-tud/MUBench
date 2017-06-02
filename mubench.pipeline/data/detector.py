@@ -1,7 +1,9 @@
+from logging import Logger
 from os.path import join, exists
 from typing import Dict, Optional, List
 
 from data.finding import Finding, SpecializedFinding
+from data.project_version import ProjectVersion
 from data.runner_interface import RunnerInterface
 from utils.io import read_yaml
 
@@ -22,10 +24,7 @@ class Detector:
 
         self.jar_path = join(self.path, self.base_name + ".jar")
         self.jar_url = "{}/{}/{}/{}.jar".format(Detector.BASE_URL, self.release_tag, self.cli_version, self.base_name)
-        if self.cli_version:
-            self.runner_interface = RunnerInterface.get(self.cli_version, self.jar_path, java_options)
-        else:
-            self.runner_interface = None
+        self.runner_interface = RunnerInterface.get(self.cli_version, self.jar_path, java_options)
 
     def _get_release_info(self, releases_index_file_path: str) -> Dict[str, str]:
         if exists(releases_index_file_path):
@@ -33,6 +32,10 @@ class Detector:
             if len(releases) > 0:
                 return releases[0]
         return dict()
+
+    def execute(self, version: ProjectVersion, arguments: Dict[str, str],
+                timeout: Optional[int], logger: Logger):
+        return self.runner_interface.execute(version, arguments, timeout, logger)
 
     def specialize_findings(self, findings_path: str, findings: List[Finding]) -> List[SpecializedFinding]:
         return [self._specialize_finding(findings_path, finding) for finding in findings]
