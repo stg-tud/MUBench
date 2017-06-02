@@ -99,7 +99,7 @@ class Benchmark:
     def __get_detector(self):
         try:
             java_options = ['-' + option for option in self.config.java_options]
-            return find_detector(self.DETECTORS_PATH, self.config.detector, java_options)
+            return find_detector(self.DETECTORS_PATH, self.config.detector, java_options, self.config.release_tag)
         except ValueError as e:
             logger.critical(e)
             exit()
