@@ -6,6 +6,7 @@ from unittest.mock import MagicMock, patch, ANY
 from nose.tools import assert_equals
 
 from data.detector_execution import DetectOnlyExecution, MineAndDetectExecution, Result, DetectorExecution, DetectorMode
+from data.runner_interface import NoInterface
 from data.finding import Finding
 from data.findings_filters import PotentialHits, AllFindings, FindingsFilter
 from data.project_compile import ProjectCompile
@@ -133,6 +134,13 @@ class TestDetectorExecution:
             {'result': 'success', 'message': '', 'md5': self.detector.md5, 'runtime': ANY},
             file='-findings-/run.yml'
         )
+
+    def test_does_not_save_when_missing_runner_interface(self, write_yaml_mock):
+        self.detector.runner_interface = NoInterface("-cli_version-")
+
+        self.uut.execute("-compiles", 42, self.logger)
+
+        write_yaml_mock.assert_not_called()
 
 
 class TestDetectorExecutionLoadFindings:

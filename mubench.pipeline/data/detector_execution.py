@@ -12,6 +12,7 @@ from data.findings_filters import FindingsFilter
 from data.misuse import Misuse
 from data.project_compile import ProjectCompile
 from data.project_version import ProjectVersion
+from data.runner_interface import NoCompatibleRunnerInterface
 from utils.io import write_yaml, remove_tree, read_yaml_if_exists, open_yamls_if_exists
 from utils.shell import Shell, CommandFailedError
 
@@ -84,6 +85,9 @@ class DetectorExecution:
         try:
             self.detector.execute(self.version, detector_args, timeout, logger)
             result = Result.success
+        except NoCompatibleRunnerInterface as e:
+            logger.error("Cannot run detector, because it has no compatible runner interface: %s", e)
+            return
         except CommandFailedError as e:
             logger.error("Detector failed: %s", e)
             result = Result.error
