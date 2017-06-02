@@ -5,6 +5,7 @@ from nose.tools import assert_equals, assert_is_instance
 from tests.test_utils.runner_interface_test_impl import RunnerInterfaceTestImpl
 
 from data.detector import Detector
+from data.runner_interface import NoInterface
 from utils.io import remove_tree, write_yaml
 
 
@@ -17,39 +18,30 @@ class TestDetector:
 
     def test_defaults_on_no_release(self):
         self.setup_releases([])
-        assert_equals("latest", self.detector.release_tag)
+
         assert_equals(None, self.detector.md5)
-        assert_equals(None, self.detector.cli_version)
+        assert_is_instance(self.detector.runner_interface, NoInterface)
 
-    def test_tag(self):
-        self.setup_releases([{"tag": "-tag-"}])
-        assert_equals("-tag-", self.detector.release_tag)
-
-    def test_tag_defaults_to_latest(self):
+    def test_defaults(self):
         self.setup_releases([dict()])
-        assert_equals("latest", self.detector.release_tag)
+
+        assert_equals(None, self.detector.md5)
+        assert_is_instance(self.detector.runner_interface, NoInterface)
 
     def test_md5(self):
         self.setup_releases([{"md5": "-md5-"}])
+
         assert_equals("-md5-", self.detector.md5)
 
-    def test_md5_defaults_to_none(self):
-        self.setup_releases([dict()])
-        assert_equals(None, self.detector.md5)
-
-    def test_cli_version(self):
+    def test_interface(self):
         self.setup_releases([{"cli_version": RunnerInterfaceTestImpl.TEST_VERSION}])
+
         assert_is_instance(self.detector.runner_interface, RunnerInterfaceTestImpl)
 
-    def test_cli_version_defaults_to_none(self):
-        self.setup_releases([dict()])
-        assert_equals(None, self.detector.cli_version)
-
     def test_download_url(self):
-        test_version = RunnerInterfaceTestImpl.TEST_VERSION
-        self.setup_releases([{"tag": "-tag-", "cli_version": test_version}])
+        self.setup_releases([{"cli_version": "-version-", "tag": "-tag-"}])
 
-        expected_url = "{}/-tag-/{}/{}.jar".format(Detector.BASE_URL, test_version, self.detector.id)
+        expected_url = "{}/-tag-/-version-/{}.jar".format(Detector.BASE_URL, self.detector.id)
         assert_equals(expected_url, self.detector.jar_url)
 
     def setup_releases(self, releases):
