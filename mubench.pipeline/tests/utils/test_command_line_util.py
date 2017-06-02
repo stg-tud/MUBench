@@ -138,3 +138,8 @@ def test_release():
     parser = get_command_line_parser(['valid-detector'], [], [])
     result = parser.parse_args(['detect', 'valid-detector', '1', '--tag', 'FSE17'])
     assert_equals('FSE17', result.requested_release)
+
+def test_release_default():
+    parser = get_command_line_parser(['valid-detector'], [], [])
+    result = parser.parse_args(['detect', 'valid-detector', '1'])
+    assert_equals(None, result.requested_release)
