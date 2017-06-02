@@ -133,3 +133,8 @@ def test_dataset():
 def test_fails_for_invalid_dataset():
     parser = get_command_line_parser(['valid-detector'], [], ['valid-dataset'])
     assert_raises(SystemExit, parser.parse_args, ['detect', 'valid-detector', '1', '--dataset', 'invalid-dataset'])
+
+def test_release():
+    parser = get_command_line_parser(['valid-detector'], [], [])
+    result = parser.parse_args(['detect', 'valid-detector', '1', '--tag', 'FSE17'])
+    assert_equals('FSE17', result.requested_release)

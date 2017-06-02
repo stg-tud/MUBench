@@ -203,6 +203,8 @@ def __setup_detector_arguments(parser: ArgumentParser, available_detectors: List
                         default=get_default('java-options', []),
                         help="pass options to the java subprocess running the detector "
                              "(example: `--java-options Xmx4G` runs `java -Xmx4G`)")
+    parser.add_argument('--tag', dest='requested_release', default=get_default('requested_release', None),
+                        metavar='rel', help="use a specific detector release by tag")
 
 
 def __setup_publish_arguments(parser: ArgumentParser) -> None:
