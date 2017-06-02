@@ -5,9 +5,9 @@ from tempfile import mkdtemp
 from unittest import mock
 from unittest.mock import MagicMock, PropertyMock, patch
 
-from nose.tools import assert_equals, assert_true
+from nose.tools import assert_equals, assert_true, assert_raises
 
-from data.runner_interface import RunnerInterface, RunnerInterfaceV20170406
+from data.runner_interface import NoInterface, RunnerInterface, RunnerInterfaceV20170406, NoCompatibleRunnerInterface
 from tests.data.stub_detector import StubDetector
 from utils.io import remove_tree, write_yaml
 from utils.shell import Shell, CommandFailedError
@@ -18,6 +18,26 @@ class TestRunnerInterface:
     def test_get_interface_version(self):
         actual = RunnerInterface.get(RunnerInterfaceTestImpl.TEST_VERSION, "", dict())
         assert_true(isinstance(actual, RunnerInterfaceTestImpl))
+
+    def test_get_interface_version_default_for_none(self):
+        actual = RunnerInterface.get(None, "", dict())
+        assert_true(isinstance(actual, NoInterface))
+
+    def test_get_interface_version_default_for_unavailable_version(self):
+        actual = RunnerInterface.get("-unavailable_version-", "", dict())
+        assert_true(isinstance(actual, NoInterface))
+
+class TestNoInterface:
+    def test_execute_raises_exception(self):
+        uut = NoInterface("-version-")
+        assert_raises(NoCompatibleRunnerInterface, uut.execute, [])
+
+    def test_exception_contains_version(self):
+        uut = NoInterface("-version-")
+        try:
+            uut.execute()
+        except NoCompatibleRunnerInterface as e:
+            assert_equals(e.version, "-version-")
 
 @patch("data.runner_interface.Shell")
 class TestRunnerInterfaceV20170406:

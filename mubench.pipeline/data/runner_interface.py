@@ -29,7 +29,7 @@ class RunnerInterface:
         if matching_interfaces:
             return matching_interfaces[0](jar_path, java_options)
         else:
-            raise ValueError("No Runner interface available for version " + cli_version)
+            return NoInterface(cli_version)
 
     @staticmethod
     def version() -> str:
@@ -38,6 +38,15 @@ class RunnerInterface:
     def execute(self, version: ProjectVersion, detector_arguments: Dict[str, str],
                 timeout: Optional[int], logger: Logger):
         raise NotImplementedError
+
+
+class NoInterface():
+    def __init__(self, requested_cli_version: str):
+        self._requested_cli_version = requested_cli_version
+
+    def execute(self, *_):
+        raise NoCompatibleRunnerInterface(self._requested_cli_version)
+
 
 class RunnerInterfaceV20170406(RunnerInterface):
     _VALID_KEYS = [
@@ -84,3 +93,8 @@ class RunnerInterfaceV20170406(RunnerInterface):
         for key, value in detector_arguments.items():
             args[key] = _quote(value)
         return args
+
+class NoCompatibleRunnerInterface(Exception):
+    def __init__(self, version):
+        super().__init__("")
+        self.version = version
