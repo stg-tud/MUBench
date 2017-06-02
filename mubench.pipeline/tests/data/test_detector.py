@@ -25,7 +25,7 @@ class TestDetector:
         self.setup_releases([{"tag": "-tag-"}])
         assert_equals("-tag-", self.detector.release_tag)
 
-    def test_tag_defauls_to_latest(self):
+    def test_tag_defaults_to_latest(self):
         self.setup_releases([dict()])
         assert_equals("latest", self.detector.release_tag)
 
