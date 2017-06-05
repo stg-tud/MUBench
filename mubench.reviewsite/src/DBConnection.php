@@ -80,7 +80,7 @@ class DBConnection
     public function getRuns(Detector $detector, $exp)
     {
         /** @var array $runs */
-        $runs = $this->table('stats')->where('exp', $exp)->where('detector', $detector->id)->orderBy(['project', 'version'])->get();
+        $runs = $this->table($detector->getStatsTableName())->where('exp', $exp)->orderBy(['project', 'version'])->get();
 
         foreach ($runs as &$run) {
             $project_id = $run["project"];

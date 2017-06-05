@@ -19,6 +19,11 @@ class Detector
         return "detector_" . $this->id;
     }
 
+    public function getStatsTableName()
+    {
+        return "stats_" . $this->id;
+    }
+
     function __toString()
     {
         return $this->name;
