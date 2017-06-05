@@ -29,7 +29,6 @@ class StoreMetadataTest extends DatabaseTestCase
             "result" => "success",
             "runtime" => "42.1",
             "number_of_findings" => "23",
-            "detector" => $detector->id,
             "misuses" => [
                 new Misuse(
                     [

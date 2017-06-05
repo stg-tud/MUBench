@@ -51,7 +51,6 @@ class StoreFindingsTest extends DatabaseTestCase
             "result" => "success",
             "runtime" => "42.1",
             "number_of_findings" => "23",
-            "detector" => $detector->id,
             "misuses" => []
         ];
 
@@ -74,7 +73,6 @@ class StoreFindingsTest extends DatabaseTestCase
             "result" => "success",
             "runtime" => "42.1",
             "number_of_findings" => "23",
-            "detector" => $detector->id,
             "misuses" => [
                 new Misuse(
                     ["misuse" => "0", "snippets" => [0 => ["line" => "5", "snippet" => "-code-", "id" => "1"]]],
@@ -127,7 +125,6 @@ class StoreFindingsTest extends DatabaseTestCase
             "result" => "success",
             "runtime" => "42.1",
             "number_of_findings" => "23",
-            "detector" => $detector->id,
             "misuses" => []
         ];
 
