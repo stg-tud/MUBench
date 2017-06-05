@@ -136,10 +136,10 @@ class Misuse
         return $this->getReviewState() > ReviewState::NEEDS_REVIEW;
     }
 
-    public function isDistinctReviewState()
+    public function hasConclusiveReviewState()
     {
         $review_state = $this->getReviewState();
-        return  $review_state != ReviewState::DISAGREEMENT && $review_state != ReviewState::NEEDS_CLARIFICATION && $review_state != ReviewState::UNRESOLVED;
+        return  $review_state != ReviewState::NEEDS_REVIEW && $review_state != ReviewState::DISAGREEMENT && $review_state != ReviewState::NEEDS_CLARIFICATION && $review_state != ReviewState::UNRESOLVED;
     }
 
     public function getReviewState()

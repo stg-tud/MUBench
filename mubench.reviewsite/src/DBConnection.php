@@ -77,7 +77,7 @@ class DBConnection
         return $this->table('types')->where('name', $name)->first()['id'];
     }
 
-    public function getRuns(Detector $detector, $exp)
+    public function getRuns(Detector $detector, $exp, $max_reviews = -1)
     {
         /** @var array $runs */
         $runs = $this->table('stats')->where('exp', $exp)->where('detector', $detector->id)->orderBy(['project', 'version'])->get();
@@ -113,9 +113,11 @@ class DBConnection
                 }
                 $misuses[$key] = new Misuse($misuse, $potential_hits, $reviews);
             }
+            if($max_reviews > -1 && strcmp($exp, "ex2") == 0){
+                $misuses = $this->filterMisusesForMaxReviews($misuses, $max_reviews);
+            }
             $run["misuses"] = $misuses;
         }
-
         return $runs;
     }
 
@@ -234,20 +236,12 @@ class DBConnection
         foreach($experiment as $exp){
             $detectors = $this->getDetectors($exp);
             foreach($detectors as $detector){
-                $runs = $this->getRuns($detector, $exp);
+                $runs = $this->getRuns($detector, $exp, $max_reviews);
                 foreach($runs as $run){
-                    $index = 0;
                     foreach($run['misuses'] as $misuse){
-                        if($index > $max_reviews){
-                            break;
-                        }
                         /** @var Misuse $misuse */
                         if(!$misuse->hasReviewed($reviewer) && !$misuse->hasSufficientReviews() && $misuse->hasPotentialHits()){
                             $misuses[$exp][$detector->name][] = $misuse;
-                        }
-                        if($misuse->isDistinctReviewState())
-                        {
-                            $index++;
                         }
                     }
                 }
@@ -260,6 +254,23 @@ class DBConnection
     private function getQualifiedName($table_name)
     {
         return $this->query_builder->addTablePrefix($table_name, false);
+    }
+
+
+    private function filterMisusesForMaxReviews($misuses, $max_reviews)
+    {
+            $conclusive_reviews = 0;
+            $filtered_misuses = [];
+            foreach ($misuses as $misuse) {
+                if ($conclusive_reviews >= $max_reviews) {
+                    break;
+                }
+                $filtered_misuses[] = $misuse;
+                if ($misuse->hasConclusiveReviewState() || !$misuse->hasSufficientReviews()) {
+                    $conclusive_reviews++;
+                }
+            }
+            return $filtered_misuses;
     }
 
 }
