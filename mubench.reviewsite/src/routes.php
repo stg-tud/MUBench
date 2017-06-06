@@ -18,7 +18,7 @@ $logger = $app->getContainer()['logger'];
 $database = $app->getContainer()['database'];
 $renderer = $app->getContainer()['renderer'];
 // TODO rename RoutesHelper to ResultsViewController
-$routesHelper = new RoutesHelper($database, $renderer, $logger, $settings['upload'], $settings['site_base_url'], $settings['default_ex2_reviews_size']);
+$routesHelper = new RoutesHelper($database, $renderer, $logger, $settings['upload'], $settings['site_base_url'], $settings['default_ex2_review_size']);
 
 $app->get('/', [$routesHelper, 'index']);
 $app->get('/{exp:ex[1-3]}/{detector}', [$routesHelper, 'detector']);
