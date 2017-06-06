@@ -35,7 +35,7 @@ use MuBench\ReviewSite\Model\ReviewState;
 
     <h1>Experiment <?= $experiment->getNumber() ?>: <?= htmlspecialchars($experiment->getTitle()) ?></h1>
     <h2>Detector: <?= htmlspecialchars($detector->name); ?></h2>
-    <?php if(strcmp($exp, "ex2") == 0) : ?>
+    <?php if(strcmp($experiment, "ex2") == 0) : ?>
         <form action="" method="get">
             <label for="ex2_review_size">Max. Reviews per Project</label>:
             <input type="text" id="ex2_review_size" name="ex2_review_size" value="<?= $ex2_review_size ?>" />
