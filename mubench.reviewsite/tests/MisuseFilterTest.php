@@ -141,7 +141,7 @@ class MisuseFilterTest extends DatabaseTestCase
         self::assertEquals([$expected_run], $runs);
     }
 
-    function test_one_unconclusive_reviews()
+    function test_inconclusive_reviews()
     {
         $uploader = new FindingsUploader($this->db, $this->logger);
         $review_uploader = new ReviewUploader($this->db, $this->logger);
@@ -175,6 +175,21 @@ class MisuseFilterTest extends DatabaseTestCase
 
 
         self::assertEquals(2, sizeof($runs[0]['misuses']));
+    }
+
+    function test_one_inconclusive_review()
+    {
+        $uploader = new FindingsUploader($this->db, $this->logger);
+        $review_uploader = new ReviewUploader($this->db, $this->logger);
+        $data = json_decode(json_encode($this->request_body));
+
+        $uploader->processData("ex2", $data);
+        $review_uploader->processReview($this->undecided_review);
+
+        $detector = $this->db->getOrCreateDetector("-d-");
+        $runs = $this->db->getRuns($detector, "ex2", 3);
+
+        self::assertEquals(3, sizeof($runs[0]['misuses']));
     }
 
 }

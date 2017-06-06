@@ -138,6 +138,10 @@ class Misuse
 
     public function hasConclusiveReviewState()
     {
+        if(count($this->getReviews()) == 1){
+            $review = $this->getReviews()[0];
+            return $review->getDecision() != Decision::MAYBE;
+        }
         $review_state = $this->getReviewState();
         return  $review_state != ReviewState::NEEDS_REVIEW && $review_state != ReviewState::DISAGREEMENT && $review_state != ReviewState::NEEDS_CLARIFICATION && $review_state != ReviewState::UNRESOLVED;
     }
