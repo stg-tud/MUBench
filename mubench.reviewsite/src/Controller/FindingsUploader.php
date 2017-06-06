@@ -30,7 +30,7 @@ class FindingsUploader
         $potential_hits = $run->{'potential_hits'};
 
         $this->createOrUpdateDetectorStatsTable($detector, $run);
-        $this->storeStats($detector, $exp, $project, $version, $run);
+        $this->deleteAndStoreStats($detector, $exp, $project, $version, $run);
         if ($potential_hits) {
             $this->createOrUpdateFindingsTable($detector, $potential_hits);
             $this->storeFindings($exp, $detector, $project, $version, $potential_hits);
@@ -145,8 +145,9 @@ class FindingsUploader
         $this->db->table($detector->getTableName())->insert($values);
     }
 
-    private function storeStats($detector, $exp, $project, $version, $run)
+    private function deleteAndStoreStats($detector, $exp, $project, $version, $run)
     {
+        $this->db->table($detector->getStatsTableName())->where("exp", $exp)->where("project", $project)->where("version", $version)->delete();
         $values = array("exp" => $exp, "project" => $project, "version" => $version);
         foreach ($this->getPropertyToColumnNameMapping([$run]) as $property => $column) {
             $value = $run->{$property};
