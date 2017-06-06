@@ -21,7 +21,6 @@ class StoreDetectorTest extends DatabaseTestCase
         "result": "failure",
         "runtime": 30.1,
         "number_of_findings": 0,
-        "-custom-stat-": "-stat-val-",
         "potential_hits": []
     }
 EOD
