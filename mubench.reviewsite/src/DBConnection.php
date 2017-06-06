@@ -133,9 +133,10 @@ class DBConnection
     public function getDetectors($exp)
     {
         $detectors = [];
-        foreach ($this->table('detectors')->orderBy('name')->get() as $detector) {
-            if ($this->table('stats')->where('detector', $detector['id'])->where('exp', $exp)->first()) {
-                $detectors[] = new Detector($detector['name'], $detector['id']);
+        foreach ($this->table('detectors')->orderBy('name')->get() as $dt) {
+            $detector = new Detector($dt['name'], $dt['id']);
+            if ($this->table($detector->getStatsTableName())->where('exp', $exp)->first()) {
+                $detectors[] = $detector;
             }
         }
         return $detectors;
