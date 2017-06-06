@@ -28,7 +28,6 @@ class DatabaseTestCase extends TestCase
         "result": "success",
         "runtime": 42.1,
         "number_of_findings": 23,
-        "-custom-stat-": "-stat-val-",
         "potential_hits": [
             {
                 "misuse": "-m-",
