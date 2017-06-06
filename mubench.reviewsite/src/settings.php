@@ -18,13 +18,13 @@ return [
     ],
     'db' => [
         'driver'    => 'mysql',
-        'host'      => 'localhost:8889',
-        'database'  => 'mubench4',
-        'username'  => 'root',
-        'password'  => 'root',
+        'host'      => 'localhost',
+        'database'  => 'database',
+        'username'  => 'username',
+        'password'  => 'password',
         'charset'   => 'utf8',
         'collation' => 'utf8_unicode_ci',
-        'prefix'    => 'mubench_fse17_',
+        'prefix'    => 'mubench_',
         'options'   => []
     ],
     'upload' => "./upload",
@@ -33,5 +33,5 @@ return [
         "admin2" => "pass"
     ],
     'site_base_url' => '/',
-    'default_ex2_reviews_size' => '20'
+    'default_ex2_review_size' => '20'
 ];
