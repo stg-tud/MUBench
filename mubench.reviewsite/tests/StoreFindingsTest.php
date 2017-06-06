@@ -22,6 +22,7 @@ class StoreFindingsTest extends DatabaseTestCase
             "result" => "success",
             "runtime" => 42.1,
             "number_of_findings" => 23,
+            "-custom-stats-" => "-stat-val-",
             "potential_hits" => [
                 [
                     "misuse" => "-m-",
@@ -51,6 +52,7 @@ class StoreFindingsTest extends DatabaseTestCase
             "result" => "success",
             "runtime" => "42.1",
             "number_of_findings" => "23",
+            "-custom-stats-" => "-stat-val-",
             "misuses" => []
         ];
 
@@ -73,6 +75,7 @@ class StoreFindingsTest extends DatabaseTestCase
             "result" => "success",
             "runtime" => "42.1",
             "number_of_findings" => "23",
+            "-custom-stats-" => "-stat-val-",
             "misuses" => [
                 new Misuse(
                     ["misuse" => "0", "snippets" => [0 => ["line" => "5", "snippet" => "-code-", "id" => "1"]]],
@@ -125,6 +128,7 @@ class StoreFindingsTest extends DatabaseTestCase
             "result" => "success",
             "runtime" => "42.1",
             "number_of_findings" => "23",
+            "-custom-stats-" => "-stat-val-",
             "misuses" => []
         ];
 
