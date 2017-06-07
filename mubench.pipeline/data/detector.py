@@ -17,17 +17,17 @@ class Detector:
         self.path = join(detectors_path, self.id)
 
         releases_index_path = join(self.path, Detector.RELEASES_FILE)
-        release_info = self._get_release_info(releases_index_path, requested_release)
-        release_tag = release_info.get("tag", "latest")
-        cli_version = release_info.get("cli_version", None)
-        self.md5 = release_info.get("md5", None)
+        release = self._get_release(releases_index_path, requested_release)
+        release_tag = release.get("tag", "latest")
+        cli_version = release.get("cli_version", None)
+        self.md5 = release.get("md5", None)
 
         self.jar_path = join(self.path, self.base_name + ".jar")
         self.jar_url = "{}/{}/{}/{}.jar".format(Detector.BASE_URL, release_tag, cli_version, self.base_name)
 
         self.runner_interface = RunnerInterface.get(cli_version, self.jar_path, java_options)
 
-    def _get_release_info(self, releases_index_file_path: str, requested_release: Optional[str]) -> Dict[str, str]:
+    def _get_release(self, releases_index_file_path: str, requested_release: Optional[str]) -> Dict[str, str]:
         if exists(releases_index_file_path):
             releases = read_yaml(releases_index_file_path)
             if requested_release:
