@@ -11,7 +11,6 @@ from data.misuse import Pattern, Misuse
 from data.project import Project
 from data.project_compile import ProjectCompile
 from data.project_version import ProjectVersion
-from requirements import JavaRequirement, MavenRequirement, GradleRequirement
 from tasks.project_version_task import ProjectVersionTask
 from utils.io import remove_tree, copy_tree
 from utils.shell import Shell, CommandFailedError
@@ -25,9 +24,6 @@ class Compile(ProjectVersionTask):
         self.checkouts_base_path = checkouts_base_path
         self.compiles_base_path = compiles_base_path
         self.force_compile = force_compile
-
-    def get_requirements(self):
-        return [JavaRequirement(), MavenRequirement(), GradleRequirement()]
 
     def process_project_version(self, project: Project, version: ProjectVersion):
         logger = logging.getLogger("compile")

@@ -9,7 +9,6 @@ from data.experiments import Experiment
 from data.finding import SpecializedFinding
 from data.project import Project
 from data.project_version import ProjectVersion
-from requirements import RequestsRequirement
 from tasks.project_version_task import ProjectVersionTask
 from utils.web_util import post
 
@@ -30,9 +29,6 @@ class PublishFindingsTask(ProjectVersionTask):
         self.review_site_password = review_site_password
 
         self.logger = logging.getLogger("review_findings")
-
-    def get_requirements(self):
-        return [RequestsRequirement()]
 
     def start(self):
         if self.review_site_user and not self.review_site_password:

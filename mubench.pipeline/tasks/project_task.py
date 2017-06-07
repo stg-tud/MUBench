@@ -37,9 +37,6 @@ class ProjectTask:
     def skip(entity):
         return [entity.id]
 
-    def get_requirements(self) -> Set[Requirement]:
-        return []
-
     def start(self) -> None:
         pass
 
