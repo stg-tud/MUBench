@@ -11,21 +11,21 @@ class Check(ProjectTask):
         super().__init__()
 
     def start(self):
-        self._check_all_requirements()
-
-    def process_project(self, *_):
-        return self.ok()
-
-    def _check_all_requirements(self):
         logger = logging.getLogger("requirements")
         logger.info("Checking all requirements...")
-        import requirements
-        requirements = map(lambda requirement: requirement(), Requirement.__subclasses__())
+        requirements = self._get_requirements()
         if Check._are_satisfied(requirements, logger):
             logger.info("All requirements satisfied. You're good to go.")
         else:
             logger.warning("Unsatisfied requirements. Some MUBench tasks might work anyways, but to use the entire benchmark,"
                         " please ensure that your environment meets all requirements.")
+
+    def process_project(self, *_):
+        return self.ok()
+
+    def _get_requirements(self) -> List[Requirement]:
+        import requirements
+        return [requirement() for requirement in Requirement.__subclasses__()]
 
     @staticmethod
     def _are_satisfied(requirements: List[Requirement], logger) -> bool:
