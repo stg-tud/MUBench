@@ -48,7 +48,7 @@ class NoInterface():
         raise NoCompatibleRunnerInterface(self._requested_cli_version)
 
 
-class RunnerInterfaceV20170406(RunnerInterface):
+class RunnerInterface_0_0_8(RunnerInterface):
     _VALID_KEYS = [
         "target",
         "run_info",
@@ -62,7 +62,7 @@ class RunnerInterfaceV20170406(RunnerInterface):
 
     @staticmethod
     def version() -> str:
-        return "v20170406"
+        return "0.0.8"
 
     def execute(self, version: ProjectVersion, detector_arguments: Dict[str, str],
                 timeout: Optional[int], logger: Logger):
@@ -74,7 +74,7 @@ class RunnerInterfaceV20170406(RunnerInterface):
     def _filter_args(args: Dict[str, str], logger: Logger) -> Dict[str, str]:
         valid_args = OrderedDict()
         for key, value in args.items():
-            if key in RunnerInterfaceV20170406._VALID_KEYS:
+            if key in RunnerInterface_0_0_8._VALID_KEYS:
                 valid_args[key] = value
             else:
                 logger.debug("Detector uses legacy CLI: argument %s with value %s will not be passed to the detector.", key, value)
