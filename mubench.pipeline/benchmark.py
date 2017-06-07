@@ -9,7 +9,6 @@ from os.path import join, exists, abspath, dirname
 
 from data.detectors import find_detector, get_available_detector_ids
 from data.experiments import ProvidedPatternsExperiment, TopFindingsExperiment, BenchmarkExperiment
-from requirements import check_all_requirements
 from task_runner import TaskRunner
 from tasks.implementations import stats
 from tasks.implementations.check import Check
