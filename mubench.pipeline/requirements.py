@@ -1,5 +1,15 @@
-from tasks.project_task import Requirement
 from utils.shell import Shell
+
+
+class Requirement:
+    def __init__(self, description: str, check=None):
+        self.description = description
+        if not check:
+            check = self.check
+        self.check = check
+
+    def check(self):
+        raise NotImplementedError
 
 
 class PyYamlRequirement(Requirement):

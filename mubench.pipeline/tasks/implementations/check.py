@@ -1,7 +1,7 @@
 import logging
 from typing import List
 
-from tasks.project_task import Requirement
+from requirements import Requirement
 from tasks.project_task import ProjectTask
 from utils.shell import Shell
 
