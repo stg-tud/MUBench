@@ -12,6 +12,7 @@ from data.experiments import ProvidedPatternsExperiment, TopFindingsExperiment, 
 from requirements import check_all_requirements
 from task_runner import TaskRunner
 from tasks.implementations import stats
+from tasks.implementations.check import Check
 from tasks.implementations.checkout import Checkout
 from tasks.implementations.compile import Compile
 from tasks.implementations.detect import Detect
@@ -54,6 +55,9 @@ class Benchmark:
             white_list.extend(get_white_list(self.DATASETS_FILE_PATH, config.dataset))
 
         self.runner = TaskRunner(Benchmark.DATA_PATH, white_list, black_list)
+
+    def _setup_check(self):
+        self.runner.add(Check())
 
     def _setup_stats(self) -> None:
         stats_calculator = stats.get_calculator(self.config.script)
@@ -105,10 +109,8 @@ class Benchmark:
             exit()
 
     def run(self) -> None:
-        if config.task == 'check':
-            check_all_requirements()
-            return
-        elif config.task == 'info':
+        self._setup_check()
+        if config.task == 'info':
             self._setup_info()
         elif config.task == 'checkout':
             self._setup_checkout()
