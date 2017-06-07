@@ -7,7 +7,7 @@ from unittest.mock import MagicMock, PropertyMock, patch
 
 from nose.tools import assert_equals, assert_true, assert_raises
 
-from data.runner_interface import NoInterface, RunnerInterface, RunnerInterfaceV20170406, NoCompatibleRunnerInterface
+from data.runner_interface import NoInterface, RunnerInterface, RunnerInterface_0_0_8, NoCompatibleRunnerInterface
 from tests.data.stub_detector import StubDetector
 from utils.io import remove_tree, write_yaml
 from utils.shell import Shell, CommandFailedError
@@ -40,10 +40,10 @@ class TestNoInterface:
             assert_equals(e.version, "-version-")
 
 @patch("data.runner_interface.Shell")
-class TestRunnerInterfaceV20170406:
+class TestRunnerInterface_0_0_8:
     # noinspection PyAttributeOutsideInit
     def setup(self):
-        self.uut = RunnerInterfaceV20170406("-detector-", [])
+        self.uut = RunnerInterface_0_0_8("-detector-", [])
         self.logger = logging.getLogger("test")
         self.version = create_version("-version-")
 
@@ -71,7 +71,7 @@ class TestRunnerInterfaceV20170406:
                 ("dep_classpath", dependencies_classpath)
             ])
 
-        uut = RunnerInterfaceV20170406(jar, [])
+        uut = RunnerInterface_0_0_8(jar, [])
 
         uut.execute(self.version, detector_args, timeout=42, logger=self.logger)
 
@@ -88,7 +88,7 @@ class TestRunnerInterfaceV20170406:
 
     def test_filters_incompatible_args(self, shell_mock):
         jar = "-detector-"
-        uut = RunnerInterfaceV20170406(jar, [])
+        uut = RunnerInterface_0_0_8(jar, [])
 
         uut.execute(self.version, {"-incompatible-" : "-value-"}, timeout=42, logger=self.logger)
 
