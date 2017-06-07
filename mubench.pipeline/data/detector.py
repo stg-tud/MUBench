@@ -32,8 +32,12 @@ class Detector:
             releases = read_yaml(releases_index_file_path)
             if requested_release:
                 releases = [r for r in releases if r.get("tag", "latest") == requested_release]
-            if len(releases) > 0:
+
+            if releases:
                 return releases[0]
+            else:
+                raise ValueError("No matching {} release for {}".format(self.id, requested_release))
+
         return dict()
 
     def execute(self, version: ProjectVersion, arguments: Dict[str, str],
