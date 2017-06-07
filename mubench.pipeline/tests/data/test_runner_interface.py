@@ -37,7 +37,7 @@ class TestNoInterface:
         try:
             uut.execute()
         except NoCompatibleRunnerInterface as e:
-            assert_equals(e.version, "-version-")
+            assert_equals(str(e), "No compatible runner interface for version -version-")
 
 @patch("data.runner_interface.Shell")
 class TestRunnerInterface_0_0_8:

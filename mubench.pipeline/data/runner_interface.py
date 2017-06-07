@@ -95,6 +95,5 @@ class RunnerInterface_0_0_8(RunnerInterface):
         return args
 
 class NoCompatibleRunnerInterface(Exception):
-    def __init__(self, version):
-        super().__init__("")
-        self.version = version
+    def __init__(self, version: str):
+        super().__init__("No compatible runner interface for version {}".format(version))
