@@ -135,13 +135,15 @@ class TestDetectorExecution:
             file='-findings-/run.yml'
         )
 
-    def test_does_not_save_when_missing_runner_interface(self, write_yaml_mock):
+    def test_result_error_when_missing_runner_interface(self, write_yaml_mock):
         self.detector.runner_interface = NoInterface("-cli_version-")
 
         self.uut.execute("-compiles", 42, self.logger)
 
-        write_yaml_mock.assert_not_called()
-
+        write_yaml_mock.assert_called_with(
+            {'result': 'error', 'message': ANY, 'md5': self.detector.md5, 'runtime': ANY},
+            file='-findings-/run.yml'
+        )
 
 class TestDetectorExecutionLoadFindings:
     @patch("data.detector_execution.open_yamls_if_exists")

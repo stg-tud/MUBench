@@ -85,10 +85,7 @@ class DetectorExecution:
         try:
             self.detector.execute(self.version, detector_args, timeout, logger)
             result = Result.success
-        except NoCompatibleRunnerInterface as e:
-            logger.error("Cannot run detector, because it has no compatible runner interface: %s", e)
-            return
-        except CommandFailedError as e:
+        except (CommandFailedError, NoCompatibleRunnerInterface) as e:
             logger.error("Detector failed: %s", e)
             result = Result.error
             message = str(e)
