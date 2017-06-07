@@ -39,17 +39,6 @@ class TestTaskRunner:
 
         requirement.check.assert_called_with()
 
-    def test_stops_on_unsatisfied_requirement(self):
-        requirement = Requirement("test requirement")
-        requirement.check = MagicMock(side_effect=ValueError("not satisfied"))
-        self.test_task.get_requirements = MagicMock(return_value=[requirement])
-
-        with assert_raises(SystemExit):
-            self.uut.run()
-
-        # assert that exit comes before task is started
-        self.test_task.start.assert_not_called()
-
     def test_starts_task(self):
         self.uut.run()
 

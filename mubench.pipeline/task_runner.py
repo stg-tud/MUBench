@@ -49,8 +49,7 @@ class TaskRunner:
     @staticmethod
     def __check_requirements(task, logger):
         if not are_satisfied(task.get_requirements(), logger):
-            logger.error("Cannot run '%s'. Please ensure requirements.", task.name)
-            exit(1)
+            logger.warning("Missing requirements for %s.", task.name)
 
     @staticmethod
     def _get_projects(data_path: str) -> List[Project]:
