@@ -9,17 +9,6 @@ class Response(Enum):
     skip = 1
 
 
-class Requirement:
-    def __init__(self, description: str, check=None):
-        self.description = description
-        if not check:
-            check = self.check
-        self.check = check
-
-    def check(self):
-        raise NotImplementedError
-
-
 class ProjectTask:
     def __init__(self):
         self.black_list = []
