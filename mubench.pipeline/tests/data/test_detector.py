@@ -16,33 +16,30 @@ class TestDetector:
     def teardown(self):
         remove_tree(self.temp_dir)
 
-    def test_defaults_on_missing_file(self):
-        self.detector = Detector(self.temp_dir, "-detector-", [])
-
-        assert_equals(None, self.detector.md5)
-        assert_is_instance(self.detector.runner_interface, NoInterface)
+    def test_raises_on_missing_file(self):
+        assert_raises(ValueError, Detector, self.temp_dir, "-detector-", [])
 
     def test_raises_value_error_on_no_release(self):
         assert_raises(ValueError, self.setup_releases, [])
 
-    def test_defaults(self):
-        self.setup_releases([dict()])
-
-        assert_equals(None, self.detector.md5)
-        assert_is_instance(self.detector.runner_interface, NoInterface)
-
     def test_md5(self):
-        self.setup_releases([{"md5": "-md5-"}])
+        self.setup_releases([{"md5": "-md5-", "cli_version": "-version-"}])
 
         assert_equals("-md5-", self.detector.md5)
 
+    def test_raises_on_missing_md5(self):
+        assert_raises(ValueError, self.setup_releases, [{"cli_version": "-version-"}])
+
     def test_interface(self):
-        self.setup_releases([{"cli_version": RunnerInterfaceTestImpl.TEST_VERSION}])
+        self.setup_releases([{"cli_version": RunnerInterfaceTestImpl.TEST_VERSION, "md5": "-md5-"}])
 
         assert_is_instance(self.detector.runner_interface, RunnerInterfaceTestImpl)
 
+    def test_raises_on_missing_cli_version(self):
+        assert_raises(ValueError, self.setup_releases, [{"md5": "-md5-"}])
+
     def test_download_url(self):
-        self.setup_releases([{"cli_version": "-version-", "tag": "-tag-"}])
+        self.setup_releases([{"cli_version": "-version-", "tag": "-tag-", "md5": "-md5-"}])
 
         expected_url = "{}/-tag-/-version-/{}.jar".format(Detector.BASE_URL, self.detector.id)
         assert_equals(expected_url, self.detector.jar_url)
