@@ -46,7 +46,7 @@ class Detector:
             else:
                 raise ValueError("No matching {} release for {}".format(self.id, requested_release))
 
-        return dict()
+        raise ValueError("No releases for {}".format(self.id))
 
     def execute(self, version: ProjectVersion, arguments: Dict[str, str],
                 timeout: Optional[int], logger: Logger):
