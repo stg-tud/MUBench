@@ -4,7 +4,7 @@ from unittest.mock import MagicMock, call
 
 from nose.tools import assert_equals, assert_raises
 
-from tasks.project_task import ProjectTask, Requirement
+from tasks.project_task import ProjectTask
 from task_runner import TaskRunner
 from utils.io import remove_tree, create_file
 from tests.test_utils.data_util import create_project

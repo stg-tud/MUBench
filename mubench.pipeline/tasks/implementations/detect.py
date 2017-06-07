@@ -6,7 +6,6 @@ from urllib.error import URLError
 from data.experiments import Experiment, ProvidedPatternsExperiment
 from data.project import Project
 from data.project_version import ProjectVersion
-from requirements import JavaRequirement
 from tasks.project_version_task import ProjectVersionTask
 from utils.web_util import download_file
 
@@ -27,9 +26,6 @@ class Detect(ProjectVersionTask):
         self.key_training_classpath = "training_classpath"
         self.key_target_src_path = "target_src_path"
         self.key_target_classpath = "target_classpath"
-
-    def get_requirements(self):
-        return [JavaRequirement()]
 
     def start(self):
         logger = logging.getLogger("detect")

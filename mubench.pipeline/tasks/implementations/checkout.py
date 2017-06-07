@@ -3,7 +3,6 @@ from typing import List
 
 from data.project import Project
 from data.project_version import ProjectVersion
-from requirements import GitRequirement, SVNRequirement
 from tasks.project_version_task import ProjectVersionTask
 from utils.shell import CommandFailedError
 
@@ -13,9 +12,6 @@ class Checkout(ProjectVersionTask):
         super().__init__()
         self.checkouts_path = checkouts_path
         self.force_checkout = force_checkout
-
-    def get_requirements(self):
-        return [GitRequirement(), SVNRequirement()]
 
     def process_project_version(self, project: Project, version: ProjectVersion) -> List[str]:
         logger = logging.getLogger("checkout")
