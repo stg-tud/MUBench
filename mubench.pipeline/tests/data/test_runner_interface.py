@@ -19,10 +19,6 @@ class TestRunnerInterface:
         actual = RunnerInterface.get(RunnerInterfaceTestImpl.TEST_VERSION, "", dict())
         assert_true(isinstance(actual, RunnerInterfaceTestImpl))
 
-    def test_get_interface_version_default_for_none(self):
-        actual = RunnerInterface.get(None, "", dict())
-        assert_true(isinstance(actual, NoInterface))
-
     def test_get_interface_version_default_for_unavailable_version(self):
         actual = RunnerInterface.get("-unavailable_version-", "", dict())
         assert_true(isinstance(actual, NoInterface))
