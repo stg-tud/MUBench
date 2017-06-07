@@ -19,8 +19,16 @@ class Detector:
         releases_index_path = join(self.path, Detector.RELEASES_FILE)
         release = self._get_release(releases_index_path, requested_release)
         release_tag = release.get("tag", "latest")
-        cli_version = release.get("cli_version", None)
-        self.md5 = release.get("md5", None)
+
+        if "cli_version" in release:
+            cli_version = release["cli_version"]
+        else:
+            raise ValueError("Missing CLI version for {}".format(detector_id))
+
+        if "md5" in release:
+            self.md5 = release["md5"]
+        else:
+            raise ValueError("Missing MD5 for {}".format(detector_id))
 
         self.jar_path = join(self.path, self.base_name + ".jar")
         self.jar_url = "{}/{}/{}/{}.jar".format(Detector.BASE_URL, release_tag, cli_version, self.base_name)
