@@ -24,7 +24,7 @@ class Check(ProjectTask):
         if Check._are_satisfied(requirements, logger):
             logger.info("All requirements satisfied. You're good to go.")
         else:
-            logger.info("Unsatisfied requirements. Some MUBench tasks might work anyways, but to use the entire benchmark,"
+            logger.warning("Unsatisfied requirements. Some MUBench tasks might work anyways, but to use the entire benchmark,"
                         " please ensure that your environment meets all requirements.")
 
     @staticmethod
@@ -41,5 +41,6 @@ class Check(ProjectTask):
             logger.debug("Requirement '%s' satisfied", requirement.description)
             return True
         except Exception as e:
-            logger.error("Requirement '%s' not satisfied: %s", requirement.description, e)
+            logger.warning("Requirement '%s' not satisfied: %s", requirement.description, e)
             return False
+
