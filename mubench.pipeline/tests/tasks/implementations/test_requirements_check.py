@@ -1,14 +1,14 @@
 from nose.tools import assert_equals
 from unittest.mock import MagicMock
 
-from tasks.implementations.check import Check
+from tasks.implementations.requirements_check import RequirementsCheck
 from tests.test_utils.data_util import create_project
 
 from requirements import Requirement
 
-class TestCheck():
+class TestRequirementsCheck():
     def setup(self):
-        self.uut = Check()
+        self.uut = RequirementsCheck()
 
         self.test_requirement = Requirement("-test-requirement-")
         self.test_requirement.check = MagicMock()
