@@ -11,7 +11,7 @@ from data.detectors import find_detector, get_available_detector_ids
 from data.experiments import ProvidedPatternsExperiment, TopFindingsExperiment, BenchmarkExperiment
 from task_runner import TaskRunner
 from tasks.implementations import stats
-from tasks.implementations.check import Check
+from tasks.implementations.requirements_check import RequirementsCheck
 from tasks.implementations.checkout import Checkout
 from tasks.implementations.compile import Compile
 from tasks.implementations.detect import Detect
@@ -56,7 +56,7 @@ class Benchmark:
         self.runner = TaskRunner(Benchmark.DATA_PATH, white_list, black_list)
 
     def _setup_check(self):
-        self.runner.add(Check())
+        self.runner.add(RequirementsCheck())
 
     def _setup_stats(self) -> None:
         stats_calculator = stats.get_calculator(self.config.script)
