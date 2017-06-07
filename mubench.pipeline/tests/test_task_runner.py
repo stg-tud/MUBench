@@ -30,15 +30,6 @@ class TestTaskRunner:
 
         self.test_task.process_project.assert_called_with(project)
 
-    def test_checks_requirements(self):
-        requirement = Requirement("test requirement")
-        requirement.check = MagicMock()
-        self.test_task.get_requirements = MagicMock(return_value=[requirement])
-
-        self.uut.run()
-
-        requirement.check.assert_called_with()
-
     def test_starts_task(self):
         self.uut.run()
 

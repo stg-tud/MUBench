@@ -5,7 +5,6 @@ from os.path import exists, join
 from typing import List
 
 from data.project import Project
-from requirements import are_satisfied
 from tasks.project_task import ProjectTask
 
 
@@ -22,8 +21,6 @@ class TaskRunner:
     def run(self) -> None:
         for task in self.tasks:
             logger = logging.getLogger()
-            logger.info("Checking requirements for %s...", task.name)
-            self.__check_requirements(task, logger)
             logger.info("Starting %s %s...", task.name, datetime.now().strftime("at %H:%M:%S"))
             task.start()
             task.black_list = self.black_list
@@ -39,17 +36,6 @@ class TaskRunner:
                             logger.info("Cannot proceed on %s; skipping for subsequent tasks.", project)
                         self.black_list.extend(response)
             task.end()
-
-    def check(self) -> None:
-        for task in self.tasks:
-            logger = logging.getLogger()
-            logger.info("Checking requirements for %s...", task.name)
-            self.__check_requirements(task, logger)
-
-    @staticmethod
-    def __check_requirements(task, logger):
-        if not are_satisfied(task.get_requirements(), logger):
-            logger.warning("Missing requirements for %s.", task.name)
 
     @staticmethod
     def _get_projects(data_path: str) -> List[Project]:
