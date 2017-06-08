@@ -149,7 +149,7 @@ class DetectorExecution:
     def _get_findings_path(self):
         raise NotImplementedError
 
-    def _get_command(self, project_compile: ProjectCompile):
+    def _get_detector_arguments(self, project_compile: ProjectCompile):
         raise NotImplementedError
 
     def _load_findings(self):
