@@ -79,6 +79,8 @@ class TestExecutionState:
         assert_equals(execution.message, "-arbitrary text-")
 
 
+# noinspection PyUnusedLocal
+# patch prevent write to filesystem
 @patch("data.detector_execution.write_yaml")
 class TestDetectorExecution:
     # noinspection PyAttributeOutsideInit
@@ -150,11 +152,13 @@ class TestDetectorExecution:
             file='-findings-/run.yml'
         )
 
+
 class TestDetectorExecutionLoadFindings:
     @patch("data.detector_execution.open_yamls_if_exists")
     def test_adds_rank(self, read_yamls_mock):
         read_yamls_mock.return_value.__enter__.return_value = [{"name": "f1"}, {"name": "f2"}]
-        execution = DetectorExecution(DetectorMode.mine_and_detect, None, None, "-findings-base-path-", FindingsFilter())
+        execution = DetectorExecution(DetectorMode.mine_and_detect, StubDetector(), create_version("-v-"),
+                                      "-findings-base-path-", FindingsFilter())
         execution._get_findings_path = lambda: ""
 
         findings = execution._load_findings()
@@ -180,6 +184,8 @@ class TestDetectOnlyExecution:
         self.uut = DetectOnlyExecution(self.detector, self.version, self.misuse, self.findings_base_path,
                                        PotentialHits(self.misuse))
 
+    # noinspection PyUnusedLocal
+    # patch prevents write to filesystem
     def test_execute_per_misuse(self, get_dependencies_classpath_mock, write_yaml_mock):
         findings_path = join("-findings-", "detect_only", "StubDetector", "-project-", "-version-", "-misuse-")
         target = join(findings_path, "findings.yml")
@@ -198,14 +204,14 @@ class TestDetectOnlyExecution:
         self.detector.runner_interface.execute.assert_called_with(
             self.version,
             {
-                'target' : target,
-                'run_info' : run_info,
-                'detector_mode' : "1",
-                'training_src_path' : training_src_path,
-                'training_classpath' : training_classpath,
-                'target_src_path' : target_src_path,
-                'target_classpath' : target_classpath,
-                'dep_classpath' : dependencies_classpath + ":" + original_classpath
+                'target': target,
+                'run_info': run_info,
+                'detector_mode': "1",
+                'training_src_path': training_src_path,
+                'training_classpath': training_classpath,
+                'target_src_path': target_src_path,
+                'target_classpath': target_classpath,
+                'dep_classpath': dependencies_classpath + ":" + original_classpath
             },
             42, self.logger)
 
@@ -224,8 +230,9 @@ class TestMineAndDetectExecution:
         self.uut = MineAndDetectExecution(self.detector, self.version, self.findings_base_path,
                                           AllFindings())
 
+    # noinspection PyUnusedLocal
+    # patch prevents write to filesystem
     def test_execute(self, get_dependencies_classpath_mock, write_yaml_mock):
-        jar = self.detector.jar_path
         findings_path = join("-findings-", "mine_and_detect", "StubDetector", "-project-", "-version-")
         target = join(findings_path, "findings.yml")
         run_info = join(findings_path, "run.yml")
@@ -239,13 +246,13 @@ class TestMineAndDetectExecution:
         self.uut.execute("-compiles-", 42, self.logger)
 
         self.detector.runner_interface.execute.assert_called_with(
-                self.version,
-                {
-                    'target': target,
-                    'run_info': run_info,
-                    'detector_mode': "0",
-                    'target_src_path': target_src_path,
-                    'target_classpath': target_classpath,
-                    'dep_classpath': '{}:{}'.format(dependencies_classpath, original_classpath)
-                },
-                42, self.logger)
+            self.version,
+            {
+                'target': target,
+                'run_info': run_info,
+                'detector_mode': "0",
+                'target_src_path': target_src_path,
+                'target_classpath': target_classpath,
+                'dep_classpath': '{}:{}'.format(dependencies_classpath, original_classpath)
+            },
+            42, self.logger)
