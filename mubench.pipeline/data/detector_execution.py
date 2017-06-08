@@ -14,7 +14,7 @@ from data.project_compile import ProjectCompile
 from data.project_version import ProjectVersion
 from data.runner_interface import NoCompatibleRunnerInterface
 from utils.io import write_yaml, remove_tree, read_yaml_if_exists, open_yamls_if_exists
-from utils.shell import Shell, CommandFailedError
+from utils.shell import CommandFailedError
 
 
 class Result(Enum):
@@ -198,12 +198,12 @@ class MineAndDetectExecution(DetectorExecution):
 
     def _get_detector_arguments(self, project_compile: ProjectCompile):
         return {
-            self.key_findings_file : self._findings_file_path,
-            self.key_run_file : self._run_file_path,
-            self.key_detector_mode : self._run_mode_detector_argument,
-            self.key_target_src_path : project_compile.original_sources_path,
-            self.key_target_classpath : project_compile.original_classes_path,
-            self.key_dependency_classpath : project_compile.get_full_classpath()
+            self.key_findings_file: self._findings_file_path,
+            self.key_run_file: self._run_file_path,
+            self.key_detector_mode: self._run_mode_detector_argument,
+            self.key_target_src_path: project_compile.original_sources_path,
+            self.key_target_classpath: project_compile.original_classes_path,
+            self.key_dependency_classpath: project_compile.get_full_classpath()
         }
 
 
@@ -220,12 +220,12 @@ class DetectOnlyExecution(DetectorExecution):
 
     def _get_detector_arguments(self, project_compile: ProjectCompile):
         return {
-            self.key_findings_file : self._findings_file_path,
-            self.key_run_file : self._run_file_path,
-            self.key_detector_mode : self._run_mode_detector_argument,
-            self.key_training_src_path : project_compile.get_pattern_source_path(self.misuse),
-            self.key_training_classpath : project_compile.get_pattern_classes_path(self.misuse),
-            self.key_target_src_path : project_compile.misuse_source_path,
-            self.key_target_classpath : project_compile.misuse_classes_path,
-            self.key_dependency_classpath : project_compile.get_full_classpath()
+            self.key_findings_file: self._findings_file_path,
+            self.key_run_file: self._run_file_path,
+            self.key_detector_mode: self._run_mode_detector_argument,
+            self.key_training_src_path: project_compile.get_pattern_source_path(self.misuse),
+            self.key_training_classpath: project_compile.get_pattern_classes_path(self.misuse),
+            self.key_target_src_path: project_compile.misuse_source_path,
+            self.key_target_classpath: project_compile.misuse_classes_path,
+            self.key_dependency_classpath: project_compile.get_full_classpath()
         }
