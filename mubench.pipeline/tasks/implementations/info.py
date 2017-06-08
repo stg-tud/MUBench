@@ -38,8 +38,6 @@ class Info(ProjectVersionMisuseTask):
         version_compile = version.get_compile(self.__compiles_path)
         if version_compile.needs_compile():
             compile_state = "not compiled"
-        elif version_compile.needs_compile_patterns():
-            compile_state = "project compiled, patterns not compiled"
         else:
             compile_state = "compiled"
         self.__logger.info("    Compile  : %s", compile_state)
@@ -68,5 +66,12 @@ class Info(ProjectVersionMisuseTask):
             self.__logger.info("      Enclosing Method : %s", location.method)
 
         self.__logger.info("      Fix Diff         : %s", misuse.fix.commit)
+        if not misuse.patterns:
+            pattern_compile_state = "no patterns to compile"
+        elif version.get_compile(self.__compiles_path).needs_compile_patterns(misuse):
+            pattern_compile_state = "patterns not compiled"
+        else:
+            pattern_compile_state = "patterns compiled"
+        self.__logger.info("      Compile          : %s", pattern_compile_state)
 
         return self.ok()

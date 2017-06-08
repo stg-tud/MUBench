@@ -45,12 +45,12 @@ class ProjectCompile:
             return True
 
         for misuse in self.misuses:
-            if self.__needs_compile_patterns(misuse):
+            if self.needs_compile_patterns(misuse):
                 return True
 
         return False
 
-    def __needs_compile_patterns(self, misuse: Misuse):
+    def needs_compile_patterns(self, misuse: Misuse):
         return misuse.patterns and not isdir(self.get_pattern_classes_path(misuse))
 
     def get_pattern_source_path(self, misuse: Misuse):
