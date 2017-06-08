@@ -47,7 +47,7 @@ RUN apt-get install python3.5 python3.5-dev
 RUN pip install virtualenv
 RUN virtualenv -p python3.5 $HOME/venv/3.5
 ENV PATH /root/venv/3.5/bin:$PATH
-RUN pip install nose pyyaml requests
+RUN pip install pyyaml requests
 
 # mubench dependencies
 RUN apt-get install subversion
