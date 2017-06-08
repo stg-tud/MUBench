@@ -14,7 +14,7 @@ class TestRequirementsCheck():
         self.test_requirement.check = MagicMock()
         self.uut._get_requirements = lambda: [self.test_requirement]
 
-    def test_process_project(self):
+    def test_passes_on_process_project(self):
         assert_equals([], self.uut.process_project(create_project("-project-")))
 
     def test_checks_requirements_on_start(self):
