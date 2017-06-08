@@ -26,7 +26,7 @@ class ProjectVersion:
         self.path = join(self.__project.path, Project.VERSIONS_DIR, version_id)
         self._version_file = join(self.path, ProjectVersion.VERSION_FILE)  # type: str
         self._misuses_dir = join(self.__project.path, Project.MISUSES_DIR)  # type: str
-        self._YAML = None
+        self._YAML = {}
         self._MISUSES = None
         self._PATTERNS = None
 
@@ -36,7 +36,7 @@ class ProjectVersion:
 
     @property
     def _yaml(self) -> Dict[str, Any]:
-        if self._YAML is None:
+        if not self._YAML:
             with open(self._version_file) as stream:
                 version_yml = yaml.load(stream)
             self._YAML = version_yml

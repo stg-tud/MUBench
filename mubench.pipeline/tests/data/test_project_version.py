@@ -70,7 +70,6 @@ class TestProjectVersion:
 
         assert_equals([misuse2], misuses)
 
-
     def test_creates_build_config(self):
         self.uut._YAML = {"build": {"src": "src/java/", "commands": ["mvn compile"], "classes": "target/classes/"}}
         assert_equals("src/java/", self.uut.source_dir)
@@ -78,7 +77,7 @@ class TestProjectVersion:
         assert_equals("target/classes/", self.uut.classes_dir)
 
     def test_creates_build_config_with_defaults(self):
-        self.uut._YAML = {}
+        self.uut._YAML = {"-no-build-key-": ""}
         assert_equals("", self.uut.source_dir)
         assert_equals([], self.uut.compile_commands)
         assert_equals("", self.uut.classes_dir)
