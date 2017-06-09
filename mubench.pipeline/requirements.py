@@ -1,6 +1,6 @@
 import psutil
 from hurry.filesize import size
-
+from os.path import exists
 from utils.shell import Shell
 
 
@@ -79,13 +79,29 @@ class RequestsRequirement(Requirement):
         pass
 
 class CPUCountRequirement(Requirement):
+    MIN_CPU_COUNT = 2
+
     def __init__(self):
-        super().__init__("CPUs >= 2")
+        super().__init__("CPUs >= {}".format(self.MIN_CPU_COUNT))
 
     def check(self):
-        cpu_count = psutil.cpu_count(logical=False)
-        if cpu_count < 2:
+        cpu_count = self._get_cpu_count()
+        if cpu_count < self.MIN_CPU_COUNT:
             raise ValueError("Only {} CPUs available.".format(cpu_count))
+
+    def _get_cpu_count(self):
+        if _in_container():
+            return self._get_container_cpu_count()
+        else:
+            return psutil.cpu_count(logical=False)
+
+    def _get_container_cpu_count(self):
+        try:
+            with open("/sys/fs/cgroup/cpu/cpu.cfs_quota_us") as file:
+                return int(file.readline()) / 100000
+        except Exception as e:
+            raise RuntimeError("Failed to check CPU count: {}".format(e))
+
 
 class MemoryRequirement(Requirement):
     MIN_MEMORY = 8589934592
@@ -94,6 +110,23 @@ class MemoryRequirement(Requirement):
         super().__init__("Memory >= {}".format(size(self.MIN_MEMORY)))
 
     def check(self):
-        memory = psutil.virtual_memory().total
+        memory = self._get_memory()
         if memory < self.MIN_MEMORY:
             raise ValueError("Only {} of memory available.".format(size(memory)))
+
+    def _get_memory(self):
+        if _in_container():
+            return self._get_container_memory_limit()
+        else:
+            return psutil.virtual_memory().total
+
+    def _get_container_memory_limit(self):
+        try:
+            with open("/sys/fs/cgroup/memory/memory.limit_in_bytes") as file:
+                return int(file.readline())
+        except Exception as e:
+            raise RuntimeError("Failed to check memory: {}".format(e))
+
+
+def _in_container() -> bool:
+    return exists("/.dockerenv")
