@@ -1,11 +1,12 @@
 import logging
 from collections import OrderedDict
+from distutils.version import StrictVersion
 from os.path import join
 from tempfile import mkdtemp
 from unittest import mock
 from unittest.mock import MagicMock, PropertyMock, patch
 
-from nose.tools import assert_equals, assert_true, assert_raises
+from nose.tools import assert_equals, assert_true, assert_false, assert_raises
 
 from data.runner_interface import NoInterface, RunnerInterface, RunnerInterface_0_0_8, NoCompatibleRunnerInterface
 from tests.data.stub_detector import StubDetector
@@ -22,6 +23,21 @@ class TestRunnerInterface:
     def test_get_interface_version_default_for_unavailable_version(self):
         actual = RunnerInterface.get("-unavailable_version-", "", dict())
         assert_true(isinstance(actual, NoInterface))
+
+    def test_interface_is_legacy(self):
+        class LatestInterface(RunnerInterface): pass
+        LatestInterface.version = lambda *_: StrictVersion("1000.0.0")
+        class LegacyInterface(RunnerInterface): pass
+        LegacyInterface.version = lambda *_: StrictVersion("0.0.0")
+
+        assert_true(LegacyInterface("", []).is_legacy())
+
+    def test_latest_interface_is_not_legacy(self):
+        class LatestInterface(RunnerInterface): pass
+        LatestInterface.version = lambda *_: StrictVersion("1000.0.0")
+
+        assert_false(LatestInterface("", []).is_legacy())
+
 
 class TestNoInterface:
     def test_execute_raises_exception(self):
