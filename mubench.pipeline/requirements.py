@@ -1,4 +1,3 @@
-import psutil
 from hurry.filesize import size
 from os.path import exists
 from utils.shell import Shell
@@ -93,6 +92,7 @@ class CPUCountRequirement(Requirement):
         if _in_container():
             return self._get_container_cpu_count()
         else:
+            import psutil
             return psutil.cpu_count(logical=False)
 
     def _get_container_cpu_count(self):
@@ -118,6 +118,7 @@ class MemoryRequirement(Requirement):
         if _in_container():
             return self._get_container_memory_limit()
         else:
+            import psutil
             return psutil.virtual_memory().total
 
     def _get_container_memory_limit(self):
