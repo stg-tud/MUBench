@@ -140,6 +140,7 @@ def _in_container() -> bool:
 
 def _try_import(module):
     try:
+        import importlib
         return importlib.import_module(module)
     except Exception as e:
         raise ImportError("Check requires {}: {}".format(module, e))
