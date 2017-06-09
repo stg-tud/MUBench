@@ -91,15 +91,25 @@ class CPUCountRequirement(Requirement):
         if _in_container():
             return self._get_container_cpu_count()
         else:
-            psutil = _try_import("psutil")
-            return psutil.cpu_count(logical=False)
+            return self._get_normal_cpu_count()
 
     def _get_container_cpu_count(self):
         try:
             with open("/sys/fs/cgroup/cpu/cpu.cfs_quota_us") as file:
-                return int(file.readline()) / 100000
+                quota = int(file.readline())
+
+            no_limit = quota < 0
+            if no_limit:
+                return self._get_normal_cpu_count()
+            else:
+                return quota / 100000
+
         except Exception as e:
             raise RuntimeError("Failed to check CPU count: {}".format(e))
+
+    def _get_normal_cpu_count(self):
+        psutil = _try_import("psutil")
+        return psutil.cpu_count(logical=False)
 
 
 class MemoryRequirement(Requirement):
