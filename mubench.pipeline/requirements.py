@@ -1,4 +1,3 @@
-from hurry.filesize import size
 from os.path import exists
 from utils.shell import Shell
 
@@ -92,7 +91,7 @@ class CPUCountRequirement(Requirement):
         if _in_container():
             return self._get_container_cpu_count()
         else:
-            import psutil
+            psutil = _try_import("psutil")
             return psutil.cpu_count(logical=False)
 
     def _get_container_cpu_count(self):
@@ -107,18 +106,18 @@ class MemoryRequirement(Requirement):
     MIN_MEMORY = 8589934592
 
     def __init__(self):
-        super().__init__("Memory >= {}".format(size(self.MIN_MEMORY)))
+        super().__init__("Memory >= {}".format(self._to_readable_size(self.MIN_MEMORY)))
 
     def check(self):
         memory = self._get_memory()
         if memory < self.MIN_MEMORY:
-            raise ValueError("Only {} of memory available.".format(size(memory)))
+            raise ValueError("Only {} of memory available.".format(self._to_readable_size(memory)))
 
     def _get_memory(self):
         if _in_container():
             return self._get_container_memory_limit()
         else:
-            import psutil
+            psutil = _try_import("psutil")
             return psutil.virtual_memory().total
 
     def _get_container_memory_limit(self):
@@ -128,6 +127,19 @@ class MemoryRequirement(Requirement):
         except Exception as e:
             raise RuntimeError("Failed to check memory: {}".format(e))
 
+    def _to_readable_size(self, memory: int) -> str:
+        try:
+            hf = _try_import("hurry.filesize")
+            return str(hf.size(memory))
+        except ImportError:
+            return str(memory) + "B"
+
 
 def _in_container() -> bool:
     return exists("/.dockerenv")
+
+def _try_import(module):
+    try:
+        return importlib.import_module(module)
+    except Exception as e:
+        raise ImportError("Check requires {}: {}".format(module, e))
