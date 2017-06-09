@@ -1,3 +1,6 @@
+import psutil
+from hurry.filesize import size
+
 from utils.shell import Shell
 
 
@@ -74,3 +77,23 @@ class RequestsRequirement(Requirement):
 
     def check(self):
         pass
+
+class CPUCountRequirement(Requirement):
+    def __init__(self):
+        super().__init__("CPUs >= 2")
+
+    def check(self):
+        cpu_count = psutil.cpu_count(logical=False)
+        if cpu_count < 2:
+            raise ValueError("Only {} CPUs available.".format(cpu_count))
+
+class MemoryRequirement(Requirement):
+    MIN_MEMORY = 8589934592
+
+    def __init__(self):
+        super().__init__("Memory >= {}".format(size(self.MIN_MEMORY)))
+
+    def check(self):
+        memory = psutil.virtual_memory().total
+        if memory < self.MIN_MEMORY:
+            raise ValueError("Only {} of memory available.".format(size(memory)))

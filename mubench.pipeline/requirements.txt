@@ -1,2 +1,4 @@
 PyYaml
 requests
+psutil
+hurry.filesize
