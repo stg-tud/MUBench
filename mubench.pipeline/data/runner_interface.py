@@ -1,4 +1,5 @@
 from collections import OrderedDict
+from distutils.version import StrictVersion
 from enum import Enum, IntEnum
 from logging import Logger
 from typing import Optional, List, Dict
@@ -24,6 +25,11 @@ class RunnerInterface:
 
     @staticmethod
     def get(cli_version: str, jar_path: str, java_options: List[str]) -> 'RunnerInterface':
+        try:
+            requested_version = StrictVersion(cli_version)
+        except ValueError:
+            return NoInterface(cli_version)
+
         interfaces = RunnerInterface.__subclasses__()
         matching_interfaces = [i for i in interfaces if i.version() == cli_version]
         if matching_interfaces:
@@ -32,12 +38,21 @@ class RunnerInterface:
             return NoInterface(cli_version)
 
     @staticmethod
-    def version() -> str:
+    def version() -> StrictVersion:
         raise NotImplementedError
 
     def execute(self, version: ProjectVersion, detector_arguments: Dict[str, str],
                 timeout: Optional[int], logger: Logger):
         raise NotImplementedError
+
+    def is_legacy(self) -> bool:
+        return self.version() < self.__get_latest_version()
+
+    @staticmethod
+    def __get_latest_version() -> StrictVersion:
+        versions = [interface.version() for interface in
+                RunnerInterface.__subclasses__()]
+        return sorted(versions)[-1]
 
 
 class NoInterface():
@@ -46,6 +61,9 @@ class NoInterface():
 
     def execute(self, *_):
         raise NoCompatibleRunnerInterface(self._requested_cli_version)
+
+    def is_legacy(self):
+        return False
 
 
 class RunnerInterface_0_0_8(RunnerInterface):
@@ -61,8 +79,8 @@ class RunnerInterface_0_0_8(RunnerInterface):
     ]
 
     @staticmethod
-    def version() -> str:
-        return "0.0.8"
+    def version() -> StrictVersion:
+        return StrictVersion("0.0.8")
 
     def execute(self, version: ProjectVersion, detector_arguments: Dict[str, str],
                 timeout: Optional[int], logger: Logger):
