@@ -41,6 +41,10 @@ class RunnerInterface:
     def version() -> StrictVersion:
         raise NotImplementedError
 
+    @staticmethod
+    def changelog() -> str:
+        raise NotImplementedError
+
     def execute(self, version: ProjectVersion, detector_arguments: Dict[str, str],
                 timeout: Optional[int], logger: Logger):
         raise NotImplementedError
@@ -81,6 +85,10 @@ class RunnerInterface_0_0_8(RunnerInterface):
     @staticmethod
     def version() -> StrictVersion:
         return StrictVersion("0.0.8")
+
+    @staticmethod
+    def changelog() -> str:
+        return "Oldest version."
 
     def execute(self, version: ProjectVersion, detector_arguments: Dict[str, str],
                 timeout: Optional[int], logger: Logger):
