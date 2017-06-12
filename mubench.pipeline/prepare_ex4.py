@@ -14,6 +14,9 @@ MUBENCH_ROOT_PATH = os.path.normpath(os.path.join(os.path.dirname(os.path.abspat
 CHECKOUTS_PATH = os.path.join(MUBENCH_ROOT_PATH, "checkouts", "_examples")
 INDEX_PATH = os.path.join(CHECKOUTS_PATH, "index.csv")
 
+username = sys.argv[1]
+password = sys.argv[2]
+
 
 def prepare_example_projects(projects: List[GitHubProject], metadata_path: str):
     data = []
@@ -41,13 +44,14 @@ def prepare_example_projects(projects: List[GitHubProject], metadata_path: str):
 
 
 with open(INDEX_PATH) as index:
+    boa = BOA(username, password)
     for row in csv.reader(index, delimiter="\t"):
         project_id = row[0]
         version_id = row[1]
         target_type = row[2]
         try:
             print("[INFO] Preparing examples for {}.{} (target type: {})".format(project_id, version_id, target_type))
-            projects = BOA.query_projects_with_type_usages(target_type)
+            projects = boa.query_projects_with_type_usages(target_type)
             target_example_file = os.path.join(CHECKOUTS_PATH, target_type + ".yml")
             prepare_example_projects(projects, target_example_file)
         except UserWarning as warning:
