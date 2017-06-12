@@ -1,3 +1,4 @@
+import logging
 from collections import OrderedDict
 from distutils.version import StrictVersion
 from enum import Enum, IntEnum
@@ -22,6 +23,10 @@ class RunnerInterface:
     def __init__(self, jar_path: str, java_options: List[str]):
         self.jar_path = jar_path
         self.java_options = java_options
+        self.logger = logging.getLogger("runner_interface")
+
+        if self.is_legacy():
+            self._log_legacy_warning()
 
     @staticmethod
     def get(cli_version: str, jar_path: str, java_options: List[str]) -> 'RunnerInterface':
@@ -48,6 +53,23 @@ class RunnerInterface:
     def execute(self, version: ProjectVersion, detector_arguments: Dict[str, str],
                 timeout: Optional[int], logger: Logger):
         raise NotImplementedError
+
+    def _log_legacy_warning(self):
+        self.logger.warning("The detector uses a legacy interface.")
+        self.logger.info("The following changes were made since its release:")
+        self._log_changes()
+
+    def _log_changes(self):
+        logger = logging.getLogger("runner_interface.changelogs")
+
+        interfaces = RunnerInterface._get_interfaces()
+        later_interfaces = [i for i in interfaces if i.version() > self.version()]
+        later_interfaces.sort(key=lambda i: i.version())
+        for index, later_interface in enumerate(later_interfaces):
+            from_ = later_interfaces[index-1].version()
+            to = later_interface.version()
+            logger.info("{} => {}:".format(from_, to))
+            logger.info(later_interface.changelog())
 
     def is_legacy(self) -> bool:
         return self.version() < self.__get_latest_version()
