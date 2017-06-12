@@ -13,3 +13,7 @@ class RunnerInterfaceTestImpl(RunnerInterface):
     @staticmethod
     def version() -> StrictVersion:
         return StrictVersion(RunnerInterfaceTestImpl.TEST_VERSION)
+
+    @staticmethod
+    def changelog() -> str:
+        "-changes-"
