@@ -85,7 +85,7 @@ class DetectorExecution:
         try:
             self.detector.execute(self.version, detector_args, timeout, logger)
             result = Result.success
-        except (CommandFailedError, NoCompatibleRunnerInterface) as e:
+        except CommandFailedError as e:
             logger.error("Detector failed: %s", e)
             result = Result.error
             message = str(e)
