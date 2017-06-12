@@ -19,6 +19,11 @@ def _as_list(dictionary: Dict) -> List:
     return l
 
 
+class NoCompatibleRunnerInterface(Exception):
+    def __init__(self, version: StrictVersion):
+        super().__init__("No compatible runner interface for version {}".format(version))
+
+
 class RunnerInterface:
     def __init__(self, jar_path: str, java_options: List[str]):
         self.jar_path = jar_path
@@ -140,7 +145,3 @@ class RunnerInterface_0_0_8(RunnerInterface):
         for key, value in detector_arguments.items():
             args[key] = _quote(value)
         return args
-
-class NoCompatibleRunnerInterface(Exception):
-    def __init__(self, version: StrictVersion):
-        super().__init__("No compatible runner interface for version {}".format(version))
