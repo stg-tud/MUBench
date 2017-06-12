@@ -266,7 +266,7 @@ class DBConnection
                     break;
                 }
                 $filtered_misuses[] = $misuse;
-                if ($misuse->hasConclusiveReviewState() || !$misuse->hasSufficientReviews()) {
+                if ($misuse->hasConclusiveReviewState() || (!$misuse->hasSufficientReviews() && !$misuse->hasInconclusiveReview())) {
                     $conclusive_reviews++;
                 }
             }
