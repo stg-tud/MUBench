@@ -13,7 +13,7 @@ from utils.shell import CommandFailedError
 MUBENCH_ROOT_PATH = os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir))
 CHECKOUTS_PATH = os.path.join(MUBENCH_ROOT_PATH, "checkouts", "_examples")
 INDEX_PATH = os.path.join(CHECKOUTS_PATH, "index.csv")
-SUBTYPES_PATH = os.path.join(CHECKOUTS_PATH, "subtype.csv")
+SUBTYPES_PATH = os.path.join(CHECKOUTS_PATH, "subtypes.csv")
 
 _SUBTYPES = {}
 
@@ -49,8 +49,8 @@ def _prepare_example_projects(projects: List[GitHubProject], metadata_path: str)
 def _get_subtypes(target_type):
     if not _SUBTYPES:
         with open(SUBTYPES_PATH) as subtypes_file:
-            for subtypes_entry in subtypes_file.readlines():
-                _SUBTYPES[subtypes_entry[0]] = subtypes_entry[1:]
+            for subtypes_row in csv.reader(subtypes_file, delimiter="\t"):
+                _SUBTYPES[subtypes_row[0]] = subtypes_row[1:]
 
     all_subtypes = _SUBTYPES.get(target_type, [])
     subtypes_sample = [subtype for subtype in all_subtypes if "sun." not in subtype]  # filter Sun-specific types
