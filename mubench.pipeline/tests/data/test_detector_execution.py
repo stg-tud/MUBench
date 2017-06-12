@@ -12,6 +12,7 @@ from data.findings_filters import PotentialHits, AllFindings, FindingsFilter
 from data.project_compile import ProjectCompile
 from tests.data.stub_detector import StubDetector
 from tests.test_utils.data_util import create_misuse, create_version, create_project
+from tests.test_utils.runner_interface_test_impl import RunnerInterfaceTestImpl
 from utils.io import remove_tree
 from utils.shell import CommandFailedError
 

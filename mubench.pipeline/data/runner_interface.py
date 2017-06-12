@@ -40,7 +40,7 @@ class RunnerInterface:
         if matching_interfaces:
             return matching_interfaces[0](jar_path, java_options)
         else:
-            return NoInterface(requested_version)
+            raise NoCompatibleRunnerInterface(requested_version)
 
     @staticmethod
     def version() -> StrictVersion:
