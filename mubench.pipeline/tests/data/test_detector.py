@@ -5,7 +5,6 @@ from nose.tools import assert_equals, assert_is_instance, assert_raises
 from tests.test_utils.runner_interface_test_impl import RunnerInterfaceTestImpl
 
 from data.detector import Detector
-from data.runner_interface import NoInterface
 from utils.io import remove_tree, write_yaml
 
 

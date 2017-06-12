@@ -8,7 +8,7 @@ from unittest.mock import MagicMock, PropertyMock, patch
 
 from nose.tools import assert_equals, assert_true, assert_false, assert_raises
 
-from data.runner_interface import NoInterface, RunnerInterface, RunnerInterface_0_0_8, NoCompatibleRunnerInterface
+from data.runner_interface import RunnerInterface, RunnerInterface_0_0_8, NoCompatibleRunnerInterface
 from tests.data.stub_detector import StubDetector
 from utils.io import remove_tree, write_yaml
 from utils.shell import Shell, CommandFailedError
@@ -51,18 +51,6 @@ class TestRunnerInterface:
 
         assert_false(LatestInterface("", []).is_legacy())
 
-
-class TestNoInterface:
-    def test_execute_raises_exception(self):
-        uut = NoInterface("-version-")
-        assert_raises(NoCompatibleRunnerInterface, uut.execute, [])
-
-    def test_exception_contains_version(self):
-        uut = NoInterface("-version-")
-        try:
-            uut.execute()
-        except NoCompatibleRunnerInterface as e:
-            assert_equals(str(e), "No compatible runner interface for version -version-")
 
 @patch("data.runner_interface.Shell")
 class TestRunnerInterface_0_0_8:

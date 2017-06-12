@@ -85,17 +85,6 @@ class RunnerInterface:
         return sorted(versions)[-1]
 
 
-class NoInterface():
-    def __init__(self, requested_cli_version: StrictVersion):
-        self._requested_cli_version = requested_cli_version
-
-    def execute(self, *_):
-        raise NoCompatibleRunnerInterface(self._requested_cli_version)
-
-    def is_legacy(self):
-        return False
-
-
 class RunnerInterface_0_0_8(RunnerInterface):
     _VALID_KEYS = [
         "target",
