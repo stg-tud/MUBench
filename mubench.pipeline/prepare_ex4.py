@@ -52,7 +52,9 @@ def _get_subtypes(target_type):
             for subtypes_entry in subtypes_file.readlines():
                 _SUBTYPES[subtypes_entry[0]] = subtypes_entry[1:]
 
-    return _SUBTYPES.get(target_type, [])
+    all_subtypes = _SUBTYPES.get(target_type, [])
+    subtypes_sample = [subtype for subtype in all_subtypes if "sun." not in subtype]  # filter Sun-specific types
+    return subtypes_sample
 
 
 with open(INDEX_PATH) as index:
