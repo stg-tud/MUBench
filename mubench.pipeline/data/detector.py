@@ -1,3 +1,4 @@
+from distutils.version import StrictVersion
 from logging import Logger
 from os.path import join, exists
 from typing import Dict, Optional, List
@@ -21,7 +22,7 @@ class Detector:
         release_tag = release.get("tag", "latest")
 
         if "cli_version" in release:
-            cli_version = release["cli_version"]
+            cli_version = StrictVersion(release["cli_version"])
         else:
             raise ValueError("Missing CLI version for {}".format(detector_id))
 

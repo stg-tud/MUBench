@@ -29,18 +29,13 @@ class RunnerInterface:
             self._log_legacy_warning()
 
     @staticmethod
-    def get(cli_version: str, jar_path: str, java_options: List[str]) -> 'RunnerInterface':
-        try:
-            requested_version = StrictVersion(cli_version)
-        except ValueError:
-            return NoInterface(cli_version)
-
+    def get(requested_version: StrictVersion, jar_path: str, java_options: List[str]) -> 'RunnerInterface':
         interfaces = RunnerInterface._get_interfaces()
-        matching_interfaces = [i for i in interfaces if i.version() == cli_version]
+        matching_interfaces = [i for i in interfaces if i.version() == requested_version]
         if matching_interfaces:
             return matching_interfaces[0](jar_path, java_options)
         else:
-            return NoInterface(cli_version)
+            return NoInterface(requested_version)
 
     @staticmethod
     def version() -> StrictVersion:
@@ -86,7 +81,7 @@ class RunnerInterface:
 
 
 class NoInterface():
-    def __init__(self, requested_cli_version: str):
+    def __init__(self, requested_cli_version: StrictVersion):
         self._requested_cli_version = requested_cli_version
 
     def execute(self, *_):
@@ -147,5 +142,5 @@ class RunnerInterface_0_0_8(RunnerInterface):
         return args
 
 class NoCompatibleRunnerInterface(Exception):
-    def __init__(self, version: str):
+    def __init__(self, version: StrictVersion):
         super().__init__("No compatible runner interface for version {}".format(version))
