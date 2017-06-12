@@ -15,7 +15,17 @@ from utils.shell import Shell, CommandFailedError
 from tests.test_utils.data_util import create_misuse, create_version, create_project
 from tests.test_utils.runner_interface_test_impl import RunnerInterfaceTestImpl
 
+
 class TestRunnerInterface:
+    def setup(self):
+        self.test_interfaces = [RunnerInterfaceTestImpl]
+
+        self._orig_get_interfaces = RunnerInterface._get_interfaces
+        RunnerInterface._get_interfaces = lambda: self.test_interfaces
+
+    def teardown(self):
+        RunnerInterface._get_interfaces = self._orig_get_interfaces
+
     def test_get_interface_version(self):
         actual = RunnerInterface.get(RunnerInterfaceTestImpl.TEST_VERSION, "", dict())
         assert_true(isinstance(actual, RunnerInterfaceTestImpl))
@@ -25,16 +35,20 @@ class TestRunnerInterface:
         assert_true(isinstance(actual, NoInterface))
 
     def test_interface_is_legacy(self):
-        class LatestInterface(RunnerInterface): pass
-        LatestInterface.version = lambda *_: StrictVersion("1000.0.0")
-        class LegacyInterface(RunnerInterface): pass
+        class LatestInterface(RunnerInterfaceTestImpl): pass
+        LatestInterface.version = lambda *_: StrictVersion("0.0.1")
+        class LegacyInterface(RunnerInterfaceTestImpl): pass
         LegacyInterface.version = lambda *_: StrictVersion("0.0.0")
+        self.test_interfaces = [LatestInterface, LegacyInterface]
 
         assert_true(LegacyInterface("", []).is_legacy())
 
     def test_latest_interface_is_not_legacy(self):
-        class LatestInterface(RunnerInterface): pass
-        LatestInterface.version = lambda *_: StrictVersion("1000.0.0")
+        class LatestInterface(RunnerInterfaceTestImpl): pass
+        LatestInterface.version = lambda *_: StrictVersion("0.0.1")
+        class LegacyInterface(RunnerInterfaceTestImpl): pass
+        LegacyInterface.version = lambda *_: StrictVersion("0.0.0")
+        self.test_interfaces = [LatestInterface, LegacyInterface]
 
         assert_false(LatestInterface("", []).is_legacy())
 

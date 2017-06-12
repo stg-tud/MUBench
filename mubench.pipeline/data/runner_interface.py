@@ -30,7 +30,7 @@ class RunnerInterface:
         except ValueError:
             return NoInterface(cli_version)
 
-        interfaces = RunnerInterface.__subclasses__()
+        interfaces = RunnerInterface._get_interfaces()
         matching_interfaces = [i for i in interfaces if i.version() == cli_version]
         if matching_interfaces:
             return matching_interfaces[0](jar_path, java_options)
@@ -53,9 +53,13 @@ class RunnerInterface:
         return self.version() < self.__get_latest_version()
 
     @staticmethod
+    def _get_interfaces() -> List['RunnerInterface']:
+        return RunnerInterface.__subclasses__()
+
+    @staticmethod
     def __get_latest_version() -> StrictVersion:
-        versions = [interface.version() for interface in
-                RunnerInterface.__subclasses__()]
+        versions = [interface.version() for interface in \
+                RunnerInterface._get_interfaces()]
         return sorted(versions)[-1]
 
 
