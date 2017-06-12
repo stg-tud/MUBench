@@ -15,6 +15,7 @@ CHECKOUTS_PATH = os.path.join(MUBENCH_ROOT_PATH, "checkouts", "_examples")
 INDEX_PATH = os.path.join(CHECKOUTS_PATH, "index.csv")
 SUBTYPES_PATH = os.path.join(CHECKOUTS_PATH, "subtypes.csv")
 MAX_SUBTYPES_SAMPLE_SIZE = 25
+MAX_PROJECT_SAMPLE_SIZE = 50
 
 _SUBTYPES = {}
 
@@ -23,6 +24,10 @@ password = sys.argv[2]
 
 
 def _prepare_example_projects(projects: List[GitHubProject], metadata_path: str):
+    if len(projects) > MAX_PROJECT_SAMPLE_SIZE:
+        print("[WARN] Sampling {} of {} example projects...".format(MAX_PROJECT_SAMPLE_SIZE, len(projects)))
+        projects = projects[:MAX_PROJECT_SAMPLE_SIZE]
+
     data = []
     for project in projects:
         print("[INFO] Preparing example project {}".format(project))
