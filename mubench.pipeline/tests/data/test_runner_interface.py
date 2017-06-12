@@ -31,7 +31,7 @@ class TestRunnerInterface:
         assert_true(isinstance(actual, RunnerInterfaceTestImpl))
 
     def test_get_interface_version_default_for_unavailable_version(self):
-        actual = RunnerInterface.get("-unavailable_version-", "", dict())
+        actual = RunnerInterface.get("1000.90.42", "", dict())
         assert_true(isinstance(actual, NoInterface))
 
     def test_interface_is_legacy(self):
