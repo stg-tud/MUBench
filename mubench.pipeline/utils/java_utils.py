@@ -6,9 +6,9 @@ from urllib.error import URLError
 from utils.shell import Shell
 from utils.web_util import is_valid_file, download_file
 
-UTILS_JAR_NAME = "mubench.utils.jar"
+UTILS_JAR_NAME = "mubench.utils-0.0.1-SNAPSHOT-jar-with-dependencies.jar"
 UTILS_JAR_URL = "http://www.st.informatik.tu-darmstadt.de/artifacts/mubench/{}".format(UTILS_JAR_NAME)
-UTILS_MD5 = "6790ec09b26fd90df18409ccc59585e3"
+UTILS_MD5 = "e3618de71374eb6a2508074d83cdec6b"
 
 
 def exec_util(main: str, args: str = ""):
