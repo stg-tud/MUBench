@@ -36,10 +36,13 @@ class BOA:
                 output = java_utils.exec_util("BOAExampleProjectFinder",
                                               "\"{}\" \"{}\" \"{}\"".format(self.username, self.password, type_name))
                 output_lines = output.splitlines()
-                results_start_line = output_lines.find("Start output:") + 1
-                results_end_line = output_lines.find("===")
-                results = str.join(os.sep, output[results_start_line:results_end_line])
-                io.safe_write(results, result_file_name, append=False)
+                try:
+                    results_start_line = output_lines.index("Start output:") + 1
+                    results_end_line = output_lines.index("===")
+                    results = str.join(os.sep, output[results_start_line:results_end_line])
+                    io.safe_write(results, result_file_name, append=False)
+                except ValueError:
+                    raise UserWarning("No output from BOA.")
 
             with open(result_file_name, 'r') as result_file:
                 for line in result_file.readlines():
