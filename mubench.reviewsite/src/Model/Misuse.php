@@ -138,12 +138,17 @@ class Misuse
 
     public function hasConclusiveReviewState()
     {
-        if(count($this->getReviews()) == 1){
-            $review = $this->getReviews()[0];
-            return $review->getDecision() != Decision::MAYBE;
-        }
         $review_state = $this->getReviewState();
-        return  $review_state != ReviewState::NEEDS_REVIEW && $review_state != ReviewState::DISAGREEMENT && $review_state != ReviewState::NEEDS_CLARIFICATION && $review_state != ReviewState::UNRESOLVED;
+        return $review_state != ReviewState::NEEDS_REVIEW && $review_state != ReviewState::DISAGREEMENT && $review_state != ReviewState::NEEDS_CLARIFICATION && $review_state != ReviewState::UNRESOLVED;
+    }
+
+    public function hasInconclusiveReview()
+    {
+        $decisions = $this->getReviewDecisions();
+        if (array_key_exists(Decision::MAYBE, $decisions)) {
+            return true;
+        }
+        return false;
     }
 
     public function getReviewState()
@@ -164,10 +169,7 @@ class Misuse
                     return ReviewState::UNRESOLVED;
                 }
             } else {
-                $decisions = [];
-                foreach ($this->getReviews() as $review) {
-                    $decisions[$review->getDecision()] = true;
-                }
+                $decisions = $this->getReviewDecisions();
                 if (array_key_exists(Decision::MAYBE, $decisions)) {
                     return ReviewState::NEEDS_CLARIFICATION;
                 } elseif (count($decisions) > 1) {
@@ -179,6 +181,14 @@ class Misuse
                 }
             }
         }
+    }
+
+    private function getReviewDecisions(){
+        $decisions = [];
+        foreach ($this->getReviews() as $review) {
+            $decisions[$review->getDecision()] = true;
+        }
+        return $decisions;
     }
 
     private function hasResolutionReview()
