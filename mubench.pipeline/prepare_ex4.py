@@ -13,6 +13,9 @@ from utils.shell import CommandFailedError
 MUBENCH_ROOT_PATH = os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir))
 CHECKOUTS_PATH = os.path.join(MUBENCH_ROOT_PATH, "checkouts", "_examples")
 INDEX_PATH = os.path.join(CHECKOUTS_PATH, "index.csv")
+SUBTYPES_PATH = os.path.join(CHECKOUTS_PATH, "subtype.csv")
+
+_SUBTYPES = {}
 
 username = sys.argv[1]
 password = sys.argv[2]
@@ -43,6 +46,15 @@ def prepare_example_projects(projects: List[GitHubProject], metadata_path: str):
     write_yamls(data, metadata_path)
 
 
+def _get_subtypes(target_type):
+    if not _SUBTYPES:
+        with open(SUBTYPES_PATH) as subtypes_file:
+            for subtypes_entry in subtypes_file.readlines():
+                _SUBTYPES[subtypes_entry[0]] = subtypes_entry[1:]
+
+    return _SUBTYPES.get(target_type, [])
+
+
 with open(INDEX_PATH) as index:
     boa = BOA(username, password)
     for row in csv.reader(index, delimiter="\t"):
@@ -51,7 +63,7 @@ with open(INDEX_PATH) as index:
         target_type = row[2]
         try:
             print("[INFO] Preparing examples for {}.{} (target type: {})".format(project_id, version_id, target_type))
-            projects = boa.query_projects_with_type_usages(target_type)
+            projects = boa.query_projects_with_type_usages(target_type, _get_subtypes(target_type))
             target_example_file = os.path.join(CHECKOUTS_PATH, target_type + ".yml")
             prepare_example_projects(projects, target_example_file)
         except UserWarning as warning:

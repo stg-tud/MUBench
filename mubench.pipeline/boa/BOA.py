@@ -26,21 +26,23 @@ class BOA:
         self.username = username
         self.password = password
 
-    def query_projects_with_type_usages(self, type_name: str) -> List[GitHubProject]:
+    def query_projects_with_type_usages(self, type_name: str, subtype_names: List[str]) -> List[GitHubProject]:
         projects = []
-        result_file_name = os.path.join(os.path.dirname(__file__), "results", type_name + ".boaresult")
-        if not os.path.exists(result_file_name):
-            # SMELL manually escaping parameters
-            output = java_utils.exec_util("BOAExampleProjectFinder",
-                                          "\"{}\" \"{}\" \"{}\"".format(self.username, self.password, type_name))
-            output_lines = output.splitlines()
-            results_start_line = output_lines.find("Start output:") + 1
-            results_end_line = output_lines.find("===")
-            results = str.join(os.sep, output[results_start_line:results_end_line])
-            io.safe_write(results, result_file_name, append=False)
+        for subtype_name in [type_name] + subtype_names:
+            query_id = "{}_{}".format(type_name, subtype_name)
+            result_file_name = os.path.join(os.path.dirname(__file__), "results", query_id + ".boaresult")
+            if not os.path.exists(result_file_name):
+                # SMELL manually escaping parameters
+                output = java_utils.exec_util("BOAExampleProjectFinder",
+                                              "\"{}\" \"{}\" \"{}\"".format(self.username, self.password, type_name))
+                output_lines = output.splitlines()
+                results_start_line = output_lines.find("Start output:") + 1
+                results_end_line = output_lines.find("===")
+                results = str.join(os.sep, output[results_start_line:results_end_line])
+                io.safe_write(results, result_file_name, append=False)
 
-        with open(result_file_name, 'r') as result_file:
-            for line in result_file.readlines():
-                projects.append(GitHubProject(line[8:].strip()))
-        
+            with open(result_file_name, 'r') as result_file:
+                for line in result_file.readlines():
+                    projects.append(GitHubProject(line[8:].strip()))
+
         return projects
