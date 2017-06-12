@@ -1,7 +1,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>de.tu_darmstadt.stg.mubench</groupId>
+	<groupId>de.tu-darmstadt.stg.mubench</groupId>
 	<artifactId>mubench.utils</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>mubench.cli</name>
@@ -9,16 +9,24 @@
 
 	<distributionManagement>
 		<repository>
-			<id>stg-eko</id>
+			<id>stg-mubench</id>
 			<name>Eko Releases</name>
-			<url>http://vm16.rbg.informatik.tu-darmstadt.de/nexus/repository/maven-releases</url>
+			<url>ftp://www.st.informatik.tu-darmstadt.de/mubench/mvn</url>
 		</repository>
 		<snapshotRepository>
-			<id>stg-eko</id>
+			<id>stg-mubench</id>
 			<name>Eko Snapshot</name>
-			<url>http://vm16.rbg.informatik.tu-darmstadt.de/nexus/repository/maven-snapshots</url>
+			<url>ftp://www.st.informatik.tu-darmstadt.de/mubench/mvn</url>
 		</snapshotRepository>
 	</distributionManagement>
+
+	<repositories>
+		<repository>
+			<id>stg-mubench</id>
+			<name>MuBench</name>
+			<url>http://www.st.informatik.tu-darmstadt.de/artifacts/mubench/mvn/</url>
+		</repository>
+	</repositories>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -44,8 +52,6 @@
 							<descriptorRefs>
 								<descriptorRef>jar-with-dependencies</descriptorRef>
 							</descriptorRefs>
-							<finalName>mubench.utils</finalName>
-							<appendAssemblyId>false</appendAssemblyId>
 						</configuration>
 						<phase>package</phase>
 						<goals>
@@ -55,6 +61,14 @@
 				</executions>
 			</plugin>
 		</plugins>
+		<extensions>
+			<!-- Enabling the use of FTP -->
+			<extension>
+				<groupId>org.apache.maven.wagon</groupId>
+				<artifactId>wagon-ftp</artifactId>
+				<version>1.0-beta-6</version>
+			</extension>
+		</extensions>
 	</build>
 
 	<dependencies>
