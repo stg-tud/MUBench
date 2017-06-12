@@ -21,7 +21,7 @@ username = sys.argv[1]
 password = sys.argv[2]
 
 
-def prepare_example_projects(projects: List[GitHubProject], metadata_path: str):
+def _prepare_example_projects(projects: List[GitHubProject], metadata_path: str):
     data = []
     for project in projects:
         print("[INFO] Preparing example project {}".format(project))
@@ -65,7 +65,7 @@ with open(INDEX_PATH) as index:
             print("[INFO] Preparing examples for {}.{} (target type: {})".format(project_id, version_id, target_type))
             projects = boa.query_projects_with_type_usages(target_type, _get_subtypes(target_type))
             target_example_file = os.path.join(CHECKOUTS_PATH, target_type + ".yml")
-            prepare_example_projects(projects, target_example_file)
+            _prepare_example_projects(projects, target_example_file)
         except UserWarning as warning:
             print("[WARN] {}".format(warning))
         except Exception as error:
