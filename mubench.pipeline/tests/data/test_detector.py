@@ -25,13 +25,14 @@ class TestDetector:
         assert_raises(ValueError, Detector, self.temp_dir, self.detector_id, [])
 
     def test_md5(self):
-        self.setup_releases([{"md5": "-md5-", "cli_version": "0.0.0"}])
+        self.setup_releases([{"md5": "-md5-",
+            "cli_version": RunnerInterfaceTestImpl.TEST_VERSION}])
         detector = Detector(self.temp_dir, self.detector_id, [])
 
         assert_equals("-md5-", detector.md5)
 
     def test_raises_on_missing_md5(self):
-        self.setup_releases([{"cli_version": "0.0.0"}])
+        self.setup_releases([{"cli_version": RunnerInterfaceTestImpl.TEST_VERSION}])
         assert_raises(ValueError, Detector, self.temp_dir, self.detector_id, [])
 
     def test_interface(self):
@@ -45,20 +46,24 @@ class TestDetector:
         assert_raises(ValueError, Detector, self.temp_dir, self.detector_id, [])
 
     def test_download_url(self):
-        self.setup_releases([{"cli_version": "0.0.1", "tag": "-tag-", "md5": "-md5-"}])
+        self.setup_releases(
+                [{"cli_version": RunnerInterfaceTestImpl.TEST_VERSION, "tag": "-tag-", "md5": "-md5-"}])
         detector = Detector(self.temp_dir, self.detector_id, [])
 
-        expected_url = "{}/-tag-/0.0.1/{}.jar".format(Detector.BASE_URL, self.detector_id)
+        expected_url = "{}/-tag-/{}/{}.jar".format(Detector.BASE_URL,
+                RunnerInterfaceTestImpl.TEST_VERSION, self.detector_id)
         assert_equals(expected_url, detector.jar_url)
 
     def test_gets_requested_release(self):
         self.setup_releases([
                     {"md5": "-md5_1-", "tag": "-release_1-", "cli_version": "0.0.0"},
-                    {"md5": "-md5_requested-", "tag": "-release_requested-", "cli_version": "0.0.1"},
+                    {"md5": "-md5_requested-", "tag": "-release_requested-",
+                        "cli_version": RunnerInterfaceTestImpl.TEST_VERSION},
                     {"md5": "-md5_3-", "tag": "-release_3-", "cli_version": "0.0.2"}])
         detector = Detector(self.temp_dir, self.detector_id, [], "-release_requested-")
 
-        expected_url = "{}/-release_requested-/0.0.1/{}.jar".format(Detector.BASE_URL, self.detector_id)
+        expected_url = "{}/-release_requested-/{}/{}.jar".format(Detector.BASE_URL,
+                RunnerInterfaceTestImpl.TEST_VERSION, self.detector_id)
         assert_equals(expected_url, detector.jar_url)
         assert_equals("-md5_requested-", detector.md5)
 
