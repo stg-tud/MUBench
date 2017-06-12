@@ -14,6 +14,7 @@ MUBENCH_ROOT_PATH = os.path.normpath(os.path.join(os.path.dirname(os.path.abspat
 CHECKOUTS_PATH = os.path.join(MUBENCH_ROOT_PATH, "checkouts", "_examples")
 INDEX_PATH = os.path.join(CHECKOUTS_PATH, "index.csv")
 SUBTYPES_PATH = os.path.join(CHECKOUTS_PATH, "subtypes.csv")
+MAX_SUBTYPES_SAMPLE_SIZE = 25
 
 _SUBTYPES = {}
 
@@ -54,6 +55,9 @@ def _get_subtypes(target_type):
 
     all_subtypes = _SUBTYPES.get(target_type, [])
     subtypes_sample = [subtype for subtype in all_subtypes if "sun." not in subtype]  # filter Sun-specific types
+    if len(subtypes_sample) > MAX_SUBTYPES_SAMPLE_SIZE:
+        print("[WARN] Sampling {} of {} subtypes...".format(MAX_SUBTYPES_SAMPLE_SIZE, len(subtypes_sample)))
+        subtypes_sample = subtypes_sample[:MAX_SUBTYPES_SAMPLE_SIZE]
     return subtypes_sample
 
 
