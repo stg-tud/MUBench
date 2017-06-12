@@ -24,45 +24,30 @@ class FindingsUploader
         $this->logger->info("Data for : " . $detector->name);
         $project = $run->{'project'};
         $version = $run->{'version'};
-        $runtime = $run->{'runtime'};
-        $result = $run->{'result'};
-        $number_of_findings = $run->{'number_of_findings'};
         $potential_hits = $run->{'potential_hits'};
-
-        $this->createOrUpdateDetectorStatsTable($detector, $run);
+        $this->createOrUpdateTable($detector->getStatsTableName(), $run, array($this, 'createStatsTable'));
         $this->deleteAndStoreStats($detector, $exp, $project, $version, $run);
         if ($potential_hits) {
-            $this->createOrUpdateFindingsTable($detector, $potential_hits);
+            $this->createOrUpdateTable($detector->getTableName(), $potential_hits, array($this, 'createFindingsTable'));
             $this->storeFindings($exp, $detector, $project, $version, $potential_hits);
         }
     }
 
-    private function createOrUpdateDetectorStatsTable(Detector $detector, $run)
-    {
-        $propertyColumns = $this->getPropertyColumnNames($detector->getStatsTableName());
-        if (count($propertyColumns) == 0) {
-            $this->createStatsTable($detector);
-            $propertyColumns = ['exp', 'project', 'version'];
+    private function createOrUpdateTable($table_name, $object, $createFunc){
+        $existing_columns = $this->getPropertyColumnNames($table_name);
+        if (count($existing_columns) == 0) {
+            $existing_columns = $createFunc($table_name);
         }
-        $this->logger->info("Add columns to stats table" . $detector);
-        $this->addColumnsToTable($detector->getStatsTableName(), $propertyColumns, [$run]);
-    }
-
-    private function createOrUpdateFindingsTable(Detector $detector, $findings)
-    {
-        $propertyColumns = $this->getPropertyColumnNames($detector->getTableName());
-        if (count($propertyColumns) == 0) {
-            $this->createFindingsTable($detector);
-            $propertyColumns = ['exp', 'project', 'version', 'misuse', 'rank'];
+        $this->logger->info("Add columns to " . $table_name);
+        if(is_array($object)){
+            $propertyToColumnNameMapping = $this->getPropertyToColumnNameMapping($object);
+            $propertyToColumnNameMapping = $this->removeDisruptiveFindingsColumns($propertyToColumnNameMapping);
+        }else{
+            $propertyToColumnNameMapping = $this->getColumnNamesFromProperties($object);
+            $propertyToColumnNameMapping = $this->removeDisruptiveStatsColumns($propertyToColumnNameMapping);
         }
-        $this->logger->info("Add columns to findings table " . $detector);
-        $this->addColumnsToTable($detector->getTableName(), $propertyColumns, $findings);
-    }
-
-    private function addColumnsToTable($table_name, $property_columns, $json_object)
-    {
-        foreach ($this->getPropertyToColumnNameMapping($json_object) as $column) {
-            if (!in_array($column, $property_columns)) {
+        foreach ($propertyToColumnNameMapping as $column) {
+            if (!in_array($column, $existing_columns)) {
                 $this->addColumnToTable($table_name, $column);
             }
         }
@@ -78,41 +63,62 @@ class FindingsUploader
         }
     }
 
-    private function createFindingsTable(Detector $detector)
+    private function createFindingsTable($table_name)
     {
-        $this->logger->info("Create findings table for $detector");
-        $this->db->create_table($detector->getTableName(), ['`exp` VARCHAR(10) NOT NULL',
+        $this->logger->info("Create table: " . $table_name);
+        $this->db->create_table($table_name, ['`exp` VARCHAR(10) NOT NULL',
             '`project` VARCHAR(255) NOT NULL', '`version` VARCHAR(255) NOT NULL', '`misuse` VARCHAR(255) NOT NULL',
             '`rank` VARCHAR(10) NOT NULL', 'PRIMARY KEY(`exp`, `project`, `version`, `misuse`, `rank`)']);
+        return ['exp', 'project', 'version', 'misuse', 'rank'];
     }
 
-    private function createStatsTable(Detector $detector)
+    private function createStatsTable($table_name)
     {
-        $this->logger->info("Create stats table for $detector");
-        $this->db->create_table($detector->getStatsTableName(),
+        $this->logger->info("Create table: " . $table_name);
+        $this->db->create_table($table_name,
             ['`exp` VARCHAR(10) NOT NULL', '`project` VARCHAR(255) NOT NULL', '`version` VARCHAR(255) NOT NULL',
                 'PRIMARY KEY(`exp`, `project`, `version`)']);
+        return ['exp', 'project', 'version'];
     }
 
-    private function getPropertyToColumnNameMapping($json_array)
+    private function getPropertyToColumnNameMapping($entries)
     {
         $propertyToColumnNameMapping = [];
-        foreach ($json_array as $json_object) {
-            $properties = array_keys(get_object_vars($json_object));
-            foreach ($properties as $property) {
-                // MySQL does not permit column names with more than 64 characters:
-                // https://dev.mysql.com/doc/refman/5.7/en/identifiers.html
-                $column_name = strlen($property) > 64 ? substr($property, 0, 64) : $property;
-                // Remove . from column names, since it may be confused with a table-qualified name.
-                $column_name = str_replace('.', ':', $column_name);
-                $propertyToColumnNameMapping[$property] = $column_name;
+        foreach ($entries as $entry) {
+            $propertyToColumnName = $this->getColumnNamesFromProperties($entry);
+            foreach($propertyToColumnName as $property => $column){
+                $propertyToColumnNameMapping[$property] = $column;
             }
         }
-        unset($propertyToColumnNameMapping["id"]);
-        unset($propertyToColumnNameMapping["target_snippets"]);
-        unset($propertyToColumnNameMapping["potential_hits"]);
-        unset($propertyToColumnNameMapping["detector"]);
         return $propertyToColumnNameMapping;
+    }
+
+    private function getColumnNamesFromProperties($entry)
+    {
+        $properties = array_keys(get_object_vars($entry));
+        foreach ($properties as $property) {
+            // MySQL does not permit column names with more than 64 characters:
+            // https://dev.mysql.com/doc/refman/5.7/en/identifiers.html
+            $column_name = strlen($property) > 64 ? substr($property, 0, 64) : $property;
+            // Remove . from column names, since it may be confused with a table-qualified name.
+            $column_name = str_replace('.', ':', $column_name);
+            $propertyToColumnNameMapping[$property] = $column_name;
+        }
+        return $propertyToColumnNameMapping;
+    }
+
+    private function removeDisruptiveStatsColumns($columns)
+    {
+        unset($columns["potential_hits"]);
+        unset($columns["detector"]);
+        return $columns;
+    }
+
+    private function removeDisruptiveFindingsColumns($columns)
+    {
+        unset($columns["id"]);
+        unset($columns["target_snippets"]);
+        return $columns;
     }
 
     private function addColumnToTable($table_name, $column)
@@ -135,7 +141,9 @@ class FindingsUploader
     private function storeFinding($exp, Detector $detector, $project, $version, $finding)
     {
         $values = array("exp" => $exp, "project" => $project, "version" => $version);
-        foreach ($this->getPropertyToColumnNameMapping([$finding]) as $property => $column) {
+        $propertyToColumnNameMapping = $this->getPropertyToColumnNameMapping([$finding]);
+        $propertyToColumnNameMapping = $this->removeDisruptiveFindingsColumns($propertyToColumnNameMapping);
+        foreach ($propertyToColumnNameMapping as $property => $column) {
             $value = $finding->{$property};
             $values[$column] = is_array($value) ? $this->arrayToString($value) : $value;
         }
@@ -149,7 +157,9 @@ class FindingsUploader
     {
         $this->db->table($detector->getStatsTableName())->where("exp", $exp)->where("project", $project)->where("version", $version)->delete();
         $values = array("exp" => $exp, "project" => $project, "version" => $version);
-        foreach ($this->getPropertyToColumnNameMapping([$run]) as $property => $column) {
+        $propertyToColumnNameMapping = $this->getColumnNamesFromProperties($run);
+        $propertyToColumnNameMapping = $this->removeDisruptiveStatsColumns($propertyToColumnNameMapping);
+        foreach ($propertyToColumnNameMapping as $property => $column) {
             $value = $run->{$property};
             $values[$column] = is_array($value) ? $this->arrayToString($value) : $value;
         }
