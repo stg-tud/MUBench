@@ -51,9 +51,7 @@ class Detect(ProjectVersionTask):
         file = self.detector.jar_path
 
         try:
-            if not exists(self.detector.md5_path):
-                raise FileNotFoundError("Cannot validate download, MD5-checksum file '{}' missing".format(self.detector.md5_path))
-            download_file(url, file, self.detector.md5_path)
+            download_file(url, file, self.detector.md5)
         except (FileNotFoundError, ValueError, URLError) as e:
             logger.error("Download failed: %s", e)
             exit(1)
