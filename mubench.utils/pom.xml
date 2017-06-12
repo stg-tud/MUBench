@@ -80,5 +80,10 @@
 			<artifactId>guava-collections</artifactId>
 			<version>r03</version>
 		</dependency>
+		<dependency>
+			<groupId>edu.iastate.cs.boa</groupId>
+			<artifactId>boa-client</artifactId>
+			<version>0.2.0</version>
+		</dependency>
 	</dependencies>
 </project>
