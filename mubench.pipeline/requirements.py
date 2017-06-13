@@ -98,6 +98,14 @@ class CPUCountRequirement(Requirement):
             with open("/sys/fs/cgroup/cpu/cpu.cfs_quota_us") as file:
                 quota = int(file.readline())
 
+            """
+                cpu-quota is the guaranteed microseconds of CPU time the container will get.
+                cpu-period is the scheduler period, which defaults to one second in microseconds.
+                The actual access to CPUs can be calculated using 'cpu-quota / cpu-period'.
+                Using '--cpus=X', docker sets the cpu-period to 100000 and cpu-quota to 100000 * X.
+                The default cpu-quota is -1, hence we check the host sytem in that case.
+                Example: '--cpus=1.5' means '--cpu-period=100000 --cpu-quota=150000'.
+            """
             no_limit = quota < 0
             if no_limit:
                 return self._get_normal_cpu_count()
