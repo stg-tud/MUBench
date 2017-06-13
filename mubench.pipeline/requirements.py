@@ -146,12 +146,12 @@ class MemoryRequirement(Requirement):
         except Exception as e:
             raise RuntimeError("Failed to check memory: {}".format(e))
 
-    def _to_readable_size(self, memory: int) -> str:
+    def _to_readable_size(self, size_in_bytes: int) -> str:
         try:
             hf = _try_import("hurry.filesize")
-            return str(hf.size(memory))
+            return str(hf.size(size_in_bytes))
         except ImportError:
-            return str(memory) + "B"
+            return str(size_in_bytes) + "B"
 
 
 def _in_container() -> bool:
