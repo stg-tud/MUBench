@@ -95,9 +95,6 @@ class CPUCountRequirement(Requirement):
 
     def _get_container_cpu_count(self):
         try:
-            with open("/sys/fs/cgroup/cpu/cpu.cfs_quota_us") as file:
-                quota = int(file.readline())
-
             """
                 cpu-quota is the guaranteed microseconds of CPU time the container will get.
                 cpu-period is the scheduler period, which defaults to one second in microseconds.
@@ -106,15 +103,26 @@ class CPUCountRequirement(Requirement):
                 The default cpu-quota is -1, hence we check the host sytem in that case.
                 Example: '--cpus=1.5' means '--cpu-period=100000 --cpu-quota=150000'.
             """
-            no_limit = quota < 0
+
+            cpu_quota = self._get_cpu_quota()
+            cpu_period = self._get_cpu_period()
+
+            no_limit = cpu_quota < 0
             if no_limit:
                 return self._get_normal_cpu_count()
             else:
-                cpu_period = 100000
-                return quota / cpu_period
+                return cpu_quota / cpu_period
 
         except Exception as e:
             raise RuntimeError("Failed to check CPU count: {}".format(e))
+
+    def _get_cpu_quota(self):
+        with open("/sys/fs/cgroup/cpu/cpu.cfs_quota_us") as file:
+            return int(file.readline())
+
+    def _get_cpu_period(self):
+        with open("/sys/fs/cgroup/cpu/cpu.cfs_period_us") as file:
+            return int(file.readline())
 
     def _get_normal_cpu_count(self):
         psutil = _try_import("psutil")
