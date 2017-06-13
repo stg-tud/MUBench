@@ -25,27 +25,36 @@ class FindingsUploader
         $project = $run->{'project'};
         $version = $run->{'version'};
         $potential_hits = $run->{'potential_hits'};
-        $this->createOrUpdateTable($detector->getStatsTableName(), $run, array($this, 'createStatsTable'));
+
+        $this->createOrUpdateStatsTable($detector, $run);
         $this->deleteAndStoreStats($detector, $exp, $project, $version, $run);
         if ($potential_hits) {
-            $this->createOrUpdateTable($detector->getTableName(), $potential_hits, array($this, 'createFindingsTable'));
+            $this->createOrUpdateFindingsTable($detector, $potential_hits);
             $this->storeFindings($exp, $detector, $project, $version, $potential_hits);
         }
     }
 
-    private function createOrUpdateTable($table_name, $object, $createFunc){
+    private function createOrUpdateStatsTable(Detector $detector, $run)
+    {
+        $propertyToColumnNameMapping = $this->getColumnNamesFromProperties($run);
+        $propertyToColumnNameMapping = $this->removeDisruptiveStatsColumns($propertyToColumnNameMapping);
+        $this->createOrUpdateTable($detector->getStatsTableName(),$propertyToColumnNameMapping , array($this, 'createStatsTable'));
+    }
+
+    private function createOrUpdateFindingsTable(Detector $detector, $findings)
+    {
+        $propertyToColumnNameMapping = $this->getPropertyToColumnNameMapping($findings);
+        $propertyToColumnNameMapping = $this->removeDisruptiveFindingsColumns($propertyToColumnNameMapping);
+        $this->createOrUpdateTable($detector->getTableName(), $propertyToColumnNameMapping, array($this, 'createFindingsTable'));
+    }
+
+    private function createOrUpdateTable($table_name, $propertyToColumnNameMapping, $createFunc)
+    {
         $existing_columns = $this->getPropertyColumnNames($table_name);
         if (count($existing_columns) == 0) {
             $existing_columns = $createFunc($table_name);
         }
         $this->logger->info("Add columns to " . $table_name);
-        if(is_array($object)){
-            $propertyToColumnNameMapping = $this->getPropertyToColumnNameMapping($object);
-            $propertyToColumnNameMapping = $this->removeDisruptiveFindingsColumns($propertyToColumnNameMapping);
-        }else{
-            $propertyToColumnNameMapping = $this->getColumnNamesFromProperties($object);
-            $propertyToColumnNameMapping = $this->removeDisruptiveStatsColumns($propertyToColumnNameMapping);
-        }
         foreach ($propertyToColumnNameMapping as $column) {
             if (!in_array($column, $existing_columns)) {
                 $this->addColumnToTable($table_name, $column);
