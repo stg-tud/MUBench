@@ -17,6 +17,11 @@ def safe_write(content: str, file_path: str, append: bool) -> None:
         print(content, file=file)
 
 
+def safe_read(file_path: str) -> str:
+    with open(file_path, 'r') as file:
+        return file.read()
+
+
 def safe_open(file_path: str, mode: str, newline: str = None):
     create_file_path(file_path)
     return open(file_path, mode, newline=newline, encoding="utf-8")

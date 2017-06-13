@@ -1,6 +1,8 @@
+import os
 import re
 from os.path import join
 
+from utils import io
 from utils.java_utils import exec_util
 from utils.shell import CommandFailedError
 
@@ -31,6 +33,8 @@ def get_snippets(source_base_path, file, method):
                 for method in methods:
                     info = method.split(":", 2)
                     snippets.append(Snippet("""class {} {{\n{}\n}}""".format(info[1], info[2]), int(info[0]) - 1))
+        elif file and os.path.exists(file):
+            snippets.append(Snippet(io.safe_read(file), 1))
 
     except CommandFailedError as e:
         snippets.append(Snippet(str(e), 1))
