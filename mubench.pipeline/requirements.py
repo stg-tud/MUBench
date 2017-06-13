@@ -110,7 +110,8 @@ class CPUCountRequirement(Requirement):
             if no_limit:
                 return self._get_normal_cpu_count()
             else:
-                return quota / 100000
+                cpu_period = 100000
+                return quota / cpu_period
 
         except Exception as e:
             raise RuntimeError("Failed to check CPU count: {}".format(e))
