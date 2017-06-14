@@ -23,166 +23,300 @@ use MuBench\ReviewSite\Model\Experiment;
 use MuBench\ReviewSite\Model\Decision;
 use MuBench\ReviewSite\Model\Review;
 use MuBench\ReviewSite\Model\ReviewState;
+
+$columns_to_ignore = array(
+    'exp',
+    'project',
+    'version',
+    'misuses',
+    'detector',
+    'result',
+    'number_of_findings',
+    'runtime'
+);
+
 ?>
 <html>
 <head>
     <title>MuBench :: Review Site</title>
-    <link rel="stylesheet" type="text/css" href="<?= $site_base_url ?>style/style.css" />
+    <link rel="stylesheet" type="text/css" href="<?= $site_base_url ?>style/style.css"/>
+    <link rel="stylesheet" type="text/css" href="<?= $site_base_url ?>style/modal.css"/>
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/animate.css/3.2.0/animate.min.css">
     <link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
 </head>
 <body>
 <?php include "includes/menu.phtml"; ?>
 
-    <h1>Experiment <?= $experiment->getNumber() ?>: <?= htmlspecialchars($experiment->getTitle()) ?></h1>
-    <h2>Detector: <?= htmlspecialchars($detector->name); ?></h2>
-    <?php if(strcmp($experiment, "ex2") == 0) : ?>
-        <form action="" method="get">
-            <label for="ex2_review_size">Max. Reviews per Project</label>:
-            <input type="text" id="ex2_review_size" name="ex2_review_size" value="<?= $ex2_review_size ?>" />
-            <input type="submit" value="update" />
-        </form>
-    <?php endif; ?>
-    <table>
-        <thead>
-            <tr>
-                <th>Project</th>
-                <th>Version</th>
-                <th>Result</th>
-                <th># of Findings</th>
-                <th>Runtime</th>
-                <th>Misuse</th>
-                <?php if($experiment->getId() !== "ex2") : ?><th>Violation Types</th><?php endif ?>
-                <th>Decision</th>
-                <th>Reviews</th>
-                <th>Your Review</th>
-                <th>Your Comment</th>
-            </tr>
-        </thead>
-        <tbody>
-        <?php $last_project = "" ?>
-        <?php foreach($runs as $run) : ?>
+<h1>Experiment <?= $experiment->getNumber() ?>: <?= htmlspecialchars($experiment->getTitle()) ?></h1>
+<h2>Detector: <?= htmlspecialchars($detector->name); ?></h2>
+        <?php if(strcmp($experiment, "ex2") == 0) : ?>
+            <form action="" method="get">
+                <label for="ex2_review_size">Max. Reviews per Project</label>:
+                <input type="text" id="ex2_review_size" name="ex2_review_size" value="<?= $ex2_review_size ?>" />
+                <input type="submit" value="update" />
+            </form>
+        <?php endif; ?>
+<table>
+    <thead>
+    <tr>
+        <th>Project</th>
+        <th>Version</th>
+        <th>Result</th>
+        <th># of Findings</th>
+        <th>Runtime</th>
+        <th></th>
+        <th>Misuse</th>
+        <?php if ($experiment->getId() !== "ex2") : ?>
+            <th>Violation Types</th><?php endif ?>
+        <th>Decision</th>
+        <th>Reviews</th>
+        <th>Your Review</th>
+        <th>Your Comment</th>
+    </tr>
+    </thead>
+    <tbody>
+    <?php $last_project = "" ?>
+    <?php foreach ($runs as $run) : ?>
+        <?php
+        $project = $run["project"];
+        $new_project = strcmp($last_project, $run["project"]) !== 0;
+        $last_project = $project;
+        $version = $run["version"];
+        $new_version = true;
+        $additional_stats = array_filter(array_keys($run), function ($key) use ($columns_to_ignore, $run) {
+            return !in_array($key, $columns_to_ignore) && array_key_exists($key, $run);
+        });
+        sort($additional_stats);
+        ?>
+        <?php foreach ($run['misuses'] as $misuse) : /* @var $misuse \MuBench\ReviewSite\Model\Misuse */ ?>
             <?php
-            $project = $run["project"];
-            $new_project = strcmp($last_project, $run["project"]) !== 0;
-            $last_project = $project;
-            $version = $run["version"];
-            $new_version = true;
+            $classes = [];
+            if ($new_project) $classes[] = "top";
+            if (!$misuse->hasPotentialHits()) $classes[] = "no-hit";
+            $style_classes = implode(" ", $classes);
             ?>
-            <?php foreach($run['misuses'] as $misuse) : /* @var $misuse \MuBench\ReviewSite\Model\Misuse */ ?>
-                <?php
-                $classes = [];
-                if($new_project) $classes[] = "top";
-                if(!$misuse->hasPotentialHits()) $classes[] = "no-hit";
-                $style_classes = implode(" ", $classes);
-                ?>
-                <tr>
-                    <td class="<?= $style_classes ?>">
-                        <?= $new_project ? htmlspecialchars($project) : ""; ?></td>
-                    <td class="<?= $style_classes ?>">
-                        <?= $new_version ? htmlspecialchars($version) : ""; ?></td>
-                    <td class="<?= $style_classes ?>">
-                        <?= $new_version ? htmlspecialchars($run['result']) : ""; ?></td>
-                    <td class="<?= $style_classes ?> right">
-                        <?= $new_version ? htmlspecialchars($run['number_of_findings']) : ""; ?></td>
-                    <td class="<?= $style_classes ?> right">
-                        <?= $new_version ? htmlspecialchars(substr($run['runtime'], 0, 4)) . "s" : ""; ?></td>
-                    <td class="<?= $style_classes ?>">
-                        <?= htmlspecialchars($misuse->getShortId()); ?></td>
-                    <?php if($experiment->getId() !== "ex2") : ?>
-                        <td class="<?= $style_classes ?>">
-                            <?= implode("<br/>", $misuse->getViolationTypes()) ?>
-                        </td>
+            <tr>
+                <td class="<?= $style_classes ?>">
+                    <?= $new_project ? htmlspecialchars($project) : ""; ?></td>
+                <td class="<?= $style_classes ?>">
+                    <?= $new_version ? htmlspecialchars($version) : ""; ?></td>
+                <td class="<?= $style_classes ?>">
+                    <?= $new_version ? htmlspecialchars($run['result']) : ""; ?></td>
+                <td class="<?= $style_classes ?> right">
+                    <?= $new_version ? htmlspecialchars($run['number_of_findings']) : ""; ?></td>
+                <td class="<?= $style_classes ?> right">
+                    <?= $new_version ? htmlspecialchars(substr($run['runtime'], 0, 4)) . "s" : ""; ?></td>
+                <td class="<?= $style_classes ?> right">
+                    <?php if ($new_version) : ?>
+                        <button class="more-button"
+                                value="<?= htmlspecialchars($project) ?>_<?= htmlspecialchars($version) ?>">more
+                        </button>
+                        <div id="<?= htmlspecialchars($project) ?>_<?= htmlspecialchars($version) ?>" class="modal">
+
+                            <!-- Modal content -->
+                            <div class="modal-content">
+                                <span class="close"
+                                      id="<?= htmlspecialchars($project) ?>_<?= htmlspecialchars($version) ?>">&times;</span>
+                                <h2 class="header">Detector: <?= htmlspecialchars($project); ?></h2>
+                                <table class="invisible fw">
+                                    <tr>
+                                        <td><b>Version:</b></td>
+                                        <td><?= htmlspecialchars($version); ?></td>
+                                    </tr>
+                                    <tr>
+                                        <td><b>Result:</b></td>
+                                        <td><?= htmlspecialchars($run['result']); ?></td>
+                                    </tr>
+                                    <tr>
+                                        <td><b># of Findings:</b></td>
+                                        <td><?= htmlspecialchars($run['number_of_findings']); ?></td>
+                                    </tr>
+                                    <tr>
+                                        <td><b>Runtime:</b></td>
+                                        <td><?= htmlspecialchars(substr($run['runtime'], 0, 4)) . "s"; ?></td>
+                                    </tr>
+                                    <?php foreach ($additional_stats as $stat) : ?>
+                                        <tr>
+                                            <td><b><?= htmlspecialchars($stat) ?>:</b></td>
+                                            <td><?= htmlspecialchars($run[$stat]); ?></td>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                </table>
+                            </div>
+
+                        </div>
                     <?php endif; ?>
+                </td>
+                <td class="<?= $style_classes ?>">
+                    <?= htmlspecialchars($misuse->getShortId()); ?></td>
+                <?php if ($experiment->getId() !== "ex2") : ?>
+                    <td class="<?= $style_classes ?>">
+                        <?= implode("<br/>", $misuse->getViolationTypes()) ?>
+                    </td>
+                <?php endif; ?>
+                <?php
+                $review_url = $url_prefix .
+                    htmlspecialchars($experiment->getId()) .
+                    "/" .
+                    htmlspecialchars($detector->name) .
+                    "/" .
+                    htmlspecialchars($project) .
+                    "/" .
+                    htmlspecialchars($version) .
+                    "/" .
+                    htmlspecialchars($misuse->id);
+                ?>
+                <td class="<?= $style_classes ?>">
+                    <?php $review_state = $misuse->getReviewState() ?>
+                    <?php if ($review_state == ReviewState::NOTHING_TO_REVIEW): ?>
+                    <?php elseif ($review_state == ReviewState::NEEDS_REVIEW): ?>
+                        <i class="fa fa-search" aria-hidden="true" style="color:red;" title="Needs Review"></i>
+                    <?php elseif ($review_state == ReviewState::NEEDS_CLARIFICATION): ?>
+                        <i class="fa fa-question-circle" aria-hidden="true" style="color:blue;"
+                           title="Needs Clarification"></i>
+                    <?php elseif ($review_state == ReviewState::DISAGREEMENT): ?>
+                        <a href="<?= $review_url ?>/resolution"><i class="fa fa-exclamation-triangle" aria-hidden="true"
+                                                                   style="color:red;" title="Disagreement"></i></a>
+                    <?php elseif ($review_state == ReviewState::AGREEMENT_YES): ?>
+                        <i class="fa fa-thumbs-o-up" aria-hidden="true" style="color:green;" title="Agreement: Yes"></i>
+                    <?php elseif ($review_state == ReviewState::AGREEMENT_NO): ?>
+                        <i class="fa fa-thumbs-o-down" aria-hidden="true" style="color:darkred;"
+                           title="Agreement: No"></i>
+                    <?php elseif ($review_state == ReviewState::RESOLVED_YES): ?>
+                        <i class="fa fa-thumbs-o-up" aria-hidden="true" style="color:green;" title="Resolved: Yes"></i>
+                        (<a href="<?= $review_url ?>/resolution"><i class="fa fa-handshake-o" aria-hidden="true"
+                                                                    title="Resolution"></i></a>)
+                    <?php elseif ($review_state == ReviewState::RESOLVED_NO): ?>
+                        <i class="fa fa-thumbs-o-down" aria-hidden="true" style="color:darkred;"
+                           title="Resolved: No"></i>
+                        (<a href="<?= $review_url ?>/resolution"><i class="fa fa-handshake-o" aria-hidden="true"
+                                                                    title="Resolution"></i></a>)
+                    <?php endif; ?>
+                </td>
+                <td class="<?= $style_classes ?>">
+                    <ul class="inline">
+                        <?php foreach ($misuse->getReviews() as $review) : /** @var Review $review */ ?>
+                            <?php $reviewer_name = htmlspecialchars($review->getReviewerName()) ?>
+                            <li style="display:inline"><a
+                                        href="<?= $review_url ?>/<?= $reviewer_name ?>"><?= $reviewer_name ?></a></li>
+                        <?php endforeach; ?>
+                    </ul>
+                </td>
+                <td class="<?= $style_classes ?>">
                     <?php
-                        $review_url = $url_prefix . htmlspecialchars($experiment->getId()) . "/" . htmlspecialchars($detector->name) . "/" .
-                            htmlspecialchars($project) . "/" . htmlspecialchars($version) . "/" . htmlspecialchars($misuse->id);
+                    $button_classes = "button" .
+                        (!$misuse->hasPotentialHits() ||
+                        ($user && $misuse->hasSufficientReviews() || $misuse->hasReviewed($user)) ? " no-hit" : "")
                     ?>
-                    <td class="<?= $style_classes ?>">
-                        <?php $review_state = $misuse->getReviewState() ?>
-                        <?php if ($review_state == ReviewState::NOTHING_TO_REVIEW): ?>
-                        <?php elseif ($review_state == ReviewState::NEEDS_REVIEW): ?>
-                            <i class="fa fa-search" aria-hidden="true" style="color:red;" title="Needs Review"></i>
-                        <?php elseif ($review_state == ReviewState::NEEDS_CLARIFICATION): ?>
-                            <i class="fa fa-question-circle" aria-hidden="true" style="color:blue;" title="Needs Clarification"></i>
-                        <?php elseif ($review_state == ReviewState::DISAGREEMENT): ?>
-                        <a href="<?= $review_url ?>/resolution"><i class="fa fa-exclamation-triangle" aria-hidden="true" style="color:red;" title="Disagreement"></i></a>
-                        <?php elseif ($review_state == ReviewState::AGREEMENT_YES): ?>
-                            <i class="fa fa-thumbs-o-up" aria-hidden="true" style="color:green;" title="Agreement: Yes"></i>
-                        <?php elseif ($review_state == ReviewState::AGREEMENT_NO): ?>
-                            <i class="fa fa-thumbs-o-down" aria-hidden="true" style="color:darkred;" title="Agreement: No"></i>
-                        <?php elseif ($review_state == ReviewState::RESOLVED_YES): ?>
-                            <i class="fa fa-thumbs-o-up" aria-hidden="true" style="color:green;" title="Resolved: Yes"></i>
-                            (<a href="<?= $review_url ?>/resolution"><i class="fa fa-handshake-o" aria-hidden="true" title="Resolution"></i></a>)
-                        <?php elseif ($review_state == ReviewState::RESOLVED_NO): ?>
-                            <i class="fa fa-thumbs-o-down" aria-hidden="true" style="color:darkred;" title="Resolved: No"></i>
-                            (<a href="<?= $review_url ?>/resolution"><i class="fa fa-handshake-o" aria-hidden="true" title="Resolution"></i></a>)
-                        <?php endif; ?>
-                    </td>
-                    <td class="<?= $style_classes ?>">
-                        <ul class="inline">
-                            <?php foreach($misuse->getReviews() as $review) : /** @var Review $review */ ?>
-                                <?php $reviewer_name = htmlspecialchars($review->getReviewerName()) ?>
-                                <li style="display:inline"><a href="<?= $review_url ?>/<?= $reviewer_name ?>"><?= $reviewer_name ?></a></li>
-                            <?php endforeach; ?>
-                        </ul>
-                    </td>
-                    <td class="<?= $style_classes ?>">
-                        <?php
-                        $button_classes = "button" . (!$misuse->hasPotentialHits() || ($user && $misuse->hasSufficientReviews() || $misuse->hasReviewed($user)) ? " no-hit" : "")
-                        ?>
-                        <?php if (!$user): ?>
-                            <a href="<?= $review_url; ?>" class="<?= $button_classes ?>">view</a>
-                        <?php elseif ($misuse->hasReviewed($user)): ?>
-                            <a href="<?= $review_url ?>" class="<?= $button_classes ?>">edit
+                    <?php if (!$user): ?>
+                        <a href="<?= $review_url; ?>" class="<?= $button_classes ?>">view</a>
+                    <?php elseif ($misuse->hasReviewed($user)): ?>
+                        <a href="<?= $review_url ?>" class="<?= $button_classes ?>">edit
                             <?php $your_decision = $misuse->getReview($user)->getDecision() ?>
                             <?php if ($your_decision == Decision::YES): ?>
                                 (<i class="fa fa-thumbs-o-up" aria-hidden="true" style="color:green;" title="Yes"></i>)
                             <?php elseif ($your_decision == Decision::NO): ?>
-                                (<i class="fa fa-thumbs-o-down" aria-hidden="true" style="color:darkred;" title="No"></i>)
+                                (<i class="fa fa-thumbs-o-down" aria-hidden="true" style="color:darkred;"
+                                    title="No"></i>)
                             <?php else: ?>
-                                (<i class="fa fa-question-circle" aria-hidden="true" style="color:blue;" title="Need Clarification"></i>)
+                                (<i class="fa fa-question-circle" aria-hidden="true" style="color:blue;"
+                                    title="Need Clarification"></i>)
                             <?php endif; ?>
-                            </a>
-                        <?php else: ?>
-                            <a href="<?= $review_url; ?>" class="<?= $button_classes ?>">review</a>
-                        <?php endif; ?>
-                    </td>
-                    <td class="<?= $style_classes ?>" style="max-width: 300px;">
-                        <?= $misuse->hasReviewed($user) ? $misuse->getReview($user)->getComment() : "" ?>
-                    </td>
-                </tr>
-                <?php
-                $new_version = false;
-                $new_project = false;
-                ?>
-            <?php endforeach; ?>
-            <?php if(!$run["misuses"]) : ?>
-                <?php
-                $classes = ["no-hit"];
-                if($new_project) $classes[] = "top";
-                $style_classes = implode(" ", $classes);
-                ?>
-                <tr>
-                    <td class="<?= $style_classes ?>">
-                        <?= $new_project ? htmlspecialchars($project) : ""; ?></td>
-                    <td class="<?= $style_classes ?>">
-                        <?= $new_version ? htmlspecialchars($version) : ""; ?></td>
-                    <td class="<?= $style_classes ?>">
-                        <?= $new_version ? htmlspecialchars($run['result']) : ""; ?></td>
-                    <td class="<?= $style_classes ?> right">
-                        <?= $new_version ? htmlspecialchars($run['number_of_findings']) : ""; ?></td>
-                    <td class="<?= $style_classes ?> right">
-                        <?= $new_version ? htmlspecialchars(substr($run['runtime'], 0, 4)) . "s" : ""; ?></td>
-                    <td class="<?= $style_classes ?>"></td>
-                    <?php if ($experiment->getId() !== "ex2"): ?><td class="<?= $style_classes ?>"></td><?php endif ?>
-                    <td class="<?= $style_classes ?>"></td>
-                    <td class="<?= $style_classes ?>"></td>
-                    <td class="<?= $style_classes ?>"></td>
-                    <td class="<?= $style_classes ?>" style="max-width: 300px;"></td>
-                </tr>
-            <?php endif; ?>
+                        </a>
+                    <?php else: ?>
+                        <a href="<?= $review_url; ?>" class="<?= $button_classes ?>">review</a>
+                    <?php endif; ?>
+                </td>
+                <td class="<?= $style_classes ?>" style="max-width: 300px;">
+                    <?= $misuse->hasReviewed($user) ? $misuse->getReview($user)->getComment() : "" ?>
+                </td>
+            </tr>
+            <?php
+            $new_version = false;
+            $new_project = false;
+            ?>
         <?php endforeach; ?>
-        </tbody>
-    </table>
+        <?php if (!$run["misuses"]) : ?>
+            <?php
+            $classes = ["no-hit"];
+            if ($new_project) $classes[] = "top";
+            $style_classes = implode(" ", $classes);
+            ?>
+            <tr>
+                <td class="<?= $style_classes ?>">
+                    <?= $new_project ? htmlspecialchars($project) : ""; ?></td>
+                <td class="<?= $style_classes ?>">
+                    <?= $new_version ? htmlspecialchars($version) : ""; ?></td>
+                <td class="<?= $style_classes ?>">
+                    <?= $new_version ? htmlspecialchars($run['result']) : ""; ?></td>
+                <td class="<?= $style_classes ?> right">
+                    <?= $new_version ? htmlspecialchars($run['number_of_findings']) : ""; ?></td>
+                <td class="<?= $style_classes ?> right">
+                    <?= $new_version ? htmlspecialchars(substr($run['runtime'], 0, 4)) . "s" : ""; ?></td>
+                <td class="<?= $style_classes ?> right">
+                    <?php if ($new_version) : ?>
+                        <button class="more-button"
+                                value="<?= htmlspecialchars($project) ?>_<?= htmlspecialchars($version) ?>">more
+                        </button>
+                        <div id="<?= htmlspecialchars($project) ?>_<?= htmlspecialchars($version) ?>" class="modal">
+                            <!-- Modal content -->
+                            <div class="modal-content">
+                                <span class="close"
+                                      id="<?= htmlspecialchars($project) ?>_<?= htmlspecialchars($version) ?>">&times;</span>
+                                <h2 class="header">Detector: <?= htmlspecialchars($project); ?></h2>
+                                <table class="invisible fw">
+                                    <tr>
+                                        <td><b>Version:</b></td>
+                                        <td><?= htmlspecialchars($version); ?></td>
+                                    </tr>
+                                    <tr>
+                                        <td><b>Result:</b></td>
+                                        <td><?= htmlspecialchars($run['result']); ?></td>
+                                    </tr>
+                                    <tr>
+                                        <td><b># of Findings:</b></td>
+                                        <td><?= htmlspecialchars($run['number_of_findings']); ?></td>
+                                    </tr>
+                                    <tr>
+                                        <td><b>Runtime:</b></td>
+                                        <td><?= htmlspecialchars(substr($run['runtime'], 0, 4)) . "s"; ?></td>
+                                    </tr>
+                                </table>
+                            </div>
+
+                        </div>
+                    <?php endif; ?>
+                </td>
+                <td class="<?= $style_classes ?>"></td>
+                <?php if ($experiment->getId() !== "ex2"): ?>
+                <td class="<?= $style_classes ?>"></td><?php endif ?>
+                <td class="<?= $style_classes ?>"></td>
+                <td class="<?= $style_classes ?>"></td>
+                <td class="<?= $style_classes ?>"></td>
+                <td class="<?= $style_classes ?>" style="max-width: 300px;"></td>
+            </tr>
+        <?php endif; ?>
+    <?php endforeach; ?>
+    </tbody>
+</table>
+
+
+<script>
+    var buttons = document.getElementsByClassName("more-button");
+    for (var i = 0; i < buttons.length; ++i) {
+        var btn = buttons[i];
+        btn.onclick = function (event) {
+            document.getElementById(event.target.value).style.display = "block";
+        };
+
+        window.onclick = function (event) {
+            if (event.target.className == "modal" || event.target.className == "close") {
+                document.getElementById(event.target.id).style.display = "None";
+            }
+        }
+    }
+
+
+</script>
 </body>
 </html>

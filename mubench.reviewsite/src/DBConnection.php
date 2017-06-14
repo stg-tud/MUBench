@@ -163,7 +163,6 @@ class DBConnection
         $columns = ['line', 'snippet'];
         if (strcmp($experiment, "ex2") == 0) {
             $query = $this->table('finding_snippets')->where('finding', $misuse_id)->where('detector', $detector->id);
-            $columns[] = 'id';
         } else {
             $query = $this->table('meta_snippets')->where('misuse', $misuse_id);
         }

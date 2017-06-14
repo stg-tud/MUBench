@@ -18,13 +18,13 @@ return [
     ],
     'db' => [
         'driver'    => 'mysql',
-        'host'      => 'localhost',
-        'database'  => 'database',
-        'username'  => 'username',
-        'password'  => 'password',
+        'host'      => 'localhost:8889',
+        'database'  => 'mubench1',
+        'username'  => 'root',
+        'password'  => 'root',
         'charset'   => 'utf8',
         'collation' => 'utf8_unicode_ci',
-        'prefix'    => 'mubench_',
+        'prefix'    => 'mubench_fse17_',
         'options'   => []
     ],
     'upload' => "./upload",
