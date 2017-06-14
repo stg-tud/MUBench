@@ -38,7 +38,7 @@ class FindingsUploader
     {
         $propertyToColumnNameMapping = $this->getColumnNamesFromProperties($run);
         $propertyToColumnNameMapping = $this->removeDisruptiveStatsColumns($propertyToColumnNameMapping);
-        $this->createOrUpdateTable($detector->getStatsTableName(),$propertyToColumnNameMapping , array($this, 'createStatsTable'));
+        $this->createOrUpdateTable($detector->getStatsTableName(), $propertyToColumnNameMapping, array($this, 'createStatsTable'));
     }
 
     private function createOrUpdateFindingsTable(Detector $detector, $findings)
