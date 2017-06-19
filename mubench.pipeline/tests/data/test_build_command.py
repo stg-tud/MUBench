@@ -7,9 +7,6 @@ from unittest.mock import MagicMock, patch, ANY
 class BuildCommandTestImpl(BuildCommand):
     TEST_COMMAND = "-test_command-"
 
-    def __init__(self, args):
-        super().__init__(args)
-
     @staticmethod
     def name():
         return BuildCommandTestImpl.TEST_COMMAND
@@ -28,8 +25,11 @@ class TestBuildCommand:
         actual = BuildCommand.get(BuildCommandTestImpl.TEST_COMMAND)
         assert_is_instance(actual, BuildCommandTestImpl)
 
-    def test_raise_on_unknown_command(self):
-        assert_raises(ValueError, BuildCommand.get, "-unknown_command-")
+    def test_generic_command_returns_base_implementation(self):
+        uut = BuildCommand.get("-some_command-")
+
+        assert_is_instance(uut, BuildCommand)
+        assert_equals("-some_command-", uut._name)
 
     def test_raise_on_multiple_matches(self):
         duplicate_command = BuildCommandTestImpl.TEST_COMMAND
@@ -39,16 +39,16 @@ class TestBuildCommand:
 
     @patch("data.build_command.Shell.exec")
     def test_execute_runs_command(self, shell_mock):
-        uut = BuildCommand.get(BuildCommandTestImpl.TEST_COMMAND)
+        uut = BuildCommand.get("-command-")
 
         uut.execute("-project_dir-", "-dep_dir-", "-cmp_base_path-")
 
-        shell_mock.assert_called_with(BuildCommandTestImpl.TEST_COMMAND,
+        shell_mock.assert_called_with("-command-",
                                       cwd="-project_dir-", logger=ANY)
 
     @patch("data.build_command.Shell.exec")
     def test_execute_runs_command_with_args(self, shell_mock):
-        command = BuildCommandTestImpl.TEST_COMMAND + " -arg- --arg--"
+        command = "-command- -arg- --arg--"
         uut = BuildCommand.get(command)
 
         uut.execute("-project_dir-", "-dep_dir-", "-cmp_base_path-")
@@ -59,7 +59,7 @@ class TestBuildCommand:
     @patch("data.build_command.Shell.exec")
     def test_execute_copies_dependencies(self, shell_mock):
         shell_mock.return_value = "-output-"
-        command = BuildCommandTestImpl.TEST_COMMAND + " -arg- --arg--"
+        command = "-command-"
         uut = BuildCommand.get(command)
         uut._copy_dependencies = MagicMock()
 
