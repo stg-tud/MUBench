@@ -66,5 +66,6 @@ class TestBuildCommand:
         uut.execute("-project_dir-", "-dep_dir-", "-cmp_base_path-")
 
         uut._copy_dependencies.assert_called_with("-output-",
+                                                  "-project_dir-",
                                                   "-dep_dir-",
                                                   "-cmp_base_path-")
