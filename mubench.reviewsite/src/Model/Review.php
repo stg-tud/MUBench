@@ -45,6 +45,21 @@ class Review
         return $this->getReviewFinding($rank)['violation_types'];
     }
 
+    public function hasPositiveHit()
+    {
+        return $this->getDecision() == Decision::YES;
+    }
+
+    public function getMinimalPositiveHitRank()
+    {
+        foreach($this->data["finding_reviews"] as $finding_review)
+        {
+            if(strcmp($finding_review["decision"], "Yes") === 0){
+                return $finding_review["rank"];
+            }
+        }
+    }
+
     private function getReviewFinding($rank){
         foreach ($this->data["finding_reviews"] as $finding_review){
             if(strcmp($finding_review["rank"], $rank) == 0){

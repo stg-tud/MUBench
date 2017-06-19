@@ -196,7 +196,7 @@ class Misuse
         return $this->hasReviewed("resolution");
     }
 
-    private function getResolutionReview()
+    public function getResolutionReview()
     {
         return $this->getReview("resolution");
     }
