@@ -41,7 +41,6 @@ $columns_to_ignore = array(
     <title>MuBench :: Review Site</title>
     <link rel="stylesheet" type="text/css" href="<?= $site_base_url ?>style/style.css"/>
     <link rel="stylesheet" type="text/css" href="<?= $site_base_url ?>style/modal.css"/>
-    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/animate.css/3.2.0/animate.min.css">
     <link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
 </head>
 <body>
@@ -108,43 +107,7 @@ $columns_to_ignore = array(
                     <?= $new_version ? htmlspecialchars(substr($run['runtime'], 0, 4)) . "s" : ""; ?></td>
                 <td class="<?= $style_classes ?> right">
                     <?php if ($new_version) : ?>
-                        <button class="more-button"
-                                value="<?= htmlspecialchars($project) ?>_<?= htmlspecialchars($version) ?>">more
-                        </button>
-                        <div id="<?= htmlspecialchars($project) ?>_<?= htmlspecialchars($version) ?>" class="modal">
-
-                            <!-- Modal content -->
-                            <div class="modal-content">
-                                <span class="close"
-                                      id="<?= htmlspecialchars($project) ?>_<?= htmlspecialchars($version) ?>">&times;</span>
-                                <h2 class="header">Detector: <?= htmlspecialchars($project); ?></h2>
-                                <table class="invisible fw">
-                                    <tr>
-                                        <td><b>Version:</b></td>
-                                        <td><?= htmlspecialchars($version); ?></td>
-                                    </tr>
-                                    <tr>
-                                        <td><b>Result:</b></td>
-                                        <td><?= htmlspecialchars($run['result']); ?></td>
-                                    </tr>
-                                    <tr>
-                                        <td><b># of Findings:</b></td>
-                                        <td><?= htmlspecialchars($run['number_of_findings']); ?></td>
-                                    </tr>
-                                    <tr>
-                                        <td><b>Runtime:</b></td>
-                                        <td><?= htmlspecialchars(substr($run['runtime'], 0, 4)) . "s"; ?></td>
-                                    </tr>
-                                    <?php foreach ($additional_stats as $stat) : ?>
-                                        <tr>
-                                            <td><b><?= htmlspecialchars($stat) ?>:</b></td>
-                                            <td><?= htmlspecialchars($run[$stat]); ?></td>
-                                        </tr>
-                                    <?php endforeach; ?>
-                                </table>
-                            </div>
-
-                        </div>
+                        <?php include "includes/modal.phtml"; ?>
                     <?php endif; ?>
                 </td>
                 <td class="<?= $style_classes ?>">
@@ -255,36 +218,7 @@ $columns_to_ignore = array(
                     <?= $new_version ? htmlspecialchars(substr($run['runtime'], 0, 4)) . "s" : ""; ?></td>
                 <td class="<?= $style_classes ?> right">
                     <?php if ($new_version) : ?>
-                        <button class="more-button"
-                                value="<?= htmlspecialchars($project) ?>_<?= htmlspecialchars($version) ?>">more
-                        </button>
-                        <div id="<?= htmlspecialchars($project) ?>_<?= htmlspecialchars($version) ?>" class="modal">
-                            <!-- Modal content -->
-                            <div class="modal-content">
-                                <span class="close"
-                                      id="<?= htmlspecialchars($project) ?>_<?= htmlspecialchars($version) ?>">&times;</span>
-                                <h2 class="header">Detector: <?= htmlspecialchars($project); ?></h2>
-                                <table class="invisible fw">
-                                    <tr>
-                                        <td><b>Version:</b></td>
-                                        <td><?= htmlspecialchars($version); ?></td>
-                                    </tr>
-                                    <tr>
-                                        <td><b>Result:</b></td>
-                                        <td><?= htmlspecialchars($run['result']); ?></td>
-                                    </tr>
-                                    <tr>
-                                        <td><b># of Findings:</b></td>
-                                        <td><?= htmlspecialchars($run['number_of_findings']); ?></td>
-                                    </tr>
-                                    <tr>
-                                        <td><b>Runtime:</b></td>
-                                        <td><?= htmlspecialchars(substr($run['runtime'], 0, 4)) . "s"; ?></td>
-                                    </tr>
-                                </table>
-                            </div>
-
-                        </div>
+                        <?php include "includes/modal.phtml"; ?>
                     <?php endif; ?>
                 </td>
                 <td class="<?= $style_classes ?>"></td>
@@ -302,21 +236,15 @@ $columns_to_ignore = array(
 
 
 <script>
-    var buttons = document.getElementsByClassName("more-button");
-    for (var i = 0; i < buttons.length; ++i) {
-        var btn = buttons[i];
-        btn.onclick = function (event) {
-            document.getElementById(event.target.value).style.display = "block";
-        };
-
-        window.onclick = function (event) {
-            if (event.target.className == "modal" || event.target.className == "close") {
-                document.getElementById(event.target.id).style.display = "None";
-            }
-        }
+    function showModal(button) {
+        document.getElementById(button.getAttribute("value")).style.display = "block";
     }
 
-
+    window.onclick = function (event) {
+        if (event.target.className == "modal" || event.target.className == "close") {
+            document.getElementById(event.target.id).style.display = "None";
+        }
+    }
 </script>
 </body>
 </html>
