@@ -76,6 +76,7 @@ class Misuse
 
     public function hasViolationTypes()
     {
+        // TODO: how to do with markdown ? not there ?
         return !empty($this->getViolationTypes());
     }
 
