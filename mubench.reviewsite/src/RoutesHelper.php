@@ -51,7 +51,7 @@ class RoutesHelper
         $review = $misuse->getReview($reviewer);
         $is_reviewer = strcmp($user, $reviewer) == 0 || strcmp($reviewer, "resolution") == 0;
         return $this->render($this, $request, $response, $args, 'review.phtml',
-            ['is_reviewer' => $is_reviewer, 'misuse' => $misuse, 'review' => $review]);
+            ['reviewer' => $reviewer, 'is_reviewer' => $is_reviewer, 'misuse' => $misuse, 'review' => $review]);
     }
 
     public function stats(Request $request, Response $response, array $args) {

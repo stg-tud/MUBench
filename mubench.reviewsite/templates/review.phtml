@@ -560,7 +560,7 @@ use MuBench\ReviewSite\Model\Experiment;
             <?php if($user && $is_reviewer) :?>
                 <table class="invisible">
                 <tr><td>Reviewer Name:</td>
-                    <td><?= htmlspecialchars($user); ?></td></tr>
+                    <td><?= htmlspecialchars($reviewer); ?></td></tr>
                 <tr><td class="vtop"><label for="review_comment">Comment</label>:</td>
                     <td>
                     <?php if($review) : ?>
@@ -570,7 +570,7 @@ use MuBench\ReviewSite\Model\Experiment;
                     <?php endif; ?>
                     </td></tr>
                 </table>
-                <input type="hidden" name="review_name" value="<?= htmlspecialchars($user); ?>"/>
+                <input type="hidden" name="review_name" value="<?= htmlspecialchars($reviewer); ?>"/>
                 <input type="hidden" name="review_exp" value="<?= htmlspecialchars($experiment->getId()); ?>">
                 <input type="hidden" name="review_detector" value="<?= htmlspecialchars($detector->name); ?>">
                 <input type="hidden" name="review_project" value="<?= htmlspecialchars($misuse->getProject()); ?>">
