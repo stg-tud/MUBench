@@ -41,7 +41,11 @@ class BuildCommand:
 
     def execute(self, project_dir: str, dep_dir: str, compile_base_path: str) -> None:
         command = self._get_command(self.args)
-        output = Shell.exec(command, cwd=project_dir, logger=self.logger)
+
+        try:
+            output = Shell.exec(command, cwd=project_dir, logger=self.logger)
+        except CommandFailedError as e:
+            raise CommandFailedError(e.command, self._get_errors(e.output))
 
         self._copy_dependencies(output, project_dir, dep_dir, compile_base_path)
 
@@ -54,6 +58,9 @@ class BuildCommand:
 
     def _extend_args(self, args: List[str]) -> List[str]:
         return args
+
+    def _get_errors(self, output: str) -> str:
+        return output
 
     def _copy_dependencies(self, exec_output: str, project_dir: str, dep_dir: str, compile_base_path: str) -> None:
         pass
