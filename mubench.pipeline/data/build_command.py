@@ -92,7 +92,7 @@ class GradleCommand(BuildCommand):
 
     def _copy_dependencies(self, exec_output: str, project_dir: str,
                            dep_dir: str, compile_base_path: str) -> None:
-        buildfile_dir = Compile.__parse_buildfile_dir(command)
+        buildfile_dir = GradleCommand.__parse_buildfile_dir(self.args)
         shutil.copy(os.path.join(os.path.dirname(__file__), 'classpath.gradle'), os.path.join(project_dir, buildfile_dir))
         command = "gradle :printClasspath -b '{}'".format(os.path.join(buildfile_dir, "classpath.gradle"))
         output = Shell.exec(command, cwd=project_dir, logger=self.logger)
@@ -112,6 +112,17 @@ class GradleCommand(BuildCommand):
         first_dependency_idx = next(i for i, line in enumerate(lines) if line == ":printClasspath") + 1
         first_empty_line_idx = next(i for i, line in enumerate(lines) if not line)
         return set(lines[first_dependency_idx:first_empty_line_idx])
+
+    @staticmethod
+    def __parse_buildfile_dir(args):
+        buildfile_dir = ""
+
+        if "-p" in args:
+            buildfile_dir = args[args.index("-p") + 1]
+        elif "--project-dir" in args:
+            buildfile_dir = args[args.index("--project-dir") + 1]
+
+        return buildfile_dir
 
 
 class AntCommand(BuildCommand):

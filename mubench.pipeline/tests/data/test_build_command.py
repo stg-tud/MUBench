@@ -1,4 +1,4 @@
-from data.build_command import BuildCommand, MavenCommand, AntCommand
+from data.build_command import BuildCommand, MavenCommand, GradleCommand, AntCommand
 
 from nose.tools import assert_equals, assert_is_instance, assert_raises, assert_in
 from unittest.mock import MagicMock, patch, call, ANY
@@ -128,8 +128,29 @@ class TestMavenCommand:
         assert_equals(shell_mock.mock_calls[0][1], ("mvn dependency:build-classpath -DincludeScope=compile build",))
 
 
+@patch("data.build_command.shutil.copy")
+@patch("data.build_command.Shell.exec")
 class TestGradleCommand:
-    pass
+    def test_compile_with_gradle(self, shell_mock, copy_mock):
+        shell_mock.return_value = ":printClasspath\n/path/dependency1.jar\n/path/dependency2.jar\n\nBUILD SUCCESSFUL"
+
+        GradleCommand("gradle", ["build"]).execute("-project_dir-", "-dep_dir-", "-cmp_base_path-")
+
+        assert_equals(shell_mock.mock_calls[1][1], ("gradle :printClasspath -b 'classpath.gradle'",))
+        assert_in(call("/path/dependency1.jar",  "-dep_dir-"), copy_mock.mock_calls)
+        assert_in(call("/path/dependency2.jar",  "-dep_dir-"), copy_mock.mock_calls)
+
+    def test_compile_with_gradle_project_dir_parameter(self, shell_mock, copy_mock):
+        shell_mock.return_value = ":printClasspath\n/path/dependency1.jar\n/path/dependency2.jar\n\nBUILD SUCCESSFUL"
+
+        GradleCommand("gradle", ["build", "-p", "/testdir/"]).execute("-project_dir-", "-dep_dir-", "-cmp_base_path-")
+
+        assert_equals(shell_mock.mock_calls[1][1], ("gradle :printClasspath -b '/testdir/classpath.gradle'",))
+
+    def test_compile_with_gradle_no_dependencies(self, shell_mock, copy_mock):
+        shell_mock.return_value = ":printClasspath\n\nBUILD SUCCESSFUL"
+
+        GradleCommand("gradle", ["build"]).execute("-project_dir-", "-dep_dir-", "-cmp_base_path-")
 
 
 @patch("data.build_command.shutil.copy")
