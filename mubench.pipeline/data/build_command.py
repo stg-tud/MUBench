@@ -101,6 +101,13 @@ class GradleCommand(BuildCommand):
     def name() -> str:
         return "gradle"
 
+    def _extend_args(self, args: List[str]) -> str:
+        return args + ["--debug"]
+
+    def _get_errors(self, output: str) -> str:
+        lines = output.splitlines()
+        return '\n'.join([""] + [line for line in lines if "[ERROR]" in line])
+
     def _copy_dependencies(self, exec_output: str, project_dir: str,
                            dep_dir: str, compile_base_path: str) -> None:
         buildfile_dir = GradleCommand.__parse_buildfile_dir(self.args)
