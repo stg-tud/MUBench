@@ -1,0 +1,10 @@
+<?php
+/**
+* @var string $circle_color - defining the color of the circle around the number
+* @var string $number_in_circle - number in the circle
+*/
+?>
+<span class="fa-stack fa-3x" style="font-size:0.7em">
+    <i class="fa fa-circle fa-stack-2x" style="color:<?= htmlspecialchars($circle_color); ?>"></i>
+    <strong class="fa-stack-1x" style="color:white"><?= htmlspecialchars($number_in_circle); ?></strong>
+</span>

@@ -45,12 +45,12 @@ class Review
         return $this->getReviewFinding($rank)['violation_types'];
     }
 
-    public function hasPositiveHit()
+    public function identifiesHit()
     {
         return $this->getDecision() == Decision::YES;
     }
 
-    public function getMinimalPositiveHitRank()
+    public function getLowestHitRank()
     {
         foreach($this->data["finding_reviews"] as $finding_review)
         {
@@ -58,6 +58,7 @@ class Review
                 return $finding_review["rank"];
             }
         }
+        throw new \RuntimeException("no hit was identified");
     }
 
     private function getReviewFinding($rank){
