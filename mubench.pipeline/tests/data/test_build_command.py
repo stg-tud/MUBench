@@ -1,3 +1,4 @@
+from utils.shell import CommandFailedError
 from data.build_command import BuildCommand, MavenCommand, GradleCommand, AntCommand
 
 from nose.tools import assert_equals, assert_is_instance, assert_raises, assert_in
@@ -81,6 +82,22 @@ class TestBuildCommand:
 
         assert_equals(["arg 1", "arg 2"], uut.args)
 
+    @patch("data.build_command.Shell.exec")
+    def test_raises_on_error(self, shell_mock):
+        shell_mock.side_effect = CommandFailedError("-command-", "-output-")
+        uut = BuildCommand.get("-some_command-")
+
+        assert_raises(CommandFailedError, uut.execute, "-p-", "-d-", "-bp-")
+
+    @patch("data.build_command.Shell.exec")
+    def test_default_does_not_filter_output_on_error(self, shell_mock):
+        shell_mock.side_effect = CommandFailedError("-command-", "-output-")
+        uut = BuildCommand.get("-some_command-")
+
+        try:
+            uut.execute("-p-", "-d-", "-bp-")
+        except CommandFailedError as e:
+            assert_equals("-output-", e.output)
 
 
 @patch("data.build_command.shutil.copy")
