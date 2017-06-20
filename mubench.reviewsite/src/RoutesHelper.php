@@ -8,6 +8,7 @@ use MuBench\ReviewSite\Model\Experiment;
 use MuBench\ReviewSite\Model\ExperimentResult;
 use MuBench\ReviewSite\Model\Misuse;
 use MuBench\ReviewSite\Model\ReviewState;
+use MuBench\ReviewSite\CSVHelper;
 use Slim\Http\Request;
 use Slim\Http\Response;
 use Slim\Views\PhpRenderer;
@@ -20,6 +21,7 @@ class RoutesHelper
     private $site_base_url;
     private $upload_path;
     private $default_ex2_review_size;
+    private $csv_helper;
 
     public function __construct(DBConnection $db, PhpRenderer $renderer, Logger $logger, $upload_path, $site_base_url, $default_ex2_review_size)
     {
@@ -29,6 +31,7 @@ class RoutesHelper
         $this->site_base_url = $site_base_url;
         $this->upload_path = $upload_path;
         $this->default_ex2_review_size = $default_ex2_review_size;
+        $this->csv_helper = new CSVHelper();
     }
 
     public function index(Request $request, Response $response, array $args) {
@@ -84,7 +87,6 @@ class RoutesHelper
             }
             $results[$experiment]["total"] = new ExperimentResult($results[$experiment]);
         }
-
         return $this->render($this, $request, $response, $args, 'stats.phtml',
             ['results' => $results, 'ex2_review_size' => $ex2_review_size]);
     }
@@ -97,6 +99,46 @@ class RoutesHelper
     public function todos(Request $request, Response $response, array $args) {
         $todos = $this->db->getTodo($this->getUser($request), $this->default_ex2_review_size);
         return $this->render($this, $request, $response, $args, 'todo.phtml', ['misuses' => $todos]);
+    }
+
+    public function download_stats(Request $request, Response $response, array $args)
+    {
+        $ex2_review_size = $request->getQueryParam("ex2_review_size", $this->default_ex2_review_size);
+        $experiment = $args['exp'];
+        $stats = [];
+        $detectors = $this->db->getDetectors($experiment);
+        foreach ($detectors as $detector) {
+            $runs = $this->db->getRuns($detector, $experiment, $ex2_review_size);
+            if (strcmp($experiment, "ex2") === 0) {
+                foreach ($runs as &$run) {
+                    $misuses = array();
+                    $number_of_misuses = 0;
+                    foreach ($run["misuses"] as $misuse) { /** @var $misuse Misuse */
+                        if ($misuse->getReviewState() != ReviewState::UNRESOLVED) {
+                            $misuses[] = $misuse;
+                            $number_of_misuses++;
+                        }
+
+                        if ($number_of_misuses == $ex2_review_size) {
+                            break;
+                        }
+                    }
+                    $run["misuses"] = $misuses;
+                }
+            }
+            $stats[$detector->id] = new DetectorResult($detector, $runs);
+        }
+        $stats["total"] = new ExperimentResult($stats);
+
+        return $this->download($response, $this->csv_helper->createCSVFromStats($experiment, $stats), "stats_" . $experiment . ".csv");
+    }
+
+    public function download_detector(Request $request, Response $response, array $args)
+    {
+        $ex2_review_size = $request->getQueryParam("ex2_review_size", $this->default_ex2_review_size);
+        $detector = $this->db->getOrCreateDetector($args['detector']);
+        $runs = $this->db->getRuns($detector, $args['exp'], $ex2_review_size);
+        return $this->download($response, $this->csv_helper->createCSVFromRuns($runs), $args['detector'] . ".csv");
     }
 
     private function render($handler, Request $request, Response $response, array $args, $template, array $params)
@@ -123,6 +165,17 @@ class RoutesHelper
         $params["experiment"] = array_key_exists("exp", $args) ? Experiment::get($args["exp"]) : null;
         $params["detector"] = array_key_exists("detector", $args) ? $this->db->getOrCreateDetector($args["detector"]) : null;
         return $this->renderer->render($response, $template, $params);
+    }
+
+    private function download(Response $response, $file_data, $filename)
+    {
+        $stream = fopen('data://text/plain,' . $file_data,'r');
+        $stream = new \Slim\Http\Stream($stream);
+        return $response->withHeader('Content-Type', 'application/force-download')
+            ->withHeader('Content-Type', 'application/octet-stream')
+            ->withHeader('Content-Disposition', 'attachment; filename="' . $filename . '"')
+            ->withHeader('Content-Description', 'File Transfer')
+            ->withBody($stream);
     }
 
     private function getUser(Request $request)

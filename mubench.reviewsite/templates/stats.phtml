@@ -28,7 +28,7 @@ use MuBench\ReviewSite\Model\RunsResult;
 <h1>Statistics</h1>
 
 <h2>Experiment 1</h2>
-
+<a href="<?=$public_url_prefix?>download/ex1/stats">export table</a>
 <table>
     <thead>
     <tr>
@@ -96,7 +96,7 @@ use MuBench\ReviewSite\Model\RunsResult;
 </table>
 
 <h2>Experiment 2</h2>
-
+<a href="<?=$public_url_prefix?>download/ex2/stats?ex2_review_size=<?= $ex2_review_size ?>">export table</a>
 <form action="" method="get">
     <label for="ex2_review_size">Max. Reviews per Project</label>:
     <input type="text" id="ex2_review_size" name="ex2_review_size" value="<?= $ex2_review_size ?>" />
@@ -162,8 +162,8 @@ use MuBench\ReviewSite\Model\RunsResult;
         </tbody>
     <?php endforeach; ?>
 </table>
-
 <h2>Experiment 3</h2>
+<a href="<?=$public_url_prefix?>download/ex3/stats">export table</a>
 
 <table>
     <thead>
