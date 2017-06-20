@@ -1,7 +1,7 @@
-from data.build_command import BuildCommand
+from data.build_command import BuildCommand, MavenCommand
 
-from nose.tools import assert_equals, assert_is_instance, assert_raises
-from unittest.mock import MagicMock, patch, ANY
+from nose.tools import assert_equals, assert_is_instance, assert_raises, assert_in
+from unittest.mock import MagicMock, patch, call, ANY
 
 
 class BuildCommandTestImpl(BuildCommand):
@@ -10,6 +10,7 @@ class BuildCommandTestImpl(BuildCommand):
     @staticmethod
     def name():
         return BuildCommandTestImpl.TEST_COMMAND
+
 
 class TestBuildCommand:
     def setup(self):
@@ -69,3 +70,56 @@ class TestBuildCommand:
                                                   "-project_dir-",
                                                   "-dep_dir-",
                                                   "-cmp_base_path-")
+
+
+@patch("data.build_command.shutil.copy")
+@patch("data.build_command.Shell.exec")
+class TestMavenCommand:
+    def test_compile_with_maven(self, shell_mock, copy_mock):
+        shell_mock.return_value = """
+[INFO] --- maven-dependency-plugin:2.8:build-classpath (default-cli) @ testproject ---
+[INFO] Dependencies classpath:
+/path/dependency1.jar:/path/dependency2.jar
+[INFO] ------------------------------------------------------------------------"""
+
+        MavenCommand("mvn", ["build"]).execute("-project_dir-", "-dep_dir-", "-cmp_base_path-")
+
+        assert_equals(shell_mock.mock_calls[0][1], ("mvn dependency:build-classpath -DincludeScope=compile build",))
+        assert_in(call("/path/dependency1.jar", "-dep_dir-"), copy_mock.mock_calls)
+        assert_in(call("/path/dependency2.jar",  "-dep_dir-"), copy_mock.mock_calls)
+
+    def test_compile_with_maven_multi_modules(self, shell_mock, copy_mock):
+        shell_mock.return_value = """
+    [INFO] --- maven-dependency-plugin:2.8:build-classpath (default-cli) @ module1 ---
+    [INFO] Dependencies classpath:
+    /path/dependency1.jar
+    [INFO] ------------------------------------------------------------------------
+    [INFO] --- maven-dependency-plugin:2.8:build-classpath (default-cli) @ module2 ---
+    [INFO] Dependencies classpath:
+    /path/dependency2.jar
+    [INFO] ------------------------------------------------------------------------"""
+
+        MavenCommand("mvn", ["build"]).execute("-project_dir-", "-dep_dir-", "-cmp_base_path-")
+
+        assert_equals(shell_mock.mock_calls[0][1], ("mvn dependency:build-classpath -DincludeScope=compile build",))
+        assert_in(call("/path/dependency1.jar", "-dep_dir-"), copy_mock.mock_calls)
+        assert_in(call("/path/dependency2.jar", "-dep_dir-"), copy_mock.mock_calls)
+
+    def test_compile_with_maven_no_dependencies(self, shell_mock, copy_mock):
+        shell_mock.return_value = """
+[INFO] --- maven-dependency-plugin:2.8:build-classpath (default-cli) @ testproject ---
+[INFO] Dependencies classpath:
+
+[INFO] ------------------------------------------------------------------------"""
+
+        MavenCommand("mvn", ["build"]).execute("-project_dir-", "-dep_dir-", "-cmp_base_path-")
+
+        assert_equals(shell_mock.mock_calls[0][1], ("mvn dependency:build-classpath -DincludeScope=compile build",))
+
+
+class TestGradleCommand:
+    pass
+
+
+class TestAntCommand:
+    pass

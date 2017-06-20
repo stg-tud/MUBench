@@ -50,7 +50,10 @@ class BuildCommand:
         raise NotImplementedError
 
     def _get_command(self, args: List[str]) -> str:
-        return ' '.join([self._name] + args)
+        return ' '.join([self._name] + self._extend_args(args))
+
+    def _extend_args(self, args: List[str]) -> List[str]:
+        return args
 
     def _copy_dependencies(self, exec_output: str, project_dir: str, dep_dir: str, compile_base_path: str) -> None:
         pass
@@ -61,11 +64,11 @@ class MavenCommand(BuildCommand):
     def name() -> str:
         return "mvn"
 
-    def _get_command(self, args: List[str]) -> str:
-        return "mvn dependency:build-classpath -DincludeScope=compile " + args[3:]
+    def _extend_args(self, args: List[str]) -> List[str]:
+        return ["dependency:build-classpath", "-DincludeScope=compile"] + args
 
     def _copy_dependencies(self, exec_output: str, project_dir: str, dep_dir: str, compile_base_path: str) -> None:
-        dependencies = MavenCommand.__parse_maven_classpath(output)
+        dependencies = MavenCommand.__parse_maven_classpath(exec_output)
         _copy_classpath(dependencies, dep_dir, compile_base_path)
 
     @staticmethod
@@ -79,6 +82,7 @@ class MavenCommand(BuildCommand):
         for line in [lines[i + 1].strip() for i, line in enumerate(lines) if "Dependencies classpath:" in line]:
             if line:
                 classpath.update(line.split(":"))
+        return classpath
 
 
 class GradleCommand(BuildCommand):
@@ -115,8 +119,8 @@ class AntCommand(BuildCommand):
     def name() -> str:
         return "ant"
 
-    def _get_command(self, args: List[str]) -> str:
-        return ' '.join([self.name(), "-debug", "-verbose"] + args)
+    def _extend_args(self, args: List[str]) -> List[str]:
+        return ["-debug", "-verbose"] + args
 
     def _copy_dependencies(self, exec_output: str, project_dir: str,
                            dep_dir: str, compile_base_path: str) -> None:
@@ -140,7 +144,6 @@ class AntCommand(BuildCommand):
         return classpath
 
 
-@staticmethod
 def _copy_classpath(dependencies: Set[str], dep_dir: str, compile_base_path: str):
     remove_tree(dep_dir)
     makedirs(dep_dir, exist_ok=True)
@@ -153,8 +156,6 @@ def _copy_classpath(dependencies: Set[str], dep_dir: str, compile_base_path: str
         else:
             shutil.copy(dependency, dep_dir)
 
-
-@staticmethod
 def __create_jar(classes_path, jar_path):
     zip_path = shutil.make_archive(jar_path, 'zip', classes_path)
     os.rename(zip_path, jar_path)
