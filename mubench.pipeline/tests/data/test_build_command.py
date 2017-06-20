@@ -1,4 +1,4 @@
-from data.build_command import BuildCommand, MavenCommand
+from data.build_command import BuildCommand, MavenCommand, AntCommand
 
 from nose.tools import assert_equals, assert_is_instance, assert_raises, assert_in
 from unittest.mock import MagicMock, patch, call, ANY
@@ -121,5 +121,32 @@ class TestGradleCommand:
     pass
 
 
+@patch("data.build_command.shutil.copy")
+@patch("data.build_command.Shell.exec")
 class TestAntCommand:
-    pass
+    def test_compile_with_ant(self, shell_mock, copy_mock):
+        shell_mock.return_value = """[javac] Compilation arguments:
+[javac] '-d'
+[javac] '/project/build'
+[javac] '-classpath'
+[javac] '/project/build/classes:/path/dependency1.jar:/path/dependency2.jar'"""
+
+        AntCommand("ant", []).execute("-project_dir-", "-dep_dir-", "-cmp_base_path-")
+
+        assert_equals(shell_mock.mock_calls[0][1], ("ant -debug -verbose",))
+        assert_in(call("/path/dependency2.jar", "-dep_dir-"), copy_mock.mock_calls)
+        assert_in(call("/path/dependency1.jar", "-dep_dir-"), copy_mock.mock_calls)
+
+    def test_compile_with_ant_multi_build(self, shell_mock, copy_mock):
+        shell_mock.return_value = """[javac] Compilation arguments:
+    [javac] '-classpath'
+    [javac] '/project/build:/path/dependency1.jar'
+     --- some intermediate output ---
+    [javac] '-classpath'
+    [javac] '/path/dependency2.jar'"""
+
+        AntCommand("ant", []).execute("-project_dir-", "-dep_dir-", "-cmp_base_path-")
+
+        assert_equals(shell_mock.mock_calls[0][1], ("ant -debug -verbose",))
+        assert_in(call("/path/dependency1.jar", "-dep_dir-"), copy_mock.mock_calls)
+        assert_in(call("/path/dependency2.jar", "-dep_dir-"), copy_mock.mock_calls)
