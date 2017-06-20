@@ -124,8 +124,8 @@ class AntCommand(BuildCommand):
 
     def _copy_dependencies(self, exec_output: str, project_dir: str,
                            dep_dir: str, compile_base_path: str) -> None:
-        dependencies = AntCommand.__parse_ant_classpath(output)
-        Compile._copy_classpath(dependencies, dep_dir, compile_base_path)
+        dependencies = AntCommand.__parse_ant_classpath(exec_output)
+        _copy_classpath(dependencies, dep_dir, compile_base_path)
 
     @staticmethod
     def __parse_ant_classpath(shell_output: str) -> Set[str]:
