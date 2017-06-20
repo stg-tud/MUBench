@@ -97,7 +97,7 @@ class TestBuildCommand:
         try:
             uut.execute("-p-", "-d-", "-bp-")
         except CommandFailedError as e:
-            assert_equals("-output-", e.output)
+            assert_equals("\n-output-", e.output)
 
 
 @patch("data.build_command.shutil.copy")

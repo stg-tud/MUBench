@@ -45,7 +45,7 @@ class BuildCommand:
         try:
             output = Shell.exec(command, cwd=project_dir, logger=self.logger)
         except CommandFailedError as e:
-            raise CommandFailedError(e.command, self._get_errors(e.output))
+            raise CommandFailedError(e.command, '\n' + self._get_errors(e.output))
 
         self._copy_dependencies(output, project_dir, dep_dir, compile_base_path)
 
@@ -76,7 +76,7 @@ class MavenCommand(BuildCommand):
 
     def _get_errors(self, output: str) -> str:
         lines = output.splitlines()
-        return '\n'.join([""] + [line for line in lines if line.startswith("[ERROR]")])
+        return '\n'.join([line for line in lines if line.startswith("[ERROR]")])
 
     def _copy_dependencies(self, exec_output: str, project_dir: str, dep_dir: str, compile_base_path: str) -> None:
         dependencies = MavenCommand.__parse_maven_classpath(exec_output)
@@ -106,7 +106,7 @@ class GradleCommand(BuildCommand):
 
     def _get_errors(self, output: str) -> str:
         lines = output.splitlines()
-        return '\n'.join([""] + [line for line in lines if "[ERROR]" in line])
+        return '\n'.join([line for line in lines if "[ERROR]" in line])
 
     def _copy_dependencies(self, exec_output: str, project_dir: str,
                            dep_dir: str, compile_base_path: str) -> None:
