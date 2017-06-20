@@ -154,33 +154,39 @@ $columns_to_ignore = array(
                                 $user_review = $misuse->getReview($user);
                                 $reviews = $misuse->getReviews();
                             ?>
-                            <?php if($review_state == ReviewState::NEEDS_REVIEW && $user_review->hasPositiveHit()) : ?>
-                                <i class="fa fa-thumbs-o-up" aria-hidden="true" style="color:green;" title="Agreement: Yes"></i>
-                                <span class="fa-stack fa-3x" style="font-size:0.7em">
-                                  <i class="fa fa-circle fa-stack-2x"></i>
-                                  <strong class="fa-stack-1x" style="color:white;"><?= htmlspecialchars($user_review->getMinimalPositiveHitRank()); ?></strong>
-                                </span>
-                            <?php elseif ($review_state == ReviewState::AGREEMENT_YES): ?>
-                                <span class="fa-stack fa-3x" style="font-size:0.7em">
-                                  <i class="fa fa-circle fa-stack-2x"></i>
-                                  <strong class="fa-stack-1x" style="color:white;"><?= htmlspecialchars($user_review->getMinimalPositiveHitRank()); ?></strong>
-                                </span>
-                                <?php foreach($reviews as $review) : ?>
+                            <?php if(true) : ?>
+                                <?php if($review_state == ReviewState::NEEDS_REVIEW && $user_review->identifiesHit()) : ?>
+                                    <i class="fa fa-thumbs-o-up" aria-hidden="true" style="color:green;" title="Agreement: Yes"></i>
                                     <?php
-                                        $same_rank = strcmp($user_review->getMinimalPositiveHitRank(), $review->getMinimalPositiveHitRank()) === 0;
+                                        $number_in_circle = $user_review->getLowestHitRank();
+                                        $circle_color = "black";
+                                        include "includes/number_circle.phtml";
                                     ?>
-                                    <?php if(strcmp($review->getReviewerName(), $user) !== 0 && !$same_rank) : ?>
-                                        <span class="fa-stack fa-3x" style="font-size:0.7em">
-                                          <i class="fa fa-circle fa-stack-2x" style="color:darkred;"></i>
-                                          <strong class="fa-stack-1x" style="color:white;"><?= htmlspecialchars($review->getMinimalPositiveHitRank()); ?></strong>
-                                        </span>
-                                    <?php endif; ?>
-                                <?php endforeach; ?>
+                                <?php elseif ($review_state == ReviewState::AGREEMENT_YES): ?>
+                                    <?php
+                                        $number_in_circle = $user_review->getLowestHitRank();
+                                        $circle_color = "black";
+                                        include "includes/number_circle.phtml";
+                                    ?>
+                                    <?php foreach($reviews as $review) : ?>
+                                        <?php
+                                            $same_rank = strcmp($user_review->getLowestHitRank(), $review->getLowestHitRank()) === 0;
+                                        ?>
+                                        <?php if(strcmp($review->getReviewerName(), $user) !== 0 && !$same_rank) : ?>
+                                            <?php
+                                                $number_in_circle = $review->getLowestHitRank();
+                                                $circle_color="darkred";
+                                                include "includes/number_circle.phtml";
+                                            ?>
+                                        <?php endif; ?>
+                                    <?php endforeach; ?>
                                 <?php elseif ($review_state == ReviewState::RESOLVED_YES) : ?>
-                                <span class="fa-stack fa-3x" style="font-size:0.7em">
-                                  <i class="fa fa-circle fa-stack-2x" style="color:cornflowerblue;"></i>
-                                  <strong class="fa-stack-1x" style="color:white;"><?= htmlspecialchars($misuse->getResolutionReview()->getMinimalPositiveHitRank()); ?></strong>
-                                </span>
+                                    <?php
+                                        $number_in_circle = $misuse->getResolutionReview()->getLowestHitRank();
+                                        $circle_color = "cornflowerblue";
+                                        include "includes/number_circle.phtml";
+                                    ?>
+                                <?php endif; ?>
                             <?php endif; ?>
                         <?php endif; ?>
                     </td>
