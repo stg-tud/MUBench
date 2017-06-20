@@ -203,6 +203,41 @@ class TestGradleCommand:
 
         GradleCommand("gradle", ["build"]).execute("-project_dir-", "-dep_dir-", "-cmp_base_path-")
 
+    def test_adds_debug_flag_to_command(self, shell_mock, copy_mock):
+        uut = GradleCommand("gradle", ["build"])
+        assert_in("--debug", uut._extend_args(["build"]))
+
+    def test_filter_error_lines_from_output(self, shell_mock, copy_mock):
+        full_output = """15:46:17.784 [DEBUG] [org.gradle.model.internal.registry.DefaultModelRegistry] Transitioning model element 'tasks.wrapper' to state Discovered.
+15:46:17.799 [ERROR] [org.gradle.BuildExceptionReporter]
+15:46:17.802 [ERROR] [org.gradle.BuildExceptionReporter] FAILURE: Build failed with an exception.abs15:46:17.811 [ERROR] [org.gradle.BuildExceptionReporter]
+15:46:17.816 [ERROR] [org.gradle.BuildExceptionReporter] * What went wrong:
+15:46:17.818 [ERROR] [org.gradle.BuildExceptionReporter] Could not create service of type TaskArtifactStateCacheAccess using TaskExecutionServices.createCacheAccess().
+15:46:17.819 [ERROR] [org.gradle.BuildExceptionReporter] > Failed to create parent directory '/mubench/checkouts/synthetic/wait-loop/build/.gradle/2.10' when creating directory '/mubench/checkouts/synthetic/wait-loop/build/.gradle/2.10/taskArtifacts'
+15:46:17.821 [ERROR] [org.gradle.BuildExceptionReporter]
+15:46:17.822 [ERROR] [org.gradle.BuildExceptionReporter] * Try:
+15:46:17.823 [ERROR] [org.gradle.BuildExceptionReporter] Run with --stacktrace option to get the stack trace.
+15:46:17.824 [LIFECYCLE] [org.gradle.BuildResultLogger]
+15:46:17.825 [LIFECYCLE] [org.gradle.BuildResultLogger] BUILD FAILED
+15:46:17.826 [LIFECYCLE] [org.gradle.BuildResultLogger]
+15:46:17.827 [LIFECYCLE] [org.gradle.BuildResultLogger] Total time: 3.061 secs"""
+        shell_mock.side_effect = CommandFailedError("gradle build", full_output)
+
+        expected_error_output = """
+15:46:17.799 [ERROR] [org.gradle.BuildExceptionReporter]
+15:46:17.802 [ERROR] [org.gradle.BuildExceptionReporter] FAILURE: Build failed with an exception.abs15:46:17.811 [ERROR] [org.gradle.BuildExceptionReporter]
+15:46:17.816 [ERROR] [org.gradle.BuildExceptionReporter] * What went wrong:
+15:46:17.818 [ERROR] [org.gradle.BuildExceptionReporter] Could not create service of type TaskArtifactStateCacheAccess using TaskExecutionServices.createCacheAccess().
+15:46:17.819 [ERROR] [org.gradle.BuildExceptionReporter] > Failed to create parent directory '/mubench/checkouts/synthetic/wait-loop/build/.gradle/2.10' when creating directory '/mubench/checkouts/synthetic/wait-loop/build/.gradle/2.10/taskArtifacts'
+15:46:17.821 [ERROR] [org.gradle.BuildExceptionReporter]
+15:46:17.822 [ERROR] [org.gradle.BuildExceptionReporter] * Try:
+15:46:17.823 [ERROR] [org.gradle.BuildExceptionReporter] Run with --stacktrace option to get the stack trace."""
+
+        try:
+            GradleCommand("gradle", ["build"]).execute("-p-", "-d-", "-bp-")
+        except CommandFailedError as e:
+            assert_equals(expected_error_output, e.output)
+
 
 @patch("data.build_command.shutil.copy")
 @patch("data.build_command.Shell.exec")
