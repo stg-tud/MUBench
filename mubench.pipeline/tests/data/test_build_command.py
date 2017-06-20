@@ -71,6 +71,17 @@ class TestBuildCommand:
                                                   "-dep_dir-",
                                                   "-cmp_base_path-")
 
+    def test_saves_args(self):
+        uut = BuildCommand.get("-some_command- arg1 arg2")
+
+        assert_equals(["arg1", "arg2"], uut.args)
+
+    def test_quoted_args_are_saved_without_quotes(self):
+        uut = BuildCommand.get("-some_command- 'arg 1' \"arg 2\"")
+
+        assert_equals(["arg 1", "arg 2"], uut.args)
+
+
 
 @patch("data.build_command.shutil.copy")
 @patch("data.build_command.Shell.exec")
