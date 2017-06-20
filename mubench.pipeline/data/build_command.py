@@ -74,6 +74,10 @@ class MavenCommand(BuildCommand):
     def _extend_args(self, args: List[str]) -> List[str]:
         return ["dependency:build-classpath", "-DincludeScope=compile"] + args
 
+    def _get_errors(self, output: str) -> str:
+        lines = output.splitlines()
+        return '\n'.join([""] + [line for line in lines if line.startswith("[ERROR]")])
+
     def _copy_dependencies(self, exec_output: str, project_dir: str, dep_dir: str, compile_base_path: str) -> None:
         dependencies = MavenCommand.__parse_maven_classpath(exec_output)
         _copy_classpath(dependencies, dep_dir, compile_base_path)
