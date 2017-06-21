@@ -37,8 +37,8 @@ $app->group('/private', function () use ($app, $routesHelper, $database) {
 });
 
 $app->group('/download', function () use ($app, $routesHelper, $database) {
-    $app->get('/{exp:ex[1-3}]/stats', [$routesHelper, 'download_stats']);
-    $app->get('/{exp:ex[1-3}]/{detector}/', [$routesHelper, 'download_detector']);
+    $app->get('/{exp:ex[1-3]}/stats', [$routesHelper, 'download_stats']);
+    $app->get('/{exp:ex[1-3]}/{detector}', [$routesHelper, 'download_detector']);
 });
 
 
