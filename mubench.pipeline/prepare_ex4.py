@@ -3,11 +3,17 @@ import os
 import traceback
 
 import sys
+
+import logging
+from datetime import datetime
+
+from os.path import exists, join
 from typing import List
 
 from boa.BOA import BOA, GitHubProject
 from buildtools.maven import Project
 from utils.io import write_yamls
+from utils.logging import IndentFormatter
 from utils.shell import CommandFailedError
 
 MUBENCH_ROOT_PATH = os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir))
@@ -25,20 +31,20 @@ password = sys.argv[2]
 
 def _prepare_example_projects(projects: List[GitHubProject], metadata_path: str):
     if len(projects) > MAX_PROJECT_SAMPLE_SIZE:
-        print("[WARN] Sampling {} of {} example projects...".format(MAX_PROJECT_SAMPLE_SIZE, len(projects)))
+        logger.warning("Sampling %r of %r example projects...", MAX_PROJECT_SAMPLE_SIZE, len(projects))
         projects = projects[:MAX_PROJECT_SAMPLE_SIZE]
 
     data = []
     for project in projects:
-        print("[INFO] Preparing example project {}".format(project))
+        logger.info("Preparing example project %r", project)
 
         checkout = project.get_checkout(CHECKOUTS_PATH)
         if not checkout.exists():
             try:
-                print("[INFO]   Checking out...")
+                logger.info("  Checking out...")
                 checkout.create()
             except CommandFailedError as error:
-                print("[WARN] Checkout failed: {}".format(error))
+                logger.warning("Checkout failed: %r", error)
                 checkout.delete()
                 continue
 
@@ -61,10 +67,25 @@ def _get_subtypes(target_type):
     all_subtypes = _SUBTYPES.get(target_type, [])
     subtypes_sample = [subtype for subtype in all_subtypes if "sun." not in subtype]  # filter Sun-specific types
     if len(subtypes_sample) > MAX_SUBTYPES_SAMPLE_SIZE:
-        print("[WARN] Sampling {} of {} subtypes...".format(MAX_SUBTYPES_SAMPLE_SIZE, len(subtypes_sample)))
+        logger.warning("Sampling %r of %r subtypes...", MAX_SUBTYPES_SAMPLE_SIZE, len(subtypes_sample))
         subtypes_sample = subtypes_sample[:MAX_SUBTYPES_SAMPLE_SIZE]
     return subtypes_sample
 
+
+logger = logging.getLogger()
+logger.setLevel(logging.DEBUG)
+handler = logging.StreamHandler()
+handler.setFormatter(IndentFormatter("%(indent)s%(message)s"))
+handler.setLevel(logging.INFO)
+logger.addHandler(handler)
+LOG_DIR = "logs"
+if not exists(LOG_DIR):
+    os.makedirs(LOG_DIR)
+log_name = datetime.now().strftime("prepare_ex4_%Y%m%d_%H%M%S") + ".log"
+handler = logging.FileHandler(join(LOG_DIR, log_name))
+handler.setFormatter(logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s'))
+handler.setLevel(logging.DEBUG)
+logger.addHandler(handler)
 
 with open(INDEX_PATH) as index:
     boa = BOA(username, password)
@@ -73,12 +94,11 @@ with open(INDEX_PATH) as index:
         version_id = row[1]
         target_type = row[2]
         try:
-            print("[INFO] Preparing examples for {}.{} (target type: {})".format(project_id, version_id, target_type))
+            logger.info("Preparing examples for %s.%s (target type: %s)", project_id, version_id, target_type)
             projects = boa.query_projects_with_type_usages(target_type, _get_subtypes(target_type))
             target_example_file = os.path.join(CHECKOUTS_PATH, target_type + ".yml")
             _prepare_example_projects(projects, target_example_file)
         except UserWarning as warning:
-            print("[WARN] {}".format(warning))
+            logger.warning("%r", warning)
         except Exception as error:
-            print("[ERROR] {}".format(error))
-            traceback.print_exc(file=sys.stdout)
+            logger.exception("failed", exc_info=error)
