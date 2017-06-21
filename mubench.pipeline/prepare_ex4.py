@@ -36,7 +36,7 @@ def _prepare_example_projects(projects: List[GitHubProject], metadata_path: str)
 
     data = []
     for project in projects:
-        logger.info("Preparing example project %r", project)
+        logger.info("Preparing example project %r", project.id)
 
         checkout = project.get_checkout(CHECKOUTS_PATH)
         if not checkout.exists():
