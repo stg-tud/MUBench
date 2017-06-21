@@ -8,7 +8,7 @@ from utils.web_util import is_valid_file, download_file
 
 UTILS_JAR_NAME = "mubench.utils-0.0.1-SNAPSHOT-jar-with-dependencies.jar"
 UTILS_JAR_URL = "http://www.st.informatik.tu-darmstadt.de/artifacts/mubench/{}".format(UTILS_JAR_NAME)
-UTILS_MD5 = "240573bdb0e2f27f16d9e2f16df49c8a"
+UTILS_MD5 = "ed0554da0ab5d1346fb2fecb4757d32c"
 
 
 def exec_util(main: str, args: str = ""):
