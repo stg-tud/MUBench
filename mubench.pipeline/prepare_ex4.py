@@ -30,10 +30,6 @@ password = sys.argv[2]
 
 
 def _prepare_example_projects(projects: List[GitHubProject], metadata_path: str):
-    if len(projects) > MAX_PROJECT_SAMPLE_SIZE:
-        logger.warning("Sampling %r of %r example projects...", MAX_PROJECT_SAMPLE_SIZE, len(projects))
-        projects = projects[:MAX_PROJECT_SAMPLE_SIZE]
-
     data = []
     for project in projects:
         logger.info("Preparing example project %r", project.id)
@@ -54,6 +50,10 @@ def _prepare_example_projects(projects: List[GitHubProject], metadata_path: str)
             "path": os.path.relpath(checkout.checkout_dir, MUBENCH_ROOT_PATH),
             "source_paths": Project(checkout.checkout_dir).get_sources_paths()
         })
+
+        if len(data) >= MAX_PROJECT_SAMPLE_SIZE:
+            logger.warning("  Stopping after %r of %r example projects...", MAX_PROJECT_SAMPLE_SIZE, len(projects))
+            break
 
     write_yamls(data, metadata_path)
 
