@@ -2,37 +2,49 @@ package de.tu_darmstadt.stg.mubench.utils;
 
 import edu.iastate.cs.boa.*;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
 public class BOAExampleProjectFinder {
+    private final BoaClient client;
+
     public static void main(String[] args) throws BoaException {
-        BoaClient client = new BoaClient();
-        client.login(args[0], args[1]);
-        System.out.println("Logged in.");
-        InputHandle largeGitHubDataset = client.getDataset("2015 September/GitHub");
-        System.out.println("Fetched dataset.");
-        System.out.print("Running query for '" + args[2] + "'...");
-        JobHandle jobHandle = client.query(createQuery(args[2]), largeGitHubDataset);
-        while (isNotFinished(jobHandle)) {
-            try {
-                System.out.print(".");
-                Thread.sleep(1000);
-            } catch (InterruptedException ignored) {}
-        }
+        String username = args[0];
+        String password = args[1];
+        String targetType = args[2];
+
+        System.out.println("Logging in...");
+        BOAExampleProjectFinder exampleFinder = new BOAExampleProjectFinder(username, password);
+        System.out.println("Searching example projects for " + targetType + "...");
+        JobHandle jobHandle = exampleFinder.findExampleProjects(targetType);
 
         if (isSuccessful(jobHandle)) {
-            System.out.println(" ok.");
-            try {
-                if (hasOutput(jobHandle)) {
-                    System.out.println("Start output:");
-                    System.out.println(jobHandle.getOutput());
-                    System.out.println("===");
-                } else {
-                    System.out.println("No output.");
-                }
-            } catch (BoaException e) {
-                System.out.println(String.format("No output (Exception '%s').", e.getMessage()));
+            if (hasOutput(jobHandle)) {
+                System.out.println("Start output:");
+                System.out.println(fetchOutput(jobHandle));
+                System.out.println("===");
+            } else {
+                System.out.println("No output (empty).");
             }
         } else {
-            System.out.println("ERROR!");
+            System.out.println("No output (error)!");
+        }
+    }
+
+    private BOAExampleProjectFinder(String username, String password) throws LoginException {
+        client = new BoaClient();
+        client.login(username, password);
+    }
+
+    private JobHandle findExampleProjects(String type) throws BoaException {
+        String query = createQuery(type);
+        Optional<JobHandle> job = findExistingJob(query);
+        if (job.isPresent()) {
+            return job.get();
+        } else {
+            throw new RuntimeException("Job already run!");
+            //return runNewJob(query);
         }
     }
 
@@ -78,6 +90,39 @@ public class BOAExampleProjectFinder {
                 "});";
     }
 
+    private Optional<JobHandle> findExistingJob(String query) throws BoaException {
+        int jobCount = client.getJobCount();
+        // traverse job from latest to newest, because only the first execution of a query gives an output
+        for (int jobIndex = jobCount - 1; jobIndex > 0; jobIndex--) {
+            try {
+                JobHandle job = client.getJobList(jobIndex, 1).get(0);
+                if (job.getSource().equals(query)) {
+                    return Optional.of(job);
+                }
+            } catch (BoaException e) {
+                // client failed to parse the server response...
+            }
+        }
+        return Optional.empty();
+    }
+
+    private JobHandle runNewJob(String query) throws BoaException {
+        System.out.println("Fetching dataset...");
+        JobHandle jobHandle;
+        InputHandle largeGitHubDataset = client.getDataset("2015 September/GitHub");
+        System.out.print("Running query");
+        jobHandle = client.query(query, largeGitHubDataset);
+        while (isNotFinished(jobHandle)) {
+            try {
+                System.out.print(".");
+                Thread.sleep(1000);
+            } catch (InterruptedException ignored) {
+            }
+        }
+        System.out.println(" done.");
+        return jobHandle;
+    }
+
     private static boolean isNotFinished(JobHandle jobHandle) throws BoaException {
         jobHandle.refresh();
         ExecutionStatus status = jobHandle.getExecutionStatus();
@@ -88,7 +133,7 @@ public class BOAExampleProjectFinder {
         return jobHandle.getExecutionStatus() == ExecutionStatus.FINISHED;
     }
 
-    private static boolean hasOutput(JobHandle jobHandle) throws BoaException {
+    private static boolean hasOutput(JobHandle jobHandle) {
         try {
             return jobHandle.getOutputSize() > 0;
         } catch (BoaException e) {
@@ -96,6 +141,14 @@ public class BOAExampleProjectFinder {
             // this point (otherwise, we wouldn't have been able to place the query in the first place), I think we can
             // safely ignore this and assume that there is no output.
             return false;
+        }
+    }
+
+    private static String fetchOutput(JobHandle jobHandle) {
+        try {
+            return jobHandle.getOutput();
+        } catch (BoaException e) {
+            throw new RuntimeException("This should never happen", e);
         }
     }
 }
