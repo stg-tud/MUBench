@@ -39,7 +39,7 @@ class BOA:
                 try:
                     results_start_line = output_lines.index("Start output:") + 1
                     results_end_line = output_lines.index("===")
-                    results = str.join(os.sep, output[results_start_line:results_end_line])
+                    results = str.join(os.sep, output_lines[results_start_line:results_end_line])
                     io.safe_write(results, result_file_name, append=False)
                 except ValueError:
                     raise UserWarning("No output from BOA.")
