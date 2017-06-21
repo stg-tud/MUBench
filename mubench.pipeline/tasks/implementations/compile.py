@@ -7,6 +7,7 @@ from os import makedirs
 from os.path import join, exists, dirname, splitext, relpath
 from typing import List, Set
 
+from data.build_command import BuildCommand
 from data.misuse import Pattern, Misuse
 from data.project import Project
 from data.project_compile import ProjectCompile
@@ -125,28 +126,8 @@ class Compile(ProjectVersionTask):
 
     @staticmethod
     def _compile(commands: List[str], project_dir: str, dep_dir: str, compile_base_path: str) -> None:
-        logger = logging.getLogger("compile.tasks.exec")
         for command in commands:
-            if command.startswith("mvn "):
-                command = "mvn dependency:build-classpath -DincludeScope=compile " + command[4:]
-                output = Shell.exec(command, cwd=project_dir, logger=logger)
-                dependencies = Compile.__parse_maven_classpath(output)
-                Compile._copy_classpath(dependencies, dep_dir, compile_base_path)
-            elif command.startswith("ant"):
-                command += " -debug -verbose"
-                output = Shell.exec(command, cwd=project_dir, logger=logger)
-                dependencies = Compile.__parse_ant_classpath(output)
-                Compile._copy_classpath(dependencies, dep_dir, compile_base_path)
-            elif command.startswith("gradle "):
-                Shell.exec(command, cwd=project_dir, logger=logger)
-                buildfile_dir = Compile.__parse_buildfile_dir(command)
-                shutil.copy(os.path.join(os.path.dirname(__file__), 'classpath.gradle'), os.path.join(project_dir, buildfile_dir))
-                command = "gradle :printClasspath -b '{}'".format(os.path.join(buildfile_dir, "classpath.gradle"))
-                output = Shell.exec(command, cwd=project_dir, logger=logger)
-                dependencies = Compile.__parse_gradle_classpath(output)
-                Compile._copy_classpath(dependencies, dep_dir, compile_base_path)
-            else:
-                Shell.exec(command, cwd=project_dir, logger=logger)
+            BuildCommand.get(command).execute(project_dir, dep_dir, compile_base_path)
 
     @staticmethod
     def __parse_buildfile_dir(command):
