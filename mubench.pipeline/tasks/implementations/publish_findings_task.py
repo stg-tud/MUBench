@@ -104,7 +104,7 @@ class PublishFindingsTask(ProjectVersionTask):
             "project": project.id,
             "version": version.version_id,
             "result": result,
-            "potential_hits": potential_hits
+            "potential_hits": [potential_hit.with_markdown() for potential_hit in potential_hits]
         })
         file_paths = PublishFindingsTask.get_file_paths(potential_hits)
         post(self.__upload_url, data, file_paths=file_paths,

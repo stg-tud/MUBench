@@ -4,7 +4,7 @@ import json
 import mimetypes
 import shutil
 from contextlib import ExitStack
-from typing import List
+from typing import List, Dict, Any
 from urllib.request import urlopen
 from os import remove
 from os.path import exists, basename
