@@ -3,8 +3,8 @@ from unittest.mock import patch
 
 from nose.tools import assert_equals, assert_raises
 
-from data.finding import Finding
 from data.snippets import Snippet, SnippetUnavailableException
+from data.finding import Finding, UnsupportedTypeError
 from utils.shell import CommandFailedError
 from tests.test_utils.data_util import create_misuse
 
@@ -120,3 +120,37 @@ class TestTargetCode:
 
         assert_equals('/base/-file-', context.exception.file)
         assert_equals(utils_mock.side_effect, context.exception.exception)
+
+
+class TestMarkdown:
+    def setup(self):
+        self.uut = Finding(dict())
+
+    def test_raises_on_non_convertible(self):
+        class SomeClass: pass
+        self.uut["non-convertible"] = SomeClass
+        assert_raises(UnsupportedTypeError, self.uut.with_markdown)
+
+    def test_empty_list(self):
+        self.uut["list"] = []
+        actual = self.uut.with_markdown()
+        expected = ""
+        assert_equals(expected, actual["list"])
+
+    def test_list(self):
+        self.uut["list"] = ["hello", "world"]
+        actual = self.uut.with_markdown()
+        expected = "* hello\n* world"
+        assert_equals(expected, actual["list"])
+
+    def test_empty_dict(self):
+        self.uut["dict"] = dict()
+        actual = self.uut.with_markdown()
+        expected = ""
+        assert_equals(expected, actual["dict"])
+
+    def test_dict(self):
+        self.uut["dict"] = {"key": "value"}
+        actual = self.uut.with_markdown()
+        expected = "key: \nvalue"
+        assert_equals(expected, actual["dict"])

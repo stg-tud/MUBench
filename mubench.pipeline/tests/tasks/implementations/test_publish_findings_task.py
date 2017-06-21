@@ -83,7 +83,7 @@ class TestPublishFindingsTask:
             "result": "success",
             "runtime": 42.0,
             "number_of_findings": 5,
-            "potential_hits": potential_hits
+            "potential_hits": [ph.with_markdown() for ph in potential_hits]
         })
 
     def test_publish_successful_run_files(self, post_mock):
