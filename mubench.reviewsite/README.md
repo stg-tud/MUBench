@@ -15,11 +15,15 @@ The [MUBench Pipeline](../mubench.pipeline) publishes the detectors' results to 
 ## Setup
 
 1. `$> ./mubench configure review-site`
-2. Enter your database (`db`) and reviewer credentials (`users`) in [`mubench.reviewsite/src/settings.php`](src/settings.php).
+2. Adjust [`mubench.reviewsite/src/settings.php`](src/settings.php) to your environment:
+  - Enter your database configuration below `db`.
+  - Enter a prefix (possibly empty) for your database tables in `db/prefix`.
+  - List your reviewer credentials below `users`.
 3. Upload the contents of `mubench.reviewsite/` to your webserver.
 4. Grant the server read/write permissions on the `upload` and `logs` directories.
 5. Import [`mubench.reviewsite/init_db.sql`](https://github.com/stg-tud/MUBench/blob/master/mubench.reviewsite/init_db.sql) into your database.
-6. Go to `http://<your-site.url>/`.
+6. Add the table-name prefix you entered in the settings to all tables.
+7. Go to `http://<your-site.url>/`.
 
 ## Use
 
