@@ -6,16 +6,6 @@ CREATE TABLE IF NOT EXISTS `detectors` (
   UNIQUE KEY `name` (`name`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=latin1;
 
-CREATE TABLE IF NOT EXISTS `stats` (
-  `exp` text NOT NULL,
-  `detector` text NOT NULL,
-  `project` text NOT NULL,
-  `version` text NOT NULL,
-  `result` text NOT NULL,
-  `runtime` text NOT NULL,
-  `number_of_findings` text NOT NULL
-) ENGINE=MyISAM  DEFAULT CHARSET=latin1;
-
 CREATE TABLE IF NOT EXISTS `metadata` (
   `project` text NOT NULL,
   `version` text NOT NULL,
