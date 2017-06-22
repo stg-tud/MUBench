@@ -29,35 +29,6 @@ username = sys.argv[1]
 password = sys.argv[2]
 
 
-def _prepare_example_projects(projects: List[GitHubProject], metadata_path: str):
-    data = []
-    for project in projects:
-        checkout = project.get_checkout(CHECKOUTS_PATH)
-        if not checkout.exists():
-            try:
-                logger.info("Checking out %r...", str(project))
-                checkout.create()
-            except CommandFailedError as error:
-                logger.warning("  Checkout failed: %r", error)
-                checkout.delete()
-                continue
-        else:
-            logger.info("Already checked out %r.", str(project))
-
-        data.append({
-            "id": project.id,
-            "url": project.repository_url,
-            "path": os.path.relpath(checkout.checkout_dir, MUBENCH_ROOT_PATH),
-            "source_paths": Project(checkout.checkout_dir).get_sources_paths()
-        })
-
-        if len(data) >= MAX_PROJECT_SAMPLE_SIZE:
-            logger.warning("  Stopping after %r of %r example projects...", MAX_PROJECT_SAMPLE_SIZE, len(projects))
-            break
-
-    write_yamls(data, metadata_path)
-
-
 def _get_subtypes(target_type):
     if not _SUBTYPES:
         with open(SUBTYPES_PATH) as subtypes_file:
@@ -66,10 +37,39 @@ def _get_subtypes(target_type):
 
     all_subtypes = _SUBTYPES.get(target_type, [])
     subtypes_sample = [subtype for subtype in all_subtypes if "sun." not in subtype]  # filter Sun-specific types
-    if len(subtypes_sample) > MAX_SUBTYPES_SAMPLE_SIZE:
-        logger.warning("Sampling %r of %r subtypes...", MAX_SUBTYPES_SAMPLE_SIZE, len(subtypes_sample))
-        subtypes_sample = subtypes_sample[:MAX_SUBTYPES_SAMPLE_SIZE]
     return subtypes_sample
+
+
+def _prepare_example_projects(target_type: str, boa: BOA, metadata_path: str):
+    data = []
+    for type in [target_type] + _get_subtypes(target_type):
+        projects = boa.query_projects_with_type_usages(target_type, type)
+        for project in projects:
+            checkout = project.get_checkout(CHECKOUTS_PATH)
+            if not checkout.exists():
+                try:
+                    logger.info("Checking out %r...", str(project))
+                    checkout.create()
+                except CommandFailedError as error:
+                    logger.warning("  Checkout failed: %r", error)
+                    checkout.delete()
+                    continue
+            else:
+                logger.info("Already checked out %r.", str(project))
+
+            data.append({
+                "id": project.id,
+                "url": project.repository_url,
+                "path": os.path.relpath(checkout.checkout_dir, MUBENCH_ROOT_PATH),
+                "source_paths": Project(checkout.checkout_dir).get_sources_paths()
+            })
+
+            if len(data) >= MAX_PROJECT_SAMPLE_SIZE:
+                logger.warning("  Stopping after %r of %r example projects...", MAX_PROJECT_SAMPLE_SIZE, len(projects))
+                write_yamls(data, metadata_path)
+                return
+
+    write_yamls(data, metadata_path)
 
 
 logger = logging.getLogger()
@@ -95,9 +95,8 @@ with open(INDEX_PATH) as index:
         target_type = row[2]
         try:
             logger.info("Preparing examples for %s.%s (target type: %s)", project_id, version_id, target_type)
-            projects = boa.query_projects_with_type_usages(target_type, _get_subtypes(target_type))
             target_example_file = os.path.join(CHECKOUTS_PATH, target_type + ".yml")
-            _prepare_example_projects(projects, target_example_file)
+            _prepare_example_projects(target_type, boa, target_example_file)
         except UserWarning as warning:
             logger.warning("%r", warning)
         except Exception as error:
