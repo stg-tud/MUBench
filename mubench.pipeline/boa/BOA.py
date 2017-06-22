@@ -1,9 +1,28 @@
 import os
 
+from os.path import exists
 from typing import List
 
-from data.project_checkout import GitProjectCheckout
+from data.project_checkout import GitProjectCheckout, RepoProjectCheckout
 from utils import java_utils, io
+from utils.shell import Shell
+
+
+class GitProjectShallowCheckout(RepoProjectCheckout):
+    def __init__(self, url: str, base_path: str, name: str):
+        super().__init__(url, base_path, name, "latest", "HEAD")
+
+    def _clone(self, url: str, revision: str, path: str):
+        pass
+
+    def _update(self, url: str, revision: str, path: str):
+        Shell.exec("git clone --depth 1 {} . --quiet".format(url), cwd=path, logger=self._logger)
+
+    def _is_repo(self, path: str):
+        return exists(path) and Shell.try_exec("git status", cwd=path, logger=self._logger)
+
+    def __str__(self):
+        return "shallow-git:{}#{}".format(self.url, self.revision[:8])
 
 
 class GitHubProject:
@@ -15,7 +34,7 @@ class GitHubProject:
         return "http://github.com/{}".format(self.id)
 
     def get_checkout(self, checkout_base_path: str):
-        return GitProjectCheckout(self.repository_url, checkout_base_path, self.id, "latest", "HEAD")
+        return GitProjectShallowCheckout(self.repository_url, checkout_base_path, self.id)
 
     def __str__(self):
         return self.repository_url
