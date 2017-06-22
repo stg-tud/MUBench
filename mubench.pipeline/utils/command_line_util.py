@@ -208,9 +208,9 @@ def __setup_detector_arguments(parser: ArgumentParser, available_detectors: List
 
 
 def __setup_publish_arguments(parser: ArgumentParser) -> None:
-    parser.add_argument("-s", "--review-site", required=True, metavar="URL", dest="review_site_url",
-                        default=get_default('review-site', None),
-                        help="use the specified review site")
+    default_review_site = get_default('review-site', None)
+    parser.add_argument("-s", "--review-site", required=(not default_review_site), metavar="URL",
+                        dest="review_site_url", default=default_review_site, help="use the specified review site")
     parser.add_argument("-u", "--username", metavar="USER", dest="review_site_user",
                         default=get_default('username', None),
                         help="use the specified user to authenticate with the review site."
