@@ -2,8 +2,6 @@ package de.tu_darmstadt.stg.mubench.utils;
 
 import edu.iastate.cs.boa.*;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 public class BOAExampleProjectFinder {
@@ -40,12 +38,16 @@ public class BOAExampleProjectFinder {
     private JobHandle findExampleProjects(String type) throws BoaException {
         String query = createQuery(type);
         Optional<JobHandle> job = findExistingJob(query);
+        JobHandle jobHandle;
         if (job.isPresent()) {
-            return job.get();
+            System.out.print("Found existing job...");
+            jobHandle = job.get();
         } else {
-            throw new RuntimeException("Job already run!");
-            //return runNewJob(query);
+            System.out.print("Starting new query...");
+            jobHandle = startNewJob(query);
         }
+        waitForJobToFinish(jobHandle);
+        return jobHandle;
     }
 
     private static String createQuery(String targetType) {
@@ -106,12 +108,12 @@ public class BOAExampleProjectFinder {
         return Optional.empty();
     }
 
-    private JobHandle runNewJob(String query) throws BoaException {
-        System.out.println("Fetching dataset...");
-        JobHandle jobHandle;
+    private JobHandle startNewJob(String query) throws BoaException {
         InputHandle largeGitHubDataset = client.getDataset("2015 September/GitHub");
-        System.out.print("Running query");
-        jobHandle = client.query(query, largeGitHubDataset);
+        return client.query(query, largeGitHubDataset);
+    }
+
+    private void waitForJobToFinish(JobHandle jobHandle) throws BoaException {
         while (isNotFinished(jobHandle)) {
             try {
                 System.out.print(".");
@@ -120,7 +122,6 @@ public class BOAExampleProjectFinder {
             }
         }
         System.out.println(" done.");
-        return jobHandle;
     }
 
     private static boolean isNotFinished(JobHandle jobHandle) throws BoaException {
