@@ -98,7 +98,8 @@ with open(INDEX_PATH) as index:
         try:
             logger.info("Preparing examples for %s.%s (target type: %s)", project_id, version_id, target_type)
             target_example_file = os.path.join(CHECKOUTS_PATH, target_type + ".yml")
-            _prepare_example_projects(target_type, boa, target_example_file)
+            if not exists(target_example_file):
+                _prepare_example_projects(target_type, boa, target_example_file)
         except UserWarning as warning:
             logger.warning("%r", warning)
         except Exception as error:
