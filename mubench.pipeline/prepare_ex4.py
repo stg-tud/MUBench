@@ -48,14 +48,14 @@ def _prepare_example_projects(target_type: str, boa: BOA, metadata_path: str):
             checkout = project.get_checkout(CHECKOUTS_PATH)
             if not checkout.exists():
                 try:
-                    logger.info("Checking out %r...", str(project))
+                    logger.info("  Checking out %r...", str(project))
                     checkout.create()
                 except CommandFailedError as error:
-                    logger.warning("  Checkout failed: %r", error)
+                    logger.warning("    Checkout failed: %r", error)
                     checkout.delete()
                     continue
             else:
-                logger.info("Already checked out %r.", str(project))
+                logger.info("  Already checked out %r.", str(project))
 
             try:
                 project_entry = {"id": project.id, "url": project.repository_url,
@@ -64,10 +64,10 @@ def _prepare_example_projects(target_type: str, boa: BOA, metadata_path: str):
                 write_yaml(project_entry)
                 data.append(project_entry)
             except UnicodeEncodeError:
-                logger.warning("  Illegal characters in project data.")
+                logger.warning("    Illegal characters in project data.")
 
             if len(data) >= MAX_PROJECT_SAMPLE_SIZE:
-                logger.warning("  Stopping after %r of %r example projects...", MAX_PROJECT_SAMPLE_SIZE, len(projects))
+                logger.warning("  Stopping after %r of %r example projects.", MAX_PROJECT_SAMPLE_SIZE, len(projects))
                 write_yamls(data, metadata_path)
                 return
 
@@ -96,10 +96,12 @@ with open(INDEX_PATH) as index:
         version_id = row[1]
         target_type = row[2]
         try:
-            logger.info("Preparing examples for %s.%s (target type: %s)", project_id, version_id, target_type)
             target_example_file = os.path.join(CHECKOUTS_PATH, target_type + ".yml")
             if not exists(target_example_file):
+                logger.info("Preparing examples for %s.%s (type: %s)...", project_id, version_id, target_type)
                 _prepare_example_projects(target_type, boa, target_example_file)
+            else:
+                logger.info("Already prepared examples for %s.%s (type: %s)", project_id, version_id, target_type)
         except UserWarning as warning:
             logger.warning("%r", warning)
         except Exception as error:
