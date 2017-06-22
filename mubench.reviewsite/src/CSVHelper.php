@@ -84,7 +84,7 @@ class CSVHelper
                 $misuse_entries[] = $run_details;
             }
         }
-        for ($i = 0; $i < $max_review_count; $i++) {
+        for ($i = 1; $i < $max_review_count; $i++) {
             $result .= ",review{$i}_name";
             $result .= ",review{$i}_decision";
             $result .= ",review{$i}_comment";
