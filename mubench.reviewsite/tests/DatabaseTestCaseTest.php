@@ -15,7 +15,6 @@ class DatabaseTestCaseTest extends DatabaseTestCase
 
         $expectedTables = [
             ['name' => 'detectors'],
-            ['name' => 'stats'],
             ['name' => 'metadata'],
             ['name' => 'patterns'],
             ['name' => 'reviews'],
