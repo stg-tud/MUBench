@@ -18,7 +18,7 @@ class GitHubProject:
         return GitProjectCheckout(self.repository_url, checkout_base_path, self.id, "latest", "HEAD")
 
     def __str__(self):
-        return self.id
+        return self.repository_url
 
 
 class BOA:
