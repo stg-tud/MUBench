@@ -9,7 +9,7 @@ from utils.web_util import is_valid_file, download_file
 
 UTILS_JAR_NAME = "mubench.utils-0.0.1-SNAPSHOT-jar-with-dependencies.jar"
 UTILS_JAR_URL = "http://www.st.informatik.tu-darmstadt.de/artifacts/mubench/{}".format(UTILS_JAR_NAME)
-UTILS_MD5 = "ed0554da0ab5d1346fb2fecb4757d32c"
+UTILS_MD5 = "424fe42efa2cc764ace2c4120a087fc1"
 
 
 def exec_util(main: str, args: str = "", timeout: Optional[int] = None):
