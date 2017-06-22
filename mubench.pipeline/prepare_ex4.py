@@ -75,7 +75,7 @@ def _get_subtypes(target_type):
 logger = logging.getLogger()
 logger.setLevel(logging.DEBUG)
 handler = logging.StreamHandler()
-handler.setFormatter(IndentFormatter("%(indent)s%(message)s"))
+handler.setFormatter(IndentFormatter("%(asctime)s %(indent)s%(message)s"))
 handler.setLevel(logging.INFO)
 logger.addHandler(handler)
 LOG_DIR = "logs"
