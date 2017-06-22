@@ -12,7 +12,7 @@ from typing import List
 
 from boa.BOA import BOA, GitHubProject
 from buildtools.maven import Project
-from utils.io import write_yamls
+from utils.io import write_yamls, write_yaml
 from utils.logging import IndentFormatter
 from utils.shell import CommandFailedError
 
@@ -57,12 +57,14 @@ def _prepare_example_projects(target_type: str, boa: BOA, metadata_path: str):
             else:
                 logger.info("Already checked out %r.", str(project))
 
-            data.append({
-                "id": project.id,
-                "url": project.repository_url,
-                "path": os.path.relpath(checkout.checkout_dir, MUBENCH_ROOT_PATH),
-                "source_paths": Project(checkout.checkout_dir).get_sources_paths()
-            })
+            try:
+                project_entry = {"id": project.id, "url": project.repository_url,
+                                 "path": os.path.relpath(checkout.checkout_dir, MUBENCH_ROOT_PATH),
+                                 "source_paths": Project(checkout.checkout_dir).get_sources_paths()}
+                write_yaml(project_entry)
+                data.append(project_entry)
+            except UnicodeEncodeError:
+                logger.warning("  Illegal characters in project data.")
 
             if len(data) >= MAX_PROJECT_SAMPLE_SIZE:
                 logger.warning("  Stopping after %r of %r example projects...", MAX_PROJECT_SAMPLE_SIZE, len(projects))
