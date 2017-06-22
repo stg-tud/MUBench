@@ -1,6 +1,7 @@
 from os.path import dirname, join, exists
 
 from os import remove
+from typing import Optional
 from urllib.error import URLError
 
 from utils.shell import Shell
@@ -11,7 +12,7 @@ UTILS_JAR_URL = "http://www.st.informatik.tu-darmstadt.de/artifacts/mubench/{}".
 UTILS_MD5 = "ed0554da0ab5d1346fb2fecb4757d32c"
 
 
-def exec_util(main: str, args: str = ""):
+def exec_util(main: str, args: str = "", timeout: Optional[int] = None):
     base_path = dirname(__file__)
     utils_jar_path = join(base_path, UTILS_JAR_NAME)
 
@@ -24,4 +25,5 @@ def exec_util(main: str, args: str = ""):
         except (URLError, ValueError, FileNotFoundError) as e:
             raise ValueError("utils unavailable: {}".format(e))
 
-    return Shell.exec("java -cp \"{}\" de.tu_darmstadt.stg.mubench.utils.{} {}".format(utils_jar_path, main, args))
+    return Shell.exec("java -cp \"{}\" de.tu_darmstadt.stg.mubench.utils.{} {}".format(utils_jar_path, main, args),
+                      timeout=timeout)
