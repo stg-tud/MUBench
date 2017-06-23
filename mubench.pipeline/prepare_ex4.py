@@ -1,16 +1,11 @@
 import csv
-import os
-import traceback
-
-import sys
-
 import logging
+import os
+import sys
 from datetime import datetime
-
 from os.path import exists, join
-from typing import List
 
-from boa.BOA import BOA, GitHubProject
+from boa.BOA import BOA
 from buildtools.maven import Project
 from utils.io import write_yamls, write_yaml, is_empty
 from utils.logging import IndentFormatter
