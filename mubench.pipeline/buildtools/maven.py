@@ -29,11 +29,14 @@ class Project:
 
     @staticmethod
     def __get_package_names(java_file_path):
-        with open(java_file_path, 'r', encoding='utf-8', errors='ignore') as f:
-            try:
-                package_declaration = next(line for line in f.readlines() if "package " in line)  # type: str
-                package_name_start = package_declaration.find("package ") + 8
-                package_name_end = package_declaration.find(";", package_name_start)
-                return package_declaration[package_name_start:package_name_end].split(".")
-            except StopIteration:
-                return []
+        try:
+            with open(java_file_path, 'r', encoding='utf-8', errors='ignore') as f:
+                try:
+                    package_declaration = next(line for line in f.readlines() if "package " in line)  # type: str
+                    package_name_start = package_declaration.find("package ") + 8
+                    package_name_end = package_declaration.find(";", package_name_start)
+                    return package_declaration[package_name_start:package_name_end].split(".")
+                except StopIteration:
+                    return []
+        except FileNotFoundError:
+            return []  # somehow this seems to happen for empty files
