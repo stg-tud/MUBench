@@ -25,7 +25,7 @@ abstract class RunsResult
         $misuses = array();
         $synthetics = array();
         foreach ($runs as $run) {
-            if (strcmp($run["result"], "success") !== 0) {
+            if (strcmp($run["result"], "not run") === 0) {
                 continue;
             }
             if (strcmp($run["project"], "synthetic") === 0) {
