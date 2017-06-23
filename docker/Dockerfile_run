@@ -1,28 +1,33 @@
-FROM ubuntu:12.04
+FROM ubuntu:latest
 
 # settings
 ENV DEBIAN_FRONTEND noninteractive
+RUN apt-get clean && apt-get update
+RUN apt-get install locales
 RUN locale-gen en_US en_US.UTF-8
 RUN dpkg-reconfigure locales
 RUN echo "APT::Get::Assume-Yes \"true\";\nAPT::Get::force-yes \"true\";" >> /etc/apt/apt.conf.d/90forceyes
-RUN echo "deb http://extras.ubuntu.com/ubuntu precise main" >> /etc/apt/sources.list
 
 # default 
 RUN apt-get update
 RUN apt-get install python-pip
 RUN apt-get install python-software-properties
+RUN apt-get install software-properties-common
 
 # update apt reps
 RUN add-apt-repository ppa:cwchien/gradle
 RUN add-apt-repository ppa:webupd8team/java
 RUN add-apt-repository ppa:fkrull/deadsnakes
-RUN add-apt-repository ppa:dominik-stadler/subversion-1.8
-RUN add-apt-repository ppa:git-core/ppa
 RUN apt-get update
 
+# python setup
+RUN apt-get install python3.5 python3.5-dev
+RUN pip install virtualenv
+RUN virtualenv -p python3.5 $HOME/venv/3.5
+ENV PATH /root/venv/3.5/bin:$PATH
+RUN pip install -r https://raw.githubusercontent.com/stg-tud/MUBench/master/mubench.pipeline/requirements.txt
+
 # c lib pyyaml
-RUN apt-get -y install gcc
-RUN apt-get -y install build-essential
 ADD http://pyyaml.org/download/libyaml/yaml-0.1.7.tar.gz /libyaml/
 WORKDIR /libyaml
 RUN tar xvf yaml-0.1.7.tar.gz
@@ -31,23 +36,6 @@ WORKDIR /libyaml/yaml-0.1.7
 RUN ./configure
 RUN make
 RUN make install
-
-# python setup
-RUN apt-get -y install gcc
-RUN apt-get -y install build-essential
-ADD http://pyyaml.org/download/libyaml/yaml-0.1.7.tar.gz /libyaml/
-WORKDIR /libyaml
-RUN tar xvf yaml-0.1.7.tar.gz
-WORKDIR /libyaml/yaml-0.1.7
-RUN ./configure
-RUN make
-RUN make install
-
-RUN apt-get install python3.5 python3.5-dev
-RUN pip install virtualenv
-RUN virtualenv -p python3.5 $HOME/venv/3.5
-ENV PATH /root/venv/3.5/bin:$PATH
-RUN pip install -r https://raw.githubusercontent.com/stg-tud/MUBench/master/mubench.pipeline/requirements.txt
 
 # mubench dependencies
 RUN apt-get install subversion
