@@ -105,7 +105,7 @@ def __write_yaml(data, dump, file):
 
 def __escape_str(data):
     if isinstance(data, str):
-        if "\n" in data:
+        if len(data.splitlines()) > 1:
             return __MultilineString(data)
         else:
             return data
