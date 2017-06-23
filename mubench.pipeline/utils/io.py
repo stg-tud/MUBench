@@ -1,4 +1,5 @@
-from os import makedirs, chmod, remove, listdir, readlink, symlink, os
+import os
+from os import makedirs, chmod, remove, listdir, readlink, symlink
 from os.path import dirname, exists, isfile, join, isdir, basename, islink
 from shutil import rmtree, copy
 from stat import S_IWRITE
