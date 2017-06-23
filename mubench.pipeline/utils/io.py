@@ -1,5 +1,4 @@
-import os
-from os import makedirs, chmod, remove, listdir, readlink, symlink
+from os import makedirs, chmod, remove, listdir, readlink, symlink, stat
 from os.path import dirname, exists, isfile, join, isdir, basename, islink
 from shutil import rmtree, copy
 from stat import S_IWRITE
@@ -39,7 +38,7 @@ def create_file(file_path: str, truncate: bool = False) -> None:
 
 
 def is_empty(file_path: str) -> bool:
-    return os.path.exists(file_path) and os.stat(file_path).st_size == 0
+    return exists(file_path) and stat(file_path).st_size == 0
 
 
 def remove_tree(root: str) -> None:
