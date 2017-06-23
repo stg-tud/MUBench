@@ -12,7 +12,7 @@ from typing import List
 
 from boa.BOA import BOA, GitHubProject
 from buildtools.maven import Project
-from utils.io import write_yamls, write_yaml
+from utils.io import write_yamls, write_yaml, is_empty
 from utils.logging import IndentFormatter
 from utils.shell import CommandFailedError
 
@@ -100,9 +100,9 @@ with open(INDEX_PATH) as index:
             if not exists(target_example_file):
                 logger.info("Preparing examples for %s.%s (type: %s)...", project_id, version_id, target_type)
                 _prepare_example_projects(target_type, boa, target_example_file)
+            elif is_empty(target_example_file):
+                logger.info("No example projects for %s.%s (type: %s)", project_id, version_id, target_type)
             else:
                 logger.info("Already prepared examples for %s.%s (type: %s)", project_id, version_id, target_type)
-        except UserWarning as warning:
-            logger.warning("%r", warning)
         except Exception as error:
             logger.exception("failed", exc_info=error)
