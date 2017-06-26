@@ -135,3 +135,14 @@ class RunnerInterface_0_0_8(RunnerInterface):
         for key, value in detector_arguments.items():
             args[key] = _quote(value)
         return args
+
+
+# noinspection PyPep8Naming
+class RunnerInterface_0_0_10(RunnerInterface_0_0_8):
+    @staticmethod
+    def version():
+        return StrictVersion("0.0.10")
+
+    @staticmethod
+    def changelog():
+        return "Java-side interface now uses builder."
