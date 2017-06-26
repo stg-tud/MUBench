@@ -268,3 +268,14 @@ class TestAntCommand:
         assert_equals(shell_mock.mock_calls[0][1], ("ant -debug -verbose",))
         assert_in(call("/path/dependency1.jar", "-dep_dir-"), copy_mock.mock_calls)
         assert_in(call("/path/dependency2.jar", "-dep_dir-"), copy_mock.mock_calls)
+
+    def test_error_outputs_error_stream(self, shell_mock, copy_mock):
+        error = "-error-"
+        shell_mock.side_effect = CommandFailedError("ant", "", error)
+
+        expected_error_output = '\n' + error
+
+        try:
+            AntCommand("ant", []).execute("-p-", "-d-", "-bp-")
+        except CommandFailedError as e:
+            assert_equals(expected_error_output, e.output)

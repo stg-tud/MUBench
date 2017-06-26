@@ -154,6 +154,9 @@ class AntCommand(BuildCommand):
     def _extend_args(self, args: List[str]) -> List[str]:
         return ["-debug", "-verbose"] + args
 
+    def _get_errors(self, output: str, error: str) -> str:
+        return error
+
     def _copy_dependencies(self, exec_output: str, project_dir: str,
                            dep_dir: str, compile_base_path: str) -> None:
         dependencies = AntCommand.__parse_ant_classpath(exec_output)
