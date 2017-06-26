@@ -42,20 +42,14 @@ class PublishFindingsTask(ProjectVersionTask):
         logger = self.logger.getChild("version")
 
         detector_run = self.experiment.get_run(version)
-        runtime = detector_run.get_runtime()
+        run_info = detector_run.get_run_info()
+        potential_hits = detector_run.get_potential_hits()
 
         if detector_run.is_success():
             logger.info("Preparing findings in %s...", version)
-
             result = "success"
-            number_of_findings = detector_run.get_number_of_findings()
-            potential_hits = detector_run.get_potential_hits()
-
             logger.info("Found %s potential hits.", len(potential_hits))
         else:
-            number_of_findings = 0
-            potential_hits = []
-
             if detector_run.is_error():
                 logger.info("Run on %s produced an error.", version)
                 result = "error"
@@ -75,7 +69,7 @@ class PublishFindingsTask(ProjectVersionTask):
         try:
             logger.info("Publishing findings...")
             for potential_hits_slice in self.__slice_by_max_files_per_post(potential_hits):
-                self.__post(project, version, runtime, number_of_findings, result, potential_hits_slice)
+                self.__post(project, version, run_info, result, potential_hits_slice)
             logger.info("Findings published.")
         except RequestException as e:
             response = e.response
@@ -101,17 +95,17 @@ class PublishFindingsTask(ProjectVersionTask):
 
         yield potential_hits_slice
 
-    def __post(self, project, version, runtime, number_of_findings, result, potential_hits):
-        data = {
+    def __post(self, project, version, run_info, result, potential_hits):
+        data = {}
+        data.update(run_info)
+        data.update({
             "dataset": self.dataset,
             "detector": self.detector.id,
             "project": project.id,
             "version": version.version_id,
             "result": result,
-            "runtime": runtime,
-            "number_of_findings": number_of_findings,
             "potential_hits": potential_hits
-        }
+        })
         file_paths = PublishFindingsTask.get_file_paths(potential_hits)
         post(self.__upload_url, data, file_paths=file_paths,
              username=self.review_site_user, password=self.review_site_password)

@@ -16,17 +16,20 @@ class Run:
 
     def get_potential_hits(self) -> List[SpecializedFinding]:
         potential_hits = []
-        previous_execution_min_rank = 0
-        for execution in self.executions:
-            min_rank = previous_execution_min_rank
-            for potential_hit in execution.potential_hits:
-                rank = int(potential_hit["rank"])
-                if rank < min_rank:
-                    rank += previous_execution_min_rank
-                potential_hit["rank"] = rank
-                potential_hits.append(potential_hit)
-                min_rank = rank + 1
-            previous_execution_min_rank = min_rank
+
+        if self.is_success():
+            previous_execution_min_rank = 0
+            for execution in self.executions:
+                min_rank = previous_execution_min_rank
+                for potential_hit in execution.potential_hits:
+                    rank = int(potential_hit["rank"])
+                    if rank < min_rank:
+                        rank += previous_execution_min_rank
+                    potential_hit["rank"] = rank
+                    potential_hits.append(potential_hit)
+                    min_rank = rank + 1
+                previous_execution_min_rank = min_rank
+
         return potential_hits
 
     def get_number_of_findings(self) -> int:
@@ -40,6 +43,18 @@ class Run:
         for execution in self.executions:
             runtime += execution.runtime
         return runtime / len(self.executions)
+
+    def get_run_info(self):
+        run_info = {
+            "number_of_findings": self.get_number_of_findings(),
+            "runtime": self.get_runtime()
+        }
+        if len(self.executions) == 1:
+            run_info.update(self.executions[0].get_run_info())
+        else:
+            for index, execution in enumerate(self.executions):
+                run_info["run {}".format(index)] = execution.get_run_info()
+        return run_info
 
     def reset(self):
         for execution in self.executions:

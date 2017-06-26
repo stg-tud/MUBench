@@ -134,6 +134,7 @@ class TestPublishFindingsTask:
                       [{"code": "-code-", "first_line_number": 23}])
 
     def test_publish_erroneous_run(self, post_mock):
+        self.test_run.get_number_of_findings = lambda: 0
         self.test_run.is_error = lambda: True
         self.test_run.get_runtime = lambda: 1337
 
@@ -153,6 +154,7 @@ class TestPublishFindingsTask:
     def test_publish_timeout_run(self, post_mock):
         self.test_run.is_timeout = lambda: True
         self.test_run.get_runtime = lambda: 1000000
+        self.test_run.get_number_of_findings = lambda: 0
 
         self.uut.process_project_version(self.project, self.version)
 
@@ -169,6 +171,7 @@ class TestPublishFindingsTask:
 
     def test_publish_not_run(self, post_mock):
         self.test_run.get_runtime = lambda: 0
+        self.test_run.get_number_of_findings = lambda: 0
 
         self.uut.process_project_version(self.project, self.version)
 

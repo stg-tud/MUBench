@@ -67,7 +67,7 @@ class DetectorExecution:
 
     @property
     def runtime(self):
-        return self.__get_run_info("runtime", None)
+        return self.__get_run_info("runtime", 0)
 
     @property
     def message(self):
@@ -76,6 +76,9 @@ class DetectorExecution:
     @property
     def __detector_md5(self):
         return self.__get_run_info("md5", None)
+
+    def get_run_info(self):
+        return self.__run_info
 
     def execute(self, compile_base_path: str, timeout: Optional[int], logger: Logger):
         detector_args = self._get_detector_arguments(self.version.get_compile(compile_base_path))
