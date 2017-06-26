@@ -45,7 +45,10 @@ class BuildCommand:
         try:
             output = Shell.exec(command, cwd=project_dir, logger=self.logger)
         except CommandFailedError as e:
-            raise CommandFailedError(e.command, '\n' + self._get_errors(e.output))
+            error_output = '\n' + self._get_errors(e.output, e.error)
+            e.output = error_output
+            e.error = ""
+            raise
 
         self._copy_dependencies(output, project_dir, dep_dir, compile_base_path)
 
@@ -59,7 +62,7 @@ class BuildCommand:
     def _extend_args(self, args: List[str]) -> List[str]:
         return args
 
-    def _get_errors(self, output: str) -> str:
+    def _get_errors(self, output: str, error: str) -> str:
         return output
 
     def _copy_dependencies(self, exec_output: str, project_dir: str, dep_dir: str, compile_base_path: str) -> None:
@@ -74,7 +77,7 @@ class MavenCommand(BuildCommand):
     def _extend_args(self, args: List[str]) -> List[str]:
         return ["dependency:build-classpath", "-DincludeScope=compile"] + args
 
-    def _get_errors(self, output: str) -> str:
+    def _get_errors(self, output: str, error: str) -> str:
         lines = output.splitlines()
         return '\n'.join([line for line in lines if line.startswith("[ERROR]")])
 
@@ -104,7 +107,7 @@ class GradleCommand(BuildCommand):
     def _extend_args(self, args: List[str]) -> str:
         return args + ["--debug"]
 
-    def _get_errors(self, output: str) -> str:
+    def _get_errors(self, output: str, error: str) -> str:
         lines = output.splitlines()
         return '\n'.join([line for line in lines if "[ERROR]" in line])
 
