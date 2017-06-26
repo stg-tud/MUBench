@@ -26,3 +26,24 @@ class TestShell:
     def test_timeout(self):
         with assert_raises(TimeoutError):
             Shell.exec("sleep 10", timeout=1)
+
+    def test_output_contains_non_empty_stderr(self):
+        out = Shell.exec("echo 'test' 1>&2")
+        expected = "=== ERROR ===" + os.linesep + "test" + os.linesep
+        assert_equals(expected, out)
+
+    def test_output_contains_stdout_and_stderr(self):
+        out = Shell.exec("echo '-stdout-' && echo '-stderr-' 1>&2")
+        expected = "=== OUT ===" + os.linesep + \
+                   "-stdout-" + os.linesep + \
+                   "=== ERROR ===" + os.linesep + \
+                   "-stderr-" + os.linesep
+
+    def test_error_contains_stderr(self):
+        with assert_raises(CommandFailedError):
+            Shell.exec("echo 'test' 1>&2 && exit 1")
+        try:
+            Shell.exec("echo 'test' 1>&2 && exit 1")
+        except CommandFailedError as e:
+            assert_equals("test" + os.linesep, e.error)
+
