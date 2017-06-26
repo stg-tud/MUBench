@@ -85,6 +85,7 @@ class RunnerInterface:
         return sorted(versions)[-1]
 
 
+# noinspection PyPep8Naming
 class RunnerInterface_0_0_8(RunnerInterface):
     _VALID_KEYS = [
         "target",
