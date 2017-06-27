@@ -47,7 +47,7 @@ class Compile(ProjectVersionTask):
             if needs_copy_sources or needs_compile:
                 logger.debug("Copying checkout to build directory...")
                 checkout_path = version.get_checkout(self.checkouts_base_path).checkout_dir
-                self.__clean_copy(checkout_path, build_path)
+                copy_tree(checkout_path, build_path)
                 logger.debug("Copying additional resources...")
                 self.__copy_additional_compile_sources(version, build_path)
 
@@ -56,7 +56,7 @@ class Compile(ProjectVersionTask):
             else:
                 logger.info("Copying sources...")
                 logger.debug("Copying project sources...")
-                self.__clean_copy(sources_path, project_compile.original_sources_path)
+                copy_tree(sources_path, project_compile.original_sources_path)
                 logger.debug("Copying misuse sources...")
                 self.__copy_misuse_sources(sources_path, version.misuses, project_compile.misuse_source_path)
                 logger.info("Copying pattern sources...")
@@ -77,7 +77,7 @@ class Compile(ProjectVersionTask):
                 self.__copy_pattern_classes(version.misuses, classes_path, project_compile)
                 self.__remove_patter_classes(version.misuses, classes_path)
                 logger.debug("Copy project classes...")
-                self.__clean_copy(classes_path, project_compile.original_classes_path)
+                copy_tree(classes_path, project_compile.original_classes_path)
                 logger.debug("Create project jar...")
                 self.__create_jar(project_compile.original_classes_path, project_compile.original_classpath)
                 logger.debug("Copy misuse classes...")
@@ -90,13 +90,7 @@ class Compile(ProjectVersionTask):
         return self.ok()
 
     @staticmethod
-    def __clean_copy(sources_path: str, destination: str):
-        remove_tree(destination)
-        copy_tree(sources_path, destination)
-
-    @staticmethod
     def __copy_misuse_sources(sources_path, misuses, destination):
-        remove_tree(destination)
         for misuse in misuses:
             file = misuse.location.file
             dst = join(destination, file)
@@ -105,7 +99,6 @@ class Compile(ProjectVersionTask):
 
     @staticmethod
     def __copy_pattern_sources(misuses: List[Misuse], project_compile: ProjectCompile):
-        remove_tree(project_compile.pattern_sources_base_path)
         for misuse in misuses:
             pattern_source_path = project_compile.get_pattern_source_path(misuse)
             for pattern in misuse.patterns:
@@ -124,7 +117,6 @@ class Compile(ProjectVersionTask):
 
     @staticmethod
     def __copy_misuse_classes(classes_path, misuses, destination):
-        remove_tree(destination)
         for misuse in misuses:
             basepath = join(classes_path, splitext(misuse.location.file)[0])
             classes = glob(basepath + ".class") + glob(basepath + "$*.class")
@@ -140,7 +132,6 @@ class Compile(ProjectVersionTask):
 
     @staticmethod
     def __copy_pattern_classes(misuses: List[Misuse], classes_path: str, project_compile: ProjectCompile):
-        remove_tree(project_compile.pattern_classes_base_path)
         for misuse in misuses:
             pattern_classes_path = project_compile.get_pattern_classes_path(misuse)
             for pattern in misuse.patterns:
