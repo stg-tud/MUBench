@@ -39,7 +39,7 @@ class BuildCommand:
     def _get_implementations():
         return BuildCommand.__subclasses__()
 
-    def execute(self, project_dir: str, dep_dir: str, compile_base_path: str) -> None:
+    def execute(self, project_dir: str) -> Set[str]:
         command = self._get_command(self.args)
 
         try:
@@ -50,7 +50,7 @@ class BuildCommand:
             e.error = ""
             raise
 
-        self._copy_dependencies(output, project_dir, dep_dir, compile_base_path)
+        return self._get_dependencies(output, project_dir)
 
     @staticmethod
     def name() -> str:
@@ -65,8 +65,8 @@ class BuildCommand:
     def _get_errors(self, output: str, error: str) -> str:
         return output
 
-    def _copy_dependencies(self, exec_output: str, project_dir: str, dep_dir: str, compile_base_path: str) -> None:
-        pass
+    def _get_dependencies(self, shell_output: str, project_dir: str) -> Set[str]:
+        return []
 
 
 class MavenCommand(BuildCommand):
@@ -81,12 +81,7 @@ class MavenCommand(BuildCommand):
         lines = output.splitlines()
         return '\n'.join([line for line in lines if line.startswith("[ERROR]")])
 
-    def _copy_dependencies(self, exec_output: str, project_dir: str, dep_dir: str, compile_base_path: str) -> None:
-        dependencies = MavenCommand.__parse_maven_classpath(exec_output)
-        _copy_classpath(dependencies, dep_dir, compile_base_path)
-
-    @staticmethod
-    def __parse_maven_classpath(shell_output: str) -> Set[str]:
+    def _get_dependencies(self, shell_output: str, project_dir: str) -> Set[str]:
         # shell_output looks like (possibly multiple times, once for each Maven module):
         # [INFO] Dependencies classpath:
         # /path/dep1.jar:/path/dep2.jar
@@ -111,17 +106,14 @@ class GradleCommand(BuildCommand):
         lines = output.splitlines()
         return '\n'.join([line for line in lines if "[ERROR]" in line])
 
-    def _copy_dependencies(self, exec_output: str, project_dir: str,
-                           dep_dir: str, compile_base_path: str) -> None:
-        buildfile_dir = GradleCommand.__parse_buildfile_dir(self.args)
+    def _get_dependencies(self, shell_output: str, project_dir: str) -> Set[str]:
+        buildfile_dir = self._parse_buildfile_dir(self.args)
         shutil.copy(os.path.join(os.path.dirname(__file__), 'classpath.gradle'), os.path.join(project_dir, buildfile_dir))
         command = "gradle :printClasspath -b '{}'".format(os.path.join(buildfile_dir, "classpath.gradle"))
         output = Shell.exec(command, cwd=project_dir, logger=self.logger)
-        dependencies = GradleCommand.__parse_gradle_classpath(output)
-        _copy_classpath(dependencies, dep_dir, compile_base_path)
+        return self._parse_classpath(output)
 
-    @staticmethod
-    def __parse_gradle_classpath(shell_output: str) -> Set[str]:
+    def _parse_classpath(self, shell_output: str) -> Set[str]:
         # shell_output looks like:
         # :printClasspath
         # /path/dependency1.jar
@@ -134,8 +126,7 @@ class GradleCommand(BuildCommand):
         first_empty_line_idx = next(i for i, line in enumerate(lines) if not line)
         return set(lines[first_dependency_idx:first_empty_line_idx])
 
-    @staticmethod
-    def __parse_buildfile_dir(args):
+    def _parse_buildfile_dir(self, args):
         buildfile_dir = ""
 
         if "-p" in args:
@@ -157,13 +148,7 @@ class AntCommand(BuildCommand):
     def _get_errors(self, output: str, error: str) -> str:
         return error
 
-    def _copy_dependencies(self, exec_output: str, project_dir: str,
-                           dep_dir: str, compile_base_path: str) -> None:
-        dependencies = AntCommand.__parse_ant_classpath(exec_output)
-        _copy_classpath(dependencies, dep_dir, compile_base_path)
-
-    @staticmethod
-    def __parse_ant_classpath(shell_output: str) -> Set[str]:
+    def _get_dependencies(self, shell_output: str, project_dir: str) -> Set[str]:
         # shell_output looks like:
         #   [javac] '-classpath'
         #   [javac] '/project/build:/path/dep1.jar:/path/dep2.jar'
@@ -177,20 +162,3 @@ class AntCommand(BuildCommand):
                 classpath.update(line[classpath_start_idx:classpath_end_idx].split(":"))
 
         return classpath
-
-
-def _copy_classpath(dependencies: Set[str], dep_dir: str, compile_base_path: str):
-    remove_tree(dep_dir)
-    makedirs(dep_dir, exist_ok=True)
-    for dependency in dependencies:
-        if os.path.isdir(dependency):
-            # dependency is a classes directory
-            dep_name = os.path.relpath(dependency, compile_base_path)
-            dep_name = dep_name.replace(os.sep, '-')
-            _create_jar(dependency, os.path.join(dep_dir, dep_name + ".jar"))
-        else:
-            shutil.copy(dependency, dep_dir)
-
-def __create_jar(classes_path, jar_path):
-    zip_path = shutil.make_archive(jar_path, 'zip', classes_path)
-    os.rename(zip_path, jar_path)
