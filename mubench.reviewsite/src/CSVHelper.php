@@ -10,16 +10,20 @@ class CSVHelper
 
     }
 
+    public function getCSVHeaderForStatsExp($experiment)
+    {
+        if (strcmp($experiment, "ex1") === 0) {
+            return "detector,project,synthetics,misuses,potential_hits,open_reviews,need_clarification,yes_agreements,no_agreements,total_agreements,yes_no_agreements,no_yes_agreements,total_disagreements,kappa_p0,kappa_pe,kappa_score,hits,recall";
+        } elseif (strcmp($experiment, "ex2") === 0) {
+            return "detector,project,potential_hits,open_reviews,need_clarification,yes_agreements,no_agreements,total_agreements,yes_no_agreements,no_yes_agreements,total_disagreements,kappa_p0,kappa_pe,kappa_score,hits,recall";
+        } else {
+            return "detector,project,misuses,potential_hits,open_reviews,need_clarification,yes_agreements,no_agreements,total_agreements,yes_no_agreements,no_yes_agreements,total_disagreements,kappa_p0,kappa_pe,kappa_score,hits,recall";
+        }
+    }
+
     public function createCSVFromStats($experiment, $stats)
     {
-        $result = "sep=,\n";
-        if (strcmp($experiment, "ex1") === 0) {
-            $result .= "detector,project,synthetics,misuses,potential_hits,open_reviews,need_clarification,yes_agreements,no_agreements,total_agreements,yes_no_agreements,no_yes_agreements,total_disagreements,kappa_p0,kappa_pe,kappa_score,hits,recall";
-        } elseif (strcmp($experiment, "ex2") === 0) {
-            $result .= "detector,project,potential_hits,open_reviews,need_clarification,yes_agreements,no_agreements,total_agreements,yes_no_agreements,no_yes_agreements,total_disagreements,kappa_p0,kappa_pe,kappa_score,hits,recall";
-        } else {
-            $result .= "detector,project,misuses,potential_hits,open_reviews,need_clarification,yes_agreements,no_agreements,total_agreements,yes_no_agreements,no_yes_agreements,total_disagreements,kappa_p0,kappa_pe,kappa_score,hits,recall";
-        }
+        $result = "sep=,\n" . $this->getCSVHeaderForStatsExp($experiment);
         foreach ($stats as $key => $stat) {
             $result .="\n";
             $result .= "{$stat->getDisplayName()},{$stat->number_of_projects},";
