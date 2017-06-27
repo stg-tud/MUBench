@@ -29,7 +29,6 @@ class Compile(ProjectVersionTask):
     def process_project_version(self, project: Project, version: ProjectVersion):
         logger = logging.getLogger("compile")
         logger.info("Compiling %s...", version)
-        logger.debug("- Force compile     = %r", self.force_compile)
         logger = logging.getLogger("compile.tasks")
 
         project_compile = version.get_compile(self.compiles_base_path)
@@ -38,7 +37,8 @@ class Compile(ProjectVersionTask):
         classes_path = join(build_path, version.classes_dir)
 
         if self.force_compile:
-            self._delete(project_compile)
+            logger.debug("Force compile - removing previous compiles...")
+            project_compile.delete()
 
         try:
             needs_copy_sources = project_compile.needs_copy_sources()
@@ -84,7 +84,7 @@ class Compile(ProjectVersionTask):
                 self.__copy_misuse_classes(classes_path, version.misuses, project_compile.misuse_classes_path)
         except Exception as e:
             logger.error("Compilation failed: %s", e)
-            self._delete(project_compile)
+            project_compile.delete()
             return self.skip(version)
 
         return self.ok()
@@ -163,11 +163,3 @@ class Compile(ProjectVersionTask):
     def __create_jar(classes_path, jar_path):
         zip_path = shutil.make_archive(jar_path, 'zip', classes_path)
         os.rename(zip_path, jar_path)
-
-    def _delete(self, project_compile: ProjectCompile):
-        remove_tree(project_compile.original_sources_path)
-        remove_tree(project_compile.misuse_source_path)
-        remove_tree(project_compile.pattern_sources_base_path)
-        remove_tree(project_compile.original_classpath)
-        remove_tree(project_compile.misuse_classes_path)
-        remove_tree(project_compile.pattern_classes_base_path)

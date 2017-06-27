@@ -3,6 +3,7 @@ from os.path import join, isdir
 from typing import List
 
 from data.misuse import Misuse
+from utils.io import remove_tree
 
 
 class ProjectCompile:
@@ -71,3 +72,11 @@ class ProjectCompile:
             return "{}:{}".format(dependency_classpath, self.original_classpath)
         else:
             return self.original_classpath
+
+    def delete(self):
+        remove_tree(self.original_sources_path)
+        remove_tree(self.misuse_source_path)
+        remove_tree(self.pattern_sources_base_path)
+        remove_tree(self.original_classes_path)
+        remove_tree(self.misuse_classes_path)
+        remove_tree(self.pattern_classes_base_path)
