@@ -38,27 +38,22 @@ class Compile(ProjectVersionTask):
         classes_path = join(build_path, version.classes_dir)
 
         if self.force_compile:
-            remove_tree(project_compile.original_sources_path)
-            remove_tree(project_compile.misuse_source_path)
-            remove_tree(project_compile.pattern_sources_base_path)
-            remove_tree(project_compile.original_classpath)
-            remove_tree(project_compile.misuse_classes_path)
-            remove_tree(project_compile.pattern_classes_base_path)
+            self._delete(project_compile)
 
-        needs_copy_sources = project_compile.needs_copy_sources()
-        needs_compile = project_compile.needs_compile()
+        try:
+            needs_copy_sources = project_compile.needs_copy_sources()
+            needs_compile = project_compile.needs_compile()
 
-        if needs_copy_sources or needs_compile:
-            logger.debug("Copying checkout to build directory...")
-            checkout_path = version.get_checkout(self.checkouts_base_path).checkout_dir
-            self.__clean_copy(checkout_path, build_path)
-            logger.debug("Copying additional resources...")
-            self.__copy_additional_compile_sources(version, build_path)
+            if needs_copy_sources or needs_compile:
+                logger.debug("Copying checkout to build directory...")
+                checkout_path = version.get_checkout(self.checkouts_base_path).checkout_dir
+                self.__clean_copy(checkout_path, build_path)
+                logger.debug("Copying additional resources...")
+                self.__copy_additional_compile_sources(version, build_path)
 
-        if not needs_copy_sources:
-            logger.debug("Already copied source.")
-        else:
-            try:
+            if not needs_copy_sources:
+                logger.debug("Already copied source.")
+            else:
                 logger.info("Copying sources...")
                 logger.debug("Copying project sources...")
                 self.__clean_copy(sources_path, project_compile.original_sources_path)
@@ -66,21 +61,14 @@ class Compile(ProjectVersionTask):
                 self.__copy_misuse_sources(sources_path, version.misuses, project_compile.misuse_source_path)
                 logger.info("Copying pattern sources...")
                 self.__copy_pattern_sources(version.misuses, project_compile)
-            except IOError as e:
-                remove_tree(project_compile.original_sources_path)
-                remove_tree(project_compile.misuse_source_path)
-                remove_tree(project_compile.pattern_sources_base_path)
-                logger.error("Failed to copy sources: %s", e)
+
+            if not version.compile_commands:
+                logger.warning("Skipping compilation: not configured.")
                 return self.skip(version)
 
-        if not version.compile_commands:
-            logger.warning("Skipping compilation: not configured.")
-            return self.skip(version)
-
-        if not needs_compile:
-            logger.debug("Already compiled project.")
-        else:
-            try:
+            if not needs_compile:
+                logger.debug("Already compiled project.")
+            else:
                 logger.info("Compiling project...")
                 logger.debug("Copying patterns to source directory...")
                 self.__copy(version.patterns, sources_path)
@@ -94,13 +82,10 @@ class Compile(ProjectVersionTask):
                 self.__create_jar(project_compile.original_classes_path, project_compile.original_classpath)
                 logger.debug("Copy misuse classes...")
                 self.__copy_misuse_classes(classes_path, version.misuses, project_compile.misuse_classes_path)
-            except Exception as e:
-                logger.error("Compilation failed: %s", e)
-                remove_tree(project_compile.pattern_classes_base_path)
-                remove_tree(project_compile.original_classpath)
-                remove_tree(project_compile.original_classpath)
-                remove_tree(project_compile.misuse_classes_path)
-                return self.skip(version)
+        except Exception as e:
+            logger.error("Compilation failed: %s", e)
+            self._delete(project_compile)
+            return self.skip(version)
 
         return self.ok()
 
@@ -178,3 +163,11 @@ class Compile(ProjectVersionTask):
     def __create_jar(classes_path, jar_path):
         zip_path = shutil.make_archive(jar_path, 'zip', classes_path)
         os.rename(zip_path, jar_path)
+
+    def _delete(self, project_compile: ProjectCompile):
+        remove_tree(project_compile.original_sources_path)
+        remove_tree(project_compile.misuse_source_path)
+        remove_tree(project_compile.pattern_sources_base_path)
+        remove_tree(project_compile.original_classpath)
+        remove_tree(project_compile.misuse_classes_path)
+        remove_tree(project_compile.pattern_classes_base_path)
