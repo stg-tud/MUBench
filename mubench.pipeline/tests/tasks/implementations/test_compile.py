@@ -4,7 +4,7 @@ from os.path import join, exists, dirname, relpath
 from shutil import rmtree
 from tempfile import mkdtemp
 from typing import List
-from unittest.mock import MagicMock, patch, call
+from unittest.mock import MagicMock, patch, call, ANY
 
 from nose.tools import assert_equals, assert_in
 
@@ -161,10 +161,11 @@ class TestCompile:
         create_file(join(self.source_path, "some.file"))
         makedirs(self.pattern_classes_path)
         self.uut.force_compile = True
+        self.uut._delete = MagicMock()
 
         self.uut.process_project_version(self.project, self.version)
 
-        assert exists(join(self.original_classes_path, "some.file"))
+        self.uut._delete.assert_called_once_with(ANY)
 
     def test_skips_on_build_error(self):
         self.mock_with_fake_compile()
