@@ -23,6 +23,7 @@ use MuBench\ReviewSite\Model\Experiment;
 use MuBench\ReviewSite\Model\Decision;
 use MuBench\ReviewSite\Model\Review;
 use MuBench\ReviewSite\Model\ReviewState;
+use Parsedown;
 
 $columns_to_ignore = array(
     'exp',
@@ -34,6 +35,8 @@ $columns_to_ignore = array(
     'number_of_findings',
     'runtime'
 );
+
+$markdown_parser = new Parsedown();
 
 ?>
 <html>
@@ -97,22 +100,22 @@ $columns_to_ignore = array(
             ?>
             <tr>
                 <td class="<?= $style_classes ?>">
-                    <?= $new_project ? htmlspecialchars($project) : ""; ?></td>
+                    <?= $new_project ? $markdown_parser->text($project) : ""; ?></td>
                 <td class="<?= $style_classes ?>">
-                    <?= $new_version ? htmlspecialchars($version) : ""; ?></td>
+                    <?= $new_version ? $markdown_parser->text($version) : ""; ?></td>
                 <td class="<?= $style_classes ?>">
-                    <?= $new_version ? htmlspecialchars($run['result']) : ""; ?></td>
+                    <?= $new_version ? $markdown_parser->text($run['result']) : ""; ?></td>
                 <td class="<?= $style_classes ?> right">
-                    <?= $new_version ? htmlspecialchars($run['number_of_findings']) : ""; ?></td>
+                    <?= $new_version ? $markdown_parser->text($run['number_of_findings']) : ""; ?></td>
                 <td class="<?= $style_classes ?> right">
-                    <?= $new_version ? htmlspecialchars(substr($run['runtime'], 0, 4)) . "s" : ""; ?></td>
+                    <?= $new_version ? $markdown_parser->text(substr($run['runtime'], 0, 4)) . "s" : ""; ?></td>
                 <td class="<?= $style_classes ?> right">
                     <?php if ($new_version) : ?>
                         <?php include "includes/modal.phtml"; ?>
                     <?php endif; ?>
                 </td>
                 <td class="<?= $style_classes ?>">
-                    <?= htmlspecialchars($misuse->getShortId()); ?></td>
+                    <?= $markdown_parser->text($misuse->getShortId()); ?></td>
                 <?php if ($experiment->getId() !== "ex2") : ?>
                     <td class="<?= $style_classes ?>">
                         <ul>
@@ -243,15 +246,15 @@ $columns_to_ignore = array(
             ?>
             <tr>
                 <td class="<?= $style_classes ?>">
-                    <?= $new_project ? htmlspecialchars($project) : ""; ?></td>
+                    <?= $new_project ? $markdown_parser->text($project) : ""; ?></td>
                 <td class="<?= $style_classes ?>">
-                    <?= $new_version ? htmlspecialchars($version) : ""; ?></td>
+                    <?= $new_version ? $markdown_parser->text($version) : ""; ?></td>
                 <td class="<?= $style_classes ?>">
-                    <?= $new_version ? htmlspecialchars($run['result']) : ""; ?></td>
+                    <?= $new_version ? $markdown_parser->text($run['result']) : ""; ?></td>
                 <td class="<?= $style_classes ?> right">
-                    <?= $new_version ? htmlspecialchars($run['number_of_findings']) : ""; ?></td>
+                    <?= $new_version ? $markdown_parser->text($run['number_of_findings']) : ""; ?></td>
                 <td class="<?= $style_classes ?> right">
-                    <?= $new_version ? htmlspecialchars(substr($run['runtime'], 0, 4)) . "s" : ""; ?></td>
+                    <?= $new_version ? $markdown_parser->text(substr($run['runtime'], 0, 4)) . "s" : ""; ?></td>
                 <td class="<?= $style_classes ?> right">
                     <?php if ($new_version) : ?>
                         <?php include "includes/modal.phtml"; ?>
