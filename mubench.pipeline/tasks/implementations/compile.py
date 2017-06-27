@@ -113,7 +113,8 @@ class Compile(ProjectVersionTask):
     @staticmethod
     def _compile(commands: List[str], project_dir: str, dep_dir: str, compile_base_path: str) -> None:
         for command in commands:
-            BuildCommand.get(command).execute(project_dir, dep_dir, compile_base_path)
+            dependencies = BuildCommand.get(command).execute(project_dir)
+            Compile.__copy_dependencies(dependencies, dep_dir, compile_base_path)
 
     @staticmethod
     def __copy_misuse_classes(classes_path, misuses, destination):
@@ -154,3 +155,15 @@ class Compile(ProjectVersionTask):
     def __create_jar(classes_path, jar_path):
         zip_path = shutil.make_archive(jar_path, 'zip', classes_path)
         os.rename(zip_path, jar_path)
+
+    @staticmethod
+    def __copy_dependencies(dependencies: Set[str], dep_dir: str, compile_base_path: str):
+        makedirs(dep_dir, exist_ok=True)
+        for dependency in dependencies:
+            if os.path.isdir(dependency):
+                # dependency is a classes directory
+                dep_name = os.path.relpath(dependency, compile_base_path)
+                dep_name = dep_name.replace(os.sep, '-')
+                _create_jar(dependency, os.path.join(dep_dir, dep_name + ".jar"))
+            else:
+                shutil.copy(dependency, dep_dir)

@@ -33,6 +33,10 @@ class TestBuildCommand:
         assert_is_instance(uut, BuildCommand)
         assert_equals("-some_command-", uut._name)
 
+    def test_has_no_dependencies_by_default(self):
+        uut = BuildCommand.get("-some_command-")
+        assert not uut._get_dependencies("-output-", "-project_dir-")
+
     def test_raise_on_multiple_matches(self):
         duplicate_command = BuildCommandTestImpl.TEST_COMMAND
         self.test_subclasses = [BuildCommandTestImpl, BuildCommandTestImpl]
@@ -43,7 +47,7 @@ class TestBuildCommand:
     def test_execute_runs_command(self, shell_mock):
         uut = BuildCommand.get("-command-")
 
-        uut.execute("-project_dir-", "-dep_dir-", "-cmp_base_path-")
+        uut.execute("-project_dir-")
 
         shell_mock.assert_called_with("-command-",
                                       cwd="-project_dir-", logger=ANY)
@@ -53,24 +57,10 @@ class TestBuildCommand:
         command = "-command- -arg- --arg--"
         uut = BuildCommand.get(command)
 
-        uut.execute("-project_dir-", "-dep_dir-", "-cmp_base_path-")
+        uut.execute("-project_dir-")
 
         shell_mock.assert_called_with(command,
                                       cwd="-project_dir-", logger=ANY)
-
-    @patch("data.build_command.Shell.exec")
-    def test_execute_copies_dependencies(self, shell_mock):
-        shell_mock.return_value = "-output-"
-        command = "-command-"
-        uut = BuildCommand.get(command)
-        uut._copy_dependencies = MagicMock()
-
-        uut.execute("-project_dir-", "-dep_dir-", "-cmp_base_path-")
-
-        uut._copy_dependencies.assert_called_with("-output-",
-                                                  "-project_dir-",
-                                                  "-dep_dir-",
-                                                  "-cmp_base_path-")
 
     def test_saves_args(self):
         uut = BuildCommand.get("-some_command- arg1 arg2")
@@ -87,7 +77,7 @@ class TestBuildCommand:
         shell_mock.side_effect = CommandFailedError("-command-", "-output-")
         uut = BuildCommand.get("-some_command-")
 
-        assert_raises(CommandFailedError, uut.execute, "-p-", "-d-", "-bp-")
+        assert_raises(CommandFailedError, uut.execute, "-p-")
 
     @patch("data.build_command.Shell.exec")
     def test_default_does_not_filter_output_on_error(self, shell_mock):
@@ -95,7 +85,7 @@ class TestBuildCommand:
         uut = BuildCommand.get("-some_command-")
 
         try:
-            uut.execute("-p-", "-d-", "-bp-")
+            uut.execute("-project_dir-")
         except CommandFailedError as e:
             assert_equals("\n-output-", e.output)
 
@@ -110,11 +100,11 @@ class TestMavenCommand:
 /path/dependency1.jar:/path/dependency2.jar
 [INFO] ------------------------------------------------------------------------"""
 
-        MavenCommand("mvn", ["build"]).execute("-project_dir-", "-dep_dir-", "-cmp_base_path-")
+        actual_dependencies = MavenCommand("mvn", ["build"]).execute("-project_dir-")
 
         assert_equals(shell_mock.mock_calls[0][1], ("mvn dependency:build-classpath -DincludeScope=compile build",))
-        assert_in(call("/path/dependency1.jar", "-dep_dir-"), copy_mock.mock_calls)
-        assert_in(call("/path/dependency2.jar",  "-dep_dir-"), copy_mock.mock_calls)
+        assert_in("/path/dependency1.jar", actual_dependencies)
+        assert_in("/path/dependency2.jar", actual_dependencies)
 
     def test_compile_with_maven_multi_modules(self, shell_mock, copy_mock):
         shell_mock.return_value = """
@@ -127,11 +117,11 @@ class TestMavenCommand:
     /path/dependency2.jar
     [INFO] ------------------------------------------------------------------------"""
 
-        MavenCommand("mvn", ["build"]).execute("-project_dir-", "-dep_dir-", "-cmp_base_path-")
+        actual_dependencies = MavenCommand("mvn", ["build"]).execute("-project_dir-")
 
         assert_equals(shell_mock.mock_calls[0][1], ("mvn dependency:build-classpath -DincludeScope=compile build",))
-        assert_in(call("/path/dependency1.jar", "-dep_dir-"), copy_mock.mock_calls)
-        assert_in(call("/path/dependency2.jar", "-dep_dir-"), copy_mock.mock_calls)
+        assert_in("/path/dependency1.jar", actual_dependencies)
+        assert_in("/path/dependency2.jar", actual_dependencies)
 
     def test_compile_with_maven_no_dependencies(self, shell_mock, copy_mock):
         shell_mock.return_value = """
@@ -140,7 +130,7 @@ class TestMavenCommand:
 
 [INFO] ------------------------------------------------------------------------"""
 
-        MavenCommand("mvn", ["build"]).execute("-project_dir-", "-dep_dir-", "-cmp_base_path-")
+        MavenCommand("mvn", ["build"]).execute("-project_dir-")
 
         assert_equals(shell_mock.mock_calls[0][1], ("mvn dependency:build-classpath -DincludeScope=compile build",))
 
@@ -173,7 +163,7 @@ class TestMavenCommand:
 [ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/NoGoalSpecifiedException"""
 
         try:
-            MavenCommand("mvn", ["build"]).execute("-p-", "-d-", "-bp-")
+            MavenCommand("mvn", ["build"]).execute("-project_dir-")
         except CommandFailedError as e:
             assert_equals(expected_error_output, e.output)
 
@@ -185,23 +175,23 @@ class TestGradleCommand:
     def test_compile_with_gradle(self, shell_mock, copy_mock):
         shell_mock.return_value = ":printClasspath\n/path/dependency1.jar\n/path/dependency2.jar\n\nBUILD SUCCESSFUL"
 
-        GradleCommand("gradle", ["build"]).execute("-project_dir-", "-dep_dir-", "-cmp_base_path-")
+        actual_dependencies = GradleCommand("gradle", ["build"]).execute("-project_dir-")
 
         assert_equals(shell_mock.mock_calls[1][1], ("gradle :printClasspath -b 'classpath.gradle'",))
-        assert_in(call("/path/dependency1.jar",  "-dep_dir-"), copy_mock.mock_calls)
-        assert_in(call("/path/dependency2.jar",  "-dep_dir-"), copy_mock.mock_calls)
+        assert_in("/path/dependency1.jar", actual_dependencies)
+        assert_in("/path/dependency2.jar", actual_dependencies)
 
     def test_compile_with_gradle_project_dir_parameter(self, shell_mock, copy_mock):
         shell_mock.return_value = ":printClasspath\n/path/dependency1.jar\n/path/dependency2.jar\n\nBUILD SUCCESSFUL"
 
-        GradleCommand("gradle", ["build", "-p", "/testdir/"]).execute("-project_dir-", "-dep_dir-", "-cmp_base_path-")
+        GradleCommand("gradle", ["build", "-p", "/testdir/"]).execute("-project_dir-")
 
         assert_equals(shell_mock.mock_calls[1][1], ("gradle :printClasspath -b '/testdir/classpath.gradle'",))
 
     def test_compile_with_gradle_no_dependencies(self, shell_mock, copy_mock):
         shell_mock.return_value = ":printClasspath\n\nBUILD SUCCESSFUL"
 
-        GradleCommand("gradle", ["build"]).execute("-project_dir-", "-dep_dir-", "-cmp_base_path-")
+        GradleCommand("gradle", ["build"]).execute("-project_dir-")
 
     def test_adds_debug_flag_to_command(self, shell_mock, copy_mock):
         uut = GradleCommand("gradle", ["build"])
@@ -234,7 +224,7 @@ class TestGradleCommand:
 15:46:17.823 [ERROR] [org.gradle.BuildExceptionReporter] Run with --stacktrace option to get the stack trace."""
 
         try:
-            GradleCommand("gradle", ["build"]).execute("-p-", "-d-", "-bp-")
+            GradleCommand("gradle", ["build"]).execute("-project_dir-")
         except CommandFailedError as e:
             assert_equals(expected_error_output, e.output)
 
@@ -249,11 +239,11 @@ class TestAntCommand:
 [javac] '-classpath'
 [javac] '/project/build/classes:/path/dependency1.jar:/path/dependency2.jar'"""
 
-        AntCommand("ant", []).execute("-project_dir-", "-dep_dir-", "-cmp_base_path-")
+        actual_dependencies = AntCommand("ant", []).execute("-project_dir-")
 
         assert_equals(shell_mock.mock_calls[0][1], ("ant -debug -verbose",))
-        assert_in(call("/path/dependency2.jar", "-dep_dir-"), copy_mock.mock_calls)
-        assert_in(call("/path/dependency1.jar", "-dep_dir-"), copy_mock.mock_calls)
+        assert_in("/path/dependency1.jar", actual_dependencies)
+        assert_in("/path/dependency2.jar", actual_dependencies)
 
     def test_compile_with_ant_multi_build(self, shell_mock, copy_mock):
         shell_mock.return_value = """[javac] Compilation arguments:
@@ -263,11 +253,11 @@ class TestAntCommand:
     [javac] '-classpath'
     [javac] '/path/dependency2.jar'"""
 
-        AntCommand("ant", []).execute("-project_dir-", "-dep_dir-", "-cmp_base_path-")
+        actual_dependencies = AntCommand("ant", []).execute("-project_dir-")
 
         assert_equals(shell_mock.mock_calls[0][1], ("ant -debug -verbose",))
-        assert_in(call("/path/dependency1.jar", "-dep_dir-"), copy_mock.mock_calls)
-        assert_in(call("/path/dependency2.jar", "-dep_dir-"), copy_mock.mock_calls)
+        assert_in("/path/dependency1.jar", actual_dependencies)
+        assert_in("/path/dependency2.jar", actual_dependencies)
 
     def test_error_outputs_error_stream(self, shell_mock, copy_mock):
         error = "-error-"
@@ -276,6 +266,6 @@ class TestAntCommand:
         expected_error_output = '\n' + error
 
         try:
-            AntCommand("ant", []).execute("-p-", "-d-", "-bp-")
+            AntCommand("ant", []).execute("-project_dir-")
         except CommandFailedError as e:
             assert_equals(expected_error_output, e.output)
