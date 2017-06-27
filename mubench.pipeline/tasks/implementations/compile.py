@@ -37,8 +37,16 @@ class Compile(ProjectVersionTask):
         sources_path = join(build_path, version.source_dir)
         classes_path = join(build_path, version.classes_dir)
 
-        needs_copy_sources = project_compile.needs_copy_sources() or self.force_compile
-        needs_compile = project_compile.needs_compile() or self.force_compile
+        if self.force_compile:
+            remove_tree(project_compile.original_sources_path)
+            remove_tree(project_compile.misuse_source_path)
+            remove_tree(project_compile.pattern_sources_base_path)
+            remove_tree(project_compile.original_classpath)
+            remove_tree(project_compile.misuse_classes_path)
+            remove_tree(project_compile.pattern_classes_base_path)
+
+        needs_copy_sources = project_compile.needs_copy_sources()
+        needs_compile = project_compile.needs_compile()
 
         if needs_copy_sources or needs_compile:
             logger.debug("Copying checkout to build directory...")
