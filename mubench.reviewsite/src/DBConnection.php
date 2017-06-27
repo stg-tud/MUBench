@@ -9,7 +9,6 @@ use MuBench\ReviewSite\Model\Review;
 use PDO;
 use Pixie\Connection;
 use Pixie\QueryBuilder\QueryBuilderHandler;
-use Parsedown;
 
 class DBConnection
 {
@@ -19,14 +18,10 @@ class DBConnection
     /** @var Logger */
     private $logger;
 
-    /** @var Parsedown  */
-    private $markdown_parser;
-
     function __construct(Connection $connection, Logger $logger)
     {
         $this->query_builder = $connection->getQueryBuilder();
         $this->logger = $logger;
-        $this->markdown_parser = new Parsedown();
     }
 
     /**
@@ -109,11 +104,10 @@ class DBConnection
             $misuses = $query->where('project', $project_id)->where('version', $version_id)
                 ->orderBy($this->query_builder->raw("$misuse_column * 1,"), $misuse_column)->get();
 
-            $misuses = $this->parseMarkdownInQuery($misuses);
             foreach ($misuses as $key => $misuse) {
                 $misuse_id = $misuse["misuse"];
                 /** @var array $potential_hits */
-                $potential_hits = $this->parseMarkdownInQuery($this->getPotentialHits($exp, $detector, $project_id, $version_id, $misuse_id));
+                $potential_hits = $this->getPotentialHits($exp, $detector, $project_id, $version_id, $misuse_id);
                 /** @var array $reviews */
                 $reviews = $this->getReviews($exp, $detector, $project_id, $version_id, $misuse_id);
                 $snippets = $this->getSnippets($exp, $detector, $project_id, $version_id, $misuse_id);
