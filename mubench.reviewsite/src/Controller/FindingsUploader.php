@@ -165,10 +165,12 @@ class FindingsUploader
 
     private function deleteAndStoreStats(Detector $detector, $exp, $project, $version, $run)
     {
+        $this->logger->info("Delete existing stats for $detector in $exp on $project.$version");
         $this->db->table($detector->getStatsTableName())->where("exp", $exp)->where("project", $project)->where("version", $version)->delete();
         $values = array("exp" => $exp, "project" => $project, "version" => $version);
         $propertyToColumnNameMapping = $this->getColumnNamesFromProperties($run);
         $propertyToColumnNameMapping = $this->removeDisruptiveStatsColumns($propertyToColumnNameMapping);
+        $this->logger->info("Store stats for $detector in $exp on $project.$version");
         foreach ($propertyToColumnNameMapping as $property => $column) {
             $value = $run->{$property};
             $values[$column] = is_array($value) ? $this->arrayToString($value) : $value;
