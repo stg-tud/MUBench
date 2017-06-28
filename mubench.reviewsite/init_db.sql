@@ -1,4 +1,34 @@
 
+CREATE TABLE IF NOT EXISTS `metadata` (
+  `project` varchar(100) NOT NULL,
+  `version` varchar(100) NOT NULL,
+  `misuse` varchar(100) NOT NULL,
+  `description` text NOT NULL,
+  `fix_description` text NOT NULL,
+  `violation_types` text NOT NULL,
+  `file` text NOT NULL,
+  `method` text NOT NULL,
+  `diff_url` text NOT NULL,
+  PRIMARY KEY (`project`,`version`,`misuse`)
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1;
+
+CREATE TABLE IF NOT EXISTS `meta_snippets` (
+  `project` varchar(100) NOT NULL,
+  `version` varchar(100) NOT NULL,
+  `misuse` varchar(100) NOT NULL,
+  `snippet` text NOT NULL,
+  `line` int(11) NOT NULL,
+  KEY `lookup` (`project`,`version`,`misuse`)
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1;
+
+CREATE TABLE IF NOT EXISTS `patterns` (
+  `misuse` varchar(100) NOT NULL,
+  `name` varchar(100) NOT NULL,
+  `code` text NOT NULL,
+  `line` VARCHAR(10) NOT NULL,
+  PRIMARY KEY (`misuse`,`name`)
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1;
+
 CREATE TABLE IF NOT EXISTS `detectors` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(100) NOT NULL,
@@ -6,67 +36,44 @@ CREATE TABLE IF NOT EXISTS `detectors` (
   UNIQUE KEY `name` (`name`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=latin1;
 
-CREATE TABLE IF NOT EXISTS `metadata` (
-  `project` text NOT NULL,
-  `version` text NOT NULL,
-  `misuse` text NOT NULL,
-  `description` text NOT NULL,
-  `fix_description` text NOT NULL,
-  `violation_types` text NOT NULL,
-  `file` text NOT NULL,
-  `method` text NOT NULL,
-  `diff_url` text NOT NULL
-) ENGINE=MyISAM  DEFAULT CHARSET=latin1;
-
-CREATE TABLE IF NOT EXISTS `patterns` (
-  `misuse` text NOT NULL,
-  `name` text NOT NULL,
-  `code` text NOT NULL,
-  `line` text NOT NULL
-) ENGINE=MyISAM  DEFAULT CHARSET=latin1;
-
 CREATE TABLE IF NOT EXISTS `reviews` (
-  `exp` varchar(100) NOT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `exp` varchar(10) NOT NULL,
   `detector` varchar(100) NOT NULL,
   `project` varchar(100) NOT NULL,
   `version` varchar(100) NOT NULL,
   `misuse` varchar(100) NOT NULL,
-  `name` text NOT NULL,
+  `name` varchar(100) NOT NULL,
   `comment` text NOT NULL,
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `lookup` (`exp`,`detector`,`project`,`version`,`misuse`,`name`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=latin1;
 
 CREATE TABLE IF NOT EXISTS `review_findings` (
-  `decision` text NOT NULL,
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `rank` text NOT NULL,
   `review` int(11) NOT NULL,
-  PRIMARY KEY (`id`)
+  `rank` varchar(10) NOT NULL,
+  `decision` text NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `review` (`review`,`rank`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=latin1;
 
 CREATE TABLE IF NOT EXISTS `review_findings_types` (
+  `review_finding` int(11) NOT NULL,
   `type` int(11) NOT NULL,
-  `review_finding` int(11) NOT NULL
-) ENGINE=MyISAM  DEFAULT CHARSET=latin1;
-
-CREATE TABLE IF NOT EXISTS `meta_snippets` (
-  `project` text NOT NULL,
-  `version` text NOT NUll,
-  `misuse` text NOT NULL,
-  `snippet` text NOT NULL,
-  `line` int NOT NULL
+  PRIMARY KEY (`review_finding`,`type`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=latin1;
 
 CREATE TABLE IF NOT EXISTS `finding_snippets` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `detector` text NOT NULL,
-  `project` text NOT NULL,
-  `version` text NOT NUll,
-  `finding` text NOT NULL,
+  `detector` varchar(100) NOT NULL,
+  `project` varchar(100) NOT NULL,
+  `version` varchar(100) NOT NULL,
+  `finding` varchar(100) NOT NULL,
   `snippet` text NOT NULL,
-  `line` int NOT NULL,
-  PRIMARY KEY (`id`)
+  `line` int(11) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `lookup` (`detector`,`project`,`version`,`finding`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=latin1;
 
 CREATE TABLE IF NOT EXISTS `types` (

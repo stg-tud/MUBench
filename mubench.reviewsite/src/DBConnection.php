@@ -58,8 +58,8 @@ class DBConnection
 
     public function getReview($exp, Detector $detector, $project, $version, $misuse, $name)
     {
-        return $this->table('reviews')->where('name', $name)->where('exp', $exp)->where('detector', $detector->id)
-            ->where('project', $project)->where('version', $version)->where('misuse', $misuse)->first();
+        return $this->table('reviews')->where('exp', $exp)->where('detector', $detector->id)
+            ->where('project', $project)->where('version', $version)->where('misuse', $misuse)->where('name', $name)->first();
     }
 
     public function getReviewFinding($id, $rank)
@@ -162,12 +162,14 @@ class DBConnection
     {
         $columns = ['line', 'snippet'];
         if (strcmp($experiment, "ex2") == 0) {
-            $query = $this->table('finding_snippets')->where('finding', $misuse_id)->where('detector', $detector->id);
             $columns[] = 'id';
+            $query = $this->table('finding_snippets')->where('detector', $detector->id)
+                ->where('project', $project_id)->where('version', $version_id)->where('finding', $misuse_id);
         } else {
-            $query = $this->table('meta_snippets')->where('misuse', $misuse_id);
+            $query = $this->table('meta_snippets')
+                ->where('project', $project_id)->where('version', $version_id)->where('misuse', $misuse_id);
         }
-        return $query->select($columns)->where('project', $project_id)->where('version', $version_id)->get();
+        return $query->select($columns)->get();
     }
 
     private function getFindingReviews($review_id)
