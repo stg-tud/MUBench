@@ -1,8 +1,8 @@
-import logging
 import shutil
 import os
 import shlex
 from glob import glob
+from logging import Logger
 from os import makedirs
 from os.path import join, exists, dirname, splitext, relpath
 from typing import List, Set
@@ -13,7 +13,6 @@ from utils.shell import Shell, CommandFailedError
 
 class BuildCommand:
     def __init__(self, name: str, args: List[str]):
-        self.logger = logging.getLogger("buildcommand")
         self._name = name
         self.args = args
 
@@ -39,18 +38,18 @@ class BuildCommand:
     def _get_implementations():
         return BuildCommand.__subclasses__()
 
-    def execute(self, project_dir: str) -> Set[str]:
+    def execute(self, project_dir: str, logger: Logger) -> Set[str]:
         command = self._get_command(self.args)
 
         try:
-            output = Shell.exec(command, cwd=project_dir, logger=self.logger)
+            output = Shell.exec(command, cwd=project_dir, logger=logger)
         except CommandFailedError as e:
             error_output = '\n' + self._get_errors(e.output, e.error)
             e.output = error_output
             e.error = ""
             raise
 
-        return self._get_dependencies(output, project_dir)
+        return self._get_dependencies(output, project_dir, logger)
 
     @staticmethod
     def name() -> str:
@@ -65,7 +64,7 @@ class BuildCommand:
     def _get_errors(self, output: str, error: str) -> str:
         return output
 
-    def _get_dependencies(self, shell_output: str, project_dir: str) -> Set[str]:
+    def _get_dependencies(self, shell_output: str, project_dir: str, logger: Logger) -> Set[str]:
         return []
 
 
@@ -81,7 +80,7 @@ class MavenCommand(BuildCommand):
         lines = output.splitlines()
         return '\n'.join([line for line in lines if line.startswith("[ERROR]")])
 
-    def _get_dependencies(self, shell_output: str, project_dir: str) -> Set[str]:
+    def _get_dependencies(self, shell_output: str, project_dir: str, logger: Logger) -> Set[str]:
         # shell_output looks like (possibly multiple times, once for each Maven module):
         # [INFO] Dependencies classpath:
         # /path/dep1.jar:/path/dep2.jar
@@ -106,11 +105,11 @@ class GradleCommand(BuildCommand):
         lines = output.splitlines()
         return '\n'.join([line for line in lines if "[ERROR]" in line])
 
-    def _get_dependencies(self, shell_output: str, project_dir: str) -> Set[str]:
+    def _get_dependencies(self, shell_output: str, project_dir: str, logger: Logger) -> Set[str]:
         buildfile_dir = self._parse_buildfile_dir(self.args)
         shutil.copy(os.path.join(os.path.dirname(__file__), 'classpath.gradle'), os.path.join(project_dir, buildfile_dir))
         command = "gradle :printClasspath -b '{}'".format(os.path.join(buildfile_dir, "classpath.gradle"))
-        output = Shell.exec(command, cwd=project_dir, logger=self.logger)
+        output = Shell.exec(command, cwd=project_dir, logger=logger)
         return self._parse_classpath(output)
 
     def _parse_classpath(self, shell_output: str) -> Set[str]:
@@ -148,7 +147,7 @@ class AntCommand(BuildCommand):
     def _get_errors(self, output: str, error: str) -> str:
         return error
 
-    def _get_dependencies(self, shell_output: str, project_dir: str) -> Set[str]:
+    def _get_dependencies(self, shell_output: str, project_dir: str, logger: Logger) -> Set[str]:
         # shell_output looks like:
         #   [javac] '-classpath'
         #   [javac] '/project/build:/path/dep1.jar:/path/dep2.jar'

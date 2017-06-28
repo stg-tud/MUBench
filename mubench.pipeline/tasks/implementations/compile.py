@@ -3,6 +3,7 @@ import shutil
 import os
 import shlex
 from glob import glob
+from logging import Logger
 from os import makedirs
 from os.path import join, exists, dirname, splitext, relpath
 from typing import List, Set
@@ -72,7 +73,11 @@ class Compile(ProjectVersionTask):
                 logger.info("Compiling project...")
                 logger.debug("Copying patterns to source directory...")
                 self.__copy(version.patterns, sources_path)
-                self._compile(version.compile_commands, build_path, project_compile.dependencies_path, self.compiles_base_path)
+                self._compile(version.compile_commands,
+                              build_path,
+                              project_compile.dependencies_path,
+                              self.compiles_base_path,
+                              logger)
                 logger.debug("Move pattern classes...")
                 self.__copy_pattern_classes(version.misuses, classes_path, project_compile)
                 self.__remove_patter_classes(version.misuses, classes_path)
@@ -111,9 +116,10 @@ class Compile(ProjectVersionTask):
             copy_tree(additional_sources, checkout_dir)
 
     @staticmethod
-    def _compile(commands: List[str], project_dir: str, dep_dir: str, compile_base_path: str) -> None:
+    def _compile(commands: List[str], project_dir: str, dep_dir: str,
+                 compile_base_path: str, logger: Logger) -> None:
         for command in commands:
-            dependencies = BuildCommand.get(command).execute(project_dir)
+            dependencies = BuildCommand.get(command).execute(project_dir, logger)
             Compile.__copy_dependencies(dependencies, dep_dir, compile_base_path)
 
     @staticmethod
