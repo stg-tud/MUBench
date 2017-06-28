@@ -25,7 +25,7 @@ class DatabaseTestCaseTest extends DatabaseTestCase
             ['name' => 'types']
         ];
 
-        self::assertEquals($expectedTables, $actual);
+        self::assertEquals($expectedTables, $actual, "in any order", $delta = 0.0, $maxDepth = 2, $canonicalize = true);
     }
 
     function testTypesInserted()
