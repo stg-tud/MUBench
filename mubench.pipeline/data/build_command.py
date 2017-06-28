@@ -29,11 +29,11 @@ class BuildCommand:
         if len(matching_commands) == 1:
             matching_command = matching_commands[0]
             return matching_command(requested_name, args)
-        if not matching_commands:
+        elif len(matching_commands) > 1:
+            raise ValueError("Multiple matching commands found for {}"
+                             .format(requested_command))
+        else:
             return BuildCommand(requested_name, args)
-
-        raise ValueError("Multiple matching commands found for {}"
-                         .format(requested_command))
 
     @staticmethod
     def _get_implementations():
