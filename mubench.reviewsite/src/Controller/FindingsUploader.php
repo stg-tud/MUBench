@@ -163,7 +163,7 @@ class FindingsUploader
         $this->db->table($detector->getTableName())->insert($values);
     }
 
-    private function deleteAndStoreStats($detector, $exp, $project, $version, $run)
+    private function deleteAndStoreStats(Detector $detector, $exp, $project, $version, $run)
     {
         $this->db->table($detector->getStatsTableName())->where("exp", $exp)->where("project", $project)->where("version", $version)->delete();
         $values = array("exp" => $exp, "project" => $project, "version" => $version);
