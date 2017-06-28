@@ -57,9 +57,9 @@ class BuildCommand:
         raise NotImplementedError
 
     def _get_command(self, args: List[str]) -> str:
-        return ' '.join([self._name] + self._extend_args(args))
+        return ' '.join([self._name] + self._prepare_args(args))
 
-    def _extend_args(self, args: List[str]) -> List[str]:
+    def _prepare_args(self, args: List[str]) -> List[str]:
         return args
 
     def _get_errors(self, output: str, error: str) -> str:
@@ -74,7 +74,7 @@ class MavenCommand(BuildCommand):
     def name() -> str:
         return "mvn"
 
-    def _extend_args(self, args: List[str]) -> List[str]:
+    def _prepare_args(self, args: List[str]) -> List[str]:
         return ["dependency:build-classpath", "-DincludeScope=compile"] + args
 
     def _get_errors(self, output: str, error: str) -> str:
@@ -99,7 +99,7 @@ class GradleCommand(BuildCommand):
     def name() -> str:
         return "gradle"
 
-    def _extend_args(self, args: List[str]) -> str:
+    def _prepare_args(self, args: List[str]) -> str:
         return args + ["--debug"]
 
     def _get_errors(self, output: str, error: str) -> str:
@@ -142,7 +142,7 @@ class AntCommand(BuildCommand):
     def name() -> str:
         return "ant"
 
-    def _extend_args(self, args: List[str]) -> List[str]:
+    def _prepare_args(self, args: List[str]) -> List[str]:
         return ["-debug", "-verbose"] + args
 
     def _get_errors(self, output: str, error: str) -> str:
