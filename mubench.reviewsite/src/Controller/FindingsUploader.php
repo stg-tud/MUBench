@@ -104,6 +104,7 @@ class FindingsUploader
 
     private function getColumnNamesFromProperties($entry)
     {
+        $propertyToColumnNameMapping = [];
         $properties = array_keys(get_object_vars($entry));
         foreach ($properties as $property) {
             // MySQL does not permit column names with more than 64 characters:
