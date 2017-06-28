@@ -88,11 +88,19 @@ EOD;
     }
 
     private function mySQLToSQLite($mysql){
-        $sqlite = str_replace("AUTO_INCREMENT", "", $mysql);
+        $lines = explode("\n", $mysql);
+        for ($i = count($lines) - 1; $i >= 0; $i--) {
+            // remove all named keys, i.e., leave only PRIMARY keys
+            if (strpos($lines[$i], 'KEY `') !== false) {
+                $lines[$i] = "";
+                $lines[$i - 1] = substr($lines[$i - 1], 0, -1); // remove trailing comma in previous line
+            }
+        }
+        $sqlite = implode("\n", $lines);
+        $sqlite = str_replace("AUTO_INCREMENT", "", $sqlite);
         $sqlite = str_replace("int(11)", "INTEGER", $sqlite);
-        $sqlite = str_replace("UNIQUE KEY `name` (`name`)", "", $sqlite);
-        $sqlite = str_replace("PRIMARY KEY (`id`),", "PRIMARY KEY (`id`)", $sqlite);
         $sqlite = str_replace(" ENGINE=MyISAM  DEFAULT CHARSET=latin1;", ";", $sqlite);
+        echo $sqlite;
         return $sqlite;
     }
 
