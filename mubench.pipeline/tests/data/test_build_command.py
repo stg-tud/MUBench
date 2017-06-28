@@ -1,3 +1,4 @@
+import logging
 from utils.shell import CommandFailedError
 from data.build_command import BuildCommand, MavenCommand, GradleCommand, AntCommand
 
@@ -20,6 +21,8 @@ class TestBuildCommand:
         self.build_command_subclasses_orig = BuildCommand.__subclasses__
         BuildCommand._get_implementations = lambda *_: self.test_subclasses
 
+        self.logger = logging.getLogger("test")
+
     def teardown(self):
         BuildCommand._get_implementations = self.build_command_subclasses_orig
 
@@ -35,7 +38,7 @@ class TestBuildCommand:
 
     def test_has_no_dependencies_by_default(self):
         uut = BuildCommand.get("-some_command-")
-        assert not uut._get_dependencies("-output-", "-project_dir-")
+        assert not uut._get_dependencies("-output-", "-project_dir-", self.logger)
 
     def test_raise_on_multiple_matches(self):
         duplicate_command = BuildCommandTestImpl.TEST_COMMAND
@@ -47,7 +50,7 @@ class TestBuildCommand:
     def test_execute_runs_command(self, shell_mock):
         uut = BuildCommand.get("-command-")
 
-        uut.execute("-project_dir-")
+        uut.execute("-project_dir-", self.logger)
 
         shell_mock.assert_called_with("-command-",
                                       cwd="-project_dir-", logger=ANY)
@@ -57,7 +60,7 @@ class TestBuildCommand:
         command = "-command- -arg- --arg--"
         uut = BuildCommand.get(command)
 
-        uut.execute("-project_dir-")
+        uut.execute("-project_dir-", self.logger)
 
         shell_mock.assert_called_with(command,
                                       cwd="-project_dir-", logger=ANY)
@@ -77,7 +80,7 @@ class TestBuildCommand:
         shell_mock.side_effect = CommandFailedError("-command-", "-output-")
         uut = BuildCommand.get("-some_command-")
 
-        assert_raises(CommandFailedError, uut.execute, "-p-")
+        assert_raises(CommandFailedError, uut.execute, "-p-", self.logger)
 
     @patch("data.build_command.Shell.exec")
     def test_default_does_not_filter_output_on_error(self, shell_mock):
@@ -85,7 +88,7 @@ class TestBuildCommand:
         uut = BuildCommand.get("-some_command-")
 
         try:
-            uut.execute("-project_dir-")
+            uut.execute("-project_dir-", self.logger)
         except CommandFailedError as e:
             assert_equals("\n-output-", e.output)
 
@@ -93,6 +96,9 @@ class TestBuildCommand:
 @patch("data.build_command.shutil.copy")
 @patch("data.build_command.Shell.exec")
 class TestMavenCommand:
+    def setup(self):
+        self.logger = logging.getLogger("test")
+
     def test_compile_with_maven(self, shell_mock, copy_mock):
         shell_mock.return_value = """
 [INFO] --- maven-dependency-plugin:2.8:build-classpath (default-cli) @ testproject ---
@@ -100,7 +106,7 @@ class TestMavenCommand:
 /path/dependency1.jar:/path/dependency2.jar
 [INFO] ------------------------------------------------------------------------"""
 
-        actual_dependencies = MavenCommand("mvn", ["build"]).execute("-project_dir-")
+        actual_dependencies = MavenCommand("mvn", ["build"]).execute("-project_dir-", self.logger)
 
         assert_equals(shell_mock.mock_calls[0][1], ("mvn dependency:build-classpath -DincludeScope=compile build",))
         assert_in("/path/dependency1.jar", actual_dependencies)
@@ -117,7 +123,7 @@ class TestMavenCommand:
     /path/dependency2.jar
     [INFO] ------------------------------------------------------------------------"""
 
-        actual_dependencies = MavenCommand("mvn", ["build"]).execute("-project_dir-")
+        actual_dependencies = MavenCommand("mvn", ["build"]).execute("-project_dir-", self.logger)
 
         assert_equals(shell_mock.mock_calls[0][1], ("mvn dependency:build-classpath -DincludeScope=compile build",))
         assert_in("/path/dependency1.jar", actual_dependencies)
@@ -130,7 +136,7 @@ class TestMavenCommand:
 
 [INFO] ------------------------------------------------------------------------"""
 
-        MavenCommand("mvn", ["build"]).execute("-project_dir-")
+        MavenCommand("mvn", ["build"]).execute("-project_dir-", self.logger)
 
         assert_equals(shell_mock.mock_calls[0][1], ("mvn dependency:build-classpath -DincludeScope=compile build",))
 
@@ -163,7 +169,7 @@ class TestMavenCommand:
 [ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/NoGoalSpecifiedException"""
 
         try:
-            MavenCommand("mvn", ["build"]).execute("-project_dir-")
+            MavenCommand("mvn", ["build"]).execute("-project_dir-", self.logger)
         except CommandFailedError as e:
             assert_equals(expected_error_output, e.output)
 
@@ -172,10 +178,13 @@ class TestMavenCommand:
 @patch("data.build_command.shutil.copy")
 @patch("data.build_command.Shell.exec")
 class TestGradleCommand:
+    def setup(self):
+        self.logger = logging.getLogger("test")
+
     def test_compile_with_gradle(self, shell_mock, copy_mock):
         shell_mock.return_value = ":printClasspath\n/path/dependency1.jar\n/path/dependency2.jar\n\nBUILD SUCCESSFUL"
 
-        actual_dependencies = GradleCommand("gradle", ["build"]).execute("-project_dir-")
+        actual_dependencies = GradleCommand("gradle", ["build"]).execute("-project_dir-", self.logger)
 
         assert_equals(shell_mock.mock_calls[1][1], ("gradle :printClasspath -b 'classpath.gradle'",))
         assert_in("/path/dependency1.jar", actual_dependencies)
@@ -184,14 +193,14 @@ class TestGradleCommand:
     def test_compile_with_gradle_project_dir_parameter(self, shell_mock, copy_mock):
         shell_mock.return_value = ":printClasspath\n/path/dependency1.jar\n/path/dependency2.jar\n\nBUILD SUCCESSFUL"
 
-        GradleCommand("gradle", ["build", "-p", "/testdir/"]).execute("-project_dir-")
+        GradleCommand("gradle", ["build", "-p", "/testdir/"]).execute("-project_dir-", self.logger)
 
         assert_equals(shell_mock.mock_calls[1][1], ("gradle :printClasspath -b '/testdir/classpath.gradle'",))
 
     def test_compile_with_gradle_no_dependencies(self, shell_mock, copy_mock):
         shell_mock.return_value = ":printClasspath\n\nBUILD SUCCESSFUL"
 
-        GradleCommand("gradle", ["build"]).execute("-project_dir-")
+        GradleCommand("gradle", ["build"]).execute("-project_dir-", self.logger)
 
     def test_adds_debug_flag_to_command(self, shell_mock, copy_mock):
         uut = GradleCommand("gradle", ["build"])
@@ -224,7 +233,7 @@ class TestGradleCommand:
 15:46:17.823 [ERROR] [org.gradle.BuildExceptionReporter] Run with --stacktrace option to get the stack trace."""
 
         try:
-            GradleCommand("gradle", ["build"]).execute("-project_dir-")
+            GradleCommand("gradle", ["build"]).execute("-project_dir-", self.logger)
         except CommandFailedError as e:
             assert_equals(expected_error_output, e.output)
 
@@ -232,6 +241,9 @@ class TestGradleCommand:
 @patch("data.build_command.shutil.copy")
 @patch("data.build_command.Shell.exec")
 class TestAntCommand:
+    def setup(self):
+        self.logger = logging.getLogger("test")
+
     def test_compile_with_ant(self, shell_mock, copy_mock):
         shell_mock.return_value = """[javac] Compilation arguments:
 [javac] '-d'
@@ -239,7 +251,7 @@ class TestAntCommand:
 [javac] '-classpath'
 [javac] '/project/build/classes:/path/dependency1.jar:/path/dependency2.jar'"""
 
-        actual_dependencies = AntCommand("ant", []).execute("-project_dir-")
+        actual_dependencies = AntCommand("ant", []).execute("-project_dir-", self.logger)
 
         assert_equals(shell_mock.mock_calls[0][1], ("ant -debug -verbose",))
         assert_in("/path/dependency1.jar", actual_dependencies)
@@ -253,7 +265,7 @@ class TestAntCommand:
     [javac] '-classpath'
     [javac] '/path/dependency2.jar'"""
 
-        actual_dependencies = AntCommand("ant", []).execute("-project_dir-")
+        actual_dependencies = AntCommand("ant", []).execute("-project_dir-", self.logger)
 
         assert_equals(shell_mock.mock_calls[0][1], ("ant -debug -verbose",))
         assert_in("/path/dependency1.jar", actual_dependencies)
@@ -266,6 +278,6 @@ class TestAntCommand:
         expected_error_output = '\n' + error
 
         try:
-            AntCommand("ant", []).execute("-project_dir-")
+            AntCommand("ant", []).execute("-project_dir-", self.logger)
         except CommandFailedError as e:
             assert_equals(expected_error_output, e.output)

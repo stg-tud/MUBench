@@ -1,10 +1,11 @@
 import os
+from logging import Logger
 from os import makedirs
 from os.path import join, exists, dirname, relpath
 from shutil import rmtree
 from tempfile import mkdtemp
 from typing import List
-from unittest.mock import MagicMock, patch, call
+from unittest.mock import MagicMock, patch, call, ANY
 
 from nose.tools import assert_equals, assert_in
 
@@ -55,7 +56,8 @@ class TestCompile:
         rmtree(self.temp_dir, ignore_errors=True)
 
     def mock_with_fake_compile(self):
-        def mock_compile(commands: List[str], cwd: str, dep_dir: str, compile_base_path: str):
+        def mock_compile(commands: List[str], cwd: str, dep_dir: str,
+                         compile_base_path: str, logger: Logger):
             source_path = join(cwd, self.source_dir)
             class_path = join(cwd, "classes")
             makedirs(class_path, exist_ok=True)
@@ -136,7 +138,11 @@ class TestCompile:
 
         self.uut.process_project_version(self.project, self.version)
 
-        self.uut._compile.assert_called_with(["a", "b"], self.build_path, self.dep_path, self.compile_base_path)
+        self.uut._compile.assert_called_with(["a", "b"],
+                                             self.build_path,
+                                             self.dep_path,
+                                             self.compile_base_path,
+                                             ANY)
 
     def test_copies_additional_sources(self):
         self.mock_with_fake_compile()
@@ -185,7 +191,7 @@ class TestCompile:
 
     def test_copies_misuse_inner_classes(self):
         self.mock_with_fake_compile()
-        def mock_compile(commands: List[str], cwd: str, dep_dir: str, compile_base_path: str):
+        def mock_compile(commands: List[str], cwd: str, dep_dir: str, compile_base_path: str, logger: Logger):
             class_path = join(cwd, "classes")
             makedirs(class_path, exist_ok=True)
             create_file(join(class_path, "mu.class"))
