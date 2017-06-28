@@ -195,7 +195,7 @@ class TestGradleCommand:
 
     def test_adds_debug_flag_to_command(self, shell_mock, copy_mock):
         uut = GradleCommand("gradle", ["build"])
-        assert_in("--debug", uut._extend_args(["build"]))
+        assert_in("--debug", uut._prepare_args(["build"]))
 
     def test_filter_error_lines_from_output(self, shell_mock, copy_mock):
         full_output = """15:46:17.784 [DEBUG] [org.gradle.model.internal.registry.DefaultModelRegistry] Transitioning model element 'tasks.wrapper' to state Discovered.
