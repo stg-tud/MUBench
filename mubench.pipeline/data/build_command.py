@@ -97,7 +97,7 @@ class GradleCommand(BuildCommand):
     def name() -> str:
         return "gradle"
 
-    def _prepare_args(self, args: List[str]) -> str:
+    def _prepare_args(self, args: List[str]) -> List[str]:
         return args + ["--debug"]
 
     def _get_errors(self, output: str, error: str) -> str:
