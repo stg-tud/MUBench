@@ -163,7 +163,6 @@ class TestCompile:
 
     def test_forces_compile(self):
         makedirs(self.original_classes_path)
-        create_file(join(self.source_path, "some.file"))
         makedirs(self.pattern_classes_path)
         self.mock_with_fake_compile()
         self.uut.force_compile = True
