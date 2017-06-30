@@ -17,7 +17,7 @@ class BuildCommand:
         self.args = args
 
     @staticmethod
-    def get(requested_command: str) -> 'BuildCommand':
+    def create(requested_command: str) -> 'BuildCommand':
         requested_command = shlex.split(requested_command)
         requested_name = requested_command[0]
         args = requested_command[1:]

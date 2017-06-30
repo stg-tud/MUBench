@@ -80,7 +80,7 @@ class Compile(ProjectVersionTask):
                               logger)
                 logger.debug("Move pattern classes...")
                 self.__copy_pattern_classes(version.misuses, classes_path, project_compile)
-                self.__remove_patter_classes(version.misuses, classes_path)
+                self.__remove_pattern_classes(version.misuses, classes_path)
                 logger.debug("Copy project classes...")
                 copy_tree(classes_path, project_compile.original_classes_path)
                 logger.debug("Create project jar...")
@@ -119,7 +119,7 @@ class Compile(ProjectVersionTask):
     def _compile(commands: List[str], project_dir: str, dep_dir: str,
                  compile_base_path: str, logger: Logger) -> None:
         for command in commands:
-            dependencies = BuildCommand.get(command).execute(project_dir, logger)
+            dependencies = BuildCommand.create(command).execute(project_dir, logger)
             Compile.__copy_dependencies(dependencies, dep_dir, compile_base_path)
 
     @staticmethod
@@ -127,10 +127,10 @@ class Compile(ProjectVersionTask):
         for misuse in misuses:
             basepath = join(classes_path, splitext(misuse.location.file)[0])
             classes = glob(basepath + ".class") + glob(basepath + "$*.class")
-            for clazz in classes:
-                dst = join(destination, relpath(clazz, classes_path))
+            for class_ in classes:
+                dst = join(destination, relpath(class_, classes_path))
                 makedirs(dirname(dst), exist_ok=True)
-                shutil.copy(clazz, dst)
+                shutil.copy(class_, dst)
 
     @staticmethod
     def __copy(patterns: Set[Pattern], destination: str):
@@ -148,7 +148,7 @@ class Compile(ProjectVersionTask):
                 shutil.copy(join(classes_path, pattern_class_file_name), new_name)
 
     @staticmethod
-    def __remove_patter_classes(misuses: List[Misuse], classes_path: str):
+    def __remove_pattern_classes(misuses: List[Misuse], classes_path: str):
         for misuse in misuses:
             for pattern in misuse.patterns:
                 pattern_class_file_name = pattern.relative_path_without_extension + ".class"
