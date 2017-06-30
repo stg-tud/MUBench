@@ -43,13 +43,12 @@ class BuildCommand:
 
         try:
             output = Shell.exec(command, cwd=project_dir, logger=logger)
+            return self._get_dependencies(output, project_dir, logger)
         except CommandFailedError as e:
             error_output = '\n' + self._get_errors(e.output, e.error)
             e.output = error_output
             e.error = ""
             raise
-
-        return self._get_dependencies(output, project_dir, logger)
 
     @staticmethod
     def name() -> str:
