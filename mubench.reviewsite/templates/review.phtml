@@ -246,7 +246,7 @@ use MuBench\ReviewSite\Model\Experiment;
                     </ul>
                 <?php elseif(strlen($hit[$column]) > 4 && substr($hit[$column], -4) === ".svg") : ?>
                     <? $object_id = $column . $hit['rank']; ?>
-                    <object id="<?= $object_id ?>" type="image/svg+xml" data="<?= "{$uploads_url_prefix}/{$experiment->getId()}/{$detector->name}/{$misuse->getProject()}/{$misuse->getVersion()}/{$hit[$column]}" ?>" style="width: 300px; height: 300px;"></object>
+                    <object id="<?= $object_id ?>" type="image/svg+xml" data="<?= "{$uploads_url_prefix}/{$experiment->getId()}/{$detector->name}/{$misuse->getProject()}/{$misuse->getVersion()}/{$hit[$column]}" ?>" style="width: 750px; height: 750px;"></object>
                     <script>
                         document.getElementById("<?= $object_id ?>").onload = function() {
                             svgPanZoom("#<?= $object_id ?>", {
