@@ -27,28 +27,28 @@ class TestBuildCommand:
         BuildCommand._get_implementations = self.build_command_subclasses_orig
 
     def test_get_correct_command(self):
-        actual = BuildCommand.get(BuildCommandTestImpl.TEST_COMMAND)
+        actual = BuildCommand.create(BuildCommandTestImpl.TEST_COMMAND)
         assert_is_instance(actual, BuildCommandTestImpl)
 
     def test_generic_command_returns_base_implementation(self):
-        uut = BuildCommand.get("-some_command-")
+        uut = BuildCommand.create("-some_command-")
 
         assert_is_instance(uut, BuildCommand)
         assert_equals("-some_command-", uut._name)
 
     def test_has_no_dependencies_by_default(self):
-        uut = BuildCommand.get("-some_command-")
+        uut = BuildCommand.create("-some_command-")
         assert not uut._get_dependencies("-output-", "-project_dir-", self.logger)
 
     def test_raise_on_multiple_matches(self):
         duplicate_command = BuildCommandTestImpl.TEST_COMMAND
         self.test_subclasses = [BuildCommandTestImpl, BuildCommandTestImpl]
 
-        assert_raises(ValueError, BuildCommand.get, duplicate_command)
+        assert_raises(ValueError, BuildCommand.create, duplicate_command)
 
     @patch("data.build_command.Shell.exec")
     def test_execute_runs_command(self, shell_mock):
-        uut = BuildCommand.get("-command-")
+        uut = BuildCommand.create("-command-")
 
         uut.execute("-project_dir-", self.logger)
 
@@ -58,7 +58,7 @@ class TestBuildCommand:
     @patch("data.build_command.Shell.exec")
     def test_execute_runs_command_with_args(self, shell_mock):
         command = "-command- -arg- --arg--"
-        uut = BuildCommand.get(command)
+        uut = BuildCommand.create(command)
 
         uut.execute("-project_dir-", self.logger)
 
@@ -66,26 +66,26 @@ class TestBuildCommand:
                                       cwd="-project_dir-", logger=ANY)
 
     def test_saves_args(self):
-        uut = BuildCommand.get("-some_command- arg1 arg2")
+        uut = BuildCommand.create("-some_command- arg1 arg2")
 
         assert_equals(["arg1", "arg2"], uut.args)
 
     def test_quoted_args_are_saved_without_quotes(self):
-        uut = BuildCommand.get("-some_command- 'arg 1' \"arg 2\"")
+        uut = BuildCommand.create("-some_command- 'arg 1' \"arg 2\"")
 
         assert_equals(["arg 1", "arg 2"], uut.args)
 
     @patch("data.build_command.Shell.exec")
     def test_raises_on_error(self, shell_mock):
         shell_mock.side_effect = CommandFailedError("-command-", "-output-")
-        uut = BuildCommand.get("-some_command-")
+        uut = BuildCommand.create("-some_command-")
 
         assert_raises(CommandFailedError, uut.execute, "-p-", self.logger)
 
     @patch("data.build_command.Shell.exec")
     def test_default_does_not_filter_output_on_error(self, shell_mock):
         shell_mock.side_effect = CommandFailedError("-command-", "-output-")
-        uut = BuildCommand.get("-some_command-")
+        uut = BuildCommand.create("-some_command-")
 
         try:
             uut.execute("-project_dir-", self.logger)
