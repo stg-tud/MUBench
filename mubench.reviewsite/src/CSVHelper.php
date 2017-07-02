@@ -5,97 +5,114 @@ namespace MuBench\ReviewSite;
 class CSVHelper
 {
 
-    function __construct()
-    {
-
-    }
-
-    public function getCSVHeaderForStatsExp($experiment)
-    {
-        if (strcmp($experiment, "ex1") === 0) {
-            return "detector,project,synthetics,misuses,potential_hits,open_reviews,need_clarification,yes_agreements,no_agreements,total_agreements,yes_no_agreements,no_yes_agreements,total_disagreements,kappa_p0,kappa_pe,kappa_score,hits,recall";
-        } elseif (strcmp($experiment, "ex2") === 0) {
-            return "detector,project,potential_hits,open_reviews,need_clarification,yes_agreements,no_agreements,total_agreements,yes_no_agreements,no_yes_agreements,total_disagreements,kappa_p0,kappa_pe,kappa_score,hits,recall";
-        } else {
-            return "detector,project,misuses,potential_hits,open_reviews,need_clarification,yes_agreements,no_agreements,total_agreements,yes_no_agreements,no_yes_agreements,total_disagreements,kappa_p0,kappa_pe,kappa_score,hits,recall";
-        }
-    }
-
     public function createCSVFromStats($experiment, $stats)
     {
-        $result = "sep=,\n" . $this->getCSVHeaderForStatsExp($experiment);
+        $rows[] = ["sep=,"];
+        if (strcmp($experiment, "ex1") === 0) {
+            $rows[] =
+                ["detector", "project", "synthetics", "misuses", "potential_hits", "open_reviews", "need_clarification",
+                    "yes_agreements", "no_agreements", "total_agreements", "yes_no_agreements", "no_yes_agreements",
+                    "total_disagreements", "kappa_p0", "kappa_pe", "kappa_score", "hits", "recall"];
+        } elseif (strcmp($experiment, "ex2") === 0) {
+            $rows[] = ["detector", "project", "potential_hits", "open_reviews", "need_clarification", "yes_agreements",
+                "no_agreements", "total_agreements", "yes_no_agreements", "no_yes_agreements", "total_disagreements",
+                "kappa_p0", "kappa_pe", "kappa_score", "hits", "precision"];
+        } else {
+            $rows[] = ["detector", "project", "misuses", "potential_hits", "open_reviews", "need_clarification",
+                "yes_agreements", "no_agreements", "total_agreements", "yes_no_agreements", "no_yes_agreements",
+                "total_disagreements", "kappa_p0", "kappa_pe", "kappa_score", "hits", "recall"];
+        }
         foreach ($stats as $key => $stat) {
-            $result .="\n";
-            $result .= "{$stat->getDisplayName()},{$stat->number_of_projects},";
+            $columns = [];
+            $columns[] = $stat->getDisplayName();
+            $columns[] = $stat->number_of_projects;
             if (strcmp($experiment, "ex1") === 0) {
-                $result .= "{$stat->number_of_synthetics},";
+                $columns[] = $stat->number_of_synthetics;
             }
             if (strcmp($experiment, "ex1") === 0 || strcmp($experiment, "ex3") === 0) {
-                $result .= "{$stat->number_of_misuses},";
+                $columns[] = $stat->number_of_misuses;
             }
             $kappa_p0 = round($stat->getKappaP0(), 3);
             $kappe_pe = round($stat->getKappaPe(), 3);
             $kappa_score = round($stat->getKappaScore(), 3);
-            $recall = round($stat->getRecall() * 100, 1);
+            if (strcmp($experiment, "ex2") === 0) {
+                $recall = round($stat->getPrecision() * 100, 1);
+            } else {
+                $recall = round($stat->getRecall() * 100, 1);
+            }
 
-            $result .= "{$stat->misuses_to_review},";
-            $result .= "{$stat->open_reviews},";
-            $result .= "{$stat->number_of_needs_clarification},";
-            $result .= "{$stat->yes_agreements},";
-            $result .= "{$stat->no_agreements},";
-            $result .= "{$stat->getNumberOfAgreements()},";
-            $result .= "{$stat->yes_no_disagreements},";
-            $result .= "{$stat->no_yes_disagreements},";
-            $result .= "{$stat->getNumberOfDisagreements()},";
-            $result .= "{$kappa_p0},";
-            $result .= "{$kappe_pe},";
-            $result .= "{$kappa_score},";
-            $result .= "{$stat->number_of_hits},";
-            $result .= "{$recall},";
+            $columns[] = $stat->misuses_to_review;
+            $columns[] = $stat->open_reviews;
+            $columns[] = $stat->number_of_needs_clarification;
+            $columns[] = $stat->yes_agreements;
+            $columns[] = $stat->no_agreements;
+            $columns[] = $stat->getNumberOfAgreements();
+            $columns[] = $stat->yes_no_disagreements;
+            $columns[] = $stat->no_yes_disagreements;
+            $columns[] = $stat->getNumberOfDisagreements();
+            $columns[] = $kappa_p0;
+            $columns[] = $kappe_pe;
+            $columns[] = $kappa_score;
+            $columns[] = $stat->number_of_hits;
+            $columns[] = $recall;
+            $rows[] = $columns;
         }
-        return $result;
+        return $this->createCSV($rows);
+    }
+
+    private function createCSV($lines)
+    {
+        $imploded_lines = [];
+        foreach ($lines as $line) {
+            $imploded_lines[] = implode(',', $line);
+        }
+        return implode('\n', $imploded_lines);
     }
 
     public function createCSVFromRuns($runs)
     {
-        $result = "sep=,\n";
-        $result .= "project,version,result,number_of_findings,runtime,misuse,decision,resolution_decision,resolution_comment";
-        $misuse_entries = [];
+        $rows[] = ["sep=,"];
+        $rows[] = ["project", "version", "result", "number_of_findings", "runtime", "misuse", "decision",
+            "resolution_decision", "resolution_comment"];
         $max_review_count = 2;
         foreach ($runs as $run) {
-            $run_details = "{$run['project']},{$run['version']},{$run['result']},{$run['number_of_findings']},{$run['runtime']},";
+            $run_details =
+                [$run['project'], $run['version'], $run['result'], $run['number_of_findings'], $run['runtime']];
             foreach ($run['misuses'] as $misuse) {
+                $columns = $run_details;
+
                 $reviews = $misuse->getReviews();
                 $review_count = count($reviews);
 
-                $misuse_entry = "{$run_details}{$misuse->id},";
-                $misuse_entry .= "{$misuse->getReviewState()},";
+                $columns[] = $misuse->id;
+                $columns[] = $misuse->getReviewState();
                 if ($misuse->hasResolutionReview()) {
                     $resolution = $misuse->getResolutionReview();
-                    $misuse_entry .= "{$resolution->getDecision()},{$resolution->getComment},";
+                    $columns[] = $resolution->getDecision();
+                    $columns[] = $resolution->getComment();
                 } else {
-                    $misuse_entry .= ",,";
+                    $columns[] = "";
+                    $columns[] = "";
                 }
                 foreach ($reviews as $review) {
-                    $misuse_entry .= "{$review->getReviewerName()},{$review->getDecision()},{$review->getComment()}";
+                    $columns[] = $review->getReviewerName();
+                    $columns[] = $review->getDecision();
+                    $columns[] = $review->getComment();
                 }
                 if ($review_count > $max_review_count) {
                     $max_review_count = $review_count;
                 }
-                $misuse_entries[] = $misuse_entry;
+                $rows[] = $columns;
             }
             if (empty($run['misuses'])) {
-                $misuse_entries[] = $run_details;
+                $rows[] = $run_details;
             }
         }
         for ($i = 1; $i < $max_review_count; $i++) {
-            $result .= ",review{$i}_name";
-            $result .= ",review{$i}_decision";
-            $result .= ",review{$i}_comment";
+            $rows[1][] = "review{$i}_name";
+            $rows[1][] = "review{$i}_decision";
+            $rows[1][] = "review{$i}_comment";
         }
-        foreach ($misuse_entries as $misuse_entry) {
-            $result = $result . "\n" . $misuse_entry;
-        }
-        return $result;
+        return $this->createCSV($rows);
     }
 }
