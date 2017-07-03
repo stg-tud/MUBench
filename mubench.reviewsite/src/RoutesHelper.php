@@ -52,7 +52,7 @@ class RoutesHelper
         $is_reviewer = strcmp($user, $reviewer) == 0 || strcmp($reviewer, "resolution") == 0;
         $violation_types = $misuse->getViolationTypes();
         if(strcmp($args['exp'], 'ex2') === 0){
-            $violation_types = $this->db->getAllTypes();
+            $violation_types = $this->db->getAllViolationTypes();
         }
         return $this->render($this, $request, $response, $args, 'review.phtml',
             ['reviewer' => $reviewer, 'is_reviewer' => $is_reviewer, 'misuse' => $misuse, 'review' => $review, 'violation_types' => $violation_types]);
