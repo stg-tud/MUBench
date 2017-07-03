@@ -50,8 +50,12 @@ class RoutesHelper
         $reviewer = array_key_exists('reviewer', $args) ? $args['reviewer'] : $user;
         $review = $misuse->getReview($reviewer);
         $is_reviewer = strcmp($user, $reviewer) == 0 || strcmp($reviewer, "resolution") == 0;
+        $violation_types = $misuse->getViolationTypes();
+        if(strcmp($args['exp'], 'ex2') === 0){
+            $violation_types = $this->db->getAllTypes();
+        }
         return $this->render($this, $request, $response, $args, 'review.phtml',
-            ['reviewer' => $reviewer, 'is_reviewer' => $is_reviewer, 'misuse' => $misuse, 'review' => $review]);
+            ['reviewer' => $reviewer, 'is_reviewer' => $is_reviewer, 'misuse' => $misuse, 'review' => $review, 'violation_types' => $violation_types]);
     }
 
     public function stats(Request $request, Response $response, array $args) {
