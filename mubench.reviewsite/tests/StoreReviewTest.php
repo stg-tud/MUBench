@@ -23,7 +23,7 @@ class StoreReviewTest extends DatabaseTestCase
             0 => [
                 'hit' => 'Yes',
                 'types' => [
-                    'missing/call'
+                    '1'
                 ]
             ]
         ]

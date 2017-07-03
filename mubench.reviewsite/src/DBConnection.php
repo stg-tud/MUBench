@@ -77,6 +77,11 @@ class DBConnection
         return $this->table('types')->where('name', $name)->first()['id'];
     }
 
+    public function getAllTypes()
+    {
+        return $this->table('types')->get();
+    }
+
     public function getRuns(Detector $detector, $exp, $max_reviews = -1)
     {
         /** @var array $runs */

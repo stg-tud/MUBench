@@ -54,8 +54,7 @@ class ReviewUploader
         foreach ($hits as $key => $hit) {
             $findingId = $this->db->table('review_findings')->insert(['review' => $reviewId, 'rank' => $key, 'decision' => $hit['hit']]);
             foreach ($hit['types'] as $type) {
-                $typeId = $this->db->getTypeIdByName($type);
-                $this->db->table('review_findings_types')->insert(['review_finding' => $findingId, 'type' => $typeId]);
+                $this->db->table('review_findings_types')->insert(['review_finding' => $findingId, 'type' => $type]);
             }
         }
     }
