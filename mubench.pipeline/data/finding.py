@@ -1,8 +1,7 @@
-from typing import Dict, List, Union
+from typing import Dict, List
 
 from data.misuse import Misuse
 from data.snippets import get_snippets, Snippet
-from utils.web_util import as_markdown
 
 
 class Finding(Dict[str, str]):
