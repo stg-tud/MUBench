@@ -4,6 +4,7 @@ from nose.tools import assert_equals
 
 from data.pattern import Pattern
 from data.snippets import Snippet
+from utils.web_util import as_markdown
 from tasks.implementations.publish_metadata_task import PublishMetadataTask
 from tests.test_utils.data_util import create_misuse, create_project, create_version
 
@@ -85,10 +86,10 @@ class TestPublishMetadataTask:
                 "description": "-fix-description-",
                 "diff-url": "http://fake.diff/url"
             },
-            "violation_types": [
+            "violation_types": as_markdown([
                 "-violation-type-1-",
                 "-violation-type-2-"
-            ],
+            ]),
             "location": {
                 "file": "/some/file.java",
                 "method": "-some.method()-"
