@@ -2,6 +2,7 @@ from typing import Dict, List, Union
 
 from data.misuse import Misuse
 from data.snippets import get_snippets, Snippet
+from utils.web_util import as_markdown
 
 
 class Finding(Dict[str, str]):
@@ -47,50 +48,8 @@ class Finding(Dict[str, str]):
     def get_snippets(self, source_base_path: str) -> List[Snippet]:
         return get_snippets(source_base_path, self.__file(), self.__method())
 
-    def with_markdown(self) -> 'Finding':
-        finding = Finding(dict())
-        for key, value in self.items():
-            finding[key] = _as_markdown(value)
-        return finding
-
 
 class SpecializedFinding(Finding):
     def __init__(self, data: Dict[str, str], files: List[str] = None):
         super().__init__(data)
         self.files = files or []
-
-
-def _as_markdown(value: Union[List[str], Dict[str, str], str]) -> str:
-    if isinstance(value, list):
-        return __as_markdown_list(value)
-    elif isinstance(value, dict):
-        return __as_markdown_dict(value)
-    elif isinstance(value, str):
-        return value
-    else:
-        raise UnsupportedTypeError(value)
-
-
-def __as_markdown_list(l: List[str]) -> str:
-    markdown_list = []
-    for item in l:
-        try:
-            markdown_list.append("* " + item)
-        except TypeError:
-            raise UnsupportedTypeError(item)
-    return '\n'.join(markdown_list)
-
-
-def __as_markdown_dict(d: Dict[str, str]) -> str:
-    definition_list = []
-    for key, value in d.items():
-        try:
-            definition_list.append("{}: \n{}".format(key, value))
-        except TypeError:
-            raise UnsupportedTypeError(value)
-    return '\n'.join(definition_list)
-
-
-class UnsupportedTypeError(TypeError):
-    def __init__(self, obj):
-        super().__init__("Unsupported type {} of {}".format(type(obj), repr(obj)))
