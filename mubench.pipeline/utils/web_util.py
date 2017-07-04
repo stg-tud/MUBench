@@ -4,7 +4,7 @@ import json
 import mimetypes
 import shutil
 from contextlib import ExitStack
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Union
 from urllib.request import urlopen
 from os import remove
 from os.path import exists, basename
@@ -98,8 +98,44 @@ def post(url: str, data: object, file_paths: List[str] = None, username: str="",
         response.raise_for_status()
 
 
+def as_markdown(value: Union[List[str], Dict[str, str], str]) -> str:
+    if isinstance(value, list):
+        return __as_markdown_list(value)
+    elif isinstance(value, dict):
+        return __as_markdown_dict(value)
+    elif isinstance(value, str):
+        return value
+    else:
+        raise UnsupportedTypeError(value)
+
+
 def __create_file_tuple(path: str, es: ExitStack):
     filename = basename(path)
     file_handle = es.enter_context(open(path, 'rb'))
     mime_type = mimetypes.guess_type(path)[0]
     return filename, (filename, file_handle, mime_type)
+
+
+def __as_markdown_list(l: List[str]) -> str:
+    markdown_list = []
+    for item in l:
+        try:
+            markdown_list.append("* " + item)
+        except TypeError:
+            raise UnsupportedTypeError(item)
+    return '\n'.join(markdown_list)
+
+
+def __as_markdown_dict(d: Dict[str, str]) -> str:
+    definition_list = []
+    for key, value in d.items():
+        try:
+            definition_list.append("{}: \n{}".format(key, value))
+        except TypeError:
+            raise UnsupportedTypeError(value)
+    return '\n'.join(definition_list)
+
+
+class UnsupportedTypeError(TypeError):
+    def __init__(self, obj):
+        super().__init__("Unsupported type {} of {}".format(type(obj), repr(obj)))

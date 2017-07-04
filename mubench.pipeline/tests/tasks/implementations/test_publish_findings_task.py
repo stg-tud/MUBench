@@ -73,6 +73,8 @@ class TestPublishFindingsTask:
         self.test_run.get_number_of_findings = lambda: 5
         self.test_run.get_potential_hits = lambda: potential_hits
 
+        self.uut._prepare_post = lambda potential_hit, *_: potential_hit
+
         self.uut.process_project_version(self.project, self.version)
 
         assert_equals(post_mock.call_args[0][1], {
@@ -83,7 +85,7 @@ class TestPublishFindingsTask:
             "result": "success",
             "runtime": 42.0,
             "number_of_findings": 5,
-            "potential_hits": [ph.with_markdown() for ph in potential_hits]
+            "potential_hits": potential_hits
         })
 
     def test_publish_successful_run_files(self, post_mock):
@@ -190,6 +192,17 @@ class TestPublishFindingsTask:
         self.uut.end()
 
         post_mock.assert_not_called()
+
+    def test_with_markdown(self, post_mock):
+        finding = SpecializedFinding(dict())
+        finding["list"] = ["hello", "world"]
+        finding["dict"] = {"key": "value"}
+        actual = self.uut._to_markdown_dict(finding)
+
+        expected = dict()
+        expected["list"] = "* hello\n* world"
+        expected["dict"] = "key: \nvalue"
+        assert_equals(expected, actual)
 
 
 def _create_finding(data: Dict, file_paths=None, snippets=None):
