@@ -37,14 +37,14 @@ class RoutesHelper
 
     public function detector(Request $request, Response $response, array $args) {
         $ex2_review_size = $request->getQueryParam("ex2_review_size", $this->default_ex2_review_size);
-        $detector = $this->db->getOrCreateDetector($args['detector']);
+        $detector = $this->getDetector($args['detector'], $request, $response);
         $runs = $this->db->getRuns($detector, $args['exp'], $ex2_review_size);
         return $this->render($this, $request, $response, $args, 'detector.phtml', ['ex2_review_size' => $ex2_review_size, 'runs' => $runs]);
     }
 
     public function review(Request $request, Response $response, array $args)
     {
-        $detector = $this->db->getOrCreateDetector($args['detector']);
+        $detector = $this->getDetector($args['detector'], $request, $response);
         $misuse = $this->db->getMisuse($args['exp'], $detector, $args['project'], $args['version'], $args['misuse']);
         $user = $this->getUser($request);
         $reviewer = array_key_exists('reviewer', $args) ? $args['reviewer'] : $user;
@@ -121,7 +121,9 @@ class RoutesHelper
             $params["detectors"][$experiment->getId()] = $this->db->getDetectors($experiment->getId());
         }
         $params["experiment"] = array_key_exists("exp", $args) ? Experiment::get($args["exp"]) : null;
-        $params["detector"] = array_key_exists("detector", $args) ? $this->db->getOrCreateDetector($args["detector"]) : null;
+
+        $params["detector"] = array_key_exists("detector", $args) ? $this->getDetector($args['detector'], $request, $response) : null;
+
         return $this->renderer->render($response, $template, $params);
     }
 
@@ -129,5 +131,14 @@ class RoutesHelper
     {
         $params = $request->getServerParams();
         return array_key_exists('PHP_AUTH_USER', $params) ? $params['PHP_AUTH_USER'] : "";
+    }
+
+    private function getDetector($detector_name, $request, $response)
+    {
+        try{
+            return $this->db->getDetector($detector_name);
+        }catch (\InvalidArgumentException $e){
+            throw new \Slim\Exception\NotFoundException($request, $response);
+        }
     }
 }

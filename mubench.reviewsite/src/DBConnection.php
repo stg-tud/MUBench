@@ -132,6 +132,15 @@ class DBConnection
         return new Detector($detector_name, $detector_id);
     }
 
+    public function getDetector($detector_name)
+    {
+        $detector_data = $this->table('detectors')->select('id')->where('name', $detector_name)->first();
+        if($detector_data){
+            return new Detector($detector_name, $detector_data['id']);
+        }
+        throw new \InvalidArgumentException("no detector with name $detector_name");
+    }
+
     public function getDetectors($exp)
     {
         $detectors = [];
