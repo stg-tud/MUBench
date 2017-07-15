@@ -66,7 +66,7 @@ class CSVHelper
         foreach ($lines as $line) {
             $imploded_lines[] = implode(',', $line);
         }
-        return implode('\n', $imploded_lines);
+        return implode("\n", $imploded_lines);
     }
 
     public function createCSVFromRuns($runs)
@@ -89,7 +89,7 @@ class CSVHelper
                 if ($misuse->hasResolutionReview()) {
                     $resolution = $misuse->getResolutionReview();
                     $columns[] = $resolution->getDecision();
-                    $columns[] = $resolution->getComment();
+                    $columns[] = str_replace(array(','), '',trim(preg_replace('/\s\s+/', ' ', $resolution->getComment())));
                 } else {
                     $columns[] = "";
                     $columns[] = "";
@@ -97,7 +97,7 @@ class CSVHelper
                 foreach ($reviews as $review) {
                     $columns[] = $review->getReviewerName();
                     $columns[] = $review->getDecision();
-                    $columns[] = $review->getComment();
+                    $columns[] = str_replace(array(','), '',trim(preg_replace('/\s\s+/', ' ', $review->getComment())));
                 }
                 if ($review_count > $max_review_count) {
                     $max_review_count = $review_count;
