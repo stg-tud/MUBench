@@ -52,6 +52,7 @@ class FindingsUploader
     {
         $existing_columns = $this->getPropertyColumnNames($table_name);
         if (count($existing_columns) == 0) {
+            $this->db->table($table_name)->delete();
             $existing_columns = $createFunc($table_name);
         }
         $this->logger->info("Add columns to " . $table_name);
