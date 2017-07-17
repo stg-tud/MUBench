@@ -5,7 +5,7 @@ namespace MuBench\ReviewSite;
 class CSVHelper
 {
 
-    public function createCSVFromStats($experiment, $stats)
+    public function exportStatistics($experiment, $stats)
     {
         $rows[] = ["sep=,"];
         if (strcmp($experiment, "ex1") === 0) {
@@ -32,13 +32,13 @@ class CSVHelper
             if (strcmp($experiment, "ex1") === 0 || strcmp($experiment, "ex3") === 0) {
                 $columns[] = $stat->number_of_misuses;
             }
-            $kappa_p0 = round($stat->getKappaP0(), 3);
-            $kappe_pe = round($stat->getKappaPe(), 3);
-            $kappa_score = round($stat->getKappaScore(), 3);
+            $kappa_p0 = $stat->getKappaP0();
+            $kappe_pe = $stat->getKappaPe();
+            $kappa_score = $stat->getKappaScore();
             if (strcmp($experiment, "ex2") === 0) {
-                $recall = round($stat->getPrecision() * 100, 1);
+                $recall = $stat->getPrecision();
             } else {
-                $recall = round($stat->getRecall() * 100, 1);
+                $recall = $stat->getRecall();
             }
 
             $columns[] = $stat->misuses_to_review;
@@ -69,7 +69,7 @@ class CSVHelper
         return implode("\n", $imploded_lines);
     }
 
-    public function createCSVFromRuns($runs)
+    public function exportRunStatistics($runs)
     {
         $rows[] = ["sep=,"];
         $rows[] = ["project", "version", "result", "number_of_findings", "runtime", "misuse", "decision",
@@ -89,7 +89,7 @@ class CSVHelper
                 if ($misuse->hasResolutionReview()) {
                     $resolution = $misuse->getResolutionReview();
                     $columns[] = $resolution->getDecision();
-                    $columns[] = str_replace(array(','), '',trim(preg_replace('/\s\s+/', ' ', $resolution->getComment())));
+                    $columns[] = "\"" . $resolution->getComment() . "\"";
                 } else {
                     $columns[] = "";
                     $columns[] = "";
@@ -97,7 +97,7 @@ class CSVHelper
                 foreach ($reviews as $review) {
                     $columns[] = $review->getReviewerName();
                     $columns[] = $review->getDecision();
-                    $columns[] = str_replace(array(','), '',trim(preg_replace('/\s\s+/', ' ', $review->getComment())));
+                    $columns[] = "\"" . $review->getComment() . "\"";
                 }
                 if ($review_count > $max_review_count) {
                     $max_review_count = $review_count;

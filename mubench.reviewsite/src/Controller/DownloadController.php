@@ -55,7 +55,7 @@ class DownloadController
         }
         $stats["total"] = new ExperimentResult($stats);
 
-        return $this->download($response, $this->csv_helper->createCSVFromStats($experiment, $stats),
+        return $this->download($response, $this->csv_helper->exportStatistics($experiment, $stats),
             "stats_" . $experiment . ".csv");
     }
 
@@ -64,7 +64,7 @@ class DownloadController
         $ex2_review_size = $request->getQueryParam("ex2_review_size", $this->default_ex2_review_size);
         $detector = $this->db->getOrCreateDetector($args['detector']);
         $runs = $this->db->getRuns($detector, $args['exp'], $ex2_review_size);
-        return $this->download($response, $this->csv_helper->createCSVFromRuns($runs), $args['detector'] . ".csv");
+        return $this->download($response, $this->csv_helper->exportRunStatistics($runs), $args['detector'] . ".csv");
     }
 
     private function download(Response $response, $file_data, $filename)
