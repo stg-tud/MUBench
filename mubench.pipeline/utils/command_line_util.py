@@ -140,13 +140,13 @@ def __add_publish_subprocess(available_detectors: List[str], available_datasets:
 
     def upload_limit(x):
         limit = int(x)
-        if limit < 1 or limit > 500:
-            raise ArgumentTypeError("invalid value: {} (choose from [1,500])".format(limit))
+        if limit < 1:
+            raise ArgumentTypeError("invalid value: {}, must be positive".format(limit))
         return limit
 
     findings_parser.add_argument('--limit', type=upload_limit, default=get_default('limit', 50), metavar='n',
                                  dest="limit",
-                                 help="publish only a specified number of potential hits. From [1,500]; default 50.")
+                                 help="publish only a specified number of potential hits. Defaults to 50")
 
     metadata_parser = publish_subparsers.add_parser("metadata", formatter_class=SortingHelpFormatter,
                                                     help="Publish misuse metadata to the review site. "
