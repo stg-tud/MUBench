@@ -37,6 +37,7 @@ def get_command_line_parser(available_detectors: List[str], available_scripts: L
     available_datasets = CaseInsensitiveChoices(available_datasets)
 
     parser = ArgumentParser(
+        prog="./mubench",
         description="Run MUBench, the benchmark for API-misuse detectors.",
         epilog="For details, check out https://github.com/stg-tud/MUBench.",
         formatter_class=SortingHelpFormatter)
