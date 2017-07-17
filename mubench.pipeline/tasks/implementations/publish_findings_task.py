@@ -60,7 +60,6 @@ class PublishFindingsTask(ProjectVersionTask):
                 logger.info("Not run on %s.", version)
                 result = "not run"
 
-        logger.info("Extracting target source code...")
         version_compile = version.get_compile(self.compiles_base_path)
 
         try:
