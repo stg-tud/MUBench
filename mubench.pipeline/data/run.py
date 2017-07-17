@@ -49,11 +49,8 @@ class Run:
             "number_of_findings": self.get_number_of_findings(),
             "runtime": self.get_runtime()
         }
-        if len(self.executions) == 1:
+        if self.executions:
             run_info.update(self.executions[0].get_run_info())
-        else:
-            for index, execution in enumerate(self.executions):
-                run_info["run {}".format(index)] = execution.get_run_info()
         return run_info
 
     def reset(self):
