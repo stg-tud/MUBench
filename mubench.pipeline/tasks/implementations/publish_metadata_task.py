@@ -9,6 +9,7 @@ from requests import RequestException
 from data.misuse import Misuse
 from data.project import Project
 from tasks.project_misuse_task import ProjectMisuseTask
+from utils.io import safe_read
 from utils.web_util import post
 
 
@@ -62,8 +63,7 @@ class PublishMetadataTask(ProjectMisuseTask):
     def __get_patterns(self, misuse: Misuse):
         patterns = []
         for pattern in misuse.patterns:
-            with open(pattern.path, 'r') as pattern_file:
-                pattern_code_lines = pattern_file.read().splitlines()
+            pattern_code_lines = safe_read(pattern.path).splitlines()
             pattern_code_lines = [line for line in pattern_code_lines if not self.__is_preamble_line(line)]
             pattern_code = "\n".join(pattern_code_lines)
             patterns.append({"id": pattern.name, "snippet": {"code": pattern_code, "first_line": 1}})
