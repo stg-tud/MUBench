@@ -21,7 +21,6 @@ class RoutesHelper
     private $site_base_url;
     private $upload_path;
     private $default_ex2_review_size;
-    private $csv_helper;
 
     public function __construct(DBConnection $db, PhpRenderer $renderer, Logger $logger, $upload_path, $site_base_url, $default_ex2_review_size)
     {
@@ -31,7 +30,6 @@ class RoutesHelper
         $this->site_base_url = $site_base_url;
         $this->upload_path = $upload_path;
         $this->default_ex2_review_size = $default_ex2_review_size;
-        $this->csv_helper = new CSVHelper();
     }
 
     public function index(Request $request, Response $response, array $args) {
