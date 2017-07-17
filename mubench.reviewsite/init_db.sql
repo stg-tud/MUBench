@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS `meta_snippets` (
   `project` varchar(100) NOT NULL,
   `version` varchar(100) NOT NULL,
   `misuse` varchar(100) NOT NULL,
-  `snippet` text NOT NULL,
+  `snippet` mediumtext NOT NULL,
   `line` int(11) NOT NULL,
   KEY `lookup` (`project`,`version`,`misuse`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=latin1;
@@ -70,7 +70,7 @@ CREATE TABLE IF NOT EXISTS `finding_snippets` (
   `project` varchar(100) NOT NULL,
   `version` varchar(100) NOT NULL,
   `finding` varchar(100) NOT NULL,
-  `snippet` text NOT NULL,
+  `snippet` mediumtext NOT NULL,
   `line` int(11) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `lookup` (`detector`,`project`,`version`,`finding`)
