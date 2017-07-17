@@ -8,6 +8,7 @@ from utils.shell import CommandFailedError
 
 
 def get_snippets(source_base_path, file, method):
+    target_file = join(source_base_path, file)
     snippets = []
     try:
         if file and method:
@@ -17,7 +18,6 @@ def get_snippets(source_base_path, file, method):
             #   ===
             #   <first-line number>:<declaring type>:<code>
             #
-            target_file = join(source_base_path, file)
             output = exec_util("MethodExtractor", "\"{}\" \"{}\"".format(target_file, method))
 
             # if there's other preceding output, we need to strip it
@@ -36,8 +36,8 @@ def get_snippets(source_base_path, file, method):
         elif file and os.path.exists(file):
             snippets.append(Snippet(io.safe_read(file), 1))
 
-    except CommandFailedError as e:
-        snippets.append(Snippet(str(e), 1))
+    except Exception as e:
+        raise SnippetUnavailableException(target_file, e)
     return snippets
 
 
@@ -54,3 +54,12 @@ class Snippet:
 
     def __str__(self):
         return "{}:{}".format(self.first_line_number, self.code)
+
+
+class SnippetUnavailableException(UserWarning):
+    def __init__(self, file: str, exception: Exception):
+        self.exception = exception
+        self.file = file
+
+    def __str__(self):
+        return "Could not extract snippet from '{}': {}".format(self.file, self.exception)

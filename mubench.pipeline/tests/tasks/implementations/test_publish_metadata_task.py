@@ -1,4 +1,3 @@
-from io import StringIO
 from unittest.mock import patch
 
 from nose.tools import assert_equals
@@ -9,13 +8,14 @@ from tasks.implementations.publish_metadata_task import PublishMetadataTask
 from tests.test_utils.data_util import create_misuse, create_project, create_version
 
 
+@patch("data.misuse.get_snippets")
 @patch("tasks.implementations.publish_metadata_task.post")
 class TestPublishMetadataTask:
     # noinspection PyAttributeOutsideInit
     def setup(self):
         self.project = create_project("-p-")
 
-    def test_publish_url(self, post_mock):
+    def test_publish_url(self, post_mock, snippets_mock):
         misuse = create_misuse("-m-", project=self.project)
         create_version("-v-", project=self.project, misuses=[misuse])
 
@@ -26,7 +26,7 @@ class TestPublishMetadataTask:
         assert_equals(post_mock.call_args[0][0], "http://test.url/api/upload/metadata")
 
     @patch("tasks.implementations.publish_findings_task.getpass.getpass")
-    def test_post_auth_prompt(self, pass_mock, post_mock):
+    def test_post_auth_prompt(self, pass_mock, post_mock, snippets_mock):
         misuse = create_misuse("-m-", project=self.project)
         create_version("-v-", project=self.project, misuses=[misuse])
         pass_mock.return_value = "-password-"
@@ -40,7 +40,7 @@ class TestPublishMetadataTask:
         assert_equals(post_mock.call_args[1]["password"], "-password-")
 
     @patch("tasks.implementations.publish_findings_task.getpass.getpass")
-    def test_post_auth_provided(self, pass_mock, post_mock):
+    def test_post_auth_provided(self, pass_mock, post_mock, snippets_mock):
         misuse = create_misuse("-m-", project=self.project)
         create_version("-v-", project=self.project, misuses=[misuse])
         pass_mock.side_effect = UserWarning("should skip prompt")
@@ -53,8 +53,7 @@ class TestPublishMetadataTask:
         assert_equals(post_mock.call_args[1]["username"], "-username-")
         assert_equals(post_mock.call_args[1]["password"], "-password-")
 
-    @patch("data.misuse.get_snippets")
-    def test_publishes_metadata(self, snippets_mock, post_mock):
+    def test_publishes_metadata(self, post_mock, snippets_mock):
         misuse = create_misuse("-m-", meta={
             "description": "-description-",
             "fix": {
@@ -98,12 +97,12 @@ class TestPublishMetadataTask:
             "patterns": []
         }])
 
-    @patch("tasks.implementations.publish_metadata_task.open")
-    def test_publishes_pattern_code(self, open_mock, post_mock):
+    @patch("tasks.implementations.publish_metadata_task.safe_read")
+    def test_publishes_pattern_code(self, read_mock, post_mock, snippets_mock):
         pattern_code = "public class P1 {\n" \
             "  void m() { return; }\n" \
             "}"
-        open_mock.return_value = StringIO(pattern_code)
+        read_mock.return_value = pattern_code
         misuse = create_misuse("-m-", project=self.project, patterns=[Pattern("/base/path", "P1.java")])
         create_version("-v-", project=self.project, misuses=[misuse])
 
@@ -115,15 +114,15 @@ class TestPublishMetadataTask:
             {"id": "P1", "snippet": {"code": pattern_code, "first_line": 1}}
         ])
 
-    @patch("tasks.implementations.publish_metadata_task.open")
-    def test_publishes_pattern_code_without_preamble(self, open_mock, post_mock):
+    @patch("tasks.implementations.publish_metadata_task.safe_read")
+    def test_publishes_pattern_code_without_preamble(self, read_mock, post_mock, snippets_mock):
         pattern_preamble = "package foo;\n" \
                        "import Bar;\n" \
                        "\n"
         pattern_code = "public class P1 {\n" \
                        "  void m() { return; }\n" \
                        "}"
-        open_mock.return_value = StringIO(pattern_preamble + pattern_code)
+        read_mock.return_value = pattern_preamble + pattern_code
         misuse = create_misuse("-m-", project=self.project, patterns=[Pattern("/", "P1.java")])
         create_version("-v-", project=self.project, misuses=[misuse])
 
@@ -133,10 +132,10 @@ class TestPublishMetadataTask:
 
         assert_equals(post_mock.call_args[0][1][0]["patterns"][0]["snippet"]["code"], pattern_code)
 
-    @patch("tasks.implementations.publish_metadata_task.open")
-    def test_publishes_pattern_code_without_trailing_newlines(self, open_mock, post_mock):
+    @patch("tasks.implementations.publish_metadata_task.safe_read")
+    def test_publishes_pattern_code_without_trailing_newlines(self, read_mock, post_mock, snippets_mock):
         pattern_code = "public class P1 {}"
-        open_mock.return_value = StringIO(pattern_code + "\n\n\n")
+        read_mock.return_value = pattern_code + "\n\n\n"
         misuse = create_misuse("-m-", project=self.project, patterns=[Pattern("/", "P1.java")])
         create_version("-v-", project=self.project, misuses=[misuse])
 

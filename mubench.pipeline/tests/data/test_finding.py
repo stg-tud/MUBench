@@ -1,10 +1,10 @@
 from typing import Dict
 from unittest.mock import patch
 
-from nose.tools import assert_equals
+from nose.tools import assert_equals, assert_raises
 
 from data.finding import Finding
-from data.snippets import Snippet
+from data.snippets import Snippet, SnippetUnavailableException
 from utils.shell import CommandFailedError
 from tests.test_utils.data_util import create_misuse
 
@@ -115,4 +115,8 @@ class TestTargetCode:
 
         finding = Finding({"file": "-file-", "method": "-method-"})
 
-        assert_equals([Snippet("Failed to execute 'cmd': output", 1)], finding.get_snippets("/base"))
+        with assert_raises(SnippetUnavailableException) as context:
+            finding.get_snippets("/base")
+
+        assert_equals('/base/-file-', context.exception.file)
+        assert_equals(utils_mock.side_effect, context.exception.exception)
