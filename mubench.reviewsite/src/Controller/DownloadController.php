@@ -35,28 +35,28 @@ class DownloadController
         $detectors = $this->db->getDetectors($experiment);
         foreach ($detectors as $detector) {
             $runs = $this->db->getRuns($detector, $experiment, $ex2_review_size);
-            if (strcmp($experiment, "ex2") === 0) {
-                foreach ($runs as &$run) {
-                    $misuses = array();
-                    $number_of_misuses = 0;
-                    foreach ($run["misuses"] as $misuse) { /** @var $misuse Misuse */
-                        if ($misuse->getReviewState() != ReviewState::UNRESOLVED) {
-                            $misuses[] = $misuse;
-                            $number_of_misuses++;
-                        }
-
-                        if ($number_of_misuses == $ex2_review_size) {
-                            break;
-                        }
+            foreach ($runs as &$run) {
+                $misuses = array();
+                $number_of_misuses = 0;
+                foreach ($run["misuses"] as $misuse) {
+                    /** @var $misuse Misuse */
+                    if ($misuse->getReviewState() != ReviewState::UNRESOLVED) {
+                        $misuses[] = $misuse;
+                        $number_of_misuses++;
                     }
-                    $run["misuses"] = $misuses;
+
+                    if ($number_of_misuses == $ex2_review_size) {
+                        break;
+                    }
                 }
+                $run["misuses"] = $misuses;
             }
             $stats[$detector->id] = new DetectorResult($detector, $runs);
         }
         $stats["total"] = new ExperimentResult($stats);
 
-        return $this->download($response, $this->csv_helper->createCSVFromStats($experiment, $stats), "stats_" . $experiment . ".csv");
+        return $this->download($response, $this->csv_helper->createCSVFromStats($experiment, $stats),
+            "stats_" . $experiment . ".csv");
     }
 
     public function download_run_stats(Request $request, Response $response, array $args)
@@ -69,7 +69,7 @@ class DownloadController
 
     private function download(Response $response, $file_data, $filename)
     {
-        $stream = fopen('data://text/plain,' . $file_data,'r');
+        $stream = fopen('data://text/plain,' . $file_data, 'r');
         $stream = new \Slim\Http\Stream($stream);
         return $response->withHeader('Content-Type', 'application/force-download')
             ->withHeader('Content-Type', 'application/octet-stream')
