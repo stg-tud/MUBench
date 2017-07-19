@@ -1,0 +1,314 @@
+#!/usr/bin/env python3
+import csv, json, os, requests, sys, yaml
+from io import TextIOWrapper
+from os.path import join, dirname, abspath, exists
+from os import mkdir, makedirs
+from urllib.request import urlopen
+from urllib.error import HTTPError
+from utils.io import write_yaml, read_yaml
+
+MUBENCH_ROOT_PATH = join(dirname(abspath(__file__)), os.pardir)
+DATA_PATH = join(MUBENCH_ROOT_PATH, 'data')
+REPORTS_SOURCE_URL = "http://fsl.cs.illinois.edu/spec-eval/bugreports.csv"
+SUBJECTS_SOURCE_URL = "http://fsl.cs.illinois.edu/spec-eval/subjects.csv"
+MANUAL_INSPECTIONS_URL = "http://fsl.cs.illinois.edu/spec-eval/inspections.csv"
+LOCAL_PULL_REQUESTS = join(MUBENCH_ROOT_PATH, 'owolabi-pull-requests')
+DATASETS_FILE = join(DATA_PATH, 'datasets.yml')
+
+def read_csv(url):
+    stream = urlopen(url)
+    reader = csv.reader(TextIOWrapper(stream, encoding='utf-8'), delimiter=',')
+    return list(reader)
+
+def get_accepted_reports(reports):
+    accepted_reports = []
+
+    for report in reports:
+        status = report[4]
+
+        if status in ['Accepted']:
+            accepted_reports.append(report)
+        elif status in ['Rejected', 'Pending ', 'Already fixed']:
+            continue
+        else:
+            raise ValueError("Unknown status: {}".format(status))
+
+    return accepted_reports
+
+
+def get_evaluated_subject(report_url, subjects):
+    for subject in subjects:
+        _, _, subject_url, commit_sha = subject
+        
+        # example report_path:  https://github.com/Thomas-S-B/visualee/pull/4 
+        # example subject_path: https://github.com/Thomas-S-B/visualee.git
+        report_path = report_url.split("/pull/", 1)[0]
+        subject_path = subject_url[:-4]
+
+        if report_path == subject_path:
+            return subject
+
+    return None
+
+
+def get_manual_inspection(violation_id, manual_inspections):
+    # skip 30 because of collision between M_30 and A_30
+    if violation_id == "30":
+        return None
+
+    for manual_inspection in manual_inspections:
+        # example: manual_inspection[1] = A_192
+
+        manual_inspection_violation_id = manual_inspection[1].split('_', 1)[1]
+        if violation_id == manual_inspection_violation_id:
+            return manual_inspection
+
+    return None
+
+
+def get_pull_request(url, user, token):
+    url = __to_api_pull_request_url(pull_request_url)
+
+    local_pull_request = __get_local_pull_request_path(url)
+    if exists(local_pull_request):
+        with open(local_pull_request) as file_:
+            pull_request = json.load(file_)
+        return pull_request
+    else:
+        try:
+            if user and token:
+                response = requests.get(url,
+                                        auth=requests.auth.HTTPBasicAuth(
+                                            user, 
+                                            token))
+            else: 
+                response = requests.get(url)
+        except HTTPError:
+            return None
+
+        pull_request = json.loads(response.text)
+
+        save_locally(pull_request)
+        return pull_request
+
+
+def __to_api_pull_request_url(url):
+    # urls in the dataset look like this:
+    # https://github.com/cbeust/testng/pull/830
+    # to use the github API, we need this:
+    # https://api.github.com/repos/cbeust/testng/pulls/830
+
+    path = url[19:]
+    user, project, _, pull_request_id = path.split('/')
+
+    api_url = "https://api.github.com/repos/{}/{}/pulls/{}".format(user, project, pull_request_id)
+    return api_url
+
+
+def __get_local_pull_request_path(url):
+    url_path = url.split("https://api.github.com/repos/", 1)[1]
+    return join(LOCAL_PULL_REQUESTS, url_path)
+
+
+def save_locally(pull_request):
+    file_path = __get_local_pull_request_path(pull_request["url"])
+    makedirs(dirname(file_path), exist_ok=True)
+
+    with open(file_path, 'w+') as file_:
+        json.dump(pull_request, file_)
+
+
+def get_project_name(source_project_name):
+    return source_project_name.replace('.', '-').lower()
+
+
+def create_project(data_path, project_id, repository):
+    project_dir = join(data_path, project_id)
+    makedirs(project_dir, exist_ok=True)
+    
+    content = {
+            "name": repository["name"], 
+            "repository": {"type": "git", "url": repository["clone_url"]},
+            "url": repository["homepage"] or repository["html_url"]
+            }
+
+    project_yml_path = join(project_dir, "project.yml")
+    write_yaml(content, project_yml_path)
+
+    return project_dir
+
+
+def create_misuse(project_path, misuse_id, pull_request, specification, location_file):
+    misuse_dir = join(project_path, "misuses", misuse_id)
+    makedirs(misuse_dir, exist_ok=True)
+
+    head_url = pull_request["head"]["repo"]["html_url"]
+    fix_revision = pull_request["head"]["sha"]
+    content = {
+            "api": __get_api(specification),
+            "characteristics": ["TODO"],
+            "crash": "TODO",
+            "description": pull_request["body"],
+            "location": {"file": location_file or "TODO", "method": "TODO"},
+            "fix": {
+                "commit": "{}/commit/{}".format(head_url, fix_revision), 
+                "revision": fix_revision
+                },
+            "internal": False,
+            "report": pull_request["html_url"],
+            "source": {"name": "Owolabi's Dataset ASE'16", "url": "fsl.cs.illinois.edu/spec-eval/"}
+            }
+
+    misuse_yml_path = join(misuse_dir, "misuse.yml")
+    write_yaml(content, misuse_yml_path)
+    
+
+def __get_api(specification):
+    mapping = {
+            "Collections_SynchronizedCollection": ["java.util.List"],
+            "Collections_SynchronizedMap": ["java.util.Map"],
+            "Iterator_HasNext": ["java.util.Iterator"],
+            "StringTokenizer_HasMoreElements": ["java.util.Enumeration"],
+            "Token_HasMoreElements": ["java.util.Enumeration"],
+            "URLDecoder_DecodeUTF8": ["java.net.URLDecoder"],
+            "ByteArrayOutputStream_FlushBeforeRetrieve": ["java.io.ByteArrayOutputStream"],
+            "Math_ContendedRandom": ["java.lang.Math"],
+            "InetSocketAddress_Port": ["java.net.InetSocketAddress"],
+            "Long_BadParsingArgs": ["java.lang.Long"],
+            "Byte_BadParsingArgs": ["java.lang.Byte"],
+            "Short_BadParsingArgs": ["java.lang.Short"]
+            }
+
+    if specification in mapping:
+        return mapping[specification]
+    else:
+        return ["TODO.{}".format(specification)]
+
+
+def create_version(project_path, version_sha, misuses):
+    version_subfolder = version_sha[:7]
+    version_dir = join(project_path, "versions", version_subfolder)
+    makedirs(version_dir, exist_ok=True)
+
+    content = {
+            "build": {
+                "classes": "target/classes/",
+                "commands": ["mvn compile"],
+                "src": "src/main/java/"
+                },
+            "misuses": sorted(misuses),
+            "revision": version_sha
+            }
+
+    version_yml_path = join(version_dir, "version.yml")
+    write_yaml(content, version_yml_path)
+    
+
+def add_dataset(dataset, datasets_yml_path):
+    datasets = read_yaml(datasets_yml_path)
+    datasets['owolabi-ase16'] = dataset
+    write_yaml(datasets, datasets_yml_path)
+
+
+if len(sys.argv) == 3:
+    _, user, token = sys.argv
+else:
+    user, token = (None, None)
+    print("No user/token given; continuing without authentication.")
+
+reports = read_csv(REPORTS_SOURCE_URL)
+subjects = read_csv(SUBJECTS_SOURCE_URL)
+manual_inspections = read_csv(MANUAL_INSPECTIONS_URL)
+
+versions_per_project = {}
+misuses_per_version = {}
+
+visited_pull_requests = set()
+
+accepted_reports = get_accepted_reports(reports)
+for report in accepted_reports:
+    row_number, specification, misuse, pull_request_url, status = report
+    
+    if pull_request_url in visited_pull_requests:
+        print("Skipping {}: duplicate pull request URL".format(misuse))
+        continue
+    visited_pull_requests.add(pull_request_url)
+
+    if not pull_request_url.startswith("https://github.com/"):
+        print("Unknown repository type of {}".format(pull_request_url))
+        continue
+
+    pull_request = get_pull_request(pull_request_url, user, token)
+    if not pull_request:
+        print("No pull request information available for {}".format(misuse))
+        continue
+
+    subject = get_evaluated_subject(pull_request_url, subjects)
+    manual_inspection = get_manual_inspection(misuse, manual_inspections)
+    if not (subject or manual_inspection):
+        print("Could not find matching subject or manual inspection for {}".format(misuse))
+        continue
+
+    if subject:
+        version = subject[3]
+        project = get_project_name(subject[1])
+    else:
+        if manual_inspection:
+            version = "{}^1".format(pull_request["head"]["sha"])
+            project = get_project_name(manual_inspection[2])
+
+    file_with_misuse = None
+    if manual_inspection:
+        # example: ./src/main/java/com/google/common/collect/SingletonImmutableSet.java:99
+        file_with_misuse = manual_inspection[3]
+        
+        if file_with_misuse.startswith("./src/main/java/"):
+            file_with_misuse = file_with_misuse[16:]
+        else:
+            print("Unknown source files directory for {}; fix matching version.yml!".format(misuse))
+
+        file_with_misuse = file_with_misuse.rsplit(':', 1)[0]
+
+    if version not in misuses_per_version:
+        misuses_per_version[version] = set()
+    if project not in versions_per_project:
+        versions_per_project[project] = set()
+
+    versions_per_project[project].add(version)
+
+    repository = pull_request["base"]["repo"]
+    project_path = create_project(DATA_PATH, project, repository)
+
+    create_misuse(project_path, misuse, pull_request, specification, file_with_misuse)
+    misuses_per_version[version].add(misuse) 
+
+dataset = set()
+
+for project, versions in versions_per_project.items():
+    for version in versions:
+        project_path = join(DATA_PATH, project)
+        misuses = list(misuses_per_version[version])
+
+        create_version(project_path, version, misuses) 
+
+        dataset.add("{}.{}".format(project, version[:7]))
+
+add_dataset(sorted(list(dataset)), DATASETS_FILE)
+
+number_of_projects = 0
+number_of_versions = 0
+number_of_misuses = 0
+for project, versions in versions_per_project.items():
+    number_of_projects += 1
+    for version in versions:
+        number_of_versions += 1
+
+for version, misuses in misuses_per_version.items():
+    for misuse in misuses:
+        number_of_misuses += 1
+
+print("{}/{} Reports were accepted".format(len(accepted_reports), len(reports)))
+print("{} Subjects".format(len(subjects)))
+print("{} Manual Inspections".format(len(manual_inspections)))
+print("Dataset contains {} misuses, {} versions, and {} projects.".format(
+    number_of_misuses, number_of_versions, number_of_projects))
