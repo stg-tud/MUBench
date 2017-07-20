@@ -37,7 +37,7 @@ class DBConnection
     public function create_table($table_name, array $columns)
     {
         $table_name = $this->getQualifiedName($table_name);
-        $this->query_builder->pdo()->exec("CREATE TABLE `$table_name` (" . implode(",", $columns) . ")");
+        $this->query_builder->pdo()->exec("CREATE TABLE IF NOT EXISTS `$table_name` (" . implode(",", $columns) . ")");
     }
 
     public function add_column($table_name, $column)
