@@ -83,7 +83,7 @@ $columns_to_ignore = array(
         $version = $run["version"];
         $new_version = true;
         $additional_stats = array_filter(array_keys($run), function ($key) use ($columns_to_ignore, $run) {
-            return !in_array($key, $columns_to_ignore) && array_key_exists($key, $run);
+            return !in_array($key, $columns_to_ignore) && array_key_exists($key, $run) && !empty($run[$key]);
         });
         sort($additional_stats);
         ?>

@@ -38,12 +38,10 @@
                 <td><?= htmlspecialchars(substr($run['runtime'], 0, 4)) . "s"; ?></td>
             </tr>
             <?php foreach ($additional_stats as $stat) : ?>
-                <?php if(empty($additional_stats[$stat])): ?>
-                    <tr>
-                        <td><b><?= htmlspecialchars($stat) ?>:</b></td>
-                        <td><?= htmlspecialchars($run[$stat]); ?></td>
-                    </tr>
-                <?php endif; ?>
+                <tr>
+                    <td><b><?= htmlspecialchars($stat) ?>:</b></td>
+                    <td><?= htmlspecialchars($run[$stat]); ?></td>
+                </tr>
             <?php endforeach; ?>
         </table>
     </div>
