@@ -20,4 +20,3 @@ report: https://issues.apache.org/jira/browse/LANG-412
 source:
   name: Defects4J
   url: https://github.com/rjust/defects4j
-type: org.apache.commons.lang.text.StrBuilder
