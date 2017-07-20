@@ -100,7 +100,6 @@ EOD;
         $sqlite = str_replace("AUTO_INCREMENT", "", $sqlite);
         $sqlite = str_replace("int(11)", "INTEGER", $sqlite);
         $sqlite = str_replace(" ENGINE=MyISAM  DEFAULT CHARSET=latin1;", ";", $sqlite);
-        echo $sqlite;
         return $sqlite;
     }
 
