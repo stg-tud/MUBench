@@ -7,112 +7,104 @@ class CSVHelper
 
     public function exportStatistics($experiment, $stats)
     {
-        $rows[] = ["sep=,"];
-        if (strcmp($experiment, "ex1") === 0) {
-            $rows[] =
-                ["detector", "project", "synthetics", "misuses", "potential_hits", "open_reviews", "need_clarification",
-                    "yes_agreements", "no_agreements", "total_agreements", "yes_no_agreements", "no_yes_agreements",
-                    "total_disagreements", "kappa_p0", "kappa_pe", "kappa_score", "hits", "recall"];
-        } elseif (strcmp($experiment, "ex2") === 0) {
-            $rows[] = ["detector", "project", "potential_hits", "open_reviews", "need_clarification", "yes_agreements",
-                "no_agreements", "total_agreements", "yes_no_agreements", "no_yes_agreements", "total_disagreements",
-                "kappa_p0", "kappa_pe", "kappa_score", "hits", "precision"];
-        } else {
-            $rows[] = ["detector", "project", "misuses", "potential_hits", "open_reviews", "need_clarification",
-                "yes_agreements", "no_agreements", "total_agreements", "yes_no_agreements", "no_yes_agreements",
-                "total_disagreements", "kappa_p0", "kappa_pe", "kappa_score", "hits", "recall"];
-        }
         foreach ($stats as $key => $stat) {
-            $columns = [];
-            $columns[] = $stat->getDisplayName();
-            $columns[] = $stat->number_of_projects;
+            $row = [];
+            $row["detector"] = $stat->getDisplayName();
+            $row["project"] = $stat->number_of_projects;
+
             if (strcmp($experiment, "ex1") === 0) {
-                $columns[] = $stat->number_of_synthetics;
+                $row["synthetics"] = $stat->number_of_synthetics;
             }
             if (strcmp($experiment, "ex1") === 0 || strcmp($experiment, "ex3") === 0) {
-                $columns[] = $stat->number_of_misuses;
-            }
-            $kappa_p0 = $stat->getKappaP0();
-            $kappe_pe = $stat->getKappaPe();
-            $kappa_score = $stat->getKappaScore();
-            if (strcmp($experiment, "ex2") === 0) {
-                $recall = $stat->getPrecision();
-            } else {
-                $recall = $stat->getRecall();
+                $row["misuses"] = $stat->number_of_misuses;
             }
 
-            $columns[] = $stat->misuses_to_review;
-            $columns[] = $stat->open_reviews;
-            $columns[] = $stat->number_of_needs_clarification;
-            $columns[] = $stat->yes_agreements;
-            $columns[] = $stat->no_agreements;
-            $columns[] = $stat->getNumberOfAgreements();
-            $columns[] = $stat->yes_no_disagreements;
-            $columns[] = $stat->no_yes_disagreements;
-            $columns[] = $stat->getNumberOfDisagreements();
-            $columns[] = $kappa_p0;
-            $columns[] = $kappe_pe;
-            $columns[] = $kappa_score;
-            $columns[] = $stat->number_of_hits;
-            $columns[] = $recall;
-            $rows[] = $columns;
+            $row["potential_hits"] = $stat->misuses_to_review;
+            $row["open_reviews"] = $stat->open_reviews;
+            $row["need_clarification"] = $stat->number_of_needs_clarification;
+            $row["yes_agreements"] = $stat->yes_agreements;
+            $row["no_agreements"] = $stat->no_agreements;
+            $row["total_agreements"] = $stat->getNumberOfAgreements();
+            $row["yes_no_agreements"] = $stat->yes_no_disagreements;
+            $row["no_yes_agreements"] = $stat->no_yes_disagreements;
+            $row["total_disagreements"] = $stat->getNumberOfDisagreements();
+            $row["kappa_p0"] = $stat->getKappaP0();
+            $row["kappa_pe"] = $stat->getKappaPe();
+            $row["kappa_score"] = $stat->getKappaScore();
+            $row["hits"] = $stat->number_of_hits;
+
+            if (strcmp($experiment, "ex2") === 0) {
+                $row["precision"] = $stat->getPrecision();
+            } else {
+                $row["recall"] = $stat->getRecall();
+            }
+
+            $rows[] = $row;
         }
         return $this->createCSV($rows);
     }
 
-    private function createCSV($lines)
-    {
-        $imploded_lines = [];
-        foreach ($lines as $line) {
-            $imploded_lines[] = implode(',', $line);
-        }
-        return implode("\n", $imploded_lines);
-    }
-
     public function exportRunStatistics($runs)
     {
-        $rows[] = ["sep=,"];
-        $rows[] = ["project", "version", "result", "number_of_findings", "runtime", "misuse", "decision",
-            "resolution_decision", "resolution_comment"];
-        $max_review_count = 2;
         foreach ($runs as $run) {
-            $run_details =
-                [$run['project'], $run['version'], $run['result'], $run['number_of_findings'], $run['runtime']];
+            $run_details = [];
+            $run_details["project"] = $run["project"];
+            $run_details["version"] = $run["version"];
+            $run_details["result"] = $run["result"];
+            $run_details["number_of_findings"] = $run["number_of_findings"];
+            $run_details["runtime"] = $run["runtime"];
+
             foreach ($run['misuses'] as $misuse) {
-                $columns = $run_details;
+                $row = $run_details;
 
-                $reviews = $misuse->getReviews();
-                $review_count = count($reviews);
-
-                $columns[] = $misuse->id;
-                $columns[] = $misuse->getReviewState();
+                $row["misuse"] = $misuse->id;
+                $row["decision"] = $misuse->getReviewState();
                 if ($misuse->hasResolutionReview()) {
                     $resolution = $misuse->getResolutionReview();
-                    $columns[] = $resolution->getDecision();
-                    $columns[] = "\"" . $resolution->getComment() . "\"";
+                    $row["resolution_decision"] = $resolution->getDecision();
+                    $row["resolution_comment"] = $this->escapeText($resolution->getComment());
                 } else {
-                    $columns[] = "";
-                    $columns[] = "";
+                    $row["resolution_decision"] = "";
+                    $row["resolution_comment"] = "";
                 }
+
+                $reviews = $misuse->getReviews();
+                $review_index = 0;
                 foreach ($reviews as $review) {
-                    $columns[] = $review->getReviewerName();
-                    $columns[] = $review->getDecision();
-                    $columns[] = "\"" . $review->getComment() . "\"";
+                    $review_index++;
+                    $row["review{$review_index}_name"] = $review->getReviewerName();
+                    $row["review{$review_index}_decision"] = $review->getDecision();
+                    $row["review{$review_index}_comment"] = $this->escapeText($review->getComment());
                 }
-                if ($review_count > $max_review_count) {
-                    $max_review_count = $review_count;
-                }
-                $rows[] = $columns;
+
+                $rows[] = $row;
             }
             if (empty($run['misuses'])) {
                 $rows[] = $run_details;
             }
         }
-        for ($i = 1; $i < $max_review_count; $i++) {
-            $rows[1][] = "review{$i}_name";
-            $rows[1][] = "review{$i}_decision";
-            $rows[1][] = "review{$i}_comment";
-        }
         return $this->createCSV($rows);
+    }
+
+
+    private function createCSV($lines)
+    {
+        $rows = [];
+        $header = [];
+        foreach ($lines as $line) {
+            $rows[] = implode(',', $line);
+
+            $columns = array_keys($line);
+            if(count($columns) > count($header)){
+                $header = $columns;
+            }
+        }
+        array_unshift($rows, implode(',', $header));
+        array_unshift($rows, "sep=,");
+        return implode("\n", $rows);
+    }
+
+    private function escapeText($text){
+        return "\"" . $text . "\"";
     }
 }

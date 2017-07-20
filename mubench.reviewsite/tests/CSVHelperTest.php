@@ -197,7 +197,7 @@ Total,1,1,2,2,0,1,0,1,0,0,0,0.5,0,0.5,1,0.5';
             "misuses" => [$this->positive_reviews_misuse, $this->resolved_review_misuse, $this->no_reviews_misuse],
         ]];
         $expected_csv = 'sep=,
-project,version,result,number_of_findings,runtime,misuse,decision,resolution_decision,resolution_comment,review1_name,review1_decision,review1_comment
+project,version,result,number_of_findings,runtime,misuse,decision,resolution_decision,resolution_comment,review1_name,review1_decision,review1_comment,review2_name,review2_decision,review2_comment
 -p-,-v-,success,23,42.1,0,4,,,-reviewer1-,2,"-comment-",-reviewer2-,2,"-comment-"
 -p-,-v-,success,23,42.1,0,6,2,"-comment-",-reviewer1-,2,"-comment-",-reviewer2-,0,"-comment-"
 -p-,-v-,success,23,42.1,0,1,,';
