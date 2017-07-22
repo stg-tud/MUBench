@@ -8,7 +8,6 @@ use MuBench\ReviewSite\Model\Experiment;
 use MuBench\ReviewSite\Model\ExperimentResult;
 use MuBench\ReviewSite\Model\Misuse;
 use MuBench\ReviewSite\Model\ReviewState;
-use MuBench\ReviewSite\CSVHelper;
 use Slim\Http\Request;
 use Slim\Http\Response;
 use Slim\Views\PhpRenderer;
@@ -85,6 +84,7 @@ class RoutesHelper
             }
             $results[$experiment]["total"] = new ExperimentResult($results[$experiment]);
         }
+
         return $this->render($this, $request, $response, $args, 'stats.phtml',
             ['results' => $results, 'ex2_review_size' => $ex2_review_size]);
     }

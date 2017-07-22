@@ -7,7 +7,7 @@ class CSVHelper
 
     public function exportStatistics($experiment, $stats)
     {
-        foreach ($stats as $key => $stat) {
+        foreach ($stats as $stat) {
             $row = [];
             $row["detector"] = $stat->getDisplayName();
             $row["project"] = $stat->number_of_projects;
@@ -87,24 +87,25 @@ class CSVHelper
     }
 
 
-    private function createCSV($lines)
+    private function createCSV($rows)
     {
-        $rows = [];
+        $lines = [];
         $header = [];
-        foreach ($lines as $line) {
-            $rows[] = implode(',', $line);
+        foreach ($rows as $line) {
+            $lines[] = implode(',', $line);
 
             $columns = array_keys($line);
             if(count($columns) > count($header)){
                 $header = $columns;
             }
         }
-        array_unshift($rows, implode(',', $header));
-        array_unshift($rows, "sep=,");
-        return implode("\n", $rows);
+        array_unshift($lines, implode(',', $header));
+        array_unshift($lines, "sep=,");
+        return implode("\n", $lines);
     }
 
     private function escapeText($text){
         return "\"" . $text . "\"";
     }
+
 }

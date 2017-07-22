@@ -37,14 +37,14 @@ class CSVHelperTest extends TestCase
         ]);
         $this->no_reviews_misuse = new Misuse(
             ["misuse" => "0"],
-            [0 => []
-            ],
+            [0 => []],
             []
         );
         $this->positive_reviews_misuse = new Misuse(
             ["misuse" => "0"],
             [0 => []],
-            [$positive_review,
+            [
+                $positive_review,
                 new Review([
                     'name' => '-reviewer2-',
                     'comment' => '-comment-',
@@ -58,7 +58,8 @@ class CSVHelperTest extends TestCase
         $this->resolved_review_misuse = new Misuse(
             ["misuse" => "0"],
             [0 => []],
-            [$positive_review,
+            [
+                $positive_review,
                 new Review([
                     'name' => '-reviewer2-',
                     'comment' => '-comment-',
@@ -112,6 +113,7 @@ detector,project,synthetics,misuses,potential_hits,open_reviews,need_clarificati
 -d1-,1,0,1,1,2,0,0,0,0,0,0,0,0,0,0,0,0
 -d2-,1,0,1,1,0,0,1,0,1,0,0,0,1,0,1,1,1
 Total,1,0,1,2,2,0,1,0,1,0,0,0,0.5,0,0.5,1,0.5';
+
         self::assertEquals($expected_csv, $this->csv_helper->exportStatistics("ex1", $stats));
     }
 
@@ -147,6 +149,7 @@ detector,project,potential_hits,open_reviews,need_clarification,yes_agreements,n
 -d1-,1,1,2,0,0,0,0,0,0,0,0,0,0,0,0
 -d2-,1,1,0,0,1,0,1,0,0,0,1,0,1,1,1
 Total,1,2,2,0,1,0,1,0,0,0,0.5,0,0.5,1,0.5';
+
         self::assertEquals($expected_csv, $this->csv_helper->exportStatistics("ex2", $stats));
     }
 
@@ -182,6 +185,7 @@ detector,project,misuses,potential_hits,open_reviews,need_clarification,yes_agre
 -d1-,1,1,1,2,0,0,0,0,0,0,0,0,0,0,0,0
 -d2-,1,1,1,0,0,1,0,1,0,0,0,1,0,1,1,1
 Total,1,1,2,2,0,1,0,1,0,0,0,0.5,0,0.5,1,0.5';
+
         self::assertEquals($expected_csv, $this->csv_helper->exportStatistics("ex3", $stats));
     }
 
@@ -201,6 +205,7 @@ project,version,result,number_of_findings,runtime,misuse,decision,resolution_dec
 -p-,-v-,success,23,42.1,0,4,,,-reviewer1-,2,"-comment-",-reviewer2-,2,"-comment-"
 -p-,-v-,success,23,42.1,0,6,2,"-comment-",-reviewer1-,2,"-comment-",-reviewer2-,0,"-comment-"
 -p-,-v-,success,23,42.1,0,1,,';
+
         self::assertEquals($expected_csv, $this->csv_helper->exportRunStatistics($runs));
     }
 

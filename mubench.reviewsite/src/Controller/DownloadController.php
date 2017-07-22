@@ -35,22 +35,6 @@ class DownloadController
         $detectors = $this->db->getDetectors($experiment);
         foreach ($detectors as $detector) {
             $runs = $this->db->getRuns($detector, $experiment, $ex2_review_size);
-            foreach ($runs as &$run) {
-                $misuses = array();
-                $number_of_misuses = 0;
-                foreach ($run["misuses"] as $misuse) {
-                    /** @var $misuse Misuse */
-                    if ($misuse->getReviewState() != ReviewState::UNRESOLVED) {
-                        $misuses[] = $misuse;
-                        $number_of_misuses++;
-                    }
-
-                    if ($number_of_misuses == $ex2_review_size) {
-                        break;
-                    }
-                }
-                $run["misuses"] = $misuses;
-            }
             $stats[$detector->id] = new DetectorResult($detector, $runs);
         }
         $stats["total"] = new ExperimentResult($stats);
