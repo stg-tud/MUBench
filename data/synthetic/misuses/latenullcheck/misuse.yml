@@ -1,5 +1,5 @@
 api:
-- java.Object
+- java.lang.Object
 characteristics:
 - misplaced/condition/null_check
 crash: true

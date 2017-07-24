@@ -1,5 +1,5 @@
 api:
-- java.util.List
+- java.util.Collection
 characteristics:
 - superfluous/iteration
 crash: true

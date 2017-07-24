@@ -1,6 +1,5 @@
 api:
-- java.awt.geom.GeneralPath
-- java.awt.geom.PathIterator
+- com.itextpdf.awt.geom.GeneralPath
 characteristics:
 - missing/call
 crash: false

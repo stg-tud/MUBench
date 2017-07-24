@@ -1,5 +1,5 @@
 api:
-- java.Object
+- java.util.Map
 characteristics:
 - missing/condition/threading
 crash: false

@@ -1,6 +1,6 @@
 api:
-- java.util.Set
 - java.util.Iterator
+- java.util.Set
 characteristics:
 - missing/condition/value_or_state
 crash: true

@@ -1,5 +1,5 @@
 api:
-- java.io.SortedMap
+- java.util.SortedMap
 characteristics:
 - missing/exception handling
 crash: true

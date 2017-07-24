@@ -1,6 +1,6 @@
 api:
-- java.util.Collection (and subtypes)
 - java.util.Iterator
+- java.util.Collection
 characteristics:
 - superfluous/call
 crash: true

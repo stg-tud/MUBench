@@ -1,6 +1,6 @@
 api:
-- java.util.Collection (and subclasses)
 - java.util.Iterator
+- java.util.Collection
 characteristics:
 - missing/condition/value_or_state
 crash: true

@@ -1,5 +1,5 @@
 api:
-- java.Object
+- java.lang.Object
 characteristics:
 - superfluous/condition/threading
 crash: true
