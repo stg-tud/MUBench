@@ -109,10 +109,10 @@ class Misuse:
         return self._source
 
     @property
-    def challenges(self):
-        if getattr(self, '_challenges', None) is None:
-            self._challenges = self._yaml.get('challenges', [])
-        return self._challenges
+    def apis(self):
+        if getattr(self, '_apis', None) is None:
+            self._apis = self._yaml.get('api', [])
+        return self._apis
 
     @property
     def characteristics(self):
