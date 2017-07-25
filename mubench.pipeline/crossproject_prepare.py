@@ -89,7 +89,7 @@ with open(INDEX_PATH) as index:
     for row in csv.reader(index, delimiter="\t"):
         project_id = row[0]
         version_id = row[1]
-        target_type = row[2]
+        target_type = row[6]
         try:
             target_example_file = os.path.join(CHECKOUTS_PATH, target_type + ".yml")
             if not exists(target_example_file):
