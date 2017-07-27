@@ -50,15 +50,16 @@ use MuBench\ReviewSite\Model\Experiment;
                         <?php if(array_key_exists('startline', $hit)) : ?>
                             <?php foreach($misuse->getSnippets() as $snippet) : ?>
                                     #code_<?= htmlspecialchars($snippet['id'])?> li:nth-child(<?= htmlspecialchars(abs($snippet['line'] - $hit['startline'] - 1)); ?>):before {
-                                        content: "<?= $hit["rank"] ?>";
+                                        content: "<?= str_pad($hit["rank"], 4, " ", STR_PAD_LEFT) ?>";
+                                        color: white;
                                         background-color: red;
                                         visibility: visible;
+                                        padding: 0 2px;
                                     }
-
                                     #code_<?= htmlspecialchars($snippet['id'])?> li:before {
                                         content: "    ";
                                         visibility: hidden;
-                                        border-radius: 50%;
+                                        border-radius: 25%;
                                     }
                             <?php endforeach; ?>
                         <?php endif; ?>
