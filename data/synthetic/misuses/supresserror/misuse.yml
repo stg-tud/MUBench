@@ -7,7 +7,7 @@ description: >
   Catches Throwable, which might supress Errors, like OutOfMemory, TheadDeath, ...
 location:
   file: SupressError.java
-  method: "misuse()"
+  method: "misuse(Target)"
 fix:
   description: >
     Catch specific exception.
