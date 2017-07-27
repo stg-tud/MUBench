@@ -48,6 +48,7 @@ $columns_to_ignore = array(
 
 <h1>Experiment <?= $experiment->getNumber() ?>: <?= htmlspecialchars($experiment->getTitle()) ?></h1>
 <h2>Detector: <?= htmlspecialchars($detector->name); ?></h2>
+<a class="button" href="<?=$public_url_prefix?>download/<?=$experiment->getId()?>/<?=$detector->name?>"><i class="fa fa-download" aria-hidden="true"> download csv</i></a>
         <?php if(strcmp($experiment->getId(), "ex2") == 0) : ?>
             <form action="" method="get">
                 <label for="ex2_review_size">Max. Reviews per Project</label>:

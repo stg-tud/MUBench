@@ -5,6 +5,7 @@ use MuBench\ReviewSite\Controller\FindingsUploader;
 use MuBench\ReviewSite\Controller\MetadataUploader;
 use MuBench\ReviewSite\Controller\ReviewUploader;
 use MuBench\ReviewSite\Controller\SnippetUploader;
+use MuBench\ReviewSite\Controller\DownloadController;
 use MuBench\ReviewSite\DBConnection;
 use MuBench\ReviewSite\DirectoryHelper;
 use MuBench\ReviewSite\Model\Experiment;
@@ -19,6 +20,7 @@ $database = $app->getContainer()['database'];
 $renderer = $app->getContainer()['renderer'];
 // TODO rename RoutesHelper to ResultsViewController
 $routesHelper = new RoutesHelper($database, $renderer, $logger, $settings['upload'], $settings['site_base_url'], $settings['default_ex2_review_size']);
+$downloadController = new DownloadController($database, $logger, $settings['default_ex2_review_size']);
 
 $app->get('/', [$routesHelper, 'index']);
 $app->get('/{exp:ex[1-3]}/{detector}', [$routesHelper, 'detector']);
@@ -35,6 +37,12 @@ $app->group('/private', function () use ($app, $routesHelper, $database) {
     $app->get('/overview', [$routesHelper, 'overview']);
     $app->get('/todo', [$routesHelper, 'todos']);
 });
+
+$app->group('/download', function () use ($app, $downloadController, $database) {
+    $app->get('/{exp:ex[1-3]}/stats', [$downloadController, 'download_stats']);
+    $app->get('/{exp:ex[1-3]}/{detector}', [$downloadController, 'download_run_stats']);
+});
+
 
 $app->group('/api/upload', function () use ($app, $settings, $database) {
     $app->post('/[{experiment:ex[1-3]}]',
