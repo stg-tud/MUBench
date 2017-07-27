@@ -47,20 +47,18 @@ use MuBench\ReviewSite\Model\Experiment;
                 <script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js?autoload=true&amp;skin=sunburst"></script>
                 <script src="http://cdn.rawgit.com/ariutta/svg-pan-zoom/master/dist/svg-pan-zoom.min.js"></script>
                 <style>
+                    .prettyprint li:before {
+                        content: "    ";
+                        border-radius: 25%;
+                        padding: 0 2px;
+                        color: white;
+                    }
                     <?php foreach($misuse->getPotentialHits() as $hit) : ?>
                         <?php if(array_key_exists('startline', $hit)) : ?>
                             <?php foreach($misuse->getSnippets() as $snippet) : ?>
                                     #code_<?= htmlspecialchars($snippet['id'])?> li:nth-child(<?= htmlspecialchars(abs($snippet['line'] - $hit['startline'] - 1)); ?>):before {
                                         content: "<?= str_pad($hit["rank"], 4, " ", STR_PAD_LEFT) ?>";
-                                        color: white;
                                         background-color: red;
-                                        visibility: visible;
-                                        padding: 0 2px;
-                                    }
-                                    #code_<?= htmlspecialchars($snippet['id'])?> li:before {
-                                        content: "    ";
-                                        visibility: hidden;
-                                        border-radius: 25%;
                                     }
                             <?php endforeach; ?>
                         <?php endif; ?>
