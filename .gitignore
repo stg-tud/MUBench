@@ -132,6 +132,9 @@ local.properties
 # Code Recommenders
 .recommenders/
 
+### IntelliJ IDEA ###
+*.iml
+
 
 ### Java ###
 *.class
@@ -156,3 +159,13 @@ out.log*
 mubench.reviewsite/upload/
 mubench.reviewsite/vendor/
 mubench.reviewsite/composer.phar
+
+# convenience scripts to build detector versions/run experiments
+build_*
+run_*
+
+# data from cross-project study
+mubench.pipeline/boa/results
+
+# strange log file that keeps being created by some detector…
+log.txt
