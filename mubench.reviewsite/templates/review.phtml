@@ -49,9 +49,16 @@ use MuBench\ReviewSite\Model\Experiment;
                     <?php foreach($misuse->getPotentialHits() as $hit) : ?>
                         <?php if(array_key_exists('startline', $hit)) : ?>
                             <?php foreach($misuse->getSnippets() as $snippet) : ?>
-                                    li:nth-child(<?= htmlspecialchars(abs($snippet['line'] - $hit['startline'] - 1)); ?>):before {
+                                    #code_<?= htmlspecialchars($snippet['id'])?> li:nth-child(<?= htmlspecialchars(abs($snippet['line'] - $hit['startline'] - 1)); ?>):before {
                                         content: "<?= $hit["rank"] ?>";
                                         background-color: red;
+                                        visibility: visible;
+                                        border-radius: 50%;
+                                    }
+
+                                    #code_<?= htmlspecialchars($snippet['id'])?> li:before {
+                                        content: "123";
+                                        visibility: hidden;
                                         border-radius: 50%;
                                     }
                             <?php endforeach; ?>
@@ -117,7 +124,7 @@ use MuBench\ReviewSite\Model\Experiment;
                                 <button style="border:none;background-color:white;position:absolute;right:5px" type="submit"><i class="fa fa-trash"></i></button>
                             </form>
                         <?php endif; ?>
-                        <pre class="prettyprint linenums:<?= htmlspecialchars($snippet['line']); ?>"><code class="language-java"><?= htmlspecialchars($snippet['snippet']); ?></code></pre>
+                        <pre id="code_<?= htmlspecialchars($snippet['id']); ?>" class="prettyprint linenums:<?= htmlspecialchars($snippet['line']); ?>"><code class="language-java"><?= htmlspecialchars($snippet['snippet']); ?></code></pre>
                     <?php endforeach; ?>
                 <?php else : ?>
                     <pre class="prettyprint"><code class="language-java">code not found</code></pre>
