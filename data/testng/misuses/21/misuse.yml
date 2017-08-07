@@ -1,0 +1,22 @@
+api:
+- java.util.Collections$SynchronizedCollection
+characteristics:
+- missing/condition/synchronization
+crash: false
+description: |
+  In Model.java:49, the synchronized map returned by suite.getResults()
+  is iterated over in an unsynchronized manner, but according to the
+  [Oracle Java 7 API specification](http://docs.oracle.com/javase/7/docs/api/java/util/Collections.html#synchronizedMap%28java.util.Map%29),
+  this is not thread-safe and can lead to non-deterministic behavior.
+  This pull request adds a fix by synchronizing the iteration.
+fix:
+  commit: https://github.com/cbeust/testng/commit/cd807910fcc3a0eb646834bad911a549259be9d2
+  revision: cd807910fcc3a0eb646834bad911a549259be9d2
+internal: false
+location:
+  file: org/testng/reporters/jq/Model.java
+  method: init()
+report: https://github.com/cbeust/testng/pull/929
+source:
+  name: Owolabi's Dataset ASE'16
+  url: fsl.cs.illinois.edu/spec-eval/

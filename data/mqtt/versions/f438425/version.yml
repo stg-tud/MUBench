@@ -1,0 +1,9 @@
+build:
+  classes: org.eclipse.paho.client.mqttv3/$mvn.default.classes
+  commands:
+  - mvn compile
+  src: org.eclipse.paho.client.mqttv3/src/main/java/
+misuses:
+- '389'
+- '390'
+revision: f43842538579aab345e6aadda9d081da615900d3

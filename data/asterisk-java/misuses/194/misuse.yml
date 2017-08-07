@@ -1,0 +1,20 @@
+api:
+- java.lang.Long
+characteristics:
+- missing/exception_handling
+crash: true
+description: |
+  `RtcpReceivedEvent.java` calls `java.lang.long.parseLong` without first checking whether the argument parses. This lead to an uncaught `NumberFormatException`:
+  [Oracle Java 7 API specification](http://docs.oracle.com/javase/7/docs/api/java/lang/Long.html#parseLong%28java.lang.String,%20int%29).
+  This pull request adds a check with a more helpful exception message. Kindly let me know if you want me to change the message.
+fix:
+  commit: https://github.com/emopers/asterisk-java/commit/41461b41309bf9f027a46f178cb777a1a94b8c3f
+  revision: 41461b41309bf9f027a46f178cb777a1a94b8c3f
+internal: false
+location:
+  file: org/asteriskjava/manager/event/RtcpReceivedEvent.java
+  method: setPt(String)
+report: https://github.com/asterisk-java/asterisk-java/pull/132
+source:
+  name: Owolabi's Dataset ASE'16
+  url: fsl.cs.illinois.edu/spec-eval/
