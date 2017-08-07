@@ -1,0 +1,22 @@
+api:
+- java.util.Scanner
+characteristics:
+- missing/condition/value_or_state
+crash: true
+description: |
+  Examiner.java calls 'scanner.next()' on 'java.util.Scanner scanner' without checking
+  if there are more elements.  Because the scanner is built from the JavaSource parameter
+  that can be invalid (e.g., an empty source), this can lead to a runtime exception
+  without a useful error message.
+  This pull request adds an error message and a test.
+fix:
+  commit: https://github.com/emopers/visualee/commit/eff52eea696912fc0b106bfd5b78a0683d3dd3c0
+  revision: eff52eea696912fc0b106bfd5b78a0683d3dd3c0
+internal: false
+location:
+  file: de/strullerbaumann/visualee/examiner/Examiner.java 
+  method: isAJavaToken(String)
+report: https://github.com/Thomas-S-B/visualee/pull/2
+source:
+  name: Owolabi's Dataset ASE'16
+  url: fsl.cs.illinois.edu/spec-eval/

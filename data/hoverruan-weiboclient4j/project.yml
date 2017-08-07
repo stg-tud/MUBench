@@ -1,0 +1,5 @@
+name: weiboclient4j
+repository:
+  type: git
+  url: https://github.com/hoverruan/weiboclient4j.git
+url: https://github.com/hoverruan/weiboclient4j

@@ -1,0 +1,21 @@
+api:
+- java.io.DataOutputStream
+characteristics:
+- missing/call
+crash: false
+description: |
+  When a DataOutputStream instance wraps an underlying ByteArrayOutputStream instance,
+  it is recommended to flush or close the DataOutputStream before invoking the underlying instances's toByteArray().
+  Also, it is a good practice to call flush/close explicitly as mentioned for example [here](http://stackoverflow.com/questions/2984538/how-to-use-bytearrayoutputstream-and-dataoutputstream-simultaneously-java).
+  This pull request adds a flush method before calling toByteArray().
+fix:
+  commit: https://github.com/emopers/paho.mqtt.java/commit/e91206c5865934d12e5133b14acde8d0adff0fe8
+  revision: e91206c5865934d12e5133b14acde8d0adff0fe8
+internal: false
+location:
+  file: org/eclipse/paho/client/mqttv3/internal/wire/MqttSubscribe.java
+  method: getPayload()
+report: https://github.com/eclipse/paho.mqtt.java/pull/3
+source:
+  name: Owolabi's Dataset ASE'16
+  url: fsl.cs.illinois.edu/spec-eval/

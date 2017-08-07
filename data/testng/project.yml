@@ -1,0 +1,5 @@
+name: testng
+repository:
+  type: git
+  url: https://github.com/cbeust/testng.git
+url: http://testng.org
