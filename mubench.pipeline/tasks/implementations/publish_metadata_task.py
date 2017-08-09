@@ -10,7 +10,7 @@ from data.misuse import Misuse
 from data.project import Project
 from tasks.project_misuse_task import ProjectMisuseTask
 from utils.io import safe_read
-from utils.web_util import post
+from utils.web_util import post, as_markdown
 
 
 class PublishMetadataTask(ProjectMisuseTask):
@@ -45,7 +45,7 @@ class PublishMetadataTask(ProjectMisuseTask):
             "misuse": misuse.id,
             "location": misuse.location.__dict__,
             "description": misuse.description,
-            "violation_types": misuse.characteristics,
+            "violation_types": as_markdown(misuse.characteristics),
             "fix": {
                 "description": misuse.fix.description,
                 "diff-url": misuse.fix.commit

@@ -9,7 +9,7 @@ from nose.tools import assert_raises, assert_equals
 from requests import Response
 
 from utils.io import create_file, safe_write
-from utils.web_util import validate_file, download_file, is_valid_file, post
+from utils.web_util import validate_file, download_file, is_valid_file, post, as_markdown, UnsupportedTypeError
 
 EMPTY_FILE_MD5 = "d41d8cd98f00b204e9800998ecf8427e"
 
@@ -129,3 +129,29 @@ class TestPost:
 
         with assert_raises(UserWarning):
             post("-url-", "-data-")
+
+
+class TestMarkdown:
+    def test_raises_on_non_convertible(self):
+        class SomeClass: pass
+        assert_raises(UnsupportedTypeError, as_markdown, SomeClass())
+
+    def test_empty_list(self):
+        actual = as_markdown([])
+        expected = ""
+        assert_equals(expected, actual)
+
+    def test_list(self):
+        actual = as_markdown(["hello", "world"])
+        expected = "* hello\n* world"
+        assert_equals(expected, actual)
+
+    def test_empty_dict(self):
+        actual = as_markdown(dict())
+        expected = ""
+        assert_equals(expected, actual)
+
+    def test_dict(self):
+        actual = as_markdown({"key": "value"})
+        expected = "key: \nvalue"
+        assert_equals(expected, actual)

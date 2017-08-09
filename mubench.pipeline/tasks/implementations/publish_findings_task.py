@@ -1,6 +1,6 @@
 import getpass
 import logging
-from typing import List
+from typing import List, Dict
 from urllib.parse import urljoin
 
 from requests import RequestException
@@ -10,7 +10,7 @@ from data.finding import SpecializedFinding
 from data.project import Project
 from data.project_version import ProjectVersion
 from tasks.project_version_task import ProjectVersionTask
-from utils.web_util import post
+from utils.web_util import post, as_markdown
 
 
 class PublishFindingsTask(ProjectVersionTask):
@@ -60,16 +60,18 @@ class PublishFindingsTask(ProjectVersionTask):
                 logger.info("Not run on %s.", version)
                 result = "not run"
 
-        logger.info("Extracting target source code...")
         version_compile = version.get_compile(self.compiles_base_path)
-        for potential_hit in potential_hits:
-            snippets = potential_hit.get_snippets(version_compile.original_sources_path)
-            potential_hit["target_snippets"] = [snippet.__dict__ for snippet in snippets]
 
         try:
             logger.info("Publishing findings...")
             for potential_hits_slice in self.__slice_by_max_files_per_post(potential_hits):
-                self.__post(project, version, run_info, result, potential_hits_slice)
+                post_data_slice = []
+                for potential_hit in potential_hits_slice:
+                    postable_data = self._prepare_post(potential_hit, version_compile)
+                    post_data_slice.append(postable_data)
+
+                file_paths = PublishFindingsTask.get_file_paths(potential_hits_slice)
+                self.__post(project, version, run_info, result, post_data_slice, file_paths)
             logger.info("Findings published.")
         except RequestException as e:
             response = e.response
@@ -95,7 +97,13 @@ class PublishFindingsTask(ProjectVersionTask):
 
         yield potential_hits_slice
 
-    def __post(self, project, version, run_info, result, potential_hits):
+    def _prepare_post(self, finding: SpecializedFinding, version_compile) -> Dict[str, str]:
+        markdown_dict = self._to_markdown_dict(finding)
+        snippets = finding.get_snippets(version_compile.original_sources_path)
+        markdown_dict["target_snippets"] = [snippet.__dict__ for snippet in snippets]
+        return markdown_dict
+
+    def __post(self, project, version, run_info, result, upload_data, file_paths):
         data = {}
         data.update(run_info)
         data.update({
@@ -104,9 +112,8 @@ class PublishFindingsTask(ProjectVersionTask):
             "project": project.id,
             "version": version.version_id,
             "result": result,
-            "potential_hits": potential_hits
+            "potential_hits": upload_data
         })
-        file_paths = PublishFindingsTask.get_file_paths(potential_hits)
         post(self.__upload_url, data, file_paths=file_paths,
              username=self.review_site_user, password=self.review_site_password)
 
@@ -116,3 +123,10 @@ class PublishFindingsTask(ProjectVersionTask):
         for finding in findings:
             files.extend(finding.files)
         return files
+
+    def _to_markdown_dict(self, finding: SpecializedFinding) -> Dict[str, str]:
+        markdown_dict = dict()
+        for key, value in finding.items():
+            markdown_dict[key] = as_markdown(value)
+        return markdown_dict
+
