@@ -45,19 +45,19 @@ class TagTest extends DatabaseTestCase
 
     function test_save_misuse_tags()
     {
-        $tag = [
-            "name" => 'test1',
+        $misuse = [
+            "tag" => 'test1',
             "exp" => 1,
             "detector" => 1,
             "project" => "-project-",
             "version" => "-version-",
-            "finding" => "-finding-"
+            "misuse" => "-misuse-"
         ];
-        $this->tagController->saveTagForMisuse($tag);
+        $this->tagController->saveTagForMisuse($misuse);
         $expected_tags = [
             ['id' => 1, 'name' => 'test1']
         ];
-        $misuse_tags = $this->db->getTagsForMisuse(1, 1, "-project-", "-version-", "-finding-");
+        $misuse_tags = $this->db->getTagsForMisuse(1, 1, "-project-", "-version-", "-misuse-");
         self::assertEquals($expected_tags, $misuse_tags);
     }
 

@@ -17,24 +17,25 @@ class TagController
         $this->logger = $logger;
     }
 
-    public function saveTagForMisuse($tag)
+    public function saveTagForMisuse($misuse)
     {
-        $tag_id = $this->getOrCreateTag($tag['name'])['id'];
-        $experiment = $tag['exp'];
-        $detector_id = $tag['detector'];
-        $project = $tag['project'];
-        $version = $tag['version'];
-        $finding = $tag['finding'];
-        $this->logger->info("saving tag $tag_id for $experiment, $detector_id, " . $project . ", " . $version . ", " . $finding);
-        $misuse_tags = $this->db->getTagsForMisuse($experiment, $detector_id, $project, $version, $finding);
+        $tag = $this->getOrCreateTag($misuse['tag']);
+        $tag_id = $tag['id'];
+        $experiment = $misuse['exp'];
+        $detector = $misuse['detector'];
+        $project = $misuse['project'];
+        $version = $misuse['version'];
+        $misuse_id = $misuse['misuse'];
+        $this->logger->info("saving tag $tag_id for $experiment, $detector, " . $project . ", " . $version . ", " . $misuse_id);
+        $misuse_tags = $this->db->getTagsForMisuse($experiment, $detector, $project, $version, $misuse_id);
         foreach($misuse_tags as $misuse_tag){
             if($tag_id === $misuse_tag['id']){
                 return;
             }
         }
-        $this->db->table('misuse_tags')->insert(['exp' => $experiment, 'detector' => $detector_id,
+        $this->db->table('misuse_tags')->insert(['exp' => $experiment, 'detector' => $detector,
             'project' => $project,
-            'version' => $version, 'finding' => $finding, 'tag' => $tag_id]);
+            'version' => $version, 'misuse' => $misuse_id, 'tag' => $tag_id]);
     }
 
     public function getOrCreateTag($name)
@@ -46,11 +47,17 @@ class TagController
         return $this->db->table('tags')->where('name', $name)->get()[0];
     }
 
-    public function deleteMisuseTag($experiment, $detector, $project, $version, $finding, $tag)
+    public function deleteMisuseTag($misuse)
     {
-        $this->logger->info("deleting tag $tag for $detector, $project, $version, $finding");
+        $tag = $misuse['tag'];
+        $experiment = $misuse['exp'];
+        $detector = $misuse['detector'];
+        $project = $misuse['project'];
+        $version = $misuse['version'];
+        $misuse_id = $misuse['misuse'];
+        $this->logger->info("deleting tag $tag for $detector, $project, $version, $misuse_id");
         $this->db->table('misuse_tags')->where('exp', $experiment)->where('detector', $detector)
-            ->where('project', $project)->where('version', $version)->where('finding', $finding)->where('tag', $tag)->delete();
+            ->where('project', $project)->where('version', $version)->where('misuse', $misuse_id)->where('tag', $tag)->delete();
     }
 
     public function saveNewTag($tag_name)

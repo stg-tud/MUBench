@@ -294,10 +294,10 @@ class DBConnection
         return $this->table('tags')->get();
     }
 
-    public function getTagsForMisuse($experiment, $detector, $project, $version, $finding)
+    public function getTagsForMisuse($experiment, $detector, $project, $version, $misuse)
     {
         return $this->table('misuse_tags')->innerJoin('tags', 'misuse_tags.tag', '=', 'tags.id')->select('id', 'name')->where('exp', $experiment)->where('detector', $detector)
-            ->where('project', $project)->where('version', $version)->where('finding', $finding)->get();
+            ->where('project', $project)->where('version', $version)->where('misuse', $misuse)->get();
     }
 
     private function getQualifiedName($table_name)

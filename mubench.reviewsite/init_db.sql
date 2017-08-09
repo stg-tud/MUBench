@@ -95,7 +95,7 @@ CREATE TABLE IF NOT EXISTS `misuse_tags` (
   `detector` varchar(100) NOT NULL,
   `project` varchar(100) NOT NULL,
   `version` varchar(100) NOT NULL,
-  `finding` varchar(100) NOT NULL,
+  `misuse` varchar(100) NOT NULL,
   `tag` int(11) NOT NULL,
   KEY `lookup` (`exp`,`detector`,`project`,`version`,`finding`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=latin1;

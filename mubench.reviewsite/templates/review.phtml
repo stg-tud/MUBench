@@ -147,7 +147,13 @@ use MuBench\ReviewSite\Model\Experiment;
                                     <span><?= htmlspecialchars($tag['name']) ?></span>
                                     <? if($user) : ?>
                                     <div style="display:inline-block;padding-right:2px;margin:0;color:black">
-                                        <form action="<?= "{$api_url_prefix}upload/delete/tag/{$experiment->getId()}/{$detector->id}/{$misuse->getProject()}/{$misuse->getVersion()}/{$misuse->id}/{$tag['id']}"?>" method="post" target="">
+                                        <form action="<?= "{$api_url_prefix}upload/delete/tag"?>" method="post" target="">
+                                            <input type="hidden" name="exp" value="<?= htmlspecialchars($experiment->getId()); ?>">
+                                            <input type="hidden" name="detector" value="<?= htmlspecialchars($detector->id); ?>">
+                                            <input type="hidden" name="project" value="<?= htmlspecialchars($misuse->getProject()); ?>">
+                                            <input type="hidden" name="version" value="<?= htmlspecialchars($misuse->getVersion()); ?>">
+                                            <input type="hidden" name="misuse" value="<?= htmlspecialchars($misuse->id); ?>">
+                                            <input type="hidden" name="tag" value="<?= htmlspecialchars($tag['id']); ?>">
                                             <input type="hidden" name="path" value="<?= htmlspecialchars($path); ?>">
                                             <button style="border:none;background-color:gray;outline:none;margin:0;padding:0" type="submit"><i class="fa fa-trash"></i></button>
                                         </form>
@@ -162,9 +168,9 @@ use MuBench\ReviewSite\Model\Experiment;
                                 <input type="hidden" name="detector" value="<?= htmlspecialchars($detector->id); ?>">
                                 <input type="hidden" name="project" value="<?= htmlspecialchars($misuse->getProject()); ?>">
                                 <input type="hidden" name="version" value="<?= htmlspecialchars($misuse->getVersion()); ?>">
-                                <input type="hidden" name="finding" value="<?= htmlspecialchars($misuse->id); ?>">
+                                <input type="hidden" name="misuse" value="<?= htmlspecialchars($misuse->id); ?>">
                                 <input type="hidden" name="path" value="<?= htmlspecialchars($path); ?>">
-                                <input class="tag-input" name="name" placeholder="add new tag" autocomplete="off">
+                                <input class="tag-input" name="tag" placeholder="add new tag" autocomplete="off">
                             </form>
                         </div>
                         <? endif; ?>
