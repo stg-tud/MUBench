@@ -51,6 +51,17 @@ class TestRunnerInterface:
 
         assert_false(LatestInterface("", []).is_legacy())
 
+    def test_handles_interfaces_without_version(self):
+        class InterfaceBaseImpl(RunnerInterface): pass
+        assert InterfaceBaseImpl not in self._orig_get_interfaces()
+
+    def test_finds_interfaces_recursively(self):
+        class InterfaceBase(RunnerInterface): pass
+        class InterfaceBaseImpl(InterfaceBase): pass
+        InterfaceBaseImpl.version = lambda *_: StrictVersion("0.0.0")
+
+        assert InterfaceBaseImpl in self._orig_get_interfaces()
+
 
 @patch("data.runner_interface.Shell")
 class TestRunnerInterface_0_0_8:

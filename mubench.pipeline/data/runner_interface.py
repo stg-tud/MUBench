@@ -76,13 +76,30 @@ class RunnerInterface:
 
     @staticmethod
     def _get_interfaces() -> List['RunnerInterface']:
-        return RunnerInterface.__subclasses__()
+        interfaces_with_versions = []
+
+        for interface in _get_subclasses_recursive(RunnerInterface):
+            try:
+                interface.version()
+                interfaces_with_versions.append(interface)
+            except NotImplementedError:
+                continue
+
+        return interfaces_with_versions
 
     @staticmethod
     def __get_latest_version() -> StrictVersion:
         versions = [interface.version() for interface in \
                 RunnerInterface._get_interfaces()]
         return sorted(versions)[-1]
+
+
+def _get_subclasses_recursive(class_) -> List['RunnerInterface']:
+    subclasses = []
+    for subclass in class_.__subclasses__():
+        subclasses.append(subclass)
+        subclasses.extend(_get_subclasses_recursive(subclass))
+    return subclasses
 
 
 # noinspection PyPep8Naming
