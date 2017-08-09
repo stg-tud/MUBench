@@ -13,9 +13,9 @@ class TagTest extends DatabaseTestCase
     {
         parent::setUp();
         $this->tagController = new TagController($this->db, $this->logger);
-        $this->tagController->saveNewTag("test1");
-        $this->tagController->saveNewTag("test2");
-        $this->tagController->saveNewTag("test3");
+        $this->db->table('tags')->insert(['name' => 'test1']);
+        $this->db->table('tags')->insert(['name' => 'test2']);
+        $this->db->table('tags')->insert(['name' => 'test3']);
     }
 
     function test_get_all_tags()
@@ -29,23 +29,9 @@ class TagTest extends DatabaseTestCase
         self::assertEquals($expected_tags, $tags);
     }
 
-    function test_save_new_tag()
-    {
-        $this->tagController->saveNewTag("test");
-        $tags = $this->db->getAllTags();
-
-        $expected_tags = [
-            ['id' => 1, 'name' => 'test1'],
-            ['id' => 2, 'name' => 'test2'],
-            ['id' => 3, 'name' => 'test3'],
-            ['id' => 4, 'name' => 'test']
-        ];
-        self::assertEquals($expected_tags, $tags);
-    }
-
     function test_save_misuse_tags()
     {
-        $misuse = [
+        $misuse_tag1 = [
             "tag" => 'test1',
             "exp" => 1,
             "detector" => 1,
@@ -53,13 +39,90 @@ class TagTest extends DatabaseTestCase
             "version" => "-version-",
             "misuse" => "-misuse-"
         ];
-        $this->tagController->saveTagForMisuse($misuse);
+        $misuse_tag2 = [
+            "tag" => 'test2',
+            "exp" => 1,
+            "detector" => 1,
+            "project" => "-project-",
+            "version" => "-version-",
+            "misuse" => "-misuse-"
+        ];
+        $this->tagController->saveTagForMisuse($misuse_tag1);
+        $this->tagController->saveTagForMisuse($misuse_tag2);
         $expected_tags = [
-            ['id' => 1, 'name' => 'test1']
+            ['id' => 1, 'name' => 'test1'],
+            ['id' => 2, 'name' => 'test2']
         ];
         $misuse_tags = $this->db->getTagsForMisuse(1, 1, "-project-", "-version-", "-misuse-");
+
         self::assertEquals($expected_tags, $misuse_tags);
     }
 
+    function test_delete_misuse_tag()
+    {
+        $misuse_tag1 = [
+            "tag" => 'test1',
+            "exp" => 1,
+            "detector" => 1,
+            "project" => "-project-",
+            "version" => "-version-",
+            "misuse" => "-misuse-"
+        ];
+        $misuse_tag2 = [
+            "tag" => 'test2',
+            "exp" => 1,
+            "detector" => 1,
+            "project" => "-project-",
+            "version" => "-version-",
+            "misuse" => "-misuse-"
+        ];
+        $remove_tag = [
+            "tag" => 1,
+            "exp" => 1,
+            "detector" => 1,
+            "project" => "-project-",
+            "version" => "-version-",
+            "misuse" => "-misuse-"
+        ];
+        $expected_tags = [
+            ['id' => 2, 'name' => 'test2']
+        ];
+        $this->tagController->saveTagForMisuse($misuse_tag1);
+        $this->tagController->saveTagForMisuse($misuse_tag2);
+        $this->tagController->deleteMisuseTag($remove_tag);
+        $misuse_tags = $this->db->getTagsForMisuse(1, 1, "-project-", "-version-", "-misuse-");
 
+        self::assertEquals($expected_tags, $misuse_tags);
+    }
+
+    function test_adding_same_tag_twice()
+    {
+        $misuse_tag1 = [
+            "tag" => 'test1',
+            "exp" => 1,
+            "detector" => 1,
+            "project" => "-project-",
+            "version" => "-version-",
+            "misuse" => "-misuse-"
+        ];
+        $misuse_tag2 = [
+            "tag" => 'test2',
+            "exp" => 1,
+            "detector" => 1,
+            "project" => "-project-",
+            "version" => "-version-",
+            "misuse" => "-misuse-"
+        ];
+
+        $expected_tags = [
+            ['id' => 1, 'name' => 'test1'],
+            ['id' => 2, 'name' => 'test2']
+        ];
+        $this->tagController->saveTagForMisuse($misuse_tag1);
+        $this->tagController->saveTagForMisuse($misuse_tag1);
+        $this->tagController->saveTagForMisuse($misuse_tag2);
+        $misuse_tags = $this->db->getTagsForMisuse(1, 1, "-project-", "-version-", "-misuse-");
+
+        self::assertEquals($expected_tags, $misuse_tags);
+    }
 }
