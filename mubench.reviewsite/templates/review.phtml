@@ -93,7 +93,7 @@ use Parsedown;
             <tr>
                 <td class="vtop"><b>Fix Description:</b></td>
                 <td><?= $markdown_parser->text($misuse->getFixDescription()); ?>
-                    <?php if ($misuse->hasDiff()): ?>(<a href="<?= $markdown_parser->text($misuse->getDiff()); ?>">see diff</a>)<?php endif ?>
+                    <?php if ($misuse->hasDiff()): ?>(<a href="<?= $misuse->getDiff(); ?>">see diff</a>)<?php endif ?>
                 </td></tr>
             <tr><td class="vtop"><b>Violation Types:</b></td><td>
 

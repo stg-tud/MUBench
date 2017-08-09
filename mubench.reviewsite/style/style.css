@@ -19,6 +19,7 @@ h2 {
 
 p {
 	margin: 10pt 0;
+    display: inline;
 }
 
 ul {
@@ -184,6 +185,9 @@ td.top { border-top: 1px solid black; }
 td.right { text-align: right; }
 
 td.no-hit { color: lightgray; }
+
+
+
 a.button.no-hit { color: lightgray; }
 
 table.potential_hits th {
