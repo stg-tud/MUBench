@@ -6,6 +6,7 @@ use MuBench\ReviewSite\Controller\MetadataUploader;
 use MuBench\ReviewSite\Controller\ReviewUploader;
 use MuBench\ReviewSite\Controller\SnippetUploader;
 use MuBench\ReviewSite\Controller\DownloadController;
+use MuBench\ReviewSite\Controller\TagController;
 use MuBench\ReviewSite\DBConnection;
 use MuBench\ReviewSite\DirectoryHelper;
 use MuBench\ReviewSite\Model\Experiment;
@@ -119,6 +120,14 @@ $app->group('/api/upload', function () use ($app, $settings, $database) {
             }
         });
 
+    $app->post('/delete/tag/{exp}/{detector}/{project}/{version}/{misuse}/{tag}',
+        function (Request $request, Response $response, array $args) use ($database, $settings) {
+            $obj = $request->getParsedBody();
+            $controller = new TagController($database, $this->logger);
+            $controller->deleteMisuseTag($args['exp'], $args['detector'], $args['project'], $args['version'], $args['misuse'], $args['tag']);
+            return $response->withRedirect("{$settings['site_base_url']}index.php/{$obj['path']}");
+        });
+
     $app->post('/snippet',
         function (Request $request, Response $response, array $args) use ($database, $settings) {
             $obj = $request->getParsedBody();
@@ -126,4 +135,13 @@ $app->group('/api/upload', function () use ($app, $settings, $database) {
             $uploader->processSnippet($obj);
             return $response->withRedirect("{$settings['site_base_url']}index.php/{$obj['path']}");
         });
+
+    $app->post('/tag',
+        function (Request $request, Response $response, array $args) use ($database, $settings) {
+            $obj = $request->getParsedBody();
+            $controller = new TagController($database, $this->logger);
+            $controller->saveTagForMisuse($obj);
+            return $response->withRedirect("{$settings['site_base_url']}index.php/{$obj['path']}");
+        });
+
 });
