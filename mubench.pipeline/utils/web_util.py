@@ -105,6 +105,8 @@ def as_markdown(value: Union[List[str], Dict[str, str], str]) -> str:
         return __as_markdown_dict(value)
     elif isinstance(value, str):
         return value
+    elif isinstance(value, int):
+        return value
     else:
         raise UnsupportedTypeError(value)
 
