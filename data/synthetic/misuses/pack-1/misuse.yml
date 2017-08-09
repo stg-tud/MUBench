@@ -4,14 +4,15 @@ characteristics:
 - misplaced/call
 crash: false
 description: >
-  Calls JFrame.setPreferredSize() after JFrame.pack(), such that the size
-  is not respected when rendering the frame.
+  Calls JFrame.setVisible(true) before JFrame.pack(). This may lead to
+  undesired effects, such as the window being moved to the default plattform
+  location.
 location:
-  file: Pack1.java
-  method: "misuse(JFrame, Dimension)"
+  file: PackAfterVisible.java
+  method: "misuse(JFrame)"
 fix:
   description: >
-    Call JFrame.setPreferredSize() before JFrame.pack().
+    Call JFrame.pack() before JFrame.setVisible(true).
 internal: false
 pattern:
 - single object

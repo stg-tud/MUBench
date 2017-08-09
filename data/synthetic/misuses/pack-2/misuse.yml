@@ -4,14 +4,14 @@ characteristics:
 - missing/call
 crash: false
 description: >
-  Calls JFrame.setPreferredSize() without calling JFrame.pack(), such
-  that the size is not respected when rendering the frame.
+  Calls JFrame.setVisible(true) without calling JFrame.pack(), such that the
+  frame is not layouted before being shown.
 location:
-  file: Pack1.java
-  method: "misuse(JFrame, Dimension)"
+  file: NoPackBeforeVisible.java
+  method: "misuse(JFrame)"
 fix:
   description: >
-    Call JFrame.pack() after JFrame.setPreferredSize().
+    Call JFrame.pack() before JFrame.setVisible(true).
 internal: false
 pattern:
 - single object
