@@ -77,7 +77,7 @@ class StoreFindingsTest extends DatabaseTestCase
             "number_of_findings" => "23",
             "misuses" => [
                 new Misuse(
-                    ["misuse" => "0", "snippets" => [0 => ["line" => "5", "snippet" => "-code-", "id" => "1"]]],
+                    ["misuse" => "0", "snippets" => [0 => ["line" => "5", "snippet" => "-code-", "id" => "1"]], "tags" => []],
                     [0 => [
                         "exp" => "ex2",
                         "project" => "-p-",
@@ -158,7 +158,8 @@ class StoreFindingsTest extends DatabaseTestCase
                 'method' => '-method-',
                 'diff_url' => '-diff-',
                 'snippets' => [['line' => '273', 'snippet' => '-code-']],
-                'patterns' => [['name' => '-p-id-','code' => '-pattern-code-','line' => '1']]
+                'patterns' => [['name' => '-p-id-','code' => '-pattern-code-','line' => '1']],
+                'tags' => []
             ],
             [[
                 'exp' => 'ex1',

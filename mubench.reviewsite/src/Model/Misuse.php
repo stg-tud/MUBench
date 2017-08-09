@@ -64,6 +64,16 @@ class Misuse
             $this->id;
     }
 
+    public function getTags()
+    {
+        return $this->data['tags'];
+    }
+
+    public function hasTags()
+    {
+        return !empty($this->data['tags']);
+    }
+
     public function getFile(){
         if(!array_key_exists("file", $this->data)) return $this->potential_hits[0]["file"];
         return $this->data['file'];
