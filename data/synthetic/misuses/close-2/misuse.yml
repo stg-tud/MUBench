@@ -1,5 +1,5 @@
 api:
-- java.io.Closeable
+- java.io.PrintWriter
 characteristics:
 - missing/exception handling
 crash: false
