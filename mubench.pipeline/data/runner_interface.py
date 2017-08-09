@@ -76,7 +76,16 @@ class RunnerInterface:
 
     @staticmethod
     def _get_interfaces() -> List['RunnerInterface']:
-        return RunnerInterface.__subclasses__()
+        interfaces_with_versions = []
+
+        for interface in RunnerInterface.__subclasses__():
+            try:
+                interface.version()
+                interfaces_with_versions.append(interface)
+            except NotImplementedError:
+                continue
+
+        return interfaces_with_versions
 
     @staticmethod
     def __get_latest_version() -> StrictVersion:

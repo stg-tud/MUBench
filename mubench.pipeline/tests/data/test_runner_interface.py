@@ -51,6 +51,10 @@ class TestRunnerInterface:
 
         assert_false(LatestInterface("", []).is_legacy())
 
+    def test_handles_interfaces_without_version(self):
+        class InterfaceBaseImpl(RunnerInterface): pass
+        assert InterfaceBaseImpl not in self._orig_get_interfaces()
+
 
 @patch("data.runner_interface.Shell")
 class TestRunnerInterface_0_0_8:
