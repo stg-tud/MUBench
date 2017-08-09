@@ -1,7 +1,7 @@
 from typing import Dict
 from unittest.mock import patch
 
-from nose.tools import assert_equals
+from nose.tools import assert_equals, assert_raises
 
 from data.snippets import Snippet, SnippetUnavailableException
 from data.finding import Finding
