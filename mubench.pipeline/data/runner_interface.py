@@ -78,7 +78,7 @@ class RunnerInterface:
     def _get_interfaces() -> List['RunnerInterface']:
         interfaces_with_versions = []
 
-        for interface in RunnerInterface.__subclasses__():
+        for interface in _get_subclasses_recursive(RunnerInterface):
             try:
                 interface.version()
                 interfaces_with_versions.append(interface)
@@ -92,6 +92,14 @@ class RunnerInterface:
         versions = [interface.version() for interface in \
                 RunnerInterface._get_interfaces()]
         return sorted(versions)[-1]
+
+
+def _get_subclasses_recursive(class_) -> List['RunnerInterface']:
+    subclasses = []
+    for subclass in class_.__subclasses__():
+        subclasses.append(subclass)
+        subclasses.extend(_get_subclasses_recursive(subclass))
+    return subclasses
 
 
 # noinspection PyPep8Naming
