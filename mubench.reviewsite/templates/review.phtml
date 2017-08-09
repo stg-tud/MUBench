@@ -46,6 +46,12 @@ use MuBench\ReviewSite\Model\Experiment;
                 <link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
                 <script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js?autoload=true&amp;skin=sunburst"></script>
                 <script src="http://cdn.rawgit.com/ariutta/svg-pan-zoom/master/dist/svg-pan-zoom.min.js"></script>
+                <script
+                        src="http://code.jquery.com/jquery-3.2.1.slim.js"
+                        integrity="sha256-tA8y0XqiwnpwmOIl3SGAcFl2RvxHjA8qp0+1uCGmRmg="
+                        crossorigin="anonymous"></script>
+                <script src="https://cdnjs.cloudflare.com/ajax/libs/corejs-typeahead/1.1.1/typeahead.jquery.js"></script>
+
                 <style>
                     .prettyprint li:before {
                         content: "    ";
@@ -63,6 +69,62 @@ use MuBench\ReviewSite\Model\Experiment;
                             <?php endforeach; ?>
                         <?php endif; ?>
                     <?php endforeach; ?>
+
+                    .misuse-tag {
+                        float:left;
+                        margin-right: 3px;
+                        padding:4px;
+                        border-radius: 2px;
+                        background-color: gray;
+                        color: lightgray;
+                    }
+
+                    .tag-input {
+                        margin-left: 5px;
+                        padding; 4px;
+                        width: 100%;
+                        height:100%;
+                        border: 0;
+                        outline: none;
+                    }
+
+                    .tt-menu {
+                        display:none;
+                        width: 422px;
+                        margin: 12px 0;
+                        padding: 8px 0;
+                        background-color: #fff;
+                        border: 1px solid #ccc;
+                        border: 1px solid rgba(0, 0, 0, 0.2);
+                        -webkit-border-radius: 8px;
+                        -moz-border-radius: 8px;
+                        border-radius: 8px;
+                        -webkit-box-shadow: 0 5px 10px rgba(0,0,0,.2);
+                        -moz-box-shadow: 0 5px 10px rgba(0,0,0,.2);
+                        box-shadow: 0 5px 10px rgba(0,0,0,.2);
+                    }
+
+                    .tt-suggestion {
+                        padding: 3px 20px;
+                        font-size: 18px;
+                        line-height: 24px;
+                    }
+
+                    .tt-suggestion:hover {
+                        cursor: pointer;
+                        color: #fff;
+                        background-color: #0097cf;
+                    }
+
+                    .tt-suggestion.tt-cursor {
+                        color: #fff;
+                        background-color: #0097cf;
+
+                    }
+
+                    .tt-suggestion p {
+                        margin: 0;
+                    }
                 </style>
             </head>
             <body>
@@ -76,6 +138,39 @@ use MuBench\ReviewSite\Model\Experiment;
             <?php if($experiment->getId() !== "ex2") : ?>
                 <tr><td><b>Misuse:</b></td><td>misuse '<?= htmlspecialchars($misuse->getShortId()); ?>'</td></tr>
             <?php endif; ?>
+            <?php if($user || $misuse->getTags()): ?>
+                <tr>
+                <td><b>Tags:</b></td>
+                <td>
+                            <? foreach($misuse->getTags() as $tag) : ?>
+                                <div class="misuse-tag">
+                                    <span><?= htmlspecialchars($tag['name']) ?></span>
+                                    <? if($user) : ?>
+                                    <div style="display:inline-block;padding-right:2px;margin:0;color:black">
+                                        <form action="<?= "{$api_url_prefix}upload/delete/tag/{$experiment->getId()}/{$detector->id}/{$misuse->getProject()}/{$misuse->getVersion()}/{$misuse->id}/{$tag['id']}"?>" method="post" target="">
+                                            <input type="hidden" name="path" value="<?= htmlspecialchars($path); ?>">
+                                            <button style="border:none;background-color:gray;outline:none;margin:0;padding:0" type="submit"><i class="fa fa-trash"></i></button>
+                                        </form>
+                                    </div>
+                                    <? endif; ?>
+                                </div>
+                            <? endforeach; ?>
+                        <? if($user): ?>
+                        <div style="display:inline-block;height:100%;padding:4px;">
+                            <form id="tag-form" action="<?= $api_url_prefix ?>upload/tag" method="post" target="">
+                                <input type="hidden" name="exp" value="<?= htmlspecialchars($experiment->getId()); ?>">
+                                <input type="hidden" name="detector" value="<?= htmlspecialchars($detector->id); ?>">
+                                <input type="hidden" name="project" value="<?= htmlspecialchars($misuse->getProject()); ?>">
+                                <input type="hidden" name="version" value="<?= htmlspecialchars($misuse->getVersion()); ?>">
+                                <input type="hidden" name="finding" value="<?= htmlspecialchars($misuse->id); ?>">
+                                <input type="hidden" name="path" value="<?= htmlspecialchars($path); ?>">
+                                <input class="tag-input" name="name" placeholder="add new tag" autocomplete="off">
+                            </form>
+                        </div>
+                        <? endif; ?>
+                </td>
+                </tr>
+            <? endif; ?>
         </table>
         <?php if($experiment->getId() !== "ex2") : ?>
             <h2>Misuse Details</h2>
@@ -335,6 +430,50 @@ use MuBench\ReviewSite\Model\Experiment;
                     }
                     b.type = "hidden";
                 }
+
+                var substringMatcher = function(strs) {
+                    return function findMatches(q, cb) {
+                        var matches, substringRegex;
+
+                        // an array that will be populated with substring matches
+                        matches = [];
+
+                        // regex used to determine if a string contains the substring `q`
+                        substrRegex = new RegExp(q, 'i');
+
+                        // iterate through the pool of strings and for any string that
+                        // contains the substring `q`, add it to the `matches` array
+                        $.each(strs, function(i, str) {
+                            if (substrRegex.test(str)) {
+                                matches.push(str);
+                            }
+                        });
+
+                        cb(matches);
+                    };
+                };
+
+                var tags = [
+                    <? foreach($tags as $tag): ?>
+                        "<?= $tag['name'] ?>",
+                    <? endforeach; ?>
+                ];
+
+                $('.tag-input').typeahead({
+                        hint: true,
+                        highlight: true,
+                        minLength: 1
+                    },
+                    {
+                        name: 'tags',
+                        source: substringMatcher(tags)
+                    });
+
+                $('.tag-input').on('keydown', function(e) {
+                    if (e.keyCode == 13) {
+                        $('#tag-form').submit();
+                    }
+                });
             </script>
             </body>
         </html>

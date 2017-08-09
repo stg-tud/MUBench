@@ -44,18 +44,20 @@ class RoutesHelper
 
     public function review(Request $request, Response $response, array $args)
     {
+        $experiment = $args['exp'];
         $detector = $this->getDetector($args['detector'], $request, $response);
-        $misuse = $this->db->getMisuse($args['exp'], $detector, $args['project'], $args['version'], $args['misuse']);
+        $misuse = $this->db->getMisuse($experiment, $detector, $args['project'], $args['version'], $args['misuse']);
         $user = $this->getUser($request);
         $reviewer = array_key_exists('reviewer', $args) ? $args['reviewer'] : $user;
         $review = $misuse->getReview($reviewer);
         $is_reviewer = strcmp($user, $reviewer) == 0 || strcmp($reviewer, "resolution") == 0;
         $violation_types = $misuse->getViolationTypes();
-        if(strcmp($args['exp'], 'ex2') === 0){
+        if(strcmp($experiment, 'ex2') === 0){
             $violation_types = $this->db->getAllViolationTypes();
         }
+        $tags = $this->db->getAllTags();
         return $this->render($this, $request, $response, $args, 'review.phtml',
-            ['reviewer' => $reviewer, 'is_reviewer' => $is_reviewer, 'misuse' => $misuse, 'review' => $review, 'violation_types' => $violation_types]);
+            ['reviewer' => $reviewer, 'is_reviewer' => $is_reviewer, 'misuse' => $misuse, 'review' => $review, 'violation_types' => $violation_types, 'tags' => $tags]);
     }
 
     public function stats(Request $request, Response $response, array $args) {
