@@ -90,6 +90,23 @@ CREATE TABLE IF NOT EXISTS `types` (
   UNIQUE KEY `name` (`name`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=latin1;
 
+CREATE TABLE IF NOT EXISTS `misuse_tags` (
+  `exp` varchar(10) NOT NULL,
+  `detector` varchar(100) NOT NULL,
+  `project` varchar(100) NOT NULL,
+  `version` varchar(100) NOT NULL,
+  `finding` varchar(100) NOT NULL,
+  `tag` int(11) NOT NULL,
+  KEY `lookup` (`exp`,`detector`,`project`,`version`,`finding`)
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1;
+
+CREATE TABLE IF NOT EXISTS `tags` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(100) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `name` (`name`)
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1;
+
 INSERT INTO types (name)
 VALUES
     ('missing/call'),
