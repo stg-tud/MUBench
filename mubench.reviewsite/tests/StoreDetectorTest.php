@@ -60,7 +60,7 @@ EOD
 EOD
         );
 
-        $this->db->create_table($this->expected_detector->getStatsTableName(), ['`exp` VARCHAR(10) NOT NULL', '`project` VARCHAR(100) NOT NULL', '`version` VARCHAR(100) NOT NULL',
+        $this->db->create_table($this->expected_detector->getStatsTableName(), ['`exp` VARCHAR(10) NOT NULL', '`project` VARCHAR(30) NOT NULL', '`version` VARCHAR(30) NOT NULL',
             'PRIMARY KEY(`exp`, `project`, `version`)']);
         $uploader->processData("ex1", $data);
         $actual_detector = $this->db->getOrCreateDetector("-d-");

@@ -76,7 +76,7 @@ class FindingsUploader
     {
         $this->logger->info("Create table: " . $table_name);
         $this->db->create_table($table_name, ['`exp` VARCHAR(10) NOT NULL',
-            '`project` VARCHAR(100) NOT NULL', '`version` VARCHAR(100) NOT NULL', '`misuse` VARCHAR(100) NOT NULL',
+            '`project` VARCHAR(30) NOT NULL', '`version` VARCHAR(30) NOT NULL', '`misuse` VARCHAR(30) NOT NULL',
             '`rank` VARCHAR(10) NOT NULL', 'PRIMARY KEY(`exp`, `project`, `version`, `misuse`, `rank`)']);
         return ['exp', 'project', 'version', 'misuse', 'rank'];
     }
@@ -85,7 +85,7 @@ class FindingsUploader
     {
         $this->logger->info("Create table: " . $table_name);
         $this->db->create_table($table_name,
-            ['`exp` VARCHAR(10) NOT NULL', '`project` VARCHAR(100) NOT NULL', '`version` VARCHAR(100) NOT NULL',
+            ['`exp` VARCHAR(10) NOT NULL', '`project` VARCHAR(30) NOT NULL', '`version` VARCHAR(30) NOT NULL',
                 'PRIMARY KEY(`exp`, `project`, `version`)']);
         return ['exp', 'project', 'version'];
     }
