@@ -50,7 +50,7 @@ $app->group('/api/upload', function () use ($app, $settings, $database) {
             $experiment = $args['experiment'];
             $run = decodeJsonBody($request);
             if (!$run) {
-                return error_response($response, $this->logger, 400, "empty: " . print_r($request->getBody(), true));
+                return error_response($response, $this->logger, 400, "empty: " . print_r($_POST, true));
             }
             $detector = $run->{'detector'};
             if (!$detector) {
