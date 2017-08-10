@@ -160,6 +160,9 @@ mubench.reviewsite/upload/
 mubench.reviewsite/vendor/
 mubench.reviewsite/composer.phar
 
+# local default-configuration file
+/default.config
+
 # convenience scripts to build detector versions/run experiments
 build_*
 run_*
