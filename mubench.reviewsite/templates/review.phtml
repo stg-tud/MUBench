@@ -196,7 +196,6 @@ use Parsedown;
             sort($columns);
             ?>
 
-
         <tr>
             <th>Hit</th>
             <th>Rank</th>
@@ -254,6 +253,8 @@ use Parsedown;
                             });
                         };
                     </script>
+                <?php elseif(strlen($hit[$column]) > 4 && substr($hit[$column], -4) === ".png"): ?>
+                    <img src="<?= "{$uploads_url_prefix}/{$experiment->getId()}/{$detector->name}/{$misuse->getProject()}/{$misuse->getVersion()}/{$hit[$column]}" ?>" />
                 <?php else : ?>
                     <?= $markdown_parser->text($hit[$column]); ?>
                 <?php endif; ?>

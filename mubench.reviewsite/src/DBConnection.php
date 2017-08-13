@@ -129,16 +129,6 @@ class DBConnection
         return $runs;
     }
 
-    private function parseMarkdownInQuery($query){
-        foreach($query as $index => $row){
-            foreach($row as $key => $value){
-                $row[$key] = $this->markdown_parser->text($value);
-            }
-            $query[$index] = $row;
-        }
-        return $query;
-    }
-
     public function getOrCreateDetector($detector_name)
     {
         $detector_data = $this->table('detectors')->select('id')->where('name', $detector_name)->first();
