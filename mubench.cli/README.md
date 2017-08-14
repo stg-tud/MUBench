@@ -61,7 +61,7 @@ The must contain at least one entry. By default, MUBench uses the newest version
 
 `md5` is the md5 hash of the `detector/my-detector/my-detector.jar` file. MUBench will use this value to check the integrity of the detector if it was loaded from a remote source.
 
-`tag` is optional and can be used to reference specific detector releases. To request a specific detector release, add `-tag my-tag` to the MuBench command.
+`tag` is optional and can be used to reference specific detector releases. To request a specific detector release, add `--tag my-tag` to the MuBench command.
 
 ## Detector.py
 
