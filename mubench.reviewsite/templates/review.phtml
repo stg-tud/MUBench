@@ -399,11 +399,11 @@ use MuBench\ReviewSite\Model\Experiment;
                 }
                 function onInput() {
                     var tag_name_input = document.getElementById("tag-input").value;
-                    var assigned_tags = document.getElementById("tags").childNodes;
+                    var suggested_tags = document.getElementById("tags").childNodes;
                     var form = document.getElementById("tag-form");
-                    // loops tags in dropdown to submit the form when one is clicked
-                    for (var i = 0; i < assigned_tags.length; i++) {
-                        if (assigned_tags[i].value === tag_name_input) {
+                    // loops over tags in the autocompletion list to submit the form when one is clicked
+                    for (var i = 0; i < suggested_tags.length; i++) {
+                        if (suggested_tags[i].value === tag_name_input) {
                             form.submit();
                             break;
                         }
