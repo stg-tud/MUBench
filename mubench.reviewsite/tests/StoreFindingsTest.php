@@ -153,7 +153,7 @@ class StoreFindingsTest extends DatabaseTestCase
                 'version' => '-v-',
                 'description' => '-desc-',
                 'fix_description' => '-fix-desc-',
-                'violation_types' => 'superfluous/condition/null_check',
+                'violation_types' => [0 => 'superfluous/condition/null_check'],
                 'file' => '-f-',
                 'method' => '-method-',
                 'diff_url' => '-diff-',
