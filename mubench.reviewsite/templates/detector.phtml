@@ -115,7 +115,11 @@ $columns_to_ignore = array(
                     <?= htmlspecialchars($misuse->getShortId()); ?></td>
                 <?php if ($experiment->getId() !== "ex2") : ?>
                     <td class="<?= $style_classes ?>">
-                        <?= implode("<br/>", $misuse->getViolationTypes()) ?>
+                        <ul>
+                            <?php foreach($misuse->getViolationTypes() as $type): ?>
+                                <li><?= htmlspecialchars($type) ?></li>
+                            <?php endforeach; ?>
+                        </ul>
                     </td>
                 <?php endif; ?>
                 <?php

@@ -81,7 +81,7 @@ class Misuse
 
     public function getViolationTypes()
     {
-        return explode(";", $this->data["violation_types"]);
+        return $this->data["violation_types"];
     }
 
     public function getSnippets(){
