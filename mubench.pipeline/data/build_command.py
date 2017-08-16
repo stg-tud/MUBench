@@ -64,7 +64,7 @@ class BuildCommand:
         return output
 
     def _get_dependencies(self, shell_output: str, project_dir: str, logger: Logger) -> Set[str]:
-        return []
+        return set()
 
 
 class MavenCommand(BuildCommand):
