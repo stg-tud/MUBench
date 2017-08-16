@@ -76,6 +76,15 @@ class TestBuildCommand:
         assert_equals(["arg 1", "arg 2"], uut.args)
 
     @patch("data.build_command.Shell.exec")
+    def test_quotes_args_for_execution(self, shell_mock):
+        uut = BuildCommand.create("-command- 'arg 1'")
+
+        uut.execute("-pdir-", self.logger)
+
+        shell_mock.assert_called_with("-command- 'arg 1'",
+                                      cwd="-pdir-", logger=ANY)
+
+    @patch("data.build_command.Shell.exec")
     def test_raises_on_error(self, shell_mock):
         shell_mock.side_effect = CommandFailedError("-command-", "-output-")
         uut = BuildCommand.create("-some_command-")

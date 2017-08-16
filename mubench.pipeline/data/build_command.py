@@ -55,7 +55,7 @@ class BuildCommand:
         raise NotImplementedError
 
     def _get_command(self, args: List[str]) -> str:
-        return ' '.join([self._name] + self._prepare_args(args))
+        return ' '.join(shlex.quote(s) for s in [self._name] + self._prepare_args(args))
 
     def _prepare_args(self, args: List[str]) -> List[str]:
         return args
