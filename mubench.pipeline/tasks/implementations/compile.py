@@ -170,6 +170,6 @@ class Compile(ProjectVersionTask):
                 # dependency is a classes directory
                 dep_name = os.path.relpath(dependency, compile_base_path)
                 dep_name = dep_name.replace(os.sep, '-')
-                _create_jar(dependency, os.path.join(dep_dir, dep_name + ".jar"))
+                Compile.__create_jar(dependency, os.path.join(dep_dir, dep_name + ".jar"))
             else:
                 shutil.copy(dependency, dep_dir)
