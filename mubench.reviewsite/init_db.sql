@@ -80,8 +80,8 @@ CREATE TABLE IF NOT EXISTS `misuse_types` (
   `version` varchar(100) NOT NULL,
   `misuse` varchar(100) NOT NULL,
   `type` int(11) NOT NULL,
-  KEY `lookup` (`project`,`version`,`misuse`)
-  UNIQUE KEY (`project`,`version`,`misuse`, `type`)
+  KEY `lookup` (`project`,`version`,`misuse`),
+  UNIQUE KEY `misuse_type` (`project`,`version`,`misuse`, `type`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=latin1;
 
 CREATE TABLE IF NOT EXISTS `types` (
