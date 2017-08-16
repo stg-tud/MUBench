@@ -66,12 +66,12 @@ class MetadataUploader
 
     private function getOrCreateViolationType($violation_type)
     {
-        $type = $this->db->table('types')->where('name', $violation_type)->get();
+        $type = $this->db->table('types')->where('name', $violation_type)->first();
         if(!$type) {
             $this->db->table('types')->insert(['name' => $violation_type]);
-            $type = $this->db->table('types')->where('name', $violation_type)->get();
+            $type = $this->db->table('types')->where('name', $violation_type)->first();
         }
-        return $type[0];
+        return $type;
     }
 
     private function insertPattern($misuse, $id, $code, $line)
