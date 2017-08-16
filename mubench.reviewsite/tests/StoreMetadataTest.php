@@ -43,7 +43,7 @@ class StoreMetadataTest extends DatabaseTestCase
                     'diff_url' => '-diff-',
                     'snippets' => [0 => ['line' => '273', 'snippet' => '-code-']],
                     'patterns' => [0 => ['name' => '-p-id-', 'code' => '-pattern-code-','line' => '1']],
-                        'tags' => []
+                    'tags' => []
                     ],
                     [
                         [

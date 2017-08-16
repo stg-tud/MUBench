@@ -125,4 +125,34 @@ class TagTest extends DatabaseTestCase
 
         self::assertEquals($expected_tags, $misuse_tags);
     }
+
+    function test_add_unknown_tag()
+    {
+        $misuse_tag1 = [
+            "tag" => 'unknown_tag',
+            "exp" => 1,
+            "detector" => 1,
+            "project" => "-project-",
+            "version" => "-version-",
+            "misuse" => "-misuse-"
+        ];
+        $misuse_tag2 = [
+            "tag" => 'test2',
+            "exp" => 1,
+            "detector" => 1,
+            "project" => "-project-",
+            "version" => "-version-",
+            "misuse" => "-misuse-"
+        ];
+
+        $expected_tags = [
+            ['id' => 4, 'name' => 'unknown_tag'],
+            ['id' => 2, 'name' => 'test2']
+        ];
+        $this->tagController->saveTagForMisuse($misuse_tag1);
+        $this->tagController->saveTagForMisuse($misuse_tag2);
+        $misuse_tags = $this->db->getTagsForMisuse(1, 1, "-project-", "-version-", "-misuse-");
+
+        self::assertEquals($expected_tags, $misuse_tags);
+    }
 }

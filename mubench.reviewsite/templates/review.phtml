@@ -398,12 +398,12 @@ use MuBench\ReviewSite\Model\Experiment;
                     b.type = "hidden";
                 }
                 function onInput() {
-                    console.log("Hello");
-                    var val = document.getElementById("tag-input").value;
-                    var opts = document.getElementById("tags").childNodes;
+                    var tag_name_input = document.getElementById("tag-input").value;
+                    var assigned_tags = document.getElementById("tags").childNodes;
                     var form = document.getElementById("tag-form");
-                    for (var i = 0; i < opts.length; i++) {
-                        if (opts[i].value === val) {
+                    // loops tags in dropdown to submit the form when one is clicked
+                    for (var i = 0; i < assigned_tags.length; i++) {
+                        if (assigned_tags[i].value === tag_name_input) {
                             form.submit();
                             break;
                         }

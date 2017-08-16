@@ -26,12 +26,7 @@ class TagController
         $project = $misuse['project'];
         $version = $misuse['version'];
         $misuse_id = $misuse['misuse'];
-        $this->logger->info("saving tag $tag_id for $experiment, $detector, " .
-            $project .
-            ", " .
-            $version .
-            ", " .
-            $misuse_id);
+        $this->logger->info("saving tag $tag_id for $experiment, $detector, $project, $version, $misuse_id");
         $misuse_tags = $this->db->getTagsForMisuse($experiment, $detector, $project, $version, $misuse_id);
         foreach ($misuse_tags as $misuse_tag) {
             if ($tag_id === $misuse_tag['id']) {
@@ -63,7 +58,7 @@ class TagController
         if (!$tag) {
             $this->saveNewTag($name);
         }
-        return $this->db->table('tags')->where('name', $name)->get()[0];
+        return $this->db->table('tags')->where('name', $name)->first();
     }
 
     private function saveNewTag($name)

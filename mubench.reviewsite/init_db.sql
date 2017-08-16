@@ -92,12 +92,12 @@ CREATE TABLE IF NOT EXISTS `types` (
 
 CREATE TABLE IF NOT EXISTS `misuse_tags` (
   `exp` varchar(10) NOT NULL,
-  `detector` varchar(100) NOT NULL,
-  `project` varchar(100) NOT NULL,
-  `version` varchar(100) NOT NULL,
-  `misuse` varchar(100) NOT NULL,
+  `detector` varchar(10) NOT NULL,
+  `project` varchar(30) NOT NULL,
+  `version` varchar(30) NOT NULL,
+  `misuse` varchar(30) NOT NULL,
   `tag` int(11) NOT NULL,
-  KEY `lookup` (`exp`,`detector`,`project`,`version`,`misuse`)
+  PRIMARY KEY `lookup` (`exp`,`detector`,`project`,`version`,`misuse`,`tag`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=latin1;
 
 CREATE TABLE IF NOT EXISTS `tags` (
