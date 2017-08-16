@@ -30,7 +30,7 @@ class DatasetCheck(ProjectVersionMisuseTask):
         return super().process_project(project)
 
     def process_project_version(self, project: Project, version: ProjectVersion):
-        yaml_path = "{}/{}/version.yml".format(project.id, version.version_id)
+        yaml_path = "{}/versions/{}/version.yml".format(project.id, version.version_id)
 
         if "revision" not in version._YAML:
             self._missing_key("revision", yaml_path)
@@ -52,6 +52,50 @@ class DatasetCheck(ProjectVersionMisuseTask):
         return super().process_project_version(project, version)
 
     def process_project_version_misuse(self, project: Project, version: ProjectVersion, misuse: Misuse):
+        yaml_path = "{}/misuses/{}/misuse.yml".format(project.id, misuse.misuse_id)
+
+        if "location" not in misuse._YAML:
+            self._missing_key("location", yaml_path)
+        else:
+            location = misuse._YAML["location"]
+            if "file" not in location:
+                self._missing_key("location.file", yaml_path)
+            if "method" not in location:
+                self._missing_key("location.method", yaml_path)
+
+        if "api" not in misuse._YAML:
+            self._missing_key("api", yaml_path)
+
+        if not misuse._YAML.get("characteristics", None):
+            self._missing_key("characteristics", yaml_path)
+
+        if not misuse._YAML.get("description", None):
+            self._missing_key("description", yaml_path)
+
+        if "fix" not in misuse._YAML:
+            self._missing_key("fix", yaml_path)
+        else:
+            fix = misuse._YAML["fix"]
+            if "commit" not in fix:
+                self._missing_key("fix.commit", yaml_path)
+            if "revision" not in fix:
+                self._missing_key("fix.revision", yaml_path)
+
+        if "internal" not in misuse._YAML:
+            self._missing_key("internal", yaml_path)
+
+        if "report" not in misuse._YAML:
+            self._missing_key("report", yaml_path)
+
+        if "source" not in misuse._YAML:
+            self._missing_key("source", yaml_path)
+        else:
+            source = misuse._YAML["source"]
+            if "name" not in source:
+                self._missing_key("source.name", yaml_path)
+            if "url" not in source:
+                self._missing_key("source.url", yaml_path)
+
         return self.ok()
 
     def _missing_key(self, tag: str, file_path: str):
