@@ -126,7 +126,7 @@ use MuBench\ReviewSite\Model\Experiment;
                                 <input type="hidden" name="version" value="<?= htmlspecialchars($misuse->getVersion()); ?>">
                                 <input type="hidden" name="misuse" value="<?= htmlspecialchars($misuse->id); ?>">
                                 <input type="hidden" name="path" value="<?= htmlspecialchars($path); ?>">
-                                <input id="tag-input" class="tag-input" onInput='onInput()' list="tags" name="tag" placeholder="add new tag" autocomplete="off">
+                                <input id="tag-input" class="tag-input" maxlength="100" list="tags" name="tag" placeholder="add new tag" autocomplete="off">
                                 <datalist id="tags">
                                     <?php foreach($tags as $tag): ?>
                                         <option value="<?= htmlspecialchars($tag['name']); ?>">
@@ -396,18 +396,6 @@ use MuBench\ReviewSite\Model\Experiment;
                         elem.style.display = "block";
                     }
                     b.type = "hidden";
-                }
-                function onInput() {
-                    var tag_name_input = document.getElementById("tag-input").value;
-                    var suggested_tags = document.getElementById("tags").childNodes;
-                    var form = document.getElementById("tag-form");
-                    // loops over tags in the autocompletion list to submit the form when one is clicked
-                    for (var i = 0; i < suggested_tags.length; i++) {
-                        if (suggested_tags[i].value === tag_name_input) {
-                            form.submit();
-                            break;
-                        }
-                    }
                 }
             </script>
             </body>
