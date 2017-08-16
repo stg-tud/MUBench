@@ -27,7 +27,7 @@ class MetadataUploader
         $this->logger->info("saving metadata for $project, $version, $misuse");
         $this->insertMetadata($project, $version, $misuse, $json->{'description'}, $json->{'fix'}->{'description'},
             $json->{'fix'}->{'diff-url'}, $json->{'location'}->{'file'}, $json->{'location'}->{'method'});
-        $this->addViolationTypeToMisuse($project, $version, $misuse, $json->{'violation_types'});
+        $this->addViolationTypesToMisuse($project, $version, $misuse, $json->{'violation_types'});
         foreach ($json->{'patterns'} as $p) {
             $this->insertPattern($misuse, $p->{'id'}, $p->{'snippet'}->{'code'}, $p->{'snippet'}->{'first_line'});
         }
@@ -54,9 +54,9 @@ class MetadataUploader
             'description' => $desc, 'fix_description' => $fix_desc, 'diff_url' => $diff_url, 'file' => $file, 'method' => $method]);
     }
 
-    private function addViolationTypeToMisuse($project, $version, $misuse, $violation_types)
+    private function addViolationTypesToMisuse($project, $version, $misuse, $violation_types)
     {
-        $this->logger->info("saving violation types for misuses");
+        $this->logger->info("saving violation types for misuse");
         foreach($violation_types as $type_name){
             $violation_type = $this->getOrCreateViolationType($type_name);
             $this->logger->info(print_r($violation_type, true));

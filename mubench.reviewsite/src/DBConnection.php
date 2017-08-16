@@ -215,10 +215,9 @@ class DBConnection
 
     private function getViolationTypeNamesForMisuse($project, $version, $misuse)
     {
-        $type_ids = $this->table('misuse_types')->select('type')->where('project', $project)->where('version', $version)->where('misuse', $misuse)->get();
-        $type_names = [];
-        foreach($type_ids as $type_id){
-            $type = $this->getViolationTypeForId($type_id);
+        $types = $this->table('misuse_types')->select('types.name')->innerJoin('types', 'misuse_types.type', '=', 'types.id')->where('project', $project)->where('version', $version)->where('misuse', $misuse)->get();
+        $type_names = array();
+        foreach($types as $type){
             $type_names[] = $type['name'];
         }
         return $type_names;

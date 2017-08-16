@@ -76,12 +76,11 @@ CREATE TABLE IF NOT EXISTS `finding_snippets` (
 ) ENGINE=MyISAM  DEFAULT CHARSET=latin1;
 
 CREATE TABLE IF NOT EXISTS `misuse_types` (
-  `project` varchar(100) NOT NULL,
-  `version` varchar(100) NOT NULL,
-  `misuse` varchar(100) NOT NULL,
+  `project` varchar(30) NOT NULL,
+  `version` varchar(30) NOT NULL,
+  `misuse` varchar(30) NOT NULL,
   `type` int(11) NOT NULL,
-  KEY `lookup` (`project`,`version`,`misuse`),
-  UNIQUE KEY `misuse_type` (`project`,`version`,`misuse`, `type`)
+  PRIMARY KEY `misuse_type` (`project`,`version`,`misuse`, `type`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=latin1;
 
 CREATE TABLE IF NOT EXISTS `types` (
