@@ -36,6 +36,10 @@ class DatasetCheck(ProjectVersionMisuseTask):
     def process_project_version(self, project: Project, version: ProjectVersion):
         self._check_required_keys_in_version_yaml(project, version)
 
+        for misuse_id in version._yaml.get("misuses", []) or []:
+            if misuse_id not in [misuse.misuse_id for misuse in version.misuses]:
+                self._unknown_misuse(version.id, misuse_id)
+
         return super().process_project_version(project, version)
 
     def _check_required_keys_in_version_yaml(self, project: Project, version: ProjectVersion):
@@ -118,3 +122,6 @@ class DatasetCheck(ProjectVersionMisuseTask):
 
     def _version_misuse_conflict(self, project_id: str, conflicting_id: str):
         self.logger.warning('Conflicting version and misuse "{}" in "{}"'.format(conflicting_id, project_id))
+
+    def _unknown_misuse(self, version_id: str, unknown_misuse_id: str):
+        self.logger.warning('Unknown misuse "{}" in "{}"'.format(unknown_misuse_id, version_id))

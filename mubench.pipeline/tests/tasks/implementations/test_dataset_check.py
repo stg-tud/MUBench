@@ -85,6 +85,14 @@ class TestDatasetCheckProjectVersion:
 
         self.uut._missing_key.assert_any_call("misuses", "-project-/versions/-id-/version.yml")
 
+    def test_misuses_none(self):
+        project = create_project("-project-", meta={"empty": ''})
+        version = create_version("-id-", meta={"misuses": None}, project=project)
+
+        self.uut.process_project_version(project, version)
+
+        self.uut._missing_key.assert_any_call("misuses", "-project-/versions/-id-/version.yml")
+
     def test_missing_build(self):
         meta = {"misuses": ["1"]}
         project = create_project("-project-", meta={"empty": ''})
@@ -130,6 +138,18 @@ class TestDatasetCheckProjectVersion:
         self.uut.process_project_version(project, version)
 
         self.uut._missing_key.assert_any_call("build.src", "-project-/versions/-id-/version.yml")
+
+
+    def test_non_existent_misuse(self):
+        self.uut._unknown_misuse = MagicMock()
+        project = create_project("-project-")
+        version = create_version("-id-", meta={"misuses": ["-misuse-"]}, project=project)
+        version._MISUSES = []
+
+        self.uut.process_project_version(project, version)
+
+        self.uut._unknown_misuse.assert_any_call(version.id, "-misuse-")
+
 
 class TestDatasetCheckMisuse:
     def setup(self):
