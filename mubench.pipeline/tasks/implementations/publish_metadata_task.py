@@ -10,7 +10,7 @@ from data.misuse import Misuse
 from data.project import Project
 from tasks.project_misuse_task import ProjectMisuseTask
 from utils.io import safe_read
-from utils.web_util import post, as_markdown
+from utils.web_util import post
 
 
 class PublishMetadataTask(ProjectMisuseTask):
