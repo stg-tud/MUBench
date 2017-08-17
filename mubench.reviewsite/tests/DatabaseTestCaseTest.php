@@ -23,7 +23,9 @@ class DatabaseTestCaseTest extends DatabaseTestCase
             ['name' => 'meta_snippets'],
             ['name' => 'finding_snippets'],
             ['name' => 'misuse_types'],
-            ['name' => 'types']
+            ['name' => 'types'],
+            ['name' => 'misuse_tags'],
+            ['name' => 'tags']
         ];
 
         self::assertEquals($expectedTables, $actual, "in any order", $delta = 0.0, $maxDepth = 2, $canonicalize = true);
