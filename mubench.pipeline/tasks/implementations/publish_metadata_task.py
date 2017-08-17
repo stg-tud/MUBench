@@ -45,7 +45,7 @@ class PublishMetadataTask(ProjectMisuseTask):
             "misuse": misuse.id,
             "location": misuse.location.__dict__,
             "description": misuse.description,
-            "violation_types": as_markdown(misuse.characteristics),
+            "violation_types": misuse.characteristics,
             "fix": {
                 "description": misuse.fix.description,
                 "diff-url": misuse.fix.commit
