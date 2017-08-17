@@ -62,7 +62,7 @@ Entries look like this:
 The must contain at least one entry. By default, MUBench uses the newest version listed. Each entry consists of the following keys:
 
 * `cli-version` - The [MUBench Runner](#runner) version implemented by the respective detector release. This information is used to invoke your detector.
-* `md5` - The md5 hash of the `detector/mydetector/mydetector.jar` file. MUBench will use this value to check the integrity of the detector, if it was loaded from a remote source.
+* `md5` (Optional) - The MD5 hash of the `detector/mydetector/mydetector.jar` file. MUBench will use this value to check the integrity of the detector, if it is loaded from the remote detector registry. The MD5 is mandatory in this case.
 * `tag` (Optional) - Used to reference specific detector releases. To request a specific detector release, add `--tag my-tag` to the MuBench command.
 
 ## Detector.py
