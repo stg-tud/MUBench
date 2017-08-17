@@ -96,10 +96,13 @@ use Parsedown;
                     <?php if ($misuse->hasDiff()): ?>(<a href="<?= $misuse->getDiff(); ?>">see diff</a>)<?php endif ?>
                 </td></tr>
             <tr><td class="vtop"><b>Violation Types:</b></td><td>
-
-            <?php if($misuse->hasViolationTypes()) : ?>
-                <?= $markdown_parser->text($misuse->getViolationTypes()); ?>
-            <?php endif; ?>
+                <?php if($misuse->hasViolationTypes()) : ?>
+                <ul>
+                    <?php foreach($violation_types as $type) : ?>
+                    <li><?= htmlspecialchars($type); ?></li>
+                    <?php endforeach; ?>
+                </ul>
+                <?php endif; ?>
             </td></tr>
         <?php else : ?>
             <tr><td><b>Finding:</b></td><td><?= $markdown_parser->text($misuse->getShortId()); ?></td></tr>
