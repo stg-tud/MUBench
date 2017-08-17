@@ -14,6 +14,11 @@ class DatasetCheck(ProjectVersionMisuseTask):
         super().__init__()
 
     def process_project(self, project: Project):
+        self._check_required_keys_in_project_yaml(project)
+
+        return super().process_project(project)
+
+    def _check_required_keys_in_project_yaml(self, project: Project):
         yaml_path = "{}/project.yml".format(project.id)
 
         if "name" not in project._YAML:
@@ -27,9 +32,12 @@ class DatasetCheck(ProjectVersionMisuseTask):
             if "url" not in project._YAML["repository"]:
                 self._missing_key("repository.url", yaml_path)
 
-        return super().process_project(project)
-
     def process_project_version(self, project: Project, version: ProjectVersion):
+        self._check_required_keys_in_version_yaml(project, version)
+
+        return super().process_project_version(project, version)
+
+    def _check_required_keys_in_version_yaml(self, project: Project, version: ProjectVersion):
         yaml_path = "{}/versions/{}/version.yml".format(project.id, version.version_id)
 
         if "revision" not in version._YAML:
@@ -49,9 +57,12 @@ class DatasetCheck(ProjectVersionMisuseTask):
         if not version._YAML.get("misuses", None):
             self._missing_key("misuses", yaml_path)
 
-        return super().process_project_version(project, version)
-
     def process_project_version_misuse(self, project: Project, version: ProjectVersion, misuse: Misuse):
+        self._check_required_keys_in_misuse_yaml(project, version, misuse)
+
+        return self.ok()
+
+    def _check_required_keys_in_misuse_yaml(self, project: Project, version: ProjectVersion, misuse: Misuse):
         yaml_path = "{}/misuses/{}/misuse.yml".format(project.id, misuse.misuse_id)
 
         if "location" not in misuse._YAML:
@@ -95,8 +106,6 @@ class DatasetCheck(ProjectVersionMisuseTask):
                 self._missing_key("source.name", yaml_path)
             if "url" not in source:
                 self._missing_key("source.url", yaml_path)
-
-        return self.ok()
 
     def _missing_key(self, tag: str, file_path: str):
         self.logger.warning('Missing "{}" in "{}".'.format(tag, file_path))
