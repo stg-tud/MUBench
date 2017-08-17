@@ -243,7 +243,7 @@ use Parsedown;
             </td>
             <?php foreach($columns as $column) : ?>
             <td>
-                <?php if(strlen($hit[$column]) > 4 && in_array(substr($hit[$column], -4), [".png", ".svg"])) : ?>
+                <?php if(strlen($hit[$column]) > 4 && in_array(substr($hit[$column], -4), [".svg"])) : ?>
                     <? $object_id = $column . $hit['rank'] ?>
                     <object id="<?= $object_id ?>" type="image/svg+xml" data="<?= "{$uploads_url_prefix}/{$experiment->getId()}/{$detector->name}/{$misuse->getProject()}/{$misuse->getVersion()}/{$hit[$column]}" ?>" style="width: 300px; height: 300px;"></object>
                     <script>
@@ -253,7 +253,7 @@ use Parsedown;
                             });
                         };
                     </script>
-                <?php elseif(strlen($hit[$column]) > 4 && substr($hit[$column], -4) === ".png"): ?>
+                <?php elseif(strlen($hit[$column]) > 4 && substr($hit[$column], -4) === ".png") : ?>
                     <img src="<?= "{$uploads_url_prefix}/{$experiment->getId()}/{$detector->name}/{$misuse->getProject()}/{$misuse->getVersion()}/{$hit[$column]}" ?>" />
                 <?php else : ?>
                     <?= $markdown_parser->text($hit[$column]); ?>
