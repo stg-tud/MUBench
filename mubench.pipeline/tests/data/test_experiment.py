@@ -28,16 +28,6 @@ class TestExperiment:
         assert_is_instance(run.executions[0], DetectOnlyExecution)
         assert_is_instance(run.executions[0]._findings_filter, PotentialHits)
 
-    def test_provided_patterns_run_no_patterns(self):
-        self.version._MISUSES = [create_misuse("-1-", project=self.project, patterns=[])]
-
-        experiment = ProvidedPatternsExperiment(self.detector, "-findings_path-")
-
-        run = experiment.get_run(self.version)
-
-        assert_is_instance(run, Run)
-        assert_equals(0, len(run.executions))
-
     def test_top_findings_run(self):
         experiment = TopFindingsExperiment(self.detector, "-findings_path-", 42)
 
@@ -57,3 +47,15 @@ class TestExperiment:
         assert_is_instance(run, Run)
         assert_equals(1, len(run.executions))
         assert_is_instance(run.executions[0], MineAndDetectExecution)
+
+
+class TestProvidedPatternsExperiment:
+    def test_creates_empty_execution_if_no_patterns(self):
+        detector = StubDetector()
+        project = create_project("-project-")
+        version = create_version("-version-", project=project)
+
+        experiment = ProvidedPatternsExperiment(detector, "-base-path-")
+        run = experiment.get_run(version)
+
+        assert not run.executions
