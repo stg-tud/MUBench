@@ -3,6 +3,7 @@ from os.path import exists
 from typing import Optional, List
 from urllib.error import URLError
 
+from data.detector import Detector
 from data.experiments import Experiment, ProvidedPatternsExperiment
 from data.project import Project
 from data.project_version import ProjectVersion
@@ -51,7 +52,10 @@ class Detect(ProjectVersionTask):
         file = self.detector.jar_path
 
         try:
-            download_file(url, file, self.detector.md5)
+            md5 = self.detector.md5
+            if md5 == Detector.NO_MD5:
+                raise ValueError("Missing MD5 for {}".format(self.detector.id))
+            download_file(url, file, md5)
         except (FileNotFoundError, ValueError, URLError) as e:
             logger.error("Download failed: %s", e)
             exit(1)

@@ -4,8 +4,9 @@ from shutil import rmtree
 from tempfile import mkdtemp
 from unittest.mock import MagicMock, ANY, patch
 
-from nose.tools import assert_equals
+from nose.tools import assert_equals, assert_raises
 
+from data.detector import Detector
 from data.detector_execution import MineAndDetectExecution
 from data.experiments import Experiment, ProvidedPatternsExperiment
 from data.findings_filters import FindingsFilter
@@ -91,7 +92,15 @@ class TestDetectorDownload:
     @patch("tasks.implementations.detect.download_file")
     def test_downloads_detector_if_not_available(self, download_mock):
         self.uut._detector_available = MagicMock(return_value=False)
+        self.detector.md5 = ":some-md5:"
 
         self.uut.start()
 
         download_mock.assert_called_with(self.detector.jar_url, self.detector.jar_path, self.detector.md5)
+
+    @patch("tasks.implementations.detect.download_file")
+    def test_aborts_download_if_detector_md5_is_missing(self, download_mock):
+        self.uut._detector_available = MagicMock(return_value=False)
+
+        download_mock.assert_not_called()
+        assert_raises(SystemExit, self.uut.start)

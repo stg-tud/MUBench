@@ -30,9 +30,10 @@ class TestDetector:
 
         assert_equals("-md5-", detector.md5)
 
-    def test_raises_on_missing_md5(self):
+    def test_md5_defaults_to_none(self):
         self.setup_releases([{"cli_version": RunnerInterfaceTestImpl.TEST_VERSION}])
-        assert_raises(ValueError, Detector, self.temp_dir, self.detector_id, [])
+        detector = Detector(self.temp_dir, self.detector_id, [])
+        assert_equals(detector.md5, Detector.NO_MD5)
 
     def test_interface(self):
         self.setup_releases([{"cli_version": RunnerInterfaceTestImpl.TEST_VERSION, "md5": "-md5-"}])

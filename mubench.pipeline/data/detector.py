@@ -12,6 +12,7 @@ from utils.io import read_yaml
 class Detector:
     BASE_URL = "http://www.st.informatik.tu-darmstadt.de/artifacts/mubench/detectors"
     RELEASES_FILE = "releases.yml"
+    NO_MD5 = "md5 not specified"
 
     def __init__(self, detectors_path: str, detector_id: str, java_options: List[str], requested_release: Optional[str] = None):
         self.id = detector_id
@@ -27,10 +28,7 @@ class Detector:
         else:
             raise ValueError("Missing CLI version for {}".format(detector_id))
 
-        if "md5" in release:
-            self.md5 = release["md5"]
-        else:
-            raise ValueError("Missing MD5 for {}".format(detector_id))
+        self.md5 = release.get("md5", Detector.NO_MD5)
 
         self.jar_path = join(self.path, self.base_name + ".jar")
         self.jar_url = "{}/{}/{}/{}.jar".format(Detector.BASE_URL, release_tag, cli_version, self.base_name)
