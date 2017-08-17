@@ -32,6 +32,7 @@ class DatasetCheck(ProjectVersionMisuseTask):
             if "url" not in project._YAML["repository"]:
                 self._missing_key("repository.url", yaml_path)
 
+
     def process_project_version(self, project: Project, version: ProjectVersion):
         self._check_required_keys_in_version_yaml(project, version)
 
@@ -59,6 +60,9 @@ class DatasetCheck(ProjectVersionMisuseTask):
 
     def process_project_version_misuse(self, project: Project, version: ProjectVersion, misuse: Misuse):
         self._check_required_keys_in_misuse_yaml(project, version, misuse)
+
+        if version.version_id == misuse.misuse_id:
+            self._version_misuse_conflict(project.id, version.version_id)
 
         return self.ok()
 
@@ -109,3 +113,6 @@ class DatasetCheck(ProjectVersionMisuseTask):
 
     def _missing_key(self, tag: str, file_path: str):
         self.logger.warning('Missing "{}" in "{}".'.format(tag, file_path))
+
+    def _version_misuse_conflict(self, project_id: str, conflicting_id: str):
+        self.logger.warning('Conflicting version and misuse "{}" in "{}"'.format(conflicting_id, project_id))

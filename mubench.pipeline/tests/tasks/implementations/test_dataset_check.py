@@ -42,6 +42,17 @@ class TestDatasetCheckProject:
 
         self.uut._missing_key.assert_any_call("repository.url", "-id-/project.yml")
 
+    def test_version_and_misuse_with_same_name(self):
+        self.uut._version_misuse_conflict = MagicMock()
+        project = create_project("-project-")
+        misuse = create_misuse("-conflict-", project=project)
+        version = create_version("-conflict-", project=project, misuses=[misuse])
+
+        self.uut.process_project(project)
+
+        self.uut._version_misuse_conflict.assert_any_call("-project-", "-conflict-")
+
+
 class TestDatasetCheckProjectVersion:
     def setup(self):
         self.uut = DatasetCheck()
