@@ -8,6 +8,7 @@ from data.project_version import ProjectVersion
 from data.runner_interface import RunnerInterface
 from utils.io import read_yaml
 
+
 class Detector:
     BASE_URL = "http://www.st.informatik.tu-darmstadt.de/artifacts/mubench/detectors"
     RELEASES_FILE = "releases.yml"
