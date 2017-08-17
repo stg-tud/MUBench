@@ -44,9 +44,9 @@ class TestDatasetCheckProject:
 
     def test_version_and_misuse_with_same_name(self):
         self.uut._version_misuse_conflict = MagicMock()
-        project = create_project("-project-")
-        misuse = create_misuse("-conflict-", project=project)
-        version = create_version("-conflict-", project=project, misuses=[misuse])
+        project = create_project("-project-", meta={'empty': None})
+        misuse = create_misuse("-conflict-", project=project, meta={'empty': None})
+        version = create_version("-conflict-", project=project, misuses=[misuse], meta={'empty': None})
 
         self.uut.process_project(project)
 
