@@ -24,9 +24,10 @@ class MetadataUploader
         $misuse = $json->{'misuse'};
         $this->deleteMetadata($json->{'misuse'});
         $this->deletePatterns($json->{'misuse'});
+        $this->logger->info("saving metadata for $project, $version, $misuse");
         $this->insertMetadata($project, $version, $misuse, $json->{'description'}, $json->{'fix'}->{'description'},
-            $json->{'fix'}->{'diff-url'}, $this->arrayToString($json->{'violation_types'}),
-            $json->{'location'}->{'file'}, $json->{'location'}->{'method'});
+            $json->{'fix'}->{'diff-url'}, $json->{'location'}->{'file'}, $json->{'location'}->{'method'});
+        $this->addViolationTypesToMisuse($project, $version, $misuse, $json->{'violation_types'});
         foreach ($json->{'patterns'} as $p) {
             $this->insertPattern($misuse, $p->{'id'}, $p->{'snippet'}->{'code'}, $p->{'snippet'}->{'first_line'});
         }
@@ -47,11 +48,30 @@ class MetadataUploader
         $this->db->table('patterns')->where('misuse', $misuse)->delete();
     }
 
-    private function insertMetadata($project, $version, $misuse, $desc, $fix_desc, $diff_url, $violation, $file, $method)
+    private function insertMetadata($project, $version, $misuse, $desc, $fix_desc, $diff_url, $file, $method)
     {
         $this->db->table('metadata')->insert(['project' => $project, 'version' => $version, 'misuse' => $misuse,
-            'description' => $desc, 'fix_description' => $fix_desc, 'diff_url' => $diff_url,
-            'violation_types' => $violation, 'file' => $file, 'method' => $method]);
+            'description' => $desc, 'fix_description' => $fix_desc, 'diff_url' => $diff_url, 'file' => $file, 'method' => $method]);
+    }
+
+    private function addViolationTypesToMisuse($project, $version, $misuse, $violation_types)
+    {
+        $this->logger->info("saving violation types for misuse");
+        foreach($violation_types as $type_name){
+            $violation_type = $this->getOrCreateViolationType($type_name);
+            $this->logger->info(print_r($violation_type, true));
+            $this->db->table('misuse_types')->insert(['project' => $project, 'version' => $version, 'misuse' => $misuse, 'type' => $violation_type['id']]);
+        }
+    }
+
+    private function getOrCreateViolationType($violation_type)
+    {
+        $type = $this->db->table('types')->where('name', $violation_type)->first();
+        if(!$type) {
+            $this->db->table('types')->insert(['name' => $violation_type]);
+            $type = $this->db->table('types')->where('name', $violation_type)->first();
+        }
+        return $type;
     }
 
     private function insertPattern($misuse, $id, $code, $line)

@@ -5,7 +5,6 @@ CREATE TABLE IF NOT EXISTS `metadata` (
   `misuse` varchar(30) NOT NULL,
   `description` text NOT NULL,
   `fix_description` text NOT NULL,
-  `violation_types` text NOT NULL,
   `file` text NOT NULL,
   `method` text NOT NULL,
   `diff_url` text NOT NULL,
@@ -74,6 +73,14 @@ CREATE TABLE IF NOT EXISTS `finding_snippets` (
   `line` int(11) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `lookup` (`detector`,`project`,`version`,`finding`)
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1;
+
+CREATE TABLE IF NOT EXISTS `misuse_types` (
+  `project` varchar(30) NOT NULL,
+  `version` varchar(30) NOT NULL,
+  `misuse` varchar(30) NOT NULL,
+  `type` int(11) NOT NULL,
+  PRIMARY KEY `misuse_type` (`project`,`version`,`misuse`, `type`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=latin1;
 
 CREATE TABLE IF NOT EXISTS `types` (

@@ -111,6 +111,9 @@ class DBConnection
                 /** @var array $reviews */
                 $reviews = $this->getReviews($exp, $detector, $project_id, $version_id, $misuse_id);
                 $snippets = $this->getSnippets($exp, $detector, $project_id, $version_id, $misuse_id);
+                if(strcmp($exp, "ex2") !== 0){
+                    $misuse["violation_types"] = $this->getViolationTypeNamesForMisuse($project_id, $version_id, $misuse_id);
+                }
                 $misuse["snippets"] = $snippets;
                 if(strcmp($exp, "ex1") == 0){
                     $patterns = $this->getPatterns($misuse_id);
@@ -208,6 +211,21 @@ class DBConnection
             ->where('exp', $experiment)->where('project', $project_id)
             ->where('version', $version_id)->where('misuse', $misuse_id)
             ->orderBy($this->query_builder->raw("`rank` * 1"))->get();
+    }
+
+    private function getViolationTypeNamesForMisuse($project, $version, $misuse)
+    {
+        $types = $this->table('misuse_types')->select('types.name')->innerJoin('types', 'misuse_types.type', '=', 'types.id')->where('project', $project)->where('version', $version)->where('misuse', $misuse)->get();
+        $type_names = array();
+        foreach($types as $type){
+            $type_names[] = $type['name'];
+        }
+        return $type_names;
+    }
+
+    private function getViolationTypeForId($type_id)
+    {
+        return $this->table('types')->select('name')->where('id', $type_id)->first();
     }
 
     public function getMisuse($experiment, $detector, $project, $version, $misuse){
