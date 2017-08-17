@@ -2,7 +2,7 @@ import os
 from os.path import join
 from shutil import rmtree
 from tempfile import mkdtemp
-from unittest.mock import MagicMock, ANY
+from unittest.mock import MagicMock, ANY, patch
 
 from nose.tools import assert_equals
 
@@ -84,14 +84,14 @@ class TestDetectorDownload:
         self.compiles_path = join(self.temp_dir, "checkout")
         self.findings_path = join(self.temp_dir, "findings")
 
-        detector = StubDetector()
-        experiment = Experiment("mock experiment", detector, self.findings_path)
+        self.detector = StubDetector()
+        experiment = Experiment("mock experiment", self.detector, self.findings_path)
         self.uut = Detect(self.compiles_path, experiment, None, False)
-        self.uut._download = MagicMock(return_value=True)
 
-    def test_downloads_detector_if_not_available(self):
+    @patch("tasks.implementations.detect.download_file")
+    def test_downloads_detector_if_not_available(self, download_mock):
         self.uut._detector_available = MagicMock(return_value=False)
 
         self.uut.start()
 
-        self.uut._download.assert_called_with()
+        download_mock.assert_called_with(self.detector.jar_url, self.detector.jar_path, self.detector.md5)
