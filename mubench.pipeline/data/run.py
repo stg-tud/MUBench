@@ -11,8 +11,11 @@ class Run:
         self.executions = run_executions
 
     def execute(self, compile_base_path: str, timeout: Optional[int], logger: Logger):
-        for execution in self.executions:
-            execution.execute(compile_base_path, timeout, logger)
+        if not self.executions:
+            logger.info("Nothing to run.")
+        else:
+            for execution in self.executions:
+                execution.execute(compile_base_path, timeout, logger)
 
     def get_potential_hits(self) -> List[SpecializedFinding]:
         potential_hits = []
@@ -64,13 +67,13 @@ class Run:
         return self.executions and all([execution.is_success() for execution in self.executions])
 
     def is_outdated(self):
-        return any([execution.is_outdated() for execution in self.executions])
+        return self.executions and any([execution.is_outdated() for execution in self.executions])
 
     def is_error(self):
-        return any([execution.is_error() for execution in self.executions])
+        return self.executions and any([execution.is_error() for execution in self.executions])
 
     def is_timeout(self):
-        return any([execution.is_timeout() for execution in self.executions])
+        return self.executions and any([execution.is_timeout() for execution in self.executions])
 
     def is_failure(self):
         return self.is_error() or self.is_timeout()

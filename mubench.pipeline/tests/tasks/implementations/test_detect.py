@@ -49,7 +49,8 @@ class TestDetect:
 
         self.test_run.execute.assert_called_with(self.compiles_path, None, ANY)
 
-    def test_skips_detect_if_previous_run_succeeded_but_continues_with_version(self):
+    def test_continues_without_detect_if_previous_run_succeeded(self):
+        self.test_run_execution.is_outdated = lambda: False
         self.test_run.is_success = lambda: True
 
         response = self.uut.process_project_version(self.project, self.version)
@@ -58,6 +59,7 @@ class TestDetect:
         assert_equals([], response)
 
     def test_skips_detect_if_previous_run_was_error(self):
+        self.test_run_execution.is_outdated = lambda: False
         self.test_run.is_error = lambda: True
 
         response = self.uut.process_project_version(self.project, self.version)
@@ -73,14 +75,6 @@ class TestDetect:
 
         self.test_run.execute.assert_called_with(self.compiles_path, None, ANY)
         assert_equals([], response)
-
-    def test_skips_detect_only_if_no_patterns_are_available(self):
-        self.experiment.id = ProvidedPatternsExperiment.ID
-
-        response = self.uut.process_project_version(self.project, self.version)
-
-        self.test_run.execute.assert_not_called()
-        assert_equals([self.version.id], response)
 
 
 class TestDetectorDownload:
