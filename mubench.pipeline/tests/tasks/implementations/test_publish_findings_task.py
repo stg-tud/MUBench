@@ -9,6 +9,7 @@ from data.finding import SpecializedFinding
 from data.snippets import Snippet
 from data.run import Run
 from tasks.implementations.publish_findings_task import PublishFindingsTask
+from tests.data.stub_detector import StubDetector
 from tests.data.test_misuse import create_misuse
 from tests.test_utils.data_util import create_project, create_version
 
@@ -26,8 +27,10 @@ class TestPublishFindingsTask:
         self.test_run.is_success = lambda: False
         self.test_run.is_error = lambda: False
         self.test_run.is_timeout = lambda: False
+        self.test_run.get_runtime = lambda: 0
+        self.test_run.get_number_of_findings = lambda: 0
 
-        self.detector = MagicMock()  # type: Detector
+        self.detector = StubDetector()  # type: Detector
         self.detector.id = "test_detector"
 
         self.experiment = MagicMock()  # type: Experiment
@@ -67,13 +70,11 @@ class TestPublishFindingsTask:
         self.test_run.is_success = lambda: True
         self.test_run.get_runtime = lambda: 42
         potential_hits = [
-            _create_finding({"rank": "-1-", "misuse": "-p-.-m1-", "detector_specific": "-specific1-"}),
-            _create_finding({"rank": "-2-", "misuse": "-p-.-m2-", "detector_specific": "-specific2-"})
+            _create_finding({"rank": "-1-"}),
+            _create_finding({"rank": "-2-"})
         ]
         self.test_run.get_number_of_findings = lambda: 5
         self.test_run.get_potential_hits = lambda: potential_hits
-
-        self.uut._prepare_post = lambda potential_hit, *_: potential_hit
 
         self.uut.process_project_version(self.project, self.version)
 
@@ -85,7 +86,10 @@ class TestPublishFindingsTask:
             "result": "success",
             "runtime": 42.0,
             "number_of_findings": 5,
-            "potential_hits": potential_hits
+            "potential_hits": [
+                {"rank": "-1-", "target_snippets": []},
+                {"rank": "-2-", "target_snippets": []}
+            ]
         })
 
     def test_publish_successful_run_files(self, post_mock):
@@ -194,15 +198,22 @@ class TestPublishFindingsTask:
         post_mock.assert_not_called()
 
     def test_with_markdown(self, post_mock):
-        finding = SpecializedFinding(dict())
-        finding["list"] = ["hello", "world"]
-        finding["dict"] = {"key": "value"}
-        actual = self.uut._to_markdown_dict(finding)
+        self.test_run.is_success = lambda: True
+        potential_hits = [_create_finding({"list": ["hello", "world"], "dict": {"key": "value"}})]
+        self.test_run.get_potential_hits = lambda: potential_hits
+        self.test_run.get_run_info = lambda: {"info": {"k1": "v1"}}
 
-        expected = dict()
-        expected["list"] = "* hello\n* world"
-        expected["dict"] = "key: \nvalue"
-        assert_equals(expected, actual)
+        self.uut.process_project_version(self.project, self.version)
+
+        assert_equals(post_mock.call_args[0][1], {
+            "dataset": self.dataset,
+            "detector": self.detector.id,
+            "project": self.project.id,
+            "version": self.version.version_id,
+            "result": "success",
+            "info": "k1: \nv1",
+            "potential_hits": [{"list": "* hello\n* world", "dict": "key: \nvalue", "target_snippets": []}]
+        })
 
 
 def _create_finding(data: Dict, file_paths=None, snippets=None):

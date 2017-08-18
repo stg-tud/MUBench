@@ -105,7 +105,7 @@ class PublishFindingsTask(ProjectVersionTask):
 
     def __post(self, project, version, run_info, result, upload_data, file_paths):
         data = {}
-        data.update(run_info)
+        data.update(self._to_markdown_dict(run_info))
         data.update({
             "dataset": self.dataset,
             "detector": self.detector.id,
