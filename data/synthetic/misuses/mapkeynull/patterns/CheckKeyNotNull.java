@@ -1,9 +1,11 @@
 import java.util.HashMap;
 
 public class CheckKeyNotNull {
-	public void pattern(HashMap<String, Object> m, String key) {
+	public Object pattern(HashMap<String, Object> m, String key) {
 		if (key != null) {
-			m.get(key);
+			return m.get(key);
+		} else {
+		  return null;
 		}
 	}
 }

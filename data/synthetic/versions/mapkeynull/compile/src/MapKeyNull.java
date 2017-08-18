@@ -1,7 +1,7 @@
 import java.util.HashMap;
 
 public class MapKeyNull {
-	public void misuse(HashMap<String, Object> m, String key) {
-		m.get(key);
+	Object misuse(HashMap<String, Object> m, String key) {
+		return m.get(key);
 	}
 }
