@@ -4,12 +4,13 @@ import json
 import mimetypes
 import shutil
 from contextlib import ExitStack
-from typing import List, Dict, Any, Union
-from urllib.request import urlopen
+from numbers import Number
 from os import remove
 from os.path import exists, basename
+from urllib.request import urlopen
 
 import requests
+from typing import List, Dict, Union
 
 
 def download_file(url: str, file: str, md5_checksum: str = None):
@@ -98,14 +99,14 @@ def post(url: str, data: object, file_paths: List[str] = None, username: str="",
         response.raise_for_status()
 
 
-def as_markdown(value: Union[List[str], Dict[str, str], str]) -> str:
+def as_markdown(value: Union[List[str], Dict[str, str], str]) -> Union[str, Number]:
     if isinstance(value, list):
         return __as_markdown_list(value)
     elif isinstance(value, dict):
         return __as_markdown_dict(value)
     elif isinstance(value, str):
         return value
-    elif isinstance(value, int):
+    elif isinstance(value, (int, float)):
         return value
     else:
         raise UnsupportedTypeError(value)
