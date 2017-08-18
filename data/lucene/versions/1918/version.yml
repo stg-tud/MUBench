@@ -1,5 +1,5 @@
 build:
-  classes: build/classes/main/
+  classes: build/classes/java/main/
   commands:
   - gradle :compileJava
   src: src/java/
