@@ -3,8 +3,8 @@ from unittest.mock import patch
 
 from nose.tools import assert_equals, assert_raises
 
-from data.finding import Finding
 from data.snippets import Snippet, SnippetUnavailableException
+from data.finding import Finding
 from utils.shell import CommandFailedError
 from tests.test_utils.data_util import create_misuse
 

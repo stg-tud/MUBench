@@ -56,9 +56,7 @@ EOT;
             "id": "-p-id-"
         }
     ],
-    "violation_types": [
-        "superfluous/condition/null_check"
-    ],
+    "violation_types": ["superfluous/condition/null_check"],
     "target_snippets": [
         {
             "first_line_number": 273,

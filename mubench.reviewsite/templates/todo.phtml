@@ -16,6 +16,9 @@
  * @var array $misuses
  */
 use MuBench\ReviewSite\Model\ReviewState;
+use Parsedown;
+
+$markdown_parser = new Parsedown();
 
 ?>
 <html>
@@ -59,13 +62,13 @@ use MuBench\ReviewSite\Model\ReviewState;
             ?>
             <tr>
                 <td class="<?= $style_classes ?>">
-                    <?= $new_project ? htmlspecialchars($detector) : ""; ?></td>
+                    <?= $new_project ? $markdown_parser->text($detector) : ""; ?></td>
                 <td class="<?= $style_classes ?>">
-                    <?= $new_project ? htmlspecialchars($project) : ""; ?></td>
+                    <?= $new_project ? $markdown_parser->text($project) : ""; ?></td>
                 <td class="<?= $style_classes ?>">
-                    <?= $new_version ? htmlspecialchars($version) : ""; ?></td>
+                    <?= $new_version ? $markdown_parser->text($version) : ""; ?></td>
                 <td class="<?= $style_classes ?>">
-                    <?= htmlspecialchars($misuse->getShortId()); ?></td>
+                    <?= $markdown_parser->text($misuse->getShortId()); ?></td>
                 <?php
                 $review_url = $url_prefix . htmlspecialchars($experiment) . "/" . htmlspecialchars($detector) . "/" .
                     htmlspecialchars($project) . "/" . htmlspecialchars($version) . "/" . htmlspecialchars($misuse->id);

@@ -25,6 +25,7 @@
  */
 use MuBench\ReviewSite\Model\Detector;
 use MuBench\ReviewSite\Model\Experiment;
+use Parsedown;
 
     $columns_to_ignore = array(
         "target_snippets",
@@ -39,6 +40,8 @@ use MuBench\ReviewSite\Model\Experiment;
         "exp",
         "startline"
     );
+
+    $markdown_parser = new Parsedown();
 ?>
         <html>
             <head>
@@ -90,9 +93,9 @@ use MuBench\ReviewSite\Model\Experiment;
         <h1>Review</h1>
         <table class="invisible">
             <tr><td><b>Detector:</b></td><td><?= htmlspecialchars($detector->name); ?></td></tr>
-            <tr><td><b>Target:</b></td><td>project '<?= htmlspecialchars($misuse->getProject()); ?>' version <?= htmlspecialchars($misuse->getVersion()); ?></td></tr>
+            <tr><td><b>Target:</b></td><td>project '<?= $markdown_parser->text($misuse->getProject()); ?>' version <?= $markdown_parser->text($misuse->getVersion()); ?></td></tr>
             <?php if($experiment->getId() !== "ex2") : ?>
-                <tr><td><b>Misuse:</b></td><td>misuse '<?= htmlspecialchars($misuse->getShortId()); ?>'</td></tr>
+                <tr><td><b>Misuse:</b></td><td>misuse '<?= $markdown_parser->text($misuse->getShortId()); ?>'</td></tr>
             <?php endif; ?>
             <?php if($user || $misuse->getTags()): ?>
                 <tr>
@@ -148,26 +151,25 @@ use MuBench\ReviewSite\Model\Experiment;
         <?php endif; ?>
         <table class="invisible fw">
         <?php if($experiment->getId() !== "ex2") : ?>
-            <tr><td class="vtop"><b>Description:</b></td><td><?= htmlspecialchars($misuse->getDescription()); ?></td></tr>
+            <tr><td class="vtop"><b>Description:</b></td><td><?= $markdown_parser->text($misuse->getDescription()); ?></td></tr>
             <tr>
                 <td class="vtop"><b>Fix Description:</b></td>
-                <td><?= htmlspecialchars($misuse->getFixDescription()); ?>
-                    <?php if ($misuse->hasDiff()): ?>(<a href="<?= htmlspecialchars($misuse->getDiff()); ?>">see diff</a>)<?php endif ?>
+                <td><?= $markdown_parser->text($misuse->getFixDescription()); ?>
+                    <?php if ($misuse->hasDiff()): ?>(<a href="<?= $misuse->getDiff(); ?>">see diff</a>)<?php endif ?>
                 </td></tr>
             <tr><td class="vtop"><b>Violation Types:</b></td><td>
-            
             <ul>
             <?php if($misuse->hasViolationTypes()) : ?>
             <?php foreach($misuse->getViolationTypes() as $v) : ?>
                 <li><?= htmlspecialchars($v); ?></li>
             <?php endforeach; ?>
-        <?php endif; ?>
+            <?php endif; ?>
             </ul></td></tr>
         <?php else : ?>
-            <tr><td><b>Finding:</b></td><td><?= htmlspecialchars($misuse->getShortId()); ?></td></tr>
+            <tr><td><b>Finding:</b></td><td><?= $markdown_parser->text($misuse->getShortId()); ?></td></tr>
         <?php endif; ?>
-            <tr><td><b>In File:</b></td><td><?= htmlspecialchars($misuse->getFile()); ?></td></tr>
-            <tr><td><b>In Method:</b></td><td><?= htmlspecialchars($misuse->getMethod()); ?></td></tr>
+            <tr><td><b>In File:</b></td><td><?= $markdown_parser->text($misuse->getFile()); ?></td></tr>
+            <tr><td><b>In Method:</b></td><td><?= $markdown_parser->text($misuse->getMethod()); ?></td></tr>
             <tr>
             <?php if($experiment->getId() !== "ex2") : ?>
                 <td class="vtop"><b>Code with Misuse:</b></td>
@@ -257,7 +259,6 @@ use MuBench\ReviewSite\Model\Experiment;
             });
             sort($columns);
             ?>
-        
 
         <tr>
             <th>Hit</th>
@@ -267,7 +268,7 @@ use MuBench\ReviewSite\Model\Experiment;
             <?php endforeach; ?>
             <th>Violation Types</th>
         </tr>
-    
+
         <?php foreach($potential_hits as $hit) : ?>
         <tr>
             <td>
@@ -302,19 +303,13 @@ use MuBench\ReviewSite\Model\Experiment;
             <?php endif;?>
             </td>
             <td>
-                <?= htmlspecialchars($hit['rank']); ?>
+                <?= $markdown_parser->text($hit['rank']); ?>
             </td>
             <?php foreach($columns as $column) : ?>
             <td>
-                <?php if(strpos($hit[$column], ";") !== false) : ?>
-                    <ul>
-                        <?php foreach(explode(";", $hit[$column]) as $v) : ?>
-                            <li><?= htmlspecialchars($v); ?></li>
-                        <?php endforeach; ?>
-                    </ul>
-                <?php elseif(strlen($hit[$column]) > 4 && substr($hit[$column], -4) === ".svg") : ?>
-                    <? $object_id = $column . $hit['rank']; ?>
-                    <object id="<?= $object_id ?>" type="image/svg+xml" data="<?= "{$uploads_url_prefix}/{$experiment->getId()}/{$detector->name}/{$misuse->getProject()}/{$misuse->getVersion()}/{$hit[$column]}" ?>" style="width: 750px; height: 750px;"></object>
+                <?php if(strlen($hit[$column]) > 4 && substr($hit[$column], -4) === ".svg") : ?>
+                    <? $object_id = $column . $hit['rank'] ?>
+                    <object id="<?= $object_id ?>" type="image/svg+xml" data="<?= "{$uploads_url_prefix}/{$experiment->getId()}/{$detector->name}/{$misuse->getProject()}/{$misuse->getVersion()}/{$hit[$column]}" ?>" style="width: 300px; height: 300px;"></object>
                     <script>
                         document.getElementById("<?= $object_id ?>").onload = function() {
                             svgPanZoom("#<?= $object_id ?>", {
@@ -325,7 +320,7 @@ use MuBench\ReviewSite\Model\Experiment;
                 <?php elseif(strlen($hit[$column]) > 4 && substr($hit[$column], -4) === ".png") : ?>
                     <img src="<?= "{$uploads_url_prefix}/{$experiment->getId()}/{$detector->name}/{$misuse->getProject()}/{$misuse->getVersion()}/{$hit[$column]}" ?>" />
                 <?php else : ?>
-                    <?= htmlspecialchars($hit[$column]); ?>
+                    <?= $markdown_parser->text($hit[$column]); ?>
                 <?php endif; ?>
             </td>
             <?php endforeach; ?>
@@ -340,14 +335,6 @@ use MuBench\ReviewSite\Model\Experiment;
                             <?php endif; ?>
                         <?php endforeach; ?>
                     </select>
-                <?php else : ?>
-                    <?php if($misuse->hasViolationTypes()) : ?>
-                        <ul>
-                            <?php foreach($violation_types as $type) : ?>
-                                    <li><?= htmlspecialchars($type); ?></li>
-                            <?php endforeach; ?>
-                        </ul>
-                    <?php endif; ?>
                 <?php endif; ?>
             </td>
         </tr>

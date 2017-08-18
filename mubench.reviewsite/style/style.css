@@ -18,7 +18,8 @@ h2 {
 }
 
 p {
-	margin: 10pt 0;
+    margin: 10pt 0;
+    display: inline;
 }
 
 ul {

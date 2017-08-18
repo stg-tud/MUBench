@@ -28,6 +28,7 @@ class MetadataUploader
         $this->insertMetadata($project, $version, $misuse, $json->{'description'}, $json->{'fix'}->{'description'},
             $json->{'fix'}->{'diff-url'}, $json->{'location'}->{'file'}, $json->{'location'}->{'method'});
         $this->addViolationTypesToMisuse($project, $version, $misuse, $json->{'violation_types'});
+
         foreach ($json->{'patterns'} as $p) {
             $this->insertPattern($misuse, $p->{'id'}, $p->{'snippet'}->{'code'}, $p->{'snippet'}->{'first_line'});
         }

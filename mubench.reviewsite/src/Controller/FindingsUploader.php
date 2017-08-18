@@ -155,7 +155,7 @@ class FindingsUploader
         $propertyToColumnNameMapping = $this->removeDisruptiveFindingsColumns($propertyToColumnNameMapping);
         foreach ($propertyToColumnNameMapping as $property => $column) {
             $value = $finding->{$property};
-            $values[$column] = is_array($value) ? $this->arrayToString($value) : $value;
+            $values[$column] = $value;
         }
         if ($exp === "ex2") {
             $values["misuse"] = $finding->{'rank'};
@@ -173,14 +173,9 @@ class FindingsUploader
         $this->logger->info("Store stats for $detector in $exp on $project.$version");
         foreach ($propertyToColumnNameMapping as $property => $column) {
             $value = $run->{$property};
-            $values[$column] = is_array($value) ? $this->arrayToString($value) : $value;
+            $values[$column] = $value;
         }
         $this->db->table($detector->getStatsTableName())->insert($values);
-    }
-
-    private function arrayToString($array)
-    {
-        return implode(";", $array);
     }
 
     private function storeFindingTargetSnippets($project, Detector $detector, $version, $rank, $snippets)

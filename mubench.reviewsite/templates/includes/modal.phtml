@@ -4,7 +4,9 @@
 * @var string $version
 * @var array $run all run information
 * @var array $additional_stats all stat columns from the run information besides project, version, runtime, result and number_of_findings
+* @var Parsedown $markdown_parser markdown parser
 */
+use Parsedown;
 ?>
 
 <i value="<?= htmlspecialchars($project) ?>_<?= htmlspecialchars($version) ?>" onclick="showModal(this)" class="fa fa-info-circle" aria-hidden="true"></i>
@@ -19,28 +21,28 @@
             </tr>
             <tr>
                 <td><b>Project:</b></td>
-                <td><?= htmlspecialchars($project); ?></td>
+                <td><?= $markdown_parser->text($project); ?></td>
             </tr>
             <tr>
                 <td><b>Version:</b></td>
-                <td><?= htmlspecialchars($version); ?></td>
+                <td><?= $markdown_parser->text($version); ?></td>
             </tr>
             <tr>
                 <td><b>Result:</b></td>
-                <td><?= htmlspecialchars($run['result']); ?></td>
+                <td><?= $markdown_parser->text($run['result']); ?></td>
             </tr>
             <tr>
                 <td><b># of Findings:</b></td>
-                <td><?= htmlspecialchars($run['number_of_findings']); ?></td>
+                <td><?= $markdown_parser->text($run['number_of_findings']); ?></td>
             </tr>
             <tr>
                 <td><b>Runtime:</b></td>
-                <td><?= htmlspecialchars(substr($run['runtime'], 0, 4)) . "s"; ?></td>
+                <td><?= $markdown_parser->text(substr($run['runtime'], 0, 4)) . "s"; ?></td>
             </tr>
             <?php foreach ($additional_stats as $stat) : ?>
                 <tr>
-                    <td><b><?= htmlspecialchars($stat) ?>:</b></td>
-                    <td><?= htmlspecialchars($run[$stat]); ?></td>
+                    <td><b><?= $markdown_parser->text($stat) ?>:</b></td>
+                    <td><?= $markdown_parser->text($run[$stat]); ?></td>
                 </tr>
             <?php endforeach; ?>
         </table>
