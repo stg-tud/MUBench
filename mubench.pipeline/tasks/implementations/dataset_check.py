@@ -15,10 +15,24 @@ class DatasetCheck(ProjectVersionMisuseTask):
         self.datasets = datasets
 
     def process_project(self, project: Project):
-        self._check_required_keys_in_project_yaml(project)
         self._new_known_datasets_entry(project.id)
-
+        self._check_required_keys_in_project_yaml(project)
         return super().process_project(project)
+
+    def process_project_version(self, project: Project, version: ProjectVersion):
+        self._new_known_datasets_entry(version.id)
+        self._check_required_keys_in_version_yaml(project, version)
+        self._check_misuses_listed_in_version_exist(version)
+        return super().process_project_version(project, version)
+
+    def process_project_version_misuse(self, project: Project, version: ProjectVersion, misuse: Misuse):
+        self._new_known_datasets_entry(misuse.id)
+        self._check_required_keys_in_misuse_yaml(project, version, misuse)
+        self._check_version_misuse_id_conflict(project.id, version.version_id, misuse.misuse_id)
+        return self.ok()
+
+    def end(self):
+        self._report_unknown_dataset_entries()
 
     def _check_required_keys_in_project_yaml(self, project: Project):
         yaml_path = "{}/project.yml".format(project.id)
@@ -34,16 +48,6 @@ class DatasetCheck(ProjectVersionMisuseTask):
                 self._missing_key("repository.type", yaml_path)
             if "url" not in project_yaml["repository"]:
                 self._missing_key("repository.url", yaml_path)
-
-    def process_project_version(self, project: Project, version: ProjectVersion):
-        self._check_required_keys_in_version_yaml(project, version)
-        self._new_known_datasets_entry(version.id)
-
-        for misuse_id in version._yaml.get("misuses", []) or []:
-            if misuse_id not in [misuse.misuse_id for misuse in version.misuses]:
-                self._unknown_misuse(version.id, misuse_id)
-
-        return super().process_project_version(project, version)
 
     def _check_required_keys_in_version_yaml(self, project: Project, version: ProjectVersion):
         yaml_path = "{}/versions/{}/version.yml".format(project.id, version.version_id)
@@ -65,15 +69,6 @@ class DatasetCheck(ProjectVersionMisuseTask):
 
         if not version_yaml.get("misuses", None):
             self._missing_key("misuses", yaml_path)
-
-    def process_project_version_misuse(self, project: Project, version: ProjectVersion, misuse: Misuse):
-        self._check_required_keys_in_misuse_yaml(project, version, misuse)
-        self._new_known_datasets_entry(misuse.id)
-
-        if version.version_id == misuse.misuse_id:
-            self._version_misuse_conflict(project.id, version.version_id)
-
-        return self.ok()
 
     def _check_required_keys_in_misuse_yaml(self, project: Project, version: ProjectVersion, misuse: Misuse):
         yaml_path = "{}/misuses/{}/misuse.yml".format(project.id, misuse.misuse_id)
@@ -121,8 +116,14 @@ class DatasetCheck(ProjectVersionMisuseTask):
             if "url" not in source:
                 self._missing_key("source.url", yaml_path)
 
-    def end(self):
-        self._report_unknown_dataset_entries()
+    def _check_misuses_listed_in_version_exist(self, version: ProjectVersion):
+        for misuse_id in version._yaml.get("misuses", []) or []:
+            if misuse_id not in [misuse.misuse_id for misuse in version.misuses]:
+                self._unknown_misuse(version.id, misuse_id)
+
+    def _check_version_misuse_id_conflict(self, project_id: str, version_id: str, misuse_id: str):
+        if version_id == misuse_id:
+            self._version_misuse_conflict(project_id, version_id)
 
     def _new_known_datasets_entry(self, id_: str):
         for dataset, entries in self.datasets.items():
