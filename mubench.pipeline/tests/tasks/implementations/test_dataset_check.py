@@ -161,10 +161,9 @@ class TestDatasetCheckMisuse:
         self.uut._check_misuse_location_exists = MagicMock()
 
     def test_missing_location(self):
-        meta = EMPTY_META
         project = create_project("-project-", meta=EMPTY_META)
-        misuse = create_misuse("-id-", project=project)
-        misuse._YAML = meta
+        misuse = create_misuse("-id-", project=project, meta=EMPTY_META)
+        misuse._YAML = EMPTY_META # needs to be set here, since create_misuse adds a location
         version = create_version("-version-", meta=EMPTY_META, project=project, misuses=[misuse])
 
         self.uut.process_project_version_misuse(project, version, misuse)
@@ -192,9 +191,8 @@ class TestDatasetCheckMisuse:
         self.uut._missing_key.assert_any_call("location.method", "-project-/misuses/-id-/misuse.yml")
 
     def test_missing_api(self):
-        meta = {"empty": {}}
         project = create_project("-project-", meta=EMPTY_META)
-        misuse = create_misuse("-id-", project=project, meta=meta)
+        misuse = create_misuse("-id-", project=project, meta=EMPTY_META)
         version = create_version("-version-", meta=EMPTY_META, project=project, misuses=[misuse])
 
         self.uut.process_project_version_misuse(project, version, misuse)
@@ -202,9 +200,8 @@ class TestDatasetCheckMisuse:
         self.uut._missing_key.assert_any_call("api", "-project-/misuses/-id-/misuse.yml")
 
     def test_missing_characteristics(self):
-        meta = EMPTY_META
         project = create_project("-project-", meta=EMPTY_META)
-        misuse = create_misuse("-id-", project=project, meta=meta)
+        misuse = create_misuse("-id-", project=project, meta=EMPTY_META)
         version = create_version("-version-", meta=EMPTY_META, project=project, misuses=[misuse])
 
         self.uut.process_project_version_misuse(project, version, misuse)
@@ -222,9 +219,8 @@ class TestDatasetCheckMisuse:
         self.uut._missing_key.assert_any_call("characteristics", "-project-/misuses/-id-/misuse.yml")
 
     def test_missing_description(self):
-        meta = EMPTY_META
         project = create_project("-project-", meta=EMPTY_META)
-        misuse = create_misuse("-id-", project=project, meta=meta)
+        misuse = create_misuse("-id-", project=project, meta=EMPTY_META)
         version = create_version("-version-", meta=EMPTY_META, project=project, misuses=[misuse])
 
         self.uut.process_project_version_misuse(project, version, misuse)
@@ -242,9 +238,8 @@ class TestDatasetCheckMisuse:
         self.uut._missing_key.assert_any_call("description", "-project-/misuses/-id-/misuse.yml")
 
     def test_missing_fix(self):
-        meta = EMPTY_META
         project = create_project("-project-", meta=EMPTY_META)
-        misuse = create_misuse("-id-", project=project, meta=meta)
+        misuse = create_misuse("-id-", project=project, meta=EMPTY_META)
         version = create_version("-version-", meta=EMPTY_META, project=project, misuses=[misuse])
 
         self.uut.process_project_version_misuse(project, version, misuse)
@@ -272,9 +267,8 @@ class TestDatasetCheckMisuse:
         self.uut._missing_key.assert_any_call("fix.revision", "-project-/misuses/-id-/misuse.yml")
 
     def test_missing_internal(self):
-        meta = EMPTY_META
         project = create_project("-project-", meta=EMPTY_META)
-        misuse = create_misuse("-id-", project=project, meta=meta)
+        misuse = create_misuse("-id-", project=project, meta=EMPTY_META)
         version = create_version("-version-", meta=EMPTY_META, project=project, misuses=[misuse])
 
         self.uut.process_project_version_misuse(project, version, misuse)
@@ -282,9 +276,8 @@ class TestDatasetCheckMisuse:
         self.uut._missing_key.assert_any_call("internal", "-project-/misuses/-id-/misuse.yml")
 
     def test_missing_report(self):
-        meta = EMPTY_META
         project = create_project("-project-", meta=EMPTY_META)
-        misuse = create_misuse("-id-", project=project, meta=meta)
+        misuse = create_misuse("-id-", project=project, meta=EMPTY_META)
         version = create_version("-version-", meta=EMPTY_META, project=project, misuses=[misuse])
 
         self.uut.process_project_version_misuse(project, version, misuse)
@@ -292,9 +285,8 @@ class TestDatasetCheckMisuse:
         self.uut._missing_key.assert_any_call("report", "-project-/misuses/-id-/misuse.yml")
 
     def test_missing_source(self):
-        meta = EMPTY_META
         project = create_project("-project-", meta=EMPTY_META)
-        misuse = create_misuse("-id-", project=project, meta=meta)
+        misuse = create_misuse("-id-", project=project, meta=EMPTY_META)
         version = create_version("-version-", meta=EMPTY_META, project=project, misuses=[misuse])
 
         self.uut.process_project_version_misuse(project, version, misuse)
