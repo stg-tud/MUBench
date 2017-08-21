@@ -1,7 +1,8 @@
 import logging
 
 from typing import Dict, List, Optional, Any
-from os.path import join
+from os import listdir
+from os.path import join, isdir
 
 from data.misuse import Misuse
 from data.project import Project
@@ -11,11 +12,16 @@ from tasks.project_version_misuse_task import ProjectVersionMisuseTask
 
 
 class DatasetCheck(ProjectVersionMisuseTask):
-    def __init__(self, datasets: Dict[str, List[str]], checkout_base_path: str):
+    def __init__(self, datasets: Dict[str, List[str]], checkout_base_path: str, data_base_path: str):
         super().__init__()
         self.logger = logging.getLogger("datasetcheck")
         self.datasets = datasets
         self.checkout_base_path = checkout_base_path
+        self.data_base_path = data_base_path
+        self.misuses_not_listed_in_any_version = []
+
+    def start(self):
+        self.misuses_not_listed_in_any_version = self._get_all_misuses(self.data_base_path)
 
     def process_project(self, project: Project):
         self._new_known_datasets_entry(project.id)
@@ -30,6 +36,7 @@ class DatasetCheck(ProjectVersionMisuseTask):
 
     def process_project_version_misuse(self, project: Project, version: ProjectVersion, misuse: Misuse):
         self._new_known_datasets_entry(misuse.id)
+        self._misuse_listed_in_version(misuse.id)
         self._check_required_keys_in_misuse_yaml(project, version, misuse)
         self._check_version_misuse_id_conflict(project.id, version.version_id, misuse.misuse_id)
         self._check_misuse_location_exists(project, version, misuse)
@@ -37,6 +44,7 @@ class DatasetCheck(ProjectVersionMisuseTask):
 
     def end(self):
         self._report_unknown_dataset_entries()
+        self._report_misuses_not_listed_in_any_version()
 
     def _check_required_keys_in_project_yaml(self, project: Project):
         yaml_path = "{}/project.yml".format(project.id)
@@ -153,10 +161,18 @@ class DatasetCheck(ProjectVersionMisuseTask):
             if id_ in entries:
                 entries.remove(id_)
 
+    def _misuse_listed_in_version(self, misuse: str):
+        if misuse in self.misuses_not_listed_in_any_version:
+            self.misuses_not_listed_in_any_version.remove(misuse)
+
     def _report_unknown_dataset_entries(self):
         for dataset, entries in self.datasets.items():
             for entry in entries:
                 self._unknown_dataset_entry(dataset, entry)
+
+    def _report_misuses_not_listed_in_any_version(self):
+        for misuse in self.misuses_not_listed_in_any_version:
+            self._misuse_not_listed(misuse)
 
     def _missing_key(self, tag: str, file_path: str):
         self.logger.warning('Missing "{}" in "{}".'.format(tag, file_path))
@@ -172,3 +188,18 @@ class DatasetCheck(ProjectVersionMisuseTask):
 
     def _unknown_dataset_entry(self, dataset: str, entry: str):
         self.logger.warning('Unknown dataset entry "{}" in dataset "{}"'.format(entry, dataset))
+
+    def _misuse_not_listed(self, misuse_id: str):
+        self.logger.warning('Misuse "{}" is not listed in any versions'.format(misuse_id))
+
+    def _get_all_misuses(self, data_base_path: str) -> List[str]:
+        misuses = []
+
+        project_dirs = [join(data_base_path, subdir) for subdir in listdir(data_base_path) if isdir(join(data_base_path, subdir))]
+        for project_dir in project_dirs:
+            misuses_dir = join(project_dir, "misuses")
+            misuse_ids = [subdir for subdir in listdir(misuses_dir) if isdir(join(misuses_dir, subdir))]
+            misuse_ids = ["{}.{}".format(basename(project_dir), misuse) for misuse in misuse_ids]
+            misuses.extend(misuse_ids)
+
+        return misuses

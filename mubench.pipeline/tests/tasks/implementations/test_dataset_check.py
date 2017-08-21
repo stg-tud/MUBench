@@ -8,7 +8,7 @@ EMPTY_META = {"empty": None}
 
 class TestDatasetCheckProject:
     def setup(self):
-        self.uut = DatasetCheck({}, '')
+        self.uut = DatasetCheck({}, '', '')
         self.uut._missing_key = MagicMock()
         self.uut._check_misuse_location_exists = MagicMock()
 
@@ -57,7 +57,7 @@ class TestDatasetCheckProject:
 
 class TestDatasetCheckProjectVersion:
     def setup(self):
-        self.uut = DatasetCheck({}, '')
+        self.uut = DatasetCheck({}, '', '')
         self.uut._missing_key = MagicMock()
         self.uut._check_misuse_location_exists = MagicMock()
 
@@ -156,7 +156,7 @@ class TestDatasetCheckProjectVersion:
 
 class TestDatasetCheckMisuse:
     def setup(self):
-        self.uut = DatasetCheck({}, '')
+        self.uut = DatasetCheck({}, '', '')
         self.uut._missing_key = MagicMock()
         self.uut._check_misuse_location_exists = MagicMock()
 
@@ -316,7 +316,7 @@ class TestDatasetCheckMisuse:
 
 class TestDatasetCheckDatasetLists:
     def setup(self):
-        self.uut = DatasetCheck({}, '')
+        self.uut = DatasetCheck({}, '', '')
         self.uut._unknown_dataset_entry = MagicMock()
         self.uut._check_misuse_location_exists = MagicMock()
 
@@ -360,7 +360,7 @@ class TestDatasetCheckDatasetLists:
 
 class TestDatasetCheckUnknownLocation:
     def setup(self):
-        self.uut = DatasetCheck({}, '')
+        self.uut = DatasetCheck({}, '', '')
         self.uut._cannot_find_location = MagicMock()
 
         self.project = create_project("-project-", meta=EMPTY_META)
@@ -390,3 +390,30 @@ class TestDatasetCheckUnknownLocation:
 
         self.uut._location_exists.assert_called_once_with("-checkout_dir-/-source_dir-", "-file-", "-method-")
         self.uut._cannot_find_location.assert_not_called()
+
+
+class TestDatasetCheckUnlistedMisuses:
+    def setup(self):
+        self.uut = DatasetCheck({}, '', '')
+        self.uut._check_misuse_location_exists = MagicMock()
+        self.uut._misuse_not_listed = MagicMock()
+
+    def test_misuse_not_listed_in_any_version(self):
+        self.uut._get_all_misuses = MagicMock(return_value=["-project-.-misuse-"])
+
+        self.uut.start()
+        self.uut.end()
+
+        self.uut._misuse_not_listed.assert_called_once_with("-project-.-misuse-")
+
+    def test_listed_misuse_is_not_reported(self):
+        self.uut._get_all_misuses = MagicMock(return_value=["-project-.-misuse-"])
+        project = create_project("-project-", meta=EMPTY_META)
+        misuse = create_misuse("-misuse-", project=project, meta=EMPTY_META)
+        version = create_version("-version-", project=project, misuses=[misuse], meta=EMPTY_META)
+
+        self.uut.start()
+        self.uut.process_project_version_misuse(project, version, misuse)
+        self.uut.end()
+
+        self.uut._misuse_not_listed.assert_not_called()
