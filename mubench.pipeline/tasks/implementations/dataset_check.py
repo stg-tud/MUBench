@@ -24,17 +24,20 @@ class DatasetCheck(ProjectVersionMisuseTask):
         self.misuses_not_listed_in_any_version = self._get_all_misuses(self.data_base_path)
 
     def process_project(self, project: Project):
+        self.logger = logging.getLogger("datasetcheck.project")
         self._new_known_datasets_entry(project.id)
         self._check_required_keys_in_project_yaml(project)
         return super().process_project(project)
 
     def process_project_version(self, project: Project, version: ProjectVersion):
+        self.logger = logging.getLogger("datasetcheck.project.version")
         self._new_known_datasets_entry(version.id)
         self._check_required_keys_in_version_yaml(project, version)
         self._check_misuses_listed_in_version_exist(version)
         return super().process_project_version(project, version)
 
     def process_project_version_misuse(self, project: Project, version: ProjectVersion, misuse: Misuse):
+        self.logger = logging.getLogger("datasetcheck.project.version.misuse")
         self._new_known_datasets_entry(misuse.id)
         self._misuse_listed_in_version(misuse.id)
         self._check_required_keys_in_misuse_yaml(project, version, misuse)
@@ -43,8 +46,10 @@ class DatasetCheck(ProjectVersionMisuseTask):
         return self.ok()
 
     def end(self):
-        self._report_unknown_dataset_entries()
+        self.logger = logging.getLogger("datasetcheck.misuse")
         self._report_misuses_not_listed_in_any_version()
+        self.logger = logging.getLogger("datasetcheck")
+        self._report_unknown_dataset_entries()
 
     def _check_required_keys_in_project_yaml(self, project: Project):
         yaml_path = "{}/project.yml".format(project.id)
