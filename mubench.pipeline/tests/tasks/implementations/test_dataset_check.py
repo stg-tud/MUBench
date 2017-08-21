@@ -8,8 +8,9 @@ EMPTY_META = {"empty": None}
 
 class TestDatasetCheckProject:
     def setup(self):
-        self.uut = DatasetCheck({})
+        self.uut = DatasetCheck({}, '')
         self.uut._missing_key = MagicMock()
+        self.uut._check_misuse_location_exists = MagicMock()
 
     def test_missing_name(self):
         meta = {"repository": {"type": "git", "url": "https://github.com/stg-tud/MUBench.git"}}
@@ -56,8 +57,9 @@ class TestDatasetCheckProject:
 
 class TestDatasetCheckProjectVersion:
     def setup(self):
-        self.uut = DatasetCheck({})
+        self.uut = DatasetCheck({}, '')
         self.uut._missing_key = MagicMock()
+        self.uut._check_misuse_location_exists = MagicMock()
 
     def test_missing_revision(self):
         meta = {"misuses": ["1"]}
@@ -154,8 +156,9 @@ class TestDatasetCheckProjectVersion:
 
 class TestDatasetCheckMisuse:
     def setup(self):
-        self.uut = DatasetCheck({})
+        self.uut = DatasetCheck({}, '')
         self.uut._missing_key = MagicMock()
+        self.uut._check_misuse_location_exists = MagicMock()
 
     def test_missing_location(self):
         meta = EMPTY_META
@@ -318,10 +321,12 @@ class TestDatasetCheckMisuse:
 
         self.uut._missing_key.assert_any_call("source.url", "-project-/misuses/-id-/misuse.yml")
 
+
 class TestDatasetCheckDatasetLists:
     def setup(self):
-        self.uut = DatasetCheck({})
+        self.uut = DatasetCheck({}, '')
         self.uut._unknown_dataset_entry = MagicMock()
+        self.uut._check_misuse_location_exists = MagicMock()
 
     def test_unknown_entry(self):
         self.uut.datasets = {"-dataset-": ["-unknown-entry-"]}
@@ -359,3 +364,37 @@ class TestDatasetCheckDatasetLists:
         self.uut.end()
 
         self.uut._unknown_dataset_entry.assert_not_called()
+
+
+class TestDatasetCheckUnknownLocation:
+    def setup(self):
+        self.uut = DatasetCheck({}, '')
+        self.uut._cannot_find_location = MagicMock()
+
+        self.project = create_project("-project-", meta=EMPTY_META)
+
+        misuse_meta = {"location": {"file": "-file-", "method": "-method-"}}
+        self.misuse = create_misuse("-id-", project=self.project, meta=misuse_meta)
+
+        version_meta = {"build": {"src": "-source_dir-"}}
+        self.version = create_version("-version-", meta=version_meta, project=self.project, misuses=[self.misuse])
+        checkout = MagicMock()
+        checkout.exists = MagicMock(return_value=True)
+        checkout.checkout_dir = "-checkout_dir-"
+        self.version.get_checkout = MagicMock(return_value=checkout)
+
+    def test_unknown_location(self):
+        self.uut._location_exists = MagicMock(return_value=False)
+
+        self.uut.process_project_version_misuse(self.project, self.version, self.misuse)
+
+        self.uut._location_exists.assert_called_once_with("-checkout_dir-/-source_dir-", "-file-", "-method-")
+        self.uut._cannot_find_location.assert_called_once_with("Location(-file-, -method-)", "-project-/misuses/-id-/misuse.yml")
+
+    def test_known_location(self):
+        self.uut._location_exists = MagicMock(return_value=True)
+
+        self.uut.process_project_version_misuse(self.project, self.version, self.misuse)
+
+        self.uut._location_exists.assert_called_once_with("-checkout_dir-/-source_dir-", "-file-", "-method-")
+        self.uut._cannot_find_location.assert_not_called()

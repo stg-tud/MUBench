@@ -1,18 +1,21 @@
 import logging
 
 from typing import Dict, List, Optional, Any
+from os.path import join
 
 from data.misuse import Misuse
 from data.project import Project
 from data.project_version import ProjectVersion
+from data.snippets import get_snippets
 from tasks.project_version_misuse_task import ProjectVersionMisuseTask
 
 
 class DatasetCheck(ProjectVersionMisuseTask):
-    def __init__(self, datasets: Dict[str, List[str]]):
+    def __init__(self, datasets: Dict[str, List[str]], checkout_base_path: str):
         super().__init__()
         self.logger = logging.getLogger("datasetcheck")
         self.datasets = datasets
+        self.checkout_base_path = checkout_base_path
 
     def process_project(self, project: Project):
         self._new_known_datasets_entry(project.id)
@@ -29,6 +32,7 @@ class DatasetCheck(ProjectVersionMisuseTask):
         self._new_known_datasets_entry(misuse.id)
         self._check_required_keys_in_misuse_yaml(project, version, misuse)
         self._check_version_misuse_id_conflict(project.id, version.version_id, misuse.misuse_id)
+        self._check_misuse_location_exists(project, version, misuse)
         return self.ok()
 
     def end(self):
@@ -125,6 +129,25 @@ class DatasetCheck(ProjectVersionMisuseTask):
         if version_id == misuse_id:
             self._version_misuse_conflict(project_id, version_id)
 
+    def _check_misuse_location_exists(self, project: Project, version: ProjectVersion, misuse: Misuse):
+        if "location" in misuse._yaml:
+            location = misuse.location
+            if location.file and location.method:
+
+                checkout = version.get_checkout(self.checkout_base_path)
+                if not checkout.exists():
+                    self.logger.info(
+                            'Cannot check location for "{}": requires checkout of "{}".'.format(
+                                misuse.id, version.id))
+                    return
+
+                source_base_path = join(checkout.checkout_dir, version.source_dir)
+                if not self._location_exists(source_base_path, location.file, location.method):
+                    self._cannot_find_location(str(location), "{}/misuses/{}/misuse.yml".format(project.id, misuse.misuse_id))
+
+    def _location_exists(source_base_path, file_, method) -> bool:
+        return get_snippets(source_base_path, location.file, location.method)
+
     def _new_known_datasets_entry(self, id_: str):
         for dataset, entries in self.datasets.items():
             if id_ in entries:
@@ -143,6 +166,9 @@ class DatasetCheck(ProjectVersionMisuseTask):
 
     def _unknown_misuse(self, version_id: str, unknown_misuse_id: str):
         self.logger.warning('Unknown misuse "{}" in "{}"'.format(unknown_misuse_id, version_id))
+
+    def _cannot_find_location(self, location: str, misuse_yaml_path: str):
+        self.logger.warning('Cannot find "{}" listed in "{}"'.format(location, misuse_yaml_path))
 
     def _unknown_dataset_entry(self, dataset: str, entry: str):
         self.logger.warning('Unknown dataset entry "{}" in dataset "{}"'.format(entry, dataset))
