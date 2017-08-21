@@ -7,7 +7,7 @@ from tests.test_utils.data_util import create_project, create_version, create_mi
 
 class TestDatasetCheckProject:
     def setup(self):
-        self.uut = DatasetCheck()
+        self.uut = DatasetCheck({})
         self.uut._missing_key = MagicMock()
 
     def test_missing_name(self):
@@ -55,7 +55,7 @@ class TestDatasetCheckProject:
 
 class TestDatasetCheckProjectVersion:
     def setup(self):
-        self.uut = DatasetCheck()
+        self.uut = DatasetCheck({})
         self.uut._missing_key = MagicMock()
 
     def test_missing_revision(self):
@@ -153,7 +153,7 @@ class TestDatasetCheckProjectVersion:
 
 class TestDatasetCheckMisuse:
     def setup(self):
-        self.uut = DatasetCheck()
+        self.uut = DatasetCheck({})
         self.uut._missing_key = MagicMock()
 
     def test_missing_location(self):
@@ -316,3 +316,45 @@ class TestDatasetCheckMisuse:
         self.uut.process_project_version_misuse(project, version, misuse)
 
         self.uut._missing_key.assert_any_call("source.url", "-project-/misuses/-id-/misuse.yml")
+
+class TestDatasetCheckDatasetLists:
+    def setup(self):
+        self.uut = DatasetCheck({})
+        self.uut._unknown_dataset_entry = MagicMock()
+
+    def test_unknown_entry(self):
+        self.uut.datasets = {"-dataset-": ["-unknown-entry-"]}
+
+        self.uut.end()
+
+        self.uut._unknown_dataset_entry.assert_any_call("-dataset-", "-unknown-entry-")
+
+    def test_no_warning_on_known_project(self):
+        project = create_project("-project-", meta={"empty": ''})
+        self.uut.datasets = {"-dataset-": [project.id]}
+
+        self.uut.process_project(project)
+        self.uut.end()
+
+        self.uut._unknown_dataset_entry.assert_not_called()
+
+    def test_no_warning_on_known_version(self):
+        project = create_project("-project-", meta={"empty": ''})
+        version = create_version("-version-", project=project, meta={"empty": ''})
+        self.uut.datasets = {"-dataset-": [version.id]}
+
+        self.uut.process_project_version(project, version)
+        self.uut.end()
+
+        self.uut._unknown_dataset_entry.assert_not_called()
+
+    def test_no_warning_on_known_misuse(self):
+        project = create_project("-project-", meta={"empty": ''})
+        misuse = create_misuse("-misuse-", project=project, meta={"empty": ''})
+        version = create_version("-version-", project=project, misuses=[misuse], meta={"empty": ''})
+        self.uut.datasets = {"-dataset-": [misuse.id]}
+
+        self.uut.process_project_version_misuse(project, version, misuse)
+        self.uut.end()
+
+        self.uut._unknown_dataset_entry.assert_not_called()

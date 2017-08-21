@@ -1,6 +1,6 @@
 import logging
 
-from typing import Dict, Optional, Any
+from typing import Dict, List, Optional, Any
 
 from data.misuse import Misuse
 from data.project import Project
@@ -9,12 +9,14 @@ from tasks.project_version_misuse_task import ProjectVersionMisuseTask
 
 
 class DatasetCheck(ProjectVersionMisuseTask):
-    def __init__(self):
-        self.logger = logging.getLogger("datasetcheck")
+    def __init__(self, datasets: Dict[str, List[str]]):
         super().__init__()
+        self.logger = logging.getLogger("datasetcheck")
+        self.datasets = datasets
 
     def process_project(self, project: Project):
         self._check_required_keys_in_project_yaml(project)
+        self._new_known_datasets_entry(project.id)
 
         return super().process_project(project)
 
@@ -35,6 +37,7 @@ class DatasetCheck(ProjectVersionMisuseTask):
 
     def process_project_version(self, project: Project, version: ProjectVersion):
         self._check_required_keys_in_version_yaml(project, version)
+        self._new_known_datasets_entry(version.id)
 
         for misuse_id in version._yaml.get("misuses", []) or []:
             if misuse_id not in [misuse.misuse_id for misuse in version.misuses]:
@@ -65,6 +68,7 @@ class DatasetCheck(ProjectVersionMisuseTask):
 
     def process_project_version_misuse(self, project: Project, version: ProjectVersion, misuse: Misuse):
         self._check_required_keys_in_misuse_yaml(project, version, misuse)
+        self._new_known_datasets_entry(misuse.id)
 
         if version.version_id == misuse.misuse_id:
             self._version_misuse_conflict(project.id, version.version_id)
@@ -117,6 +121,19 @@ class DatasetCheck(ProjectVersionMisuseTask):
             if "url" not in source:
                 self._missing_key("source.url", yaml_path)
 
+    def end(self):
+        self._report_unknown_dataset_entries()
+
+    def _new_known_datasets_entry(self, id_: str):
+        for dataset, entries in self.datasets.items():
+            if id_ in entries:
+                entries.remove(id_)
+
+    def _report_unknown_dataset_entries(self):
+        for dataset, entries in self.datasets.items():
+            for entry in entries:
+                self._unknown_dataset_entry(dataset, entry)
+
     def _missing_key(self, tag: str, file_path: str):
         self.logger.warning('Missing "{}" in "{}".'.format(tag, file_path))
 
@@ -125,3 +142,6 @@ class DatasetCheck(ProjectVersionMisuseTask):
 
     def _unknown_misuse(self, version_id: str, unknown_misuse_id: str):
         self.logger.warning('Unknown misuse "{}" in "{}"'.format(unknown_misuse_id, version_id))
+
+    def _unknown_dataset_entry(self, dataset: str, entry: str):
+        self.logger.warning('Unknown dataset entry "{}" in dataset "{}"'.format(entry, dataset))
