@@ -4,6 +4,7 @@ from nose.tools import assert_equals
 from tasks.implementations.dataset_check import DatasetCheck
 from tests.test_utils.data_util import create_project, create_version, create_misuse
 
+EMPTY_META = {"empty": None}
 
 class TestDatasetCheckProject:
     def setup(self):
@@ -44,9 +45,9 @@ class TestDatasetCheckProject:
 
     def test_version_and_misuse_with_same_name(self):
         self.uut._version_misuse_conflict = MagicMock()
-        project = create_project("-project-", meta={'empty': None})
-        misuse = create_misuse("-conflict-", project=project, meta={'empty': None})
-        version = create_version("-conflict-", project=project, misuses=[misuse], meta={'empty': None})
+        project = create_project("-project-", meta=EMPTY_META)
+        misuse = create_misuse("-conflict-", project=project, meta=EMPTY_META)
+        version = create_version("-conflict-", project=project, misuses=[misuse], meta=EMPTY_META)
 
         self.uut.process_project(project)
 
@@ -60,7 +61,7 @@ class TestDatasetCheckProjectVersion:
 
     def test_missing_revision(self):
         meta = {"misuses": ["1"]}
-        project = create_project("-project-", meta={"empty": ''})
+        project = create_project("-project-", meta=EMPTY_META)
         version = create_version("-id-", meta=meta, project=project)
 
         self.uut.process_project_version(project, version)
@@ -69,7 +70,7 @@ class TestDatasetCheckProjectVersion:
 
     def test_missing_misuses(self):
         meta = {"revision": "1"}
-        project = create_project("-project-", meta={"empty": ''})
+        project = create_project("-project-", meta=EMPTY_META)
         version = create_version("-id-", meta=meta, project=project)
 
         self.uut.process_project_version(project, version)
@@ -78,7 +79,7 @@ class TestDatasetCheckProjectVersion:
 
     def test_empty_misuses(self):
         meta = {"misuses": []}
-        project = create_project("-project-", meta={"empty": ''})
+        project = create_project("-project-", meta=EMPTY_META)
         version = create_version("-id-", meta=meta, project=project)
 
         self.uut.process_project_version(project, version)
@@ -86,7 +87,7 @@ class TestDatasetCheckProjectVersion:
         self.uut._missing_key.assert_any_call("misuses", "-project-/versions/-id-/version.yml")
 
     def test_misuses_none(self):
-        project = create_project("-project-", meta={"empty": ''})
+        project = create_project("-project-", meta=EMPTY_META)
         version = create_version("-id-", meta={"misuses": None}, project=project)
 
         self.uut.process_project_version(project, version)
@@ -95,7 +96,7 @@ class TestDatasetCheckProjectVersion:
 
     def test_missing_build(self):
         meta = {"misuses": ["1"]}
-        project = create_project("-project-", meta={"empty": ''})
+        project = create_project("-project-", meta=EMPTY_META)
         version = create_version("-id-", meta=meta, project=project)
 
         self.uut.process_project_version(project, version)
@@ -104,7 +105,7 @@ class TestDatasetCheckProjectVersion:
 
     def test_missing_build_classes(self):
         meta = {"build": {}}
-        project = create_project("-project-", meta={"empty": ''})
+        project = create_project("-project-", meta=EMPTY_META)
         version = create_version("-id-", meta=meta, project=project)
 
         self.uut.process_project_version(project, version)
@@ -113,7 +114,7 @@ class TestDatasetCheckProjectVersion:
 
     def test_missing_build_commands(self):
         meta = {"build": {}}
-        project = create_project("-project-", meta={"empty": ''})
+        project = create_project("-project-", meta=EMPTY_META)
         version = create_version("-id-", meta=meta, project=project)
 
         self.uut.process_project_version(project, version)
@@ -122,7 +123,7 @@ class TestDatasetCheckProjectVersion:
 
     def test_empty_build_commands(self):
         meta = {"build": {"commands": []}}
-        project = create_project("-project-", meta={"empty": ''})
+        project = create_project("-project-", meta=EMPTY_META)
         version = create_version("-id-", meta=meta, project=project)
 
         self.uut.process_project_version(project, version)
@@ -132,7 +133,7 @@ class TestDatasetCheckProjectVersion:
 
     def test_missing_build_src(self):
         meta = {"build": {}}
-        project = create_project("-project-", meta={"empty": ''})
+        project = create_project("-project-", meta=EMPTY_META)
         version = create_version("-id-", meta=meta, project=project)
 
         self.uut.process_project_version(project, version)
@@ -157,11 +158,11 @@ class TestDatasetCheckMisuse:
         self.uut._missing_key = MagicMock()
 
     def test_missing_location(self):
-        meta = {"empty": ''}
-        project = create_project("-project-", meta={"empty": ''})
+        meta = EMPTY_META
+        project = create_project("-project-", meta=EMPTY_META)
         misuse = create_misuse("-id-", project=project)
         misuse._YAML = meta
-        version = create_version("-version-", meta={"empty": ''}, project=project, misuses=[misuse])
+        version = create_version("-version-", meta=EMPTY_META, project=project, misuses=[misuse])
 
         self.uut.process_project_version_misuse(project, version, misuse)
 
@@ -169,9 +170,9 @@ class TestDatasetCheckMisuse:
 
     def test_missing_location_file(self):
         meta = {"location": {}}
-        project = create_project("-project-", meta={"empty": ''})
+        project = create_project("-project-", meta=EMPTY_META)
         misuse = create_misuse("-id-", project=project, meta=meta)
-        version = create_version("-version-", meta={"empty": ''}, project=project, misuses=[misuse])
+        version = create_version("-version-", meta=EMPTY_META, project=project, misuses=[misuse])
 
         self.uut.process_project_version_misuse(project, version, misuse)
 
@@ -179,9 +180,9 @@ class TestDatasetCheckMisuse:
 
     def test_missing_location_method(self):
         meta = {"location": {}}
-        project = create_project("-project-", meta={"empty": ''})
+        project = create_project("-project-", meta=EMPTY_META)
         misuse = create_misuse("-id-", project=project, meta=meta)
-        version = create_version("-version-", meta={"empty": ''}, project=project, misuses=[misuse])
+        version = create_version("-version-", meta=EMPTY_META, project=project, misuses=[misuse])
 
         self.uut.process_project_version_misuse(project, version, misuse)
 
@@ -189,19 +190,19 @@ class TestDatasetCheckMisuse:
 
     def test_missing_api(self):
         meta = {"empty": {}}
-        project = create_project("-project-", meta={"empty": ''})
+        project = create_project("-project-", meta=EMPTY_META)
         misuse = create_misuse("-id-", project=project, meta=meta)
-        version = create_version("-version-", meta={"empty": ''}, project=project, misuses=[misuse])
+        version = create_version("-version-", meta=EMPTY_META, project=project, misuses=[misuse])
 
         self.uut.process_project_version_misuse(project, version, misuse)
 
         self.uut._missing_key.assert_any_call("api", "-project-/misuses/-id-/misuse.yml")
 
     def test_missing_characteristics(self):
-        meta = {"empty": ''}
-        project = create_project("-project-", meta={"empty": ''})
+        meta = EMPTY_META
+        project = create_project("-project-", meta=EMPTY_META)
         misuse = create_misuse("-id-", project=project, meta=meta)
-        version = create_version("-version-", meta={"empty": ''}, project=project, misuses=[misuse])
+        version = create_version("-version-", meta=EMPTY_META, project=project, misuses=[misuse])
 
         self.uut.process_project_version_misuse(project, version, misuse)
 
@@ -209,19 +210,19 @@ class TestDatasetCheckMisuse:
 
     def test_empty_characteristics(self):
         meta = {"characteristics": []}
-        project = create_project("-project-", meta={"empty": ''})
+        project = create_project("-project-", meta=EMPTY_META)
         misuse = create_misuse("-id-", project=project, meta=meta)
-        version = create_version("-version-", meta={"empty": ''}, project=project, misuses=[misuse])
+        version = create_version("-version-", meta=EMPTY_META, project=project, misuses=[misuse])
 
         self.uut.process_project_version_misuse(project, version, misuse)
 
         self.uut._missing_key.assert_any_call("characteristics", "-project-/misuses/-id-/misuse.yml")
 
     def test_missing_description(self):
-        meta = {"empty": ''}
-        project = create_project("-project-", meta={"empty": ''})
+        meta = EMPTY_META
+        project = create_project("-project-", meta=EMPTY_META)
         misuse = create_misuse("-id-", project=project, meta=meta)
-        version = create_version("-version-", meta={"empty": ''}, project=project, misuses=[misuse])
+        version = create_version("-version-", meta=EMPTY_META, project=project, misuses=[misuse])
 
         self.uut.process_project_version_misuse(project, version, misuse)
 
@@ -229,19 +230,19 @@ class TestDatasetCheckMisuse:
 
     def test_empty_description(self):
         meta = {"description": ''}
-        project = create_project("-project-", meta={"empty": ''})
+        project = create_project("-project-", meta=EMPTY_META)
         misuse = create_misuse("-id-", project=project, meta=meta)
-        version = create_version("-version-", meta={"empty": ''}, project=project, misuses=[misuse])
+        version = create_version("-version-", meta=EMPTY_META, project=project, misuses=[misuse])
 
         self.uut.process_project_version_misuse(project, version, misuse)
 
         self.uut._missing_key.assert_any_call("description", "-project-/misuses/-id-/misuse.yml")
 
     def test_missing_fix(self):
-        meta = {"empty": ''}
-        project = create_project("-project-", meta={"empty": ''})
+        meta = EMPTY_META
+        project = create_project("-project-", meta=EMPTY_META)
         misuse = create_misuse("-id-", project=project, meta=meta)
-        version = create_version("-version-", meta={"empty": ''}, project=project, misuses=[misuse])
+        version = create_version("-version-", meta=EMPTY_META, project=project, misuses=[misuse])
 
         self.uut.process_project_version_misuse(project, version, misuse)
 
@@ -249,9 +250,9 @@ class TestDatasetCheckMisuse:
 
     def test_missing_fix_commit(self):
         meta = {"fix": {}}
-        project = create_project("-project-", meta={"empty": ''})
+        project = create_project("-project-", meta=EMPTY_META)
         misuse = create_misuse("-id-", project=project, meta=meta)
-        version = create_version("-version-", meta={"empty": ''}, project=project, misuses=[misuse])
+        version = create_version("-version-", meta=EMPTY_META, project=project, misuses=[misuse])
 
         self.uut.process_project_version_misuse(project, version, misuse)
 
@@ -259,39 +260,39 @@ class TestDatasetCheckMisuse:
 
     def test_missing_fix_revision(self):
         meta = {"fix": {}}
-        project = create_project("-project-", meta={"empty": ''})
+        project = create_project("-project-", meta=EMPTY_META)
         misuse = create_misuse("-id-", project=project, meta=meta)
-        version = create_version("-version-", meta={"empty": ''}, project=project, misuses=[misuse])
+        version = create_version("-version-", meta=EMPTY_META, project=project, misuses=[misuse])
 
         self.uut.process_project_version_misuse(project, version, misuse)
 
         self.uut._missing_key.assert_any_call("fix.revision", "-project-/misuses/-id-/misuse.yml")
 
     def test_missing_internal(self):
-        meta = {"empty": ''}
-        project = create_project("-project-", meta={"empty": ''})
+        meta = EMPTY_META
+        project = create_project("-project-", meta=EMPTY_META)
         misuse = create_misuse("-id-", project=project, meta=meta)
-        version = create_version("-version-", meta={"empty": ''}, project=project, misuses=[misuse])
+        version = create_version("-version-", meta=EMPTY_META, project=project, misuses=[misuse])
 
         self.uut.process_project_version_misuse(project, version, misuse)
 
         self.uut._missing_key.assert_any_call("internal", "-project-/misuses/-id-/misuse.yml")
 
     def test_missing_report(self):
-        meta = {"empty": ''}
-        project = create_project("-project-", meta={"empty": ''})
+        meta = EMPTY_META
+        project = create_project("-project-", meta=EMPTY_META)
         misuse = create_misuse("-id-", project=project, meta=meta)
-        version = create_version("-version-", meta={"empty": ''}, project=project, misuses=[misuse])
+        version = create_version("-version-", meta=EMPTY_META, project=project, misuses=[misuse])
 
         self.uut.process_project_version_misuse(project, version, misuse)
 
         self.uut._missing_key.assert_any_call("report", "-project-/misuses/-id-/misuse.yml")
 
     def test_missing_source(self):
-        meta = {"empty": ''}
-        project = create_project("-project-", meta={"empty": ''})
+        meta = EMPTY_META
+        project = create_project("-project-", meta=EMPTY_META)
         misuse = create_misuse("-id-", project=project, meta=meta)
-        version = create_version("-version-", meta={"empty": ''}, project=project, misuses=[misuse])
+        version = create_version("-version-", meta=EMPTY_META, project=project, misuses=[misuse])
 
         self.uut.process_project_version_misuse(project, version, misuse)
 
@@ -299,9 +300,9 @@ class TestDatasetCheckMisuse:
 
     def test_missing_source_name(self):
         meta = {"source": {}}
-        project = create_project("-project-", meta={"empty": ''})
+        project = create_project("-project-", meta=EMPTY_META)
         misuse = create_misuse("-id-", project=project, meta=meta)
-        version = create_version("-version-", meta={"empty": ''}, project=project, misuses=[misuse])
+        version = create_version("-version-", meta=EMPTY_META, project=project, misuses=[misuse])
 
         self.uut.process_project_version_misuse(project, version, misuse)
 
@@ -309,9 +310,9 @@ class TestDatasetCheckMisuse:
 
     def test_missing_source_url(self):
         meta = {"source": {}}
-        project = create_project("-project-", meta={"empty": ''})
+        project = create_project("-project-", meta=EMPTY_META)
         misuse = create_misuse("-id-", project=project, meta=meta)
-        version = create_version("-version-", meta={"empty": ''}, project=project, misuses=[misuse])
+        version = create_version("-version-", meta=EMPTY_META, project=project, misuses=[misuse])
 
         self.uut.process_project_version_misuse(project, version, misuse)
 
@@ -330,7 +331,7 @@ class TestDatasetCheckDatasetLists:
         self.uut._unknown_dataset_entry.assert_any_call("-dataset-", "-unknown-entry-")
 
     def test_no_warning_on_known_project(self):
-        project = create_project("-project-", meta={"empty": ''})
+        project = create_project("-project-", meta=EMPTY_META)
         self.uut.datasets = {"-dataset-": [project.id]}
 
         self.uut.process_project(project)
@@ -339,8 +340,8 @@ class TestDatasetCheckDatasetLists:
         self.uut._unknown_dataset_entry.assert_not_called()
 
     def test_no_warning_on_known_version(self):
-        project = create_project("-project-", meta={"empty": ''})
-        version = create_version("-version-", project=project, meta={"empty": ''})
+        project = create_project("-project-", meta=EMPTY_META)
+        version = create_version("-version-", project=project, meta=EMPTY_META)
         self.uut.datasets = {"-dataset-": [version.id]}
 
         self.uut.process_project_version(project, version)
@@ -349,9 +350,9 @@ class TestDatasetCheckDatasetLists:
         self.uut._unknown_dataset_entry.assert_not_called()
 
     def test_no_warning_on_known_misuse(self):
-        project = create_project("-project-", meta={"empty": ''})
-        misuse = create_misuse("-misuse-", project=project, meta={"empty": ''})
-        version = create_version("-version-", project=project, misuses=[misuse], meta={"empty": ''})
+        project = create_project("-project-", meta=EMPTY_META)
+        misuse = create_misuse("-misuse-", project=project, meta=EMPTY_META)
+        version = create_version("-version-", project=project, misuses=[misuse], meta=EMPTY_META)
         self.uut.datasets = {"-dataset-": [misuse.id]}
 
         self.uut.process_project_version_misuse(project, version, misuse)
