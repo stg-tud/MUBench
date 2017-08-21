@@ -2,7 +2,7 @@ import logging
 
 from typing import Dict, List, Optional, Any
 from os import listdir
-from os.path import join, isdir
+from os.path import join, isdir, basename, exists
 
 from data.misuse import Misuse
 from data.project import Project
@@ -153,8 +153,8 @@ class DatasetCheck(ProjectVersionMisuseTask):
                 if not self._location_exists(source_base_path, location.file, location.method):
                     self._cannot_find_location(str(location), "{}/misuses/{}/misuse.yml".format(project.id, misuse.misuse_id))
 
-    def _location_exists(source_base_path, file_, method) -> bool:
-        return get_snippets(source_base_path, location.file, location.method)
+    def _location_exists(self, source_base_path, file_, method) -> bool:
+        return get_snippets(source_base_path, file_, method)
 
     def _new_known_datasets_entry(self, id_: str):
         for dataset, entries in self.datasets.items():
@@ -198,6 +198,9 @@ class DatasetCheck(ProjectVersionMisuseTask):
         project_dirs = [join(data_base_path, subdir) for subdir in listdir(data_base_path) if isdir(join(data_base_path, subdir))]
         for project_dir in project_dirs:
             misuses_dir = join(project_dir, "misuses")
+            if not exists(misuses_dir):
+                continue
+
             misuse_ids = [subdir for subdir in listdir(misuses_dir) if isdir(join(misuses_dir, subdir))]
             misuse_ids = ["{}.{}".format(basename(project_dir), misuse) for misuse in misuse_ids]
             misuses.extend(misuse_ids)
