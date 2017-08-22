@@ -102,44 +102,31 @@ def _get_subclasses_recursive(class_) -> List['RunnerInterface']:
     return subclasses
 
 
-# noinspection PyPep8Naming
-class RunnerInterface_0_0_8(RunnerInterface):
-    _VALID_KEYS = [
-        "target",
-        "run_info",
-        "detector_mode",
-        "training_src_path",
-        "training_classpath",
-        "target_src_path",
-        "target_classpath",
-        "dep_classpath"
-    ]
-
+class CommandLineArgsRunnerInterface(RunnerInterface):
     @staticmethod
     def version() -> StrictVersion:
-        return StrictVersion("0.0.8")
+        raise NotImplementedError()
 
     @staticmethod
     def changelog() -> str:
-        return "Oldest version."
+        raise NotImplementedError()
 
     def execute(self, version: ProjectVersion, detector_arguments: Dict[str, str],
                 timeout: Optional[int], logger: Logger):
         detector_arguments = self._filter_args(detector_arguments, logger)
-        command = self._get_command(version, detector_arguments)
+        command = self._get_command(detector_arguments)
         Shell.exec(command, logger=logger, timeout=timeout)
 
-    @staticmethod
-    def _filter_args(args: Dict[str, str], logger: Logger) -> Dict[str, str]:
+    def _filter_args(self, args: Dict[str, str], logger: Logger) -> Dict[str, str]:
         valid_args = OrderedDict()
         for key, value in args.items():
-            if key in RunnerInterface_0_0_8._VALID_KEYS:
+            if key in self._get_supported_cli_args():
                 valid_args[key] = value
             else:
                 logger.debug("Detector uses legacy CLI: argument %s with value %s will not be passed to the detector.", key, value)
         return valid_args
 
-    def _get_command(self, version: ProjectVersion, detector_arguments: Dict[str, str]) -> str:
+    def _get_command(self, detector_arguments: Dict[str, str]) -> str:
         detector_invocation = ["java"] + self.java_options + ["-jar", _quote(self.jar_path)]
         detector_arguments = self._get_cli_args(detector_arguments)
         command = detector_invocation + _as_list(detector_arguments)
@@ -147,11 +134,62 @@ class RunnerInterface_0_0_8(RunnerInterface):
         return command
 
     @staticmethod
+    def _get_supported_cli_args():
+        raise NotImplementedError()
+
+    @staticmethod
     def _get_cli_args(detector_arguments: Dict[str, str]) -> Dict[str, str]:
         args = OrderedDict()
         for key, value in detector_arguments.items():
             args[key] = _quote(value)
         return args
+
+
+# noinspection PyPep8Naming
+class RunnerInterface_0_0_7(CommandLineArgsRunnerInterface):
+    @staticmethod
+    def version() -> StrictVersion:
+        return StrictVersion("0.0.7")
+
+    @staticmethod
+    def changelog() -> str:
+        return ""
+
+    @staticmethod
+    def _get_supported_cli_args():
+        return [
+            "target",
+            "run_info",
+            "detector_mode",
+            "training_src_path",
+            "training_classpath",
+            "target_src_path",
+            "target_classpath"
+        ]
+
+
+# noinspection PyPep8Naming
+class RunnerInterface_0_0_8(CommandLineArgsRunnerInterface):
+    @staticmethod
+    def version() -> StrictVersion:
+        return StrictVersion("0.0.8")
+
+    @staticmethod
+    def changelog() -> str:
+        return "Pass dependency classpath to detectors as `dep_classpath`."
+
+    @staticmethod
+    def _get_supported_cli_args():
+        return [
+            "target",
+            "run_info",
+            "detector_mode",
+            "training_src_path",
+            "training_classpath",
+            "target_src_path",
+            "target_classpath",
+            "dep_classpath"
+        ]
 
 
 # noinspection PyPep8Naming
