@@ -1,0 +1,54 @@
+<?php
+/**
+ * @var string $user the logged in user, if any
+ *
+ * @var string $site_base_url
+ * @var string $public_url_prefix
+ * @var string $private_url_prefix
+ * @var string $url_prefix the public or private url prefix, depending on whether the user is logged in
+ *
+ * @var string $path the current route path
+ * @var string $origin_param url parameter that carries the $path
+ * @var string $origin_path referrer path
+ *
+ * @var array $experiments all experiments (Experiment)
+ * @var array $detectors detectors (Detector) with results per experiment
+ * @var array $results
+ * @var array $tags
+ * @var int $ex2_review_size max number of reviews (per project) to include in statistics
+ */
+?>
+<html>
+<head>
+    <link rel="stylesheet" type="text/css" href="<?= $site_base_url ?>style/style.css"/>
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+</head>
+<body>
+<?php include "includes/menu.phtml" ?>
+
+<h1>Tag - Statistics</h1>
+
+<?php foreach($experiments as $exp): ?>
+<h2>Experiment <?= $exp->getNumber() ?></h2>
+<table>
+    <tr>
+        <td>Detector</td>
+        <?php foreach($tags as $tag): ?>
+            <td><?= htmlspecialchars($tag['name']) ?></td>
+        <?php endforeach; ?>
+    </tr>
+
+    <?php foreach ($results[$exp->getId()] as $key => $result) : /** @var $result RunsResult */ ?>
+        <tbody>
+        <tr>
+            <td> <?= htmlspecialchars($key) ?>
+            <?php foreach($result as $tag_result): ?>
+                    <td><?= htmlspecialchars(count($tag_result)) ?></td>
+            <?php endforeach; ?>
+        </tr>
+        </tbody>
+    <?php endforeach; ?>
+</table>
+<?php endforeach; ?>
+</body>
+</html>

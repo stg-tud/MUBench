@@ -36,8 +36,19 @@ use MuBench\ReviewSite\Model\Experiment;
             <?php endforeach ?>
             <?php $experiment = $this_exp ?>
             <li class="<?= strpos($path, "/stats") !== false ? "active" : "" ?>">
-                <a href="<?= $public_url_prefix ?>stats">Statistics</a></li>
-
+                <span>Statistics</span>
+                <ul>
+                    <li class="<?= strpos($path, "/stats") !== false ? "active" : "" ?>">
+                        <a href="<?= $public_url_prefix ?>stats/tags">Tags</a></li>
+                    </li>
+                    <li class="<?= strpos($path, "/stats") !== false ? "active" : "" ?>">
+                        <a href="<?= $public_url_prefix ?>stats/types">Types</a></li>
+                    </li>
+                    <li class="<?= strpos($path, "/stats") !== false ? "active" : "" ?>">
+                        <a href="<?= $public_url_prefix ?>stats/results">Result</a></li>
+                    </li>
+                </ul>
+            </li>
             <?php if($user) : ?>
                 <li class="right <?= strpos($path, "/overview") !== false ? "active" : "" ?>">
                     <a href="<?= $private_url_prefix ?>overview">My Reviews</a></li>
