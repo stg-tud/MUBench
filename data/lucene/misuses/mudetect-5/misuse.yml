@@ -1,0 +1,16 @@
+api:
+- java.util.Iterator
+characteristics:
+- missing/condition/value_or_state
+crash: true
+description: >
+  Iterator.next() is invoked without prior check that the iterator has more
+  elements. There is a second iterator who is checked and is apparently
+  assumed to have as many elements. However, this is not ensured within the
+  method.
+location:
+  file: org/apache/lucene/search/BooleanQuery.java
+  method: "explain(IndexReader, int)"
+internal: false
+source:
+  name: MUDetect

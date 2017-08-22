@@ -1,0 +1,13 @@
+api:
+- java.util.Iterator
+characteristics:
+- missing/condition/value_or_state
+crash: true
+description: >
+  Iterator.next() is invoked without prior check that the iterator has more elements.
+location:
+  file: com/google/javascript/jscomp/ReplaceMessages.java
+  method: "constructAddOrStringNode(Iterator, Node)"
+internal: false
+source:
+  name: MUDetect
