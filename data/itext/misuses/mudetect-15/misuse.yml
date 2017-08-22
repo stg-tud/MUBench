@@ -1,5 +1,5 @@
 api:
-- java.util.Iterator
+- com.itextpdf.text.pdf.PdfLayer
 characteristics:
 - missing/condition/value_or_state
 crash: true
@@ -9,6 +9,6 @@ description: |
 location:
   file: com/itextpdf/text/pdf/PdfLayer.java
   method: "addChild(PdfLayer)"
-internal: false
+internal: true
 source:
   name: MUDetect
