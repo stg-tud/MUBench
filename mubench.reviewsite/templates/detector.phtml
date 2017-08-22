@@ -74,6 +74,7 @@ $markdown_parser = new Parsedown();
         <th>Reviews</th>
         <th>Your Review</th>
         <th>Your Comment</th>
+        <th>Tags</th>
     </tr>
     </thead>
     <tbody>
@@ -231,6 +232,15 @@ $markdown_parser = new Parsedown();
                 <td class="<?= $style_classes ?>" style="max-width: 300px;">
                     <?= $misuse->hasReviewed($user) ? $misuse->getReview($user)->getComment() : "" ?>
                 </td>
+                <td class="<?= $style_classes ?>">
+                    <? if($misuse->hasSufficientReviews()) : ?>
+                        <? foreach($misuse->getTags() as $tag) : ?>
+                            <div class="misuse-tag">
+                                <span><?= htmlspecialchars($tag['name']) ?></span>
+                            </div>
+                        <? endforeach; ?>
+                    <? endif; ?>
+                </td>
             </tr>
             <?php
             $new_version = false;
@@ -266,6 +276,7 @@ $markdown_parser = new Parsedown();
                 <td class="<?= $style_classes ?>"></td>
                 <td class="<?= $style_classes ?>"></td>
                 <td class="<?= $style_classes ?>" style="max-width: 300px;"></td>
+                <td class="<?= $style_classes ?>"></td>
             </tr>
         <?php endif; ?>
     <?php endforeach; ?>
