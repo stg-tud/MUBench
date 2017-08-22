@@ -288,6 +288,10 @@ class DBConnection
         return $misuses;
     }
 
+    public function getTaggedMisuses($experiment, $detector, $tag)
+    {
+        return $this->table('misuse_tags')->where('exp', $experiment)->where('detector', $detector->id)->where('tag', $tag)->get();
+    }
 
     public function getAllTags()
     {
@@ -298,6 +302,11 @@ class DBConnection
     {
         return $this->table('misuse_tags')->innerJoin('tags', 'misuse_tags.tag', '=', 'tags.id')->select('id', 'name')->where('exp', $experiment)->where('detector', $detector)
             ->where('project', $project)->where('version', $version)->where('misuse', $misuse)->get();
+    }
+
+    public function getMisuseCountForType($type_id)
+    {
+        return $this->table('misuse_types')->select('type')->where('type', $type_id)->count();
     }
 
     private function getQualifiedName($table_name)
