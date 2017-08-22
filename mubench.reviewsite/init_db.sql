@@ -52,7 +52,7 @@ CREATE TABLE IF NOT EXISTS `review_findings` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `review` int(11) NOT NULL,
   `rank` varchar(10) NOT NULL,
-  `decision` text NOT NULL,
+  `decision` varchar(3) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `review` (`review`,`rank`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=latin1;
