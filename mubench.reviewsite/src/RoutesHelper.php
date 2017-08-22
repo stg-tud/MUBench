@@ -19,7 +19,7 @@ class RoutesHelper
     private $logger;
     private $site_base_url;
     private $upload_path;
-    private $default_ex2_review_size;
+    public $default_ex2_review_size;
 
     public function __construct(DBConnection $db, PhpRenderer $renderer, Logger $logger, $upload_path, $site_base_url, $default_ex2_review_size)
     {
@@ -60,41 +60,6 @@ class RoutesHelper
             ['reviewer' => $reviewer, 'is_reviewer' => $is_reviewer, 'misuse' => $misuse, 'review' => $review, 'violation_types' => $violation_types, 'tags' => $tags]);
     }
 
-    public function stats(Request $request, Response $response, array $args) {
-        $ex2_review_size = $request->getQueryParam("ex2_review_size", $this->default_ex2_review_size);
-        $results = array();
-        foreach (array("ex1", "ex2", "ex3") as $experiment) {
-            $detectors = $this->db->getDetectors($experiment);
-            $results[$experiment] = array();
-            foreach ($detectors as $detector) {
-                $runs = $this->db->getRuns($detector, $experiment, $ex2_review_size);
-                // TODO move this functionality to dedicate experiment classes
-                if (strcmp($experiment, "ex2") === 0) {
-                    foreach ($runs as &$run) {
-                        $misuses = array();
-                        $number_of_misuses = 0;
-                        foreach ($run["misuses"] as $misuse) { /** @var $misuse Misuse */
-                            if ($misuse->getReviewState() != ReviewState::UNRESOLVED) {
-                                $misuses[] = $misuse;
-                                $number_of_misuses++;
-                            }
-
-                            if ($number_of_misuses == $ex2_review_size) {
-                                break;
-                            }
-                        }
-                        $run["misuses"] = $misuses;
-                    }
-                }
-                $results[$experiment][$detector->id] = new DetectorResult($detector, $runs);
-            }
-            $results[$experiment]["total"] = new ExperimentResult($results[$experiment]);
-        }
-
-        return $this->render($this, $request, $response, $args, 'stats.phtml',
-            ['results' => $results, 'ex2_review_size' => $ex2_review_size]);
-    }
-
     public function overview(Request $request, Response $response, array $args) {
         $reviews = $this->db->getAllReviews($this->getUser($request));
         return $this->render($this, $request, $response, $args, 'overview.phtml', ['misuses' => $reviews]);
@@ -105,7 +70,7 @@ class RoutesHelper
         return $this->render($this, $request, $response, $args, 'todo.phtml', ['misuses' => $todos]);
     }
 
-    private function render($handler, Request $request, Response $response, array $args, $template, array $params)
+    public function render($handler, Request $request, Response $response, array $args, $template, array $params)
     {
         $params["user"] = $this->getUser($request);
 
