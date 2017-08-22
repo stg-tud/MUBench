@@ -200,4 +200,4 @@ class RunnerInterface_0_0_10(RunnerInterface_0_0_8):
 
     @staticmethod
     def changelog():
-        return "Java-side interface now uses builder."
+        return ""  # only changed Java-side interface
