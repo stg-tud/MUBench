@@ -123,7 +123,7 @@ class CommandLineArgsRunnerInterface(RunnerInterface):
             if key in self._get_supported_cli_args():
                 valid_args[key] = value
             else:
-                logger.debug("Detector uses legacy CLI: argument %s with value %s will not be passed to the detector.", key, value)
+                logger.warning("Detector uses legacy CLI: argument `%s` will not be passed to it.", key)
         return valid_args
 
     def _get_command(self, detector_arguments: Dict[str, str]) -> str:
