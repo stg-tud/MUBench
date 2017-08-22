@@ -77,7 +77,6 @@ class RunnerInterface:
     @staticmethod
     def _get_interfaces() -> List['RunnerInterface']:
         interfaces_with_versions = []
-
         for interface in _get_subclasses_recursive(RunnerInterface):
             try:
                 interface.version()
@@ -89,8 +88,7 @@ class RunnerInterface:
 
     @staticmethod
     def __get_latest_version() -> StrictVersion:
-        versions = [interface.version() for interface in \
-                RunnerInterface._get_interfaces()]
+        versions = [interface.version() for interface in RunnerInterface._get_interfaces()]
         return sorted(versions)[-1]
 
 
