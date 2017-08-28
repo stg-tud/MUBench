@@ -23,7 +23,6 @@ class RoutesHelper
     private $default_ex2_review_size;
     private $statsHelper;
 
-
     public function __construct(DBConnection $db, PhpRenderer $renderer, Logger $logger, $upload_path, $site_base_url, $default_ex2_review_size)
     {
         $this->db = $db;
