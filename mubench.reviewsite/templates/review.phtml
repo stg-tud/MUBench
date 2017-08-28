@@ -265,7 +265,9 @@ use MuBench\ReviewSite\Model\Experiment;
             <?php foreach($columns as $column) : ?>
                 <th><?= htmlspecialchars(ucwords(str_replace("_", " ", $column))); ?></th>
             <?php endforeach; ?>
-            <th>Violation Types</th>
+            <?php if(strcmp($experiment->getId(), 'ex2') === 0) : ?>
+                <th>Violation Types</th>
+            <?php endif; ?>
         </tr>
 
         <?php foreach($potential_hits as $hit) : ?>
@@ -323,8 +325,8 @@ use MuBench\ReviewSite\Model\Experiment;
                 <?php endif; ?>
             </td>
             <?php endforeach; ?>
-            <td>
-                <?php if(strcmp($experiment->getId(), 'ex2') === 0) : ?>
+            <?php if(strcmp($experiment->getId(), 'ex2') === 0) : ?>
+                <td>
                     <select name="review_hit[<?= htmlspecialchars($hit['rank']); ?>][types][]" title="Violation Types" size="<?= count($violation_types) ?>" multiple <?= ($user && $is_reviewer) ? "" : "disabled" ?>>
                         <?php foreach($violation_types as $type) : ?>
                             <?php if($review && in_array($type['name'], $review->getHitViolationTypes($hit['rank']))) : ?>
@@ -334,8 +336,8 @@ use MuBench\ReviewSite\Model\Experiment;
                             <?php endif; ?>
                         <?php endforeach; ?>
                     </select>
-                <?php endif; ?>
-            </td>
+                </td>
+            <?php endif; ?>
         </tr>
        <?php endforeach; ?>
        </table>
