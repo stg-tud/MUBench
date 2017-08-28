@@ -28,3 +28,15 @@ The [MUBench Pipeline](../mubench.pipeline) publishes the detectors' results to 
 ## Use
 
 `$> ./mubench publish X -s http://<your-sites.url>/index.php/` publishes experiment results to your review site. Check [Run Benchmark Experiments](../mubench.pipeline/) and `./mubench publish -h` for further details.
+
+## Known Issues
+
+### Cannot login as a reviewer
+
+*Scenario:* You configured a user in your `settings.php`, but when you click `Login` and enter the credentials, the login prompt just reappears, as if you had typed in wrong credentials.
+
+*Solution:* The problem might be how PHP Basic Auth is configured on your server. Try adding a `.htaccess` file with the following line to the base directory of your MUBench installation:
+
+```
+RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization},L]
+```
