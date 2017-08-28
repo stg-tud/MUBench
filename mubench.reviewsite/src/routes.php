@@ -53,7 +53,6 @@ $app->group('/download', function () use ($app, $downloadController, $database) 
 });
 
 
-
 $app->group('/api/upload', function () use ($app, $settings, $database) {
     $app->post('/[{experiment:ex[1-3]}]',
         function (Request $request, Response $response, array $args) use ($settings, $database) {

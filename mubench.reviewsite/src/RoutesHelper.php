@@ -94,7 +94,7 @@ class RoutesHelper
         return $this->render($this, $request, $response, $args, 'type_stats.phtml', ['results' => $results]);
     }
 
-    public function render($handler, Request $request, Response $response, array $args, $template, array $params)
+    private function render($handler, Request $request, Response $response, array $args, $template, array $params)
     {
         $params["user"] = $this->getUser($request);
 
