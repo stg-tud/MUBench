@@ -36,7 +36,11 @@ In Experiments 1 and 3, the review site needs the misuse metadata, such as the d
 
 ## Use
 
-`$> ./mubench publish X -s http://<your-sites.url>/index.php/` publishes experiment results to your review site. Check [Run Benchmark Experiments](../mubench.pipeline/) and `./mubench publish -h` for further details.
+After running experiments, you need to publish the respective findings to your review site. You can do this via the following command:
+
+`$> ./mubench publish findings <detector> <experiment> -s http://<your-sites.url>/index.php/ -u <user> -p <password>`
+
+This will also run the respective experiment, if you did not do this before. Check [Run Benchmark Experiments](../mubench.pipeline/) and `./mubench publish findings -h` for further details.
 
 ## Known Issues
 
