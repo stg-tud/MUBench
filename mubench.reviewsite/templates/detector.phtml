@@ -233,7 +233,7 @@ $markdown_parser = new Parsedown();
                     <?= $misuse->hasReviewed($user) ? $misuse->getReview($user)->getComment() : "" ?>
                 </td>
                 <td class="<?= $style_classes ?>">
-                    <? if($misuse->hasSufficientReviews()) : ?>
+                    <? if($misuse->hasConclusiveReviewState()) : ?>
                         <? foreach($misuse->getTags() as $tag) : ?>
                             <div class="misuse-tag">
                                 <span><?= htmlspecialchars($tag['name']) ?></span>
