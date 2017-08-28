@@ -226,3 +226,21 @@ table.fw {width:100%;}
 .prettyprint ol.linenums > li {
     list-style: decimal inside;
 }
+
+.misuse-tag {
+    float: left;
+    margin-right: 3px;
+    padding: 4px;
+    border-radius: 2px;
+    background-color: gray;
+    color: lightgray;
+}
+
+.tag-input {
+    margin-left: 5px;
+    padding: 4px;
+    width: 100%;
+    height: 100%;
+    border: 0;
+    outline: none;
+}
