@@ -23,7 +23,16 @@ The [MUBench Pipeline](../mubench.pipeline) publishes the detectors' results to 
 4. Grant the server read/write permissions on the `upload` and `logs` directories.
 5. Import [`mubench.reviewsite/init_db.sql`](https://github.com/stg-tud/MUBench/blob/master/mubench.reviewsite/init_db.sql) into your database.
 6. Add the table-name prefix you entered in the settings to all tables.
-7. Go to `http://<your-site.url>/`.
+7. [Publish the misuse metadata](#publish-misuse-metadata) to your review site.
+8. Go to `http://<your-site.url>/`.
+
+## Publish Misuse Metadata
+
+In Experiments 1 and 3, the review site needs the misuse metadata, such as the description, the pattern code, and the misuse code, in order to display the detectors findings correctly. To upload the metadata to your review site, simply execute:
+
+`$> ./mubench publish metadata -s http://<your-site.url>/index.php/ -u <user> -p <password>`
+
+*Hint:* You may use the usual filter options (`--dataset`, `--only`, `--skip`) to upload metadata selectively.
 
 ## Use
 
