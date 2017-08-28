@@ -70,7 +70,8 @@ class Benchmark:
         self.runner.add(checkout_handler)
 
     def _setup_compile(self):
-        compile_handler = Compile(Benchmark.CHECKOUTS_PATH, Benchmark.COMPILES_PATH, self.config.force_compile)
+        compile_handler = Compile(Benchmark.CHECKOUTS_PATH, Benchmark.COMPILES_PATH,
+                                  self.config.force_compile, self.config.windows_fix)
         self.runner.add(compile_handler)
 
     def _setup_detect(self):
