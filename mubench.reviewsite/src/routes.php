@@ -7,7 +7,6 @@ use MuBench\ReviewSite\Controller\ReviewUploader;
 use MuBench\ReviewSite\Controller\SnippetUploader;
 use MuBench\ReviewSite\Controller\DownloadController;
 use MuBench\ReviewSite\Controller\TagController;
-use MuBench\ReviewSite\StatsHelper;
 use MuBench\ReviewSite\DBConnection;
 use MuBench\ReviewSite\DirectoryHelper;
 use MuBench\ReviewSite\Model\Experiment;
@@ -23,27 +22,26 @@ $renderer = $app->getContainer()['renderer'];
 // TODO rename RoutesHelper to ResultsViewController
 $routesHelper = new RoutesHelper($database, $renderer, $logger, $settings['upload'], $settings['site_base_url'], $settings['default_ex2_review_size']);
 $downloadController = new DownloadController($database, $logger, $settings['default_ex2_review_size']);
-$statsHelper = new StatsHelper($database, $logger, $routesHelper);
 
 $app->get('/', [$routesHelper, 'index']);
 $app->get('/{exp:ex[1-3]}/{detector}', [$routesHelper, 'detector']);
 $app->get('/{exp:ex[1-3]}/{detector}/{project}/{version}/{misuse}', [$routesHelper, 'review']);
 $app->get('/{exp:ex[1-3]}/{detector}/{project}/{version}/{misuse}/{reviewer}', [$routesHelper, 'review']);
-$app->group('/stats', function() use ($app, $statsHelper) {
-    $app->get('/results', [$statsHelper, 'result_stats']);
-    $app->get('/tags', [$statsHelper, 'tag_stats']);
-    $app->get('/types', [$statsHelper, 'type_stats']);
+$app->group('/stats', function() use ($app, $routesHelper) {
+    $app->get('/results', [$routesHelper, 'result_stats']);
+    $app->get('/tags', [$routesHelper, 'tag_stats']);
+    $app->get('/types', [$routesHelper, 'type_stats']);
 });
 
-$app->group('/private', function () use ($app, $routesHelper, $statsHelper, $database) {
+$app->group('/private', function () use ($app, $routesHelper, $database) {
     $app->get('/', [$routesHelper, 'index']);
     $app->get('/{exp:ex[1-3]}/{detector}', [$routesHelper, 'detector']);
     $app->get('/{exp:ex[1-3]}/{detector}/{project}/{version}/{misuse}', [$routesHelper, 'review']);
     $app->get('/{exp:ex[1-3]}/{detector}/{project}/{version}/{misuse}/{reviewer}', [$routesHelper, 'review']);
-    $app->group('/stats', function() use ($app, $statsHelper) {
-        $app->get('/results', [$statsHelper, 'result_stats']);
-        $app->get('/tags', [$statsHelper, 'tag_stats']);
-        $app->get('/types', [$statsHelper, 'type_stats']);
+    $app->group('/stats', function() use ($app, $routesHelper) {
+        $app->get('/results', [$routesHelper, 'result_stats']);
+        $app->get('/tags', [$routesHelper, 'tag_stats']);
+        $app->get('/types', [$routesHelper, 'type_stats']);
     });
     $app->get('/overview', [$routesHelper, 'overview']);
     $app->get('/todo', [$routesHelper, 'todos']);

@@ -8,6 +8,7 @@ use MuBench\ReviewSite\Model\Experiment;
 use MuBench\ReviewSite\Model\ExperimentResult;
 use MuBench\ReviewSite\Model\Misuse;
 use MuBench\ReviewSite\Model\ReviewState;
+use MuBench\ReviewSite\StatsHelper;
 use Slim\Http\Request;
 use Slim\Http\Response;
 use Slim\Views\PhpRenderer;
@@ -19,7 +20,9 @@ class RoutesHelper
     private $logger;
     private $site_base_url;
     private $upload_path;
-    public $default_ex2_review_size;
+    private $default_ex2_review_size;
+    private $statsHelper;
+
 
     public function __construct(DBConnection $db, PhpRenderer $renderer, Logger $logger, $upload_path, $site_base_url, $default_ex2_review_size)
     {
@@ -29,6 +32,7 @@ class RoutesHelper
         $this->site_base_url = $site_base_url;
         $this->upload_path = $upload_path;
         $this->default_ex2_review_size = $default_ex2_review_size;
+        $this->statsHelper = new StatsHelper($db, $logger);
     }
 
     public function index(Request $request, Response $response, array $args) {
@@ -68,6 +72,26 @@ class RoutesHelper
     public function todos(Request $request, Response $response, array $args) {
         $todos = $this->db->getTodo($this->getUser($request), $this->default_ex2_review_size);
         return $this->render($this, $request, $response, $args, 'todo.phtml', ['misuses' => $todos]);
+    }
+
+    public function result_stats(Request $request, Response $response, array $args) {
+        $ex2_review_size = $request->getQueryParam("ex2_review_size", $this->default_ex2_review_size);
+        $results = $this->statsHelper->getResultStats($ex2_review_size);
+
+        return $this->render($this, $request, $response, $args, 'result_stats.phtml',
+            ['results' => $results, 'ex2_review_size' => $ex2_review_size]);
+    }
+
+    public function tag_stats(Request $request, Response $response, array $args) {
+        $results = $this->statsHelper->getTagStats();
+        $tags = $this->db->getAllTags();
+        return $this->render($this, $request, $response, $args, 'tag_stats.phtml',
+            ['results' => $results, 'tags' => $tags]);
+    }
+
+    public function type_stats(Request $request, Response $response, array $args){
+        $results = $this->statsHelper->getTypeStats();
+        return $this->render($this, $request, $response, $args, 'type_stats.phtml', ['results' => $results]);
     }
 
     public function render($handler, Request $request, Response $response, array $args, $template, array $params)

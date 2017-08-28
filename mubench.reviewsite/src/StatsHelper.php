@@ -16,17 +16,14 @@ class StatsHelper
 {
     private $db;
     private $logger;
-    private $routesHelper;
 
-    public function __construct(DBConnection $db, Logger $logger, RoutesHelper $routesHelper)
+    public function __construct(DBConnection $db, Logger $logger)
     {
         $this->db = $db;
         $this->logger = $logger;
-        $this->routesHelper = $routesHelper;
     }
 
-    public function result_stats(Request $request, Response $response, array $args) {
-        $ex2_review_size = $request->getQueryParam("ex2_review_size", $this->routesHelper->default_ex2_review_size);
+    public function getResultStats($ex2_review_size) {
         $results = array();
         foreach (array("ex1", "ex2", "ex3") as $experiment) {
             $detectors = $this->db->getDetectors($experiment);
@@ -56,11 +53,10 @@ class StatsHelper
             $results[$experiment]["total"] = new ExperimentResult($results[$experiment]);
         }
 
-        return $this->routesHelper->render($this, $request, $response, $args, 'result_stats.phtml',
-            ['results' => $results, 'ex2_review_size' => $ex2_review_size]);
+        return $results;
     }
 
-    public function tag_stats(Request $request, Response $response, array $args) {
+    public function getTagStats() {
         $results = array();
         $tags = $this->db->getAllTags();
         foreach (array("ex1", "ex2", "ex3") as $experiment) {
@@ -79,15 +75,14 @@ class StatsHelper
             }
             $results[$experiment]["total"] = $total;
         }
-        return $this->routesHelper->render($this, $request, $response, $args, 'tag_stats.phtml',
-            ['results' => $results, 'tags' => $tags]);
+        return $results;
     }
 
-    public function type_stats(Request $request, Response $response, array $args){
+    public function getTypeStats(){
         $results = array();
         foreach($this->db->getAllViolationTypes() as $type){
             $results[$type['name']] = $this->db->getMisuseCountForType($type['id']);
         }
-        return $this->routesHelper->render($this, $request, $response, $args, 'type_stats.phtml', ['results' => $results]);
+        return $results;
     }
 }
