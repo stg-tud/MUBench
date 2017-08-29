@@ -20,7 +20,7 @@ from tasks.implementations.info import Info
 from tasks.implementations.publish_findings_task import PublishFindingsTask
 from tasks.implementations.publish_metadata_task import PublishMetadataTask
 from utils import command_line_util
-from utils.dataset_util import get_datasets, get_available_datasets, get_white_list
+from utils.dataset_util import get_datasets, get_available_dataset_ids, get_white_list
 from utils.logging import IndentFormatter
 
 MUBENCH_ROOT_PATH = join(dirname(abspath(__file__)), os.pardir)
@@ -145,7 +145,7 @@ class Benchmark:
 
 available_detectors = get_available_detector_ids(Benchmark.DETECTORS_PATH)
 available_scripts = stats.get_available_calculator_names()
-available_datasets = get_available_datasets(Benchmark.DATASETS_FILE_PATH)
+available_datasets = get_available_dataset_ids(Benchmark.DATASETS_FILE_PATH)
 config = command_line_util.parse_args(sys.argv, available_detectors, available_scripts, available_datasets)
 
 logger = logging.getLogger()
