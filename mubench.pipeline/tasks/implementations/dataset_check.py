@@ -34,7 +34,7 @@ class DatasetCheck(ProjectVersionMisuseTask):
         self.logger = logging.getLogger("datasetcheck.project.version")
         self._register_entry(version.id)
         self._check_required_keys_in_version_yaml(project, version)
-        self._check_misuses_listed_in_version_exist(version)
+        self._check_misuses_listed_in_version_exist(project, version)
         return super().process_project_version(project, version)
 
     def process_project_version_misuse(self, project: Project, version: ProjectVersion, misuse: Misuse):
@@ -134,9 +134,9 @@ class DatasetCheck(ProjectVersionMisuseTask):
                 if "url" not in source:
                     self._report_missing_key("source.url", yaml_path)
 
-    def _check_misuses_listed_in_version_exist(self, version: ProjectVersion):
+    def _check_misuses_listed_in_version_exist(self, project: Project, version: ProjectVersion):
         for misuse_id in version._yaml.get("misuses", []) or []:
-            if misuse_id not in [misuse.misuse_id for misuse in version.misuses]:
+            if not Misuse.is_misuse(join(project.path, project.MISUSES_DIR, misuse_id)):
                 self._report_unknown_misuse(version.id, misuse_id)
 
     def _check_misuse_location_exists(self, project: Project, version: ProjectVersion, misuse: Misuse):

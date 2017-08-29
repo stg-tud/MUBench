@@ -1,8 +1,13 @@
 from unittest.mock import call, patch, MagicMock, ANY
 from nose.tools import assert_equals
+from tempfile import mkdtemp
+from os.path import join
 
+from data.project import Project
+from data.misuse import Misuse
 from tasks.implementations.dataset_check import DatasetCheck
 from tests.test_utils.data_util import create_project, create_version, create_misuse
+from utils.io import remove_tree, create_file
 
 EMPTY_META = {"empty": None}
 
@@ -181,6 +186,22 @@ class TestDatasetCheckProjectVersion:
         self.uut.process_project_version(project, version)
 
         self.uut._report_unknown_misuse.assert_any_call(version.id, "-misuse-")
+
+    def test_existent_misuse(self):
+        self.uut._report_unknown_misuse = MagicMock()
+        project = create_project("-project-", meta=EMPTY_META)
+        version = create_version("-id-", meta={"misuses": ["-misuse-"]}, project=project)
+
+        project.path = mkdtemp(prefix="mubench_test-dataset-check_")
+        try:
+            misuse_yml_path = join(project.path, Project.MISUSES_DIR, "-misuse-", Misuse.MISUSE_FILE)
+            create_file(misuse_yml_path)
+
+            self.uut.process_project_version(project, version)
+
+            self.uut._report_unknown_misuse.assert_not_called()
+        finally:
+            remove_tree(project.path)
 
 
 class TestDatasetCheckMisuse:
