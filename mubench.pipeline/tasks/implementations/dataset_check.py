@@ -26,20 +26,20 @@ class DatasetCheck(ProjectVersionMisuseTask):
 
     def process_project(self, project: Project):
         self.logger = logging.getLogger("datasetcheck.project")
-        self._register_entry(project.id)
+        self._register_entry(project, project.id)
         self._check_required_keys_in_project_yaml(project)
         return super().process_project(project)
 
     def process_project_version(self, project: Project, version: ProjectVersion):
         self.logger = logging.getLogger("datasetcheck.project.version")
-        self._register_entry(version.id)
+        self._register_entry(project, version.id)
         self._check_required_keys_in_version_yaml(project, version)
         self._check_misuses_listed_in_version_exist(project, version)
         return super().process_project_version(project, version)
 
     def process_project_version_misuse(self, project: Project, version: ProjectVersion, misuse: Misuse):
         self.logger = logging.getLogger("datasetcheck.project.version.misuse")
-        self._register_entry(misuse.id)
+        self._register_entry(project, misuse.id)
         self._register_misuse_is_linked_from_version(misuse.id)
         self._check_required_keys_in_misuse_yaml(project, version, misuse)
         self._check_misuse_location_exists(project, version, misuse)
@@ -156,7 +156,7 @@ class DatasetCheck(ProjectVersionMisuseTask):
     def _location_exists(self, source_base_path, file_, method) -> bool:
         return get_snippets(source_base_path, file_, method)
 
-    def _register_entry(self, id_: str):
+    def _register_entry(self, project: Project, id_: str):
         for dataset, entries in self.datasets.items():
             if id_ in entries:
                 entries.remove(id_)
@@ -164,7 +164,8 @@ class DatasetCheck(ProjectVersionMisuseTask):
         if not id_ in self.registered_entries:
             self.registered_entries.add(id_)
         else:
-            self._report_id_conflict(id_)
+            if not _is_synthetic(project):
+                self._report_id_conflict(id_)
 
     def _register_misuse_is_linked_from_version(self, misuse: str):
         if misuse in self.misuses_not_listed_in_any_version:

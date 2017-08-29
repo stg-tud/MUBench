@@ -70,6 +70,16 @@ class TestDatasetCheckProject:
 
         self.uut._report_id_conflict.assert_any_call("-project-.-conflict-")
 
+    def test_no_id_conflict_on_synthetic_repositories(self):
+        self.uut._report_id_conflict = MagicMock()
+        project = create_project("-project-", meta={"repository": {"type": "synthetic"}})
+        misuse = create_misuse("-conflict-", project=project, meta=EMPTY_META)
+        version = create_version("-conflict-", project=project, misuses=[misuse], meta=EMPTY_META)
+
+        self.uut.process_project(project)
+
+        self.uut._report_id_conflict.assert_not_called()
+
     def test_synthetic_no_url(self):
         meta = {"name": "-project-name-", "repository": {"type": "synthetic"}}
         project = create_project("-id-", meta=meta)
