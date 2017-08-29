@@ -1,4 +1,4 @@
-from unittest.mock import patch, MagicMock, ANY
+from unittest.mock import call, patch, MagicMock, ANY
 from nose.tools import assert_equals
 
 from tasks.implementations.dataset_check import DatasetCheck
@@ -54,6 +54,14 @@ class TestDatasetCheckProject:
 
         self.uut._version_misuse_conflict.assert_any_call("-project-", "-conflict-")
 
+    def test_synthetic_no_url(self):
+        meta = {"name": "-project-name-", "repository": {"type": "synthetic"}}
+        project = create_project("-id-", meta=meta)
+
+        self.uut.process_project(project)
+
+        self.uut._missing_key.assert_not_called()
+
 
 class TestDatasetCheckProjectVersion:
     def setup(self):
@@ -69,6 +77,16 @@ class TestDatasetCheckProjectVersion:
         self.uut.process_project_version(project, version)
 
         self.uut._missing_key.assert_any_call("revision", "-project-/versions/-id-/version.yml")
+
+    def test_synthetic_no_revision(self):
+        meta = {"misuses": ["1"]}
+        project = create_project("-project-", meta={"repository": {"type": "synthetic"}})
+        version = create_version("-id-", meta=meta, project=project)
+
+        self.uut.process_project_version(project, version)
+
+        assert call("revision", "-project-/versions/-id-/version.yml") \
+               not in self.uut._missing_key.call_args_list
 
     def test_missing_misuses(self):
         meta = {"revision": "1"}
@@ -145,7 +163,7 @@ class TestDatasetCheckProjectVersion:
 
     def test_non_existent_misuse(self):
         self.uut._unknown_misuse = MagicMock()
-        project = create_project("-project-")
+        project = create_project("-project-", meta=EMPTY_META)
         version = create_version("-id-", meta={"misuses": ["-misuse-"]}, project=project)
         version._MISUSES = []
 
@@ -266,6 +284,16 @@ class TestDatasetCheckMisuse:
 
         self.uut._missing_key.assert_any_call("fix.revision", "-project-/misuses/-id-/misuse.yml")
 
+    def test_synthetic_no_fix(self):
+        project = create_project("-project-", meta={"repository": {"type": "synthetic"}})
+        misuse = create_misuse("-id-", project=project, meta=EMPTY_META)
+        version = create_version("-version-", meta=EMPTY_META, project=project, misuses=[misuse])
+
+        self.uut.process_project_version_misuse(project, version, misuse)
+
+        assert call("fix", "-project-/misuses/-id-/misuse.yml") \
+               not in self.uut._missing_key.call_args_list
+
     def test_missing_internal(self):
         project = create_project("-project-", meta=EMPTY_META)
         misuse = create_misuse("-id-", project=project, meta=EMPTY_META)
@@ -275,6 +303,16 @@ class TestDatasetCheckMisuse:
 
         self.uut._missing_key.assert_any_call("internal", "-project-/misuses/-id-/misuse.yml")
 
+    def test_synthetic_no_internal(self):
+        project = create_project("-project-", meta={"repository": {"type": "synthetic"}})
+        misuse = create_misuse("-id-", project=project, meta=EMPTY_META)
+        version = create_version("-version-", meta=EMPTY_META, project=project, misuses=[misuse])
+
+        self.uut.process_project_version_misuse(project, version, misuse)
+
+        assert call("internal", "-project-/misuses/-id-/misuse.yml") \
+               not in self.uut._missing_key.call_args_list
+
     def test_missing_report(self):
         project = create_project("-project-", meta=EMPTY_META)
         misuse = create_misuse("-id-", project=project, meta=EMPTY_META)
@@ -283,6 +321,16 @@ class TestDatasetCheckMisuse:
         self.uut.process_project_version_misuse(project, version, misuse)
 
         self.uut._missing_key.assert_any_call("report", "-project-/misuses/-id-/misuse.yml")
+
+    def test_synthetic_no_report(self):
+        project = create_project("-project-", meta={"repository": {"type": "synthetic"}})
+        misuse = create_misuse("-id-", project=project, meta=EMPTY_META)
+        version = create_version("-version-", meta=EMPTY_META, project=project, misuses=[misuse])
+
+        self.uut.process_project_version_misuse(project, version, misuse)
+
+        assert call("report", "-project-/misuses/-id-/misuse.yml") \
+               not in self.uut._missing_key.call_args_list
 
     def test_missing_source(self):
         project = create_project("-project-", meta=EMPTY_META)
@@ -312,6 +360,16 @@ class TestDatasetCheckMisuse:
         self.uut.process_project_version_misuse(project, version, misuse)
 
         self.uut._missing_key.assert_any_call("source.url", "-project-/misuses/-id-/misuse.yml")
+
+    def test_synthetic_no_source(self):
+        project = create_project("-project-", meta={"repository": {"type": "synthetic"}})
+        misuse = create_misuse("-id-", project=project, meta=EMPTY_META)
+        version = create_version("-version-", meta=EMPTY_META, project=project, misuses=[misuse])
+
+        self.uut.process_project_version_misuse(project, version, misuse)
+
+        assert call("source", "-project-/misuses/-id-/misuse.yml") \
+               not in self.uut._missing_key.call_args_list
 
 
 class TestDatasetCheckDatasetLists:

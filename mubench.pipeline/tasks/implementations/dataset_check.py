@@ -63,14 +63,14 @@ class DatasetCheck(ProjectVersionMisuseTask):
         else:
             if "type" not in project_yaml["repository"]:
                 self._missing_key("repository.type", yaml_path)
-            if "url" not in project_yaml["repository"]:
+            if "url" not in project_yaml["repository"] and not _is_synthetic(project):
                 self._missing_key("repository.url", yaml_path)
 
     def _check_required_keys_in_version_yaml(self, project: Project, version: ProjectVersion):
         yaml_path = "{}/versions/{}/version.yml".format(project.id, version.version_id)
         version_yaml = version._yaml
 
-        if "revision" not in version_yaml:
+        if "revision" not in version_yaml and not _is_synthetic(project):
             self._missing_key("revision", yaml_path)
 
         if "build" not in version_yaml:
@@ -109,29 +109,30 @@ class DatasetCheck(ProjectVersionMisuseTask):
         if not misuse_yaml.get("description", None):
             self._missing_key("description", yaml_path)
 
-        if "fix" not in misuse_yaml:
-            self._missing_key("fix", yaml_path)
-        else:
-            fix = misuse_yaml["fix"]
-            if "commit" not in fix:
-                self._missing_key("fix.commit", yaml_path)
-            if "revision" not in fix:
-                self._missing_key("fix.revision", yaml_path)
+        if not _is_synthetic(project):
+            if "fix" not in misuse_yaml:
+                self._missing_key("fix", yaml_path)
+            else:
+                fix = misuse_yaml["fix"]
+                if "commit" not in fix:
+                    self._missing_key("fix.commit", yaml_path)
+                if "revision" not in fix:
+                    self._missing_key("fix.revision", yaml_path)
 
-        if "internal" not in misuse_yaml:
-            self._missing_key("internal", yaml_path)
+            if "internal" not in misuse_yaml:
+                self._missing_key("internal", yaml_path)
 
-        if "report" not in misuse_yaml:
-            self._missing_key("report", yaml_path)
+            if "report" not in misuse_yaml:
+                self._missing_key("report", yaml_path)
 
-        if "source" not in misuse_yaml:
-            self._missing_key("source", yaml_path)
-        else:
-            source = misuse_yaml["source"]
-            if "name" not in source:
-                self._missing_key("source.name", yaml_path)
-            if "url" not in source:
-                self._missing_key("source.url", yaml_path)
+            if "source" not in misuse_yaml:
+                self._missing_key("source", yaml_path)
+            else:
+                source = misuse_yaml["source"]
+                if "name" not in source:
+                    self._missing_key("source.name", yaml_path)
+                if "url" not in source:
+                    self._missing_key("source.url", yaml_path)
 
     def _check_misuses_listed_in_version_exist(self, version: ProjectVersion):
         for misuse_id in version._yaml.get("misuses", []) or []:
@@ -211,3 +212,7 @@ class DatasetCheck(ProjectVersionMisuseTask):
             misuses.extend(misuse_ids)
 
         return misuses
+
+
+def _is_synthetic(project: Project) -> bool:
+    return project._yaml.get("repository", {}).get("type", '') == "synthetic"
