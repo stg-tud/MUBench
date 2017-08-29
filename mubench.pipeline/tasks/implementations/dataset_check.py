@@ -25,21 +25,21 @@ class DatasetCheck(ProjectVersionMisuseTask):
 
     def process_project(self, project: Project):
         self.logger = logging.getLogger("datasetcheck.project")
-        self._new_known_datasets_entry(project.id)
+        self._register_datasets_entry(project.id)
         self._check_required_keys_in_project_yaml(project)
         return super().process_project(project)
 
     def process_project_version(self, project: Project, version: ProjectVersion):
         self.logger = logging.getLogger("datasetcheck.project.version")
-        self._new_known_datasets_entry(version.id)
+        self._register_datasets_entry(version.id)
         self._check_required_keys_in_version_yaml(project, version)
         self._check_misuses_listed_in_version_exist(version)
         return super().process_project_version(project, version)
 
     def process_project_version_misuse(self, project: Project, version: ProjectVersion, misuse: Misuse):
         self.logger = logging.getLogger("datasetcheck.project.version.misuse")
-        self._new_known_datasets_entry(misuse.id)
-        self._misuse_listed_in_version(misuse.id)
+        self._register_datasets_entry(misuse.id)
+        self._register_misuse_is_linked_from_version(misuse.id)
         self._check_required_keys_in_misuse_yaml(project, version, misuse)
         self._check_version_misuse_id_conflict(project.id, version.version_id, misuse.misuse_id)
         self._check_misuse_location_exists(project, version, misuse)
@@ -56,146 +56,144 @@ class DatasetCheck(ProjectVersionMisuseTask):
         project_yaml = project._yaml
 
         if "name" not in project_yaml:
-            self._missing_key("name", yaml_path)
+            self._report_missing_key("name", yaml_path)
 
         if "repository" not in project_yaml:
-            self._missing_key("repository", yaml_path)
+            self._report_missing_key("repository", yaml_path)
         else:
             if "type" not in project_yaml["repository"]:
-                self._missing_key("repository.type", yaml_path)
+                self._report_missing_key("repository.type", yaml_path)
             if "url" not in project_yaml["repository"] and not _is_synthetic(project):
-                self._missing_key("repository.url", yaml_path)
+                self._report_missing_key("repository.url", yaml_path)
 
     def _check_required_keys_in_version_yaml(self, project: Project, version: ProjectVersion):
         yaml_path = "{}/versions/{}/version.yml".format(project.id, version.version_id)
         version_yaml = version._yaml
 
         if "revision" not in version_yaml and not _is_synthetic(project):
-            self._missing_key("revision", yaml_path)
+            self._report_missing_key("revision", yaml_path)
 
         if "build" not in version_yaml:
-            self._missing_key("build", yaml_path)
+            self._report_missing_key("build", yaml_path)
         else:
             build = version_yaml["build"]
             if "classes" not in build:
-                self._missing_key("build.classes", yaml_path)
+                self._report_missing_key("build.classes", yaml_path)
             if not build.get("commands", None):
-                self._missing_key("build.commands", yaml_path)
+                self._report_missing_key("build.commands", yaml_path)
             if "src" not in build:
-                self._missing_key("build.src", yaml_path)
+                self._report_missing_key("build.src", yaml_path)
 
         if not version_yaml.get("misuses", None):
-            self._missing_key("misuses", yaml_path)
+            self._report_missing_key("misuses", yaml_path)
 
     def _check_required_keys_in_misuse_yaml(self, project: Project, version: ProjectVersion, misuse: Misuse):
         yaml_path = "{}/misuses/{}/misuse.yml".format(project.id, misuse.misuse_id)
         misuse_yaml = misuse._yaml
 
         if "location" not in misuse_yaml:
-            self._missing_key("location", yaml_path)
+            self._report_missing_key("location", yaml_path)
         else:
             location = misuse_yaml["location"]
             if "file" not in location:
-                self._missing_key("location.file", yaml_path)
+                self._report_missing_key("location.file", yaml_path)
             if "method" not in location:
-                self._missing_key("location.method", yaml_path)
+                self._report_missing_key("location.method", yaml_path)
 
         if "api" not in misuse_yaml:
-            self._missing_key("api", yaml_path)
+            self._report_missing_key("api", yaml_path)
 
         if not misuse_yaml.get("characteristics", None):
-            self._missing_key("characteristics", yaml_path)
+            self._report_missing_key("characteristics", yaml_path)
 
         if not misuse_yaml.get("description", None):
-            self._missing_key("description", yaml_path)
+            self._report_missing_key("description", yaml_path)
 
         if not _is_synthetic(project):
             if "fix" not in misuse_yaml:
-                self._missing_key("fix", yaml_path)
+                self._report_missing_key("fix", yaml_path)
             else:
                 fix = misuse_yaml["fix"]
                 if "commit" not in fix:
-                    self._missing_key("fix.commit", yaml_path)
+                    self._report_missing_key("fix.commit", yaml_path)
                 if "revision" not in fix:
-                    self._missing_key("fix.revision", yaml_path)
+                    self._report_missing_key("fix.revision", yaml_path)
 
             if "internal" not in misuse_yaml:
-                self._missing_key("internal", yaml_path)
+                self._report_missing_key("internal", yaml_path)
 
             if "report" not in misuse_yaml:
-                self._missing_key("report", yaml_path)
+                self._report_missing_key("report", yaml_path)
 
             if "source" not in misuse_yaml:
-                self._missing_key("source", yaml_path)
+                self._report_missing_key("source", yaml_path)
             else:
                 source = misuse_yaml["source"]
                 if "name" not in source:
-                    self._missing_key("source.name", yaml_path)
+                    self._report_missing_key("source.name", yaml_path)
                 if "url" not in source:
-                    self._missing_key("source.url", yaml_path)
+                    self._report_missing_key("source.url", yaml_path)
 
     def _check_misuses_listed_in_version_exist(self, version: ProjectVersion):
         for misuse_id in version._yaml.get("misuses", []) or []:
             if misuse_id not in [misuse.misuse_id for misuse in version.misuses]:
-                self._unknown_misuse(version.id, misuse_id)
+                self._report_unknown_misuse(version.id, misuse_id)
 
     def _check_version_misuse_id_conflict(self, project_id: str, version_id: str, misuse_id: str):
         if version_id == misuse_id:
-            self._version_misuse_conflict(project_id, version_id)
+            self._report_version_misuse_conflict(project_id, version_id)
 
     def _check_misuse_location_exists(self, project: Project, version: ProjectVersion, misuse: Misuse):
         if "location" in misuse._yaml:
             location = misuse.location
             if location.file and location.method:
-
                 checkout = version.get_checkout(self.checkout_base_path)
                 if not checkout.exists():
-                    self.logger.info(
-                            'Cannot check location for "{}": requires checkout of "{}".'.format(
+                    self.logger.debug(
+                            'Skipping location check for "{}": requires checkout of "{}".'.format(
                                 misuse.id, version.id))
-                    return
-
-                source_base_path = join(checkout.checkout_dir, version.source_dir)
-                if not self._location_exists(source_base_path, location.file, location.method):
-                    self._cannot_find_location(str(location), "{}/misuses/{}/misuse.yml".format(project.id, misuse.misuse_id))
+                else:
+                    source_base_path = join(checkout.checkout_dir, version.source_dir)
+                    if not self._location_exists(source_base_path, location.file, location.method):
+                        self._report_cannot_find_location(str(location), "{}/misuses/{}/misuse.yml".format(project.id, misuse.misuse_id))
 
     def _location_exists(self, source_base_path, file_, method) -> bool:
         return get_snippets(source_base_path, file_, method)
 
-    def _new_known_datasets_entry(self, id_: str):
+    def _register_datasets_entry(self, id_: str):
         for dataset, entries in self.datasets.items():
             if id_ in entries:
                 entries.remove(id_)
 
-    def _misuse_listed_in_version(self, misuse: str):
+    def _register_misuse_is_linked_from_version(self, misuse: str):
         if misuse in self.misuses_not_listed_in_any_version:
             self.misuses_not_listed_in_any_version.remove(misuse)
 
     def _report_unknown_dataset_entries(self):
         for dataset, entries in self.datasets.items():
             for entry in entries:
-                self._unknown_dataset_entry(dataset, entry)
+                self._report_unknown_dataset_entry(dataset, entry)
 
     def _report_misuses_not_listed_in_any_version(self):
         for misuse in self.misuses_not_listed_in_any_version:
             self._misuse_not_listed(misuse)
 
-    def _missing_key(self, tag: str, file_path: str):
+    def _report_missing_key(self, tag: str, file_path: str):
         self.logger.warning('Missing "{}" in "{}".'.format(tag, file_path))
 
-    def _version_misuse_conflict(self, project_id: str, conflicting_id: str):
+    def _report_version_misuse_conflict(self, project_id: str, conflicting_id: str):
         self.logger.warning('Conflicting version and misuse "{}" in "{}"'.format(conflicting_id, project_id))
 
-    def _unknown_misuse(self, version_id: str, unknown_misuse_id: str):
+    def _report_unknown_misuse(self, version_id: str, unknown_misuse_id: str):
         self.logger.warning('Unknown misuse "{}" in "{}"'.format(unknown_misuse_id, version_id))
 
-    def _cannot_find_location(self, location: str, misuse_yaml_path: str):
+    def _report_cannot_find_location(self, location: str, misuse_yaml_path: str):
         self.logger.warning('Cannot find "{}" listed in "{}"'.format(location, misuse_yaml_path))
 
-    def _unknown_dataset_entry(self, dataset: str, entry: str):
+    def _report_unknown_dataset_entry(self, dataset: str, entry: str):
         self.logger.warning('Unknown dataset entry "{}" in dataset "{}"'.format(entry, dataset))
 
-    def _misuse_not_listed(self, misuse_id: str):
+    def _report_misuse_not_listed(self, misuse_id: str):
         self.logger.warning('Misuse "{}" is not listed in any versions'.format(misuse_id))
 
     def _get_all_misuses(self, data_base_path: str) -> List[str]:
