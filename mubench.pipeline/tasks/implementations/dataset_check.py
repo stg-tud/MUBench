@@ -183,7 +183,7 @@ class DatasetCheck(ProjectVersionMisuseTask):
 
     def _report_misuses_not_listed_in_any_version(self):
         for misuse in self.misuses_not_listed_in_any_version:
-            self._misuse_not_listed(misuse)
+            self._report_misuse_not_listed(misuse)
 
     def _report_missing_key(self, tag: str, file_path: str):
         self.logger.warning('Missing "{}" in "{}".'.format(tag, file_path))
