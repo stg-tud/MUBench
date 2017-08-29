@@ -174,7 +174,7 @@ def __add_dataset_check_subprocess(available_datasets: List[str], subparsers) ->
     dataset_check_parser = subparsers.add_parser('dataset-check', formatter_class=SortingHelpFormatter,
                                                   help="Check the consistency of MUBench's dataset.",
                                                   description="Check the consistency of MUBench's dataset."
-                                                              "Run `checkout` to check misuse locations.")  # type: ArgumentParser
+                                                              "Run `checkout` first, to also check misuse locations.")  # type: ArgumentParser
     __setup_misuse_filter_arguments(dataset_check_parser, available_datasets)
 
 
