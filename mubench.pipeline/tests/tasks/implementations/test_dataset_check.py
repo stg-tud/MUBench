@@ -496,7 +496,7 @@ class TestDatasetCheckUnlistedMisuses:
     def setup(self):
         self.uut = DatasetCheck({}, '', '')
         self.uut._check_misuse_location_exists = MagicMock()
-        self.uut._misuse_not_listed = MagicMock()
+        self.uut._report_misuse_not_listed = MagicMock()
 
     def test_misuse_not_listed_in_any_version(self):
         self.uut._get_all_misuses = MagicMock(return_value=["-project-.-misuse-"])
@@ -504,7 +504,7 @@ class TestDatasetCheckUnlistedMisuses:
         self.uut.start()
         self.uut.end()
 
-        self.uut._misuse_not_listed.assert_called_once_with("-project-.-misuse-")
+        self.uut._report_misuse_not_listed.assert_called_once_with("-project-.-misuse-")
 
     def test_listed_misuse_is_not_reported(self):
         self.uut._get_all_misuses = MagicMock(return_value=["-project-.-misuse-"])
@@ -516,4 +516,4 @@ class TestDatasetCheckUnlistedMisuses:
         self.uut.process_project_version_misuse(project, version, misuse)
         self.uut.end()
 
-        self.uut._misuse_not_listed.assert_not_called()
+        self.uut._report_misuse_not_listed.assert_not_called()
