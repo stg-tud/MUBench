@@ -186,16 +186,16 @@ class DatasetCheck(ProjectVersionMisuseTask):
         self.logger.warning('ID "{}" is used for multiple data entries.'.format(conflicting_id))
 
     def _report_unknown_misuse(self, version_id: str, unknown_misuse_id: str):
-        self.logger.warning('Unknown misuse "{}" in "{}"'.format(unknown_misuse_id, version_id))
+        self.logger.warning('Unknown misuse "{}" in "{}".'.format(unknown_misuse_id, version_id))
 
     def _report_cannot_find_location(self, location: str, misuse_yaml_path: str):
-        self.logger.warning('Cannot find "{}" listed in "{}"'.format(location, misuse_yaml_path))
+        self.logger.warning('Cannot find "{}" listed in "{}".'.format(location, misuse_yaml_path))
 
     def _report_unknown_dataset_entry(self, dataset: str, entry: str):
-        self.logger.warning('Unknown dataset entry "{}" in dataset "{}"'.format(entry, dataset))
+        self.logger.warning('Unknown dataset entry "{}" in dataset "{}".'.format(entry, dataset))
 
     def _report_misuse_not_listed(self, misuse_id: str):
-        self.logger.warning('Misuse "{}" is not listed in any versions'.format(misuse_id))
+        self.logger.warning('Misuse "{}" is not listed in any versions.'.format(misuse_id))
 
     def _get_all_misuses(self, data_base_path: str) -> List[str]:
         misuses = []
