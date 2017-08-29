@@ -22,9 +22,9 @@ class TaskRunner:
         for task in self.tasks:
             logger = logging.getLogger()
             logger.info("Starting %s %s...", task.name, datetime.now().strftime("at %H:%M:%S"))
-            task.start()
             task.black_list = self.black_list
             task.white_list = self.white_list
+            task.start()
             for project in self._get_projects(self.data_path):
                 logger = logging.getLogger("project")
                 if self.__skip(project):

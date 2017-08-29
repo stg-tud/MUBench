@@ -22,6 +22,9 @@ class DatasetCheck(ProjectVersionMisuseTask):
         self.registered_entries = set()
 
     def start(self):
+        if self.white_list or self.black_list:
+            self.logger.warning("Using filter option(s). You may encounter invalid warnings!")
+
         self.misuses_not_listed_in_any_version = self._get_all_misuses(self.data_base_path)
 
     def process_project(self, project: Project):
