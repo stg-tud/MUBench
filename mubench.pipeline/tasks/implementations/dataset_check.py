@@ -154,7 +154,12 @@ class DatasetCheck(ProjectVersionMisuseTask):
                         self._report_cannot_find_location(str(location), "{}/misuses/{}/misuse.yml".format(project.id, misuse.misuse_id))
 
     def _location_exists(self, source_base_path, file_, method) -> bool:
-        return get_snippets(source_base_path, file_, method)
+        try:
+            snippets = get_snippets(source_base_path, file_, method)
+        except:
+            return False
+        else:
+            return len(snippets) > 0
 
     def _register_entry(self, project: Project, id_: str):
         for dataset, entries in self.datasets.items():
