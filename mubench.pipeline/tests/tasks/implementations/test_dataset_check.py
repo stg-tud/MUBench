@@ -45,14 +45,25 @@ class TestDatasetCheckProject:
         self.uut._report_missing_key.assert_any_call("repository.url", "-id-/project.yml")
 
     def test_version_and_misuse_with_same_name(self):
-        self.uut._report_version_misuse_conflict = MagicMock()
+        self.uut._report_id_conflict = MagicMock()
         project = create_project("-project-", meta=EMPTY_META)
         misuse = create_misuse("-conflict-", project=project, meta=EMPTY_META)
         version = create_version("-conflict-", project=project, misuses=[misuse], meta=EMPTY_META)
 
         self.uut.process_project(project)
 
-        self.uut._report_version_misuse_conflict.assert_any_call("-project-", "-conflict-")
+        self.uut._report_id_conflict.assert_any_call("-project-.-conflict-")
+
+    def test_version_and_misuse_from_different_version_with_same_name(self):
+        self.uut._report_id_conflict = MagicMock()
+        project = create_project("-project-", meta=EMPTY_META)
+        misuse_with_conflict = create_misuse("-conflict-", project=project, meta=EMPTY_META)
+        version = create_version("-version-", project=project, misuses=[misuse_with_conflict], meta=EMPTY_META)
+        version_with_conflict = create_version("-conflict-", project=project, misuses=[], meta=EMPTY_META)
+
+        self.uut.process_project(project)
+
+        self.uut._report_id_conflict.assert_any_call("-project-.-conflict-")
 
     def test_synthetic_no_url(self):
         meta = {"name": "-project-name-", "repository": {"type": "synthetic"}}

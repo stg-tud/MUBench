@@ -19,29 +19,29 @@ class DatasetCheck(ProjectVersionMisuseTask):
         self.checkout_base_path = checkout_base_path
         self.data_base_path = data_base_path
         self.misuses_not_listed_in_any_version = []
+        self.registered_entries = set()
 
     def start(self):
         self.misuses_not_listed_in_any_version = self._get_all_misuses(self.data_base_path)
 
     def process_project(self, project: Project):
         self.logger = logging.getLogger("datasetcheck.project")
-        self._register_datasets_entry(project.id)
+        self._register_entry(project.id)
         self._check_required_keys_in_project_yaml(project)
         return super().process_project(project)
 
     def process_project_version(self, project: Project, version: ProjectVersion):
         self.logger = logging.getLogger("datasetcheck.project.version")
-        self._register_datasets_entry(version.id)
+        self._register_entry(version.id)
         self._check_required_keys_in_version_yaml(project, version)
         self._check_misuses_listed_in_version_exist(version)
         return super().process_project_version(project, version)
 
     def process_project_version_misuse(self, project: Project, version: ProjectVersion, misuse: Misuse):
         self.logger = logging.getLogger("datasetcheck.project.version.misuse")
-        self._register_datasets_entry(misuse.id)
+        self._register_entry(misuse.id)
         self._register_misuse_is_linked_from_version(misuse.id)
         self._check_required_keys_in_misuse_yaml(project, version, misuse)
-        self._check_version_misuse_id_conflict(project.id, version.version_id, misuse.misuse_id)
         self._check_misuse_location_exists(project, version, misuse)
         return self.ok()
 
@@ -139,10 +139,6 @@ class DatasetCheck(ProjectVersionMisuseTask):
             if misuse_id not in [misuse.misuse_id for misuse in version.misuses]:
                 self._report_unknown_misuse(version.id, misuse_id)
 
-    def _check_version_misuse_id_conflict(self, project_id: str, version_id: str, misuse_id: str):
-        if version_id == misuse_id:
-            self._report_version_misuse_conflict(project_id, version_id)
-
     def _check_misuse_location_exists(self, project: Project, version: ProjectVersion, misuse: Misuse):
         if "location" in misuse._yaml:
             location = misuse.location
@@ -160,10 +156,15 @@ class DatasetCheck(ProjectVersionMisuseTask):
     def _location_exists(self, source_base_path, file_, method) -> bool:
         return get_snippets(source_base_path, file_, method)
 
-    def _register_datasets_entry(self, id_: str):
+    def _register_entry(self, id_: str):
         for dataset, entries in self.datasets.items():
             if id_ in entries:
                 entries.remove(id_)
+
+        if not id_ in self.registered_entries:
+            self.registered_entries.add(id_)
+        else:
+            self._report_id_conflict(id_)
 
     def _register_misuse_is_linked_from_version(self, misuse: str):
         if misuse in self.misuses_not_listed_in_any_version:
@@ -181,8 +182,8 @@ class DatasetCheck(ProjectVersionMisuseTask):
     def _report_missing_key(self, tag: str, file_path: str):
         self.logger.warning('Missing "{}" in "{}".'.format(tag, file_path))
 
-    def _report_version_misuse_conflict(self, project_id: str, conflicting_id: str):
-        self.logger.warning('Conflicting version and misuse "{}" in "{}"'.format(conflicting_id, project_id))
+    def _report_id_conflict(self, conflicting_id: str):
+        self.logger.warning('ID "{}" is used for multiple data entries.'.format(conflicting_id))
 
     def _report_unknown_misuse(self, version_id: str, unknown_misuse_id: str):
         self.logger.warning('Unknown misuse "{}" in "{}"'.format(unknown_misuse_id, version_id))
