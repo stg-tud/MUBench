@@ -8,10 +8,11 @@ from utils.shell import CommandFailedError
 
 
 class Checkout(ProjectVersionTask):
-    def __init__(self, checkouts_path: str, force_checkout: bool):
+    def __init__(self, checkouts_path: str, force_checkout: bool, use_temp_dir: bool):
         super().__init__()
         self.checkouts_path = checkouts_path
         self.force_checkout = force_checkout
+        self.use_temp_dir = use_temp_dir
 
     def process_project_version(self, project: Project, version: ProjectVersion) -> List[str]:
         logger = logging.getLogger("checkout")

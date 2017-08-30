@@ -66,7 +66,8 @@ class Benchmark:
         self.runner.add(Info(Benchmark.CHECKOUTS_PATH, Benchmark.COMPILES_PATH))
 
     def _setup_checkout(self):
-        checkout_handler = Checkout(Benchmark.CHECKOUTS_PATH, self.config.force_checkout)
+        checkout_handler = Checkout(Benchmark.CHECKOUTS_PATH, self.config.force_checkout,
+                                    self.config.use_tmp_wrkdir)
         self.runner.add(checkout_handler)
 
     def _setup_compile(self):
