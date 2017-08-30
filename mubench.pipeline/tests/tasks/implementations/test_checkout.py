@@ -20,7 +20,7 @@ class TestCheckout(unittest.TestCase):
         self.version = create_version("-version-", project=self.project)
         self.version.get_checkout = MagicMock(return_value=self.checkout)
 
-        self.uut = Checkout("-checkouts-", force_checkout=False)
+        self.uut = Checkout("-checkouts-", force_checkout=False, use_temp_dir=False)
 
     def test_initial_checkout(self):
         self.checkout.exists = MagicMock(return_value=False)
