@@ -1,10 +1,12 @@
 import logging
 from typing import List
+from tempfile import mkdtemp
 
 from data.project import Project
 from data.project_version import ProjectVersion
 from tasks.project_version_task import ProjectVersionTask
 from utils.shell import CommandFailedError
+from utils.io import copy_tree, remove_tree
 
 
 class Checkout(ProjectVersionTask):
@@ -32,7 +34,15 @@ class Checkout(ProjectVersionTask):
                 logger.debug("Already checked out %s.", version)
             else:
                 logger.info("Fetching %s from %s...", version, checkout)
-                checkout.create()
+                if self.use_temp_dir:
+                    temp_dir = mkdtemp(prefix="mubench-checkout_")
+                    temp_checkout = version.get_checkout(temp_dir)
+                    temp_checkout.create()
+                    logger.debug("Copying checkout to persistent directory...")
+                    copy_tree(temp_dir, self.checkouts_path)
+                    remove_tree(temp_dir)
+                else:
+                    checkout.create()
 
             return self.ok()
 
