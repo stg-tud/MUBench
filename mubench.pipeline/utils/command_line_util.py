@@ -47,7 +47,7 @@ def get_command_line_parser(available_detectors: List[str], available_scripts: L
         help="MUBench provides several tasks. Run `mubench <task> -h` for details.",
         dest='task')
 
-    parser.add_argument('--windows-fix', dest='windows_fix', default=get_default('windows-fix', False),
+    parser.add_argument('--use-tmp-wrkdir', dest='use_tmp_wrkdir', default=get_default('use-tmp-wrkdir', False),
                         help=argparse.SUPPRESS, action='store_true')
 
     __add_check_subprocess(subparsers)

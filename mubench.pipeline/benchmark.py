@@ -71,7 +71,7 @@ class Benchmark:
 
     def _setup_compile(self):
         compile_handler = Compile(Benchmark.CHECKOUTS_PATH, Benchmark.COMPILES_PATH,
-                                  self.config.force_compile, self.config.windows_fix)
+                                  self.config.force_compile, self.config.use_tmp_wrkdir)
         self.runner.add(compile_handler)
 
     def _setup_detect(self):
