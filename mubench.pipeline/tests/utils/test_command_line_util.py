@@ -143,3 +143,9 @@ def test_release_default():
     parser = get_command_line_parser(['valid-detector'], [], [])
     result = parser.parse_args(['detect', 'valid-detector', '1'])
     assert_equals(None, result.requested_release)
+
+
+def test_dataset_check():
+    parser = get_command_line_parser([], [], [])
+    result = parser.parse_args(['dataset-check'])
+    assert_equals('dataset-check', result.task)

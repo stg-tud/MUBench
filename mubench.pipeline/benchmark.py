@@ -11,6 +11,7 @@ from data.detectors import find_detector, get_available_detector_ids
 from data.experiments import ProvidedPatternsExperiment, TopFindingsExperiment, BenchmarkExperiment
 from task_runner import TaskRunner
 from tasks.implementations import stats
+from tasks.implementations.dataset_check import DatasetCheck
 from tasks.implementations.requirements_check import RequirementsCheck
 from tasks.implementations.checkout import Checkout
 from tasks.implementations.compile import Compile
@@ -19,7 +20,7 @@ from tasks.implementations.info import Info
 from tasks.implementations.publish_findings_task import PublishFindingsTask
 from tasks.implementations.publish_metadata_task import PublishMetadataTask
 from utils import command_line_util
-from utils.dataset_util import get_available_datasets, get_white_list
+from utils.dataset_util import get_available_datasets, get_available_dataset_ids, get_white_list
 from utils.logging import IndentFormatter
 
 MUBENCH_ROOT_PATH = join(dirname(abspath(__file__)), os.pardir)
@@ -57,6 +58,11 @@ class Benchmark:
 
     def _setup_check(self):
         self.runner.add(RequirementsCheck())
+
+    def _setup_dataset_check(self):
+        self.runner.add(DatasetCheck(get_available_datasets(self.DATASETS_FILE_PATH),
+                                     self.CHECKOUTS_PATH,
+                                     self.DATA_PATH))
 
     def _setup_stats(self) -> None:
         stats_calculator = stats.get_calculator(self.config.script)
@@ -134,12 +140,14 @@ class Benchmark:
                 self._setup_publish_metadata()
         elif config.task == 'stats':
             self._setup_stats()
+        elif config.task == 'dataset-check':
+            self._setup_dataset_check()
 
         self.runner.run()
 
 available_detectors = get_available_detector_ids(Benchmark.DETECTORS_PATH)
 available_scripts = stats.get_available_calculator_names()
-available_datasets = get_available_datasets(Benchmark.DATASETS_FILE_PATH)
+available_datasets = get_available_dataset_ids(Benchmark.DATASETS_FILE_PATH)
 config = command_line_util.parse_args(sys.argv, available_detectors, available_scripts, available_datasets)
 
 logger = logging.getLogger()
