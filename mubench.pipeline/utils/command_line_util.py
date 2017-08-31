@@ -1,3 +1,4 @@
+import argparse
 from argparse import ArgumentParser, HelpFormatter, ArgumentTypeError
 from operator import attrgetter
 
@@ -45,6 +46,9 @@ def get_command_line_parser(available_detectors: List[str], available_scripts: L
     subparsers = parser.add_subparsers(
         help="MUBench provides several tasks. Run `mubench <task> -h` for details.",
         dest='task')
+
+    parser.add_argument('--use-tmp-wrkdir', dest='use_tmp_wrkdir', default=get_default('use-tmp-wrkdir', False),
+                        help=argparse.SUPPRESS, action='store_true')
 
     __add_check_subprocess(subparsers)
     __add_info_subprocess(available_datasets, subparsers)

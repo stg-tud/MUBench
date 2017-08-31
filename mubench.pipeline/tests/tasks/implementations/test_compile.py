@@ -50,7 +50,7 @@ class TestCompile:
         self.pattern_classes_path = join(self.base_path, "patterns-classes")
         self.dep_path = join(self.base_path, "dependencies")
 
-        self.uut = Compile(self.checkout_base_path, self.compile_base_path, False)
+        self.uut = Compile(self.checkout_base_path, self.compile_base_path, False, False)
 
     def teardown(self):
         rmtree(self.temp_dir, ignore_errors=True)

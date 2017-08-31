@@ -11,5 +11,5 @@ IF "%~1" == "configure" (
     echo "Choose one of {review-site}"
   )
 ) ELSE (
-  docker run --rm -v "%SCRIPT_DIR%":/mubench svamann/mubench python ./mubench.pipeline/benchmark.py %*
+  docker run --rm -v "%SCRIPT_DIR%":/mubench svamann/mubench python ./mubench.pipeline/benchmark.py --use-tmp-wrkdir %*
 )

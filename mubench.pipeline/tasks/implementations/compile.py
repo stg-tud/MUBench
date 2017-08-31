@@ -6,6 +6,7 @@ from glob import glob
 from logging import Logger
 from os import makedirs
 from os.path import join, exists, dirname, splitext, relpath
+from tempfile import mkdtemp
 from typing import List, Set
 
 from data.build_command import BuildCommand
@@ -21,11 +22,13 @@ from utils.shell import Shell, CommandFailedError
 class Compile(ProjectVersionTask):
     __BUILD_DIR = "build"
 
-    def __init__(self, checkouts_base_path: str, compiles_base_path: str, force_compile):
+    def __init__(self, checkouts_base_path: str, compiles_base_path: str,
+                 force_compile: bool, use_temp_dir: bool):
         super().__init__()
         self.checkouts_base_path = checkouts_base_path
         self.compiles_base_path = compiles_base_path
         self.force_compile = force_compile
+        self.use_temp_dir = use_temp_dir
 
     def process_project_version(self, project: Project, version: ProjectVersion):
         logger = logging.getLogger("compile")
@@ -33,7 +36,10 @@ class Compile(ProjectVersionTask):
         logger = logging.getLogger("compile.tasks")
 
         project_compile = version.get_compile(self.compiles_base_path)
-        build_path = join(project_compile.base_path, Compile.__BUILD_DIR)
+
+        build_path = mkdtemp(prefix='mubench-compile_') if self.use_temp_dir \
+                     else join(project_compile.base_path, Compile.__BUILD_DIR)
+
         sources_path = join(build_path, version.source_dir)
         classes_path = join(build_path, version.classes_dir)
 
@@ -87,6 +93,11 @@ class Compile(ProjectVersionTask):
                 self.__create_jar(project_compile.original_classes_path, project_compile.original_classpath)
                 logger.debug("Copy misuse classes...")
                 self.__copy_misuse_classes(classes_path, version.misuses, project_compile.misuse_classes_path)
+
+            if self.use_temp_dir:
+                logger.debug("Moving complete build to persistent directory...")
+                copy_tree(build_path, join(project_compile.base_path, Compile.__BUILD_DIR))
+                remove_tree(build_path)
         except Exception as e:
             logger.error("Compilation failed: %s", e)
             project_compile.delete()
