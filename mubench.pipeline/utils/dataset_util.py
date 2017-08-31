@@ -3,7 +3,7 @@ from typing import Dict, List, Optional
 from utils.io import read_yaml
 
 
-def get_datasets(datasets_file_path: str) -> Dict[str, List[str]]:
+def get_available_datasets(datasets_file_path: str) -> Dict[str, List[str]]:
     return read_yaml(datasets_file_path)
 
 
