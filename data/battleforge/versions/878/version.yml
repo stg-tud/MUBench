@@ -2,6 +2,7 @@ build:
   classes: dist/battleforge/battleforge.jar
   attempt-commands:
   - mkdir classes
+  - sed -i 's/<javac/<javac debug="on"/g' build.xml
   - ant
   src: src/java/
 misuses:
