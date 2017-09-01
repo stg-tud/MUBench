@@ -136,6 +136,17 @@ public class MethodExtractorTest {
 	}
 
 	@Test
+	public void findsMethodWithFinalParameter() throws Exception {
+		testFindsMethod("class C {\n" +
+				"  void m(final A a) {}\n" +
+				"}",
+
+				"m(A)",
+
+				"  void m(final A a) {}");
+	}
+
+	@Test
 	public void findsStaticMethod() throws Exception {
 		testFindsMethod("class C {\n" +
 				"  static void m() {}\n" +
