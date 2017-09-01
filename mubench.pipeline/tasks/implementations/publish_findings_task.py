@@ -97,9 +97,14 @@ class PublishFindingsTask(ProjectVersionTask):
 
         yield potential_hits_slice
 
-    def _prepare_post(self, finding: SpecializedFinding, version_compile) -> Dict[str, str]:
+    def _prepare_post(self, finding: SpecializedFinding, version_compile, logger) -> Dict[str, str]:
         markdown_dict = self._to_markdown_dict(finding)
-        snippets = finding.get_snippets(version_compile.original_sources_path)
+
+        try:
+            snippets = finding.get_snippets(version_compile.original_sources_path)
+        except:
+            logger.warning("No snippets added: invalid file location.")
+
         markdown_dict["target_snippets"] = [snippet.__dict__ for snippet in snippets]
         return markdown_dict
 
