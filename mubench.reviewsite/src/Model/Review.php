@@ -12,6 +12,7 @@ class Review
         assert(array_key_exists("name", $data), "review requires name");
 
         $this->data = $data;
+        usort($this->data["finding_reviews"], function($lhs, $rhs){ return intval($lhs['rank']) - intval($rhs['rank']);});
     }
 
     public function getReviewerName()
