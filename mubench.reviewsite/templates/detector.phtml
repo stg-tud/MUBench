@@ -108,7 +108,7 @@ $markdown_parser = new Parsedown();
                 <td class="<?= $style_classes ?> right">
                     <?= $new_version ? $markdown_parser->text($run['number_of_findings']) : ""; ?></td>
                 <td class="<?= $style_classes ?> right">
-                    <?= $new_version ? $markdown_parser->text(substr($run['runtime'], 0, 4)) . "s" : ""; ?></td>
+                    <?= $new_version ? $markdown_parser->text(number_format(floatval($run['runtime']), 1)) . "s" : ""; ?></td>
                 <td class="<?= $style_classes ?> right">
                     <?php if ($new_version) : ?>
                         <?php include "includes/modal.phtml"; ?>
