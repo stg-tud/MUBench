@@ -8,6 +8,7 @@ use MuBench\ReviewSite\Model\Experiment;
 use MuBench\ReviewSite\Model\ExperimentResult;
 use MuBench\ReviewSite\Model\Misuse;
 use MuBench\ReviewSite\Model\ReviewState;
+use MuBench\ReviewSite\StatsHelper;
 use Slim\Http\Request;
 use Slim\Http\Response;
 use Slim\Views\PhpRenderer;
@@ -20,6 +21,7 @@ class RoutesHelper
     private $site_base_url;
     private $upload_path;
     private $default_ex2_review_size;
+    private $statsHelper;
 
     public function __construct(DBConnection $db, PhpRenderer $renderer, Logger $logger, $upload_path, $site_base_url, $default_ex2_review_size)
     {
@@ -29,6 +31,7 @@ class RoutesHelper
         $this->site_base_url = $site_base_url;
         $this->upload_path = $upload_path;
         $this->default_ex2_review_size = $default_ex2_review_size;
+        $this->statsHelper = new StatsHelper($db, $logger);
     }
 
     public function index(Request $request, Response $response, array $args) {
@@ -60,41 +63,6 @@ class RoutesHelper
             ['reviewer' => $reviewer, 'is_reviewer' => $is_reviewer, 'misuse' => $misuse, 'review' => $review, 'violation_types' => $violation_types, 'tags' => $tags]);
     }
 
-    public function stats(Request $request, Response $response, array $args) {
-        $ex2_review_size = $request->getQueryParam("ex2_review_size", $this->default_ex2_review_size);
-        $results = array();
-        foreach (array("ex1", "ex2", "ex3") as $experiment) {
-            $detectors = $this->db->getDetectors($experiment);
-            $results[$experiment] = array();
-            foreach ($detectors as $detector) {
-                $runs = $this->db->getRuns($detector, $experiment, $ex2_review_size);
-                // TODO move this functionality to dedicate experiment classes
-                if (strcmp($experiment, "ex2") === 0) {
-                    foreach ($runs as &$run) {
-                        $misuses = array();
-                        $number_of_misuses = 0;
-                        foreach ($run["misuses"] as $misuse) { /** @var $misuse Misuse */
-                            if ($misuse->getReviewState() != ReviewState::UNRESOLVED) {
-                                $misuses[] = $misuse;
-                                $number_of_misuses++;
-                            }
-
-                            if ($number_of_misuses == $ex2_review_size) {
-                                break;
-                            }
-                        }
-                        $run["misuses"] = $misuses;
-                    }
-                }
-                $results[$experiment][$detector->id] = new DetectorResult($detector, $runs);
-            }
-            $results[$experiment]["total"] = new ExperimentResult($results[$experiment]);
-        }
-
-        return $this->render($this, $request, $response, $args, 'stats.phtml',
-            ['results' => $results, 'ex2_review_size' => $ex2_review_size]);
-    }
-
     public function overview(Request $request, Response $response, array $args) {
         $reviews = $this->db->getAllReviews($this->getUser($request));
         return $this->render($this, $request, $response, $args, 'overview.phtml', ['misuses' => $reviews]);
@@ -103,6 +71,26 @@ class RoutesHelper
     public function todos(Request $request, Response $response, array $args) {
         $todos = $this->db->getTodo($this->getUser($request), $this->default_ex2_review_size);
         return $this->render($this, $request, $response, $args, 'todo.phtml', ['misuses' => $todos]);
+    }
+
+    public function result_stats(Request $request, Response $response, array $args) {
+        $ex2_review_size = $request->getQueryParam("ex2_review_size", $this->default_ex2_review_size);
+        $results = $this->statsHelper->getResultStats($ex2_review_size);
+
+        return $this->render($this, $request, $response, $args, 'result_stats.phtml',
+            ['results' => $results, 'ex2_review_size' => $ex2_review_size]);
+    }
+
+    public function tag_stats(Request $request, Response $response, array $args) {
+        $results = $this->statsHelper->getTagStats();
+        $tags = $this->db->getAllTags();
+        return $this->render($this, $request, $response, $args, 'tag_stats.phtml',
+            ['results' => $results, 'tags' => $tags]);
+    }
+
+    public function type_stats(Request $request, Response $response, array $args){
+        $results = $this->statsHelper->getTypeStats();
+        return $this->render($this, $request, $response, $args, 'type_stats.phtml', ['results' => $results]);
     }
 
     private function render($handler, Request $request, Response $response, array $args, $template, array $params)
