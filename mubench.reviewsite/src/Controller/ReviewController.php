@@ -205,12 +205,13 @@ class ReviewController
     {
         $review = $request->getParsedBody();
 
-        $reviewerName = $review['review_name'];
+        // REFACTOR remove 'review_exp' and 'review_detector' from template and use $args here.
         $experimentId = $review['review_exp'];
-        $detector = $this->db->getDetector($review['review_detector']);
+        $detector = $this->getDetector($review['review_detector'], $request, $response);
         $projectId = $review['review_project'];
         $versionId = $review['review_version'];
         $misuseId = $review['review_misuse'];
+        $reviewerName = $review['review_name'];
         $comment = $review['review_comment'];
         $hits = $review['review_hit'];
 
