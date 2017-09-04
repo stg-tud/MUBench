@@ -40,7 +40,7 @@ class PublishMetadataTask:
         self.__metadata.append({
             "project": project.id,
             "version": version.version_id,
-            "misuse": misuse.id,
+            "misuse": misuse.misuse_id,
             "location": misuse.location.__dict__,
             "description": misuse.description,
             "violation_types": misuse.characteristics,
@@ -70,7 +70,7 @@ class PublishMetadataTask:
         return line.startswith("import") or line.startswith("package") or not line
 
     def end(self):
-        url = urljoin(self.review_site_url, "api/upload/metadata")
+        url = urljoin(self.review_site_url, "metadata")
         logger = logging.getLogger("publish.metadata")
         logger.info("Uploading metadata about %r misuses to %s...", len(self.__metadata), url)
         try:

@@ -49,7 +49,9 @@ class TestPublishFindingsTask:
         self.uut.run(self.project, self.version, self.test_detector_execution, self.test_potential_hits,
                      self.version_compile)
 
-        assert_equals(post_mock.call_args[0][0], "http://dummy.url/api/upload/" + self.experiment_id)
+        assert_equals(post_mock.call_args[0][0],
+                      "http://dummy.url/experiments/{}/detectors/{}/projects/{}/versions/{}/runs".format(
+                          self.experiment_id, self.detector.id, self.project.id, self.version.version_id))
 
     @patch("tasks.implementations.publish_findings.getpass.getpass")
     def test_post_auth_prompt(self, pass_mock, post_mock):
@@ -85,12 +87,7 @@ class TestPublishFindingsTask:
         self.uut.run(self.project, self.version, self.test_detector_execution, self.test_potential_hits,
                      self.version_compile)
 
-        # noinspection PySetFunctionToLiteral
-        assert_equals(set(post_mock.call_args[0][1]), set({
-            "dataset": self.dataset,
-            "detector": self.detector.id,
-            "project": self.project.id,
-            "version": self.version.version_id,
+        assert_equals(post_mock.call_args[0][1], {
             "result": "success",
             "runtime": 42.0,
             "number_of_findings": 5,
@@ -98,7 +95,7 @@ class TestPublishFindingsTask:
                 {"rank": "-1-", "target_snippets": []},
                 {"rank": "-2-", "target_snippets": []}
             ]
-        }))
+        })
 
     def test_publish_successful_run_files(self, post_mock):
         self.test_detector_execution.is_success = lambda: True
@@ -165,22 +162,17 @@ class TestPublishFindingsTask:
     def test_publish_erroneous_run(self, post_mock):
         self.test_detector_execution.number_of_findings = 0
         self.test_detector_execution.is_error = lambda: True
-        self.test_detector_execution.runtime = 0
+        self.test_detector_execution.runtime = 1337
 
         self.uut.run(self.project, self.version, self.test_detector_execution, self.test_potential_hits,
                      self.version_compile)
 
-        # noinspection PySetFunctionToLiteral
-        assert_equals(set(post_mock.call_args[0][1]), set({
-            "dataset": self.dataset,
-            "detector": self.detector.id,
-            "project": self.project.id,
-            "version": self.version.version_id,
+        assert_equals(post_mock.call_args[0][1], {
             "result": "error",
             "runtime": 1337,
             "number_of_findings": 0,
             "potential_hits": []
-        }))
+        })
 
     def test_publish_timeout_run(self, post_mock):
         self.test_detector_execution.is_timeout = lambda: True
@@ -190,17 +182,12 @@ class TestPublishFindingsTask:
         self.uut.run(self.project, self.version, self.test_detector_execution, self.test_potential_hits,
                      self.version_compile)
 
-        # noinspection PySetFunctionToLiteral
-        assert_equals(set(post_mock.call_args[0][1]), set({
-            "dataset": self.dataset,
-            "detector": self.detector.id,
-            "project": self.project.id,
-            "version": self.version.version_id,
+        assert_equals(post_mock.call_args[0][1], {
             "result": "timeout",
             "runtime": 1000000,
             "number_of_findings": 0,
             "potential_hits": []
-        }))
+        })
 
     def test_publish_not_run(self, post_mock):
         self.test_detector_execution.runtime = 0
@@ -209,17 +196,12 @@ class TestPublishFindingsTask:
         self.uut.run(self.project, self.version, self.test_detector_execution, self.test_potential_hits,
                      self.version_compile)
 
-        # noinspection PySetFunctionToLiteral
-        assert_equals(set(post_mock.call_args[0][1]), set({
-            "dataset": self.dataset,
-            "detector": self.detector.id,
-            "project": self.project.id,
-            "version": self.version.version_id,
+        assert_equals(post_mock.call_args[0][1], {
             "result": "not run",
             "runtime": 0,
             "number_of_findings": 0,
             "potential_hits": []
-        }))
+        })
 
     def test_with_markdown(self, post_mock):
         self.test_detector_execution.is_success = lambda: True
@@ -231,10 +213,6 @@ class TestPublishFindingsTask:
                      self.version_compile)
 
         assert_equals(post_mock.call_args[0][1], {
-            "dataset": self.dataset,
-            "detector": self.detector.id,
-            "project": self.project.id,
-            "version": self.version.version_id,
             "result": "success",
             "info": "k1: \nv1",
             "potential_hits": [{"list": "* hello\n* world", "dict": "key: \nvalue", "target_snippets": []}]

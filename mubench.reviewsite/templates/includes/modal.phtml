@@ -28,15 +28,15 @@
             </tr>
             <tr>
                 <td><b>Result:</b></td>
-                <td><?= $markdown_parser->text($run['result']); ?></td>
+                <td><?= $markdown_parser->text($run->result); ?></td>
             </tr>
             <tr>
                 <td><b># of Findings:</b></td>
-                <td><?= $markdown_parser->text($run['number_of_findings']); ?></td>
+                <td><?= $markdown_parser->text($run->number_of_findings); ?></td>
             </tr>
             <tr>
                 <td><b>Runtime:</b></td>
-                <td><?= $markdown_parser->text(substr($run['runtime'], 0, 4)) . "s"; ?></td>
+                <td><?= $markdown_parser->text($run->runtime) . "s"; ?></td>
             </tr>
             <?php foreach ($additional_stats as $stat) : ?>
                 <tr>

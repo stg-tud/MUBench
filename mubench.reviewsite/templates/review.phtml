@@ -18,13 +18,13 @@
  * @var Experiment $experiment the selected experiment, if any
  * @var Detector $detector the selected detector, if any
  *
- * @var \MuBench\ReviewSite\Model\Misuse $misuse
- * @var \MuBench\ReviewSite\Model\Review $review
+ * @var \MuBench\ReviewSite\Models\Misuse $misuse
+ * @var \MuBench\ReviewSite\Models\Review $review
  * @var bool $is_reviewer whether the user is the author of this review
  * @var array $violation_types all violation types of this misuse in exp1/3, all possible violation types in exp2
  */
-use MuBench\ReviewSite\Model\Detector;
-use MuBench\ReviewSite\Model\Experiment;
+use MuBench\ReviewSite\Models\Detector;
+use MuBench\ReviewSite\Models\Experiment;
 
     $columns_to_ignore = array(
         "target_snippets",
@@ -37,14 +37,22 @@ use MuBench\ReviewSite\Model\Experiment;
         "identifier",
         "rank",
         "exp",
-        "startline"
+        "startline",
+        "created_at",
+        "id",
+        "misuse_muid",
+        "misuse_id",
+        "updated_at",
+        "project_muid",
+        "version_muid",
+        "experiment_id"
     );
 
     $markdown_parser = new Parsedown();
 ?>
         <html>
             <head>
-                <link rel="stylesheet" type="text/css" href="<?= $site_base_url ?>style/style.css" />
+                <link rel="stylesheet" type="text/css" href="<?= $site_base_url ?>css/style.css" />
                 <link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
                 <script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js?autoload=true&amp;skin=sunburst"></script>
                 <script src="http://cdn.rawgit.com/ariutta/svg-pan-zoom/master/dist/svg-pan-zoom.min.js"></script>
@@ -55,11 +63,11 @@ use MuBench\ReviewSite\Model\Experiment;
                         padding: 0 2px;
                         color: white;
                     }
-                    <?php foreach($misuse->getPotentialHits() as $hit) : ?>
-                        <?php if(array_key_exists('startline', $hit)) : ?>
-                            <?php foreach($misuse->getSnippets() as $snippet) : ?>
-                                    #code_<?= htmlspecialchars($snippet['id'])?> li:nth-child(<?= htmlspecialchars(abs($snippet['line'] - $hit['startline'] - 1)); ?>):before {
-                                        content: "<?= str_pad($hit["rank"], 4, " ", STR_PAD_LEFT) ?>";
+                    <?php foreach($misuse->findings as $hit) : ?>
+                        <?php if($hit->startline) : ?>
+                            <?php foreach($misuse->snippets() as $snippet) : ?>
+                                    #code_<?= htmlspecialchars($snippet->id)?> li:nth-child(<?= htmlspecialchars(abs($snippet->line - $hit->startline - 1)); ?>):before {
+                                        content: "<?= str_pad($hit->rank, 4, " ", STR_PAD_LEFT) ?>";
                                         background-color: red;
                                     }
                             <?php endforeach; ?>
@@ -70,60 +78,52 @@ use MuBench\ReviewSite\Model\Experiment;
             <body>
 
             <?php include "includes/menu.phtml" ?>
-
         <h1>Review</h1>
         <table class="invisible">
-            <tr><td><b>Detector:</b></td><td><?= htmlspecialchars($detector->name); ?></td></tr>
+            <tr><td><b>Detector:</b></td><td><?= htmlspecialchars($detector->muid); ?></td></tr>
             <tr><td><b>Target:</b></td><td>project '<?= $markdown_parser->text($misuse->getProject()); ?>' version <?= $markdown_parser->text($misuse->getVersion()); ?></td></tr>
-            <?php if($experiment->getId() !== "ex2") : ?>
-                <tr><td><b>Misuse:</b></td><td>misuse '<?= $markdown_parser->text($misuse->getShortId()); ?>'</td></tr>
+            <?php if($experiment->id !== 2) : ?>
+                <tr><td><b>Misuse:</b></td><td>misuse '<?= $markdown_parser->text($misuse->misuse_muid); ?>'</td></tr>
             <?php endif; ?>
-            <?php if($user || $misuse->getTags()): ?>
+            <?php if($user || $misuse->misuse_tags) : ?>
                 <tr>
                 <td><b>Tags:</b></td>
                 <td>
-                            <? foreach($misuse->getTags() as $tag) : ?>
-                                <div class="misuse-tag">
-                                    <span><?= htmlspecialchars($tag['name']) ?></span>
-                                    <? if($user) : ?>
-                                    <div style="display:inline-block;padding-right:2px;margin:0;color:black">
-                                        <form action="<?= "{$api_url_prefix}upload/delete/tag"?>" method="post" target="">
-                                            <input type="hidden" name="exp" value="<?= htmlspecialchars($experiment->getId()); ?>">
-                                            <input type="hidden" name="detector" value="<?= htmlspecialchars($detector->id); ?>">
-                                            <input type="hidden" name="project" value="<?= htmlspecialchars($misuse->getProject()); ?>">
-                                            <input type="hidden" name="version" value="<?= htmlspecialchars($misuse->getVersion()); ?>">
-                                            <input type="hidden" name="misuse" value="<?= htmlspecialchars($misuse->id); ?>">
-                                            <input type="hidden" name="tag" value="<?= htmlspecialchars($tag['id']); ?>">
-                                            <input type="hidden" name="path" value="<?= htmlspecialchars($path); ?>">
-                                            <button style="border:none;background-color:gray;outline:none;margin:0;padding:0" type="submit"><i class="fa fa-trash"></i></button>
-                                        </form>
-                                    </div>
-                                    <? endif; ?>
+                    <?php if($misuse->misuse_tags): ?>
+                        <?php foreach($misuse->misuse_tags as $tag) : ?>
+                            <div class="misuse-tag">
+                                <span><?= htmlspecialchars($tag->name) ?></span>
+                                <?php if($user) : ?>
+                                <div style="display:inline-block;padding-right:2px;margin:0;color:black">
+                                    <form action="<?= $pathFor('tag.remove', array('experiment_id' => $experiment->id, 'detector_muid' => $detector->muid, 'project_muid' => $misuse->getProject(), 'version_muid' => $misuse->getVersion(), 'misuse_muid' => $misuse->misuse_muid, 'tag_id' => $tag->id)) ?>" method="post" target="">
+                                        <input type="hidden" name="path" value="<?= htmlspecialchars($path); ?>">
+                                        <input type="hidden" name="misuse_id" value="<?= htmlspecialchars($misuse->id); ?>">
+                                        <button style="border:none;background-color:gray;outline:none;margin:0;padding:0" type="submit"><i class="fa fa-trash"></i></button>
+                                    </form>
                                 </div>
-                            <? endforeach; ?>
-                        <? if($user): ?>
-                        <div style="display:inline-block;height:100%;padding:4px;">
-                            <form id="tag-form" action="<?= $api_url_prefix ?>upload/tag" method="post" target="">
-                                <input type="hidden" name="exp" value="<?= htmlspecialchars($experiment->getId()); ?>">
-                                <input type="hidden" name="detector" value="<?= htmlspecialchars($detector->id); ?>">
-                                <input type="hidden" name="project" value="<?= htmlspecialchars($misuse->getProject()); ?>">
-                                <input type="hidden" name="version" value="<?= htmlspecialchars($misuse->getVersion()); ?>">
-                                <input type="hidden" name="misuse" value="<?= htmlspecialchars($misuse->id); ?>">
-                                <input type="hidden" name="path" value="<?= htmlspecialchars($path); ?>">
-                                <input id="tag-input" class="tag-input" maxlength="100" list="tags" name="tag" placeholder="add new tag" autocomplete="off">
-                                <datalist id="tags">
-                                    <?php foreach($tags as $tag): ?>
-                                        <option value="<?= htmlspecialchars($tag['name']); ?>">
-                                    <?endforeach;?>
-                                </datalist>
-                            </form>
-                        </div>
-                        <? endif; ?>
+                                <?php endif; ?>
+                            </div>
+                        <?php endforeach; ?>
+                    <?php endif; ?>
+                    <?php if($user) : ?>
+                            <div style="display:inline-block;height:100%;padding:4px;">
+                                <form id="tag-form" action="<?= $pathFor('tag.add', array('experiment_id' => $experiment->id, 'detector_muid' => $detector->muid, 'project_muid' => $misuse->getProject(), 'version_muid' => $misuse->getVersion(), 'misuse_muid' => $misuse->misuse_muid)) ?>" method="post" target="">
+                                    <input type="hidden" name="misuse_id" value="<?= htmlspecialchars($misuse->id); ?>">
+                                    <input type="hidden" name="path" value="<?= htmlspecialchars($path); ?>">
+                                    <input id="tag-input" class="tag-input" maxlength="100" list="tags" name="tag_name" placeholder="add new tag" autocomplete="off">
+                                    <datalist id="tags">
+                                        <?php foreach($tags as $tag) : ?>
+                                            <option value="<?= htmlspecialchars($tag->name); ?>">
+                                        <?php endforeach;?>
+                                    </datalist>
+                                </form>
+                            </div>
+                        <?php endif; ?>
                 </td>
                 </tr>
-            <? endif; ?>
+            <?php endif; ?>
         </table>
-        <?php if($experiment->getId() !== "ex2") : ?>
+        <?php if($experiment->id !== 2) : ?>
             <h2>Misuse Details</h2>
             <p>Details about the known misuse from the MUBench dataset.</p>
         <?php else : ?>
@@ -131,50 +131,49 @@ use MuBench\ReviewSite\Model\Experiment;
             <p>Anomaly identified by the detector. Please review whether this anomaly corresponds to a misuse.</p>
         <?php endif; ?>
         <table class="invisible fw">
-        <?php if($experiment->getId() !== "ex2") : ?>
-            <tr><td class="vtop"><b>Description:</b></td><td><?= $markdown_parser->text($misuse->getDescription()); ?></td></tr>
+        <?php if($experiment->id !== 2) : ?>
+            <tr><td class="vtop"><b>Description:</b></td><td><?= $markdown_parser->text($misuse->metadata->description); ?></td></tr>
             <tr>
                 <td class="vtop"><b>Fix Description:</b></td>
-                <td><?= $markdown_parser->text($misuse->getFixDescription()); ?>
-                    <?php if ($misuse->hasDiff()): ?>(<a href="<?= $misuse->getDiff(); ?>">see diff</a>)<?php endif ?>
+                <td><?= $markdown_parser->text($misuse->metadata->fix_description); ?>
+                    <?php if ($misuse->metadata->diff_url): ?>(<a href="<?= $misuse->metadata->diff_url; ?>">see diff</a>)<?php endif ?>
                 </td></tr>
             <tr><td class="vtop"><b>Violation Types:</b></td><td>
             <ul>
             <?php if($misuse->hasViolationTypes()) : ?>
             <?php foreach($misuse->getViolationTypes() as $v) : ?>
-                <li><?= htmlspecialchars($v); ?></li>
+                <li><?= htmlspecialchars($v->name); ?></li>
             <?php endforeach; ?>
             <?php endif; ?>
             </ul></td></tr>
         <?php else : ?>
-            <tr><td><b>Finding:</b></td><td><?= $markdown_parser->text($misuse->getShortId()); ?></td></tr>
+            <tr><td><b>Finding:</b></td><td><?= $markdown_parser->text($misuse->misuse_muid); ?></td></tr>
         <?php endif; ?>
             <tr><td><b>In File:</b></td><td><?= $markdown_parser->text($misuse->getFile()); ?></td></tr>
             <tr><td><b>In Method:</b></td><td><?= $markdown_parser->text($misuse->getMethod()); ?></td></tr>
             <tr>
-            <?php if($experiment->getId() !== "ex2") : ?>
+            <?php if($experiment->id !== 2) : ?>
                 <td class="vtop"><b>Code with Misuse:</b></td>
             <?php else : ?>
                 <td class="vtop"><b>Code with Finding:</b></td>
             <?php endif; ?>
             <td>
                 <?php if($misuse->hasSnippets()) : ?>
-                    <?php $multiple_snippets = (sizeof($misuse->getSnippets()) >= 2 && $user && strcmp($experiment->getId(), "ex2") === 0); ?>
-                    <?php foreach($misuse->getSnippets() as $snippet): ?>
+                    <?php $multiple_snippets = (sizeof($misuse->snippets()) >= 2 && $user && $experiment->id == 2); ?>
+                    <?php foreach($misuse->snippets() as $snippet): ?>
                         <?php if($multiple_snippets): ?>
-                            <form id="delete_snippet_form" action="<?= "{$api_url_prefix}upload/delete/snippet/{$experiment->getId()}/{$detector->name}" ?>" method="post" target="">
-                                <input type="hidden" name="id" value="<?= htmlspecialchars($snippet['id']); ?>">
+                            <form id="delete_snippet_form" action="<?= $pathFor('snippet.remove', array('experiment_id' => $experiment->id, 'detector_muid' => $detector->muid, 'project_muid' => $misuse->getProject(), 'version_muid' => $misuse->getVersion(), 'misuse_muid' => $misuse->misuse_muid, 'snippet_id' => $snippet->id)) ?><?= $origin_param ?>" method="POST" target="">
                                 <input type="hidden" name="path" value="<?= htmlspecialchars($path); ?>">
                                 <button style="border:none;background-color:white;position:absolute;right:5px" type="submit"><i class="fa fa-trash"></i></button>
                             </form>
                         <?php endif; ?>
-                        <pre id="code_<?= htmlspecialchars($snippet['id']); ?>" class="prettyprint linenums:<?= htmlspecialchars($snippet['line']); ?>"><code class="language-java"><?= htmlspecialchars($snippet['snippet']); ?></code></pre>
+                        <pre id="code_<?= htmlspecialchars($snippet->id); ?>" class="prettyprint linenums:<?= htmlspecialchars($snippet->line); ?>"><code class="language-java"><?= htmlspecialchars($snippet->snippet); ?></code></pre>
                     <?php endforeach; ?>
                 <?php else : ?>
                     <pre class="prettyprint"><code class="language-java">code not found</code></pre>
                     <?php if($user) : ?>
                         <input type="button" onclick="show(this);" value="Add code snippet">
-                        <form  id="snippet_form" style="display:none;" action="<?= $api_url_prefix ?>upload/snippet" method="post" target="">
+                        <form  id="snippet_form" style="display:none;" action="<?= $pathFor('snippet.add', array('experiment_id' => $experiment->id, 'detector_muid' => $detector->muid, 'project_muid' => $misuse->getProject(), 'version_muid' => $misuse->getVersion(), 'misuse_muid' => $misuse->misuse_muid)) ?>" method="post" target="">
                             <table>
                             <tr>
                                 <td>
@@ -185,11 +184,7 @@ use MuBench\ReviewSite\Model\Experiment;
                             </tr>
                             <tr>
                                 <td>
-                                    <input type="hidden" name="exp" value="<?= htmlspecialchars($experiment->getId()); ?>">
-                                    <input type="hidden" name="detector" value="<?= htmlspecialchars($detector->name); ?>">
-                                    <input type="hidden" name="project" value="<?= htmlspecialchars($misuse->getProject()); ?>">
-                                    <input type="hidden" name="version" value="<?= htmlspecialchars($misuse->getVersion()); ?>">
-                                    <input type="hidden" name="misuse" value="<?= htmlspecialchars($misuse->id); ?>">
+                                    <input type="hidden" name="misuse_id" value="<?= htmlspecialchars($misuse->id); ?>">
                                     <input type="hidden" name="path" value="<?= htmlspecialchars($path); ?>">
                                     <textarea name="snippet" title="Code Snippet" cols="80" rows="5"></textarea>
                                 </td>
@@ -202,19 +197,19 @@ use MuBench\ReviewSite\Model\Experiment;
                     <?php endif; ?>
                 <?php endif; ?>
             </td></tr>
-            <?php if($experiment->getId() === "ex1") : ?>
+            <?php if($experiment->id === 1) : ?>
                     <tr><td class="vtop"><b>Code with Pattern(s):</b></td>
                         <td>
-                <?php foreach($misuse->getPatterns() as $pattern) : ?>
-                    <pre class="prettyprint"><code class="language-java"><?= htmlspecialchars($pattern["code"]); ?></code></pre>
+                <?php foreach($misuse->metadata->patterns as $pattern) : ?>
+                    <pre class="prettyprint"><code class="language-java"><?= htmlspecialchars($pattern->code); ?></code></pre>
                 <?php endforeach; ?>
                         </td></tr>
             <?php endif; ?>
         </table>
-            <form action="<?= "{$api_url_prefix}upload/review/{$experiment->getId()}/{$detector->name}" ?>" method="post" target="">
+            <form action="<?= $pathFor('update.review', array('experiment_id' => $experiment->id, 'detector_muid' => $detector->muid, 'project_muid' => $misuse->getProject(), 'version_muid' => $misuse->getVersion(), 'misuse_muid' => $misuse->misuse_muid, 'reviewer_name' => $reviewer->name), true) ?>" method="post" target="">
             <?php if($misuse->hasPotentialHits()) : ?>
 
-            <?php if($experiment->getId() !== "ex2") : ?>
+            <?php if($experiment->id !== 2) : ?>
             <h2>Potential Hits</h2>
             <p>Findings of the detector that identify an anomaly in the same file and method as the known misuse.</p>
         <?php else : ?>
@@ -233,11 +228,11 @@ use MuBench\ReviewSite\Model\Experiment;
                     return $carry && empty($potential_hit[$property]);
                 }, true);
             }
-
-            $potential_hits = $misuse->getPotentialHits();
-            $columns = array_filter(array_keys(current($potential_hits)), function ($key) use ($columns_to_ignore, $potential_hits) {
-                return !in_array($key, $columns_to_ignore) && !is_empty($key, $potential_hits);
+            $potential_hits = $misuse->findings;
+            $columns = array_filter(array_keys(current($potential_hits->toArray())), function ($key) use ($columns_to_ignore, $potential_hits) {
+                return !in_array($key, $columns_to_ignore) && !is_empty($key, $potential_hits->toArray());
             });
+
             sort($columns);
             ?>
 
@@ -247,7 +242,7 @@ use MuBench\ReviewSite\Model\Experiment;
             <?php foreach($columns as $column) : ?>
                 <th><?= htmlspecialchars(ucwords(str_replace("_", " ", $column))); ?></th>
             <?php endforeach; ?>
-            <?php if(strcmp($experiment->getId(), 'ex2') === 0) : ?>
+            <?php if($experiment->id === 2) : ?>
                 <th>Violation Types</th>
             <?php endif; ?>
         </tr>
@@ -274,10 +269,10 @@ use MuBench\ReviewSite\Model\Experiment;
                     <?php endif;?>
                 </select>
             <?php elseif($review) : ?>
-                <?php if(!$review->getHitDecision($hit['rank'])) : ?>
+                <?php if(!$review->getHitDecision($hit->rank)) : ?>
                     No
-                <? else : ?>
-                    <?= htmlspecialchars($review->getHitDecision($hit['rank'])); ?>
+                <?php else : ?>
+                    <?= htmlspecialchars($review->getHitDecision($hit->rank)); ?>
                 <?php endif; ?>
             <?php elseif($user) : ?>
                 No
@@ -286,13 +281,13 @@ use MuBench\ReviewSite\Model\Experiment;
             <?php endif;?>
             </td>
             <td>
-                <?= $markdown_parser->text($hit['rank']); ?>
+                <?= $markdown_parser->text($hit->rank); ?>
             </td>
             <?php foreach($columns as $column) : ?>
             <td>
                 <?php if(strlen($hit[$column]) > 4 && substr($hit[$column], -4) === ".svg") : ?>
-                    <? $object_id = $column . $hit['rank'] ?>
-                    <object id="<?= $object_id ?>" type="image/svg+xml" data="<?= "{$uploads_url_prefix}/{$experiment->getId()}/{$detector->name}/{$misuse->getProject()}/{$misuse->getVersion()}/{$hit[$column]}" ?>" style="width: 750px; height: 750px;"></object>
+                    <?php $object_id = $column . $hit['rank'] ?>
+                    <object id="<?= $object_id ?>" type="image/svg+xml" data="<?= "{$uploads_url_prefix}/{$experiment->id}/{$detector->muid}/{$misuse->getProject()}/{$misuse->getVersion()}/{$hit[$column]}" ?>" style="width: 750px; height: 750px;"></object>
                     <script>
                         document.getElementById("<?= $object_id ?>").onload = function() {
                             svgPanZoom("#<?= $object_id ?>", {
@@ -301,20 +296,20 @@ use MuBench\ReviewSite\Model\Experiment;
                         };
                     </script>
                 <?php elseif(strlen($hit[$column]) > 4 && substr($hit[$column], -4) === ".png") : ?>
-                    <img src="<?= "{$uploads_url_prefix}/{$experiment->getId()}/{$detector->name}/{$misuse->getProject()}/{$misuse->getVersion()}/{$hit[$column]}" ?>" />
+                    <img src="<?= "{$uploads_url_prefix}/{$experiment->id}/{$detector->muid}/{$misuse->getProject()}/{$misuse->getVersion()}/{$hit[$column]}" ?>" />
                 <?php else : ?>
                     <?= $markdown_parser->text($hit[$column]); ?>
                 <?php endif; ?>
             </td>
             <?php endforeach; ?>
-            <?php if(strcmp($experiment->getId(), 'ex2') === 0) : ?>
+            <?php if($experiment->id === 2) : ?>
                 <td>
-                    <select name="review_hit[<?= htmlspecialchars($hit['rank']); ?>][types][]" title="Violation Types" size="<?= count($violation_types) ?>" multiple <?= ($user && $is_reviewer) ? "" : "disabled" ?>>
+                    <select name="review_hit[<?= htmlspecialchars($hit->rank); ?>][types][]" title="Violation Types" size="<?= count($violation_types) ?>" multiple <?= ($user && $is_reviewer) ? "" : "disabled" ?>>
                         <?php foreach($violation_types as $type) : ?>
-                            <?php if($review && in_array($type['name'], $review->getHitViolationTypes($hit['rank']))) : ?>
-                                    <option selected="selected" value="<?= $type['id'] ?>"><?= htmlspecialchars($type['name']) ?></option>
+                            <?php if($review && in_array($type->id, array_column($review->getHitViolationTypes($hit->rank), 'id'))) : ?>
+                                    <option selected="selected" value="<?= $type->id ?>"><?= htmlspecialchars($type->name) ?></option>
                             <?php else: ?>
-                                <option value="<?= $type['id'] ?>"><?= htmlspecialchars($type['name']) ?></option>
+                                <option value="<?= $type->id ?>"><?= htmlspecialchars($type->name) ?></option>
                             <?php endif; ?>
                         <?php endforeach; ?>
                     </select>
@@ -324,36 +319,30 @@ use MuBench\ReviewSite\Model\Experiment;
        <?php endforeach; ?>
        </table>
         <?php endif; ?>
-            <?php if($user && $is_reviewer) :?>
+            <?php if($is_reviewer && $reviewer) :?>
                 <table class="invisible">
                 <tr><td>Reviewer Name:</td>
-                    <td><?= htmlspecialchars($reviewer); ?></td></tr>
+                    <td><?= htmlspecialchars($reviewer->name); ?></td></tr>
                 <tr><td class="vtop"><label for="review_comment">Comment</label>:</td>
                     <td>
                     <?php if($review) : ?>
-                        <textarea id="review_comment" name="review_comment" cols="80" rows="5"><?= htmlspecialchars($review->getComment()); ?></textarea>
+                        <textarea id="review_comment" name="review_comment" cols="80" rows="5"><?= htmlspecialchars($review->comment); ?></textarea>
                     <?php else : ?>
                         <textarea id="review_comment" name="review_comment" cols="80" rows="5"></textarea>
                     <?php endif; ?>
                     </td></tr>
                 </table>
-                <input type="hidden" name="review_name" value="<?= htmlspecialchars($reviewer); ?>"/>
-                <input type="hidden" name="review_exp" value="<?= htmlspecialchars($experiment->getId()); ?>">
-                <input type="hidden" name="review_detector" value="<?= htmlspecialchars($detector->name); ?>">
-                <input type="hidden" name="review_project" value="<?= htmlspecialchars($misuse->getProject()); ?>">
-                <input type="hidden" name="review_version" value="<?= htmlspecialchars($misuse->getVersion()); ?>">
-                <input type="hidden" name="review_misuse" value="<?= htmlspecialchars($misuse->id); ?>">
                 <input type="hidden" name="origin" value="<?= htmlspecialchars($origin_path); ?>">
+                <input type="hidden" name="misuse_id" value="<?= htmlspecialchars($misuse->id); ?>">
                 <input type="submit" value="Save Review" />
                 </form>
-        <?php endif; ?>
-        <?php if($review && !$user && !$is_reviewer) :?>
+        <?php elseif($review && (!$user || !$is_reviewer)) :?>
                 <table class="invisible">
                     <tr><td>Reviewer Name:</td>
-                        <td><?= htmlspecialchars($review->getReviewerName()); ?></td></tr>
+                        <td><?= htmlspecialchars($review->reviewer->name); ?></td></tr>
                     <tr><td class="vtop"><label for="review_comment">Comment</label>:</td>
                         <td>
-                                <textarea disabled id="review_comment" name="review_comment" cols="80" rows="5"><?= htmlspecialchars($review->getComment()); ?></textarea>
+                                <textarea disabled id="review_comment" name="review_comment" cols="80" rows="5"><?= htmlspecialchars($review->comment); ?></textarea>
                         </td></tr>
                 </table>
         <?php endif; ?>

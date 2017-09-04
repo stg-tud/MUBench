@@ -1,36 +1,31 @@
 <?php
 return [
-    'settings' => [
-        'displayErrorDetails' => true, // set to false in production
-        'addContentLengthHeader' => false, // Allow the web server to send the content-length header
+    'displayErrorDetails' => true, // set to false in production
+    'addContentLengthHeader' => false, // Allow the web server to send the content-length header
 
-        // Renderer settings
-        'renderer' => [
-            'template_path' => __DIR__ . '/../templates/',
-        ],
-
-        // Monolog settings
-        'logger' => [
-            'name' => 'mubench',
-            'path' => __DIR__ . '/../logs/app.log',
-            'level' => \Monolog\Logger::DEBUG,
-        ],
-    ],
     'db' => [
-        'driver'    => 'mysql',
-        'host'      => 'localhost',
-        'database'  => 'database',
-        'username'  => 'username',
-        'password'  => 'password',
+        'driver' => 'sqlite',
+        'host' => 'localhost',
+        'database' => __DIR__ . '/../test.sqlite',
+        'username' => 'admin',
+        'password' => 'admin',
         'charset'   => 'utf8',
         'collation' => 'utf8_unicode_ci',
-        'prefix'    => 'mubench_',
-        'options'   => []
+        'prefix'    => '',
     ],
+
+    // Monolog settings
+    'logger' => [
+        'name' => 'mubench',
+        'path' => __DIR__ . '/../logs/app.log',
+        'level' => \Monolog\Logger::DEBUG,
+    ],
+    'site_base_url' => '/',
     'upload' => "./upload",
     'users' => [
         "admin" => "pass",
-        "admin2" => "pass"
+        "admin2" => "pass",
+        "reviewer" => "pass"
     ],
     'site_base_url' => '/',
     'default_ex2_review_size' => '20'

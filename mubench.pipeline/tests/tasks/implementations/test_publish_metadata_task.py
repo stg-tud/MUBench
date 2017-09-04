@@ -23,7 +23,7 @@ class TestPublishMetadataTask:
         task.run(self.project, misuse)
         task.end()
 
-        assert_equals(post_mock.call_args[0][0], "http://test.url/api/upload/metadata")
+        assert_equals(post_mock.call_args[0][0], "http://test.url/metadata")
 
     @patch("tasks.implementations.publish_metadata.getpass.getpass")
     def test_post_auth_prompt(self, pass_mock, post_mock, snippets_mock):
@@ -77,7 +77,7 @@ class TestPublishMetadataTask:
         assert_equals(post_mock.call_args[0][1], [{
             "project": self.project.id,
             "version": "-v-",
-            "misuse": misuse.id,
+            "misuse": "-m-",
             "description": "-description-",
             "fix": {
                 "description": "-fix-description-",
