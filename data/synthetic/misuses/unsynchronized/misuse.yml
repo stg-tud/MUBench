@@ -1,7 +1,7 @@
 api:
 - java.util.Map
 characteristics:
-- missing/condition/threading
+- missing/condition/synchronization
 crash: false
 description: >
   Updates a HashMap concurrently without ensuring synchonziation.
