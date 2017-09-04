@@ -15,6 +15,11 @@ class Review
         usort($this->data["finding_reviews"], function($lhs, $rhs){ return intval($lhs['rank']) - intval($rhs['rank']);});
     }
 
+    public function getId()
+    {
+        return $this->data["id"];
+    }
+
     public function getReviewerName()
     {
         return $this->data["name"];
@@ -69,6 +74,11 @@ class Review
             }
         }
         return null;
+    }
+
+    public function getFindingReviews()
+    {
+        return $this->data["finding_reviews"];
     }
 
     public function getComment()

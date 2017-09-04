@@ -228,10 +228,9 @@ class ReviewController
     {
         $review = $this->getReview($experimentId, $detector, $projectId, $versionId, $misuseId, $reviewerName);
         if ($review) {
-            $reviewId = intval($review['id']);
+            $reviewId = intval($review->getId());
             $this->db->table('reviews')->where('id', $reviewId)->delete();
-            $findingReviews = $this->db->table('review_findings')->where('review', $reviewId)->get();
-            foreach ($findingReviews as $findingReview) {
+            foreach ($review->getFindingReviews() as $findingReview) {
                 $findingId = intval($findingReview['id']);
                 $this->db->table('review_findings')->where('id', $findingId)->delete();
                 $this->db->table('review_findings_types')->where('review_finding', $findingId)->delete();
