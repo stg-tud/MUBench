@@ -20,7 +20,7 @@
 ?>
 <html>
 <head>
-    <link rel="stylesheet" type="text/css" href="<?= $site_base_url ?>style/style.css"/>
+    <link rel="stylesheet" type="text/css" href="<?= $site_base_url ?>css/style.css"/>
     <link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
 </head>
 <body>
@@ -28,22 +28,26 @@
 
 <h1>Statistics: Tags</h1>
 
-<?php foreach($experiments as $exp): ?>
-<h2>Experiment <?= $exp->getNumber() ?></h2>
+<?php foreach($experiments as $experiment): ?>
+<h2>Experiment <?= $experiment->id ?></h2>
 <table>
     <tr>
         <td>Detector</td>
         <?php foreach($tags as $tag): ?>
-            <td><?= htmlspecialchars($tag['name']) ?></td>
+            <td><?= htmlspecialchars($tag->name) ?></td>
         <?php endforeach; ?>
     </tr>
 
-    <?php foreach ($results[$exp->getId()] as $key => $result) : /** @var $result RunsResult */ ?>
+    <?php foreach ($results[$experiment->id] as $key => $result) : ?>
         <tbody>
         <tr>
             <td> <?= htmlspecialchars($key) ?>
-            <?php foreach($result as $tag_result): ?>
-                    <td><?= htmlspecialchars(count($tag_result)) ?></td>
+            <?php foreach($tags as $tag): ?>
+                <?php if(array_key_exists($tag->name, $result)) : ?>
+                    <td><?= htmlspecialchars(count($result[$tag->name])) ?></td>
+                <?php else: ?>
+                    <td>0</td>
+                <?php endif; ?>
             <?php endforeach; ?>
         </tr>
         </tbody>

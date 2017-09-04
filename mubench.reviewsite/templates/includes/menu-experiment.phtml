@@ -16,20 +16,20 @@
  * @var Experiment $experiment the selected experiment, if any
  * @var Detector $detector the selected detector, if any
  */
-use MuBench\ReviewSite\Model\Detector;
-use MuBench\ReviewSite\Model\Experiment;
+use MuBench\ReviewSite\Models\Detector;
+use MuBench\ReviewSite\Models\Experiment;
 
-$is_current_experiment = strpos($path,  "/{$experiment->getId()}") !== false;
+$is_current_experiment = strpos($path,  "ex{$experiment->id}") !== false;
 ?>
 <li class="<?= $is_current_experiment ? "active" : "" ?>">
-    <span>E<?= $experiment->getNumber() ?>: <?= $experiment->getTitle() ?></span>
+    <span>E<?= $experiment->id ?>: <?= $experiment->name ?></span>
     <ul>
-    <?php if ($detectors[$experiment->getId()]) : ?>
+    <?php if ($detectors[$experiment->id]) : ?>
         <?php $this_det = $detector ?>
-        <?php foreach ($detectors[$experiment->getId()] as $detector) : ?>
-            <?php $is_current_detector = $this_det->id == $detector->id ?>
+        <?php foreach ($detectors[$experiment->id] as $detector) : ?>
+            <?php $is_current_detector = $this_det && $this_det->muid == $detector->muid ?>
             <li class="<?= $is_current_detector ? "active" : "" ?>">
-                <a href="<?= $url_prefix . $experiment->getId() . "/" . $detector->name ?>"><?= $detector->name ?></a>
+                <a href="<?= $pathFor('experiment.detector', array("experiment_id"=>$experiment->id, "detector_muid" => $detector->muid)) ?>"><?= $detector->muid ?></a>
             </li>
         <?php endforeach; ?>
         <?php $detector = $this_det ?>

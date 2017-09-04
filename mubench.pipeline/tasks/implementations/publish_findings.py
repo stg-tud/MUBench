@@ -22,11 +22,11 @@ class PublishFindingsTask:
         super().__init__()
         self.max_files_per_post = 20  # 20 is PHP's default limit to the number of files per request
 
+        self.experiment_id = experiment_id
         self.detector = detector
         self.dataset = dataset
         self.compiles_base_path = compiles_base_path
         self.review_site_url = review_site_url
-        self.__upload_url = urljoin(self.review_site_url, "api/upload/" + experiment_id)
         self.review_site_user = review_site_user
         self.review_site_password = review_site_password
 
@@ -37,7 +37,7 @@ class PublishFindingsTask:
                 "Enter review-site password for '{}': ".format(self.review_site_user))
 
         self.logger.info("Prepare findings of %s in %s for upload to %s...",
-                         self.detector, experiment_id, self.__upload_url)
+                         self.detector, self.experiment_id, self.review_site_url)
 
     def run(self, project: Project, version: ProjectVersion, detector_run: DetectorRun,
             potential_hits: PotentialHits, version_compile: VersionCompile):
@@ -110,15 +110,12 @@ class PublishFindingsTask:
         data = {}
         data.update(self._to_markdown_dict(run_info))
         data.update({
-            "dataset": self.dataset,
-            "detector": self.detector.id,
-            "project": project.id,
-            "version": version.version_id,
             "result": result,
             "potential_hits": upload_data
         })
-        post(self.__upload_url, data, file_paths=file_paths,
-             username=self.review_site_user, password=self.review_site_password)
+        url = urljoin(self.review_site_url, "experiments/{}/detectors/{}/projects/{}/versions/{}/runs".format(
+            self.experiment_id, self.detector.id, project.id, version.version_id))
+        post(url, data, file_paths=file_paths, username=self.review_site_user, password=self.review_site_password)
 
     @staticmethod
     def get_file_paths(findings: List[SpecializedFinding]) -> List[str]:

@@ -1,155 +1,66 @@
 <?php
 /** @var \Slim\App $app */
 
-use MuBench\ReviewSite\Controller\FindingsUploader;
-use MuBench\ReviewSite\Controller\MetadataUploader;
-use MuBench\ReviewSite\Controller\ReviewUploader;
-use MuBench\ReviewSite\Controller\SnippetUploader;
-use MuBench\ReviewSite\Controller\DownloadController;
-use MuBench\ReviewSite\Controller\TagController;
-use MuBench\ReviewSite\DBConnection;
+use MuBench\ReviewSite\Controllers\DownloadController;
+use MuBench\ReviewSite\Controllers\FindingsController;
+use MuBench\ReviewSite\Controllers\FindingsUploader;
+use MuBench\ReviewSite\Controllers\MetadataController;
+use MuBench\ReviewSite\Controllers\MisuseTagsController;
+use MuBench\ReviewSite\Controllers\ReviewsController;
+use MuBench\ReviewSite\Controllers\SnippetUploader;
 use MuBench\ReviewSite\DirectoryHelper;
-use MuBench\ReviewSite\Model\Experiment;
 use MuBench\ReviewSite\RoutesHelper;
 use Slim\Http\Request;
 use Slim\Http\Response;
 
-require_once "route_utils.php";
-
-$logger = $app->getContainer()['logger'];
-$database = $app->getContainer()['database'];
-$renderer = $app->getContainer()['renderer'];
-// TODO rename RoutesHelper to ResultsViewController
-$routesHelper = new RoutesHelper($database, $renderer, $logger, $settings['upload'], $settings['site_base_url'], $settings['default_ex2_review_size']);
-$downloadController = new DownloadController($database, $logger, $settings['default_ex2_review_size']);
-
-$app->get('/', [$routesHelper, 'index']);
-$app->get('/{exp:ex[1-3]}/{detector}', [$routesHelper, 'detector']);
-$app->get('/{exp:ex[1-3]}/{detector}/{project}/{version}/{misuse}', [$routesHelper, 'review']);
-$app->get('/{exp:ex[1-3]}/{detector}/{project}/{version}/{misuse}/{reviewer}', [$routesHelper, 'review']);
-$app->group('/stats', function() use ($app, $routesHelper) {
-    $app->get('/results', [$routesHelper, 'result_stats']);
-    $app->get('/tags', [$routesHelper, 'tag_stats']);
-    $app->get('/types', [$routesHelper, 'type_stats']);
-});
-
-$app->group('/private', function () use ($app, $routesHelper, $database) {
-    $app->get('/', [$routesHelper, 'index']);
-    $app->get('/{exp:ex[1-3]}/{detector}', [$routesHelper, 'detector']);
-    $app->get('/{exp:ex[1-3]}/{detector}/{project}/{version}/{misuse}', [$routesHelper, 'review']);
-    $app->get('/{exp:ex[1-3]}/{detector}/{project}/{version}/{misuse}/{reviewer}', [$routesHelper, 'review']);
-    $app->group('/stats', function() use ($app, $routesHelper) {
-        $app->get('/results', [$routesHelper, 'result_stats']);
-        $app->get('/tags', [$routesHelper, 'tag_stats']);
-        $app->get('/types', [$routesHelper, 'type_stats']);
+$app->get('/', \MuBench\ReviewSite\Controllers\ExperimentsController::class.":index")->setName('/');
+$app->group('/experiments/{experiment_id}', function() use ($app) {
+    $app->group('/detectors/{detector_muid}', function () use ($app) {
+        $app->get('/runs', \MuBench\ReviewSite\Controllers\RunsController::class . ":getIndex")->setName('experiment.detector');
+        $app->get('/runs.csv', \MuBench\ReviewSite\Controllers\RunsController::class . ":downloadRuns")->setName('download.runs');
+        $app->group('/projects/{project_muid}/versions/{version_muid}/misuses/{misuse_muid}', function() use ($app) {
+            $app->get('', \MuBench\ReviewSite\Controllers\ReviewsController::class . ":getReview")->setName('view');
+            $app->get('/reviewers/{reviewer_name}', \MuBench\ReviewSite\Controllers\ReviewsController::class . ":getReview")->setName('review');
+        });
     });
-    $app->get('/overview', [$routesHelper, 'overview']);
-    $app->get('/todo', [$routesHelper, 'todos']);
+    $app->get('/results.csv', \MuBench\ReviewSite\Controllers\RunsController::class . ":downloadResults")->setName('stats.results.csv');
 });
-
-$app->group('/download', function () use ($app, $downloadController, $database) {
-    $app->get('/{exp:ex[1-3]}/stats', [$downloadController, 'download_stats']);
-    $app->get('/{exp:ex[1-3]}/{detector}', [$downloadController, 'download_run_stats']);
-});
+$app->get('/results', \MuBench\ReviewSite\Controllers\RunsController::class.":getResults")->setName('stats.results');
+$app->get('/tags', \MuBench\ReviewSite\Controllers\TagsController::class.":getTags")->setName('stats.tags');
+$app->get('/types', \MuBench\ReviewSite\Controllers\TypesController::class.":getTypes")->setName('stats.types');
 
 
-$app->group('/api/upload', function () use ($app, $settings, $database) {
-    $app->post('/[{experiment:ex[1-3]}]',
-        function (Request $request, Response $response, array $args) use ($settings, $database) {
-            $experiment = $args['experiment'];
-            $run = decodeJsonBody($request);
-            if (!$run) {
-                return error_response($response, $this->logger, 400, "empty: " . print_r($_POST, true));
-            }
-            $detector = $run->{'detector'};
-            if (!$detector) {
-                return error_response($response, $this->logger, 400, "no detector: " . print_r($run, true));
-            }
-            $project = $run->{'project'};
-            if (!$project) {
-                return error_response($response, $this->logger, 400, "no project: " . print_r($run, true));
-            }
-            $version = $run->{'version'};
-            if (!$version) {
-                return error_response($response, $this->logger, 400, "no version: " . print_r($run, true));
-            }
-            $hits = $run->{'potential_hits'};
-            $this->logger->info("received data for '" . $experiment . "', '" . $project . "." . $version . "' with " . count($hits) . " potential hits.");
-
-            $uploader = new FindingsUploader($database, $this->logger);
-            $uploader->processData($experiment, $run);
-            $files = $request->getUploadedFiles();
-            $this->logger->info("received " . count($files) . " files");
-            if ($files) {
-                $directoryHelper = new DirectoryHelper($settings['upload'], $this->logger);
-                foreach ($files as $img) {
-                    $directoryHelper->handleImage($experiment, $detector, $project, $version, $img);
-                }
-            }
-            return $response->withStatus(200);
+$app->group('/private', function () use ($app) {
+    $app->get('/', \MuBench\ReviewSite\Controllers\ExperimentsController::class.":index")->setName('private./');
+    $app->group('/experiments/{experiment_id}', function() use ($app) {
+        $app->group('/detectors/{detector_muid}', function() use ($app) {
+            $app->get('/runs', \MuBench\ReviewSite\Controllers\RunsController::class . ":getIndex")->setName('private.experiment.detector');
+            $app->get('/runs.csv', \MuBench\ReviewSite\Controllers\RunsController::class . ":downloadRuns")->setName('private.download.runs');
+            $app->group('/projects/{project_muid}/versions/{version_muid}/misuses/{misuse_muid}', function() use ($app) {
+                $app->get('', \MuBench\ReviewSite\Controllers\ReviewsController::class . ":getReview")->setName('private.view');
+                $app->get('/reviewers/{reviewer_name}', \MuBench\ReviewSite\Controllers\ReviewsController::class . ":getReview")->setName('private.review');
+            });
         });
+        $app->get('/reviews/{reviewer_name}/open', \MuBench\ReviewSite\Controllers\ReviewsController::class . ":getTodo")->setName('private.todo');
+        $app->get('/reviews/{reviewer_name}/closed', \MuBench\ReviewSite\Controllers\ReviewsController::class . ":getOverview")->setName('private.overview');
+        $app->get('/results.csv', \MuBench\ReviewSite\Controllers\RunsController::class.":downloadResults")->setName('private.stats.results.csv');
+    });
+    $app->get('/results', \MuBench\ReviewSite\Controllers\RunsController::class.":getResults")->setName('private.stats.results');
+    $app->get('/tags', \MuBench\ReviewSite\Controllers\TagsController::class.":getTags")->setName('private.stats.tags');
+    $app->get('/types', \MuBench\ReviewSite\Controllers\TypesController::class.":getTypes")->setName('private.stats.types');
+})->add(new \MuBench\ReviewSite\Middleware\AuthMiddleware($container));
 
-    $app->post('/metadata',
-        function (Request $request, Response $response, array $args) use ($database) {
-            $obj = decodeJsonBody($request);
-            if (!$obj) {
-                return error_response($response, $this->logger, 400, "empty: " . print_r($request->getBody(), true));
-            }
-            $uploader = new MetadataUploader($database, $this->logger);
-            foreach ($obj as $o) {
-                $uploader->processMetaData($o);
-            }
-            return $response->withStatus(200);
+$app->group('', function () use ($app, $settings) {
+    $app->post('/metadata', \MuBench\ReviewSite\Controllers\MetadataController::class.":putMetadata");
+    $app->group('/experiments/{experiment_id}/detectors/{detector_muid}/projects/{project_muid}/versions/{version_muid}', function() use ($app) {
+        $app->post('/runs', \MuBench\ReviewSite\Controllers\RunsController::class.":postRun");
+        $app->group('/misuses/{misuse_muid}', function() use ($app) {
+            $app->post('/tags', \MuBench\ReviewSite\Controllers\TagsController::class . ":postTag")->setName('private.tag.add');
+            $app->post('/tags/{tag_id}/delete', \MuBench\ReviewSite\Controllers\TagsController::class . ":deleteTag")->setName('private.tag.remove');
+            $app->post('/reviews/{reviewer_name}', \MuBench\ReviewSite\Controllers\ReviewsController::class . ":postReview")->setName('private.update.review');
+            $app->post('/snippets', \MuBench\ReviewSite\Controllers\SnippetsController::class . ":postSnippet")->setName('private.snippet.add');
+            $app->post('/snippets/{snippet_id}/delete', \MuBench\ReviewSite\Controllers\SnippetsController::class . ":deleteSnippet")->setName('private.snippet.remove');
         });
+    });
 
-    $app->post('/review/{exp:ex[1-3]}/{detector}',
-        function (Request $request, Response $response, array $args) use ($database, $settings) {
-            $obj = $request->getParsedBody();
-            $uploader = new ReviewUploader($database, $this->logger);
-            $uploader->processReview($obj);
-            $site_base_url = $settings['site_base_url'];
-            if (strcmp($obj["origin"], "") !== 0) {
-                return $response->withRedirect("{$site_base_url}index.php/{$obj["origin"]}");
-            } else {
-                return $response->withRedirect("{$site_base_url}index.php/private/{$args['exp']}/{$args['detector']}");
-            }
-        });
-
-    $app->post('/delete/snippet/{exp:ex[1-3]}/{detector}',
-        function (Request $request, Response $response, array $args) use ($database, $settings) {
-            $obj = $request->getParsedBody();
-            $site_base_url = $settings['site_base_url'];
-            $uploader = new SnippetUploader($database, $this->logger);
-            $uploader->deleteSnippet($obj['id']);
-            if (strcmp($obj["path"], "") !== 0) {
-                return $response->withRedirect("{$site_base_url}index.php/{$obj["path"]}");
-            } else {
-                return $response->withRedirect("{$site_base_url}index.php/private/{$args['exp']}/{$args['detector']}");
-            }
-        });
-
-    $app->post('/delete/tag',
-        function (Request $request, Response $response, array $args) use ($database, $settings) {
-            $obj = $request->getParsedBody();
-            $controller = new TagController($database, $this->logger);
-            $controller->deleteMisuseTag($obj);
-            return $response->withRedirect("{$settings['site_base_url']}index.php/{$obj['path']}");
-        });
-
-    $app->post('/snippet',
-        function (Request $request, Response $response, array $args) use ($database, $settings) {
-            $obj = $request->getParsedBody();
-            $uploader = new SnippetUploader($database, $this->logger);
-            $uploader->processSnippet($obj);
-            return $response->withRedirect("{$settings['site_base_url']}index.php/{$obj['path']}");
-        });
-
-    $app->post('/tag',
-        function (Request $request, Response $response, array $args) use ($database, $settings) {
-            $obj = $request->getParsedBody();
-            $controller = new TagController($database, $this->logger);
-            $controller->saveTagForMisuse($obj);
-            return $response->withRedirect("{$settings['site_base_url']}index.php/{$obj['path']}");
-        });
-
-});
+})->add(new \MuBench\ReviewSite\Middleware\AuthMiddleware($container));

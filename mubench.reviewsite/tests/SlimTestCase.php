@@ -1,7 +1,12 @@
 <?php
 
-use MuBench\ReviewSite\DirectoryHelper;
-use MuBench\ReviewSite\RoutesHelper;
+use Illuminate\Container\Container;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Events\Dispatcher;
+use Illuminate\Support\Facades\Schema;
+use PHPUnit\Framework\TestCase;
+use Monolog\Logger;
+use Pixie\QueryBuilder\QueryBuilderHandler;
 use Slim\Http\Environment;
 use Slim\Http\Headers;
 use Slim\Http\Request;
@@ -9,7 +14,7 @@ use Slim\Http\RequestBody;
 use Slim\Http\Response;
 use Slim\Http\Uri;
 
-class SlimTestCase extends DatabaseTestCase
+class SlimTestCase extends TestCase
 {
     protected $app;
 
@@ -19,9 +24,44 @@ class SlimTestCase extends DatabaseTestCase
     /** @var Response */
     protected $response;
 
+    /**
+     * @var Logger $logger
+     */
+    protected $logger;
+
+    /** @var \Illuminate\Database\Capsule\Manager */
+    protected $db;
+
+    /** @var  \Illuminate\Support\Facades\Schema */
+    protected $schema;
+
     public function setUp(){
-        parent::setUp();
-        $this->app = $this->getSlimInstance();
+        $settings = require __DIR__ . '/../src/settings.php';
+        $app = new \Slim\App($settings);
+        require __DIR__ . '/../bootstrap/bootstrap.php';
+        $this->logger = new \Monolog\Logger("test");
+        $capsule = new \Illuminate\Database\Capsule\Manager;
+        $capsule->addConnection(['driver' => 'sqlite', 'database' => ':memory:']);
+        $capsule->setAsGlobal();
+        $capsule->setEventDispatcher(new Dispatcher(new Container()));
+        $capsule->bootEloquent();
+        $this->db = $capsule;
+        $this->schema = $capsule->schema();
+
+        // The schema accesses the database through the app, which we do not have in
+        // this context. Therefore, use an array to provide the database. This seems
+        // to work fine.
+        /** @noinspection PhpParamsInspection */
+        \Illuminate\Support\Facades\Schema::setFacadeApplication(["db" => $capsule]);
+
+        require __DIR__ . '/../setup/create_database_tables.php';
+        require __DIR__ . '/../src/routes.php';
+        require_once __DIR__ . '/../src/route_utils.php';
+        require_once __DIR__ . '/../src/csv_utils.php';
+        \MuBench\ReviewSite\Models\Detector::flushEventListeners();
+        \MuBench\ReviewSite\Models\Detector::boot();
+        $this->app = $app;
+        $this->container = $app->getContainer();
     }
 
     public function get($path, $data = array(), $optionalHeaders = array()){
@@ -60,15 +100,54 @@ class SlimTestCase extends DatabaseTestCase
         return $this->response->getBody();
     }
 
-    public function getSlimInstance(){
-        $settings = require __DIR__ . '/../src/settings.php';
-        $app = new \Slim\App($settings);
+    private function mySQLToSQLite($mysql){
+        $lines = explode("\n", $mysql);
+        for ($i = count($lines) - 1; $i >= 0; $i--) {
+            // remove all named keys, i.e., leave only PRIMARY keys
+            if (strpos($lines[$i], 'KEY `') !== false) {
+                $lines[$i] = "";
+                $lines[$i - 1] = substr($lines[$i - 1], 0, -1); // remove trailing comma in previous line
+            }
+        }
+        $sqlite = implode("\n", $lines);
+        $sqlite = str_replace("AUTO_INCREMENT", "", $sqlite);
+        $sqlite = str_replace("int(11)", "INTEGER", $sqlite);
+        $sqlite = str_replace(" ENGINE=MyISAM  DEFAULT CHARSET=latin1;", ";", $sqlite);
+        return $sqlite;
+    }
 
-        require __DIR__ . '/../src/dependencies.php';
-        $container = $app->getContainer();
-        $container['database'] = function () { return $this->db; };
-        require __DIR__ . '/../src/routes.php';
+    protected function createFindingWith($experiment, $detector, $misuse)
+    {
+        $finding = new \MuBench\ReviewSite\Models\Finding;
+        $finding->setDetector($detector);
+        Schema::dropIfExists($finding->getTable());
+        if(!Schema::hasTable($finding->getTable())){
+            Schema::create($finding->getTable(), function (Blueprint $table) {
+                $table->increments('id');
+                $table->integer('experiment_id');
+                $table->integer('misuse_id');
+                $table->string('project_muid', 30);
+                $table->string('version_muid', 30);
+                $table->string('misuse_muid', 30);
+                $table->integer('startline');
+                $table->integer('rank');
+                $table->integer('additional_column')->nullable();
+                $table->text('file');
+                $table->text('method');
+                $table->dateTime('created_at');
+                $table->dateTime('updated_at');
+            });
+        }
 
-        return $app;
+        $finding->experiment_id = $experiment->id;
+        $finding->misuse_id = $misuse->id;
+        $finding->project_muid = 'mubench';
+        $finding->version_muid = '42';
+        $finding->misuse_muid = '0';
+        $finding->startline = 113;
+        $finding->rank = 1;
+        $finding->file = 'Test.java';
+        $finding->method = "method(A)";
+        $finding->save();
     }
 }

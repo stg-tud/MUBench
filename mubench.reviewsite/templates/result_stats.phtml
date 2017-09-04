@@ -16,11 +16,11 @@
  * @var array $results
  * @var int $ex2_review_size max number of reviews (per project) to include in statistics
  */
-use MuBench\ReviewSite\Model\RunsResult;
+use MuBench\ReviewSite\Models\RunsResult;
 ?>
 <html>
 <head>
-    <link rel="stylesheet" type="text/css" href="<?= $site_base_url ?>style/style.css"/>
+    <link rel="stylesheet" type="text/css" href="<?= $site_base_url ?>css/style.css"/>
     <link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
 </head>
 <body>
@@ -29,7 +29,7 @@ use MuBench\ReviewSite\Model\RunsResult;
 <h1>Statistics: Results</h1>
 
 <h2>Experiment 1</h2>
-<a class="button" href="<?=$public_url_prefix?>download/ex1/stats"><i class="fa fa-download" aria-hidden="true"> download csv</i></a>
+<a class="button" href="<?= $pathFor('stats.results.csv', ['experiment_id' => 1])?>"><i class="fa fa-download" aria-hidden="true"> download csv</i></a>
 <table>
     <thead>
     <tr>
@@ -68,7 +68,7 @@ use MuBench\ReviewSite\Model\RunsResult;
     </tr>
     </thead>
 
-    <?php foreach ($results["ex1"] as $result) : /** @var $result RunsResult */ ?>
+    <?php foreach ($results[1] as $result) : /** @var $result RunsResult */ ?>
         <tbody>
         <tr>
             <td><?= $result->getDisplayName() ?></td>
@@ -97,7 +97,7 @@ use MuBench\ReviewSite\Model\RunsResult;
 </table>
 
 <h2>Experiment 2</h2>
-<a class="button" href="<?=$public_url_prefix?>download/ex2/stats?ex2_review_size=<?= $ex2_review_size ?>"><i class="fa fa-download" aria-hidden="true"> download csv</i></a>
+<a class="button" href="<?= $pathFor('stats.results.csv', ['experiment_id' => 2])?>?ex2_review_size=<?= $ex2_review_size ?>"><i class="fa fa-download" aria-hidden="true"> download csv</i></a>
 <form action="" method="get">
     <label for="ex2_review_size">Max. Reviews per Project</label>:
     <input type="text" id="ex2_review_size" name="ex2_review_size" value="<?= $ex2_review_size ?>" />
@@ -138,7 +138,7 @@ use MuBench\ReviewSite\Model\RunsResult;
     </tr>
     </thead>
 
-    <?php foreach ($results["ex2"] as $result) : /** @var $result RunsResult */ ?>
+    <?php foreach ($results[2] as $result) : /** @var $result RunsResult */ ?>
         <tbody>
         <tr>
             <td><?= $result->getDisplayName() ?></td>
@@ -164,7 +164,7 @@ use MuBench\ReviewSite\Model\RunsResult;
     <?php endforeach; ?>
 </table>
 <h2>Experiment 3</h2>
-<a class="button" href="<?=$public_url_prefix?>download/ex3/stats"><i class="fa fa-download" aria-hidden="true"> download csv</i></a>
+<a class="button" href="<?= $pathFor('stats.results.csv', ['experiment_id' => 3])?>"><i class="fa fa-download" aria-hidden="true"> download csv</i></a>
 
 <table>
     <thead>
@@ -202,7 +202,7 @@ use MuBench\ReviewSite\Model\RunsResult;
     </tr>
     </thead>
 
-    <?php foreach ($results["ex3"] as $key => $result) : /** @var RunsResult $results */ ?>
+    <?php foreach ($results[3] as $key => $result) : /** @var RunsResult $results */ ?>
         <tbody>
         <tr>
             <td><?= $result->getDisplayName() ?></td>

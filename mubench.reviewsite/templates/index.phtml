@@ -1,29 +1,22 @@
 <?php
 /**
  * @var string $user the logged in user, if any
- *
- * @var string $site_base_url
- * @var string $public_url_prefix
- * @var string $private_url_prefix
- * @var string $url_prefix the public or private url prefix, depending on whether the user is logged in
- *
- * @var string $path the current route path
- * @var string $origin_param url parameter that carries the $path
- * @var string $origin_path referrer path
+ * @var callable $pathFor function to resolve router paths
+ * @var callable $srcUrlFor function to resolve resources
  *
  * @var array $experiments all experiments (Experiment)
  * @var array $detectors detectors (Detector) with results per experiment
  * @var Experiment $experiment the selected experiment, if any
  * @var Detector $detector the selected detector, if any
  */
-use MuBench\ReviewSite\Model\Detector;
-use MuBench\ReviewSite\Model\Experiment;
+use MuBench\ReviewSite\Models\Detector;
+use MuBench\ReviewSite\Models\Experiment;
 
 ?>
 <html>
     <head>
         <title>MUBench Review Site</title>
-        <link rel="stylesheet" type="text/css" href="<?= $site_base_url; ?>style/style.css" />
+        <link rel="stylesheet" type="text/css" href="<?= $srcUrlFor('css/style.css') ?>" />
     </head>
     <body>
         <?php include "includes/menu.phtml" ?>
@@ -32,11 +25,11 @@ use MuBench\ReviewSite\Model\Experiment;
 
         <ul id="experiments">
         <?php foreach($experiments as $experiment) : ?>
-            <li><span>Experiment <?= $experiment->getNumber() ?>: <?= htmlspecialchars($experiment->getTitle()) ?></span>
+            <li><span>Experiment <?= $experiment->id ?>: <?= htmlspecialchars($experiment->name) ?></span>
                 <ul>
-                <?php if ($detectors[$experiment->getId()]): ?>
-                    <?php foreach ($detectors[$experiment->getId()] as $detector): ?>
-                        <li><a href="<?= $url_prefix . $experiment->getId() . "/" . $detector->name ?>"><?= $detector->name ?></a></li>
+                <?php if ($detectors[$experiment->id]): ?>
+                    <?php foreach ($detectors[$experiment->id] as $detector): ?>
+                        <li><a href="<?= $pathFor('experiment.detector', ['experiment_id' => $experiment->id, 'detector_muid' => $detector->muid]) ?>"><?= $detector->muid ?></a></li>
                     <?php endforeach ?>
                 <?php else: ?>
                     <li>No Results</li>
