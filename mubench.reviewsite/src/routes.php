@@ -23,7 +23,8 @@ $renderer = $app->getContainer()['renderer'];
 // REFACTOR rename RoutesHelper to ResultsViewController
 $routesHelper = new RoutesHelper($database, $renderer, $logger, $settings['upload'], $settings['site_base_url'], $settings['default_ex2_review_size']);
 $downloadController = new DownloadController($database, $logger, $settings['default_ex2_review_size']);
-$reviewController = new ReviewController($settings["site_base_url"], $settings["upload"], $database, $renderer);
+$metadataController = new MetadataController($database, $logger);
+$reviewController = new ReviewController($settings["site_base_url"], $settings["upload"], $database, $renderer, $metadataController);
 
 $app->get('/', [$routesHelper, 'index']);
 $app->get('/{exp:ex[1-3]}/{detector}', [$routesHelper, 'detector']);
@@ -55,7 +56,7 @@ $app->group('/download', function () use ($app, $downloadController, $database) 
 });
 
 
-$app->group('/api/upload', function () use ($app, $settings, $database, $logger, $reviewController) {
+$app->group('/api/upload', function () use ($app, $settings, $database, $metadataController, $reviewController) {
     $app->post('/[{experiment:ex[1-3]}]',
         function (Request $request, Response $response, array $args) use ($settings, $database) {
             $experiment = $args['experiment'];
@@ -91,7 +92,7 @@ $app->group('/api/upload', function () use ($app, $settings, $database, $logger,
             return $response->withStatus(200);
         });
 
-    $app->post('/metadata', [new MetadataController($database, $logger), "update"]);
+    $app->post('/metadata', [$metadataController, "update"]);
     $app->post('/review/{exp:ex[1-3]}/{detector}', [$reviewController, "update"]);
 
     $app->post('/delete/snippet/{exp:ex[1-3]}/{detector}',

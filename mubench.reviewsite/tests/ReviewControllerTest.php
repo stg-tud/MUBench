@@ -24,7 +24,9 @@ class ReviewControllerTest extends DatabaseTestCase
     {
         parent::setUp();
         $this->detector = $this->db->getOrCreateDetector('-d-');
-        $this->reviewController = new ReviewController('', '', $this->db, new PhpRenderer());
+        $metadataController = new MetadataController($this->db, $this->logger);
+        $renderer = new PhpRenderer();
+        $this->reviewController = new ReviewController('', '', $this->db, $renderer, $metadataController);
     }
 
 
@@ -122,8 +124,8 @@ class ReviewControllerTest extends DatabaseTestCase
         ];
 
         $detector = new Detector('-d-', 1);
-        $metadataUploader = new MetadataUploader($this->db, $this->logger);
-        $metadataUploader->processMetaData(json_decode(json_encode($metadata)));
+        $metadataController = new MetadataController($this->db, $this->logger);
+        $metadataController->processMetaData($metadata);
         $findingUploader = new FindingsUploader($this->db, $this->logger);
         $findingUploader->processData('ex1', json_decode(json_encode($finding)));
 

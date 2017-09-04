@@ -4,6 +4,7 @@ namespace MuBench\ReviewSite\Controller;
 
 use Monolog\Logger;
 use MuBench\ReviewSite\DBConnection;
+use MuBench\ReviewSite\Model\Detector;
 use Slim\Http\Request;
 use Slim\Http\Response;
 
@@ -19,6 +20,61 @@ class MetadataController
         $this->logger = $logger;
     }
 
+    function getMetadata($experimentId, Detector $detector, $projectId, $versionId, $misuseId)
+    {
+        if ($experimentId === "ex1" || $experimentId === "ex3") {
+            $metadata = $this->db->table('metadata')
+                ->where('project', $projectId)->where('version', $versionId)->where('misuse', $misuseId)->first();
+
+            $types = $this->db->table('misuse_types')->select('types.name')
+                ->innerJoin('types', 'misuse_types.type', '=', 'types.id')->where('project', $projectId)
+                ->where('version', $versionId)->where('misuse', $misuseId)->get();
+            $metadata["violation_types"] = [];
+            foreach($types as $type){
+                $metadata["violation_types"][] = $type['name'];
+            }
+
+            if($experimentId === "ex1") {
+                $metadata["patterns"] = $this->getPatterns($misuseId);
+            }
+        } else { // if ($experimentId === "ex2")
+            $metadata = ["misuse" => $misuseId];
+        }
+
+        $metadata["snippets"] = $this->getSnippets($experimentId, $detector, $projectId, $versionId, $misuseId);
+        $metadata["tags"] = $this->getTags($experimentId, $detector, $projectId, $versionId, $misuseId);
+
+        return $metadata;
+    }
+
+    private function getPatterns($misuse)
+    {
+        return $this->db->table('patterns')->select(['name', 'code', 'line'])->where('misuse', $misuse)->get();
+    }
+
+    // REFACTOR move this into a snippets helper, together with the logic for storing findings snippets
+    private function getSnippets($experimentId, Detector $detector, $projectId, $versionId, $misuseId)
+    {
+        $columns = ['line', 'snippet'];
+        if ($experimentId === "ex1" || $experimentId === "ex3") {
+            $query = $this->db->table('meta_snippets')
+                ->where('project', $projectId)->where('version', $versionId)->where('misuse', $misuseId);
+        } else { // if ($experimentId === "ex2")
+            $columns[] = 'id'; // SMELL meta_findings do not have an id
+            $query = $this->db->table('finding_snippets')->where('detector', $detector->id)
+                ->where('project', $projectId)->where('version', $versionId)->where('finding', $misuseId);
+        }
+        return $query->select($columns)->get();
+    }
+
+    // REFACTOR move this into a tags helper, together with the logic for adding/removing tags
+    private function getTags($experimentId, Detector $detector, $projectId, $versionId, $misuseId)
+    {
+        return $this->db->table('misuse_tags')->innerJoin('tags', 'misuse_tags.tag', '=', 'tags.id')
+            ->select('id', 'name')->where('exp', $experimentId)->where('detector', $detector->id)
+            ->where('project', $projectId)->where('version', $versionId)->where('misuse', $misuseId)->get();
+    }
+
     public function update(Request $request, Response $response, array $args)
     {
         $metadata = $this->decodeJsonBody($request);
@@ -26,12 +82,22 @@ class MetadataController
             return $this->respondWithError($response, $this->logger, 400, "empty: " . print_r($request->getBody(), true));
         }
         foreach ($metadata as $misuseMetadata) {
-            $this->processMetaData($misuseMetadata);
+            $projectId = $misuseMetadata['project'];
+            $versionId = $misuseMetadata['version'];
+            $misuseId = $misuseMetadata['misuse'];
+            $description = $misuseMetadata['description'];
+            $fix = $misuseMetadata['fix'];
+            $location = $misuseMetadata['location'];
+            $violationTypes = $misuseMetadata['violation_types'];
+            $patterns = $misuseMetadata['patterns'];
+            $targetSnippets = $misuseMetadata['target_snippets'];
+
+            $this->updateMetadata($misuseId, $projectId, $versionId, $description, $fix, $location, $violationTypes, $patterns, $targetSnippets);
         }
         return $response->withStatus(200);
     }
 
-    // REFACTOR inline this into the method above, once it is no longer used
+    // REFACTOR remove this, once it is no longer used
     public function processMetaData($misuseMetadata)
     {
         $projectId = $misuseMetadata['project'];
