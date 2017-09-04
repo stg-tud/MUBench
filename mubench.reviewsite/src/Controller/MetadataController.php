@@ -5,7 +5,7 @@ namespace MuBench\ReviewSite\Controller;
 use Monolog\Logger;
 use MuBench\ReviewSite\DBConnection;
 
-class MetadataUploader
+class MetadataController
 {
 
     private $db;

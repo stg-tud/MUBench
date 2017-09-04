@@ -3,7 +3,7 @@
 require_once "DatabaseTestCase.php";
 
 use MuBench\ReviewSite\Controller\FindingsUploader;
-use MuBench\ReviewSite\Controller\MetadataUploader;
+use MuBench\ReviewSite\Controller\MetadataController;
 use MuBench\ReviewSite\Controller\SnippetUploader;
 use MuBench\ReviewSite\Model\Misuse;
 
@@ -137,7 +137,7 @@ class StoreFindingsTest extends DatabaseTestCase
 
     function test_get_misuse_ex1(){
         $finding_uploader = new FindingsUploader($this->db, $this->logger);
-        $metadata_uploader = new MetadataUploader($this->db, $this->logger);
+        $metadata_uploader = new MetadataController($this->db, $this->logger);
 
         $data = json_decode($this->finding_json);
         $metadata = json_decode($this->metadata_json);

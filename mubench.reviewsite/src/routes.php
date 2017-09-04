@@ -2,7 +2,7 @@
 /** @var \Slim\App $app */
 
 use MuBench\ReviewSite\Controller\FindingsUploader;
-use MuBench\ReviewSite\Controller\MetadataUploader;
+use MuBench\ReviewSite\Controller\MetadataController;
 use MuBench\ReviewSite\Controller\ReviewController;
 use MuBench\ReviewSite\Controller\ReviewUploader;
 use MuBench\ReviewSite\Controller\SnippetUploader;
@@ -97,7 +97,7 @@ $app->group('/api/upload', function () use ($app, $settings, $database, $reviewC
             if (!$obj) {
                 return error_response($response, $this->logger, 400, "empty: " . print_r($request->getBody(), true));
             }
-            $uploader = new MetadataUploader($database, $this->logger);
+            $uploader = new MetadataController($database, $this->logger);
             foreach ($obj as $o) {
                 $uploader->processMetaData($o);
             }
