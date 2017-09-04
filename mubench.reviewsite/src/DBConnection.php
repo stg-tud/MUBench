@@ -230,11 +230,6 @@ class DBConnection
         return $this->query_builder->raw($string);
     }
 
-    private function getViolationTypeForId($type_id)
-    {
-        return $this->table('types')->select('name')->where('id', $type_id)->first();
-    }
-
     public function getMisuse($experiment, $detector, $project, $version, $misuse){
         $runs = $this->getRuns($detector, $experiment);
         foreach($runs as $run){
