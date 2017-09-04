@@ -57,7 +57,7 @@ class ReviewController
                 'violation_types' => $all_violation_types, 'tags' => $all_tags]);
     }
 
-    private function getMisuse($experimentId, Detector $detector, $projectId, $versionId, $misuseId)
+    function getMisuse($experimentId, Detector $detector, $projectId, $versionId, $misuseId)
     {
         $metadata = $this->getMetadata($experimentId, $detector, $projectId, $versionId, $misuseId);
         $potential_hits = $this->getPotentialHits($experimentId, $detector, $projectId, $versionId, $misuseId);
@@ -104,7 +104,7 @@ class ReviewController
             ->orderBy($this->db->raw("`rank` * 1"))->get();
     }
 
-    private function getReview($experimentId, $detector, $projectId, $versionId, $misuseId, $reviewerName)
+    function getReview($experimentId, $detector, $projectId, $versionId, $misuseId, $reviewerName)
     {
         /** @var array $review */
         $review = $this->db->table('reviews')->where('exp', $experimentId)->where('detector', $detector->id)
@@ -214,8 +214,7 @@ class ReviewController
         $comment = $review['review_comment'];
         $hits = $review['review_hit'];
 
-        $this->deleteReview($experimentId, $detector, $projectId, $versionId, $misuseId, $reviewerName);
-        $this->saveReview($experimentId, $detector, $projectId, $versionId, $misuseId, $reviewerName, $comment, $hits);
+        $this->updateReview($experimentId, $detector, $projectId, $versionId, $misuseId, $reviewerName, $comment, $hits);
 
         if (strcmp($review["origin"], "") !== 0) {
             return $response->withRedirect("{$this->site_base_url}index.php/{$review["origin"]}");
@@ -224,13 +223,21 @@ class ReviewController
         }
     }
 
+    function updateReview($experimentId, $detector, $projectId, $versionId, $misuseId, $reviewerName, $comment, $hits)
+    {
+        $this->deleteReview($experimentId, $detector, $projectId, $versionId, $misuseId, $reviewerName);
+        $this->saveReview($experimentId, $detector, $projectId, $versionId, $misuseId, $reviewerName, $comment, $hits);
+    }
+
     private function deleteReview($experimentId, Detector $detector, $projectId, $versionId, $misuseId, $reviewerName)
     {
-        $review = $this->getReview($experimentId, $detector, $projectId, $versionId, $misuseId, $reviewerName);
+        $review = $review = $this->db->table('reviews')->where('exp', $experimentId)->where('detector', $detector->id)
+            ->where('project', $projectId)->where('version', $versionId)->where('misuse', $misuseId)
+            ->where('name', $reviewerName)->first();
         if ($review) {
-            $reviewId = intval($review->getId());
+            $reviewId = intval($review["id"]);
             $this->db->table('reviews')->where('id', $reviewId)->delete();
-            foreach ($review->getFindingReviews() as $findingReview) {
+            foreach ($this->getFindingReviews($reviewId) as $findingReview) {
                 $findingId = intval($findingReview['id']);
                 $this->db->table('review_findings')->where('id', $findingId)->delete();
                 $this->db->table('review_findings_types')->where('review_finding', $findingId)->delete();
@@ -246,8 +253,10 @@ class ReviewController
         foreach ($findingReviews as $rank => $findingReview) {
             $findingId = $this->db->table('review_findings')
                 ->insert(['review' => $reviewId, 'rank' => $rank, 'decision' => $findingReview['hit']]);
-            foreach ($findingReview['types'] as $type) {
-                $this->db->table('review_findings_types')->insert(['review_finding' => $findingId, 'type' => $type]);
+            if (array_key_exists("types", $findingReview)) {
+                foreach ($findingReview['types'] as $type) {
+                    $this->db->table('review_findings_types')->insert(['review_finding' => $findingId, 'type' => $type]);
+                }
             }
         }
     }
