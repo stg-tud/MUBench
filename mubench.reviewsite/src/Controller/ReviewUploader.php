@@ -6,6 +6,7 @@ use Monolog\Logger;
 use MuBench\ReviewSite\DBConnection;
 use MuBench\ReviewSite\Model\Detector;
 
+// REFACTOR Remove this class
 class ReviewUploader
 {
 
