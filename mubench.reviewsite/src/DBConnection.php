@@ -225,9 +225,9 @@ class DBConnection
         return $type_names;
     }
 
-    private function getViolationTypeForId($type_id)
+    public function raw($string)
     {
-        return $this->table('types')->select('name')->where('id', $type_id)->first();
+        return $this->query_builder->raw($string);
     }
 
     public function getMisuse($experiment, $detector, $project, $version, $misuse){
@@ -309,7 +309,7 @@ class DBConnection
         return $this->table('misuse_types')->select('type')->where('type', $type_id)->count();
     }
 
-    private function getQualifiedName($table_name)
+    public function getQualifiedName($table_name)
     {
         return $this->query_builder->addTablePrefix($table_name, false);
     }

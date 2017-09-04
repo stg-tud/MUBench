@@ -3,6 +3,7 @@
 
 use MuBench\ReviewSite\Controller\FindingsUploader;
 use MuBench\ReviewSite\Controller\MetadataUploader;
+use MuBench\ReviewSite\Controller\ReviewController;
 use MuBench\ReviewSite\Controller\ReviewUploader;
 use MuBench\ReviewSite\Controller\SnippetUploader;
 use MuBench\ReviewSite\Controller\DownloadController;
@@ -19,25 +20,26 @@ require_once "route_utils.php";
 $logger = $app->getContainer()['logger'];
 $database = $app->getContainer()['database'];
 $renderer = $app->getContainer()['renderer'];
-// TODO rename RoutesHelper to ResultsViewController
+// REFACTOR rename RoutesHelper to ResultsViewController
 $routesHelper = new RoutesHelper($database, $renderer, $logger, $settings['upload'], $settings['site_base_url'], $settings['default_ex2_review_size']);
 $downloadController = new DownloadController($database, $logger, $settings['default_ex2_review_size']);
+$reviewController = new ReviewController($settings["site_base_url"], $settings["upload"], $database, $renderer);
 
 $app->get('/', [$routesHelper, 'index']);
 $app->get('/{exp:ex[1-3]}/{detector}', [$routesHelper, 'detector']);
-$app->get('/{exp:ex[1-3]}/{detector}/{project}/{version}/{misuse}', [$routesHelper, 'review']);
-$app->get('/{exp:ex[1-3]}/{detector}/{project}/{version}/{misuse}/{reviewer}', [$routesHelper, 'review']);
+$app->get('/{exp:ex[1-3]}/{detector}/{project}/{version}/{misuse}', [$reviewController, 'get']);
+$app->get('/{exp:ex[1-3]}/{detector}/{project}/{version}/{misuse}/{reviewer}', [$reviewController, 'get']);
 $app->group('/stats', function() use ($app, $routesHelper) {
     $app->get('/results', [$routesHelper, 'result_stats']);
     $app->get('/tags', [$routesHelper, 'tag_stats']);
     $app->get('/types', [$routesHelper, 'type_stats']);
 });
 
-$app->group('/private', function () use ($app, $routesHelper, $database) {
+$app->group('/private', function () use ($app, $routesHelper, $database, $reviewController) {
     $app->get('/', [$routesHelper, 'index']);
     $app->get('/{exp:ex[1-3]}/{detector}', [$routesHelper, 'detector']);
-    $app->get('/{exp:ex[1-3]}/{detector}/{project}/{version}/{misuse}', [$routesHelper, 'review']);
-    $app->get('/{exp:ex[1-3]}/{detector}/{project}/{version}/{misuse}/{reviewer}', [$routesHelper, 'review']);
+    $app->get('/{exp:ex[1-3]}/{detector}/{project}/{version}/{misuse}', [$reviewController, 'get']);
+    $app->get('/{exp:ex[1-3]}/{detector}/{project}/{version}/{misuse}/{reviewer}', [$reviewController, 'get']);
     $app->group('/stats', function() use ($app, $routesHelper) {
         $app->get('/results', [$routesHelper, 'result_stats']);
         $app->get('/tags', [$routesHelper, 'tag_stats']);
@@ -53,7 +55,7 @@ $app->group('/download', function () use ($app, $downloadController, $database) 
 });
 
 
-$app->group('/api/upload', function () use ($app, $settings, $database) {
+$app->group('/api/upload', function () use ($app, $settings, $database, $reviewController) {
     $app->post('/[{experiment:ex[1-3]}]',
         function (Request $request, Response $response, array $args) use ($settings, $database) {
             $experiment = $args['experiment'];
@@ -102,18 +104,7 @@ $app->group('/api/upload', function () use ($app, $settings, $database) {
             return $response->withStatus(200);
         });
 
-    $app->post('/review/{exp:ex[1-3]}/{detector}',
-        function (Request $request, Response $response, array $args) use ($database, $settings) {
-            $obj = $request->getParsedBody();
-            $uploader = new ReviewUploader($database, $this->logger);
-            $uploader->processReview($obj);
-            $site_base_url = $settings['site_base_url'];
-            if (strcmp($obj["origin"], "") !== 0) {
-                return $response->withRedirect("{$site_base_url}index.php/{$obj["origin"]}");
-            } else {
-                return $response->withRedirect("{$site_base_url}index.php/private/{$args['exp']}/{$args['detector']}");
-            }
-        });
+    $app->post('/review/{exp:ex[1-3]}/{detector}', [$reviewController, "update"]);
 
     $app->post('/delete/snippet/{exp:ex[1-3]}/{detector}',
         function (Request $request, Response $response, array $args) use ($database, $settings) {

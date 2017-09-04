@@ -15,6 +15,11 @@ class Review
         usort($this->data["finding_reviews"], function($lhs, $rhs){ return intval($lhs['rank']) - intval($rhs['rank']);});
     }
 
+    public function getId()
+    {
+        return $this->data["id"];
+    }
+
     public function getReviewerName()
     {
         return $this->data["name"];
@@ -38,6 +43,7 @@ class Review
         return !empty($this->getHitViolationTypes($rank));
     }
 
+    // REFACTOR should return a Decision
     public function getHitDecision($rank){
         return $this->getReviewFinding($rank)['decision'];
     }
@@ -62,6 +68,7 @@ class Review
         throw new \RuntimeException("no hit was identified");
     }
 
+    // REFACTOR rename to findings reviews
     private function getReviewFinding($rank){
         foreach ($this->data["finding_reviews"] as $finding_review){
             if(strcmp($finding_review["rank"], $rank) == 0){
@@ -69,6 +76,11 @@ class Review
             }
         }
         return null;
+    }
+
+    public function getFindingReviews()
+    {
+        return $this->data["finding_reviews"];
     }
 
     public function getComment()
