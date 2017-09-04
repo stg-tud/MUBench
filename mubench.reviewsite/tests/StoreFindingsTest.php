@@ -140,7 +140,7 @@ class StoreFindingsTest extends DatabaseTestCase
         $metadata_uploader = new MetadataController($this->db, $this->logger);
 
         $data = json_decode($this->finding_json);
-        $metadata = json_decode($this->metadata_json);
+        $metadata = json_decode($this->metadata_json, true);
         $finding_uploader->processData("ex1", $data);
         $metadata_uploader->processMetaData($metadata);
         $detector = $this->db->getOrCreateDetector("-d-");

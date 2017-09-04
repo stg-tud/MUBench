@@ -13,7 +13,7 @@ class StoreMetadataTest extends DatabaseTestCase
         $finding_uploader = new FindingsUploader($this->db, $this->logger);
         $metadata_uploader = new MetadataController($this->db, $this->logger);
 
-        $data = json_decode($this->metadata_json);
+        $data = json_decode($this->metadata_json, true);
         $findings = json_decode($this->finding_json);
 
         $finding_uploader->processData('ex1', $findings);

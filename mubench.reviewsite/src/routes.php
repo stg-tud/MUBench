@@ -55,7 +55,7 @@ $app->group('/download', function () use ($app, $downloadController, $database) 
 });
 
 
-$app->group('/api/upload', function () use ($app, $settings, $database, $reviewController) {
+$app->group('/api/upload', function () use ($app, $settings, $database, $logger, $reviewController) {
     $app->post('/[{experiment:ex[1-3]}]',
         function (Request $request, Response $response, array $args) use ($settings, $database) {
             $experiment = $args['experiment'];
@@ -91,19 +91,7 @@ $app->group('/api/upload', function () use ($app, $settings, $database, $reviewC
             return $response->withStatus(200);
         });
 
-    $app->post('/metadata',
-        function (Request $request, Response $response, array $args) use ($database) {
-            $obj = decodeJsonBody($request);
-            if (!$obj) {
-                return error_response($response, $this->logger, 400, "empty: " . print_r($request->getBody(), true));
-            }
-            $uploader = new MetadataController($database, $this->logger);
-            foreach ($obj as $o) {
-                $uploader->processMetaData($o);
-            }
-            return $response->withStatus(200);
-        });
-
+    $app->post('/metadata', [new MetadataController($database, $logger), "update"]);
     $app->post('/review/{exp:ex[1-3]}/{detector}', [$reviewController, "update"]);
 
     $app->post('/delete/snippet/{exp:ex[1-3]}/{detector}',
