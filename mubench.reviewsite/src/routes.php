@@ -3,6 +3,7 @@
 
 use MuBench\ReviewSite\Controller\FindingsUploader;
 use MuBench\ReviewSite\Controller\MetadataUploader;
+use MuBench\ReviewSite\Controller\ReviewController;
 use MuBench\ReviewSite\Controller\ReviewUploader;
 use MuBench\ReviewSite\Controller\SnippetUploader;
 use MuBench\ReviewSite\Controller\DownloadController;
@@ -19,14 +20,15 @@ require_once "route_utils.php";
 $logger = $app->getContainer()['logger'];
 $database = $app->getContainer()['database'];
 $renderer = $app->getContainer()['renderer'];
-// TODO rename RoutesHelper to ResultsViewController
+// REFACTOR rename RoutesHelper to ResultsViewController
 $routesHelper = new RoutesHelper($database, $renderer, $logger, $settings['upload'], $settings['site_base_url'], $settings['default_ex2_review_size']);
 $downloadController = new DownloadController($database, $logger, $settings['default_ex2_review_size']);
+$reviewController = new ReviewController($settings["site_base_url"], $settings["upload"], $database, $renderer);
 
 $app->get('/', [$routesHelper, 'index']);
 $app->get('/{exp:ex[1-3]}/{detector}', [$routesHelper, 'detector']);
-$app->get('/{exp:ex[1-3]}/{detector}/{project}/{version}/{misuse}', [$routesHelper, 'review']);
-$app->get('/{exp:ex[1-3]}/{detector}/{project}/{version}/{misuse}/{reviewer}', [$routesHelper, 'review']);
+$app->get('/{exp:ex[1-3]}/{detector}/{project}/{version}/{misuse}', [$reviewController, 'get']);
+$app->get('/{exp:ex[1-3]}/{detector}/{project}/{version}/{misuse}/{reviewer}', [$reviewController, 'get']);
 $app->group('/stats', function() use ($app, $routesHelper) {
     $app->get('/results', [$routesHelper, 'result_stats']);
     $app->get('/tags', [$routesHelper, 'tag_stats']);
