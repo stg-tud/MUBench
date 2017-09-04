@@ -176,7 +176,12 @@ class ReviewController
         $params["origin_path"] = htmlspecialchars($request->getQueryParam("origin", ""));
 
         $params["experiment"] = Experiment::get($args["exp"]);
+        $params["experiments"] = Experiment::all();
         $params["detector"] = $this->getDetector($args['detector'], $request, $response);
+        $params["detectors"] = [];
+        foreach ($params["experiments"] as $experiment) { /** @var Experiment $experiment */
+            $params["detectors"][$experiment->getId()] = $this->db->getDetectors($experiment->getId());
+        }
 
         return $this->renderer->render($response, $template, $params);
     }
