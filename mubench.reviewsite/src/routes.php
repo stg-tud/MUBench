@@ -35,11 +35,11 @@ $app->group('/stats', function() use ($app, $routesHelper) {
     $app->get('/types', [$routesHelper, 'type_stats']);
 });
 
-$app->group('/private', function () use ($app, $routesHelper, $database) {
+$app->group('/private', function () use ($app, $routesHelper, $database, $reviewController) {
     $app->get('/', [$routesHelper, 'index']);
     $app->get('/{exp:ex[1-3]}/{detector}', [$routesHelper, 'detector']);
-    $app->get('/{exp:ex[1-3]}/{detector}/{project}/{version}/{misuse}', [$routesHelper, 'review']);
-    $app->get('/{exp:ex[1-3]}/{detector}/{project}/{version}/{misuse}/{reviewer}', [$routesHelper, 'review']);
+    $app->get('/{exp:ex[1-3]}/{detector}/{project}/{version}/{misuse}', [$reviewController, 'update']);
+    $app->get('/{exp:ex[1-3]}/{detector}/{project}/{version}/{misuse}/{reviewer}', [$reviewController, 'update']);
     $app->group('/stats', function() use ($app, $routesHelper) {
         $app->get('/results', [$routesHelper, 'result_stats']);
         $app->get('/tags', [$routesHelper, 'tag_stats']);
