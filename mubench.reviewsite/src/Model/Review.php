@@ -43,6 +43,7 @@ class Review
         return !empty($this->getHitViolationTypes($rank));
     }
 
+    // REFACTOR should return a Decision
     public function getHitDecision($rank){
         return $this->getReviewFinding($rank)['decision'];
     }
