@@ -55,7 +55,7 @@ $app->group('/download', function () use ($app, $downloadController, $database) 
 });
 
 
-$app->group('/api/upload', function () use ($app, $settings, $database) {
+$app->group('/api/upload', function () use ($app, $settings, $database, $reviewController) {
     $app->post('/[{experiment:ex[1-3]}]',
         function (Request $request, Response $response, array $args) use ($settings, $database) {
             $experiment = $args['experiment'];
@@ -104,18 +104,7 @@ $app->group('/api/upload', function () use ($app, $settings, $database) {
             return $response->withStatus(200);
         });
 
-    $app->post('/review/{exp:ex[1-3]}/{detector}',
-        function (Request $request, Response $response, array $args) use ($database, $settings) {
-            $obj = $request->getParsedBody();
-            $uploader = new ReviewUploader($database, $this->logger);
-            $uploader->processReview($obj);
-            $site_base_url = $settings['site_base_url'];
-            if (strcmp($obj["origin"], "") !== 0) {
-                return $response->withRedirect("{$site_base_url}index.php/{$obj["origin"]}");
-            } else {
-                return $response->withRedirect("{$site_base_url}index.php/private/{$args['exp']}/{$args['detector']}");
-            }
-        });
+    $app->post('/review/{exp:ex[1-3]}/{detector}', [$reviewController, "update"]);
 
     $app->post('/delete/snippet/{exp:ex[1-3]}/{detector}',
         function (Request $request, Response $response, array $args) use ($database, $settings) {

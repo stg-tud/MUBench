@@ -200,4 +200,56 @@ class ReviewController
         $params = $request->getServerParams();
         return array_key_exists('PHP_AUTH_USER', $params) ? $params['PHP_AUTH_USER'] : "";
     }
+
+    public function update(Request $request, Response $response, array $args)
+    {
+        $review = $request->getParsedBody();
+
+        $reviewerName = $review['review_name'];
+        $experimentId = $review['review_exp'];
+        $detector = $this->db->getDetector($review['review_detector']);
+        $projectId = $review['review_project'];
+        $versionId = $review['review_version'];
+        $misuseId = $review['review_misuse'];
+        $comment = $review['review_comment'];
+        $hits = $review['review_hit'];
+
+        $this->deleteReview($experimentId, $detector, $projectId, $versionId, $misuseId, $reviewerName);
+        $this->saveReview($experimentId, $detector, $projectId, $versionId, $misuseId, $reviewerName, $comment, $hits);
+
+        if (strcmp($review["origin"], "") !== 0) {
+            return $response->withRedirect("{$this->site_base_url}index.php/{$review["origin"]}");
+        } else {
+            return $response->withRedirect("{$this->site_base_url}index.php/private/{$args['exp']}/{$args['detector']}");
+        }
+    }
+
+    private function deleteReview($experimentId, Detector $detector, $projectId, $versionId, $misuseId, $reviewerName)
+    {
+        $review = $this->getReview($experimentId, $detector, $projectId, $versionId, $misuseId, $reviewerName);
+        if ($review) {
+            $reviewId = intval($review['id']);
+            $this->db->table('reviews')->where('id', $reviewId)->delete();
+            $findingReviews = $this->db->table('review_findings')->where('review', $reviewId)->get();
+            foreach ($findingReviews as $findingReview) {
+                $findingId = intval($findingReview['id']);
+                $this->db->table('review_findings')->where('id', $findingId)->delete();
+                $this->db->table('review_findings_types')->where('review_finding', $findingId)->delete();
+            }
+        }
+    }
+
+    private function saveReview($experimentId, Detector $detector, $projectId, $versionId, $misuseId, $reviewerName, $comment, $findingReviews)
+    {
+        $reviewId = $this->db->table('reviews')->insert(['exp' => $experimentId,'detector' => $detector->id,
+            'project' => $projectId, 'version' => $versionId, 'misuse' => $misuseId, 'name' => $reviewerName,
+            'comment' => $comment]);
+        foreach ($findingReviews as $rank => $findingReview) {
+            $findingId = $this->db->table('review_findings')
+                ->insert(['review' => $reviewId, 'rank' => $rank, 'decision' => $findingReview['hit']]);
+            foreach ($findingReview['types'] as $type) {
+                $this->db->table('review_findings_types')->insert(['review_finding' => $findingId, 'type' => $type]);
+            }
+        }
+    }
 }
