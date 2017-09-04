@@ -38,8 +38,8 @@ $app->group('/stats', function() use ($app, $routesHelper) {
 $app->group('/private', function () use ($app, $routesHelper, $database, $reviewController) {
     $app->get('/', [$routesHelper, 'index']);
     $app->get('/{exp:ex[1-3]}/{detector}', [$routesHelper, 'detector']);
-    $app->get('/{exp:ex[1-3]}/{detector}/{project}/{version}/{misuse}', [$reviewController, 'update']);
-    $app->get('/{exp:ex[1-3]}/{detector}/{project}/{version}/{misuse}/{reviewer}', [$reviewController, 'update']);
+    $app->get('/{exp:ex[1-3]}/{detector}/{project}/{version}/{misuse}', [$reviewController, 'get']);
+    $app->get('/{exp:ex[1-3]}/{detector}/{project}/{version}/{misuse}/{reviewer}', [$reviewController, 'get']);
     $app->group('/stats', function() use ($app, $routesHelper) {
         $app->get('/results', [$routesHelper, 'result_stats']);
         $app->get('/tags', [$routesHelper, 'tag_stats']);
