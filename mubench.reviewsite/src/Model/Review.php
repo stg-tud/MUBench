@@ -67,6 +67,7 @@ class Review
         throw new \RuntimeException("no hit was identified");
     }
 
+    // REFACTOR rename to findings reviews
     private function getReviewFinding($rank){
         foreach ($this->data["finding_reviews"] as $finding_review){
             if(strcmp($finding_review["rank"], $rank) == 0){
