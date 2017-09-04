@@ -4,6 +4,8 @@ use Monolog\Logger;
 use Slim\Http\Request;
 use Slim\Http\Response;
 
+# REFACTOR delete this after migration to controllers
+
 function decodeJsonBody(Request $request) {
     $requestBody = $request->getParsedBody();
     $body = json_decode($requestBody);
