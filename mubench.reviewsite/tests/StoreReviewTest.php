@@ -64,4 +64,13 @@ class StoreReviewTest extends DatabaseTestCase
         self::assertEquals(Decision::NO, $decision);
     }
 
+    function test_stores_violation_types()
+    {
+        $this->reviewController->updateReview('ex2', $this->detector, '-p-', '-v-', '-m-', '-reviewer-', '-comment-', [['hit' => 'Yes', 'types' => ['1']]]);
+
+        $review = $this->reviewController->getReview('ex2', $this->detector, '-p-', '-v-', '-m-', '-reviewer-');
+
+        $actualTypes = $review->getHitViolationTypes(0);
+        self::assertEquals(["missing/call"], $actualTypes);
+    }
 }
