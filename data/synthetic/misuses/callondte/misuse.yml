@@ -1,7 +1,7 @@
 api:
 - javax.swing.JFrame
 characteristics:
-- missing/condition/environment
+- missing/condition/context
 crash: false
 description: >
   Creates swing UI component on the main thread.

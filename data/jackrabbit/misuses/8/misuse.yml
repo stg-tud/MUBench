@@ -1,8 +1,8 @@
 api:
 - java.Boolean
 characteristics:
-- missing/method call
-- superflous/method call
+- missing/call
+- superflous/call
 crash: false
 description: >
   Boolean.parseBoolean() turns a string to a boolean, while Boolean.getBoolean()
