@@ -93,7 +93,9 @@ $app->group('/api/upload', function () use ($app, $settings, $database, $tagCont
             return $response->withStatus(200);
         });
 
+    // REFACTOR migrate to /metadata/{project}/{version}/{misuse}/update
     $app->post('/metadata', [$metadataController, "update"]);
+    // REFACTOR migrate to /reviews/{exp}/{detector}/{project}/{version}/{misuse}/{reviewerName}/update
     $app->post('/review/{exp:ex[1-3]}/{detector}', [$reviewController, "update"]);
 
     $app->post('/delete/snippet/{exp:ex[1-3]}/{detector}',
@@ -109,11 +111,11 @@ $app->group('/api/upload', function () use ($app, $settings, $database, $tagCont
             }
         });
 
-    // REFACTOR migrate this route to /{exp}/{detector}/{project}/{version}/{misuse}/tags/{tagname}/add
+    // REFACTOR migrate this route to /tags/{exp}/{detector}/{project}/{version}/{misuse}/{tagname}/add
     $app->post('/tag', [$tagController, "add"]);
-    // REFACTOR migrate this route to /{exp}/{detector}/{project}/{version}/{misuse}/tags/{tagname}/delete
+    // REFACTOR migrate this route to /tags/{exp}/{detector}/{project}/{version}/{misuse}/{tagname}/delete
     $app->post('/delete/tag', [$tagController, 'delete']);
-
+    
     $app->post('/snippet',
         function (Request $request, Response $response, array $args) use ($database, $settings) {
             $obj = $request->getParsedBody();
