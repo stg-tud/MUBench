@@ -113,7 +113,7 @@ class MetadataController
         $this->updateMetadata($misuseId, $projectId, $versionId, $description, $fix, $location, $violationTypes, $patterns, $targetSnippets);
     }
 
-    private function updateMetadata($misuseId, $projectId, $versionId, $description, $fix, $location, $violationTypes, $patterns, $targetSnippets)
+    function updateMetadata($misuseId, $projectId, $versionId, $description, $fix, $location, $violationTypes, $patterns, $targetSnippets)
     {
         $this->deleteMetadata($misuseId);
         $this->saveMetadata($projectId, $versionId, $misuseId, $description, $fix, $location);
