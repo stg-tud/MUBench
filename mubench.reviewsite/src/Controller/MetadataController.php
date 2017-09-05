@@ -92,7 +92,7 @@ class MetadataController
             $patterns = $misuseMetadata['patterns'];
             $targetSnippets = $misuseMetadata['target_snippets'];
 
-            $this->updateMetadata($misuseId, $projectId, $versionId, $description, $fix, $location, $violationTypes, $patterns, $targetSnippets);
+            $this->updateMetadata($projectId, $versionId, $misuseId, $description, $fix, $location, $violationTypes, $patterns, $targetSnippets);
         }
         return $response->withStatus(200);
     }
@@ -110,10 +110,10 @@ class MetadataController
         $patterns = $misuseMetadata['patterns'];
         $targetSnippets = $misuseMetadata['target_snippets'];
 
-        $this->updateMetadata($misuseId, $projectId, $versionId, $description, $fix, $location, $violationTypes, $patterns, $targetSnippets);
+        $this->updateMetadata($projectId, $versionId, $misuseId, $description, $fix, $location, $violationTypes, $patterns, $targetSnippets);
     }
 
-    function updateMetadata($misuseId, $projectId, $versionId, $description, $fix, $location, $violationTypes, $patterns, $targetSnippets)
+    function updateMetadata($projectId, $versionId, $misuseId, $description, $fix, $location, $violationTypes, $patterns, $targetSnippets)
     {
         $this->deleteMetadata($misuseId);
         $this->saveMetadata($projectId, $versionId, $misuseId, $description, $fix, $location);

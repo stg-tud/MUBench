@@ -137,11 +137,11 @@ class StoreFindingsTest extends DatabaseTestCase
 
     function test_get_misuse_ex1(){
         $metadataController = new MetadataController($this->db, $this->logger);
-        $metadataController->updateMetadata('-m-', '-p-', '-v-', '-desc-',
+        // SMELL currently, this test depends on a pattern in the metadata, because otherwise the metadata is not
+        // found for ex1. This should not be necessary anymore, once the findings controller is separated.
+        $metadataController->updateMetadata('-p-', '-v-', '-m-', '-desc-',
             ['diff-url' => '-diff-', 'description' => '-fix-desc-'],
             ['file' => '-file-location-', 'method' => '-method-location-'], [],
-            // SMELL currently, this test depends on a pattern being present, because otherwise the metadata is not
-            // found. This should not be necessary anymore, once the findings controller is separated.
             [['id' => '-p1-', 'snippet' => ['code' => '-code-', 'first_line' => 42]]], []);
 
         $findingsUploader = new FindingsUploader($this->db, $this->logger);

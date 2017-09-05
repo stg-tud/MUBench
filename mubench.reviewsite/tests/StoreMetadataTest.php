@@ -13,7 +13,7 @@ class StoreMetadataTest extends DatabaseTestCase
         $detector = $this->db->getOrCreateDetector('-d-');
         $metadataController = new MetadataController($this->db, $this->logger);
 
-        $metadataController->updateMetadata('-m-', '-p-', '-v-', '-desc-',
+        $metadataController->updateMetadata('-p-', '-v-', '-m-', '-desc-',
             ['diff-url' => '-diff-', 'description' => '-fix-desc-'],
             ['file' => '-file-location-', 'method' => '-method-location-'],
             ['missing/call'],
