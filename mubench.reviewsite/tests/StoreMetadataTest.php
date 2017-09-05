@@ -18,7 +18,7 @@ class StoreMetadataTest extends DatabaseTestCase
     {
         parent::setUp();
         $this->detector = $this->db->getOrCreateDetector('-d-');
-        $tagController = new TagController($this->db, $this->logger, '-site-base-url');
+        $tagController = new MisuseTagsController($this->db, $this->logger, '-site-base-url');
         $this->metadataController = new MetadataController($this->db, $this->logger, $tagController);
     }
 

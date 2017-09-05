@@ -7,7 +7,7 @@ use MuBench\ReviewSite\Controller\ReviewController;
 use MuBench\ReviewSite\Controller\ReviewUploader;
 use MuBench\ReviewSite\Controller\SnippetUploader;
 use MuBench\ReviewSite\Controller\DownloadController;
-use MuBench\ReviewSite\Controller\TagController;
+use MuBench\ReviewSite\Controller\MisuseTagsController;
 use MuBench\ReviewSite\DBConnection;
 use MuBench\ReviewSite\DirectoryHelper;
 use MuBench\ReviewSite\Model\Experiment;
@@ -22,7 +22,7 @@ $database = $app->getContainer()['database'];
 $renderer = $app->getContainer()['renderer'];
 // REFACTOR rename RoutesHelper to ResultsViewController
 $routesHelper = new RoutesHelper($database, $renderer, $logger, $settings['upload'], $settings['site_base_url'], $settings['default_ex2_review_size']);
-$tagController = new TagController($database, $logger, $settings["site_base_url"]);
+$tagController = new MisuseTagsController($database, $logger, $settings["site_base_url"]);
 $downloadController = new DownloadController($database, $logger, $settings['default_ex2_review_size']);
 $metadataController = new MetadataController($database, $logger, $tagController);
 $reviewController = new ReviewController($settings["site_base_url"], $settings["upload"], $database, $renderer, $metadataController);

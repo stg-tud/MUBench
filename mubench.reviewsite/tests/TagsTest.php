@@ -7,7 +7,7 @@ use MuBench\ReviewSite\Model\Detector;
 
 class TagTest extends DatabaseTestCase
 {
-    /** @var TagController */
+    /** @var MisuseTagsController */
     private $tagController;
 
     /** @var Detector */
@@ -16,7 +16,7 @@ class TagTest extends DatabaseTestCase
     function setUp()
     {
         parent::setUp();
-        $this->tagController = new TagController($this->db, $this->logger, "-site-base-url-");
+        $this->tagController = new MisuseTagsController($this->db, $this->logger, "-site-base-url-");
         $this->detector = $this->db->getOrCreateDetector('-d-');
     }
 

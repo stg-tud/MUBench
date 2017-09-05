@@ -5,7 +5,7 @@ require_once "DatabaseTestCase.php";
 use MuBench\ReviewSite\Controller\FindingsUploader;
 use MuBench\ReviewSite\Controller\MetadataController;
 use MuBench\ReviewSite\Controller\SnippetUploader;
-use MuBench\ReviewSite\Controller\TagController;
+use MuBench\ReviewSite\Controller\MisuseTagsController;
 use MuBench\ReviewSite\Model\Misuse;
 
 class StoreFindingsTest extends DatabaseTestCase
@@ -137,7 +137,7 @@ class StoreFindingsTest extends DatabaseTestCase
     }
 
     function test_get_misuse_ex1(){
-        $tagController = new TagController($this->db, $this->logger, '-site-base-url');
+        $tagController = new MisuseTagsController($this->db, $this->logger, '-site-base-url');
         $metadataController = new MetadataController($this->db, $this->logger, $tagController);
         // SMELL currently, this test depends on a pattern in the metadata, because otherwise the metadata is not
         // found for ex1. This should not be necessary anymore, once the findings controller is separated.

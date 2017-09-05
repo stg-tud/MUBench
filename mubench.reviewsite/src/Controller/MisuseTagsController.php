@@ -8,7 +8,7 @@ use MuBench\ReviewSite\Model\Detector;
 use Slim\Http\Request;
 use Slim\Http\Response;
 
-class TagController
+class MisuseTagsController
 {
 
     private $db;

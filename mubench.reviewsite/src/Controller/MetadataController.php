@@ -14,10 +14,10 @@ class MetadataController
     private $db;
     /** @var Logger */
     private $logger;
-    /** @var TagController */
+    /** @var MisuseTagsController */
     private $tagController;
 
-    function __construct(DBConnection $db, Logger $logger, TagController $tagController)
+    function __construct(DBConnection $db, Logger $logger, MisuseTagsController $tagController)
     {
         $this->db = $db;
         $this->logger = $logger;
