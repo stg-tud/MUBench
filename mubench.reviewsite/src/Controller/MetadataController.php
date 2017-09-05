@@ -97,22 +97,6 @@ class MetadataController
         return $response->withStatus(200);
     }
 
-    // REFACTOR remove this, once it is no longer used
-    public function processMetaData($misuseMetadata)
-    {
-        $projectId = $misuseMetadata['project'];
-        $versionId = $misuseMetadata['version'];
-        $misuseId = $misuseMetadata['misuse'];
-        $description = $misuseMetadata['description'];
-        $fix = $misuseMetadata['fix'];
-        $location = $misuseMetadata['location'];
-        $violationTypes = $misuseMetadata['violation_types'];
-        $patterns = $misuseMetadata['patterns'];
-        $targetSnippets = $misuseMetadata['target_snippets'];
-
-        $this->updateMetadata($projectId, $versionId, $misuseId, $description, $fix, $location, $violationTypes, $patterns, $targetSnippets);
-    }
-
     function updateMetadata($projectId, $versionId, $misuseId, $description, $fix, $location, $violationTypes, $patterns, $targetSnippets)
     {
         $this->deleteMetadata($misuseId);
