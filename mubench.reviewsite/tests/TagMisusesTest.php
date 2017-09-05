@@ -5,7 +5,7 @@ namespace MuBench\ReviewSite\Controller;
 use DatabaseTestCase;
 use MuBench\ReviewSite\Model\Detector;
 
-class TagTest extends DatabaseTestCase
+class TagMisusesTest extends DatabaseTestCase
 {
     /** @var MisuseTagsController */
     private $tagController;
