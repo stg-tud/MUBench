@@ -5,22 +5,33 @@ namespace MuBench\ReviewSite\Controller;
 require_once "DatabaseTestCase.php";
 
 use DatabaseTestCase;
+use MuBench\ReviewSite\Model\Detector;
 
 class StoreMetadataTest extends DatabaseTestCase
 {
+    /** @var MetadataController */
+    private $metadataController;
+    /** @var Detector */
+    private $detector;
+
+    function setUp()
+    {
+        parent::setUp();
+        $this->detector = $this->db->getOrCreateDetector('-d-');
+        $tagController = new TagController($this->db, $this->logger, '-site-base-url');
+        $this->metadataController = new MetadataController($this->db, $this->logger, $tagController);
+    }
+
     function test_store_metadata()
     {
-        $detector = $this->db->getOrCreateDetector('-d-');
-        $metadataController = new MetadataController($this->db, $this->logger);
-
-        $metadataController->updateMetadata('-p-', '-v-', '-m-', '-desc-',
+        $this->metadataController->updateMetadata('-p-', '-v-', '-m-', '-desc-',
             ['diff-url' => '-diff-', 'description' => '-fix-desc-'],
             ['file' => '-file-location-', 'method' => '-method-location-'],
             ['missing/call'],
             [['id' => '-p1-', 'snippet' => ['code' => '-pattern-code-', 'first_line' => 42]]],
             [['code' => '-target-snippet-code-', 'first_line_number' => 273]]);
 
-        $metadata = $metadataController->getMetadata('ex1', $detector, '-p-', '-v-', '-m-');
+        $metadata = $this->metadataController->getMetadata('ex1', $this->detector, '-p-', '-v-', '-m-');
 
         self::assertEquals([
             'project' => '-p-',
@@ -41,10 +52,7 @@ class StoreMetadataTest extends DatabaseTestCase
 
     function test_e2_metadata()
     {
-        $detector = $this->db->getOrCreateDetector('-d-');
-        $metadataController = new MetadataController($this->db, $this->logger);
-
-        $metadata = $metadataController->getMetadata('ex2', $detector, '-p-', '-v-', '-m-');
+        $metadata = $this->metadataController->getMetadata('ex2', $this->detector, '-p-', '-v-', '-m-');
 
         self::assertEquals([
             'project' => '-p-',

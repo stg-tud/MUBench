@@ -10,14 +10,18 @@ use Slim\Http\Response;
 
 class MetadataController
 {
-
+    /** @var DBConnection */
     private $db;
+    /** @var Logger */
     private $logger;
+    /** @var TagController */
+    private $tagController;
 
-    function __construct(DBConnection $db, Logger $logger)
+    function __construct(DBConnection $db, Logger $logger, TagController $tagController)
     {
         $this->db = $db;
         $this->logger = $logger;
+        $this->tagController = $tagController;
     }
 
     // REFACTOR retrieving metadata should not depend on an experiment or a detector. The metadata is global.
@@ -46,7 +50,7 @@ class MetadataController
         }
 
         $metadata['snippets'] = $this->getSnippets($experimentId, $detector, $projectId, $versionId, $misuseId);
-        $metadata['tags'] = $this->getTags($experimentId, $detector, $projectId, $versionId, $misuseId);
+        $metadata['tags'] = $this->tagController->getTags($experimentId, $detector, $projectId, $versionId, $misuseId);
 
         return $metadata;
     }
@@ -69,14 +73,6 @@ class MetadataController
                 ->where('project', $projectId)->where('version', $versionId)->where('finding', $misuseId);
         }
         return $query->select($columns)->get();
-    }
-
-    // REFACTOR move this into a tags helper, together with the logic for adding/removing tags
-    private function getTags($experimentId, Detector $detector, $projectId, $versionId, $misuseId)
-    {
-        return $this->db->table('misuse_tags')->innerJoin('tags', 'misuse_tags.tag', '=', 'tags.id')
-            ->select('id', 'name')->where('exp', $experimentId)->where('detector', $detector->id)
-            ->where('project', $projectId)->where('version', $versionId)->where('misuse', $misuseId)->get();
     }
 
     public function update(Request $request, Response $response, array $args)

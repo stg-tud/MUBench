@@ -24,7 +24,7 @@ $renderer = $app->getContainer()['renderer'];
 $routesHelper = new RoutesHelper($database, $renderer, $logger, $settings['upload'], $settings['site_base_url'], $settings['default_ex2_review_size']);
 $tagController = new TagController($database, $logger, $settings["site_base_url"]);
 $downloadController = new DownloadController($database, $logger, $settings['default_ex2_review_size']);
-$metadataController = new MetadataController($database, $logger);
+$metadataController = new MetadataController($database, $logger, $tagController);
 $reviewController = new ReviewController($settings["site_base_url"], $settings["upload"], $database, $renderer, $metadataController);
 
 $app->get('/', [$routesHelper, 'index']);

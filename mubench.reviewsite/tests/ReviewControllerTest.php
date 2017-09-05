@@ -24,7 +24,8 @@ class ReviewControllerTest extends DatabaseTestCase
     {
         parent::setUp();
         $this->detector = $this->db->getOrCreateDetector('-d-');
-        $metadataController = new MetadataController($this->db, $this->logger);
+        $tagController = new TagController($this->db, $this->logger, '-site-base-url-');
+        $metadataController = new MetadataController($this->db, $this->logger, $tagController);
         $renderer = new PhpRenderer();
         $this->reviewController = new ReviewController('', '', $this->db, $renderer, $metadataController);
     }
