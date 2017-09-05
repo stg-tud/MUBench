@@ -38,7 +38,7 @@ class MetadataController
                 $metadata['patterns'] = $this->getPatterns($misuseId);
             }
         } else { // if ($experimentId === 'ex2')
-            $metadata = ['misuse' => $misuseId];
+            $metadata = ['project' => $projectId, 'version' => $versionId, 'misuse' => $misuseId];
         }
 
         $metadata['snippets'] = $this->getSnippets($experimentId, $detector, $projectId, $versionId, $misuseId);

@@ -39,4 +39,20 @@ class StoreMetadataTest extends DatabaseTestCase
         ], $metadata);
     }
 
+    function test_e2_metadata()
+    {
+        $detector = $this->db->getOrCreateDetector('-d-');
+        $metadataController = new MetadataController($this->db, $this->logger);
+
+        $metadata = $metadataController->getMetadata('ex2', $detector, '-p-', '-v-', '-m-');
+
+        self::assertEquals([
+            'project' => '-p-',
+            'version' => '-v-',
+            'misuse' => '-m-',
+            'snippets' => [],
+            'tags' => []
+        ], $metadata);
+    }
+
 }
