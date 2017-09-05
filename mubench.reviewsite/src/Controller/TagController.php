@@ -4,38 +4,55 @@ namespace MuBench\ReviewSite\Controller;
 
 use Monolog\Logger;
 use MuBench\ReviewSite\DBConnection;
+use MuBench\ReviewSite\Model\Detector;
+use Slim\Http\Request;
+use Slim\Http\Response;
 
 class TagController
 {
 
     private $db;
     private $logger;
+    private $site_base_url;
 
-    function __construct(DBConnection $db, Logger $logger)
+    function __construct(DBConnection $db, Logger $logger, $site_base_url)
     {
         $this->db = $db;
         $this->logger = $logger;
+        $this->site_base_url = $site_base_url;
     }
 
-    public function saveTagForMisuse($misuse)
+    public function add(Request $request, Response $response, array $args) {
+        $formData = $request->getParsedBody();
+        $experimentId = $formData['exp'];
+        $detectorId = $formData['detector'];
+        $projectId = $formData['project'];
+        $versionId = $formData['version'];
+        $misuseId = $formData['misuse'];
+        $tagName = $formData['tag'];
+        $this->addTag($experimentId, $detectorId, $projectId, $versionId, $misuseId, $tagName);
+        return $this->redirectBack($response, $formData);
+    }
+
+    public function getTags($experimentId, Detector $detector, $projectId, $versionId, $misuseId)
     {
-        $tag = $this->getOrCreateTag($misuse['tag']);
-        $tag_id = $tag['id'];
-        $experiment = $misuse['exp'];
-        $detector = $misuse['detector'];
-        $project = $misuse['project'];
-        $version = $misuse['version'];
-        $misuse_id = $misuse['misuse'];
-        $this->logger->info("saving tag $tag_id for $experiment, $detector, $project, $version, $misuse_id");
-        $misuse_tags = $this->db->getTagsForMisuse($experiment, $detector, $project, $version, $misuse_id);
-        foreach ($misuse_tags as $misuse_tag) {
-            if ($tag_id === $misuse_tag['id']) {
-                return;
-            }
+        return $this->db->table('misuse_tags')->innerJoin('tags', 'misuse_tags.tag', '=', 'tags.id')
+            ->select('id', 'name')->where('exp', $experimentId)->where('detector', $detector->id)
+            ->where('project', $projectId)->where('version', $versionId)->where('misuse', $misuseId)->get();
+    }
+
+    function addTag($experimentId, $detectorId, $projectId, $versionId, $misuseId, $tagName)
+    {
+        $tag = $this->getOrCreateTag($tagName);
+        $this->logger->info("Tag $experimentId, $detectorId, $projectId, $versionId, $misuseId with {$tag['id']}:{$tag['name']}");
+        // SMELL this should be implemented with insertIgnore or insertOrUpdate, but the SQLite database in the tests can't handle this
+        $tagExists = $this->db->table('misuse_tags')->select('COUNT(*)')->innerJoin('tags', 'misuse_tags.tag', '=', 'tags.id')
+            ->where('exp', $experimentId)->where('detector', $detectorId)->where('project', $projectId)
+            ->where('version', $versionId)->where('misuse', $misuseId)->where('name', $tagName)->first();
+        if (!$tagExists) {
+            $this->db->table('misuse_tags')->insert(['exp' => $experimentId, 'detector' => $detectorId,
+                'project' => $projectId, 'version' => $versionId, 'misuse' => $misuseId, 'tag' => $tag['id']]);
         }
-        $this->db->table('misuse_tags')->insert(['exp' => $experiment, 'detector' => $detector,
-            'project' => $project,
-            'version' => $version, 'misuse' => $misuse_id, 'tag' => $tag_id]);
     }
 
     public function deleteMisuseTag($misuse)
@@ -64,6 +81,11 @@ class TagController
     private function saveNewTag($name)
     {
         $this->db->table('tags')->insert(['name' => $name]);
+    }
+
+    private function redirectBack(Response $response, $formData)
+    {
+        return $response->withRedirect("{$this->site_base_url}index.php/{$formData['path']}");
     }
 
 }

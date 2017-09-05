@@ -298,8 +298,12 @@ class DBConnection
         return $this->table('tags')->get();
     }
 
+    /**
+     * @return array
+     */
     public function getTagsForMisuse($experiment, $detector, $project, $version, $misuse)
     {
+        /** @noinspection PhpIncompatibleReturnTypeInspection */
         return $this->table('misuse_tags')->innerJoin('tags', 'misuse_tags.tag', '=', 'tags.id')->select('id', 'name')->where('exp', $experiment)->where('detector', $detector)
             ->where('project', $project)->where('version', $version)->where('misuse', $misuse)->get();
     }

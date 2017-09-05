@@ -22,6 +22,7 @@ $database = $app->getContainer()['database'];
 $renderer = $app->getContainer()['renderer'];
 // REFACTOR rename RoutesHelper to ResultsViewController
 $routesHelper = new RoutesHelper($database, $renderer, $logger, $settings['upload'], $settings['site_base_url'], $settings['default_ex2_review_size']);
+$tagController = new TagController($database, $logger, $settings["site_base_url"]);
 $downloadController = new DownloadController($database, $logger, $settings['default_ex2_review_size']);
 $metadataController = new MetadataController($database, $logger);
 $reviewController = new ReviewController($settings["site_base_url"], $settings["upload"], $database, $renderer, $metadataController);
@@ -56,7 +57,7 @@ $app->group('/download', function () use ($app, $downloadController, $database) 
 });
 
 
-$app->group('/api/upload', function () use ($app, $settings, $database, $metadataController, $reviewController) {
+$app->group('/api/upload', function () use ($app, $settings, $database, $tagController, $metadataController, $reviewController) {
     $app->post('/[{experiment:ex[1-3]}]',
         function (Request $request, Response $response, array $args) use ($settings, $database) {
             $experiment = $args['experiment'];
@@ -109,10 +110,9 @@ $app->group('/api/upload', function () use ($app, $settings, $database, $metadat
         });
 
     $app->post('/delete/tag',
-        function (Request $request, Response $response, array $args) use ($database, $settings) {
+        function (Request $request, Response $response, array $args) use ($database, $settings, $tagController) {
             $obj = $request->getParsedBody();
-            $controller = new TagController($database, $this->logger);
-            $controller->deleteMisuseTag($obj);
+            $tagController->deleteMisuseTag($obj);
             return $response->withRedirect("{$settings['site_base_url']}index.php/{$obj['path']}");
         });
 
@@ -124,12 +124,6 @@ $app->group('/api/upload', function () use ($app, $settings, $database, $metadat
             return $response->withRedirect("{$settings['site_base_url']}index.php/{$obj['path']}");
         });
 
-    $app->post('/tag',
-        function (Request $request, Response $response, array $args) use ($database, $settings) {
-            $obj = $request->getParsedBody();
-            $controller = new TagController($database, $this->logger);
-            $controller->saveTagForMisuse($obj);
-            return $response->withRedirect("{$settings['site_base_url']}index.php/{$obj['path']}");
-        });
+    $app->post('/tag', [$tagController, "add"]);
 
 });
