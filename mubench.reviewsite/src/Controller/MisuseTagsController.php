@@ -79,18 +79,22 @@ class MisuseTagsController
             ->where('tag', $tag['id'])->delete();
     }
 
-    private function getOrCreateTag($name)
+    private function getOrCreateTag($tagName)
     {
-        $tag = $this->db->table('tags')->where('name', $name)->get();
-        if (!$tag) {
-            $this->saveNewTag($name);
+        if (!$this->getTag($tagName)) {
+            $this->createTag($tagName);
         }
-        return $this->db->table('tags')->where('name', $name)->first();
+        return $this->getTag($tagName);
     }
 
-    private function saveNewTag($name)
+    private function getTag($tagName)
     {
-        $this->db->table('tags')->insert(['name' => $name]);
+        return $this->db->table('tags')->where('name', $tagName)->first();
+    }
+
+    private function createTag($tagName)
+    {
+        $this->db->table('tags')->insert(['name' => $tagName]);
     }
 
     private function redirectBack(Response $response, $formData)
