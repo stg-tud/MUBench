@@ -136,14 +136,39 @@ class StoreFindingsTest extends DatabaseTestCase
     }
 
     function test_get_misuse_ex1(){
-        $finding_uploader = new FindingsUploader($this->db, $this->logger);
-        $metadata_uploader = new MetadataController($this->db, $this->logger);
+        $metadataController = new MetadataController($this->db, $this->logger);
+        $metadataController->updateMetadata('-m-', '-p-', '-v-', '-desc-',
+            ['diff-url' => '-diff-', 'description' => '-fix-desc-'],
+            ['file' => '-file-location-', 'method' => '-method-location-'], [],
+            // SMELL currently, this test depends on a pattern being present, because otherwise the metadata is not
+            // found. This should not be necessary anymore, once the findings controller is separated.
+            [['id' => '-p1-', 'snippet' => ['code' => '-code-', 'first_line' => 42]]], []);
 
-        $data = json_decode($this->finding_json);
-        $metadata = json_decode($this->metadata_json, true);
-        $finding_uploader->processData("ex1", $data);
-        $metadata_uploader->processMetaData($metadata);
-        $detector = $this->db->getOrCreateDetector("-d-");
+        $findingsUploader = new FindingsUploader($this->db, $this->logger);
+        $findingsUploader->processData("ex1", json_decode(<<<EOT
+    {
+        "detector": "-d-",
+        "project": "-p-",
+        "version": "-v-",
+        "result": "success",
+        "runtime": 42.1,
+        "number_of_findings": 23,
+        "potential_hits": [
+            {
+                "misuse": "-m-",
+                "rank": 0,
+                "target_snippets": [
+                    {"first_line_number": 5, "code": "-code-"}
+                ],
+                "custom1": "-val1-",
+                "custom2": "-val2-"
+            }
+        ]
+    }
+EOT
+        ));
+
+        $detector = $this->db->getDetector("-d-");
         $misuse = $this->db->getMisuse("ex1", $detector, "-p-", "-v-", "-m-");
 
         $expected_misuse = new Misuse(
@@ -152,13 +177,15 @@ class StoreFindingsTest extends DatabaseTestCase
                 'project' => '-p-',
                 'version' => '-v-',
                 'description' => '-desc-',
-                'fix_description' => '-fix-desc-',
-                'violation_types' => [0 => 'superfluous/condition/null_check'],
-                'file' => '-f-',
-                'method' => '-method-',
                 'diff_url' => '-diff-',
-                'snippets' => [['line' => '273', 'snippet' => '-code-']],
-                'patterns' => [['name' => '-p-id-','code' => '-pattern-code-','line' => '1']],
+                'fix_description' => '-fix-desc-',
+                'violation_types' => [],
+                'file' => '-file-location-',
+                'method' => '-method-location-',
+                'snippets' => [],
+                'patterns' => [
+                    ['name' => '-p1-', 'code' => '-code-', 'line' => 42]
+                ],
                 'tags' => []
             ],
             [[
