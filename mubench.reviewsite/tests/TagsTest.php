@@ -29,8 +29,8 @@ class TagTest extends DatabaseTestCase
     {
         $this->db->table('tags')->insert(['name' => 'test1']);
         $this->tagController->addTag('ex1', 1, '-project-', '-version-', '-misuse-', 'test1');
-        $misuseTags = $this->db->getTagsForMisuse('ex1', 1, "-project-", "-version-", "-misuse-");
 
+        $misuseTags = $this->tagController->getTags('ex1', 1, "-project-", "-version-", "-misuse-");
         self::assertEquals([['id' => 1, 'name' => 'test1']], $misuseTags);
     }
 
@@ -48,7 +48,7 @@ class TagTest extends DatabaseTestCase
             "misuse" => "-misuse-"
         ]);
 
-        $misuseTags = $this->db->getTagsForMisuse('ex1', 1, "-project-", "-version-", "-misuse-");
+        $misuseTags = $this->tagController->getTags('ex1', 1, "-project-", "-version-", "-misuse-");
         self::assertEquals([], $misuseTags);
     }
 
@@ -59,7 +59,7 @@ class TagTest extends DatabaseTestCase
 
         $this->tagController->addTag('ex1', 1, '-project-', '-version-', '-misuse-', 'test1');
 
-        $misuseTags = $this->db->getTagsForMisuse('ex1', 1, "-project-", "-version-", "-misuse-");
+        $misuseTags = $this->tagController->getTags('ex1', 1, "-project-", "-version-", "-misuse-");
         self::assertEquals(1, count($misuseTags));
     }
 
@@ -67,7 +67,7 @@ class TagTest extends DatabaseTestCase
     {
         $this->tagController->addTag('ex1', 1, '-project-', '-version-', '-misuse-', 'unknown_tag');
 
-        $misuse_tags = $this->db->getTagsForMisuse('ex1', 1, "-project-", "-version-", "-misuse-");
+        $misuse_tags = $this->tagController->getTags('ex1', 1, "-project-", "-version-", "-misuse-");
         self::assertEquals([['id' => 1, 'name' => 'unknown_tag']], $misuse_tags);
     }
 }

@@ -34,10 +34,14 @@ class TagController
         return $this->redirectBack($response, $formData);
     }
 
-    public function getTags($experimentId, Detector $detector, $projectId, $versionId, $misuseId)
+    /**
+     * @return array
+     */
+    public function getTags($experimentId, $detectorId, $projectId, $versionId, $misuseId)
     {
+        /** @noinspection PhpIncompatibleReturnTypeInspection */
         return $this->db->table('misuse_tags')->innerJoin('tags', 'misuse_tags.tag', '=', 'tags.id')
-            ->select('id', 'name')->where('exp', $experimentId)->where('detector', $detector->id)
+            ->select('id', 'name')->where('exp', $experimentId)->where('detector', $detectorId)
             ->where('project', $projectId)->where('version', $versionId)->where('misuse', $misuseId)->get();
     }
 
