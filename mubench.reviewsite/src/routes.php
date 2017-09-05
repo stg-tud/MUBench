@@ -109,7 +109,9 @@ $app->group('/api/upload', function () use ($app, $settings, $database, $tagCont
             }
         });
 
+    // REFACTOR migrate this route to /{exp}/{detector}/{project}/{version}/{misuse}/tags/{tagname}/add
     $app->post('/tag', [$tagController, "add"]);
+    // REFACTOR migrate this route to /{exp}/{detector}/{project}/{version}/{misuse}/tags/{tagname}/delete
     $app->post('/delete/tag', [$tagController, 'delete']);
 
     $app->post('/snippet',
