@@ -22,27 +22,27 @@ class MetadataController
 
     function getMetadata($experimentId, Detector $detector, $projectId, $versionId, $misuseId)
     {
-        if ($experimentId === "ex1" || $experimentId === "ex3") {
+        if ($experimentId === 'ex1' || $experimentId === 'ex3') {
             $metadata = $this->db->table('metadata')
                 ->where('project', $projectId)->where('version', $versionId)->where('misuse', $misuseId)->first();
 
             $types = $this->db->table('misuse_types')->select('types.name')
                 ->innerJoin('types', 'misuse_types.type', '=', 'types.id')->where('project', $projectId)
                 ->where('version', $versionId)->where('misuse', $misuseId)->get();
-            $metadata["violation_types"] = [];
+            $metadata['violation_types'] = [];
             foreach($types as $type){
-                $metadata["violation_types"][] = $type['name'];
+                $metadata['violation_types'][] = $type['name'];
             }
 
-            if($experimentId === "ex1") {
-                $metadata["patterns"] = $this->getPatterns($misuseId);
+            if($experimentId === 'ex1') {
+                $metadata['patterns'] = $this->getPatterns($misuseId);
             }
-        } else { // if ($experimentId === "ex2")
-            $metadata = ["misuse" => $misuseId];
+        } else { // if ($experimentId === 'ex2')
+            $metadata = ['misuse' => $misuseId];
         }
 
-        $metadata["snippets"] = $this->getSnippets($experimentId, $detector, $projectId, $versionId, $misuseId);
-        $metadata["tags"] = $this->getTags($experimentId, $detector, $projectId, $versionId, $misuseId);
+        $metadata['snippets'] = $this->getSnippets($experimentId, $detector, $projectId, $versionId, $misuseId);
+        $metadata['tags'] = $this->getTags($experimentId, $detector, $projectId, $versionId, $misuseId);
 
         return $metadata;
     }
@@ -56,10 +56,10 @@ class MetadataController
     private function getSnippets($experimentId, Detector $detector, $projectId, $versionId, $misuseId)
     {
         $columns = ['line', 'snippet'];
-        if ($experimentId === "ex1" || $experimentId === "ex3") {
+        if ($experimentId === 'ex1' || $experimentId === 'ex3') {
             $query = $this->db->table('meta_snippets')
                 ->where('project', $projectId)->where('version', $versionId)->where('misuse', $misuseId);
-        } else { // if ($experimentId === "ex2")
+        } else { // if ($experimentId === 'ex2')
             $columns[] = 'id'; // SMELL meta_findings do not have an id
             $query = $this->db->table('finding_snippets')->where('detector', $detector->id)
                 ->where('project', $projectId)->where('version', $versionId)->where('finding', $misuseId);
@@ -79,7 +79,7 @@ class MetadataController
     {
         $metadata = $this->decodeJsonBody($request);
         if (!$metadata) {
-            return $this->respondWithError($response, $this->logger, 400, "empty: " . print_r($request->getBody(), true));
+            return $this->respondWithError($response, $this->logger, 400, 'empty: ' . print_r($request->getBody(), true));
         }
         foreach ($metadata as $misuseMetadata) {
             $projectId = $misuseMetadata['project'];
@@ -183,7 +183,7 @@ class MetadataController
         if ($body) return $body;
         $body = json_decode($request->getBody(), true);
         if ($body) return $body;
-        $body = json_decode($_POST["data"], true);
+        $body = json_decode($_POST['data'], true);
         return $body;
     }
 
