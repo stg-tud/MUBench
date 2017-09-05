@@ -25,36 +25,34 @@ class TagController
     public function add(Request $request, Response $response, array $args) {
         $formData = $request->getParsedBody();
         $experimentId = $formData['exp'];
-        $detectorId = $formData['detector'];
+        $detector = $this->db->getDetector($formData['detector']);
         $projectId = $formData['project'];
         $versionId = $formData['version'];
         $misuseId = $formData['misuse'];
         $tagName = $formData['tag'];
-        $this->addTag($experimentId, $detectorId, $projectId, $versionId, $misuseId, $tagName);
+        $this->addTag($experimentId, $detector, $projectId, $versionId, $misuseId, $tagName);
         return $this->redirectBack($response, $formData);
     }
 
-    /**
-     * @return array
-     */
-    public function getTags($experimentId, $detectorId, $projectId, $versionId, $misuseId)
+    public function getTags($experimentId, Detector $detector, $projectId, $versionId, $misuseId)
     {
-        /** @noinspection PhpIncompatibleReturnTypeInspection */
-        return $this->db->table('misuse_tags')->innerJoin('tags', 'misuse_tags.tag', '=', 'tags.id')
-            ->select('id', 'name')->where('exp', $experimentId)->where('detector', $detectorId)
+        /** @var array $stdClass */
+        $stdClass = $this->db->table('misuse_tags')->innerJoin('tags', 'misuse_tags.tag', '=', 'tags.id')
+            ->select('id', 'name')->where('exp', $experimentId)->where('detector', $detector->id)
             ->where('project', $projectId)->where('version', $versionId)->where('misuse', $misuseId)->get();
+        return $stdClass;
     }
 
-    function addTag($experimentId, $detectorId, $projectId, $versionId, $misuseId, $tagName)
+    function addTag($experimentId, Detector $detector, $projectId, $versionId, $misuseId, $tagName)
     {
         $tag = $this->getOrCreateTag($tagName);
-        $this->logger->info("Tag $experimentId, $detectorId, $projectId, $versionId, $misuseId with {$tag['id']}:{$tag['name']}");
+        $this->logger->info("Tag $experimentId, $detector, $projectId, $versionId, $misuseId with {$tag['id']}:{$tag['name']}");
         // SMELL this should be implemented with insertIgnore or insertOrUpdate, but the SQLite database in the tests can't handle this
         $tagExists = $this->db->table('misuse_tags')->select('COUNT(*)')->innerJoin('tags', 'misuse_tags.tag', '=', 'tags.id')
-            ->where('exp', $experimentId)->where('detector', $detectorId)->where('project', $projectId)
+            ->where('exp', $experimentId)->where('detector', $detector->id)->where('project', $projectId)
             ->where('version', $versionId)->where('misuse', $misuseId)->where('name', $tagName)->first();
         if (!$tagExists) {
-            $this->db->table('misuse_tags')->insert(['exp' => $experimentId, 'detector' => $detectorId,
+            $this->db->table('misuse_tags')->insert(['exp' => $experimentId, 'detector' => $detector->id,
                 'project' => $projectId, 'version' => $versionId, 'misuse' => $misuseId, 'tag' => $tag['id']]);
         }
     }
