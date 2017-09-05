@@ -20,6 +20,10 @@ class MetadataController
         $this->logger = $logger;
     }
 
+    // REFACTOR retrieving metadata should not depend on an experiment or a detector. The metadata is global.
+    // We should query the metadata table by (project, version, misuse) and return the minimal information if this
+    // returns no result. The snippets should be handled by an independent controller. The tags are not part of the
+    // metadata and should be handled by an independent controller.
     function getMetadata($experimentId, Detector $detector, $projectId, $versionId, $misuseId)
     {
         if ($experimentId === 'ex1' || $experimentId === 'ex3') {
