@@ -57,18 +57,26 @@ class MisuseTagsController
         }
     }
 
-    public function deleteMisuseTag($misuse)
+    public function delete(Request $request, Response $response, array $args)
     {
-        $tag = $misuse['tag'];
-        $experiment = $misuse['exp'];
-        $detector = $misuse['detector'];
-        $project = $misuse['project'];
-        $version = $misuse['version'];
-        $misuse_id = $misuse['misuse'];
-        $this->logger->info("deleting tag $tag for $detector, $project, $version, $misuse_id");
-        $this->db->table('misuse_tags')->where('exp', $experiment)->where('detector', $detector)
-            ->where('project', $project)->where('version', $version)->where('misuse', $misuse_id)->where('tag', $tag)
-            ->delete();
+        $formData = $request->getParsedBody();
+        $tagName = $formData['tag'];
+        $experimentId = $formData['exp'];
+        $detector = $this->db->getDetector($formData['detector']);
+        $projectId = $formData['project'];
+        $versionId = $formData['version'];
+        $misuseId = $formData['misuse'];
+        $this->deleteTag($experimentId, $detector, $projectId, $versionId, $misuseId, $tagName);
+        return $this->redirectBack($response, $formData);
+    }
+
+    public function deleteTag($experimentId, Detector $detector, $projectId, $versionId, $misuseId, $tagName)
+    {
+        $tag = $this->getOrCreateTag($tagName);
+        $this->logger->info("Remove tag {$tag['id']}:{$tag['name']} from $experimentId, $detector, $projectId, $versionId, $misuseId");
+        $this->db->table('misuse_tags')->where('exp', $experimentId)->where('detector', $detector->id)
+            ->where('project', $projectId)->where('version', $versionId)->where('misuse', $misuseId)
+            ->where('tag', $tag['id'])->delete();
     }
 
     private function getOrCreateTag($name)

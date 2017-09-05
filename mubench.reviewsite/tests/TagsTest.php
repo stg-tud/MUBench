@@ -44,14 +44,7 @@ class TagTest extends DatabaseTestCase
         $this->db->table('tags')->insert(['name' => 'test1']);
         $this->tagController->addTag('ex1', $this->detector, '-project-', '-version-', '-misuse-', 'test1');
 
-        $this->tagController->deleteMisuseTag([
-            "tag" => 1,
-            "exp" => 'ex1',
-            "detector" => 1,
-            "project" => "-project-",
-            "version" => "-version-",
-            "misuse" => "-misuse-"
-        ]);
+        $this->tagController->deleteTag('ex1', $this->detector, '-project-', '-version-', '-misuse-', 'test1');
 
         $misuseTags = $this->tagController->getTags('ex1', $this->detector, "-project-", "-version-", "-misuse-");
         self::assertEquals([], $misuseTags);

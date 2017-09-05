@@ -109,12 +109,8 @@ $app->group('/api/upload', function () use ($app, $settings, $database, $tagCont
             }
         });
 
-    $app->post('/delete/tag',
-        function (Request $request, Response $response, array $args) use ($database, $settings, $tagController) {
-            $obj = $request->getParsedBody();
-            $tagController->deleteMisuseTag($obj);
-            return $response->withRedirect("{$settings['site_base_url']}index.php/{$obj['path']}");
-        });
+    $app->post('/tag', [$tagController, "add"]);
+    $app->post('/delete/tag', [$tagController, 'delete']);
 
     $app->post('/snippet',
         function (Request $request, Response $response, array $args) use ($database, $settings) {
@@ -124,6 +120,5 @@ $app->group('/api/upload', function () use ($app, $settings, $database, $tagCont
             return $response->withRedirect("{$settings['site_base_url']}index.php/{$obj['path']}");
         });
 
-    $app->post('/tag', [$tagController, "add"]);
 
 });
