@@ -82,7 +82,7 @@ def __compute_md5(file: str):
 def post(url: str, data: object, file_paths: List[str] = None, username: str="", password: str=""):
     request = {
         "url": url,
-        "data": json.dumps(data)
+        "data": json.dumps(data, allow_nan=False)
     }
 
     if username:
