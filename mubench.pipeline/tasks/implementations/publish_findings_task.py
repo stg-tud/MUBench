@@ -67,7 +67,7 @@ class PublishFindingsTask(ProjectVersionTask):
             for potential_hits_slice in self.__slice_by_max_files_per_post(potential_hits):
                 post_data_slice = []
                 for potential_hit in potential_hits_slice:
-                    postable_data = self._prepare_post(potential_hit, version_compile)
+                    postable_data = self._prepare_post(potential_hit, version_compile, logger)
                     post_data_slice.append(postable_data)
 
                 file_paths = PublishFindingsTask.get_file_paths(potential_hits_slice)
