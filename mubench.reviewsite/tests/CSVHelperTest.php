@@ -38,6 +38,7 @@ class CSVHelperTest extends TestCase
         $this->no_reviews_misuse = new Misuse(
             ["misuse" => "0"],
             [0 => []],
+            [],
             []
         );
         $this->positive_reviews_misuse = new Misuse(
@@ -53,7 +54,8 @@ class CSVHelperTest extends TestCase
                             'decision' => 'Yes',
                         ]
                     ]
-                ])]
+                ])],
+            []
         );
         $this->resolved_review_misuse = new Misuse(
             ["misuse" => "0"],
@@ -77,7 +79,8 @@ class CSVHelperTest extends TestCase
                             'decision' => 'Yes',
                         ]
                     ]
-                ])]
+                ])],
+            []
         );
     }
 

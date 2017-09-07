@@ -67,11 +67,10 @@ class ReviewController
     function getMisuse($experimentId, Detector $detector, $projectId, $versionId, $misuseId)
     {
         $metadata = $this->metadataController->getMetadata($experimentId, $detector, $projectId, $versionId, $misuseId);
-        // REFACTOR tags should not be a field on metadata, but an independent argument to Misuse. Separate them.
-        $metadata['tags'] = $this->tagsController->getTags($experimentId, $detector, $projectId, $versionId, $misuseId);
         $potential_hits = $this->getPotentialHits($experimentId, $detector, $projectId, $versionId, $misuseId);
+        $tags = $this->tagsController->getTags($experimentId, $detector, $projectId, $versionId, $misuseId);
         // SMELL misuses don't need their review here
-        return new Misuse($metadata, $potential_hits, []);
+        return new Misuse($metadata, $potential_hits, [], $tags);
     }
 
     /**

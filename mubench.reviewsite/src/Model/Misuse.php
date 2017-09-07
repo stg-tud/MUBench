@@ -10,19 +10,25 @@ class Misuse
     private $data;
     private $potential_hits;
     private $reviews;
+    /**
+     * @var array
+     */
+    private $tags;
 
     /**
      * @param array $data
      * @param array $potential_hits
      * @param Review[] $reviews
+     * @param array $tags
      */
-    public function __construct(array $data, array $potential_hits, $reviews)
+    public function __construct(array $data, array $potential_hits, array $reviews, array $tags)
     {
         assert(array_key_exists("misuse", $data), "misuse requires id");
         $this->id = $data["misuse"];
         $this->data = $data;
         $this->potential_hits = $potential_hits;
         $this->reviews = $reviews;
+        $this->tags = $tags;
     }
 
     public function getProject()
@@ -66,12 +72,12 @@ class Misuse
 
     public function getTags()
     {
-        return $this->data['tags'];
+        return $this->tags;
     }
 
     public function hasTags()
     {
-        return !empty($this->data['tags']);
+        return !empty($this->getTags());
     }
 
     public function getFile(){
