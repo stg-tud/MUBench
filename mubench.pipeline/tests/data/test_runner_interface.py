@@ -4,7 +4,7 @@ from distutils.version import StrictVersion
 from os.path import join
 from tempfile import mkdtemp
 from unittest import mock
-from unittest.mock import MagicMock, PropertyMock, patch
+from unittest.mock import MagicMock, PropertyMock, patch, call
 
 from nose.tools import assert_equals, assert_true, assert_false, assert_raises
 
@@ -61,6 +61,38 @@ class TestRunnerInterface:
         InterfaceBaseImpl.version = lambda *_: StrictVersion("0.0.0")
 
         assert InterfaceBaseImpl in self._orig_get_interfaces()
+
+    def test_logs_legacy_changelogs(self):
+        class LegacyInterface(RunnerInterfaceTestImpl): pass
+        class LatestInterface(RunnerInterfaceTestImpl): pass
+        LegacyInterface.version = lambda *_: StrictVersion("0.0.1")
+        LatestInterface.version = lambda *_: StrictVersion("0.0.2")
+        LatestInterface.changelog = lambda *_: "-changelog-"
+        self.test_interfaces = [LatestInterface, LegacyInterface]
+        logger = MagicMock()
+
+        LegacyInterface('', [])._log_changes(logger)
+
+        expected_calls = [call("0.0.1 => 0.0.2:"), call("-changelog-")]
+        logger.info.assert_has_calls(expected_calls)
+
+    def test_logs_multiple_legacy_changelogs(self):
+        class LegacyInterface(RunnerInterfaceTestImpl): pass
+        class Interface_0_0_2(RunnerInterfaceTestImpl): pass
+        class Interface_0_0_3(RunnerInterfaceTestImpl): pass
+        LegacyInterface.version = lambda *_: StrictVersion("0.0.1")
+        Interface_0_0_2.version = lambda *_: StrictVersion("0.0.2")
+        Interface_0_0_2.changelog = lambda *_: "-changelog1-"
+        Interface_0_0_3.version = lambda *_: StrictVersion("0.0.3")
+        Interface_0_0_3.changelog = lambda *_: "-changelog2-"
+        self.test_interfaces = [LegacyInterface, Interface_0_0_2, Interface_0_0_3]
+        logger = MagicMock()
+
+        LegacyInterface('', [])._log_changes(logger)
+
+        expected_calls = [call("0.0.1 => 0.0.2:"), call("-changelog1-"),
+                          call("0.0.2 => 0.0.3:"), call("-changelog2-")]
+        logger.info.assert_has_calls(expected_calls)
 
 
 @patch("data.runner_interface.Shell")

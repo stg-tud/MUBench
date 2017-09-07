@@ -57,19 +57,18 @@ class RunnerInterface:
     def _log_legacy_warning(self):
         self.logger.warning("The detector uses a legacy interface.")
         self.logger.info("The following changes were made since its release:")
-        self._log_changes()
+        self._log_changes(logging.getLogger("runner_interface.changelogs"))
 
-    def _log_changes(self):
-        logger = logging.getLogger("runner_interface.changelogs")
-
+    def _log_changes(self, logger):
         interfaces = RunnerInterface._get_interfaces()
         later_interfaces = [i for i in interfaces if i.version() > self.version()]
         later_interfaces.sort(key=lambda i: i.version())
-        for index, later_interface in enumerate(later_interfaces):
-            from_ = later_interfaces[index-1].version()
+        from_ = self.version()
+        for later_interface in later_interfaces:
             to = later_interface.version()
             logger.info("{} => {}:".format(from_, to))
             logger.info(later_interface.changelog())
+            from_ = later_interface.version()
 
     def is_legacy(self) -> bool:
         return self.version() < self.__get_latest_version()
