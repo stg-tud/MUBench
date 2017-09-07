@@ -46,6 +46,7 @@ class DatasetCheck(ProjectVersionMisuseTask):
         self._register_misuse_is_linked_from_version(misuse.id)
         self._check_required_keys_in_misuse_yaml(project, version, misuse)
         self._check_misuse_location_exists(project, version, misuse)
+        self._check_violation_types(project, misuse)
         return self.ok()
 
     def end(self):
@@ -164,6 +165,44 @@ class DatasetCheck(ProjectVersionMisuseTask):
         else:
             return len(snippets) > 0
 
+    def _check_violation_types(self, project: Project, misuse: Misuse):
+        file_path = "{}/misuses/{}/misuse.yml".format(project.id, misuse.misuse_id)
+        violation_types = misuse._yaml.get("characteristics", [])
+
+        valid_prefixes = ['missing', 'superfluous', 'misplaced']
+        for violation_type in violation_types:
+            parts = violation_type.split('/')
+            if len(parts) > 3 or len(parts) == 1:
+                self._report_invalid_violation_type(violation_type, file_path)
+                return
+
+            prefix = parts[0]
+            element = parts[1]
+            condition_type = None if len(parts) < 3 else parts[2]
+
+            if prefix not in valid_prefixes:
+                self._report_invalid_violation_type(violation_type, file_path)
+                return
+
+            if prefix == "misplaced":
+                valid_elements = ['call']
+            else:
+                valid_elements = ['call', 'condition', 'iteration', 'exception_handling']
+
+            if element not in valid_elements:
+                self._report_invalid_violation_type(violation_type, file_path)
+                return
+
+            if condition_type and not element == "condition":
+                self._report_invalid_violation_type(violation_type, file_path)
+                return
+
+            if element == "condition":
+                valid_conditions = ['null_check', 'synchronization', 'value_or_state', 'context']
+                if condition_type not in valid_conditions:
+                    self._report_invalid_violation_type(violation_type, file_path)
+                    return
+
     def _register_entry(self, project: Project, id_: str):
         for dataset, entries in self.datasets.items():
             if id_ in entries:
@@ -205,6 +244,9 @@ class DatasetCheck(ProjectVersionMisuseTask):
 
     def _report_misuse_not_listed(self, misuse_id: str):
         self.logger.warning('Misuse "{}" is not listed in any versions.'.format(misuse_id))
+
+    def _report_invalid_violation_type(self, violation_type: str, file_path: str):
+        self.logger.warning('Invalid violation type "{}" in "{}"'.format(violation_type, file_path))
 
     def _get_all_misuses(self, data_base_path: str) -> List[str]:
         misuses = []
