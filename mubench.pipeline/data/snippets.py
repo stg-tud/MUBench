@@ -33,8 +33,8 @@ def get_snippets(source_base_path, file, method):
                 for method in methods:
                     info = method.split(":", 2)
                     snippets.append(Snippet("""class {} {{\n{}\n}}""".format(info[1], info[2]), int(info[0]) - 1))
-        elif file and os.path.exists(file):
-            snippets.append(Snippet(io.safe_read(file), 1))
+        elif file and os.path.exists(target_file):
+            snippets.append(Snippet(io.safe_read(target_file), 1))
 
     except Exception as e:
         raise SnippetUnavailableException(target_file, e)
