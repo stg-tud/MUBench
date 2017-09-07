@@ -164,3 +164,18 @@ class TestMarkdown:
         actual = as_markdown({"key": "value"})
         expected = "key: \nvalue"
         assert_equals(expected, actual)
+
+    def test_converts_nan_to_string(self):
+        actual = as_markdown(float("NaN"))
+        expected = '"NaN"'
+        assert_equals(expected, actual)
+
+    def test_converts_infinity_to_string(self):
+        actual = as_markdown(float("inf"))
+        expected = '"Infinity"'
+        assert_equals(expected, actual)
+
+    def test_converts_nan_to_string(self):
+        actual = as_markdown(float("-inf"))
+        expected = '"-Infinity"'
+        assert_equals(expected, actual)

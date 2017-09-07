@@ -106,11 +106,21 @@ def as_markdown(value: Union[List[str], Dict[str, str], str]) -> Union[str, Numb
         return __as_markdown_dict(value)
     elif isinstance(value, str):
         return value
-    elif isinstance(value, (int, float)):
+    elif isinstance(value, int):
         return value
+    elif isinstance(value, float):
+        return __make_float_json_parseable(value)
     else:
         raise UnsupportedTypeError(value)
 
+
+def __make_float_json_parseable(value: float):
+    if value == float("NaN"):
+        return '"NaN"'
+    elif value == float("inf"):
+        return '"Infinity"'
+    elif value == float("-inf"):
+        return '"-Infinity"'
 
 def __create_file_tuple(path: str, es: ExitStack):
     filename = basename(path)
