@@ -137,8 +137,7 @@ class StoreFindingsTest extends DatabaseTestCase
     }
 
     function test_get_misuse_ex1(){
-        $tagController = new MisuseTagsController($this->db, $this->logger, '-site-base-url');
-        $metadataController = new MetadataController($this->db, $this->logger, $tagController);
+        $metadataController = new MetadataController($this->db, $this->logger);
         // SMELL currently, this test depends on a pattern in the metadata, because otherwise the metadata is not
         // found for ex1. This should not be necessary anymore, once the findings controller is separated.
         $metadataController->updateMetadata('-p-', '-v-', '-m-', '-desc-',

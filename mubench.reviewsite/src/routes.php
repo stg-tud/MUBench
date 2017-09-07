@@ -22,10 +22,11 @@ $database = $app->getContainer()['database'];
 $renderer = $app->getContainer()['renderer'];
 // REFACTOR rename RoutesHelper to ResultsViewController
 $routesHelper = new RoutesHelper($database, $renderer, $logger, $settings['upload'], $settings['site_base_url'], $settings['default_ex2_review_size']);
-$tagController = new MisuseTagsController($database, $logger, $settings["site_base_url"]);
 $downloadController = new DownloadController($database, $logger, $settings['default_ex2_review_size']);
-$metadataController = new MetadataController($database, $logger, $tagController);
-$reviewController = new ReviewController($settings["site_base_url"], $settings["upload"], $database, $renderer, $metadataController);
+$metadataController = new MetadataController($database, $logger);
+$tagController = new MisuseTagsController($database, $logger, $settings["site_base_url"]);
+$reviewController = new ReviewController($settings["site_base_url"], $settings["upload"],
+    $database, $renderer, $metadataController, $tagController);
 
 $app->get('/', [$routesHelper, 'index']);
 $app->get('/{exp:ex[1-3]}/{detector}', [$routesHelper, 'detector']);
@@ -115,7 +116,7 @@ $app->group('/api/upload', function () use ($app, $settings, $database, $tagCont
     $app->post('/tag', [$tagController, "add"]);
     // REFACTOR migrate this route to /tags/{exp}/{detector}/{project}/{version}/{misuse}/{tagname}/delete
     $app->post('/delete/tag', [$tagController, 'delete']);
-    
+
     $app->post('/snippet',
         function (Request $request, Response $response, array $args) use ($database, $settings) {
             $obj = $request->getParsedBody();

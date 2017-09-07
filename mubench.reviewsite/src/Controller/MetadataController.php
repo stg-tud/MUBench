@@ -14,14 +14,11 @@ class MetadataController
     private $db;
     /** @var Logger */
     private $logger;
-    /** @var MisuseTagsController */
-    private $tagController;
 
-    function __construct(DBConnection $db, Logger $logger, MisuseTagsController $tagController)
+    function __construct(DBConnection $db, Logger $logger)
     {
         $this->db = $db;
         $this->logger = $logger;
-        $this->tagController = $tagController;
     }
 
     // REFACTOR retrieving metadata should not depend on an experiment or a detector. The metadata is global.
@@ -50,7 +47,6 @@ class MetadataController
         }
 
         $metadata['snippets'] = $this->getSnippets($experimentId, $detector, $projectId, $versionId, $misuseId);
-        $metadata['tags'] = $this->tagController->getTags($experimentId, $detector, $projectId, $versionId, $misuseId);
 
         return $metadata;
     }

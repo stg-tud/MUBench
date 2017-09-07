@@ -18,8 +18,7 @@ class StoreMetadataTest extends DatabaseTestCase
     {
         parent::setUp();
         $this->detector = $this->db->getOrCreateDetector('-d-');
-        $tagController = new MisuseTagsController($this->db, $this->logger, '-site-base-url');
-        $this->metadataController = new MetadataController($this->db, $this->logger, $tagController);
+        $this->metadataController = new MetadataController($this->db, $this->logger);
     }
 
     function test_store_metadata()
@@ -45,8 +44,7 @@ class StoreMetadataTest extends DatabaseTestCase
             'method' => '-method-location-',
             'diff_url' => '-diff-',
             'snippets' => [0 => ['snippet' => '-target-snippet-code-', 'line' => 273]],
-            'patterns' => [0 => ['name' => '-p1-', 'code' => '-pattern-code-','line' => 42]],
-            'tags' => []
+            'patterns' => [0 => ['name' => '-p1-', 'code' => '-pattern-code-','line' => 42]]
         ], $metadata);
     }
 
@@ -58,8 +56,7 @@ class StoreMetadataTest extends DatabaseTestCase
             'project' => '-p-',
             'version' => '-v-',
             'misuse' => '-m-',
-            'snippets' => [],
-            'tags' => []
+            'snippets' => []
         ], $metadata);
     }
 
