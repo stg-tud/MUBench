@@ -3,6 +3,7 @@ from os.path import dirname, exists, isfile, join, isdir, basename, islink
 from shutil import rmtree, copy
 from stat import S_IWRITE
 from typing import Dict, List
+from utils.shell import Shell
 
 import yaml
 try:
@@ -52,7 +53,7 @@ def remove_tree(root: str) -> None:
             try:
                 remove(path)
             except PermissionError:
-                pass
+                Shell.try_exec("rm -f {}".format(path))
 
     rmtree(root, onerror=retry_remove)
 
