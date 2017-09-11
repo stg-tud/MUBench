@@ -53,7 +53,7 @@ def remove_tree(root: str) -> None:
             try:
                 remove(path)
             except PermissionError:
-                Shell.try_exec("rm -f {}".format(path))
+                Shell.try_exec('rm -f "{}"'.format(path))
 
     rmtree(root, onerror=retry_remove)
 
