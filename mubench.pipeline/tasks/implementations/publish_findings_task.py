@@ -102,8 +102,9 @@ class PublishFindingsTask(ProjectVersionTask):
 
         try:
             snippets = finding.get_snippets(version_compile.original_sources_path)
-        except:
-            logger.warning("No snippets added: invalid file location.")
+        except SnippetUnavailableException as e:
+            logger.warning("No snippets added for %s", e.file)
+            logger.debug("Failed to find snippets: %s", e.exception)
 
         markdown_dict["target_snippets"] = [snippet.__dict__ for snippet in snippets]
         return markdown_dict
