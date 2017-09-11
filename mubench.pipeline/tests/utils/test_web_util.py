@@ -130,15 +130,6 @@ class TestPost:
         with assert_raises(UserWarning):
             post("-url-", "-data-")
 
-    def test_nan_raises_value_error(self, post_mock):
-        assert_raises(ValueError, post, "-url-", float("NaN"))
-
-    def test_infinity_raises_value_error(self, post_mock):
-        assert_raises(ValueError, post, "-url-", float("inf"))
-
-    def test_negative_infinity_raises_value_error(self, post_mock):
-        assert_raises(ValueError, post, "-url-", float("-inf"))
-
 
 class TestMarkdown:
     def test_raises_on_non_convertible(self):
@@ -163,19 +154,4 @@ class TestMarkdown:
     def test_dict(self):
         actual = as_markdown({"key": "value"})
         expected = "key: \nvalue"
-        assert_equals(expected, actual)
-
-    def test_converts_nan_to_string(self):
-        actual = as_markdown(float("NaN"))
-        expected = '"NaN"'
-        assert_equals(expected, actual)
-
-    def test_converts_infinity_to_string(self):
-        actual = as_markdown(float("inf"))
-        expected = '"Infinity"'
-        assert_equals(expected, actual)
-
-    def test_converts_nan_to_string(self):
-        actual = as_markdown(float("-inf"))
-        expected = '"-Infinity"'
         assert_equals(expected, actual)

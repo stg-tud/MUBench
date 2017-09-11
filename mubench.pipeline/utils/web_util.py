@@ -11,6 +11,7 @@ from urllib.request import urlopen
 
 import requests
 from typing import List, Dict, Union
+from utils.json_float_encoder import JSONFloatEncoder
 
 
 def download_file(url: str, file: str, md5_checksum: str = None):
@@ -82,7 +83,7 @@ def __compute_md5(file: str):
 def post(url: str, data: object, file_paths: List[str] = None, username: str="", password: str=""):
     request = {
         "url": url,
-        "data": json.dumps(data, allow_nan=False)
+        "data": json.dumps(data, cls=JSONFloatEncoder)
     }
 
     if username:
@@ -106,21 +107,11 @@ def as_markdown(value: Union[List[str], Dict[str, str], str]) -> Union[str, Numb
         return __as_markdown_dict(value)
     elif isinstance(value, str):
         return value
-    elif isinstance(value, int):
+    elif isinstance(value, int) or isinstance(value, float):
         return value
-    elif isinstance(value, float):
-        return __make_float_json_parseable(value)
     else:
         raise UnsupportedTypeError(value)
 
-
-def __make_float_json_parseable(value: float):
-    if value == float("NaN"):
-        return '"NaN"'
-    elif value == float("inf"):
-        return '"Infinity"'
-    elif value == float("-inf"):
-        return '"-Infinity"'
 
 def __create_file_tuple(path: str, es: ExitStack):
     filename = basename(path)
