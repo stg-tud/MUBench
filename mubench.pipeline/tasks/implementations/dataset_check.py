@@ -11,6 +11,25 @@ from data.snippets import get_snippets
 from tasks.project_version_misuse_task import ProjectVersionMisuseTask
 
 
+VALID_VIOLATION_TYPES = [
+        'missing/call',
+        'missing/condition/null_check',
+        'missing/condition/synchronization',
+        'missing/condition/value_or_state',
+        'missing/condition/context',
+        'missing/iteration',
+        'missing/exception_handling',
+        'superfluous/call',
+        'superfluous/condition/null_check',
+        'superfluous/condition/synchronization',
+        'superfluous/condition/value_or_state',
+        'superfluous/condition/context',
+        'superfluous/iteration',
+        'superfluous/exception_handling',
+        'misplaced/call',
+    ]
+
+
 class DatasetCheck(ProjectVersionMisuseTask):
     def __init__(self, datasets: Dict[str, List[str]], checkout_base_path: str, data_base_path: str):
         super().__init__()
@@ -166,42 +185,11 @@ class DatasetCheck(ProjectVersionMisuseTask):
             return len(snippets) > 0
 
     def _check_violation_types(self, project: Project, misuse: Misuse):
-        file_path = "{}/misuses/{}/misuse.yml".format(project.id, misuse.misuse_id)
         violation_types = misuse._yaml.get("characteristics", [])
-
-        valid_prefixes = ['missing', 'superfluous', 'misplaced']
         for violation_type in violation_types:
-            parts = violation_type.split('/')
-            if len(parts) > 3 or len(parts) == 1:
+            if violation_type not in VALID_VIOLATION_TYPES:
+                file_path = "{}/misuses/{}/misuse.yml".format(project.id, misuse.misuse_id)
                 self._report_invalid_violation_type(violation_type, file_path)
-                return
-
-            prefix = parts[0]
-            element = parts[1]
-            condition_type = None if len(parts) < 3 else parts[2]
-
-            if prefix not in valid_prefixes:
-                self._report_invalid_violation_type(violation_type, file_path)
-                return
-
-            if prefix == "misplaced":
-                valid_elements = ['call']
-            else:
-                valid_elements = ['call', 'condition', 'iteration', 'exception_handling']
-
-            if element not in valid_elements:
-                self._report_invalid_violation_type(violation_type, file_path)
-                return
-
-            if condition_type and not element == "condition":
-                self._report_invalid_violation_type(violation_type, file_path)
-                return
-
-            if element == "condition":
-                valid_conditions = ['null_check', 'synchronization', 'value_or_state', 'context']
-                if condition_type not in valid_conditions:
-                    self._report_invalid_violation_type(violation_type, file_path)
-                    return
 
     def _register_entry(self, project: Project, id_: str):
         for dataset, entries in self.datasets.items():
