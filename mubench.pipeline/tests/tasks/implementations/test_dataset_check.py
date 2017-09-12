@@ -458,7 +458,7 @@ class TestDatasetCheckDatasetLists:
         self.uut._report_unknown_dataset_entry.assert_not_called()
 
     def test_invalid_violation_type(self):
-        meta = {"characteristics": ["misplaced/iteration"]}
+        meta = {"characteristics": ["invalid/violation_type"]}
         project = create_project("-project-", meta=EMPTY_META)
         misuse = create_misuse("-id-", project=project, meta=meta)
         version = create_version("-version-", meta=EMPTY_META, project=project, misuses=[misuse])
@@ -466,29 +466,7 @@ class TestDatasetCheckDatasetLists:
 
         self.uut.process_project_version_misuse(project, version, misuse)
 
-        self.uut._report_invalid_violation_type.assert_any_call("misplaced/iteration", "-project-/misuses/-id-/misuse.yml")
-
-    def test_violation_type_missing_element(self):
-        meta = {"characteristics": ["misplaced"]}
-        project = create_project("-project-", meta=EMPTY_META)
-        misuse = create_misuse("-id-", project=project, meta=meta)
-        version = create_version("-version-", meta=EMPTY_META, project=project, misuses=[misuse])
-        self.uut._report_invalid_violation_type = MagicMock()
-
-        self.uut.process_project_version_misuse(project, version, misuse)
-
-        self.uut._report_invalid_violation_type.assert_any_call("misplaced", "-project-/misuses/-id-/misuse.yml")
-
-    def test_violation_type_too_many_parts(self):
-        meta = {"characteristics": ["missing/condition/value_or_state/null_check"]}
-        project = create_project("-project-", meta=EMPTY_META)
-        misuse = create_misuse("-id-", project=project, meta=meta)
-        version = create_version("-version-", meta=EMPTY_META, project=project, misuses=[misuse])
-        self.uut._report_invalid_violation_type = MagicMock()
-
-        self.uut.process_project_version_misuse(project, version, misuse)
-
-        self.uut._report_invalid_violation_type.assert_any_call("missing/condition/value_or_state/null_check", "-project-/misuses/-id-/misuse.yml")
+        self.uut._report_invalid_violation_type.assert_any_call("invalid/violation_type", "-project-/misuses/-id-/misuse.yml")
 
     def test_valid_violation_type(self):
         meta = {"characteristics": ["missing/condition/value_or_state"]}
