@@ -3,6 +3,7 @@ from os.path import dirname, exists, isfile, join, isdir, basename, islink
 from shutil import rmtree, copy
 from stat import S_IWRITE
 from typing import Dict, List
+from utils.shell import Shell
 
 import yaml
 try:
@@ -49,10 +50,7 @@ def remove_tree(root: str) -> None:
     def retry_remove(func, path, _):
         if exists(path):
             chmod(path, S_IWRITE)
-            try:
-                remove(path)
-            except PermissionError:
-                pass
+            remove(path)
 
     rmtree(root, onerror=retry_remove)
 

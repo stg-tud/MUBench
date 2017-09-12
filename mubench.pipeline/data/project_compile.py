@@ -14,6 +14,7 @@ class ProjectCompile:
     PATTERN_SOURCE_DIR = "patterns-src"
     PATTERN_CLASSES_DIR = "patterns-classes"
     DEPENDENCY_DIR = "dependencies"
+    __BUILD_DIR = "build"
 
     def __init__(self, base_path: str, misuses: List[Misuse]):
         self.base_path = base_path
@@ -27,6 +28,7 @@ class ProjectCompile:
         self.pattern_sources_base_path = join(self.base_path, ProjectCompile.PATTERN_SOURCE_DIR)
         self.pattern_classes_base_path = join(self.base_path, ProjectCompile.PATTERN_CLASSES_DIR)
         self.dependencies_path = join(self.base_path, ProjectCompile.DEPENDENCY_DIR)
+        self.build_dir = join(self.base_path, ProjectCompile.__BUILD_DIR)
 
     def needs_copy_sources(self):
         if not isdir(self.original_sources_path):
@@ -80,3 +82,4 @@ class ProjectCompile:
         remove_tree(self.original_classes_path)
         remove_tree(self.misuse_classes_path)
         remove_tree(self.pattern_classes_base_path)
+        remove_tree(self.build_dir)
