@@ -6,7 +6,7 @@ from nose.tools import assert_equals
 from data.detector import Detector
 from data.experiments import Experiment
 from data.finding import SpecializedFinding
-from data.snippets import Snippet
+from data.snippets import Snippet, SnippetUnavailableException
 from data.run import Run
 from tasks.implementations.publish_findings_task import PublishFindingsTask
 from tests.data.stub_detector import StubDetector
@@ -138,6 +138,16 @@ class TestPublishFindingsTask:
 
         assert_equals(post_mock.call_args[0][1]["potential_hits"][0]["target_snippets"],
                       [{"code": "-code-", "first_line_number": 23}])
+
+    def test_publish_successful_run_code_snippets_extraction_fails(self, post_mock):
+        self.test_run.is_success = lambda: True
+        finding = _create_finding({"rank": "42"})
+        finding.get_snippets = MagicMock(side_effect=SnippetUnavailableException('-file-', ValueError('-failure-')))
+        self.test_run.get_potential_hits = lambda: [finding]
+
+        self.uut.process_project_version(self.project, self.version)
+
+        assert_equals(post_mock.call_args[0][1]["potential_hits"][0]["target_snippets"], [])
 
     def test_publish_erroneous_run(self, post_mock):
         self.test_run.get_number_of_findings = lambda: 0
