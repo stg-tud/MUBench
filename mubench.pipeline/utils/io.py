@@ -50,10 +50,7 @@ def remove_tree(root: str) -> None:
     def retry_remove(func, path, _):
         if exists(path):
             chmod(path, S_IWRITE)
-            try:
-                remove(path)
-            except PermissionError:
-                pass
+            remove(path)
 
     rmtree(root, onerror=retry_remove)
 
