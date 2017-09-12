@@ -9,6 +9,7 @@ from data.experiments import Experiment
 from data.finding import SpecializedFinding
 from data.project import Project
 from data.project_version import ProjectVersion
+from data.snippets import SnippetUnavailableException
 from tasks.project_version_task import ProjectVersionTask
 from utils.web_util import post, as_markdown
 
@@ -105,6 +106,7 @@ class PublishFindingsTask(ProjectVersionTask):
         except SnippetUnavailableException as e:
             logger.warning("No snippets added for %s", e.file)
             logger.debug("Failed to find snippets: %s", e.exception)
+            snippets = []
 
         markdown_dict["target_snippets"] = [snippet.__dict__ for snippet in snippets]
         return markdown_dict
