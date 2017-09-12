@@ -11,6 +11,25 @@ from data.snippets import get_snippets
 from tasks.project_version_misuse_task import ProjectVersionMisuseTask
 
 
+VALID_VIOLATION_TYPES = [
+        'missing/call',
+        'missing/condition/null_check',
+        'missing/condition/synchronization',
+        'missing/condition/value_or_state',
+        'missing/condition/context',
+        'missing/iteration',
+        'missing/exception_handling',
+        'superfluous/call',
+        'superfluous/condition/null_check',
+        'superfluous/condition/synchronization',
+        'superfluous/condition/value_or_state',
+        'superfluous/condition/context',
+        'superfluous/iteration',
+        'superfluous/exception_handling',
+        'misplaced/call',
+    ]
+
+
 class DatasetCheck(ProjectVersionMisuseTask):
     def __init__(self, datasets: Dict[str, List[str]], checkout_base_path: str, data_base_path: str):
         super().__init__()
@@ -46,6 +65,7 @@ class DatasetCheck(ProjectVersionMisuseTask):
         self._register_misuse_is_linked_from_version(misuse.id)
         self._check_required_keys_in_misuse_yaml(project, version, misuse)
         self._check_misuse_location_exists(project, version, misuse)
+        self._check_violation_types(project, misuse)
         return self.ok()
 
     def end(self):
@@ -164,6 +184,13 @@ class DatasetCheck(ProjectVersionMisuseTask):
         else:
             return len(snippets) > 0
 
+    def _check_violation_types(self, project: Project, misuse: Misuse):
+        violation_types = misuse._yaml.get("characteristics", [])
+        for violation_type in violation_types:
+            if violation_type not in VALID_VIOLATION_TYPES:
+                file_path = "{}/misuses/{}/misuse.yml".format(project.id, misuse.misuse_id)
+                self._report_invalid_violation_type(violation_type, file_path)
+
     def _register_entry(self, project: Project, id_: str):
         for dataset, entries in self.datasets.items():
             if id_ in entries:
@@ -205,6 +232,9 @@ class DatasetCheck(ProjectVersionMisuseTask):
 
     def _report_misuse_not_listed(self, misuse_id: str):
         self.logger.warning('Misuse "{}" is not listed in any versions.'.format(misuse_id))
+
+    def _report_invalid_violation_type(self, violation_type: str, file_path: str):
+        self.logger.warning('Invalid violation type "{}" in "{}"'.format(violation_type, file_path))
 
     def _get_all_misuses(self, data_base_path: str) -> List[str]:
         misuses = []
