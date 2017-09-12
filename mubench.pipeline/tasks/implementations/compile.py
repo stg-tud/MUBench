@@ -20,8 +20,6 @@ from utils.shell import Shell, CommandFailedError
 
 
 class Compile(ProjectVersionTask):
-    __BUILD_DIR = "build"
-
     def __init__(self, checkouts_base_path: str, compiles_base_path: str,
                  force_compile: bool, use_temp_dir: bool):
         super().__init__()
@@ -37,8 +35,7 @@ class Compile(ProjectVersionTask):
 
         project_compile = version.get_compile(self.compiles_base_path)
 
-        build_path = mkdtemp(prefix='mubench-compile_') if self.use_temp_dir \
-                     else join(project_compile.base_path, Compile.__BUILD_DIR)
+        build_path = mkdtemp(prefix='mubench-compile_') if self.use_temp_dir else project_compile.build_dir
 
         sources_path = join(build_path, version.source_dir)
         classes_path = join(build_path, version.classes_dir)
@@ -96,7 +93,7 @@ class Compile(ProjectVersionTask):
 
             if self.use_temp_dir:
                 logger.debug("Moving complete build to persistent directory...")
-                copy_tree(build_path, join(project_compile.base_path, Compile.__BUILD_DIR))
+                copy_tree(build_path, project_compile.build_dir)
                 remove_tree(build_path)
         except Exception as e:
             logger.error("Compilation failed: %s", e)
