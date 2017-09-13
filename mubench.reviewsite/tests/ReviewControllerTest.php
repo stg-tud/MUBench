@@ -93,39 +93,27 @@ class ReviewControllerTest extends DatabaseTestCase
             ]
         ];
 
-        $metadata = [
-            "project" => "-p-",
-            "version" => "-v-",
-            "misuse" => "-m-",
-            "patterns" => [
-                [
-                    "snippet" => [
-                        "first_line" => 1,
-                        "code" => "-pattern-code-",
-
-                    ],
-                    "id" => "-p-id-"
-                ]
-            ],
-            "violation_types" => ["superfluous/condition/null_check"],
-            "target_snippets" => [[
-                'code' => '-code-',
-                'first_line_number' => 273
-            ]],
-            "description" => "-desc-",
-            "location" => [
-                "file" => "-f-",
-                "method" => "-method-"
-            ],
-            "fix" => [
-                'description' => '-fix-desc-',
-                'diff-url' => '-diff-'
-            ]
-        ];
-
         $detector = new Detector('-d-', 1);
         $metadataController = new MetadataController($this->db, $this->logger);
-        $metadataController->processMetaData($metadata);
+        $metadataController->updateMetadata('-p-', '-v-', '-m-', '-desc-', [
+            'description' => '-fix-desc-',
+            'diff-url' => '-diff-'
+        ], [
+            "file" => "-f-",
+            "method" => "-method-"
+        ], ["superfluous/condition/null_check"], [
+            [
+                "snippet" => [
+                    "first_line" => 1,
+                    "code" => "-pattern-code-",
+
+                ],
+                "id" => "-p-id-"
+            ]
+        ], [[
+            'code' => '-code-',
+            'first_line_number' => 273
+        ]]);
         $findingUploader = new FindingsUploader($this->db, $this->logger);
         $findingUploader->processData('ex1', json_decode(json_encode($finding)));
 
@@ -189,6 +177,8 @@ class ReviewControllerTest extends DatabaseTestCase
 
         $expectedMisuse = new Misuse(
             [
+                'project' => '-p-',
+                'version' => '-v-',
                 'misuse' => 0,
                 'snippets' => [],
                 'tags' => []
