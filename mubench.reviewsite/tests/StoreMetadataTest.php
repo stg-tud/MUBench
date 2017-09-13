@@ -1,66 +1,58 @@
 <?php
 
+namespace MuBench\ReviewSite\Controller;
+
 require_once "DatabaseTestCase.php";
 
-use MuBench\ReviewSite\Controller\FindingsUploader;
-use MuBench\ReviewSite\Controller\MetadataUploader;
-use MuBench\ReviewSite\Model\Misuse;
+use DatabaseTestCase;
 
 class StoreMetadataTest extends DatabaseTestCase
 {
     function test_store_metadata()
     {
-        $finding_uploader = new FindingsUploader($this->db, $this->logger);
-        $metadata_uploader = new MetadataUploader($this->db, $this->logger);
-
-        $data = json_decode($this->metadata_json);
-        $findings = json_decode($this->finding_json);
-
-        $finding_uploader->processData('ex1', $findings);
-        $metadata_uploader->processMetaData($data);
-
         $detector = $this->db->getOrCreateDetector('-d-');
-        $runs = $this->db->getRuns($detector, 'ex1');
+        $metadataController = new MetadataController($this->db, $this->logger);
 
-        $expected_run = [
-            "exp" => "ex1",
-            "project" => "-p-",
-            "version" => "-v-",
-            "result" => "success",
-            "runtime" => "42.1",
-            "number_of_findings" => "23",
-            "misuses" => [
-                new Misuse(
-                    [
-                    'misuse' => '-m-',
-                    'project' => '-p-',
-                    'version' => '-v-',
-                    'description' => '-desc-',
-                    'fix_description' => '-fix-desc-',
-                    'violation_types' => [0 => 'superfluous/condition/null_check'],
-                    'file' => '-f-',
-                    'method' => '-method-',
-                    'diff_url' => '-diff-',
-                    'snippets' => [0 => ['line' => '273', 'snippet' => '-code-']],
-                    'patterns' => [0 => ['name' => '-p-id-', 'code' => '-pattern-code-','line' => '1']],
-                    'tags' => []
-                    ],
-                    [
-                        [
-                            'exp' => 'ex1',
-                            'project' => '-p-',
-                            'version' => '-v-',
-                            'misuse' => '-m-',
-                            'rank' => '0',
-                            'custom1' => '-val1-',
-                            'custom2' => '-val2-'
-                        ]
-                    ],
-                    [])
-            ]
-        ];
+        $metadataController->updateMetadata('-p-', '-v-', '-m-', '-desc-',
+            ['diff-url' => '-diff-', 'description' => '-fix-desc-'],
+            ['file' => '-file-location-', 'method' => '-method-location-'],
+            ['missing/call'],
+            [['id' => '-p1-', 'snippet' => ['code' => '-pattern-code-', 'first_line' => 42]]],
+            [['code' => '-target-snippet-code-', 'first_line_number' => 273]]);
 
-        self::assertEquals([$expected_run], $runs);
+        $metadata = $metadataController->getMetadata('ex1', $detector, '-p-', '-v-', '-m-');
+
+        self::assertEquals([
+            'project' => '-p-',
+            'version' => '-v-',
+            'misuse' => '-m-',
+            // REFACTOR merge description and fix description
+            'description' => '-desc-',
+            'fix_description' => '-fix-desc-',
+            'violation_types' => [0 => 'missing/call'],
+            'file' => '-file-location-',
+            'method' => '-method-location-',
+            'diff_url' => '-diff-',
+            'snippets' => [0 => ['snippet' => '-target-snippet-code-', 'line' => 273]],
+            'patterns' => [0 => ['name' => '-p1-', 'code' => '-pattern-code-','line' => 42]],
+            'tags' => []
+        ], $metadata);
+    }
+
+    function test_e2_metadata()
+    {
+        $detector = $this->db->getOrCreateDetector('-d-');
+        $metadataController = new MetadataController($this->db, $this->logger);
+
+        $metadata = $metadataController->getMetadata('ex2', $detector, '-p-', '-v-', '-m-');
+
+        self::assertEquals([
+            'project' => '-p-',
+            'version' => '-v-',
+            'misuse' => '-m-',
+            'snippets' => [],
+            'tags' => []
+        ], $metadata);
     }
 
 }

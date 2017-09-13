@@ -22,13 +22,16 @@ class ReviewController
     private $db;
     /** @var PhpRenderer */
     private $renderer;
+    /** @var MetadataController */
+    private $metadataController;
 
-    function __construct($site_base_url, $upload_path, DBConnection $db, PhpRenderer $renderer)
+    function __construct($site_base_url, $upload_path, DBConnection $db, PhpRenderer $renderer, MetadataController $metadataController)
     {
         $this->site_base_url = $site_base_url;
         $this->upload_path = $upload_path;
         $this->db = $db;
         $this->renderer = $renderer;
+        $this->metadataController = $metadataController;
     }
 
     public function get(Request $request, Response $response, array $args)
@@ -59,37 +62,10 @@ class ReviewController
 
     function getMisuse($experimentId, Detector $detector, $projectId, $versionId, $misuseId)
     {
-        $metadata = $this->getMetadata($experimentId, $detector, $projectId, $versionId, $misuseId);
+        $metadata = $this->metadataController->getMetadata($experimentId, $detector, $projectId, $versionId, $misuseId);
         $potential_hits = $this->getPotentialHits($experimentId, $detector, $projectId, $versionId, $misuseId);
         // SMELL misuses don't need their review here
         return new Misuse($metadata, $potential_hits, []);
-    }
-
-    private function getMetadata($experimentId, Detector $detector, $projectId, $versionId, $misuseId)
-    {
-        if ($experimentId === "ex1" || $experimentId === "ex3") {
-            $metadata = $this->db->table('metadata')
-                ->where('project', $projectId)->where('version', $versionId)->where('misuse', $misuseId)->first();
-
-            $types = $this->db->table('misuse_types')->select('types.name')
-                ->innerJoin('types', 'misuse_types.type', '=', 'types.id')->where('project', $projectId)
-                ->where('version', $versionId)->where('misuse', $misuseId)->get();
-            $metadata["violation_types"] = [];
-            foreach($types as $type){
-                $metadata["violation_types"][] = $type['name'];
-            }
-
-            if($experimentId === "ex1") {
-                $metadata["patterns"] = $this->getPatterns($misuseId);
-            }
-        } else { // if ($experimentId === "ex2")
-            $metadata = ["misuse" => $misuseId];
-        }
-
-        $metadata["snippets"] = $this->getSnippets($experimentId, $detector, $projectId, $versionId, $misuseId);
-        $metadata["tags"] = $this->getTags($experimentId, $detector, $projectId, $versionId, $misuseId);
-
-        return $metadata;
     }
 
     /**
@@ -131,32 +107,6 @@ class ReviewController
             }
         }
         return $finding_reviews;
-    }
-
-    private function getSnippets($experimentId, Detector $detector, $projectId, $versionId, $misuseId)
-    {
-        $columns = ['line', 'snippet'];
-        if (strcmp($experimentId, "ex2") == 0) {
-            $columns[] = 'id'; // SMELL meta_findings do not have an id
-            $query = $this->db->table('finding_snippets')->where('detector', $detector->id)
-                ->where('project', $projectId)->where('version', $versionId)->where('finding', $misuseId);
-        } else {
-            $query = $this->db->table('meta_snippets')
-                ->where('project', $projectId)->where('version', $versionId)->where('misuse', $misuseId);
-        }
-        return $query->select($columns)->get();
-    }
-
-    private function getTags($experimentId, Detector $detector, $projectId, $versionId, $misuseId)
-    {
-        return $this->db->table('misuse_tags')->innerJoin('tags', 'misuse_tags.tag', '=', 'tags.id')
-            ->select('id', 'name')->where('exp', $experimentId)->where('detector', $detector->id)
-            ->where('project', $projectId)->where('version', $versionId)->where('misuse', $misuseId)->get();
-    }
-
-    private function getPatterns($misuse)
-    {
-        return $this->db->table('patterns')->select(['name', 'code', 'line'])->where('misuse', $misuse)->get();
     }
 
     private function render(Request $request, Response $response, array $args, $template, array $params)
