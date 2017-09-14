@@ -14,10 +14,6 @@ from data.project_compile import ProjectCompile
 class ProjectVersion:
     VERSION_FILE = 'version.yml'
 
-    VARS_SRC = {
-                '$gradle.default.src': "src/main/java",
-                '$mvn.default.src': "src/main/java"
-            }
     VARS_CLASSES = {
                 '$gradle.default.classes': "build/classes/java/main/",
                 '$mvn.default.classes': "target/classes/"
@@ -73,9 +69,6 @@ class ProjectVersion:
     def __compile_config(self):
         compile = {"src": "", "commands": [], "classes": ""}
         compile.update(self._yaml.get("build", {}))
-
-        for key, value in self.VARS_SRC.items():
-            compile["src"] = compile["src"].replace(key, value)
 
         for key, value in self.VARS_CLASSES.items():
             compile["classes"] = compile["classes"].replace(key, value)

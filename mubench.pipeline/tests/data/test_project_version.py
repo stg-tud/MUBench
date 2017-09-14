@@ -76,11 +76,7 @@ class TestProjectVersion:
         assert_equals(["mvn compile"], self.uut.compile_commands)
         assert_equals("target/classes/", self.uut.classes_dir)
 
-    def test_replaces_src_variables_in_build_config(self):
-        self.uut._YAML = {"build": {"src": "$mvn.default.src"}}
-        assert_equals("src/main/java/", self.uut.source_dir)
-
-    def test_replaces_src_variables_in_build_config(self):
+    def test_replaces_classes_variables_in_build_config(self):
         self.uut._YAML = {"build": {"classes": "$gradle.default.classes"}}
         assert_equals("build/classes/java/main/", self.uut.classes_dir)
 
