@@ -2,17 +2,12 @@ import logging
 from collections import OrderedDict
 from distutils.version import StrictVersion
 from os.path import join
-from tempfile import mkdtemp
-from unittest import mock
-from unittest.mock import MagicMock, PropertyMock, patch, call
+from unittest.mock import MagicMock, patch
 
 from nose.tools import assert_equals, assert_true, assert_false, assert_raises
 
 from data.runner_interface import RunnerInterface, RunnerInterface_0_0_8, NoCompatibleRunnerInterface
-from tests.data.stub_detector import StubDetector
-from utils.io import remove_tree, write_yaml
-from utils.shell import Shell, CommandFailedError
-from tests.test_utils.data_util import create_misuse, create_version, create_project
+from tests.test_utils.data_util import create_version
 from tests.test_utils.runner_interface_test_impl import RunnerInterfaceTestImpl
 
 
@@ -69,12 +64,11 @@ class TestRunnerInterface:
         LatestInterface.version = lambda *_: StrictVersion("0.0.2")
         LatestInterface.changelog = lambda *_: "-changelog-"
         self.test_interfaces = [LatestInterface, LegacyInterface]
-        logger = MagicMock()
 
-        LegacyInterface('', [])._log_changes(logger)
+        actual_changes = LegacyInterface('', [])._get_changelogs()
 
-        expected_calls = [call("0.0.1 => 0.0.2:"), call("-changelog-")]
-        logger.info.assert_has_calls(expected_calls)
+        expected_changes = ["0.0.1 => 0.0.2:", "-changelog-"]
+        assert_equals(expected_changes, actual_changes)
 
     def test_logs_multiple_legacy_changelogs(self):
         class LegacyInterface(RunnerInterfaceTestImpl): pass
@@ -86,13 +80,29 @@ class TestRunnerInterface:
         Interface_0_0_3.version = lambda *_: StrictVersion("0.0.3")
         Interface_0_0_3.changelog = lambda *_: "-changelog2-"
         self.test_interfaces = [LegacyInterface, Interface_0_0_2, Interface_0_0_3]
-        logger = MagicMock()
 
-        LegacyInterface('', [])._log_changes(logger)
+        actual_changes = LegacyInterface('', [])._get_changelogs()
 
-        expected_calls = [call("0.0.1 => 0.0.2:"), call("-changelog1-"),
-                          call("0.0.2 => 0.0.3:"), call("-changelog2-")]
-        logger.info.assert_has_calls(expected_calls)
+        expected_changes = ["0.0.1 => 0.0.2:", "-changelog1-",
+                            "0.0.2 => 0.0.3:", "-changelog2-"]
+        assert_equals(expected_changes, actual_changes)
+
+    def test_no_logs_on_empty_changelogs(self):
+        class LegacyInterface(RunnerInterfaceTestImpl): pass
+
+        class NewerInterface(RunnerInterfaceTestImpl): pass
+
+        LegacyInterface.version = lambda *_: StrictVersion("0.0.1")
+        NewerInterface.version = lambda *_: StrictVersion("0.0.2")
+        NewerInterface.changelog = lambda *_: None
+        self.test_interfaces = [LegacyInterface, NewerInterface]
+        uut = LegacyInterface('', [])
+        uut.logger = MagicMock()
+
+        uut._log_legacy_warning()
+
+        uut.logger.info.assert_not_called()
+        uut.logger.warning.assert_not_called()
 
 
 @patch("data.runner_interface.Shell")

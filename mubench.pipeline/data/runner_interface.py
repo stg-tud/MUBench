@@ -1,12 +1,12 @@
 import logging
 from collections import OrderedDict
 from distutils.version import StrictVersion
-from enum import Enum, IntEnum
 from logging import Logger
 from typing import Optional, List, Dict
 
 from data.project_version import ProjectVersion
 from utils.shell import Shell
+
 
 def _quote(value: str):
     return "\"{}\"".format(value)
@@ -55,20 +55,27 @@ class RunnerInterface:
         raise NotImplementedError
 
     def _log_legacy_warning(self):
-        self.logger.warning("The detector uses a legacy interface.")
-        self.logger.info("The following changes were made since its release:")
-        self._log_changes(logging.getLogger("runner_interface.changelogs"))
+        changelogs = self._get_changelogs()
+        if changelogs:
+            self.logger.warning("The detector uses a legacy interface.")
+            self.logger.info("The following changes were made since its release:")
+            changes_logger = logging.getLogger("runner_interface.changelogs")
+            for changelog in changelogs:
+                changes_logger.info(changelog)
 
-    def _log_changes(self, logger):
+    def _get_changelogs(self):
+        changes = []
         interfaces = RunnerInterface._get_interfaces()
         later_interfaces = [i for i in interfaces if i.version() > self.version()]
         later_interfaces.sort(key=lambda i: i.version())
         from_ = self.version()
         for later_interface in later_interfaces:
             to = later_interface.version()
-            logger.info("{} => {}:".format(from_, to))
-            logger.info(later_interface.changelog())
+            if later_interface.changelog():
+                changes.append("{} => {}:".format(from_, to))
+                changes.append(later_interface.changelog())
             from_ = later_interface.version()
+        return changes
 
     def is_legacy(self) -> bool:
         return self.version() < self.__get_latest_version()
