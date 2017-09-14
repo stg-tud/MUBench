@@ -1,5 +1,5 @@
 build:
-  classes: library/target/classes/
+  classes: library/$mvn.default.classes
   src: library/src/
 misuses:
 - '1'
