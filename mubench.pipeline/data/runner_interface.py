@@ -204,4 +204,4 @@ class RunnerInterface_0_0_10(RunnerInterface_0_0_8):
 
     @staticmethod
     def changelog():
-        return "Only changed Java-side interface."
+        return ""  # Only changed Java-side interface.
