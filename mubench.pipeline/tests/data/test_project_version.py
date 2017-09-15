@@ -76,6 +76,10 @@ class TestProjectVersion:
         assert_equals(["mvn compile"], self.uut.compile_commands)
         assert_equals("target/classes/", self.uut.classes_dir)
 
+    def test_replaces_classes_variables_in_build_config(self):
+        self.uut._YAML = {"build": {"classes": "$gradle.default.classes"}}
+        assert_equals("build/classes/java/main/", self.uut.classes_dir)
+
     def test_creates_build_config_with_defaults(self):
         self.uut._YAML = {"-no-build-key-": ""}
         assert_equals("", self.uut.source_dir)

@@ -1,5 +1,5 @@
 build:
-  classes: jackrabbit-core/target/classes/
+  classes: jackrabbit-core/$mvn.default.classes
   commands:
   - mvn compile
   src: jackrabbit-core/src/main/java/

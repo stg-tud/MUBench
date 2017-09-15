@@ -1,5 +1,5 @@
 build:
-  classes: jackrabbit-spi-commons/target/classes/
+  classes: jackrabbit-spi-commons/$mvn.default.classes
   commands:
   - sed -i '137,143 d' jackrabbit-spi2jcr/pom.xml
   - sed -i '93,99 d' jackrabbit-spi2jcr/pom.xml

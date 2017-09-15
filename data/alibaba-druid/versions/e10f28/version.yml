@@ -1,5 +1,5 @@
 build:
-  classes: target/classes/
+  classes: $mvn.default.classes
   commands:
   - sed -i 's#code.alibabatech.com/mvn/releases/#www.st.informatik.tu-darmstadt.de/artifacts/mubench/mvn/#g'
     pom.xml

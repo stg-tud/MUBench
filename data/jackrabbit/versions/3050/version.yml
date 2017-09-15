@@ -1,5 +1,5 @@
 build:
-  classes: jackrabbit-jcr2spi/target/classes/
+  classes: jackrabbit-jcr2spi/$mvn.default.classes
   commands:
   - mvn compile -Dmaven.compiler.failOnError=fals
   src: jackrabbit-jcr2spi/src/main/java/
