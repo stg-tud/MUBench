@@ -6,15 +6,16 @@ class TaskRunner:
         self.tasks = tasks
 
     def run(self):
-        self.__run(enumerate(self.tasks))
+        self.__run(enumerate(self.tasks), [])
 
-    def __run(self, tasks, result = None):
+    def __run(self, tasks, previous_results):
         task = next(tasks)[1]
 
-        if result:
-            results = task.run(result)
+        if previous_results:
+            results = task.run(*previous_results)
         else:
             results = task.run()
 
         for result in results:
-            self.__run(tasks, result)
+            previous_results.append(result)
+            self.__run(tasks, previous_results)

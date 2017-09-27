@@ -21,3 +21,15 @@ class TestTaskRunner:
         uut.run()
 
         second_task.run.assert_called_once_with(":some string:")
+
+    def test_runs_subsequent_task_with_results_of_all_previous_tasks(self):
+        first_task = MagicMock()
+        first_task.run.return_value = [":some string:"]
+        second_task = MagicMock()
+        second_task.run.return_value = [42]
+        third_task = MagicMock()
+        uut = TaskRunner([first_task, second_task, third_task])
+
+        uut.run()
+
+        third_task.run.assert_called_once_with(":some string:", 42)
