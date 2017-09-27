@@ -50,6 +50,16 @@ class TestTaskRunner:
 
         second_task.assert_called_once_with()
 
+    def test_runs_subsequent_task_with_results_of_previous_tasks_in_any_order(self):
+        first_task = VoidTask([":some string:"])
+        second_task = StringConsumingTask([42])
+        third_task = IntAndStringConsumingTask()
+        uut = TaskRunner([first_task, second_task, third_task])
+
+        uut.run()
+
+        third_task.assert_called_once_with(42, ":some string:")
+
     def test_runs_subsequent_task_with_generic_result_of_previous_task(self):
         first_task = VoidTask([[1,2]])
         second_task = ListConsumingTask()
@@ -88,6 +98,12 @@ class StringConsumingTask(MockTask):
 class StringAndIntConsumingTask(MockTask):
     def run(self, s: str, i: int):
         self.calls.append((s, i))
+        return self.results
+
+
+class IntAndStringConsumingTask(MockTask):
+    def run(self, i: int, s: str):
+        self.calls.append((i, s))
         return self.results
 
 
