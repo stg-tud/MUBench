@@ -50,6 +50,15 @@ class TestTaskRunner:
 
         second_task.assert_called_once_with()
 
+    def test_runs_subsequent_task_with_generic_result_of_previous_task(self):
+        first_task = VoidTask([[1,2]])
+        second_task = ListConsumingTask()
+        uut = TaskRunner([first_task, second_task])
+
+        uut.run()
+
+        second_task.assert_called_once_with([1,2])
+
 
 class MockTask:
     def __init__(self, results: List = None):
@@ -79,4 +88,10 @@ class StringConsumingTask(MockTask):
 class StringAndIntConsumingTask(MockTask):
     def run(self, s: str, i: int):
         self.calls.append((s, i))
+        return self.results
+
+
+class ListConsumingTask(MockTask):
+    def run(self, l: List):
+        self.calls.append((l,))
         return self.results

@@ -36,7 +36,7 @@ class TaskRunner:
     @staticmethod
     def __find_value(parameter: Parameter, previous_results):
         for value in previous_results:
-            if parameter.annotation == type(value):
+            if isinstance(value, parameter.annotation):
                 return value
         return None
 
