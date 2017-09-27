@@ -31,7 +31,7 @@ class TestTaskRunner:
 
         second_task.assert_has_calls([(":some string:",), (":other string:",)])
 
-    def test_runs_subsequent_task_with_results_of_all_previous_tasks(self):
+    def test_runs_subsequent_task_with_all_results_of_previous_tasks(self):
         first_task = VoidTask([":some string:"])
         second_task = StringConsumingTask([42])
         third_task = StringAndIntConsumingTask()
@@ -41,7 +41,7 @@ class TestTaskRunner:
 
         third_task.assert_called_once_with(":some string:", 42)
 
-    def test_drops_previous_results_if_subsequent_task_does_not_declare_respective_parameter(self):
+    def test_runs_subsequent_task_with_required_results_of_previous_tasks(self):
         first_task = VoidTask([":some string:"])
         second_task = VoidTask()
         uut = TaskRunner([first_task, second_task])
