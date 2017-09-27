@@ -160,6 +160,9 @@ mubench.reviewsite/upload/
 mubench.reviewsite/vendor/
 mubench.reviewsite/composer.phar
 
+# review-site database for local testing
+mubench.reviewsite/*.sqlite
+
 # local default-configuration file
 /default.config
 
