@@ -1,7 +1,8 @@
-from nose.tools import assert_in
 from typing import List
 
-from tasks.task_runner import TaskRunner
+from nose.tools import assert_in, assert_raises, assert_equals
+
+from tasks.task_runner import TaskRunner, TaskParameterUnavailableWarning
 
 
 class TestTaskRunner:
@@ -68,6 +69,17 @@ class TestTaskRunner:
         uut.run()
 
         second_task.assert_called_once_with([1,2])
+
+    def test_reports_if_a_task_requires_an_unavailable_parameter(self):
+        first_task = VoidTask([42])
+        second_task = StringConsumingTask()
+        uut = TaskRunner([first_task, second_task])
+
+        with assert_raises(TaskParameterUnavailableWarning) as context:
+            uut.run()
+
+        actual_message = str(context.exception)
+        assert_equals("Missing parameter s for task StringConsumingTask", actual_message)
 
 
 class MockTask:
