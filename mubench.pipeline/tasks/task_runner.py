@@ -15,6 +15,9 @@ class TaskRunner:
         parameter_values = self.__get_parameter_values(task, previous_results)
         results = task.run(*parameter_values)
         for result in results:
+            result_type_already_exists = type(result) in [type(previous_result) for previous_result in previous_results]
+            if result_type_already_exists:
+                raise TaskParameterDuplicateTypeWarning(task, type(result))
             next_results = previous_results + [result]
             self.__run(current_task_index + 1, next_results)
 
@@ -46,3 +49,9 @@ class TaskParameterUnavailableWarning(UserWarning):
         super().__init__("Missing parameter {} for task {}".format(parameter.name, type(task).__name__))
         self.task = task
         self.parameter = parameter
+
+
+class TaskParameterDuplicateTypeWarning(UserWarning):
+    def __init__(self, task, type_: type):
+        super().__init__(
+            "Parameter type {} provided by task {} already exists".format(type_.__name__, type(task).__name__))

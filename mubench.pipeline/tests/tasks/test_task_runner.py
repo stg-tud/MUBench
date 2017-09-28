@@ -2,7 +2,7 @@ from typing import List
 
 from nose.tools import assert_in, assert_raises, assert_equals
 
-from tasks.task_runner import TaskRunner, TaskParameterUnavailableWarning
+from tasks.task_runner import TaskRunner, TaskParameterUnavailableWarning, TaskParameterDuplicateTypeWarning
 
 
 class TestTaskRunner:
@@ -80,6 +80,17 @@ class TestTaskRunner:
 
         actual_message = str(context.exception)
         assert_equals("Missing parameter s for task StringConsumingTask", actual_message)
+
+    def test_reports_if_a_task_returns_the_same_type_as_a_previous_task(self):
+        first_task = VoidTask(['-some-string-'])
+        second_task = StringConsumingTask(['-some-other-string-'])
+        uut = TaskRunner([first_task, second_task])
+
+        with assert_raises(TaskParameterDuplicateTypeWarning) as context:
+            uut.run()
+
+        actual_message = str(context.exception)
+        assert_equals("Parameter type str provided by task StringConsumingTask already exists", actual_message)
 
 
 class MockTask:
