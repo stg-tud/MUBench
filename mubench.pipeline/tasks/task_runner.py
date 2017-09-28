@@ -27,6 +27,8 @@ class TaskRunner:
         for parameter in TaskRunner.__get_parameters(task):
             parameter_value = TaskRunner.__find_value(parameter, previous_results)
             if parameter_value:
+                if type(parameter_value) in [type(existing_value) for existing_value in parameter_values]:
+                    raise TaskRequestsDuplicateTypeWarning(task, type(parameter_value))
                 parameter_values.append(parameter_value)
             else:
                 raise TaskParameterUnavailableWarning(task, parameter)
@@ -55,3 +57,8 @@ class TaskParameterDuplicateTypeWarning(UserWarning):
     def __init__(self, task, type_: type):
         super().__init__(
             "Parameter type {} provided by task {} already exists".format(type_.__name__, type(task).__name__))
+
+
+class TaskRequestsDuplicateTypeWarning(UserWarning):
+    def __init__(self, task, type_: type):
+        super().__init__("Task {} requests multiple parameters of type {}".format(type(task).__name__, type_.__name__))

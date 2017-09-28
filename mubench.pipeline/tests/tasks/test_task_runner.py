@@ -2,7 +2,8 @@ from typing import List
 
 from nose.tools import assert_in, assert_raises, assert_equals
 
-from tasks.task_runner import TaskRunner, TaskParameterUnavailableWarning, TaskParameterDuplicateTypeWarning
+from tasks.task_runner import TaskRunner, TaskParameterUnavailableWarning, TaskParameterDuplicateTypeWarning, \
+    TaskRequestsDuplicateTypeWarning
 
 
 class TestTaskRunner:
@@ -92,6 +93,17 @@ class TestTaskRunner:
         actual_message = str(context.exception)
         assert_equals("Parameter type str provided by task StringConsumingTask already exists", actual_message)
 
+    def test_reports_if_a_task_requests_the_same_type_multiple_times(self):
+        first_task = VoidTask([42])
+        second_task = DuplicateIntRequestingTask()
+        uut = TaskRunner([first_task, second_task])
+
+        with assert_raises(TaskRequestsDuplicateTypeWarning) as context:
+            uut.run()
+
+        actual_message = str(context.exception)
+        assert_equals("Task DuplicateIntRequestingTask requests multiple parameters of type int", actual_message)
+
 
 class MockTask:
     def __init__(self, results: List = None):
@@ -133,4 +145,10 @@ class IntAndStringConsumingTask(MockTask):
 class ListConsumingTask(MockTask):
     def run(self, l: List):
         self.calls.append((l,))
+        return self.results
+
+
+class DuplicateIntRequestingTask(MockTask):
+    def run(self, i: int, j: int):
+        self.calls.append((i, j))
         return self.results
