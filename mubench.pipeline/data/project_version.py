@@ -16,7 +16,8 @@ class ProjectVersion:
 
     VARS_CLASSES = {
                 '$gradle.default.classes': "build/classes/java/main/",
-                '$mvn.default.classes': "target/classes/"
+                '$mvn.default.classes': "target/classes/",
+                '$mvn.default.test-classes': "target/test-classes/"
             }
 
     def __init__(self, base_path: str, project_id: str, version_id: str):
