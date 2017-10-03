@@ -1,4 +1,5 @@
 from typing import List
+from unittest.mock import MagicMock
 
 from nose.tools import assert_in, assert_raises, assert_equals
 
@@ -104,6 +105,25 @@ class TestTaskRunner:
         actual_message = str(context.exception)
         assert_equals("Task DuplicateIntRequestingTask requests multiple parameters of type int", actual_message)
 
+    def test_reports_when_a_task_fails(self):
+        task = FailingTask("-error-")
+        uut = TaskRunner([task])
+        uut.logger = MagicMock()
+
+        uut.run()
+
+        uut.logger.warning.assert_called_once_with("Task FailingTask failed with exception -error-")
+
+    def test_continues_with_next_input_if_task_fails(self):
+        first_task = VoidTask(results=["-some string-", "-some other string-"])
+        second_task = FailingStringConsumingTask("-error-")
+        uut = TaskRunner([first_task, second_task])
+        uut.logger = MagicMock()
+
+        uut.run()
+
+        second_task.assert_called_once_with("-some other string-")
+
 
 class MockTask:
     def __init__(self, results: List = None):
@@ -152,3 +172,23 @@ class DuplicateIntRequestingTask(MockTask):
     def run(self, i: int, j: int):
         self.calls.append((i, j))
         return self.results
+
+
+class FailingTask(MockTask):
+    def __init__(self, message: str = "", results = None):
+        super().__init__(results)
+        self.message = message
+
+    def run(self):
+        self.calls.append(())
+        raise ValueError(self.message)
+
+
+class FailingStringConsumingTask(MockTask):
+    def __init__(self, message: str = "", results = None):
+        super().__init__(results)
+        self.message = message
+
+    def run(self, s: str):
+        self.calls.append((s,))
+        raise ValueError(self.message)

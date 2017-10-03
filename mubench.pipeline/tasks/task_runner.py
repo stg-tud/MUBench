@@ -1,3 +1,4 @@
+import logging
 from inspect import signature, Parameter
 
 from typing import List
@@ -6,6 +7,7 @@ from typing import List
 class TaskRunner:
     def __init__(self, tasks: List):
         self.tasks = tasks
+        self.logger = logging.getLogger("taskrunner")
 
     def run(self):
         self.__run(0, [])
@@ -13,7 +15,13 @@ class TaskRunner:
     def __run(self, current_task_index: int, previous_results: List):
         task = self.tasks[current_task_index]
         parameter_values = self.__get_parameter_values(task, previous_results)
-        results = task.run(*parameter_values)
+
+        try:
+            results = task.run(*parameter_values)
+        except Exception as exception:
+            self.logger.warning("Task {} failed with exception {}".format(type(task).__name__, exception))
+            results = []
+
         for result in results:
             result_type_already_exists = type(result) in [type(previous_result) for previous_result in previous_results]
             if result_type_already_exists:
