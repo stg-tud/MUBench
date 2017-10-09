@@ -11,14 +11,17 @@ from data.detectors import find_detector, get_available_detector_ids
 from data.experiments import ProvidedPatternsExperiment, TopFindingsExperiment, BenchmarkExperiment
 from task_runner import TaskRunner
 from tasks.implementations import stats
-from tasks.implementations.dataset_check import DatasetCheck
-from tasks.implementations.requirements_check import RequirementsCheck
 from tasks.implementations.checkout import Checkout
+from tasks.implementations.collect_misuses import CollectMisuses
+from tasks.implementations.collect_projects import CollectProjects
+from tasks.implementations.collect_versions import CollectVersions
 from tasks.implementations.compile import Compile
+from tasks.implementations.dataset_check import DatasetCheck
 from tasks.implementations.detect import Detect
-from tasks.implementations.info import Info
+from tasks.implementations.info import ProjectInfo, VersionInfo, MisuseInfo
 from tasks.implementations.publish_findings_task import PublishFindingsTask
 from tasks.implementations.publish_metadata_task import PublishMetadataTask
+from tasks.implementations.requirements_check import RequirementsCheck
 from utils import command_line_util
 from utils.dataset_util import get_available_datasets, get_available_dataset_ids, get_white_list
 from utils.logging import IndentFormatter
@@ -69,7 +72,15 @@ class Benchmark:
         self.runner.add(stats_calculator)
 
     def _setup_info(self):
-        self.runner.add(Info(Benchmark.CHECKOUTS_PATH, Benchmark.COMPILES_PATH))
+        collect_projects = CollectProjects(benchmark.DATA_PATH)
+        collect_versions = CollectVersions()
+        collect_misuses = CollectMisuses()
+        project_info = ProjectInfo(Benchmark.CHECKOUTS_PATH, benchmark.COMPILES_PATH)
+        version_info = VersionInfo(Benchmark.CHECKOUTS_PATH, benchmark.COMPILES_PATH)
+        misuse_info = MisuseInfo(Benchmark.CHECKOUTS_PATH, benchmark.COMPILES_PATH)
+        from tasks.task_runner import TaskRunner as NewTaskRunner
+        self.runner = NewTaskRunner([collect_projects, project_info, collect_versions, version_info, collect_misuses,
+                                     misuse_info])
 
     def _setup_checkout(self):
         checkout_handler = Checkout(Benchmark.CHECKOUTS_PATH, self.config.force_checkout,
