@@ -64,9 +64,16 @@ class Benchmark:
         self.runner.add(RequirementsCheck())
 
     def _setup_dataset_check(self):
-        self.runner.add(DatasetCheck(get_available_datasets(self.DATASETS_FILE_PATH),
+        create_data_filter = CreateDataFilter(self.white_list, self.black_list)
+        collect_projects = CollectProjects(benchmark.DATA_PATH)
+        collect_versions = CollectVersions()
+        collect_misuses = CollectMisuses()
+        dataset_check = DatasetCheck(get_available_datasets(self.DATASETS_FILE_PATH),
                                      self.CHECKOUTS_PATH,
-                                     self.DATA_PATH))
+                                     self.DATA_PATH)
+        from tasks.task_runner import TaskRunner as NewTaskRunner
+        self.runner = NewTaskRunner([create_data_filter, collect_projects, collect_versions, collect_misuses,
+                                     dataset_check])
 
     def _setup_stats(self) -> None:
         stats_calculator = stats.get_calculator(self.config.script)
