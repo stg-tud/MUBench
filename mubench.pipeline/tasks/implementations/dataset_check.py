@@ -1,15 +1,13 @@
 import logging
-
-from typing import Dict, List, Optional, Any
 from os import listdir
 from os.path import join, isdir, basename, exists
+from typing import Dict, List
 
 from data.misuse import Misuse
 from data.project import Project
 from data.project_version import ProjectVersion
 from data.snippets import get_snippets
 from tasks.project_version_misuse_task import ProjectVersionMisuseTask
-
 
 VALID_VIOLATION_TYPES = [
         'missing/call',
@@ -36,15 +34,15 @@ class DatasetCheck(ProjectVersionMisuseTask):
         self.logger = logging.getLogger("datasetcheck")
         self.datasets = datasets
         self.checkout_base_path = checkout_base_path
-        self.data_base_path = data_base_path
         self.misuses_not_listed_in_any_version = []
         self.registered_entries = set()
+        self.misuses_not_listed_in_any_version = self._get_all_misuses(data_base_path)
 
-    def start(self):
-        if self.white_list or self.black_list:
-            self.logger.warning("Using filter option(s). You may encounter invalid warnings!")
-
-        self.misuses_not_listed_in_any_version = self._get_all_misuses(self.data_base_path)
+    def run(self, project: Project, version: ProjectVersion, misuse: Misuse):
+        self.process_project(project)
+        self.process_project_version(project, version)
+        self.process_project_version_misuse(project, version, misuse)
+        return []
 
     def process_project(self, project: Project):
         self.logger = logging.getLogger("datasetcheck.project")
