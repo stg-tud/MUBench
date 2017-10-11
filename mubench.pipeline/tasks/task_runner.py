@@ -11,6 +11,9 @@ class TaskRunner:
 
     def run(self):
         self.__run(0, [])
+        for task in self.tasks:
+            if callable(getattr(task, 'end', None)):
+                task.end()
 
     def __run(self, current_task_index: int, previous_results: List):
         task = self.tasks[current_task_index]
