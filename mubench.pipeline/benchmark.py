@@ -16,6 +16,7 @@ from tasks.implementations.collect_misuses import CollectMisuses
 from tasks.implementations.collect_projects import CollectProjects
 from tasks.implementations.collect_versions import CollectVersions
 from tasks.implementations.compile import Compile
+from tasks.implementations.create_data_filter import CreateDataFilter
 from tasks.implementations.dataset_check import DatasetCheck
 from tasks.implementations.detect import Detect
 from tasks.implementations.info import ProjectInfo, VersionInfo, MisuseInfo
@@ -47,17 +48,17 @@ class Benchmark:
 
         self.config = config
 
-        white_list = []
-        black_list = []
+        self.white_list = []
+        self.black_list = []
         if 'white_list' in config:
-            white_list.extend(config.white_list)
+            self.white_list.extend(config.white_list)
         if 'black_list' in config:
-            black_list.extend(config.black_list)
+            self.black_list.extend(config.black_list)
 
         if 'dataset' in config:
-            white_list.extend(get_white_list(self.DATASETS_FILE_PATH, config.dataset))
+            self.white_list.extend(get_white_list(self.DATASETS_FILE_PATH, config.dataset))
 
-        self.runner = TaskRunner(Benchmark.DATA_PATH, white_list, black_list)
+        self.runner = TaskRunner(Benchmark.DATA_PATH, self.white_list, self.black_list)
 
     def _setup_check(self):
         self.runner.add(RequirementsCheck())
@@ -72,6 +73,7 @@ class Benchmark:
         self.runner.add(stats_calculator)
 
     def _setup_info(self):
+        create_data_filter = CreateDataFilter(self.white_list, self.black_list)
         collect_projects = CollectProjects(benchmark.DATA_PATH)
         collect_versions = CollectVersions()
         collect_misuses = CollectMisuses()
@@ -79,8 +81,8 @@ class Benchmark:
         version_info = VersionInfo(Benchmark.CHECKOUTS_PATH, benchmark.COMPILES_PATH)
         misuse_info = MisuseInfo(Benchmark.CHECKOUTS_PATH, benchmark.COMPILES_PATH)
         from tasks.task_runner import TaskRunner as NewTaskRunner
-        self.runner = NewTaskRunner([collect_projects, project_info, collect_versions, version_info, collect_misuses,
-                                     misuse_info])
+        self.runner = NewTaskRunner([create_data_filter, collect_projects, project_info, collect_versions, version_info,
+                                     collect_misuses, misuse_info])
 
     def _setup_checkout(self):
         checkout_handler = Checkout(Benchmark.CHECKOUTS_PATH, self.config.force_checkout,
@@ -155,6 +157,7 @@ class Benchmark:
             self._setup_dataset_check()
 
         self.runner.run()
+
 
 available_detectors = get_available_detector_ids(Benchmark.DETECTORS_PATH)
 available_scripts = stats.get_available_calculator_names()
