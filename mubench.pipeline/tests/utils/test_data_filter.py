@@ -6,6 +6,10 @@ class TestDataFilter:
         uut = DataFilter([], ["-id-"])
         assert uut.is_filtered("-id-")
 
-    def test_does_not_filter_whitelisted_id(self):
+    def test_filters_non_whitelisted_id(self):
+        uut = DataFilter(["-other-id-"], [])
+        assert uut.is_filtered("-id-")
+
+    def test_filters_blacklisted_and_whitelisted_id(self):
         uut = DataFilter(["-id-"], ["-id-"])
-        assert not uut.is_filtered("-id-")
+        assert uut.is_filtered("-id-")
