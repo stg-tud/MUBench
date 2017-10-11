@@ -8,4 +8,4 @@ class CreateDataFilter:
         self.data_filter = DataFilter(white_list, black_list)
 
     def run(self):
-        return self.data_filter
+        return [self.data_filter]
