@@ -5,15 +5,15 @@ from os.path import join, exists, dirname, relpath
 from shutil import rmtree
 from tempfile import mkdtemp
 from typing import List
-from unittest.mock import MagicMock, patch, call, ANY
+from unittest.mock import MagicMock, ANY
 
-from nose.tools import assert_equals, assert_in
+from nose.tools import assert_raises
 
 from data.pattern import Pattern
 from tasks.implementations.compile import Compile
+from tests.test_utils.data_util import create_version, create_project, create_misuse
 from utils.io import create_file
 from utils.shell import CommandFailedError
-from tests.test_utils.data_util import create_version, create_project, create_misuse
 
 
 class TestCompile:
@@ -34,9 +34,9 @@ class TestCompile:
                                             "revision": "0"},
                                       misuses=[])
 
-        checkout = self.version.get_checkout(self.checkout_base_path)
+        self.checkout = self.version.get_checkout(self.checkout_base_path)
 
-        self.checkout_path = checkout.checkout_dir
+        self.checkout_path = self.checkout.checkout_dir
         self.source_path = join(self.checkout_path, self.source_dir)
         makedirs(self.source_path)
 
@@ -50,7 +50,7 @@ class TestCompile:
         self.pattern_classes_path = join(self.base_path, "patterns-classes")
         self.dep_path = join(self.base_path, "dependencies")
 
-        self.uut = Compile(self.checkout_base_path, self.compile_base_path, False, False)
+        self.uut = Compile(self.compile_base_path, False, False)
 
     def teardown(self):
         rmtree(self.temp_dir, ignore_errors=True)
@@ -74,7 +74,7 @@ class TestCompile:
         self.mock_with_fake_compile()
         create_file(join(self.source_path, "a.file"))
 
-        self.uut.process_project_version(self.project, self.version)
+        self.uut.run(self.version, self.checkout)
 
         assert exists(join(self.original_sources_path, "a.file"))
 
@@ -83,7 +83,7 @@ class TestCompile:
         create_file(join(self.source_path, "mu.file"))
         self.version.misuses.append(create_misuse("1", meta={"location": {"file": "mu.file"}}, project=self.project))
 
-        self.uut.process_project_version(self.project, self.version)
+        self.uut.run(self.version, self.checkout)
 
         assert exists(join(self.misuse_source_path, "mu.file"))
 
@@ -91,7 +91,7 @@ class TestCompile:
         self.mock_with_fake_compile()
         self.create_misuse_with_pattern("m", "a.java")
 
-        self.uut.process_project_version(self.project, self.version)
+        self.uut.run(self.version, self.checkout)
 
         assert exists(join(self.pattern_sources_path, "m", "a.java"))
 
@@ -101,7 +101,7 @@ class TestCompile:
         create_file(join(self.source_path, "a.file"))
         self.uut.force_compile = True
 
-        self.uut.process_project_version(self.project, self.version)
+        self.uut.run(self.version, self.checkout)
 
         assert exists(join(self.original_sources_path, "a.file"))
 
@@ -110,7 +110,7 @@ class TestCompile:
         create_file(join(self.original_sources_path, "old.file"))
         self.uut.force_compile = True
 
-        self.uut.process_project_version(self.project, self.version)
+        self.uut.run(self.version, self.checkout)
 
         assert not exists(join(self.original_sources_path, "old.file"))
 
@@ -120,7 +120,7 @@ class TestCompile:
         makedirs(join(self.pattern_sources_path, "m"))
         self.uut.force_compile = True
 
-        self.uut.process_project_version(self.project, self.version)
+        self.uut.run(self.version, self.checkout)
 
         assert exists(join(self.pattern_sources_path, "m", "a.java"))
 
@@ -128,15 +128,13 @@ class TestCompile:
         self.mock_with_fake_compile()
         del self.version._YAML["build"]
 
-        response = self.uut.process_project_version(self.project, self.version)
-
-        assert_equals([self.version.id], response)
+        assert_raises(UserWarning, self.uut.run, self.version, self.checkout)
 
     def test_passes_compile_commands(self):
         self.mock_with_fake_compile()
         self.version._YAML["build"]["commands"] = ["a", "b"]
 
-        self.uut.process_project_version(self.project, self.version)
+        self.uut.run(self.version, self.checkout)
 
         self.uut._compile.assert_called_with(["a", "b"],
                                              self.build_path,
@@ -148,7 +146,7 @@ class TestCompile:
         self.mock_with_fake_compile()
         create_file(join(self.version_path, "compile", "additional.file"))
 
-        self.uut.process_project_version(self.project, self.version)
+        self.uut.run(self.version, self.checkout)
 
         assert exists(join(self.build_path, "additional.file"))
 
@@ -157,7 +155,7 @@ class TestCompile:
         makedirs(self.original_classes_path)
         create_file(join(self.source_path, "some.file"))
 
-        self.uut.process_project_version(self.project, self.version)
+        self.uut.run(self.version, self.checkout)
 
         assert not exists(join(self.original_classes_path, "some.file"))
 
@@ -167,7 +165,7 @@ class TestCompile:
         self.mock_with_fake_compile()
         self.uut.force_compile = True
 
-        self.uut.process_project_version(self.project, self.version)
+        self.uut.run(self.version, self.checkout)
 
         assert self.uut._compile.call_args_list
 
@@ -175,16 +173,14 @@ class TestCompile:
         self.mock_with_fake_compile()
         self.uut._compile.side_effect = CommandFailedError("-cmd-", "-error message-")
 
-        response = self.uut.process_project_version(self.project, self.version)
-
-        assert_equals([self.version.id], response)
+        assert_raises(UserWarning, self.uut.run, self.version, self.checkout)
 
     def test_copies_misuse_classes(self):
         self.mock_with_fake_compile()
         create_file(join(self.source_path, "mu.java"))
         self.version.misuses.append(create_misuse("1", meta={"location": {"file": "mu.java"}}, project=self.project))
 
-        self.uut.process_project_version(self.project, self.version)
+        self.uut.run(self.version, self.checkout)
 
         assert exists(join(self.misuse_classes_path, "mu.class"))
 
@@ -201,7 +197,7 @@ class TestCompile:
         create_file(join(self.source_path, "mu.java"))
         self.version.misuses.append(create_misuse("1", meta={"location": {"file": "mu.java"}}, project=self.project))
 
-        self.uut.process_project_version(self.project, self.version)
+        self.uut.run(self.version, self.checkout)
 
         assert exists(join(self.misuse_classes_path, "mu.class"))
         assert exists(join(self.misuse_classes_path, "mu$1.class"))
@@ -211,7 +207,7 @@ class TestCompile:
         self.mock_with_fake_compile()
         self.create_misuse_with_pattern("m", "a.java")
 
-        self.uut.process_project_version(self.project, self.version)
+        self.uut.run(self.version, self.checkout)
 
         assert exists(join(self.pattern_classes_path, "m", "a.class"))
 
@@ -219,7 +215,7 @@ class TestCompile:
         self.mock_with_fake_compile()
         self.create_misuse_with_pattern("m", join("a", "b.java"))
 
-        self.uut.process_project_version(self.project, self.version)
+        self.uut.run(self.version, self.checkout)
 
         assert exists(join(self.pattern_classes_path, "m", "a", "b.class"))
 
@@ -230,7 +226,7 @@ class TestCompile:
         makedirs(join(self.pattern_classes_path, "m"))
         self.uut.force_compile = True
 
-        self.uut.process_project_version(self.project, self.version)
+        self.uut.run(self.version, self.checkout)
 
         assert exists(join(self.pattern_classes_path, "m", "a.class"))
 
