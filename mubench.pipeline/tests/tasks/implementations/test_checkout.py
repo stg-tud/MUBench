@@ -1,12 +1,12 @@
 import unittest
 from unittest.mock import MagicMock
 
-from nose.tools import assert_equals
+from nose.tools import assert_equals, assert_raises
 
 from data.project_checkout import ProjectCheckout
 from tasks.implementations.checkout import Checkout
-from utils.shell import CommandFailedError
 from tests.test_utils.data_util import create_project, create_version
+from utils.shell import CommandFailedError
 
 
 class TestCheckout(unittest.TestCase):
@@ -25,41 +25,37 @@ class TestCheckout(unittest.TestCase):
     def test_initial_checkout(self):
         self.checkout.exists = MagicMock(return_value=False)
 
-        response = self.uut.process_project_version(self.project, self.version)
+        response = self.uut.run(self.version)
 
         self.checkout.delete.assert_not_called()
         self.checkout.create.assert_called_with()
-        assert_equals([], response)
+        assert_equals([self.checkout], response)
 
     def test_exists(self):
         self.checkout.exists = MagicMock(return_value=True)
 
-        response = self.uut.process_project_version(self.project, self.version)
+        response = self.uut.run(self.version)
 
         self.checkout.delete.assert_not_called()
         self.checkout.create.assert_not_called()
-        assert_equals([], response)
+        assert_equals([self.checkout], response)
 
     def test_error_get_checkout(self):
         self.version.get_checkout = MagicMock(side_effect=ValueError)
 
-        response = self.uut.process_project_version(self.project, self.version)
-
-        assert_equals([self.version.id], response)
+        assert_raises(UserWarning, self.uut.run, self.version)
 
     def test_error_checkout(self):
         self.checkout.exists = MagicMock(return_value=False)
         self.checkout.create = MagicMock(side_effect=CommandFailedError("-cmd-", "-out-"))
 
-        response = self.uut.process_project_version(self.project, self.version)
-
-        assert_equals([self.version.id], response)
+        assert_raises(UserWarning, self.uut.run, self.version)
 
     def test_force_checkout(self):
         self.checkout.exists = MagicMock(return_value=False)  # should delete before check
         self.uut.force_checkout = True
 
-        self.uut.process_project_version(self.project, self.version)
+        self.uut.run(self.version)
 
         self.checkout.delete.assert_called_with()
         self.checkout.create.assert_called_with()
