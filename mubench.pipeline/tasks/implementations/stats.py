@@ -7,11 +7,10 @@ import yaml
 from data.misuse import Misuse
 from data.project import Project
 from data.project_version import ProjectVersion
-from tasks.project_version_misuse_task import ProjectVersionMisuseTask
 
 
-class StatCalculator(ProjectVersionMisuseTask):
-    def process_project_version_misuse(self, project: Project, version: ProjectVersion, misuse: Misuse):
+class StatCalculator:
+    def run(self, project: Project, version: ProjectVersion, misuse: Misuse):
         raise NotImplementedError
 
     def end(self):
@@ -42,7 +41,7 @@ class general(StatCalculator):
 
         self.logger = logging.getLogger('stats.general')
 
-    def process_project_version_misuse(self, project: Project, version: ProjectVersion, misuse: Misuse):
+    def run(self, project: Project, version: ProjectVersion, misuse: Misuse):
         self.number_of_misuses += 1
         if misuse.is_crash:
             self.number_of_crashes += 1
@@ -66,7 +65,7 @@ class violation(StatCalculator):
 
         self.logger = logging.getLogger('stats.characteristic')
 
-    def process_project_version_misuse(self, project: Project, version: ProjectVersion, misuse: Misuse):
+    def run(self, project: Project, version: ProjectVersion, misuse: Misuse):
         chars = misuse.characteristics
         for char in chars:
             seg = char.split('/')
@@ -104,7 +103,7 @@ class project(StatCalculator):
 
         self.logger = logging.getLogger('stats.project')
 
-    def process_project_version_misuse(self, project: Project, version: ProjectVersion, misuse: Misuse):
+    def run(self, project: Project, version: ProjectVersion, misuse: Misuse):
         projectname = project.name
         project = self.projects.get(projectname, {"misuses": 0, "crashes": 0})
         project["misuses"] += 1
@@ -136,7 +135,7 @@ class source(StatCalculator):
                 sources[source]["crashes"] = 0
         self.sources = sources
 
-    def process_project_version_misuse(self, project: Project, version: ProjectVersion, misuse: Misuse):
+    def run(self, project: Project, version: ProjectVersion, misuse: Misuse):
         sourcename = misuse.source
         source = self.sources[sourcename]
         source["misuses"] += 1
@@ -162,7 +161,7 @@ class misusesbytype(StatCalculator):
     def start(self):
         self.index.clear()
 
-    def process_project_version_misuse(self, project: Project, version: ProjectVersion, misuse: Misuse):
+    def run(self, project: Project, version: ProjectVersion, misuse: Misuse):
         for characteristic in misuse.characteristics:
             if characteristic not in self.index:
                 self.index[characteristic] = []
