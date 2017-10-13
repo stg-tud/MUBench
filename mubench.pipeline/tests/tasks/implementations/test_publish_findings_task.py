@@ -4,17 +4,18 @@ from unittest.mock import MagicMock, patch
 from nose.tools import assert_equals
 
 from data.detector import Detector
+from data.detector_execution import DetectorExecution
 from data.experiments import Experiment
 from data.finding import SpecializedFinding
-from data.snippets import Snippet, SnippetUnavailableException
 from data.run import Run
-from tasks.implementations.publish_findings_task import PublishFindingsTask
+from data.snippets import Snippet, SnippetUnavailableException
+from tasks.implementations.publish_findings import PublishFindings
 from tests.data.stub_detector import StubDetector
 from tests.data.test_misuse import create_misuse
 from tests.test_utils.data_util import create_project, create_version
 
 
-@patch("tasks.implementations.publish_findings_task.post")
+@patch("tasks.implementations.publish_findings.post")
 class TestPublishFindingsTask:
     # noinspection PyAttributeOutsideInit
     def setup(self):
@@ -22,8 +23,10 @@ class TestPublishFindingsTask:
         self.project = create_project("-p-")
         self.misuse = create_misuse("-m-", project=self.project)
         self.version = create_version("-v-", project=self.project, misuses=[self.misuse])
+        self.version_compile = self.version.get_compile("/sources")
 
-        self.test_run = Run([MagicMock()])
+        test_execution = MagicMock()  # type: DetectorExecution
+        self.test_run = Run([test_execution])
         self.test_run.is_success = lambda: False
         self.test_run.is_error = lambda: False
         self.test_run.is_timeout = lambda: False
@@ -38,30 +41,29 @@ class TestPublishFindingsTask:
         self.experiment.get_run = lambda v: self.test_run
         self.experiment.detector = self.detector
 
-        self.uut = PublishFindingsTask(self.experiment, self.dataset, "/sources", "http://dummy.url", "-username-")
+        self.uut = PublishFindings(self.experiment, self.dataset, "/sources", "http://dummy.url",
+                                   "-username-", "-password-")
 
     def test_post_url(self, post_mock):
-        self.uut.process_project_version(self.project, self.version)
+        self.uut.run(self.project, self.version, self.test_run, self.version_compile)
 
         assert_equals(post_mock.call_args[0][0], "http://dummy.url/api/upload/" + self.experiment.id)
 
-    @patch("tasks.implementations.publish_findings_task.getpass.getpass")
+    @patch("tasks.implementations.publish_findings.getpass.getpass")
     def test_post_auth_prompt(self, pass_mock, post_mock):
         pass_mock.return_value = "-password-"
 
-        self.uut.start()  # asks for password once on start
-        self.uut.process_project_version(self.project, self.version)
+        self.uut.run(self.project, self.version, self.test_run, self.version_compile)
 
         assert_equals(post_mock.call_args[1]["username"], "-username-")
         assert_equals(post_mock.call_args[1]["password"], "-password-")
 
-    @patch("tasks.implementations.publish_findings_task.getpass.getpass")
+    @patch("tasks.implementations.publish_findings.getpass.getpass")
     def test_post_auth_provided(self, pass_mock, post_mock):
         pass_mock.side_effect = UserWarning("should skip prompt")
         self.uut.review_site_password = "-password-"
 
-        self.uut.start()  # should not ask for a password, since already set
-        self.uut.process_project_version(self.project, self.version)
+        self.uut.run(self.project, self.version, self.test_run, self.version_compile)
 
         assert_equals(post_mock.call_args[1]["username"], "-username-")
         assert_equals(post_mock.call_args[1]["password"], "-password-")
@@ -76,7 +78,7 @@ class TestPublishFindingsTask:
         self.test_run.get_number_of_findings = lambda: 5
         self.test_run.get_potential_hits = lambda: potential_hits
 
-        self.uut.process_project_version(self.project, self.version)
+        self.uut.run(self.project, self.version, self.test_run, self.version_compile)
 
         assert_equals(post_mock.call_args[0][1], {
             "dataset": self.dataset,
@@ -100,7 +102,7 @@ class TestPublishFindingsTask:
             _create_finding({"rank": "-2-"}, file_paths=["-file2-"])
         ]
 
-        self.uut.process_project_version(self.project, self.version)
+        self.uut.run(self.project, self.version, self.test_run, self.version_compile)
 
         assert_equals(post_mock.call_args[1]["file_paths"], ["-file1-", "-file2-"])
 
@@ -112,7 +114,7 @@ class TestPublishFindingsTask:
             _create_finding({"rank": "-2-"}, file_paths=["-file2-"])
         ]
 
-        self.uut.process_project_version(self.project, self.version)
+        self.uut.run(self.project, self.version, self.test_run, self.version_compile)
 
         assert_equals(len(post_mock.call_args_list), 2)
         assert_equals(post_mock.call_args_list[0][1]["file_paths"], ["-file1-"])
@@ -126,7 +128,7 @@ class TestPublishFindingsTask:
             _create_finding({"rank": "-2-"}, file_paths=["-file3-", "-file4-"])
         ]
 
-        self.uut.process_project_version(self.project, self.version)
+        self.uut.run(self.project, self.version, self.test_run, self.version_compile)
 
         assert_equals(len(post_mock.call_args_list), 2)
 
@@ -134,7 +136,7 @@ class TestPublishFindingsTask:
         self.test_run.is_success = lambda: True
         self.test_run.get_potential_hits = lambda: [_create_finding({"rank": "42"}, snippets=[Snippet("-code-", 23)])]
 
-        self.uut.process_project_version(self.project, self.version)
+        self.uut.run(self.project, self.version, self.test_run, self.version_compile)
 
         assert_equals(post_mock.call_args[0][1]["potential_hits"][0]["target_snippets"],
                       [{"code": "-code-", "first_line_number": 23}])
@@ -145,7 +147,7 @@ class TestPublishFindingsTask:
         finding.get_snippets = MagicMock(side_effect=SnippetUnavailableException('-file-', ValueError('-failure-')))
         self.test_run.get_potential_hits = lambda: [finding]
 
-        self.uut.process_project_version(self.project, self.version)
+        self.uut.run(self.project, self.version, self.test_run, self.version_compile)
 
         assert_equals(post_mock.call_args[0][1]["potential_hits"][0]["target_snippets"], [])
 
@@ -154,7 +156,7 @@ class TestPublishFindingsTask:
         self.test_run.is_error = lambda: True
         self.test_run.get_runtime = lambda: 1337
 
-        self.uut.process_project_version(self.project, self.version)
+        self.uut.run(self.project, self.version, self.test_run, self.version_compile)
 
         assert_equals(post_mock.call_args[0][1], {
             "dataset": self.dataset,
@@ -172,7 +174,7 @@ class TestPublishFindingsTask:
         self.test_run.get_runtime = lambda: 1000000
         self.test_run.get_number_of_findings = lambda: 0
 
-        self.uut.process_project_version(self.project, self.version)
+        self.uut.run(self.project, self.version, self.test_run, self.version_compile)
 
         assert_equals(post_mock.call_args[0][1], {
             "dataset": self.dataset,
@@ -189,7 +191,7 @@ class TestPublishFindingsTask:
         self.test_run.get_runtime = lambda: 0
         self.test_run.get_number_of_findings = lambda: 0
 
-        self.uut.process_project_version(self.project, self.version)
+        self.uut.run(self.project, self.version, self.test_run, self.version_compile)
 
         assert_equals(post_mock.call_args[0][1], {
             "dataset": self.dataset,
@@ -202,18 +204,13 @@ class TestPublishFindingsTask:
             "potential_hits": []
         })
 
-    def test_nothing_to_upload(self, post_mock):
-        self.uut.end()
-
-        post_mock.assert_not_called()
-
     def test_with_markdown(self, post_mock):
         self.test_run.is_success = lambda: True
         potential_hits = [_create_finding({"list": ["hello", "world"], "dict": {"key": "value"}})]
         self.test_run.get_potential_hits = lambda: potential_hits
         self.test_run.get_run_info = lambda: {"info": {"k1": "v1"}}
 
-        self.uut.process_project_version(self.project, self.version)
+        self.uut.run(self.project, self.version, self.test_run, self.version_compile)
 
         assert_equals(post_mock.call_args[0][1], {
             "dataset": self.dataset,
