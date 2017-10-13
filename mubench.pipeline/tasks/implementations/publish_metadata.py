@@ -8,12 +8,11 @@ from requests import RequestException
 
 from data.misuse import Misuse
 from data.project import Project
-from tasks.project_misuse_task import ProjectMisuseTask
 from utils.io import safe_read
 from utils.web_util import post
 
 
-class PublishMetadataTask(ProjectMisuseTask):
+class PublishMetadata:
     def __init__(self, compiles_base_path: str,
                  review_site_url: str, review_site_user: str="", review_site_password: str=""):
         super().__init__()
@@ -24,14 +23,13 @@ class PublishMetadataTask(ProjectMisuseTask):
 
         self.__metadata = []  # type: List[Dict]
 
-    def start(self):
         if self.review_site_user and not self.review_site_password:
             self.review_site_password = getpass.getpass(
                 "Enter review-site password for '{}': ".format(self.review_site_user))
 
         self.__metadata.clear()
 
-    def process_project_misuse(self, project: Project, misuse: Misuse):
+    def run(self, project: Project, misuse: Misuse):
         versions = [version for version in project.versions if misuse in version.misuses]
         if len(versions) == 1:
             version = versions[0]
@@ -54,7 +52,7 @@ class PublishMetadataTask(ProjectMisuseTask):
             "patterns": self.__get_patterns(misuse)
         })
 
-        return self.ok()
+        return []
 
     def __get_snippets(self, misuse, version):
         version_compile = version.get_compile(self.compiles_base_path)
