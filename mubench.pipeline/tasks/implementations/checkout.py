@@ -1,29 +1,27 @@
 import logging
-from typing import List
 from tempfile import mkdtemp
+from typing import List
 
-from data.project import Project
+from data.project_checkout import ProjectCheckout
 from data.project_version import ProjectVersion
-from tasks.project_version_task import ProjectVersionTask
-from utils.shell import CommandFailedError
 from utils.io import copy_tree, remove_tree
+from utils.shell import CommandFailedError
 
 
-class Checkout(ProjectVersionTask):
+class Checkout:
     def __init__(self, checkouts_path: str, force_checkout: bool, use_temp_dir: bool):
         super().__init__()
         self.checkouts_path = checkouts_path
         self.force_checkout = force_checkout
         self.use_temp_dir = use_temp_dir
 
-    def process_project_version(self, project: Project, version: ProjectVersion) -> List[str]:
+    def run(self, version: ProjectVersion) -> List[ProjectCheckout]:
         logger = logging.getLogger("checkout")
 
         try:
             checkout = version.get_checkout(self.checkouts_path)
         except ValueError as e:
-            logger.error("Checkout data corrupted: %s", e)
-            return self.skip(version)
+            raise UserWarning("Checkout data corrupted: %s", e)
 
         try:
             if self.force_checkout:
@@ -44,11 +42,7 @@ class Checkout(ProjectVersionTask):
                 else:
                     checkout.create()
 
-            return self.ok()
+            return [checkout]
 
-        except CommandFailedError as e:
-            logger.error("Checkout failed: %s", e)
-            return self.skip(version)
-        except IOError:
-            logger.error("Checkout failed.", exc_info=True)
-            return self.skip(version)
+        except (CommandFailedError, IOError) as e:
+            raise UserWarning("Checkout failed: %s", e)
