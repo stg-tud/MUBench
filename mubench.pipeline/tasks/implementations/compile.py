@@ -1,7 +1,6 @@
 import logging
-import shutil
 import os
-import shlex
+import shutil
 from glob import glob
 from logging import Logger
 from os import makedirs
@@ -11,24 +10,20 @@ from typing import List, Set
 
 from data.build_command import BuildCommand
 from data.misuse import Pattern, Misuse
-from data.project import Project
+from data.project_checkout import ProjectCheckout
 from data.project_compile import ProjectCompile
 from data.project_version import ProjectVersion
-from tasks.project_version_task import ProjectVersionTask
 from utils.io import remove_tree, copy_tree
-from utils.shell import Shell, CommandFailedError
 
 
-class Compile(ProjectVersionTask):
-    def __init__(self, checkouts_base_path: str, compiles_base_path: str,
-                 force_compile: bool, use_temp_dir: bool):
+class Compile:
+    def __init__(self, compiles_base_path: str, force_compile: bool, use_temp_dir: bool):
         super().__init__()
-        self.checkouts_base_path = checkouts_base_path
         self.compiles_base_path = compiles_base_path
         self.force_compile = force_compile
         self.use_temp_dir = use_temp_dir
 
-    def process_project_version(self, project: Project, version: ProjectVersion):
+    def run(self, version: ProjectVersion, checkout: ProjectCheckout):
         logger = logging.getLogger("compile")
         logger.info("Compiling %s...", version)
         logger = logging.getLogger("compile.tasks")
@@ -50,7 +45,7 @@ class Compile(ProjectVersionTask):
 
             if needs_copy_sources or needs_compile:
                 logger.debug("Copying checkout to build directory...")
-                checkout_path = version.get_checkout(self.checkouts_base_path).checkout_dir
+                checkout_path = checkout.checkout_dir
                 copy_tree(checkout_path, build_path)
                 logger.debug("Copying additional resources...")
                 self.__copy_additional_compile_sources(version, build_path)
@@ -67,8 +62,7 @@ class Compile(ProjectVersionTask):
                 self.__copy_pattern_sources(version.misuses, project_compile)
 
             if not version.compile_commands:
-                logger.warning("Skipping compilation: not configured.")
-                return self.skip(version)
+                raise UserWarning("Skipping compilation: not configured.")
 
             if not needs_compile:
                 logger.debug("Already compiled project.")
@@ -96,11 +90,10 @@ class Compile(ProjectVersionTask):
                 copy_tree(build_path, project_compile.build_dir)
                 remove_tree(build_path)
         except Exception as e:
-            logger.error("Compilation failed: %s", e)
             project_compile.delete()
-            return self.skip(version)
+            raise UserWarning("Compilation failed: %s", e)
 
-        return self.ok()
+        return [project_compile]
 
     @staticmethod
     def __copy_misuse_sources(sources_path, misuses, destination):
