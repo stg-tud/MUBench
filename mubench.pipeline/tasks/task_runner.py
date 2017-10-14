@@ -7,7 +7,7 @@ from typing import List
 class TaskRunner:
     def __init__(self, tasks: List):
         self.tasks = tasks
-        self.logger = logging.getLogger("taskrunner")
+        self.logger = logging.getLogger("task_runner")
 
     def run(self):
         self.__run(0, [])
@@ -16,30 +16,31 @@ class TaskRunner:
                 task.end()
 
     def __run(self, current_task_index: int, previous_results: List):
-        if len(self.tasks) - 1 < current_task_index:
-            return
-
         task = self.tasks[current_task_index]
         parameter_values = self.__get_parameter_values(task, previous_results)
 
         task_name = type(task).__name__
-        self.logger.info("Running task {}".format(task_name))
+        self.logger.debug("Running task {}".format(task_name))
         self.logger.debug("Parameters: {}".format([str(v) for v in parameter_values]))
 
         try:
             results = task.run(*parameter_values)
         except Exception as exception:
-            logger = logging.getLogger("taskrunner.task")
-            logger.warning("An exception occurred; skipping to next input")
-            logger.debug("Full exception: %s", repr(exception))
+            logger = logging.getLogger("task_runner.{}".format(task_name))
+            logger.warning("%s", exception)
+            logger.debug("Full exception:", exc_info=True)
             results = []
 
         for result in results:
             result_type_already_exists = type(result) in [type(previous_result) for previous_result in previous_results]
             if result_type_already_exists:
                 raise TaskParameterDuplicateTypeWarning(task, type(result))
-            next_results = previous_results + [result]
-            self.__run(current_task_index + 1, next_results)
+
+            if current_task_index + 1 < len(self.tasks):
+                next_task = type(self.tasks[current_task_index + 1]).__name__
+                next_results = previous_results + [result]
+                self.logger.info("Running %s on %s", next_task, result)
+                self.__run(current_task_index + 1, next_results)
 
     @staticmethod
     def __get_parameter_values(task, previous_results):

@@ -173,7 +173,7 @@ class TestCompile:
         self.mock_with_fake_compile()
         self.uut._compile.side_effect = CommandFailedError("-cmd-", "-error message-")
 
-        assert_raises(UserWarning, self.uut.run, self.version, self.checkout)
+        assert_raises(CommandFailedError, self.uut.run, self.version, self.checkout)
 
     def test_copies_misuse_classes(self):
         self.mock_with_fake_compile()

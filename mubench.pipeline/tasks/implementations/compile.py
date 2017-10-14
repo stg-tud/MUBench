@@ -90,7 +90,7 @@ class Compile:
                 remove_tree(build_path)
         except Exception as e:
             project_compile.delete()
-            raise UserWarning("Compilation failed: {}".format(repr(e)))
+            raise
 
         return [project_compile]
 

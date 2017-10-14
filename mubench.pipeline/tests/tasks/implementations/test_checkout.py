@@ -49,7 +49,7 @@ class TestCheckout(unittest.TestCase):
         self.checkout.exists = MagicMock(return_value=False)
         self.checkout.create = MagicMock(side_effect=CommandFailedError("-cmd-", "-out-"))
 
-        assert_raises(UserWarning, self.uut.run, self.version)
+        assert_raises(CommandFailedError, self.uut.run, self.version)
 
     def test_force_checkout(self):
         self.checkout.exists = MagicMock(return_value=False)  # should delete before check
