@@ -5,7 +5,6 @@ from typing import List
 from data.project_checkout import ProjectCheckout
 from data.project_version import ProjectVersion
 from utils.io import copy_tree, remove_tree
-from utils.shell import CommandFailedError
 
 
 class Checkout:
@@ -23,26 +22,22 @@ class Checkout:
         except ValueError as e:
             raise UserWarning("Checkout data corrupted: %s", e)
 
-        try:
-            if self.force_checkout:
-                checkout.delete()
-            checkout_exists = checkout.exists()
-            logger.debug("Checkout exists = %r", checkout_exists)
-            if checkout_exists:
-                logger.debug("Already checked out %s.", version)
+        if self.force_checkout:
+            checkout.delete()
+        checkout_exists = checkout.exists()
+        logger.debug("Checkout exists = %r", checkout_exists)
+        if checkout_exists:
+            logger.debug("Already checked out %s.", version)
+        else:
+            logger.info("Fetching %s from %s...", version, checkout)
+            if self.use_temp_dir:
+                temp_dir = mkdtemp(prefix="mubench-checkout_")
+                temp_checkout = version.get_checkout(temp_dir)
+                temp_checkout.create()
+                logger.debug("Copying checkout to persistent directory...")
+                copy_tree(temp_dir, self.checkouts_path)
+                remove_tree(temp_dir)
             else:
-                logger.info("Fetching %s from %s...", version, checkout)
-                if self.use_temp_dir:
-                    temp_dir = mkdtemp(prefix="mubench-checkout_")
-                    temp_checkout = version.get_checkout(temp_dir)
-                    temp_checkout.create()
-                    logger.debug("Copying checkout to persistent directory...")
-                    copy_tree(temp_dir, self.checkouts_path)
-                    remove_tree(temp_dir)
-                else:
-                    checkout.create()
+                checkout.create()
 
-            return [checkout]
-
-        except (CommandFailedError, IOError) as e:
-            raise UserWarning("Checkout failed: %s", e)
+        return [checkout]

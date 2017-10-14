@@ -105,15 +105,6 @@ class TestTaskRunner:
         actual_message = str(context.exception)
         assert_equals("Task DuplicateIntRequestingTask requests multiple parameters of type int", actual_message)
 
-    def test_reports_when_a_task_fails(self):
-        task = FailingTask("-error-")
-        uut = TaskRunner([task])
-        uut.logger = MagicMock()
-
-        uut.run()
-
-        uut.logger.warning.assert_called_once_with("Task FailingTask failed with exception -error-")
-
     def test_continues_with_next_input_if_task_fails(self):
         first_task = VoidTask(results=["-some string-", "-some other string-"])
         second_task = FailingStringConsumingTask("-error-")
