@@ -2,27 +2,24 @@ import logging
 from typing import List
 
 from requirements import Requirement
-from tasks.project_task import ProjectTask
-from utils.shell import Shell
 
 
-class RequirementsCheck(ProjectTask):
+class RequirementsCheck:
     def __init__(self):
-        super().__init__()
-
-    def start(self):
         logger = logging.getLogger("requirements")
-        requirements = self._get_requirements()
+        requirements = RequirementsCheck._get_requirements()
         if RequirementsCheck._are_satisfied(requirements, logger):
             logger.info("All requirements satisfied. You're good to go.")
         else:
-            logger.warning("Unsatisfied requirements. Some MUBench tasks might work anyways, but to use the entire benchmark,"
-                        " please ensure that your environment meets all requirements.")
+            logger.warning(
+                "Unsatisfied requirements. Some MUBench tasks might work anyways, but to use the entire benchmark,"
+                " please ensure that your environment meets all requirements.")
 
-    def process_project(self, *_):
-        return self.ok()
+    def run(self):
+        return [self]
 
-    def _get_requirements(self) -> List[Requirement]:
+    @staticmethod
+    def _get_requirements() -> List[Requirement]:
         return [requirement() for requirement in Requirement.__subclasses__()]
 
     @staticmethod
@@ -41,4 +38,3 @@ class RequirementsCheck(ProjectTask):
         except Exception as e:
             logger.warning("Requirement '%s' not satisfied: %s", requirement.description, e)
             return False
-
