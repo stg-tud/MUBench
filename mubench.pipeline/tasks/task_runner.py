@@ -29,7 +29,9 @@ class TaskRunner:
         try:
             results = task.run(*parameter_values)
         except Exception as exception:
-            self.logger.warning("Task {} failed with exception {}".format(task_name, exception))
+            logger = logging.getLogger("taskrunner.task")
+            logger.warning("An exception occurred; skipping to next input")
+            logger.debug("Full exception: %s", repr(exception))
             results = []
 
         for result in results:
