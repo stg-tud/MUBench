@@ -19,10 +19,14 @@ class TaskRunner:
         task = self.tasks[current_task_index]
         parameter_values = self.__get_parameter_values(task, previous_results)
 
+        task_name = type(task).__name__
+        self.logger.info("Running task {}".format(task_name))
+        self.logger.debug("Parameters: {}".format([str(v) for v in parameter_values]))
+
         try:
             results = task.run(*parameter_values)
         except Exception as exception:
-            self.logger.warning("Task {} failed with exception {}".format(type(task).__name__, exception))
+            self.logger.warning("Task {} failed with exception {}".format(task_name, exception))
             results = []
 
         for result in results:
