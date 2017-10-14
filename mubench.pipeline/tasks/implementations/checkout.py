@@ -16,7 +16,7 @@ class Checkout:
         self.use_temp_dir = use_temp_dir
 
     def run(self, version: ProjectVersion) -> List[ProjectCheckout]:
-        logger = logging.getLogger("checkout")
+        logger = logging.getLogger("tasks.checkout")
 
         try:
             checkout = version.get_checkout(self.checkouts_path)

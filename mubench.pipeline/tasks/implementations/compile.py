@@ -24,9 +24,8 @@ class Compile:
         self.use_temp_dir = use_temp_dir
 
     def run(self, version: ProjectVersion, checkout: ProjectCheckout):
-        logger = logging.getLogger("compile")
+        logger = logging.getLogger("task.compile")
         logger.info("Compiling %s...", version)
-        logger = logging.getLogger("compile.tasks")
 
         project_compile = version.get_compile(self.compiles_base_path)
 
@@ -91,7 +90,7 @@ class Compile:
                 remove_tree(build_path)
         except Exception as e:
             project_compile.delete()
-            raise UserWarning("Compilation failed: %s", e)
+            raise UserWarning("Compilation failed: {}".format(repr(e)))
 
         return [project_compile]
 

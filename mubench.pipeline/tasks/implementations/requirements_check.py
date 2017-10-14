@@ -6,7 +6,7 @@ from requirements import Requirement
 
 class RequirementsCheck:
     def __init__(self):
-        logger = logging.getLogger("requirements")
+        logger = logging.getLogger("tasks.requirements")
         requirements = RequirementsCheck._get_requirements()
         if RequirementsCheck._are_satisfied(requirements, logger):
             logger.info("All requirements satisfied. You're good to go.")
