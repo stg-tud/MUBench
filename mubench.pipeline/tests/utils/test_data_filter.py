@@ -13,3 +13,7 @@ class TestDataFilter:
     def test_filters_blacklisted_and_whitelisted_id(self):
         uut = DataFilter(["-id-"], ["-id-"])
         assert uut.is_filtered("-id-")
+
+    def test_whitelists_by_prefix(self):
+        uut = DataFilter(["-project-"], [])
+        assert not uut.is_filtered("-project-.-version-")
