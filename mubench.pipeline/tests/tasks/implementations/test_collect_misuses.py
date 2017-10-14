@@ -15,9 +15,9 @@ class TestCollectMisuses:
         m1 = create_misuse("-m1-")
         m2 = create_misuse("-m2-")
         version = create_version("-version-", misuses=[m1, m2])
-        uut = CollectMisuses()
+        uut = CollectMisuses(NO_FILTER)
 
-        actual = uut.run(NO_FILTER, version)
+        actual = uut.run(version)
 
         assert_equals([m1, m2], actual)
 
@@ -25,10 +25,10 @@ class TestCollectMisuses:
         misuse = create_misuse("-id-")
         project = create_project("-project-")
         version = create_version("-version-", misuses=[misuse], project=project)
-        uut = CollectMisuses()
         filter_ = MagicMock()  # type: DataFilter
         filter_.is_filtered = lambda id_: id_ == "-project-.-id-"
+        uut = CollectMisuses(filter_)
 
-        actual = uut.run(filter_, version)
+        actual = uut.run(version)
 
         assert_equals([], actual)

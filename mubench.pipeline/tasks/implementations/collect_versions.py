@@ -3,6 +3,8 @@ from utils.data_filter import DataFilter
 
 
 class CollectVersions:
-    # noinspection PyMethodMayBeStatic
-    def run(self, data_filter: DataFilter, project: Project):
-        return [version for version in project.versions if not data_filter.is_filtered(version.id)]
+    def __init__(self, data_filter: DataFilter):
+        self.data_filter = data_filter
+
+    def run(self, project: Project):
+        return [version for version in project.versions if not self.data_filter.is_filtered(version.id)]
