@@ -16,6 +16,9 @@ class TaskRunner:
                 task.end()
 
     def __run(self, current_task_index: int, previous_results: List):
+        if len(self.tasks) - 1 < current_task_index:
+            return
+
         task = self.tasks[current_task_index]
         parameter_values = self.__get_parameter_values(task, previous_results)
 
