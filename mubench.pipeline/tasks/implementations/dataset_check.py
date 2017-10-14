@@ -31,7 +31,7 @@ VALID_VIOLATION_TYPES = [
 class DatasetCheck(ProjectVersionMisuseTask):
     def __init__(self, datasets: Dict[str, List[str]], checkout_base_path: str, data_base_path: str):
         super().__init__()
-        self.logger = logging.getLogger("datasetcheck")
+        self.logger = logging.getLogger("tasks.datasetcheck")
         self.datasets = datasets
         self.checkout_base_path = checkout_base_path
         self.misuses_not_listed_in_any_version = []

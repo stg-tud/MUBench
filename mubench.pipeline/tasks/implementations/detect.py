@@ -26,7 +26,7 @@ class Detect:
         self.key_training_classpath = "training_classpath"
         self.key_target_src_path = "target_src_path"
         self.key_target_classpath = "target_classpath"
-        self.logger = logging.getLogger("detect")
+        self.logger = logging.getLogger("task.detect")
 
         msg = "Running '{}' detector".format(self.detector)
         if self.force_detect:

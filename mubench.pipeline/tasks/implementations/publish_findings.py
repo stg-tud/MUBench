@@ -30,7 +30,7 @@ class PublishFindings:
         self.review_site_user = review_site_user
         self.review_site_password = review_site_password
 
-        self.logger = logging.getLogger("review_findings")
+        self.logger = logging.getLogger("tasks.review_findings")
 
         if self.review_site_user and not self.review_site_password:
             self.review_site_password = getpass.getpass(
