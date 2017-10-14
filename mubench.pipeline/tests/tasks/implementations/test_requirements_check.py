@@ -1,23 +1,23 @@
-from nose.tools import assert_equals
 from unittest.mock import MagicMock
 
-from tasks.implementations.requirements_check import RequirementsCheck
-from tests.test_utils.data_util import create_project
+from nose.tools import assert_equals
 
 from requirements import Requirement
+from tasks.implementations.requirements_check import RequirementsCheck
 
-class TestRequirementsCheck():
-    def setup(self):
-        self.uut = RequirementsCheck()
 
-        self.test_requirement = Requirement("-test-requirement-")
-        self.test_requirement.check = MagicMock()
-        self.uut._get_requirements = lambda: [self.test_requirement]
-
+class TestRequirementsCheck:
     def test_passes_on_process_project(self):
-        assert_equals([], self.uut.process_project(create_project("-project-")))
+        self.uut = RequirementsCheck()
+        assert_equals([self.uut], self.uut.run())
 
     def test_checks_requirements_on_start(self):
-        self.uut.start()
-
-        self.test_requirement.check.assert_called_once_with()
+        self.test_requirement = Requirement("-test-requirement-")
+        self.test_requirement.check = MagicMock()
+        orig_get_requirements = RequirementsCheck._get_requirements
+        RequirementsCheck._get_requirements = lambda: [self.test_requirement]
+        try:
+            self.uut = RequirementsCheck()
+            self.test_requirement.check.assert_called_once_with()
+        finally:
+            RequirementsCheck._get_requirements = orig_get_requirements
