@@ -24,19 +24,19 @@ class TestCollectProject:
         create_file(p1._project_file)
         p2 = create_project("p2", base_path=self.temp_dir)
         create_file(p2._project_file)
-        uut = CollectProjects(self.temp_dir)
+        uut = CollectProjects(self.temp_dir, NO_FILTER)
 
-        actual = uut.run(NO_FILTER)
+        actual = uut.run()
 
         assert_equals([p1, p2], actual)
 
     def test_uses_filter(self):
         project = create_project("-id-", base_path=self.temp_dir)
         create_file(project._project_file)
-        uut = CollectProjects(self.temp_dir)
         filter_ = MagicMock()  # type: DataFilter
         filter_.is_filtered = lambda id_: id_ == "-id-"
+        uut = CollectProjects(self.temp_dir, filter_)
 
-        actual = uut.run(filter_)
+        actual = uut.run()
 
         assert_equals([], actual)

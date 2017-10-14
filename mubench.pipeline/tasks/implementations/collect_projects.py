@@ -6,13 +6,14 @@ from utils.data_filter import DataFilter
 
 
 class CollectProjects:
-    def __init__(self, data_path: str):
+    def __init__(self, data_path: str, data_filter: DataFilter):
         self.data_path = data_path
+        self.data_filter = data_filter
 
-    def run(self, data_filter: DataFilter):
+    def run(self):
         project_ids = []
         if exists(self.data_path):
             project_ids.extend(sorted(listdir(self.data_path)))
 
         return [Project(self.data_path, project_id) for project_id in project_ids if
-                Project.is_project(join(self.data_path, project_id)) and not data_filter.is_filtered(project_id)]
+                Project.is_project(join(self.data_path, project_id)) and not self.data_filter.is_filtered(project_id)]
