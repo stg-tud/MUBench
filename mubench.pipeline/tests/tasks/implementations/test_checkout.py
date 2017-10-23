@@ -29,7 +29,7 @@ class TestCheckout(unittest.TestCase):
 
         self.checkout.delete.assert_not_called()
         self.checkout.create.assert_called_with()
-        assert_equals([self.checkout], response)
+        assert_equals(self.checkout, response)
 
     def test_exists(self):
         self.checkout.exists = MagicMock(return_value=True)
@@ -38,7 +38,7 @@ class TestCheckout(unittest.TestCase):
 
         self.checkout.delete.assert_not_called()
         self.checkout.create.assert_not_called()
-        assert_equals([self.checkout], response)
+        assert_equals(self.checkout, response)
 
     def test_error_get_checkout(self):
         self.version.get_checkout = MagicMock(side_effect=ValueError)

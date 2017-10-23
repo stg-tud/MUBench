@@ -92,7 +92,7 @@ class CompileTask:
             project_compile.delete()
             raise
 
-        return [project_compile]
+        return project_compile
 
     @staticmethod
     def __copy_misuse_sources(sources_path, misuses, destination):

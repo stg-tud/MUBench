@@ -1,3 +1,4 @@
+import collections
 import logging
 from inspect import signature, Parameter
 
@@ -31,7 +32,7 @@ class TaskRunner:
             logger.debug("Full exception:", exc_info=True)
             results = []
 
-        for result in results:
+        for result in TaskRunner.__as_iterable(results):
             result_type_already_exists = type(result) in [type(previous_result) for previous_result in previous_results]
             if result_type_already_exists:
                 raise TaskParameterDuplicateTypeWarning(task, type(result))
@@ -54,6 +55,13 @@ class TaskRunner:
             else:
                 raise TaskParameterUnavailableWarning(task, parameter)
         return parameter_values
+
+    @staticmethod
+    def __as_iterable(previous_results):
+        if isinstance(previous_results, collections.Iterable) and not isinstance(previous_results, str):
+            return previous_results
+        else:
+            return [previous_results]
 
     @staticmethod
     def __get_parameters(task):
