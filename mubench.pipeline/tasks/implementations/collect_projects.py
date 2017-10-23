@@ -5,7 +5,7 @@ from data.project import Project
 from utils.data_filter import DataFilter
 
 
-class CollectProjects:
+class CollectProjectsTask:
     def __init__(self, data_path: str, data_filter: DataFilter):
         self.data_path = data_path
         self.data_filter = data_filter

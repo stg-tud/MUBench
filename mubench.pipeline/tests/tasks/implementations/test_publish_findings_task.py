@@ -9,7 +9,7 @@ from data.experiments import Experiment
 from data.finding import SpecializedFinding
 from data.run import Run
 from data.snippets import Snippet, SnippetUnavailableException
-from tasks.implementations.publish_findings import PublishFindings
+from tasks.implementations.publish_findings import PublishFindingsTask
 from tests.data.stub_detector import StubDetector
 from tests.data.test_misuse import create_misuse
 from tests.test_utils.data_util import create_project, create_version
@@ -41,7 +41,7 @@ class TestPublishFindingsTask:
         self.experiment.get_run = lambda v: self.test_run
         self.experiment.detector = self.detector
 
-        self.uut = PublishFindings(self.experiment, self.dataset, "/sources", "http://dummy.url",
+        self.uut = PublishFindingsTask(self.experiment, self.dataset, "/sources", "http://dummy.url",
                                    "-username-", "-password-")
 
     def test_post_url(self, post_mock):

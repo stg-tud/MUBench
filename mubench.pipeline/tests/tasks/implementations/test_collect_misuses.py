@@ -2,7 +2,7 @@ from unittest.mock import MagicMock
 
 from nose.tools import assert_equals
 
-from tasks.implementations.collect_misuses import CollectMisuses
+from tasks.implementations.collect_misuses import CollectMisusesTask
 from tests.test_utils.data_util import create_version, create_misuse, create_project
 from utils.data_filter import DataFilter
 
@@ -15,7 +15,7 @@ class TestCollectMisuses:
         m1 = create_misuse("-m1-")
         m2 = create_misuse("-m2-")
         version = create_version("-version-", misuses=[m1, m2])
-        uut = CollectMisuses(NO_FILTER)
+        uut = CollectMisusesTask(NO_FILTER)
 
         actual = uut.run(version)
 
@@ -27,7 +27,7 @@ class TestCollectMisuses:
         version = create_version("-version-", misuses=[misuse], project=project)
         filter_ = MagicMock()  # type: DataFilter
         filter_.is_filtered = lambda id_: id_ == "-project-.-id-"
-        uut = CollectMisuses(filter_)
+        uut = CollectMisusesTask(filter_)
 
         actual = uut.run(version)
 

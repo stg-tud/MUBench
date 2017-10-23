@@ -10,7 +10,7 @@ from unittest.mock import MagicMock, ANY
 from nose.tools import assert_raises
 
 from data.pattern import Pattern
-from tasks.implementations.compile import Compile
+from tasks.implementations.compile import CompileTask
 from tests.test_utils.data_util import create_version, create_project, create_misuse
 from utils.io import create_file
 from utils.shell import CommandFailedError
@@ -50,7 +50,7 @@ class TestCompile:
         self.pattern_classes_path = join(self.base_path, "patterns-classes")
         self.dep_path = join(self.base_path, "dependencies")
 
-        self.uut = Compile(self.compile_base_path, False, False)
+        self.uut = CompileTask(self.compile_base_path, False, False)
 
     def teardown(self):
         rmtree(self.temp_dir, ignore_errors=True)

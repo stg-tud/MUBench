@@ -2,7 +2,7 @@ from data.project import Project
 from utils.data_filter import DataFilter
 
 
-class CollectVersions:
+class CollectVersionsTask:
     def __init__(self, data_filter: DataFilter):
         self.data_filter = data_filter
 

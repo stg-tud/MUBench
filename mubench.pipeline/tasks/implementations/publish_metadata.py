@@ -12,7 +12,7 @@ from utils.io import safe_read
 from utils.web_util import post
 
 
-class PublishMetadata:
+class PublishMetadataTask:
     def __init__(self, compiles_base_path: str,
                  review_site_url: str, review_site_user: str="", review_site_password: str=""):
         super().__init__()

@@ -15,7 +15,7 @@ from data.snippets import SnippetUnavailableException
 from utils.web_util import post, as_markdown
 
 
-class PublishFindings:
+class PublishFindingsTask:
     def __init__(self, experiment: Experiment, dataset: str, compiles_base_path: str, review_site_url: str,
                  review_site_user: str= "", review_site_password: str= ""):
         super().__init__()
@@ -69,7 +69,7 @@ class PublishFindings:
                     postable_data = self._prepare_post(potential_hit, version_compile, logger)
                     post_data_slice.append(postable_data)
 
-                file_paths = PublishFindings.get_file_paths(potential_hits_slice)
+                file_paths = PublishFindingsTask.get_file_paths(potential_hits_slice)
                 self.__post(project, version, run_info, result, post_data_slice, file_paths)
             logger.info("Findings published.")
         except RequestException as e:
