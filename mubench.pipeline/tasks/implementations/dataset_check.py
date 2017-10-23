@@ -7,7 +7,6 @@ from data.misuse import Misuse
 from data.project import Project
 from data.project_version import ProjectVersion
 from data.snippets import get_snippets
-from tasks.project_version_misuse_task import ProjectVersionMisuseTask
 
 VALID_VIOLATION_TYPES = [
         'missing/call',
@@ -28,7 +27,7 @@ VALID_VIOLATION_TYPES = [
     ]
 
 
-class DatasetCheck(ProjectVersionMisuseTask):
+class DatasetCheck:
     def __init__(self, datasets: Dict[str, List[str]], checkout_base_path: str, data_base_path: str):
         super().__init__()
         self.logger = logging.getLogger("tasks.datasetcheck")
