@@ -75,4 +75,4 @@ class DetectTask:
         logger = logging.getLogger("detect.run")
         run.execute(self.compiles_base_path, self.timeout, logger)
 
-        return run if run.is_success() else []
+        return run if run.is_success() else None

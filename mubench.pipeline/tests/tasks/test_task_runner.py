@@ -140,6 +140,15 @@ class TestTaskRunner:
 
         assert_raises(TaskParameterUnavailableWarning, uut.run)
 
+    def test_none_result_stops_execution_silently(self):
+        first_task = NoneReturningTask()
+        second_task = VoidTask()
+        uut = TaskRunner([first_task, second_task])
+
+        uut.run()
+
+        second_task.assert_not_called()
+
 
 class MockTask:
     def __init__(self, results: List = None):
@@ -152,6 +161,9 @@ class MockTask:
     def assert_has_calls(self, calls):
         for call in calls:
             assert_in(call, self.calls)
+
+    def assert_not_called(self):
+        assert_equals([], self.calls)
 
 
 class VoidTask(MockTask):
@@ -213,3 +225,12 @@ class FailingStringConsumingTask(MockTask):
 class ContinueConsumingTask(MockTask):
     def run(self, _: Continue):
         return self.results
+
+
+class NoneReturningTask(MockTask):
+    def __init__(self):
+        super().__init__()
+
+    # noinspection PyMethodMayBeStatic
+    def run(self):
+        return None
