@@ -9,6 +9,7 @@ from os.path import join, exists, abspath, dirname
 
 from data.detectors import find_detector, get_available_detector_ids
 from data.experiments import ProvidedPatternsExperiment, TopFindingsExperiment, BenchmarkExperiment
+from requirements import RequirementsCheck
 from tasks.implementations import stats
 from tasks.implementations.checkout import CheckoutTask
 from tasks.implementations.collect_misuses import CollectMisusesTask
@@ -20,7 +21,6 @@ from tasks.implementations.detect import DetectTask
 from tasks.implementations.info import ProjectInfoTask, VersionInfoTask, MisuseInfoTask
 from tasks.implementations.publish_findings import PublishFindingsTask
 from tasks.implementations.publish_metadata import PublishMetadataTask
-from tasks.implementations.requirements_check import RequirementsCheck
 from tasks.task_runner import TaskRunner
 from utils import command_line_util
 from utils.data_filter import DataFilter
@@ -59,7 +59,9 @@ class Benchmark:
             self.white_list.extend(get_white_list(self.DATASETS_FILE_PATH, config.dataset))
 
     def run(self) -> None:
-        tasks = [RequirementsCheck()]
+        RequirementsCheck()
+
+        tasks = []
         data_filter = DataFilter(self.white_list, self.black_list)
 
         if config.task == 'info':
