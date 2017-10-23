@@ -5,6 +5,10 @@ from inspect import signature, Parameter
 from typing import List
 
 
+class Continue:
+    pass
+
+
 class TaskRunner:
     def __init__(self, tasks: List):
         self.tasks = tasks
@@ -39,7 +43,12 @@ class TaskRunner:
 
             if current_task_index + 1 < len(self.tasks):
                 next_task = type(self.tasks[current_task_index + 1]).__name__
-                next_results = previous_results + [result]
+
+                if isinstance(result, Continue):
+                    next_results = previous_results
+                else:
+                    next_results = previous_results + [result]
+
                 self.logger.info("Running %s on %s", next_task, result)
                 self.__run(current_task_index + 1, next_results)
 

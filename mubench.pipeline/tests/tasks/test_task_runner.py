@@ -4,7 +4,7 @@ from unittest.mock import MagicMock
 from nose.tools import assert_in, assert_raises, assert_equals
 
 from tasks.task_runner import TaskRunner, TaskParameterUnavailableWarning, TaskParameterDuplicateTypeWarning, \
-    TaskRequestsDuplicateTypeWarning
+    TaskRequestsDuplicateTypeWarning, Continue
 
 
 class TestTaskRunner:
@@ -124,6 +124,22 @@ class TestTaskRunner:
 
         second_task.assert_called_once_with("-some string-")
 
+    def test_continue_runs_next_task(self):
+        first_task = VoidTask(results=Continue)
+        second_task = VoidTask()
+        uut = TaskRunner([first_task, second_task])
+
+        uut.run()
+
+        second_task.assert_called_once_with()
+
+    def test_continue_is_not_added_to_available_parameters(self):
+        first_task = VoidTask(results=Continue)
+        second_task = ContinueConsumingTask()
+        uut = TaskRunner([first_task, second_task])
+
+        assert_raises(TaskParameterUnavailableWarning, uut.run)
+
 
 class MockTask:
     def __init__(self, results: List = None):
@@ -192,3 +208,8 @@ class FailingStringConsumingTask(MockTask):
     def run(self, s: str):
         self.calls.append((s,))
         raise ValueError(self.message)
+
+
+class ContinueConsumingTask(MockTask):
+    def run(self, _: Continue):
+        return self.results
