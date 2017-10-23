@@ -47,14 +47,12 @@ class DatasetCheckTask:
         self.logger = logging.getLogger("datasetcheck.project")
         self._register_entry(project, project.id)
         self._check_required_keys_in_project_yaml(project)
-        return super().process_project(project)
 
     def process_project_version(self, project: Project, version: ProjectVersion):
         self.logger = logging.getLogger("datasetcheck.project.version")
         self._register_entry(project, version.id)
         self._check_required_keys_in_version_yaml(project, version)
         self._check_misuses_listed_in_version_exist(project, version)
-        return super().process_project_version(project, version)
 
     def process_project_version_misuse(self, project: Project, version: ProjectVersion, misuse: Misuse):
         self.logger = logging.getLogger("datasetcheck.project.version.misuse")
@@ -63,7 +61,6 @@ class DatasetCheckTask:
         self._check_required_keys_in_misuse_yaml(project, version, misuse)
         self._check_misuse_location_exists(project, version, misuse)
         self._check_violation_types(project, misuse)
-        return self.ok()
 
     def end(self):
         self.logger = logging.getLogger("datasetcheck.misuse")
