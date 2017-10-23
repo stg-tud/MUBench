@@ -2,7 +2,7 @@ from unittest.mock import MagicMock
 
 from nose.tools import assert_equals
 
-from tasks.implementations.collect_versions import CollectVersions
+from tasks.implementations.collect_versions import CollectVersionsTask
 from tests.test_utils.data_util import create_project, create_version
 from utils.data_filter import DataFilter
 
@@ -15,7 +15,7 @@ class TestCollectVersions:
         project = create_project("-project-")
         v1 = create_version("-v1-", project=project)
         v2 = create_version("-v2-", project=project)
-        uut = CollectVersions(NO_FILTER)
+        uut = CollectVersionsTask(NO_FILTER)
 
         actual = uut.run(project)
 
@@ -26,7 +26,7 @@ class TestCollectVersions:
         create_version("-id-", project=project)
         filter_ = MagicMock()  # type: DataFilter
         filter_.is_filtered = lambda id_: id_ == "-project-.-id-"
-        uut = CollectVersions(filter_)
+        uut = CollectVersionsTask(filter_)
 
         actual = uut.run(project)
 

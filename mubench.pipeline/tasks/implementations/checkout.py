@@ -7,7 +7,7 @@ from data.project_version import ProjectVersion
 from utils.io import copy_tree, remove_tree
 
 
-class Checkout:
+class CheckoutTask:
     def __init__(self, checkouts_path: str, force_checkout: bool, use_temp_dir: bool):
         super().__init__()
         self.checkouts_path = checkouts_path

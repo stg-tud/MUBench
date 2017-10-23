@@ -9,7 +9,7 @@ from data.project import Project
 from data.project_version import ProjectVersion
 
 
-class StatCalculator:
+class StatCalculatorTask:
     def run(self, project: Project, version: ProjectVersion, misuse: Misuse):
         raise NotImplementedError
 
@@ -18,20 +18,20 @@ class StatCalculator:
 
 
 def get_available_calculators() -> List[type]:
-    return StatCalculator.__subclasses__()
+    return StatCalculatorTask.__subclasses__()
 
 
 def get_available_calculator_names() -> List[str]:
     return [calculator.__name__ for calculator in get_available_calculators()]
 
 
-def get_calculator(name: str) -> Optional[StatCalculator]:
+def get_calculator(name: str) -> Optional[StatCalculatorTask]:
     for calculator in get_available_calculators():
         if calculator.__name__.lower() == name.lower():
             return calculator()
 
 
-class general(StatCalculator):
+class general(StatCalculatorTask):
     def __init__(self):
         super().__init__()
         self.number_of_misuses = 0
@@ -58,7 +58,7 @@ class general(StatCalculator):
         self.logger.info("- %d projects" % len(self.projects))
 
 
-class violation(StatCalculator):
+class violation(StatCalculatorTask):
     def __init__(self):
         super().__init__()
         self.statistics = {}
@@ -96,7 +96,7 @@ class violation(StatCalculator):
                     (statistic_values[segstat]["crashes"] / statistic_values[segstat]["misuses"] * 100)))
 
 
-class project(StatCalculator):
+class project(StatCalculatorTask):
     def __init__(self):
         super().__init__()
         self.projects = {}
@@ -119,7 +119,7 @@ class project(StatCalculator):
                 projectname, project["misuses"], project["crashes"], (project["crashes"] / project["misuses"] * 100)))
 
 
-class source(StatCalculator):
+class source(StatCalculatorTask):
     def __init__(self):
         super().__init__()
         self.sources = {}
@@ -153,7 +153,7 @@ class source(StatCalculator):
                 (source["crashes"] / source["misuses"] * 100)))
 
 
-class misusesbytype(StatCalculator):
+class misusesbytype(StatCalculatorTask):
     def __init__(self):
         super().__init__()
         self.index = {}  # type: Dict[str, List[Misuse]]

@@ -3,7 +3,7 @@ from unittest.mock import MagicMock
 
 from nose.tools import assert_equals
 
-from tasks.implementations.collect_projects import CollectProjects
+from tasks.implementations.collect_projects import CollectProjectsTask
 from tests.test_utils.data_util import create_project
 from utils.data_filter import DataFilter
 from utils.io import remove_tree, create_file
@@ -24,7 +24,7 @@ class TestCollectProject:
         create_file(p1._project_file)
         p2 = create_project("p2", base_path=self.temp_dir)
         create_file(p2._project_file)
-        uut = CollectProjects(self.temp_dir, NO_FILTER)
+        uut = CollectProjectsTask(self.temp_dir, NO_FILTER)
 
         actual = uut.run()
 
@@ -35,7 +35,7 @@ class TestCollectProject:
         create_file(project._project_file)
         filter_ = MagicMock()  # type: DataFilter
         filter_.is_filtered = lambda id_: id_ == "-id-"
-        uut = CollectProjects(self.temp_dir, filter_)
+        uut = CollectProjectsTask(self.temp_dir, filter_)
 
         actual = uut.run()
 

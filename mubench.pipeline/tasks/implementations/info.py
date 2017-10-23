@@ -6,7 +6,7 @@ from data.project import Project
 from data.project_version import ProjectVersion
 
 
-class ProjectInfo:
+class ProjectInfoTask:
     def __init__(self, checkouts_path, compiles_path):
         self.__logger = logging.getLogger("info.project")
         self.__checkouts_path = checkouts_path
@@ -19,7 +19,7 @@ class ProjectInfo:
         return [self]
 
 
-class VersionInfo:
+class VersionInfoTask:
     def __init__(self, checkouts_path, compiles_path):
         self.__logger = logging.getLogger("info.version")
         self.__checkouts_path = checkouts_path
@@ -50,7 +50,7 @@ class VersionInfo:
         return [self]
 
 
-class MisuseInfo:
+class MisuseInfoTask:
     def __init__(self, checkouts_path, compiles_path):
         self.__logger = logging.getLogger("info.misuse")
         self.__checkouts_path = checkouts_path

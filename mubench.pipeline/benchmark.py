@@ -10,16 +10,16 @@ from os.path import join, exists, abspath, dirname
 from data.detectors import find_detector, get_available_detector_ids
 from data.experiments import ProvidedPatternsExperiment, TopFindingsExperiment, BenchmarkExperiment
 from tasks.implementations import stats
-from tasks.implementations.checkout import Checkout
-from tasks.implementations.collect_misuses import CollectMisuses
-from tasks.implementations.collect_projects import CollectProjects
-from tasks.implementations.collect_versions import CollectVersions
-from tasks.implementations.compile import Compile
-from tasks.implementations.dataset_check import DatasetCheck
-from tasks.implementations.detect import Detect
-from tasks.implementations.info import ProjectInfo, VersionInfo, MisuseInfo
-from tasks.implementations.publish_findings import PublishFindings
-from tasks.implementations.publish_metadata import PublishMetadata
+from tasks.implementations.checkout import CheckoutTask
+from tasks.implementations.collect_misuses import CollectMisusesTask
+from tasks.implementations.collect_projects import CollectProjectsTask
+from tasks.implementations.collect_versions import CollectVersionsTask
+from tasks.implementations.compile import CompileTask
+from tasks.implementations.dataset_check import DatasetCheckTask
+from tasks.implementations.detect import DetectTask
+from tasks.implementations.info import ProjectInfoTask, VersionInfoTask, MisuseInfoTask
+from tasks.implementations.publish_findings import PublishFindingsTask
+from tasks.implementations.publish_metadata import PublishMetadataTask
 from tasks.implementations.requirements_check import RequirementsCheck
 from tasks.task_runner import TaskRunner
 from utils import command_line_util
@@ -63,62 +63,67 @@ class Benchmark:
         data_filter = DataFilter(self.white_list, self.black_list)
 
         if config.task == 'info':
-            project_info = ProjectInfo(Benchmark.CHECKOUTS_PATH, benchmark.COMPILES_PATH)
-            version_info = VersionInfo(Benchmark.CHECKOUTS_PATH, benchmark.COMPILES_PATH)
-            misuse_info = MisuseInfo(Benchmark.CHECKOUTS_PATH, benchmark.COMPILES_PATH)
-            tasks.append(CollectProjects(benchmark.DATA_PATH, data_filter))
+            project_info = ProjectInfoTask(Benchmark.CHECKOUTS_PATH, benchmark.COMPILES_PATH)
+            version_info = VersionInfoTask(Benchmark.CHECKOUTS_PATH, benchmark.COMPILES_PATH)
+            misuse_info = MisuseInfoTask(Benchmark.CHECKOUTS_PATH, benchmark.COMPILES_PATH)
+            tasks.append(CollectProjectsTask(benchmark.DATA_PATH, data_filter))
             tasks.append(project_info)
-            tasks.append(CollectVersions(data_filter))
+            tasks.append(CollectVersionsTask(data_filter))
             tasks.append(version_info)
-            tasks.append(CollectMisuses(data_filter))
+            tasks.append(CollectMisusesTask(data_filter))
             tasks.append(misuse_info)
         elif config.task == 'checkout':
-            tasks.append(CollectProjects(benchmark.DATA_PATH, data_filter))
-            tasks.append(CollectVersions(data_filter))
-            tasks.append(Checkout(Benchmark.CHECKOUTS_PATH, self.config.force_checkout, self.config.use_tmp_wrkdir))
+            tasks.append(CollectProjectsTask(benchmark.DATA_PATH, data_filter))
+            tasks.append(CollectVersionsTask(data_filter))
+            tasks.append(CheckoutTask(Benchmark.CHECKOUTS_PATH, self.config.force_checkout, self.config.use_tmp_wrkdir))
         elif config.task == 'compile':
-            tasks.append(CollectProjects(benchmark.DATA_PATH, data_filter))
-            tasks.append(CollectVersions(data_filter))
-            tasks.append(Checkout(Benchmark.CHECKOUTS_PATH, self.config.force_checkout, self.config.use_tmp_wrkdir))
-            tasks.append(Compile(Benchmark.COMPILES_PATH, self.config.force_compile, self.config.use_tmp_wrkdir))
+            tasks.append(CollectProjectsTask(benchmark.DATA_PATH, data_filter))
+            tasks.append(CollectVersionsTask(data_filter))
+            tasks.append(CheckoutTask(Benchmark.CHECKOUTS_PATH, self.config.force_checkout, self.config.use_tmp_wrkdir))
+            tasks.append(CompileTask(Benchmark.COMPILES_PATH, self.config.force_compile, self.config.use_tmp_wrkdir))
         elif config.task == 'detect':
-            tasks.append(CollectProjects(benchmark.DATA_PATH, data_filter))
-            tasks.append(CollectVersions(data_filter))
-            tasks.append(Checkout(Benchmark.CHECKOUTS_PATH, self.config.force_checkout, self.config.use_tmp_wrkdir))
-            tasks.append(Compile(Benchmark.COMPILES_PATH, self.config.force_compile, self.config.use_tmp_wrkdir))
+            tasks.append(CollectProjectsTask(benchmark.DATA_PATH, data_filter))
+            tasks.append(CollectVersionsTask(data_filter))
+            tasks.append(CheckoutTask(Benchmark.CHECKOUTS_PATH, self.config.force_checkout, self.config.use_tmp_wrkdir))
+            tasks.append(CompileTask(Benchmark.COMPILES_PATH, self.config.force_compile, self.config.use_tmp_wrkdir))
             tasks.append(
-                Detect(Benchmark.COMPILES_PATH, self.__get_experiment(), self.config.timeout, self.config.force_detect))
+                DetectTask(Benchmark.COMPILES_PATH, self.__get_experiment(), self.config.timeout,
+                           self.config.force_detect))
         elif config.task == 'publish':
             if config.publish_task == 'findings':
-                tasks.append(CollectProjects(benchmark.DATA_PATH, data_filter))
-                tasks.append(CollectVersions(data_filter))
-                tasks.append(Checkout(Benchmark.CHECKOUTS_PATH, self.config.force_checkout, self.config.use_tmp_wrkdir))
-                tasks.append(Compile(Benchmark.COMPILES_PATH, self.config.force_compile, self.config.use_tmp_wrkdir))
-                tasks.append(Detect(Benchmark.COMPILES_PATH, self.__get_experiment(), self.config.timeout,
-                                    self.config.force_detect))
-                tasks.append(CollectMisuses(data_filter))
-                tasks.append(PublishFindings(self.__get_experiment(), self.config.dataset, Benchmark.COMPILES_PATH,
-                                             self.config.review_site_url, self.config.review_site_user,
-                                             self.config.review_site_password))
-            elif config.publish_task == 'metadata':
-                tasks.append(CollectProjects(benchmark.DATA_PATH, data_filter))
-                tasks.append(CollectVersions(data_filter))
-                tasks.append(Checkout(Benchmark.CHECKOUTS_PATH, self.config.force_checkout, self.config.use_tmp_wrkdir))
-                tasks.append(CollectMisuses(data_filter))
+                tasks.append(CollectProjectsTask(benchmark.DATA_PATH, data_filter))
+                tasks.append(CollectVersionsTask(data_filter))
                 tasks.append(
-                    PublishMetadata(Benchmark.COMPILES_PATH, self.config.review_site_url, self.config.review_site_user,
-                                    self.config.review_site_password))
+                    CheckoutTask(Benchmark.CHECKOUTS_PATH, self.config.force_checkout, self.config.use_tmp_wrkdir))
+                tasks.append(
+                    CompileTask(Benchmark.COMPILES_PATH, self.config.force_compile, self.config.use_tmp_wrkdir))
+                tasks.append(DetectTask(Benchmark.COMPILES_PATH, self.__get_experiment(), self.config.timeout,
+                                        self.config.force_detect))
+                tasks.append(CollectMisusesTask(data_filter))
+                tasks.append(PublishFindingsTask(self.__get_experiment(), self.config.dataset, Benchmark.COMPILES_PATH,
+                                                 self.config.review_site_url, self.config.review_site_user,
+                                                 self.config.review_site_password))
+            elif config.publish_task == 'metadata':
+                tasks.append(CollectProjectsTask(benchmark.DATA_PATH, data_filter))
+                tasks.append(CollectVersionsTask(data_filter))
+                tasks.append(
+                    CheckoutTask(Benchmark.CHECKOUTS_PATH, self.config.force_checkout, self.config.use_tmp_wrkdir))
+                tasks.append(CollectMisusesTask(data_filter))
+                tasks.append(
+                    PublishMetadataTask(Benchmark.COMPILES_PATH, self.config.review_site_url,
+                                        self.config.review_site_user,
+                                        self.config.review_site_password))
         elif config.task == 'stats':
-            tasks.append(CollectProjects(benchmark.DATA_PATH, data_filter))
-            tasks.append(CollectVersions(data_filter))
-            tasks.append(CollectMisuses(data_filter))
+            tasks.append(CollectProjectsTask(benchmark.DATA_PATH, data_filter))
+            tasks.append(CollectVersionsTask(data_filter))
+            tasks.append(CollectMisusesTask(data_filter))
             tasks.append(stats.get_calculator(self.config.script))
         elif config.task == 'dataset-check':
-            tasks.append(CollectProjects(benchmark.DATA_PATH, data_filter))
-            tasks.append(CollectVersions(data_filter))
-            tasks.append(CollectMisuses(data_filter))
+            tasks.append(CollectProjectsTask(benchmark.DATA_PATH, data_filter))
+            tasks.append(CollectVersionsTask(data_filter))
+            tasks.append(CollectMisusesTask(data_filter))
             tasks.append(
-                DatasetCheck(get_available_datasets(self.DATASETS_FILE_PATH), self.CHECKOUTS_PATH, self.DATA_PATH))
+                DatasetCheckTask(get_available_datasets(self.DATASETS_FILE_PATH), self.CHECKOUTS_PATH, self.DATA_PATH))
 
         runner = TaskRunner(tasks)
         runner.run()

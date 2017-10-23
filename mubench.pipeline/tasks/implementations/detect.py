@@ -10,7 +10,7 @@ from data.run import Run
 from utils.web_util import download_file
 
 
-class Detect:
+class DetectTask:
     def __init__(self, compiles_base_path: str, experiment: Experiment, timeout: Optional[int], force_detect: bool):
         super().__init__()
         self.force_detect = force_detect

@@ -4,7 +4,7 @@ from unittest.mock import call, MagicMock
 
 from data.misuse import Misuse
 from data.project import Project
-from tasks.implementations.dataset_check import DatasetCheck
+from tasks.implementations.dataset_check import DatasetCheckTask
 from tests.test_utils.data_util import create_project, create_version, create_misuse
 from utils.io import remove_tree, create_file
 
@@ -13,14 +13,14 @@ EMPTY_META = {"empty": None}
 
 class TestDatasetCheckProject:
     def setup(self):
-        self.original_get_all_misuses = DatasetCheck._get_all_misuses
-        DatasetCheck._get_all_misuses = lambda *_: []
-        self.uut = DatasetCheck({}, '', '')
+        self.original_get_all_misuses = DatasetCheckTask._get_all_misuses
+        DatasetCheckTask._get_all_misuses = lambda *_: []
+        self.uut = DatasetCheckTask({}, '', '')
         self.uut._report_missing_key = MagicMock()
         self.uut._check_misuse_location_exists = MagicMock()
 
     def teardown(self):
-        DatasetCheck._get_all_misuses = self.original_get_all_misuses
+        DatasetCheckTask._get_all_misuses = self.original_get_all_misuses
 
     def test_missing_name(self):
         meta = {"repository": {"type": "git", "url": "https://github.com/stg-tud/MUBench.git"}}
@@ -96,14 +96,14 @@ class TestDatasetCheckProject:
 
 class TestDatasetCheckProjectVersion:
     def setup(self):
-        self.original_get_all_misuses = DatasetCheck._get_all_misuses
-        DatasetCheck._get_all_misuses = lambda *_: []
-        self.uut = DatasetCheck({}, '', '')
+        self.original_get_all_misuses = DatasetCheckTask._get_all_misuses
+        DatasetCheckTask._get_all_misuses = lambda *_: []
+        self.uut = DatasetCheckTask({}, '', '')
         self.uut._report_missing_key = MagicMock()
         self.uut._check_misuse_location_exists = MagicMock()
 
     def teardown(self):
-        DatasetCheck._get_all_misuses = self.original_get_all_misuses
+        DatasetCheckTask._get_all_misuses = self.original_get_all_misuses
 
     def test_missing_revision(self):
         meta = {"misuses": ["1"]}
@@ -226,14 +226,14 @@ class TestDatasetCheckProjectVersion:
 
 class TestDatasetCheckMisuse:
     def setup(self):
-        self.original_get_all_misuses = DatasetCheck._get_all_misuses
-        DatasetCheck._get_all_misuses = lambda *_: []
-        self.uut = DatasetCheck({}, '', '')
+        self.original_get_all_misuses = DatasetCheckTask._get_all_misuses
+        DatasetCheckTask._get_all_misuses = lambda *_: []
+        self.uut = DatasetCheckTask({}, '', '')
         self.uut._report_missing_key = MagicMock()
         self.uut._check_misuse_location_exists = MagicMock()
 
     def teardown(self):
-        DatasetCheck._get_all_misuses = self.original_get_all_misuses
+        DatasetCheckTask._get_all_misuses = self.original_get_all_misuses
 
     def test_missing_location(self):
         project = create_project("-project-", meta=EMPTY_META)
@@ -431,14 +431,14 @@ class TestDatasetCheckMisuse:
 
 class TestDatasetCheckDatasetLists:
     def setup(self):
-        self.original_get_all_misuses = DatasetCheck._get_all_misuses
-        DatasetCheck._get_all_misuses = lambda *_: []
-        self.uut = DatasetCheck({}, '', '')
+        self.original_get_all_misuses = DatasetCheckTask._get_all_misuses
+        DatasetCheckTask._get_all_misuses = lambda *_: []
+        self.uut = DatasetCheckTask({}, '', '')
         self.uut._report_unknown_dataset_entry = MagicMock()
         self.uut._check_misuse_location_exists = MagicMock()
 
     def teardown(self):
-        DatasetCheck._get_all_misuses = self.original_get_all_misuses
+        DatasetCheckTask._get_all_misuses = self.original_get_all_misuses
 
     def test_unknown_entry(self):
         self.uut.datasets = {"-dataset-": ["-unknown-entry-"]}
@@ -502,10 +502,10 @@ class TestDatasetCheckDatasetLists:
 
 class TestDatasetCheckUnknownLocation:
     def setup(self):
-        self.original_get_all_misuses = DatasetCheck._get_all_misuses
-        DatasetCheck._get_all_misuses = lambda *_: []
+        self.original_get_all_misuses = DatasetCheckTask._get_all_misuses
+        DatasetCheckTask._get_all_misuses = lambda *_: []
 
-        self.uut = DatasetCheck({}, '', '')
+        self.uut = DatasetCheckTask({}, '', '')
         self.uut._report_cannot_find_location = MagicMock()
 
         self.project = create_project("-project-", meta=EMPTY_META)
@@ -521,7 +521,7 @@ class TestDatasetCheckUnknownLocation:
         self.version.get_checkout = MagicMock(return_value=checkout)
 
     def teardown(self):
-        DatasetCheck._get_all_misuses = self.original_get_all_misuses
+        DatasetCheckTask._get_all_misuses = self.original_get_all_misuses
 
     def test_unknown_location(self):
         self.uut._location_exists = MagicMock(return_value=False)
@@ -542,14 +542,14 @@ class TestDatasetCheckUnknownLocation:
 
 class TestDatasetCheckUnlistedMisuses:
     def setup(self):
-        self.original_get_all_misuses = DatasetCheck._get_all_misuses
-        DatasetCheck._get_all_misuses = MagicMock(return_value=["-project-.-misuse-"])
-        self.uut = DatasetCheck({}, '', '')
+        self.original_get_all_misuses = DatasetCheckTask._get_all_misuses
+        DatasetCheckTask._get_all_misuses = MagicMock(return_value=["-project-.-misuse-"])
+        self.uut = DatasetCheckTask({}, '', '')
         self.uut._check_misuse_location_exists = MagicMock()
         self.uut._report_misuse_not_listed = MagicMock()
 
     def teardown(self):
-        DatasetCheck._get_all_misuses = self.original_get_all_misuses
+        DatasetCheckTask._get_all_misuses = self.original_get_all_misuses
 
     def test_misuse_not_listed_in_any_version(self):
 

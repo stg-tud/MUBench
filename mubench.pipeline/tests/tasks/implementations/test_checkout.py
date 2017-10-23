@@ -4,7 +4,7 @@ from unittest.mock import MagicMock
 from nose.tools import assert_equals, assert_raises
 
 from data.project_checkout import ProjectCheckout
-from tasks.implementations.checkout import Checkout
+from tasks.implementations.checkout import CheckoutTask
 from tests.test_utils.data_util import create_project, create_version
 from utils.shell import CommandFailedError
 
@@ -20,7 +20,7 @@ class TestCheckout(unittest.TestCase):
         self.version = create_version("-version-", project=self.project)
         self.version.get_checkout = MagicMock(return_value=self.checkout)
 
-        self.uut = Checkout("-checkouts-", force_checkout=False, use_temp_dir=False)
+        self.uut = CheckoutTask("-checkouts-", force_checkout=False, use_temp_dir=False)
 
     def test_initial_checkout(self):
         self.checkout.exists = MagicMock(return_value=False)

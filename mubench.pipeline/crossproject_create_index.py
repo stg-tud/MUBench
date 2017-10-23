@@ -3,9 +3,9 @@ from typing import List
 from data.misuse import Misuse
 from data.project import Project
 from data.project_version import ProjectVersion
-from tasks.implementations.collect_misuses import CollectMisuses
-from tasks.implementations.collect_projects import CollectProjects
-from tasks.implementations.collect_versions import CollectVersions
+from tasks.implementations.collect_misuses import CollectMisusesTask
+from tasks.implementations.collect_projects import CollectProjectsTask
+from tasks.implementations.collect_versions import CollectVersionsTask
 from tasks.task_runner import TaskRunner
 from utils.data_filter import DataFilter
 from utils.dataset_util import get_white_list
@@ -20,6 +20,6 @@ class Task:
 white_list = get_white_list("../data/datasets.yml", "icse16ex1")
 data_filter = DataFilter(white_list, [])
 runner = TaskRunner(
-    [CollectProjects("../data/", data_filter), CollectVersions(data_filter), CollectMisuses(data_filter),
+    [CollectProjectsTask("../data/", data_filter), CollectVersionsTask(data_filter), CollectMisusesTask(data_filter),
      Task()])
 runner.run()

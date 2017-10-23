@@ -16,7 +16,7 @@ from data.project_version import ProjectVersion
 from utils.io import remove_tree, copy_tree
 
 
-class Compile:
+class CompileTask:
     def __init__(self, compiles_base_path: str, force_compile: bool, use_temp_dir: bool):
         super().__init__()
         self.compiles_base_path = compiles_base_path
@@ -120,7 +120,7 @@ class Compile:
                  compile_base_path: str, logger: Logger) -> None:
         for command in commands:
             dependencies = BuildCommand.create(command).execute(project_dir, logger)
-            Compile.__copy_dependencies(dependencies, dep_dir, compile_base_path)
+            CompileTask.__copy_dependencies(dependencies, dep_dir, compile_base_path)
 
     @staticmethod
     def __copy_misuse_classes(classes_path, misuses, destination):
@@ -170,6 +170,6 @@ class Compile:
                 # dependency is a classes directory
                 dep_name = os.path.relpath(dependency, compile_base_path)
                 dep_name = dep_name.replace(os.sep, '-')
-                Compile.__create_jar(dependency, os.path.join(dep_dir, dep_name + ".jar"))
+                CompileTask.__create_jar(dependency, os.path.join(dep_dir, dep_name + ".jar"))
             else:
                 shutil.copy(dependency, dep_dir)
