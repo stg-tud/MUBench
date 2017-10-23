@@ -60,7 +60,8 @@ class TestDatasetCheckProject:
         misuse = create_misuse("-conflict-", project=project, meta=EMPTY_META)
         version = create_version("-conflict-", project=project, misuses=[misuse], meta=EMPTY_META)
 
-        self.uut.process_project(project)
+        self.uut.process_project_version(project, version)
+        self.uut.process_project_version_misuse(project, version, misuse)
 
         self.uut._report_id_conflict.assert_any_call("-project-.-conflict-")
 
@@ -72,6 +73,8 @@ class TestDatasetCheckProject:
         version_with_conflict = create_version("-conflict-", project=project, misuses=[], meta=EMPTY_META)
 
         self.uut.process_project(project)
+        self.uut.process_project_version(project, version_with_conflict)
+        self.uut.process_project_version_misuse(project, version, misuse_with_conflict)
 
         self.uut._report_id_conflict.assert_any_call("-project-.-conflict-")
 
@@ -82,6 +85,8 @@ class TestDatasetCheckProject:
         version = create_version("-conflict-", project=project, misuses=[misuse], meta=EMPTY_META)
 
         self.uut.process_project(project)
+        self.uut.process_project_version(project, version)
+        self.uut.process_project_version_misuse(project, version, misuse)
 
         self.uut._report_id_conflict.assert_not_called()
 
