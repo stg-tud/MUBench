@@ -2,8 +2,7 @@ from unittest.mock import MagicMock
 
 from nose.tools import assert_equals
 
-from requirements import Requirement
-from tasks.implementations.requirements_check import RequirementsCheck
+from requirements import Requirement, RequirementsCheck
 
 
 class TestRequirementsCheck:
