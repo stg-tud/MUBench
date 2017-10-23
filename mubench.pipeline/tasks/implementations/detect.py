@@ -67,7 +67,7 @@ class DetectTask:
             return []
         elif run.is_success():
             self.logger.info("Successful previous %s. Skipping.", run)
-            return [run]
+            return run
 
         run.reset()
 
@@ -75,4 +75,4 @@ class DetectTask:
         logger = logging.getLogger("detect.run")
         run.execute(self.compiles_base_path, self.timeout, logger)
 
-        return [run] if run.is_success() else []
+        return run if run.is_success() else []

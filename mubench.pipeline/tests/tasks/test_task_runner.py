@@ -115,6 +115,15 @@ class TestTaskRunner:
 
         second_task.assert_called_once_with("-some other string-")
 
+    def test_task_can_return_a_single_instance(self):
+        first_task = VoidTask(results="-some string-")
+        second_task = StringConsumingTask()
+        uut = TaskRunner([first_task, second_task])
+
+        uut.run()
+
+        second_task.assert_called_once_with("-some string-")
+
 
 class MockTask:
     def __init__(self, results: List = None):

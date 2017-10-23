@@ -40,4 +40,4 @@ class CheckoutTask:
             else:
                 checkout.create()
 
-        return [checkout]
+        return checkout
