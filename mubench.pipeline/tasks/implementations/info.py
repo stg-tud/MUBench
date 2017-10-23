@@ -4,6 +4,7 @@ from os.path import join
 from data.misuse import Misuse
 from data.project import Project
 from data.project_version import ProjectVersion
+from tasks.task_runner import Continue
 
 
 class ProjectInfoTask:
@@ -16,7 +17,7 @@ class ProjectInfoTask:
         self.__logger.info("- Project    : %s", project.name)
         self.__logger.info("  Repository : %s:%s", project.repository.vcstype, project.repository.url)
 
-        return [self]
+        return Continue
 
 
 class VersionInfoTask:
@@ -47,7 +48,7 @@ class VersionInfoTask:
             compile_state = "compiled"
         self.__logger.info("    Compile  : %s", compile_state)
 
-        return [self]
+        return Continue
 
 
 class MisuseInfoTask:
@@ -84,4 +85,4 @@ class MisuseInfoTask:
             pattern_compile_state = "patterns compiled"
         self.__logger.info("      Compile          : %s", pattern_compile_state)
 
-        return []
+        return Continue
