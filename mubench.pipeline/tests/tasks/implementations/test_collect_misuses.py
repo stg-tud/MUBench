@@ -11,7 +11,7 @@ NO_FILTER.is_filtered = lambda id_: False
 
 
 class TestCollectMisuses:
-    def test_finds_all_versions(self):
+    def test_finds_all_misuses(self):
         m1 = create_misuse("-m1-")
         m2 = create_misuse("-m2-")
         version = create_version("-version-", misuses=[m1, m2])
