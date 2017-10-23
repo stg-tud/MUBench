@@ -38,23 +38,23 @@ class DatasetCheckTask:
         self.misuses_not_listed_in_any_version = self._get_all_misuses(data_base_path)
 
     def run(self, project: Project, version: ProjectVersion, misuse: Misuse):
-        self.process_project(project)
-        self.process_project_version(project, version)
-        self.process_project_version_misuse(project, version, misuse)
+        self.check_project(project)
+        self.check_project_version(project, version)
+        self.check_project_version_misuse(project, version, misuse)
         return []
 
-    def process_project(self, project: Project):
+    def check_project(self, project: Project):
         self.logger = logging.getLogger("datasetcheck.project")
         self._register_entry(project, project.id)
         self._check_required_keys_in_project_yaml(project)
 
-    def process_project_version(self, project: Project, version: ProjectVersion):
+    def check_project_version(self, project: Project, version: ProjectVersion):
         self.logger = logging.getLogger("datasetcheck.project.version")
         self._register_entry(project, version.id)
         self._check_required_keys_in_version_yaml(project, version)
         self._check_misuses_listed_in_version_exist(project, version)
 
-    def process_project_version_misuse(self, project: Project, version: ProjectVersion, misuse: Misuse):
+    def check_project_version_misuse(self, project: Project, version: ProjectVersion, misuse: Misuse):
         self.logger = logging.getLogger("datasetcheck.project.version.misuse")
         self._register_entry(project, misuse.id)
         self._register_misuse_is_linked_from_version(misuse.id)
