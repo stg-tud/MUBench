@@ -79,8 +79,6 @@ class PublishFindingsTask:
             else:
                 logger.error("ERROR: %s", e)
 
-        return []
-
     def __slice_by_max_files_per_post(self, potential_hits: List[SpecializedFinding]) -> List[List[SpecializedFinding]]:
         potential_hits_slice = []
         number_of_files_in_slice = 0

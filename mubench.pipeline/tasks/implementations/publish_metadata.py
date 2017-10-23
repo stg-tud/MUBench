@@ -52,8 +52,6 @@ class PublishMetadataTask:
             "patterns": self.__get_patterns(misuse)
         })
 
-        return []
-
     def __get_snippets(self, misuse, version):
         version_compile = version.get_compile(self.compiles_base_path)
         return [snippet.__dict__ for snippet in misuse.get_snippets(version_compile.original_sources_path)]
