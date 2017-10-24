@@ -140,14 +140,15 @@ class TestTaskRunner:
 
         assert_raises(TaskParameterUnavailableWarning, uut.run)
 
-    def test_none_result_stops_execution_silently(self):
-        first_task = NoneReturningTask()
-        second_task = VoidTask()
-        uut = TaskRunner([first_task, second_task])
+    def test_none_result_continues_execution(self):
+        first_task = VoidTask(results="-some string-")
+        second_task = NoneReturningTask()
+        third_task = StringConsumingTask()
+        uut = TaskRunner([first_task, second_task, third_task])
 
         uut.run()
 
-        second_task.assert_not_called()
+        third_task.assert_called_once_with("-some string-")
 
 
 class MockTask:

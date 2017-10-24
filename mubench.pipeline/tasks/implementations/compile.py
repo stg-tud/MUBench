@@ -88,7 +88,7 @@ class CompileTask:
                 logger.debug("Moving complete build to persistent directory...")
                 copy_tree(build_path, project_compile.build_dir)
                 remove_tree(build_path)
-        except Exception as e:
+        except Exception:
             project_compile.delete()
             raise
 

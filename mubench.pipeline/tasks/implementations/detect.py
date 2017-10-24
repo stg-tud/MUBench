@@ -63,8 +63,7 @@ class DetectTask:
         if run.is_outdated() or self.force_detect:
             pass
         elif run.is_error():
-            self.logger.info("Error in previous %s. Skipping.", run)
-            return []
+            raise UserWarning("Error in previous {}. Skipping.".format(str(run)))
         elif run.is_success():
             self.logger.info("Successful previous %s. Skipping.", run)
             return run
@@ -75,4 +74,7 @@ class DetectTask:
         logger = logging.getLogger("detect.run")
         run.execute(self.compiles_base_path, self.timeout, logger)
 
-        return run if run.is_success() else None
+        if not run.is_success():
+            raise UserWarning("Run {} failed.".format(str(run)))
+
+        return run
