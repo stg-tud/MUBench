@@ -50,7 +50,10 @@ class TestDetect:
         rmtree(self.temp_dir, ignore_errors=True)
 
     def test_invokes_detector(self):
-        self.uut.run(self.version)
+        try:
+            self.uut.run(self.version)
+        except UserWarning:
+            pass
 
         self.test_run.execute.assert_called_with(self.compiles_path, None, ANY)
 
@@ -67,10 +70,9 @@ class TestDetect:
         self.test_run_execution.is_outdated = lambda: False
         self.test_run.is_error = lambda: True
 
-        response = self.uut.run(self.version)
+        assert_raises(UserWarning, self.uut.run, self.version)
 
         self.test_run.execute.assert_not_called()
-        assert_equals([], response)
 
     def test_force_detect_on_new_detector(self):
         self.test_run.is_success = lambda: True
