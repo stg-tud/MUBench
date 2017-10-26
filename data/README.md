@@ -8,6 +8,53 @@ When running experiments you may use the qualified project, version, or misuse i
 
 You may also use qualified project, version, or misuse ids to specify sub-dataset in [datasets.yml](datasets.yml), to conveniently run experiments on certain subsets of the entire dataset.
 
+## Statistics
+
+The current dataset contains 209 misuses from 108 project versions of 50 projects.
+It contains 162 misuses in 47 compilable project versions of 25 projects.
+It contains 64 misuses with corresponding crafted examples of correct usage, 39 from 29 compilable versions of 13 projects and 25 hand-crafted examples.
+
+**Manually Collected:**
+
+* 25 misuses from a developer survey
+* 24 misuses from manual review of [the BugClassify dataset](https://www.st.cs.uni-saarland.de/softevo/bugclassify/)
+* 17 misuses from manual review of [the Defects4J dataset](https://github.com/rjust/defects4j)
+* 16 misuses from manual review of the QACrashFix dataset (became unavailable)
+* 11 misuses from manual review of commits changing `javax.crypto.Cipher` usages on Sourceforge
+* 3 misuses from manual review of commits changing `javax.crypto.Cipher` usages on GitHub
+* 3 misuses from "Analyse der Verwendung von Kryptographie-APIs in Java-basierten Anwendungen", Ziegler, Master's Thesis, Uni Bremen, Germany
+* 2 misuses from API-usage constraints reported in ["What should developers be aware of?", Monperrus et al., Empirical Software Engineering '12](https://arxiv.org/abs/1205.6363)
+* 1 misuses from manual review of [the iBugs dataset](https://www.st.cs.uni-saarland.de/ibugs/)
+
+**Identified by API-Misuse Detectors:**
+
+* 77 misuses from 18 versions of 12 projects; source: ["How Good are the Specs? A Study of the Bug-Finding Effectiveness of Existing Java API Specifications", Owolabi et al., ASE'16](http://fsl.cs.illinois.edu/spec-eval/)
+* 9 Pradel
+* 8 DMMC
+* 7 MUDetect
+* 4 Tikanga
+* 2 Jadet
+
+### ICSE 18
+
+*Total*: 132 misuses total, 85 misuses in compilable project versions
+
+*Experiment 1*: 64 misuses, 39 from 29 versions of 13 projects and 25 hand-crafted examples
+
+*Experiment 2*: 5 projects, 7 previously-unknown misuses identified in the MUDetect's top-20 findings
+
+*Experiment 3*: 85 misuses, 60 from 29 versions of 13 projects and 25 hand-crafted examples
+
+### TSE 17
+
+*Total*: 125 misuses total, 78 misuses in compilable project versions
+
+*Experiment 1*: 64 misuses, 39 from 29 versions of 13 projects and 25 hand-crafted examples
+
+*Experiment 2*: 5 projects, 14 previously-unknown misuses identified in the detectors' top-20 findings
+
+*Experiment 3*: 53 misuses from 29 versions of 13 projects (no hand-crafted examples)
+
 ## Contribute
 
 To contribute to the MUBench Dataset, please [contact Sven Amann](http://www.stg.tu-darmstadt.de/staff/sven_amann) with details about the misuses. For each misuse, please try to provide
