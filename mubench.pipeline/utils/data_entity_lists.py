@@ -8,17 +8,14 @@ class DataEntityLists:
         self.__misuse_whitelist = DataEntityLists.__get_misuse_white_list(white_list)
         self.__black_list = black_list
 
-    @property
-    def project_white_list(self) -> List[str]:
+    def get_project_white_list(self) -> List[str]:
         return self.__project_whitelist
 
-    @property
-    def version_white_list(self) -> List[str]:
-        return self.__version_whitelist
+    def get_version_white_list(self, project_id: str) -> List[str]:
+        return [version_id for version_id in self.__version_whitelist if version_id.split('.')[0] == project_id]
 
-    @property
-    def misuse_white_list(self) -> List[str]:
-        return self.__misuse_whitelist
+    def get_misuse_white_list(self, version_id: str) -> List[str]:
+        return [misuse_id for misuse_id in self.__misuse_whitelist if misuse_id.rsplit('.', 1)[0] == version_id]
 
     @property
     def black_list(self) -> List[str]:
