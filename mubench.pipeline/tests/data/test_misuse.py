@@ -16,14 +16,15 @@ class TestMisuse:
         self.temp_dir = mkdtemp(prefix='mubench-test-misuse_')
 
         self.project_id = "project"
+        self.version_id = "version"
         self.misuse_id = "misuse1"
-        self.uut = Misuse(self.temp_dir, self.project_id, self.misuse_id)
+        self.uut = Misuse(self.temp_dir, self.project_id, self.version_id, self.misuse_id)
 
     def teardown(self):
         rmtree(self.temp_dir, ignore_errors=True)
 
     def test_extracts_id(self):
-        assert self.uut.id == "project.misuse1"
+        assert self.uut.id == "project.version.misuse1"
 
     def test_finds_no_pattern(self):
         assert self.uut.patterns == set()

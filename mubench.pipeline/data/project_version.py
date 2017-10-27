@@ -1,4 +1,3 @@
-import logging
 from os.path import exists
 from os.path import join
 from typing import List, Optional, Any, Dict, Set
@@ -91,7 +90,8 @@ class ProjectVersion:
     def misuses(self) -> List[Misuse]:
         if not self._MISUSES:
             misuse_ids = self._yaml.get("misuses", []) or []
-            self._MISUSES = [Misuse(self._base_path, self.__project.id, misuse_id) for misuse_id in misuse_ids
+            self._MISUSES = [Misuse(self._base_path, self.__project.id, self.version_id, misuse_id)
+                             for misuse_id in misuse_ids
                              if Misuse.is_misuse(join(self._misuses_dir, misuse_id))]
 
         return self._MISUSES
