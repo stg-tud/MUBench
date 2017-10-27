@@ -22,7 +22,7 @@ white_list = get_white_list("../data/datasets.yml", "icse16ex1")
 data_filter = DataFilter(white_list, [])
 data_entity_lists = DataEntityLists(white_list, [])
 runner = TaskRunner(
-    [CollectProjectsTask("../data/", data_entity_lists), CollectVersionsTask(data_filter),
+    [CollectProjectsTask("../data/", data_entity_lists), CollectVersionsTask(data_entity_lists),
      CollectMisusesTask(data_filter),
      Task()])
 runner.run()
