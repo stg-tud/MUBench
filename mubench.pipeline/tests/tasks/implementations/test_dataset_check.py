@@ -1,5 +1,6 @@
 from os.path import join
 from tempfile import mkdtemp
+from unittest import SkipTest
 from unittest.mock import call, MagicMock
 
 from data.misuse import Misuse
@@ -53,30 +54,6 @@ class TestDatasetCheckProject:
         self.uut.check_project(project)
 
         self.uut._report_missing_key.assert_any_call("repository.url", "-id-/project.yml")
-
-    def test_version_and_misuse_with_same_name(self):
-        self.uut._report_id_conflict = MagicMock()
-        project = create_project("-project-", meta=EMPTY_META)
-        misuse = create_misuse("-conflict-", project=project, meta=EMPTY_META)
-        version = create_version("-conflict-", project=project, misuses=[misuse], meta=EMPTY_META)
-
-        self.uut.check_project_version(project, version)
-        self.uut.check_project_version_misuse(project, version, misuse)
-
-        self.uut._report_id_conflict.assert_any_call("-project-.-conflict-")
-
-    def test_version_and_misuse_from_different_version_with_same_name(self):
-        self.uut._report_id_conflict = MagicMock()
-        project = create_project("-project-", meta=EMPTY_META)
-        misuse_with_conflict = create_misuse("-conflict-", project=project, meta=EMPTY_META)
-        version = create_version("-version-", project=project, misuses=[misuse_with_conflict], meta=EMPTY_META)
-        version_with_conflict = create_version("-conflict-", project=project, misuses=[], meta=EMPTY_META)
-
-        self.uut.check_project(project)
-        self.uut.check_project_version(project, version_with_conflict)
-        self.uut.check_project_version_misuse(project, version, misuse_with_conflict)
-
-        self.uut._report_id_conflict.assert_any_call("-project-.-conflict-")
 
     def test_no_id_conflict_on_synthetic_repositories(self):
         self.uut._report_id_conflict = MagicMock()
@@ -557,6 +534,7 @@ class TestDatasetCheckUnlistedMisuses:
         DatasetCheckTask._get_all_misuses = self.original_get_all_misuses
 
     def test_misuse_not_listed_in_any_version(self):
+        raise SkipTest("Feature is currently disabled")
 
         self.uut.end()
 

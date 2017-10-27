@@ -35,11 +35,12 @@ class Misuse:
     def is_misuse(path: str) -> bool:
         return isfile(join(path, Misuse.MISUSE_FILE))
 
-    def __init__(self, base_path: str, project_id: str, misuse_id: str):
+    def __init__(self, base_path: str, project_id: str, version_id: str, misuse_id: str):
         self._base_path = base_path
         self.project_id = project_id
+        self.version_id = version_id
         self.misuse_id = misuse_id
-        self.id = "{}.{}".format(project_id, misuse_id)
+        self.id = "{}.{}.{}".format(project_id, version_id, misuse_id)
 
         from data.project import Project
         self.__project = Project(base_path, project_id)
