@@ -37,7 +37,7 @@ class TestCollectVersions:
     def test_filters_if_not_whitelisted(self):
         project = create_project("-project-")
         create_version("-id-", project=project)
-        uut = CollectVersionsTask(DataEntityLists(["-other-project-.-other-id-"], []))
+        uut = CollectVersionsTask(DataEntityLists(["-project-.-other-id-"], []))
 
         actual = uut.run(project)
 

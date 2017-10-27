@@ -8,7 +8,7 @@ from utils.data_entity_lists import DataEntityLists
 class CollectProjectsTask:
     def __init__(self, data_path: str, data_entity_lists: DataEntityLists):
         self.data_path = data_path
-        self.white_list = data_entity_lists.project_white_list
+        self.white_list = data_entity_lists.get_project_white_list()
         self.black_list = data_entity_lists.black_list
 
     def run(self):
