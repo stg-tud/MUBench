@@ -7,6 +7,7 @@ from tasks.implementations.collect_misuses import CollectMisusesTask
 from tasks.implementations.collect_projects import CollectProjectsTask
 from tasks.implementations.collect_versions import CollectVersionsTask
 from tasks.task_runner import TaskRunner
+from utils.data_entity_lists import DataEntityLists
 from utils.data_filter import DataFilter
 from utils.dataset_util import get_white_list
 
@@ -19,7 +20,9 @@ class Task:
 
 white_list = get_white_list("../data/datasets.yml", "icse16ex1")
 data_filter = DataFilter(white_list, [])
+data_entity_lists = DataEntityLists(white_list, [])
 runner = TaskRunner(
-    [CollectProjectsTask("../data/", data_filter), CollectVersionsTask(data_filter), CollectMisusesTask(data_filter),
+    [CollectProjectsTask("../data/", data_entity_lists), CollectVersionsTask(data_filter),
+     CollectMisusesTask(data_filter),
      Task()])
 runner.run()
