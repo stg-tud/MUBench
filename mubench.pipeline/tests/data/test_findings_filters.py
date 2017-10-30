@@ -52,7 +52,10 @@ class TestAllFindings:
         self.uut = AllFindings()
 
     def test_returns_all_findings(self):
-        expected = [Finding({"rank": "1", "file": ""}), Finding({"rank": "2", "file": ""})]
+        expected = [
+            Finding({"rank": "1", "misuse": "finding-0", "file": ""}),
+            Finding({"rank": "2", "misuse": "finding-1", "file": ""})
+        ]
 
         actual = self.uut.get_potential_hits(expected)
 

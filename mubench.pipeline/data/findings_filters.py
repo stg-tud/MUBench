@@ -11,6 +11,12 @@ class FindingsFilter:
         raise NotImplementedError()
 
 
+def _to_potential_hit(misuse_id, finding: Finding):
+    potential_hit = deepcopy(finding)
+    potential_hit["misuse"] = misuse_id
+    return potential_hit
+
+
 class PotentialHits(FindingsFilter):
     def __init__(self, misuses: List[Misuse]):
         self.misuses = misuses
@@ -29,9 +35,7 @@ class PotentialHits(FindingsFilter):
         potential_hits = []
         for finding in findings:
             if finding.is_potential_hit(misuse, method_name_only):
-                finding = deepcopy(finding)
-                finding["misuse"] = misuse.misuse_id
-                potential_hits.append(finding)
+                potential_hits.append(_to_potential_hit(misuse.misuse_id, finding))
         return potential_hits
 
 
@@ -40,6 +44,13 @@ class AllFindings(FindingsFilter):
         self.limit = limit
 
     def get_potential_hits(self, findings: List[Finding]):
+        top_findings = self.__get_top_findings(findings)
+        potential_hits = []
+        for rank, top_finding in enumerate(top_findings):
+            potential_hits.append(_to_potential_hit("finding-{}".format(rank), top_finding))
+        return potential_hits
+
+    def __get_top_findings(self, findings):
         if self.limit:
             return findings[0:self.limit]
         else:
