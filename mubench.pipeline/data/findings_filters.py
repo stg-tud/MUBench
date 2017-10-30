@@ -30,7 +30,7 @@ class PotentialHits(FindingsFilter):
         for finding in findings:
             if finding.is_potential_hit(misuse, method_name_only):
                 finding = deepcopy(finding)
-                finding["misuse"] = misuse.id
+                finding["misuse"] = misuse.misuse_id
                 potential_hits.append(finding)
         return potential_hits
 

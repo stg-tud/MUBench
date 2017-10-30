@@ -29,7 +29,7 @@ class TestPotentialHits:
 
         potential_hits = self.uut.get_potential_hits([finding])
 
-        assert_equals(self.misuses[0].id, potential_hits[0]["misuse"])
+        assert_equals(self.misuses[0].misuse_id, potential_hits[0]["misuse"])
 
     def test_potential_hit_for_second_misuse(self):
         self.misuses.extend([create_misuse("-1st-"), create_misuse("-2nd-")])
@@ -38,7 +38,7 @@ class TestPotentialHits:
 
         potential_hits = self.uut.get_potential_hits([finding])
 
-        assert_equals(self.misuses[1].id, potential_hits[0]["misuse"])
+        assert_equals(self.misuses[1].misuse_id, potential_hits[0]["misuse"])
 
 
 class TestAllFindings:
