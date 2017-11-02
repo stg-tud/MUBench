@@ -102,7 +102,6 @@ class Benchmark:
                     CompileTask(Benchmark.COMPILES_PATH, self.config.force_compile, self.config.use_tmp_wrkdir))
                 tasks.append(DetectTask(Benchmark.COMPILES_PATH, self.__get_experiment(), self.config.timeout,
                                         self.config.force_detect))
-                tasks.append(CollectMisusesTask(self.data_entity_lists))
                 tasks.append(PublishFindingsTask(self.__get_experiment(), self.config.dataset, Benchmark.COMPILES_PATH,
                                                  self.config.review_site_url, self.config.review_site_user,
                                                  self.config.review_site_password))
