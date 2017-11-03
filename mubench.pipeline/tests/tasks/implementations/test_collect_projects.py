@@ -20,26 +20,26 @@ class TestCollectProject:
         create_file(p1._project_file)
         p2 = create_project("p2", base_path=self.temp_dir)
         create_file(p2._project_file)
-        uut = CollectProjectsTask(self.temp_dir, DataEntityLists([], []))
+        uut = CollectProjectsTask(self.temp_dir)
 
-        actual = uut.run()
+        actual = uut.run(DataEntityLists([], []))
 
         assert_equals([p1, p2], actual)
 
     def test_filters_non_whitelisted(self):
         project = create_project("-id-", base_path=self.temp_dir)
         create_file(project._project_file)
-        uut = CollectProjectsTask(self.temp_dir, DataEntityLists(["-other-id-"], []))
+        uut = CollectProjectsTask(self.temp_dir)
 
-        actual = uut.run()
+        actual = uut.run(DataEntityLists(["-other-id-"], []))
 
         assert_equals([], actual)
 
     def test_filters_blacklisted(self):
         project = create_project("-id-", base_path=self.temp_dir)
         create_file(project._project_file)
-        uut = CollectProjectsTask(self.temp_dir, DataEntityLists([], ["-id-"]))
+        uut = CollectProjectsTask(self.temp_dir)
 
-        actual = uut.run()
+        actual = uut.run(DataEntityLists([], ["-id-"]))
 
         assert_equals([], actual)
