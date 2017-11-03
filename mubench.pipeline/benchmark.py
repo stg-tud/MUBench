@@ -48,17 +48,17 @@ class Benchmark:
 
         self.config = config
 
-        self.white_list = []
-        self.black_list = []
+        white_list = []
+        black_list = []
         if 'white_list' in config:
-            self.white_list.extend(config.white_list)
+            white_list.extend(config.white_list)
         if 'black_list' in config:
-            self.black_list.extend(config.black_list)
-
-        self.data_entity_lists = DataEntityLists(self.white_list, self.black_list)
+            black_list.extend(config.black_list)
 
         if 'dataset' in config:
-            self.white_list.extend(get_white_list(self.DATASETS_FILE_PATH, config.dataset))
+            white_list.extend(get_white_list(self.DATASETS_FILE_PATH, config.dataset))
+
+        self.data_entity_lists = DataEntityLists(white_list, black_list)
 
     def run(self) -> None:
         RequirementsCheck()
