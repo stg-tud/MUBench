@@ -2,7 +2,7 @@ import collections
 import logging
 from inspect import signature, Parameter
 
-from typing import List
+from typing import List, Tuple, Any
 
 
 class Continue:
@@ -14,8 +14,8 @@ class TaskRunner:
         self.tasks = tasks
         self.logger = logging.getLogger("task_runner")
 
-    def run(self):
-        self.__run(0, [])
+    def run(self, *initial_parameters: Tuple[Any]):
+        self.__run(0, list(initial_parameters))
         for task in self.tasks:
             if callable(getattr(task, 'end', None)):
                 task.end()

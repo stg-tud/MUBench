@@ -150,6 +150,14 @@ class TestTaskRunner:
 
         third_task.assert_called_once_with("-some string-")
 
+    def test_passes_initial_parameter_values(self):
+        task = StringConsumingTask()
+        uut = TaskRunner([task])
+
+        uut.run("-string-")
+
+        task.assert_called_once_with("-string-")
+
 
 class MockTask:
     def __init__(self, results: List = None):
