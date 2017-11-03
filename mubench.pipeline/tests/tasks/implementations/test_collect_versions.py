@@ -10,44 +10,44 @@ class TestCollectVersions:
         project = create_project("-project-")
         v1 = create_version("-v1-", project=project)
         v2 = create_version("-v2-", project=project)
-        uut = CollectVersionsTask(DataEntityLists([], []))
+        uut = CollectVersionsTask()
 
-        actual = uut.run(project)
+        actual = uut.run(project, DataEntityLists([], []))
 
         assert_equals([v1, v2], actual)
 
     def test_whitelisted_project(self):
         project = create_project("-project-")
         version = create_version("-id-", project=project)
-        uut = CollectVersionsTask(DataEntityLists(["-project-"], []))
+        uut = CollectVersionsTask()
 
-        actual = uut.run(project)
+        actual = uut.run(project, DataEntityLists(["-project-"], []))
 
         assert_equals([version], actual)
 
     def test_whitelisted_version(self):
         project = create_project("-project-")
         version = create_version("-id-", project=project)
-        uut = CollectVersionsTask(DataEntityLists(["-project-.-id-"], []))
+        uut = CollectVersionsTask()
 
-        actual = uut.run(project)
+        actual = uut.run(project, DataEntityLists(["-project-.-id-"], []))
 
         assert_equals([version], actual)
 
     def test_filters_if_not_whitelisted(self):
         project = create_project("-project-")
         create_version("-id-", project=project)
-        uut = CollectVersionsTask(DataEntityLists(["-project-.-other-id-"], []))
+        uut = CollectVersionsTask()
 
-        actual = uut.run(project)
+        actual = uut.run(project, DataEntityLists(["-project-.-other-id-"], []))
 
         assert_equals([], actual)
 
     def test_filters_blacklisted(self):
         project = create_project("-project-")
         create_version("-id-", project=project)
-        uut = CollectVersionsTask(DataEntityLists([], ["-project-.-id-"]))
+        uut = CollectVersionsTask()
 
-        actual = uut.run(project)
+        actual = uut.run(project, DataEntityLists([], ["-project-.-id-"]))
 
         assert_equals([], actual)

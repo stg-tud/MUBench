@@ -69,24 +69,24 @@ class Benchmark:
             project_info = ProjectInfoTask(Benchmark.CHECKOUTS_PATH, benchmark.COMPILES_PATH)
             version_info = VersionInfoTask(Benchmark.CHECKOUTS_PATH, benchmark.COMPILES_PATH)
             misuse_info = MisuseInfoTask(Benchmark.CHECKOUTS_PATH, benchmark.COMPILES_PATH)
-            tasks.append(CollectProjectsTask(benchmark.DATA_PATH, self.data_entity_lists))
+            tasks.append(CollectProjectsTask(benchmark.DATA_PATH))
             tasks.append(project_info)
-            tasks.append(CollectVersionsTask(self.data_entity_lists))
+            tasks.append(CollectVersionsTask())
             tasks.append(version_info)
-            tasks.append(CollectMisusesTask(self.data_entity_lists))
+            tasks.append(CollectMisusesTask())
             tasks.append(misuse_info)
         elif config.task == 'checkout':
-            tasks.append(CollectProjectsTask(benchmark.DATA_PATH, self.data_entity_lists))
-            tasks.append(CollectVersionsTask(self.data_entity_lists))
+            tasks.append(CollectProjectsTask(benchmark.DATA_PATH))
+            tasks.append(CollectVersionsTask())
             tasks.append(CheckoutTask(Benchmark.CHECKOUTS_PATH, self.config.force_checkout, self.config.use_tmp_wrkdir))
         elif config.task == 'compile':
-            tasks.append(CollectProjectsTask(benchmark.DATA_PATH, self.data_entity_lists))
-            tasks.append(CollectVersionsTask(self.data_entity_lists))
+            tasks.append(CollectProjectsTask(benchmark.DATA_PATH))
+            tasks.append(CollectVersionsTask())
             tasks.append(CheckoutTask(Benchmark.CHECKOUTS_PATH, self.config.force_checkout, self.config.use_tmp_wrkdir))
             tasks.append(CompileTask(Benchmark.COMPILES_PATH, self.config.force_compile, self.config.use_tmp_wrkdir))
         elif config.task == 'detect':
-            tasks.append(CollectProjectsTask(benchmark.DATA_PATH, self.data_entity_lists))
-            tasks.append(CollectVersionsTask(self.data_entity_lists))
+            tasks.append(CollectProjectsTask(benchmark.DATA_PATH))
+            tasks.append(CollectVersionsTask())
             tasks.append(CheckoutTask(Benchmark.CHECKOUTS_PATH, self.config.force_checkout, self.config.use_tmp_wrkdir))
             tasks.append(CompileTask(Benchmark.COMPILES_PATH, self.config.force_compile, self.config.use_tmp_wrkdir))
             tasks.append(
@@ -94,8 +94,8 @@ class Benchmark:
                            self.config.force_detect))
         elif config.task == 'publish':
             if config.publish_task == 'findings':
-                tasks.append(CollectProjectsTask(benchmark.DATA_PATH, self.data_entity_lists))
-                tasks.append(CollectVersionsTask(self.data_entity_lists))
+                tasks.append(CollectProjectsTask(benchmark.DATA_PATH))
+                tasks.append(CollectVersionsTask())
                 tasks.append(
                     CheckoutTask(Benchmark.CHECKOUTS_PATH, self.config.force_checkout, self.config.use_tmp_wrkdir))
                 tasks.append(
@@ -106,29 +106,30 @@ class Benchmark:
                                                  self.config.review_site_url, self.config.review_site_user,
                                                  self.config.review_site_password))
             elif config.publish_task == 'metadata':
-                tasks.append(CollectProjectsTask(benchmark.DATA_PATH, self.data_entity_lists))
-                tasks.append(CollectVersionsTask(self.data_entity_lists))
+                tasks.append(CollectProjectsTask(benchmark.DATA_PATH))
+                tasks.append(CollectVersionsTask())
                 tasks.append(
                     CheckoutTask(Benchmark.CHECKOUTS_PATH, self.config.force_checkout, self.config.use_tmp_wrkdir))
-                tasks.append(CollectMisusesTask(self.data_entity_lists))
+                tasks.append(CollectMisusesTask())
                 tasks.append(
                     PublishMetadataTask(Benchmark.COMPILES_PATH, self.config.review_site_url,
                                         self.config.review_site_user,
                                         self.config.review_site_password))
         elif config.task == 'stats':
-            tasks.append(CollectProjectsTask(benchmark.DATA_PATH, self.data_entity_lists))
-            tasks.append(CollectVersionsTask(self.data_entity_lists))
-            tasks.append(CollectMisusesTask(self.data_entity_lists))
+            tasks.append(CollectProjectsTask(benchmark.DATA_PATH))
+            tasks.append(CollectVersionsTask())
+            tasks.append(CollectMisusesTask())
             tasks.append(stats.get_calculator(self.config.script))
         elif config.task == 'dataset-check':
-            tasks.append(CollectProjectsTask(benchmark.DATA_PATH, self.data_entity_lists))
-            tasks.append(CollectVersionsTask(self.data_entity_lists))
-            tasks.append(CollectMisusesTask(self.data_entity_lists))
+            tasks.append(CollectProjectsTask(benchmark.DATA_PATH))
+            tasks.append(CollectVersionsTask())
+            tasks.append(CollectMisusesTask())
             tasks.append(
                 DatasetCheckTask(get_available_datasets(self.DATASETS_FILE_PATH), self.CHECKOUTS_PATH, self.DATA_PATH))
 
+        initial_parameters = [self.data_entity_lists]
         runner = TaskRunner(tasks)
-        runner.run()
+        runner.run(*initial_parameters)
 
     def __get_experiment(self):
         if self.config.experiment == 1:

@@ -11,9 +11,9 @@ class TestCollectMisuses:
         m2 = create_misuse("-m2-")
         project = create_project("-project-")
         version = create_version("-version-", misuses=[m1, m2], project=project)
-        uut = CollectMisusesTask(DataEntityLists([], []))
+        uut = CollectMisusesTask()
 
-        actual = uut.run(version)
+        actual = uut.run(version, DataEntityLists([], []))
 
         assert_equals([m1, m2], actual)
 
@@ -21,9 +21,9 @@ class TestCollectMisuses:
         misuse = create_misuse("-id-")
         project = create_project("-project-")
         version = create_version("-version-", misuses=[misuse], project=project)
-        uut = CollectMisusesTask(DataEntityLists(["-project-"], []))
+        uut = CollectMisusesTask()
 
-        actual = uut.run(version)
+        actual = uut.run(version, DataEntityLists(["-project-"], []))
 
         assert_equals([misuse], actual)
 
@@ -31,9 +31,9 @@ class TestCollectMisuses:
         misuse = create_misuse("-id-")
         project = create_project("-project-")
         version = create_version("-version-", misuses=[misuse], project=project)
-        uut = CollectMisusesTask(DataEntityLists(["-project-.-version-"], []))
+        uut = CollectMisusesTask()
 
-        actual = uut.run(version)
+        actual = uut.run(version, DataEntityLists(["-project-.-version-"], []))
 
         assert_equals([misuse], actual)
 
@@ -41,9 +41,9 @@ class TestCollectMisuses:
         misuse = create_misuse("-id-")
         project = create_project("-project-")
         version = create_version("-version-", misuses=[misuse], project=project)
-        uut = CollectMisusesTask(DataEntityLists(["-project-.-version-.-id-"], []))
+        uut = CollectMisusesTask()
 
-        actual = uut.run(version)
+        actual = uut.run(version, DataEntityLists(["-project-.-version-.-id-"], []))
 
         assert_equals([misuse], actual)
 
@@ -51,9 +51,9 @@ class TestCollectMisuses:
         project = create_project("-project-")
         version = create_version("-version-", misuses=[], project=project)
         create_misuse("-id-", version=version)
-        uut = CollectMisusesTask(DataEntityLists(["-project-.-version-.-other-id-"], []))
+        uut = CollectMisusesTask()
 
-        actual = uut.run(version)
+        actual = uut.run(version, DataEntityLists(["-project-.-version-.-other-id-"], []))
 
         assert_equals([], actual)
 
@@ -61,8 +61,8 @@ class TestCollectMisuses:
         misuse = create_misuse("-id-")
         project = create_project("-project-")
         version = create_version("-version-", misuses=[misuse], project=project)
-        uut = CollectMisusesTask(DataEntityLists([], ["-project-.-version-.-id-"]))
+        uut = CollectMisusesTask()
 
-        actual = uut.run(version)
+        actual = uut.run(version, DataEntityLists([], ["-project-.-version-.-id-"]))
 
         assert_equals([], actual)
