@@ -1,5 +1,6 @@
 import os
 
+from nose.plugins.attrib import attr
 from nose.tools import assert_equals, assert_raises
 
 from utils.shell import Shell, CommandFailedError
@@ -23,6 +24,7 @@ class TestShell:
     def test_command_try_failure(self):
         assert not Shell.try_exec("unknown command")
 
+    @attr('slow')
     def test_timeout(self):
         with assert_raises(TimeoutError):
             Shell.exec("sleep 10", timeout=1)
