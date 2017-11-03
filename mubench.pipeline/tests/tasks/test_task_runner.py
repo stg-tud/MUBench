@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Tuple, Any
 from unittest.mock import MagicMock
 
 from nose.tools import assert_in, assert_raises, assert_equals
@@ -158,6 +158,30 @@ class TestTaskRunner:
 
         task.assert_called_once_with("-string-")
 
+    def test_asterisk_arg_gets_all_available_parameters(self):
+        first_task = VoidTask(results="-some string-")
+        second_task = VoidTask(results=42)
+        asterisk_task = AsteriskTask()
+        uut = TaskRunner([first_task, second_task, asterisk_task])
+
+        uut.run()
+
+        asterisk_task.assert_called_once_with("-some string-", 42)
+
+    def test_can_run_another_task_runner(self):
+        first_outer_task = VoidTask(results="-some string-")
+        first_inner_task = StringConsumingTask(results=42)
+        second_inner_task = StringAndIntConsumingTask()
+        second_outer_task = StringConsumingTask(results=42)
+        inner_runner = TaskRunner([first_inner_task, second_inner_task])
+        uut = TaskRunner([first_outer_task, inner_runner, second_outer_task])
+
+        uut.run()
+
+        first_inner_task.assert_called_once_with("-some string-")
+        second_inner_task.assert_called_once_with("-some string-", 42)
+        second_outer_task.assert_called_once_with("-some string-")
+
 
 class MockTask:
     def __init__(self, results: List = None):
@@ -243,3 +267,9 @@ class NoneReturningTask(MockTask):
     # noinspection PyMethodMayBeStatic
     def run(self):
         return None
+
+
+class AsteriskTask(MockTask):
+    def run(self, *args: Tuple[Any]):
+        self.calls.append(args)
+        return self.results
