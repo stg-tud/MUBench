@@ -65,6 +65,9 @@ class TaskRunner:
     def __get_parameter_values(task, previous_results):
         parameter_values = []
         for parameter in TaskRunner.__get_parameters(task):
+            if parameter.kind == Parameter.VAR_POSITIONAL:
+                return previous_results
+
             parameter_value = TaskRunner.__find_value(parameter, previous_results)
             if parameter_value:
                 if type(parameter_value) in [type(existing_value) for existing_value in parameter_values]:
