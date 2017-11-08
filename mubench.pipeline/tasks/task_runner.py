@@ -36,7 +36,7 @@ class TaskRunner:
             logger.debug("Full exception:", exc_info=True)
             return
 
-        if not results:
+        if results is None:
             results = [Continue()]
 
         for result in TaskRunner.__as_iterable(results):
