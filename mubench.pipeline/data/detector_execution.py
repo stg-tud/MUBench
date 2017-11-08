@@ -3,7 +3,6 @@ from enum import Enum, IntEnum
 from logging import Logger
 from os import makedirs
 from os.path import join
-
 from typing import Optional, List, Dict
 
 from data.detector import Detector
@@ -12,7 +11,6 @@ from data.findings_filters import FindingsFilter
 from data.misuse import Misuse
 from data.project_compile import ProjectCompile
 from data.project_version import ProjectVersion
-from data.runner_interface import NoCompatibleRunnerInterface
 from utils.io import write_yaml, remove_tree, read_yaml_if_exists, open_yamls_if_exists
 from utils.shell import CommandFailedError
 
@@ -81,7 +79,7 @@ class DetectorExecution:
         return self.__run_info
 
     def execute(self, compile_base_path: str, timeout: Optional[int], logger: Logger):
-        detector_args = self._get_detector_arguments(self.version.get_compile(compile_base_path))
+        detector_args = self._get_detector_arguments(compile_base_path)
 
         start = time.time()
         message = ""
@@ -199,7 +197,8 @@ class MineAndDetectExecution(DetectorExecution):
                     self.run_mode.name, self.detector.id,
                     self.version.project_id, self.version.version_id)
 
-    def _get_detector_arguments(self, project_compile: ProjectCompile):
+    def _get_detector_arguments(self, compile_base_path: str):
+        project_compile = self.version.get_compile(compile_base_path)
         return {
             self.key_findings_file: self._findings_file_path,
             self.key_run_file: self._run_file_path,
@@ -221,14 +220,16 @@ class DetectOnlyExecution(DetectorExecution):
                     self.run_mode.name, self.detector.id,
                     self.version.project_id, self.version.version_id, self.misuse.misuse_id)
 
-    def _get_detector_arguments(self, project_compile: ProjectCompile):
+    def _get_detector_arguments(self, compile_base_path: str):
+        project_compile = self.version.get_compile(compile_base_path)
+        patterns_compile = self.misuse.get_patterns_compile(compile_base_path)
         return {
             self.key_findings_file: self._findings_file_path,
             self.key_run_file: self._run_file_path,
             self.key_detector_mode: self._run_mode_detector_argument,
-            self.key_training_src_path: project_compile.get_pattern_source_path(self.misuse),
-            self.key_training_classpath: project_compile.get_pattern_classes_path(self.misuse),
-            self.key_target_src_path: project_compile.misuse_source_path,
-            self.key_target_classpath: project_compile.misuse_classes_path,
+            self.key_training_src_path: patterns_compile.get_source_path(),
+            self.key_training_classpath: patterns_compile.get_classes_path(),
+            self.key_target_src_path: patterns_compile.misuse_source_path,
+            self.key_target_classpath: patterns_compile.misuse_classes_path,
             self.key_dependency_classpath: project_compile.get_full_classpath()
         }

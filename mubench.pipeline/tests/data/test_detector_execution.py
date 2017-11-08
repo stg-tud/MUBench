@@ -11,7 +11,6 @@ from data.findings_filters import PotentialHits, AllFindings, FindingsFilter
 from data.project_compile import ProjectCompile
 from tests.data.stub_detector import StubDetector
 from tests.test_utils.data_util import create_misuse, create_version, create_project
-from tests.test_utils.runner_interface_test_impl import RunnerInterfaceTestImpl
 from utils.io import remove_tree
 from utils.shell import CommandFailedError
 
@@ -175,12 +174,13 @@ class TestDetectOnlyExecution:
         findings_path = join("-findings-", "detect_only", "StubDetector", "-project-", "-version-", "-misuse-")
         target = join(findings_path, "findings.yml")
         run_info = join(findings_path, "run.yml")
-        compiles_path = join("-compiles-", "-project-", "-version-")
-        training_src_path = join(compiles_path, "patterns-src", "-misuse-")
-        training_classpath = join(compiles_path, "patterns-classes", "-misuse-")
-        target_src_path = join(compiles_path, "misuse-src")
-        target_classpath = join(compiles_path, "misuse-classes")
-        original_classpath = join(compiles_path, "original-classes.jar")
+        project_compiles_path = join("-compiles-", "-project-", "-version-")
+        patterns_compiles_path = join("-compiles-", "-project-", "-misuse-")
+        training_src_path = join(patterns_compiles_path, "patterns-src")
+        training_classpath = join(patterns_compiles_path, "patterns-classes")
+        target_src_path = join(patterns_compiles_path, "misuse-src")
+        target_classpath = join(patterns_compiles_path, "misuse-classes")
+        original_classpath = join(project_compiles_path, "original-classes.jar")
         dependencies_classpath = "-dependencies-classpath-"
         get_dependencies_classpath_mock.return_value = dependencies_classpath
 
