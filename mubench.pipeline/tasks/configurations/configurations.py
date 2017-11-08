@@ -9,11 +9,13 @@ from tasks.implementations.collect_misuses import CollectMisusesTask
 from tasks.implementations.collect_projects import CollectProjectsTask
 from tasks.implementations.collect_versions import CollectVersionsTask
 from tasks.implementations.compile import CompileTask
+from tasks.implementations.compile_patterns import CompilePatternsTask
 from tasks.implementations.dataset_check import DatasetCheckTask
 from tasks.implementations.detect import DetectTask
 from tasks.implementations.info import ProjectInfoTask, VersionInfoTask, MisuseInfoTask
 from tasks.implementations.publish_findings import PublishFindingsTask
 from tasks.implementations.publish_metadata import PublishMetadataTask
+from tasks.task_runner import TaskRunner
 from utils.dataset_util import get_available_datasets
 
 
@@ -80,9 +82,12 @@ class CompileTaskConfiguration(TaskConfiguration):
     def _tasks(self, config) -> List:
         collect_projects = CollectProjectsTask(MubenchPaths.DATA_PATH)
         collect_versions = CollectVersionsTask()
+        collect_misuses = CollectMisusesTask()
         checkout = CheckoutTask(MubenchPaths.CHECKOUTS_PATH, config.force_checkout, config.use_tmp_wrkdir)
         compile_ = CompileTask(MubenchPaths.COMPILES_PATH, config.force_compile, config.use_tmp_wrkdir)
-        return [collect_projects, collect_versions, checkout, compile_]
+        compile_patterns = CompilePatternsTask(MubenchPaths.COMPILES_PATH, config.force_compile)
+
+        return [collect_projects, collect_versions, checkout, compile_, collect_misuses, compile_patterns]
 
 
 class DetectTaskConfiguration(TaskConfiguration):
@@ -91,11 +96,19 @@ class DetectTaskConfiguration(TaskConfiguration):
         return "detect"
 
     def _tasks(self, config) -> List:
+        experiment = _get_experiment(config)
+
         collect_projects = CollectProjectsTask(MubenchPaths.DATA_PATH)
         collect_versions = CollectVersionsTask()
         checkout = CheckoutTask(MubenchPaths.CHECKOUTS_PATH, config.force_checkout, config.use_tmp_wrkdir)
         compile_ = CompileTask(MubenchPaths.COMPILES_PATH, config.force_compile, config.use_tmp_wrkdir)
-        detect = DetectTask(MubenchPaths.COMPILES_PATH, _get_experiment(config), config.timeout, config.force_detect)
+        detect = DetectTask(MubenchPaths.COMPILES_PATH, experiment, config.timeout, config.force_detect)
+
+        if experiment.ID == ProvidedPatternsExperiment.ID:
+            compile_patterns = CompilePatternsTask(MubenchPaths.COMPILES_PATH, config.force_compile)
+            return [collect_projects, collect_versions, checkout, compile_,
+                    TaskRunner([CollectMisusesTask(), compile_patterns]), detect]
+
         return [collect_projects, collect_versions, checkout, compile_, detect]
 
 
@@ -105,13 +118,21 @@ class PublishFindingsTaskConfiguration(TaskConfiguration):
         return "publish findings"
 
     def _tasks(self, config) -> List:
+        experiment = _get_experiment(config)
+
         collect_projects = CollectProjectsTask(MubenchPaths.DATA_PATH)
         collect_versions = CollectVersionsTask()
         checkout = CheckoutTask(MubenchPaths.CHECKOUTS_PATH, config.force_checkout, config.use_tmp_wrkdir)
         compile_ = CompileTask(MubenchPaths.COMPILES_PATH, config.force_compile, config.use_tmp_wrkdir)
-        detect = DetectTask(MubenchPaths.COMPILES_PATH, _get_experiment(config), config.timeout, config.force_detect)
+        detect = DetectTask(MubenchPaths.COMPILES_PATH, experiment, config.timeout, config.force_detect)
         publish = PublishFindingsTask(_get_experiment(config), config.dataset, MubenchPaths.COMPILES_PATH,
                                       config.review_site_url, config.review_site_user, config.review_site_password)
+
+        if experiment.ID == ProvidedPatternsExperiment.ID:
+            compile_patterns = CompilePatternsTask(MubenchPaths.COMPILES_PATH, config.force_compile)
+            return [collect_projects, collect_versions, checkout, compile_,
+                    TaskRunner([CollectMisusesTask(), compile_patterns]), detect, publish]
+
         return [collect_projects, collect_versions, checkout, compile_, detect, publish]
 
 
