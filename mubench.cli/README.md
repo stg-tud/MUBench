@@ -81,3 +81,13 @@ class MyDetector(Detector):
 ```
 
 Consider [MuDetect.py](https://github.com/stg-tud/MUBench/blob/master/detectors/MuDetect/MuDetect.py) for a more advanced example with post processing.
+
+## Debugging
+
+When debugging your detector, there's no need to package and integrate it into MUBench after every change. You can invoke your runner directly from your IDE instead, which is much more convenient. To this end, just follow these steps:
+
+1. Run `./mubench detect DemoDetector E --only P`, where `E` is [the experiment](../mubench.pipeline#experiments) you want to debug your detector in and `P` is [the project or project version](../data) that you want to debug your detector on, e.g., `aclang`.
+2. Once this finished, open the newest log file in `./logs` and look for a line from `detect.run` saying something like `Executing 'java -jar DemoDetector.jar ...'`.
+3. Copy the command-line parameter of this Java invokation (the `...` above).
+4. Invoke your runner implementation with these parameters from your IDE.
+5. Happy debugging.
