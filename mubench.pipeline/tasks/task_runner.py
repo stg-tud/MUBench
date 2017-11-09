@@ -36,8 +36,12 @@ class TaskRunner:
             logger.debug("Full exception:", exc_info=True)
             return
 
-        if not results:
+        if results is None:
             results = [Continue()]
+
+        if len(results) == 0:
+            logger = logging.getLogger("task_runner.{}".format(task_name))
+            logger.warning("Task {} returned no results; skipping succeeding tasks.".format(task_name))
 
         for result in TaskRunner.__as_iterable(results):
             result_type_already_exists = type(result) in [type(previous_result) for previous_result in previous_results]
