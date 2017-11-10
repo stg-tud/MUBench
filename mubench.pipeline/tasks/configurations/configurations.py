@@ -19,32 +19,28 @@ from tasks.task_runner import TaskRunner
 from utils.dataset_util import get_available_datasets
 
 
-class TaskConfiguration(list):
-    def __init__(self, config):
-        super().__init__()
-        self.extend(self._tasks(config))
-
+class TaskConfiguration:
     @staticmethod
     def mode() -> str:
         raise NotImplementedError
 
-    def _tasks(self, config) -> List:
+    def tasks(self, config) -> List:
         raise NotImplementedError
 
 
-def get_task_configuration(config) -> TaskConfiguration:
+def get_task_configuration(config) -> List:
     mode = config.task
     if hasattr(config, 'publish_task'):
         mode += " " + config.publish_task
 
-    requested_configurations = [task_config(config) for task_config in
+    requested_configurations = [task_config() for task_config in
                                 TaskConfiguration.__subclasses__() if task_config.mode() == mode]
     if len(requested_configurations) > 1:
         raise ValueError("Multiple configurations for {}".format(mode))
     if len(requested_configurations) == 0:
         raise ValueError("No configuration available for {}".format(mode))
 
-    return requested_configurations[0]
+    return requested_configurations[0].tasks(config)
 
 
 class InfoTaskConfiguration(TaskConfiguration):
@@ -52,7 +48,7 @@ class InfoTaskConfiguration(TaskConfiguration):
     def mode() -> str:
         return "info"
 
-    def _tasks(self, config) -> List:
+    def tasks(self, config) -> List:
         collect_projects = CollectProjectsTask(MubenchPaths.DATA_PATH)
         collect_versions = CollectVersionsTask()
         collect_misuses = CollectMisusesTask()
@@ -67,7 +63,7 @@ class CheckoutTaskConfiguration(TaskConfiguration):
     def mode() -> str:
         return "checkout"
 
-    def _tasks(self, config):
+    def tasks(self, config):
         collect_projects = CollectProjectsTask(MubenchPaths.DATA_PATH)
         collect_versions = CollectVersionsTask()
         checkout = CheckoutTask(MubenchPaths.CHECKOUTS_PATH, config.force_checkout, config.use_tmp_wrkdir)
@@ -79,7 +75,7 @@ class CompileTaskConfiguration(TaskConfiguration):
     def mode() -> str:
         return "compile"
 
-    def _tasks(self, config) -> List:
+    def tasks(self, config) -> List:
         collect_projects = CollectProjectsTask(MubenchPaths.DATA_PATH)
         collect_versions = CollectVersionsTask()
         collect_misuses = CollectMisusesTask()
@@ -95,7 +91,7 @@ class DetectTaskConfiguration(TaskConfiguration):
     def mode() -> str:
         return "detect"
 
-    def _tasks(self, config) -> List:
+    def tasks(self, config) -> List:
         experiment = _get_experiment(config)
 
         collect_projects = CollectProjectsTask(MubenchPaths.DATA_PATH)
@@ -117,7 +113,7 @@ class PublishFindingsTaskConfiguration(TaskConfiguration):
     def mode() -> str:
         return "publish findings"
 
-    def _tasks(self, config) -> List:
+    def tasks(self, config) -> List:
         experiment = _get_experiment(config)
 
         collect_projects = CollectProjectsTask(MubenchPaths.DATA_PATH)
@@ -141,7 +137,7 @@ class PublishMetadataTaskConfiguration(TaskConfiguration):
     def mode() -> str:
         return "publish metadata"
 
-    def _tasks(self, config) -> List:
+    def tasks(self, config) -> List:
         collect_projects = CollectProjectsTask(MubenchPaths.DATA_PATH)
         collect_versions = CollectVersionsTask()
         checkout = CheckoutTask(MubenchPaths.CHECKOUTS_PATH, config.force_checkout, config.use_tmp_wrkdir)
@@ -156,7 +152,7 @@ class StatsTaskConfiguration(TaskConfiguration):
     def mode() -> str:
         return "stats"
 
-    def _tasks(self, config) -> List:
+    def tasks(self, config) -> List:
         collect_projects = CollectProjectsTask(MubenchPaths.DATA_PATH)
         collect_versions = CollectVersionsTask()
         collect_misuses = CollectMisusesTask()
@@ -169,7 +165,7 @@ class DatasetCheckTaskConfiguration(TaskConfiguration):
     def mode() -> str:
         return "dataset-check"
 
-    def _tasks(self, config) -> List:
+    def tasks(self, config) -> List:
         collect_projects = CollectProjectsTask(MubenchPaths.DATA_PATH)
         collect_versions = CollectVersionsTask()
         collect_misuses = CollectMisusesTask()
