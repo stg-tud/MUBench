@@ -1,6 +1,6 @@
 from typing import List
 
-from nose.tools import assert_is_instance, assert_raises
+from nose.tools import assert_raises, assert_equals
 
 from tasks.configurations.configurations import TaskConfiguration, get_task_configuration
 
@@ -13,7 +13,7 @@ class ConfigDummy:
 class TestTaskConfigurations:
     def test_get_configuration(self):
         configuration = get_task_configuration(ConfigDummy("-test-"))
-        assert_is_instance(configuration, TaskConfigurationTestImpl)
+        assert_equals(configuration, TaskConfigurationTestImpl.TASKS)
 
     def test_duplicate_raises_value_error(self):
         assert_raises(ValueError, get_task_configuration, ConfigDummy("-duplicate-"))
@@ -23,16 +23,18 @@ class TestTaskConfigurations:
 
 
 class TaskConfigurationTestImpl(TaskConfiguration):
+    TASKS = ["-a-", "-b-", "-c-"]
+
     @staticmethod
     def mode() -> str:
         return "-test-"
 
-    def _tasks(self, config) -> List:
-        return []
+    def tasks(self, config) -> List:
+        return TaskConfigurationTestImpl.TASKS
 
 
 class DuplicateTaskConfiguration(TaskConfiguration):
-    def _tasks(self, config) -> List:
+    def tasks(self, config) -> List:
         return []
 
     @staticmethod
@@ -41,7 +43,7 @@ class DuplicateTaskConfiguration(TaskConfiguration):
 
 
 class DuplicateTaskConfiguration2(TaskConfiguration):
-    def _tasks(self, config) -> List:
+    def tasks(self, config) -> List:
         return []
 
     @staticmethod
