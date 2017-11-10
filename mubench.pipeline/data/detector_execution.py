@@ -9,7 +9,7 @@ from data.detector import Detector
 from data.finding import Finding
 from data.findings_filters import FindingsFilter
 from data.misuse import Misuse
-from data.project_compile import ProjectCompile
+from data.version_compile import VersionCompile
 from data.project_version import ProjectVersion
 from utils.io import write_yaml, remove_tree, read_yaml_if_exists, open_yamls_if_exists
 from utils.shell import CommandFailedError
@@ -150,7 +150,7 @@ class DetectorExecution:
     def _get_findings_path(self):
         raise NotImplementedError
 
-    def _get_detector_arguments(self, project_compile: ProjectCompile):
+    def _get_detector_arguments(self, project_compile: VersionCompile):
         raise NotImplementedError
 
     def _load_findings(self):

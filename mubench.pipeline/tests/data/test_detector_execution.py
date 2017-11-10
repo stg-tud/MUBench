@@ -8,7 +8,7 @@ from nose.tools import assert_equals
 from data.detector_execution import DetectOnlyExecution, MineAndDetectExecution, Result, DetectorExecution, DetectorMode
 from data.finding import Finding
 from data.findings_filters import PotentialHits, AllFindings, FindingsFilter
-from data.project_compile import ProjectCompile
+from data.version_compile import VersionCompile
 from tests.data.stub_detector import StubDetector
 from tests.test_utils.data_util import create_misuse, create_version, create_project
 from utils.io import remove_tree
@@ -22,7 +22,7 @@ class DetectorExecutionTestImpl(DetectorExecution):
     def _load_findings(self):
         pass
 
-    def _get_detector_arguments(self, project_compile: ProjectCompile):
+    def _get_detector_arguments(self, project_compile: VersionCompile):
         return dict()
 
 
@@ -154,7 +154,7 @@ class TestDetectorExecutionLoadFindings:
 
 
 @patch("data.detector_execution.write_yaml")
-@patch("data.project_compile.ProjectCompile.get_dependency_classpath")
+@patch("data.version_compile.VersionCompile.get_dependency_classpath")
 class TestDetectOnlyExecution:
     # noinspection PyAttributeOutsideInit
     def setup(self):
@@ -202,7 +202,7 @@ class TestDetectOnlyExecution:
 
 
 @patch("data.detector_execution.write_yaml")
-@patch("data.project_compile.ProjectCompile.get_dependency_classpath")
+@patch("data.version_compile.VersionCompile.get_dependency_classpath")
 class TestMineAndDetectExecution:
     # noinspection PyAttributeOutsideInit
     def setup(self):

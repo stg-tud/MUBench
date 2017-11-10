@@ -9,16 +9,16 @@ import shutil
 
 from data.misuse import Misuse
 from data.pattern import Pattern
-from data.project_compile import ProjectCompile
+from data.version_compile import VersionCompile
 from utils.shell import Shell
 
 
-class CompilePatternsTask:
+class CompileMisuseTask:
     def __init__(self, compile_base_path: str, force_compile: bool):
         self.compile_base_path = compile_base_path
         self.force_compile = force_compile
 
-    def run(self, misuse: Misuse, project_compile: ProjectCompile):
+    def run(self, misuse: Misuse, version_compile: VersionCompile):
         logger = logging.getLogger("task.compile_patterns")
 
         pattern_compile = misuse.get_patterns_compile(self.compile_base_path)
@@ -27,18 +27,18 @@ class CompilePatternsTask:
             pattern_compile.delete()
 
         logger.debug("Copy misuse sources...")
-        CompilePatternsTask._copy_misuse_sources(project_compile.original_sources_path,
-                                                 misuse,
-                                                 pattern_compile.misuse_source_path)
+        CompileMisuseTask._copy_misuse_sources(version_compile.original_sources_path,
+                                               misuse,
+                                               pattern_compile.misuse_source_path)
         logger.debug("Copy misuse classes...")
-        CompilePatternsTask._copy_misuse_classes(project_compile.original_classes_path,
-                                                 misuse,
-                                                 pattern_compile.misuse_classes_path)
+        CompileMisuseTask._copy_misuse_classes(version_compile.original_classes_path,
+                                               misuse,
+                                               pattern_compile.misuse_classes_path)
 
         try:
             if pattern_compile.needs_copy_sources():
                 logger.info("Copying patterns...")
-                CompilePatternsTask._copy_patterns(misuse.patterns, pattern_compile.get_source_path())
+                CompileMisuseTask._copy_patterns(misuse.patterns, pattern_compile.get_source_path())
 
             if pattern_compile.needs_compile():
                 logger.info("Compiling patterns...")
@@ -47,9 +47,9 @@ class CompilePatternsTask:
                 for pattern in pattern_compile.patterns:
                     source_files.add(join(pattern_compile.get_source_path(), pattern.name + ".java"))
 
-                CompilePatternsTask._compile(source_files,
-                                             pattern_compile.get_classes_path(),
-                                             project_compile.get_full_classpath())
+                CompileMisuseTask._compile(source_files,
+                                           pattern_compile.get_classes_path(),
+                                           version_compile.get_full_classpath())
             else:
                 logger.info("Patterns already compiled.")
         except Exception:
