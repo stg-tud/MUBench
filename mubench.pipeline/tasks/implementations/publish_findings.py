@@ -8,7 +8,7 @@ from requests import RequestException
 from data.experiments import Experiment
 from data.finding import SpecializedFinding
 from data.project import Project
-from data.project_compile import ProjectCompile
+from data.version_compile import VersionCompile
 from data.project_version import ProjectVersion
 from data.run import Run
 from data.snippets import SnippetUnavailableException
@@ -40,7 +40,7 @@ class PublishFindingsTask:
                          self.detector, self.experiment, self.__upload_url)
 
     def run(self, project: Project, version: ProjectVersion, detector_run: Run,
-            version_compile: ProjectCompile) -> List:
+            version_compile: VersionCompile) -> List:
         logger = self.logger.getChild("version")
 
         run_info = detector_run.get_run_info()

@@ -8,8 +8,8 @@ from tasks.implementations.checkout import CheckoutTask
 from tasks.implementations.collect_misuses import CollectMisusesTask
 from tasks.implementations.collect_projects import CollectProjectsTask
 from tasks.implementations.collect_versions import CollectVersionsTask
-from tasks.implementations.compile import CompileTask
-from tasks.implementations.compile_patterns import CompilePatternsTask
+from tasks.implementations.compile_version import CompileVersionTask
+from tasks.implementations.compile_misuse import CompileMisuseTask
 from tasks.implementations.dataset_check import DatasetCheckTask
 from tasks.implementations.detect import DetectTask
 from tasks.implementations.info import ProjectInfoTask, VersionInfoTask, MisuseInfoTask
@@ -84,10 +84,10 @@ class CompileTaskConfiguration(TaskConfiguration):
         collect_versions = CollectVersionsTask()
         collect_misuses = CollectMisusesTask()
         checkout = CheckoutTask(MubenchPaths.CHECKOUTS_PATH, config.force_checkout, config.use_tmp_wrkdir)
-        compile_ = CompileTask(MubenchPaths.COMPILES_PATH, config.force_compile, config.use_tmp_wrkdir)
-        compile_patterns = CompilePatternsTask(MubenchPaths.COMPILES_PATH, config.force_compile)
+        compile_version = CompileVersionTask(MubenchPaths.COMPILES_PATH, config.force_compile, config.use_tmp_wrkdir)
+        compile_misuse = CompileMisuseTask(MubenchPaths.COMPILES_PATH, config.force_compile)
 
-        return [collect_projects, collect_versions, checkout, compile_, collect_misuses, compile_patterns]
+        return [collect_projects, collect_versions, checkout, compile_version, collect_misuses, compile_misuse]
 
 
 class DetectTaskConfiguration(TaskConfiguration):
@@ -101,15 +101,15 @@ class DetectTaskConfiguration(TaskConfiguration):
         collect_projects = CollectProjectsTask(MubenchPaths.DATA_PATH)
         collect_versions = CollectVersionsTask()
         checkout = CheckoutTask(MubenchPaths.CHECKOUTS_PATH, config.force_checkout, config.use_tmp_wrkdir)
-        compile_ = CompileTask(MubenchPaths.COMPILES_PATH, config.force_compile, config.use_tmp_wrkdir)
+        compile_version = CompileVersionTask(MubenchPaths.COMPILES_PATH, config.force_compile, config.use_tmp_wrkdir)
         detect = DetectTask(MubenchPaths.COMPILES_PATH, experiment, config.timeout, config.force_detect)
 
         if experiment.ID == ProvidedPatternsExperiment.ID:
-            compile_patterns = CompilePatternsTask(MubenchPaths.COMPILES_PATH, config.force_compile)
-            return [collect_projects, collect_versions, checkout, compile_,
-                    TaskRunner([CollectMisusesTask(), compile_patterns]), detect]
+            compile_misuse = CompileMisuseTask(MubenchPaths.COMPILES_PATH, config.force_compile)
+            return [collect_projects, collect_versions, checkout, compile_version,
+                    TaskRunner([CollectMisusesTask(), compile_misuse]), detect]
 
-        return [collect_projects, collect_versions, checkout, compile_, detect]
+        return [collect_projects, collect_versions, checkout, compile_version, detect]
 
 
 class PublishFindingsTaskConfiguration(TaskConfiguration):
@@ -123,17 +123,17 @@ class PublishFindingsTaskConfiguration(TaskConfiguration):
         collect_projects = CollectProjectsTask(MubenchPaths.DATA_PATH)
         collect_versions = CollectVersionsTask()
         checkout = CheckoutTask(MubenchPaths.CHECKOUTS_PATH, config.force_checkout, config.use_tmp_wrkdir)
-        compile_ = CompileTask(MubenchPaths.COMPILES_PATH, config.force_compile, config.use_tmp_wrkdir)
+        compile_version = CompileVersionTask(MubenchPaths.COMPILES_PATH, config.force_compile, config.use_tmp_wrkdir)
         detect = DetectTask(MubenchPaths.COMPILES_PATH, experiment, config.timeout, config.force_detect)
         publish = PublishFindingsTask(_get_experiment(config), config.dataset, MubenchPaths.COMPILES_PATH,
                                       config.review_site_url, config.review_site_user, config.review_site_password)
 
         if experiment.ID == ProvidedPatternsExperiment.ID:
-            compile_patterns = CompilePatternsTask(MubenchPaths.COMPILES_PATH, config.force_compile)
-            return [collect_projects, collect_versions, checkout, compile_,
-                    TaskRunner([CollectMisusesTask(), compile_patterns]), detect, publish]
+            compile_misuse = CompileMisuseTask(MubenchPaths.COMPILES_PATH, config.force_compile)
+            return [collect_projects, collect_versions, checkout, compile_version,
+                    TaskRunner([CollectMisusesTask(), compile_misuse]), detect, publish]
 
-        return [collect_projects, collect_versions, checkout, compile_, detect, publish]
+        return [collect_projects, collect_versions, checkout, compile_version, detect, publish]
 
 
 class PublishMetadataTaskConfiguration(TaskConfiguration):

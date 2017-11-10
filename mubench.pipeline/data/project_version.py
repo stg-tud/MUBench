@@ -7,7 +7,7 @@ import yaml
 from data.misuse import Misuse, Pattern
 from data.project_checkout import ProjectCheckout, GitProjectCheckout, SVNProjectCheckout, \
     SyntheticProjectCheckout, ZipProjectCheckout
-from data.project_compile import ProjectCompile
+from data.version_compile import VersionCompile
 
 
 class ProjectVersion:
@@ -61,8 +61,8 @@ class ProjectVersion:
         else:
             raise ValueError("unknown repository type: {}".format(repository.vcstype))
 
-    def get_compile(self, base_path: str) -> ProjectCompile:
-        return ProjectCompile(join(base_path, self.project_id, self.version_id), self.misuses)
+    def get_compile(self, base_path: str) -> VersionCompile:
+        return VersionCompile(join(base_path, self.project_id, self.version_id), self.misuses)
 
     @property
     def __compile_config(self):

@@ -3,15 +3,15 @@ from tempfile import mkdtemp
 from unittest.mock import patch, MagicMock
 
 from data.pattern import Pattern
-from tasks.implementations.compile_patterns import CompilePatternsTask
+from tasks.implementations.compile_misuse import CompileMisuseTask
 from tests.test_utils.data_util import create_misuse, create_project, create_version
 from utils.io import remove_tree, create_file
 
 
-@patch('tasks.implementations.compile_patterns.CompilePatternsTask._copy_misuse_sources')
-@patch('tasks.implementations.compile_patterns.CompilePatternsTask._copy_misuse_classes')
-@patch('tasks.implementations.compile_patterns.CompilePatternsTask._copy_patterns')
-@patch('tasks.implementations.compile_patterns.CompilePatternsTask._compile')
+@patch('tasks.implementations.compile_misuse.CompileMisuseTask._copy_misuse_sources')
+@patch('tasks.implementations.compile_misuse.CompileMisuseTask._copy_misuse_classes')
+@patch('tasks.implementations.compile_misuse.CompileMisuseTask._copy_patterns')
+@patch('tasks.implementations.compile_misuse.CompileMisuseTask._compile')
 class TestCompilePatterns:
     # noinspection PyAttributeOutsideInit
     def setup(self):
@@ -35,14 +35,14 @@ class TestCompilePatterns:
         remove_tree(self.temp_dir)
 
     def test_copies_pattern_sources(self, _, copy_patterns_mock, __, ___):
-        uut = CompilePatternsTask(self.compile_base_path, force_compile=False)
+        uut = CompileMisuseTask(self.compile_base_path, force_compile=False)
 
         uut.run(self.misuse, self.compile)
 
         copy_patterns_mock.assert_called_once_with(self.misuse.patterns, self.patterns_compile.get_source_path())
 
     def test_compiles_patterns(self, compile_mock, _, __, ___):
-        uut = CompilePatternsTask(self.compile_base_path, force_compile=False)
+        uut = CompileMisuseTask(self.compile_base_path, force_compile=False)
 
         uut.run(self.misuse, self.compile)
 
@@ -51,7 +51,7 @@ class TestCompilePatterns:
                                              self.compile.get_full_classpath())
 
     def test_skips_compile_if_not_needed(self, compile_mock, _, __, ___):
-        uut = CompilePatternsTask(self.compile_base_path, force_compile=False)
+        uut = CompileMisuseTask(self.compile_base_path, force_compile=False)
         self.patterns_compile.needs_compile = lambda: False
 
         uut.run(self.misuse, self.compile)
@@ -59,7 +59,7 @@ class TestCompilePatterns:
         compile_mock.assert_not_called()
 
     def test_forces_compile_patterns(self, compile_mock, _, __, ___):
-        uut = CompilePatternsTask(self.compile_base_path, force_compile=True)
+        uut = CompileMisuseTask(self.compile_base_path, force_compile=True)
         self.patterns_compile.delete = MagicMock()
 
         uut.run(self.misuse, self.compile)
@@ -68,6 +68,7 @@ class TestCompilePatterns:
         compile_mock.assert_called_once_with({join(self.patterns_compile.get_source_path(), "-pattern-.java")},
                                              self.patterns_compile.get_classes_path(),
                                              self.compile.get_full_classpath())
+
 
 class TestCopyMisuseFiles:
     # noinspection PyAttributeOutsideInit
@@ -85,7 +86,7 @@ class TestCopyMisuseFiles:
         remove_tree(self.temp_dir)
 
     def test_copies_misuse_sources(self):
-        uut = CompilePatternsTask(self.compile_base_path, force_compile=False)
+        uut = CompileMisuseTask(self.compile_base_path, force_compile=False)
 
         create_file(join(self.compile.original_sources_path, "mu.file"))
         misuse = create_misuse("1", meta={"location": {"file": "mu.file"}}, project=self.project, version=self.version)
@@ -95,7 +96,7 @@ class TestCopyMisuseFiles:
         assert exists(join(pattern_compile.misuse_source_path, "mu.file"))
 
     def test_copies_misuse_classes(self):
-        uut = CompilePatternsTask(self.compile_base_path, force_compile=False)
+        uut = CompileMisuseTask(self.compile_base_path, force_compile=False)
 
         create_file(join(self.compile.original_sources_path, "mu.java"))
         create_file(join(self.compile.original_classes_path, "mu.class"))
@@ -106,7 +107,7 @@ class TestCopyMisuseFiles:
         assert exists(join(pattern_compile.misuse_classes_path, "mu.class"))
 
     def test_copies_misuse_inner_classes(self):
-        uut = CompilePatternsTask(self.compile_base_path, force_compile=False)
+        uut = CompileMisuseTask(self.compile_base_path, force_compile=False)
 
         misuse = create_misuse("1", meta={"location": {"file": "mu.java"}}, project=self.project, version=self.version)
         create_file(join(self.compile.original_sources_path, "mu.java"))

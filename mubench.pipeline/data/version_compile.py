@@ -6,7 +6,7 @@ from data.misuse import Misuse
 from utils.io import remove_tree
 
 
-class ProjectCompile:
+class VersionCompile:
     ORIGINAL_SOURCE_DIR = "original-src"
     ORIGINAL_CLASSES_DIR = "original-classes"
     MISUSE_SOURCE_DIR = "misuse-src"
@@ -18,11 +18,11 @@ class ProjectCompile:
         self.base_path = base_path
         self.misuses = misuses
 
-        self.original_sources_path = join(self.base_path, ProjectCompile.ORIGINAL_SOURCE_DIR)
-        self.original_classes_path = join(self.base_path, ProjectCompile.ORIGINAL_CLASSES_DIR)
+        self.original_sources_path = join(self.base_path, VersionCompile.ORIGINAL_SOURCE_DIR)
+        self.original_classes_path = join(self.base_path, VersionCompile.ORIGINAL_CLASSES_DIR)
         self.original_classpath = self.original_classes_path + ".jar"
-        self.dependencies_path = join(self.base_path, ProjectCompile.DEPENDENCY_DIR)
-        self.build_dir = join(self.base_path, ProjectCompile.__BUILD_DIR)
+        self.dependencies_path = join(self.base_path, VersionCompile.DEPENDENCY_DIR)
+        self.build_dir = join(self.base_path, VersionCompile.__BUILD_DIR)
 
     def needs_copy_sources(self):
         return not isdir(self.original_classes_path)

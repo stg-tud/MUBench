@@ -9,13 +9,13 @@ from unittest.mock import MagicMock, ANY
 
 from nose.tools import assert_raises
 
-from tasks.implementations.compile import CompileTask
-from tests.test_utils.data_util import create_version, create_project, create_misuse
+from tasks.implementations.compile_version import CompileVersionTask
+from tests.test_utils.data_util import create_version, create_project
 from utils.io import create_file
 from utils.shell import CommandFailedError
 
 
-class TestCompile:
+class TestCompileVersion:
     # noinspection PyAttributeOutsideInit
     def setup(self):
         self.temp_dir = mkdtemp(prefix="mubench-compile-test_")
@@ -47,7 +47,7 @@ class TestCompile:
         self.pattern_classes_path = join(self.base_path, "patterns-classes")
         self.dep_path = join(self.base_path, "dependencies")
 
-        self.uut = CompileTask(self.compile_base_path, False, False)
+        self.uut = CompileVersionTask(self.compile_base_path, False, False)
 
     def teardown(self):
         rmtree(self.temp_dir, ignore_errors=True)
