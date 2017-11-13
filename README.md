@@ -1,4 +1,4 @@
-<img align="right" width="320" height="320" alt="MUBench Logo" src="https://raw.githubusercontent.com/stg-tud/MUBench/master/meta/logo.png" />
+<img align="right" width="320" height="320" alt="MUBench Logo" src="./meta/logo.png?raw=true" />
 
 # MUBench : A Benchmark for API-Misuse Detectors
 
