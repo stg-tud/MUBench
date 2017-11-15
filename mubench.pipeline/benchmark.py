@@ -3,8 +3,8 @@
 import logging.handlers
 import sys
 from datetime import datetime
-from os import makedirs
-from os.path import join, exists
+from os import makedirs, os
+from os.path import join, exists, abspath, dirname
 
 from requirements import RequirementsCheck
 from tasks.configurations.configurations import get_task_configuration
