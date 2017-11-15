@@ -1,7 +1,7 @@
 import sys
 from nose.tools import assert_raises, assert_equals, nottest
 
-from utils.command_line_util import get_command_line_parser
+from utils.config_util import get_command_line_parser
 
 def setup_module():
     sys.stderr = sys.stdout

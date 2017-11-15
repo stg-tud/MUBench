@@ -1,8 +1,15 @@
 import argparse
 from argparse import ArgumentParser, HelpFormatter, ArgumentTypeError
 from operator import attrgetter
+from os.path import abspath, join, dirname
 
 from typing import List, Any
+
+import os
+
+from data.detectors import get_available_detector_ids
+from tasks.implementations import stats
+from utils.dataset_util import get_available_dataset_ids
 from utils.io import read_yaml
 
 
@@ -62,8 +69,14 @@ def get_command_line_parser(available_detectors: List[str], available_scripts: L
     return parser
 
 
-def parse_args(args: List[str], available_detectors: List[str], available_scripts: List[str],
-               available_datasets: List[str]) -> Any:
+def get_config(args: List[str]) -> Any:
+    mubench_root_path = abspath(join(dirname(abspath(__file__)), os.pardir, os.pardir))
+    detectors_path = join(mubench_root_path, "detectors")
+    datasets_file_path = join(mubench_root_path, 'data', 'datasets.yml')
+
+    available_detectors = get_available_detector_ids(detectors_path)
+    available_scripts = stats.get_available_calculator_names()
+    available_datasets = get_available_dataset_ids(datasets_file_path)
     parser = get_command_line_parser(available_detectors, available_scripts, available_datasets)
 
     # remove first arg which always contains the script name
@@ -73,7 +86,13 @@ def parse_args(args: List[str], available_detectors: List[str], available_script
     if not args:
         args.append("")
 
-    return parser.parse_args(args)
+    config = parser.parse_args(args)
+
+    config.DATA_PATH = join(mubench_root_path, "data")
+    config.CHECKOUTS_PATH = join(config.MUBENCH_ROOT_PATH, "checkouts")
+    config.COMPILES_PATH = config.CHECKOUTS_PATH
+    config.FINDINGS_PATH = join(config.MUBENCH_ROOT_PATH, "findings")
+    return config
 
 
 def __add_check_subprocess(subparsers) -> None:
