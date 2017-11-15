@@ -1,8 +1,7 @@
 import argparse
 from argparse import ArgumentParser, HelpFormatter, ArgumentTypeError
 from operator import attrgetter
-from os.path import abspath, join, dirname
-
+from os.path import join, abspath, dirname
 from typing import List, Any
 
 import os
@@ -11,6 +10,15 @@ from data.detectors import get_available_detector_ids
 from tasks.implementations import stats
 from utils.dataset_util import get_available_dataset_ids
 from utils.io import read_yaml
+
+
+MUBENCH_ROOT_PATH = abspath(join(dirname(abspath(__file__)), os.pardir, os.pardir))
+DATA_PATH = join(MUBENCH_ROOT_PATH, "data")
+CHECKOUTS_PATH = join(MUBENCH_ROOT_PATH, "checkouts")
+COMPILES_PATH = CHECKOUTS_PATH
+FINDINGS_PATH = join(MUBENCH_ROOT_PATH, "findings")
+DATASETS_FILE_PATH = join(MUBENCH_ROOT_PATH, 'data', 'datasets.yml')
+DETECTORS_PATH = join(MUBENCH_ROOT_PATH, "detectors")
 
 
 class SortingHelpFormatter(HelpFormatter):
@@ -25,6 +33,7 @@ class CaseInsensitiveChoices(list):
 
     def __contains__(self, other):
         return any([element for element in self if element.lower() == other.lower()])
+
 
 try:
     config = read_yaml("./default.config")
@@ -56,6 +65,18 @@ def get_command_line_parser(available_detectors: List[str], available_scripts: L
 
     parser.add_argument('--use-tmp-wrkdir', dest='use_tmp_wrkdir', default=get_default('use-tmp-wrkdir', False),
                         help=argparse.SUPPRESS, action='store_true')
+    parser.add_argument('--data-path', dest='data_path', default=get_default('data-path', DATA_PATH),
+                        help=argparse.SUPPRESS)
+    parser.add_argument('--checkouts-path', dest='checkouts_path',
+                        default=get_default('checkouts-path', CHECKOUTS_PATH), help=argparse.SUPPRESS)
+    parser.add_argument('--compiles-path', dest='compiles_path', default=get_default('compiles-path', COMPILES_PATH),
+                        help=argparse.SUPPRESS)
+    parser.add_argument('--findings-path', dest='findings_path', default=get_default('findings-path', FINDINGS_PATH),
+                        help=argparse.SUPPRESS)
+    parser.add_argument('--datasets-file-path', dest='datasets_file_path',
+                        default=get_default('datasets-file-path', DATASETS_FILE_PATH), help=argparse.SUPPRESS)
+    parser.add_argument('--detectors-path', dest='detectors_path',
+                        default=get_default('detectors-path', DETECTORS_PATH), help=argparse.SUPPRESS)
 
     __add_check_subprocess(subparsers)
     __add_info_subprocess(available_datasets, subparsers)
@@ -70,13 +91,9 @@ def get_command_line_parser(available_detectors: List[str], available_scripts: L
 
 
 def get_config(args: List[str]) -> Any:
-    mubench_root_path = abspath(join(dirname(abspath(__file__)), os.pardir, os.pardir))
-    detectors_path = join(mubench_root_path, "detectors")
-    datasets_file_path = join(mubench_root_path, 'data', 'datasets.yml')
-
-    available_detectors = get_available_detector_ids(detectors_path)
+    available_detectors = get_available_detector_ids(DETECTORS_PATH)
     available_scripts = stats.get_available_calculator_names()
-    available_datasets = get_available_dataset_ids(datasets_file_path)
+    available_datasets = get_available_dataset_ids(DATASETS_FILE_PATH)
     parser = get_command_line_parser(available_detectors, available_scripts, available_datasets)
 
     # remove first arg which always contains the script name
@@ -86,13 +103,7 @@ def get_config(args: List[str]) -> Any:
     if not args:
         args.append("")
 
-    config = parser.parse_args(args)
-
-    config.DATA_PATH = join(mubench_root_path, "data")
-    config.CHECKOUTS_PATH = join(config.MUBENCH_ROOT_PATH, "checkouts")
-    config.COMPILES_PATH = config.CHECKOUTS_PATH
-    config.FINDINGS_PATH = join(config.MUBENCH_ROOT_PATH, "findings")
-    return config
+    return parser.parse_args(args)
 
 
 def __add_check_subprocess(subparsers) -> None:
@@ -195,9 +206,9 @@ def __add_stats_subprocess(available_scripts: List[str], available_datasets: Lis
 
 def __add_dataset_check_subprocess(available_datasets: List[str], subparsers) -> None:
     dataset_check_parser = subparsers.add_parser('dataset-check', formatter_class=SortingHelpFormatter,
-                                                  help="Check the consistency of MUBench's dataset.",
-                                                  description="Check the consistency of MUBench's dataset."
-                                                              "Run `checkout` first, to also check misuse locations.")  # type: ArgumentParser
+                                                 help="Check the consistency of MUBench's dataset.",
+                                                 description="Check the consistency of MUBench's dataset."
+                                                             "Run `checkout` first, to also check misuse locations.")  # type: ArgumentParser
     __setup_misuse_filter_arguments(dataset_check_parser, available_datasets)
 
 
