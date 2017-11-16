@@ -6,15 +6,12 @@ from datetime import datetime
 from os import makedirs
 from os.path import join, exists
 
-from data.detectors import get_available_detector_ids
 from requirements import RequirementsCheck
 from tasks.configurations.configurations import get_task_configuration
-from tasks.configurations.mubench_paths import MubenchPaths
-from tasks.implementations import stats
 from tasks.task_runner import TaskRunner
-from utils import command_line_util
+from utils import config_util
 from utils.data_entity_lists import DataEntityLists
-from utils.dataset_util import get_available_dataset_ids, get_white_list
+from utils.dataset_util import get_white_list
 from utils.logging import IndentFormatter
 
 
@@ -30,7 +27,7 @@ class Benchmark:
             black_list.extend(config.black_list)
 
         if 'dataset' in config:
-            white_list.extend(get_white_list(MubenchPaths.DATASETS_FILE_PATH, config.dataset))
+            white_list.extend(get_white_list(config.datasets_file_path, config.dataset))
 
         self.data_entity_lists = DataEntityLists(white_list, black_list)
 
@@ -42,10 +39,8 @@ class Benchmark:
         runner.run(*initial_parameters)
 
 
-available_detectors = get_available_detector_ids(MubenchPaths.DETECTORS_PATH)
-available_scripts = stats.get_available_calculator_names()
-available_datasets = get_available_dataset_ids(MubenchPaths.DATASETS_FILE_PATH)
-config = command_line_util.parse_args(sys.argv, available_detectors, available_scripts, available_datasets)
+config = config_util.get_config(sys.argv)
+
 
 logger = logging.getLogger()
 logger.setLevel(logging.DEBUG)
@@ -64,7 +59,6 @@ logger.addHandler(handler)
 
 logger.info("Starting benchmark...")
 logger.debug("- Arguments           = %r", sys.argv)
-logger.debug("- Available Detectors = %r", available_detectors)
 logger.debug("- Configuration       :")
 for key in config.__dict__:
     logger.debug("    - %s = %r", key.ljust(15), config.__dict__[key])
