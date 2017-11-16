@@ -38,8 +38,5 @@ public class DES {
 
 		catch (IllegalBlockSizeException illegalBlockSize) {
 		}
-
-		catch (InvalidAlgorithmParameterException invalidParam) {
-		}
 	}
 }
