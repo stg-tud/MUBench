@@ -2,42 +2,34 @@ import os
 from os.path import join
 from shutil import rmtree
 from tempfile import mkdtemp
-from unittest.mock import MagicMock, ANY, patch
+from unittest.mock import ANY, patch, MagicMock
 
 from nose.tools import assert_equals, assert_raises
 
-from data.detector_execution import MineAndDetectExecution
-from data.experiments import Experiment
-from data.findings_filters import FindingsFilter
-from data.run import Run
+from data.version_compile import VersionCompile
+from tasks.configurations.detector_interface_configuration import key_target_classpath, key_dependency_classpath, \
+    key_detector_mode, key_target_src_path, key_findings_file, key_run_file
 from tasks.implementations.detect_all_findings import DetectAllFindingsTask
 from tests.data.stub_detector import StubDetector
 from tests.test_utils.data_util import create_project, create_version
 
 
 # noinspection PyAttributeOutsideInit
+@patch("tasks.implementations.detect_all_findings.DetectAllFindingsTask._download")
+@patch("tasks.implementations.detect_all_findings.DetectAllFindingsTask._get_execution")
 class TestDetectAllFindingsTask:
     def setup(self):
         self.temp_dir = mkdtemp(prefix='mubench-detect-test_')
         self.compiles_path = join(self.temp_dir, "checkout")
-        self.findings_path = join(self.temp_dir, "findings")
+        self.findings_base_path = join(self.temp_dir, "findings")
 
         os.chdir(self.temp_dir)
 
         self.project = create_project("-project-")
         self.version = create_version("-version-", project=self.project)
         self.detector = StubDetector()
-        self.test_run_execution = MineAndDetectExecution(self.detector, self.version, self.findings_path,
-                                                         FindingsFilter())
-        self.test_run = Run([self.test_run_execution])
-        self.test_run.execute = MagicMock(return_value="test execution successful")
-        self.experiment = Experiment("mock experiment", self.detector, self.findings_path)
-        self.experiment.get_run = lambda v: self.test_run
 
-        self.orig_download = DetectAllFindingsTask._download
-        DetectAllFindingsTask._download = lambda *_: None
-
-        self.uut = DetectAllFindingsTask(self.compiles_path, self.experiment, None, False)
+        self.version_compile = VersionCompile(self.compiles_path, self.version.misuses)
 
         self.last_invoke = None
 
@@ -46,44 +38,75 @@ class TestDetectAllFindingsTask:
             self.last_invoke = absolute_misuse_detector_path, detector_args
 
     def teardown(self):
-        DetectAllFindingsTask._download = self.orig_download
         rmtree(self.temp_dir, ignore_errors=True)
 
-    def test_invokes_detector(self):
+    def test_invokes_with_detector_args(self, get_execution_mock, _):
+        execution_mock = MagicMock()
+        get_execution_mock.return_value = execution_mock
+        uut = DetectAllFindingsTask(self.compiles_path, self.findings_base_path, self.detector, None, False, None)
+
         try:
-            self.uut.run(self.version)
+            uut.run(self.version, self.version_compile)
         except UserWarning:
             pass
 
-        self.test_run.execute.assert_called_with(self.compiles_path, None, ANY)
+        expected_args = {
+            key_target_src_path: self.version_compile.original_sources_path,
+            key_target_classpath: self.version_compile.original_classes_path,
+            key_dependency_classpath: self.version_compile.get_full_classpath(),
+            key_detector_mode: 0,
+            key_findings_file: join(self.findings_base_path, "mine_and_detect", "StubDetector", "-project", "-version-",
+                                    "findings.yml"),
+            key_run_file: join(self.findings_base_path, "mine_and_detect", "StubDetector", "-project", "-version-",
+                               "run.yml"),
+        }
 
-    def test_continues_without_detect_if_previous_run_succeeded(self):
-        self.test_run_execution.is_outdated = lambda: False
-        self.test_run.is_success = lambda: True
+        execution_mock.execute.assert_called_with(ANY, None, ANY)
+        actual_args = execution_mock.execute.call_args[0][0]
+        assert_equals(set(expected_args), set(actual_args))
 
-        response = self.uut.run(self.version)
+    def test_continues_without_detect_if_previous_run_succeeded(self, get_execution_mock, _):
+        execution_mock = MagicMock()
+        get_execution_mock.return_value = execution_mock
+        uut = DetectAllFindingsTask(self.compiles_path, self.findings_base_path, self.detector, None, False, None)
 
-        self.test_run.execute.assert_not_called()
-        assert_equals(self.test_run, response)
+        execution_mock.is_outdated = lambda: False
+        execution_mock.is_error = lambda: False
+        execution_mock.is_success = lambda: True
 
-    def test_skips_detect_if_previous_run_was_error(self):
-        self.test_run_execution.is_outdated = lambda: False
-        self.test_run.is_error = lambda: True
+        response = uut.run(self.version, self.version_compile)
 
-        assert_raises(UserWarning, self.uut.run, self.version)
+        execution_mock.execute.assert_not_called()
+        assert_equals(execution_mock, response)
 
-        self.test_run.execute.assert_not_called()
+    def test_skips_detect_if_previous_run_was_error(self, get_execution_mock, _):
+        execution_mock = MagicMock()
+        get_execution_mock.return_value = execution_mock
+        uut = DetectAllFindingsTask(self.compiles_path, self.findings_base_path, self.detector, None, False, None)
 
-    def test_force_detect_on_new_detector(self):
-        self.test_run.is_success = lambda: True
-        self.test_run.is_outdated = lambda: True
+        execution_mock.is_outdated = lambda: False
+        execution_mock.is_error = lambda: True
 
-        response = self.uut.run(self.version)
+        assert_raises(UserWarning, uut.run, self.version, self.version_compile)
 
-        self.test_run.execute.assert_called_with(self.compiles_path, None, ANY)
-        assert_equals(self.test_run, response)
+        execution_mock.execute.assert_not_called()
+
+    def test_force_detect_on_new_detector(self, get_execution_mock, _):
+        execution_mock = MagicMock()
+        get_execution_mock.return_value = execution_mock
+        uut = DetectAllFindingsTask(self.compiles_path, self.findings_base_path, self.detector, None, False, None)
+
+        execution_mock.is_success = lambda: True
+        execution_mock.is_outdated = lambda: True
+
+        response = uut.run(self.version, self.version_compile)
+
+        execution_mock.execute.assert_called_with(ANY, None, ANY)
+        assert_equals(execution_mock, response)
 
 
+@patch("tasks.implementations.detect_all_findings.DetectAllFindingsTask._detector_available")
+@patch("tasks.implementations.detect_all_findings.download_file")
 class TestDetectorDownload:
     # noinspection PyAttributeOutsideInit
     def setup(self):
@@ -92,22 +115,17 @@ class TestDetectorDownload:
         self.findings_path = join(self.temp_dir, "findings")
 
         self.detector = StubDetector()
-        self.experiment = Experiment("mock experiment", self.detector, self.findings_path)
-        self.orig_detector_available = DetectAllFindingsTask._detector_available
-        DetectAllFindingsTask._detector_available = lambda *_: False
 
-    def teardown(self):
-        DetectAllFindingsTask._detector_available = self.orig_detector_available
-
-    @patch("tasks.implementations.detect_all_findings.download_file")
-    def test_downloads_detector_if_not_available(self, download_mock):
+    def test_downloads_detector_if_not_available(self, download_mock, detector_available_mock):
+        detector_available_mock.return_value = False
         self.detector.md5 = ":some-md5:"
 
-        DetectAllFindingsTask(self.compiles_path, self.experiment, None, False)
+        DetectAllFindingsTask(self.compiles_path, self.findings_path, self.detector, None, False, None)
 
         download_mock.assert_called_with(self.detector.jar_url, self.detector.jar_path, self.detector.md5)
 
-    @patch("tasks.implementations.detect_all_findings.download_file")
-    def test_aborts_download_if_detector_md5_is_missing(self, download_mock):
-        assert_raises(SystemExit, DetectAllFindingsTask, self.compiles_path, self.experiment, None, False)
+    def test_aborts_download_if_detector_md5_is_missing(self, download_mock, detector_available_mock):
+        detector_available_mock.return_value = False
+        assert_raises(SystemExit, DetectAllFindingsTask, self.compiles_path, self.findings_path, self.detector, None,
+                      False, None)
         download_mock.assert_not_called()

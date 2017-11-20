@@ -5,25 +5,13 @@ from unittest.mock import MagicMock, patch, ANY
 
 from nose.tools import assert_equals
 
-from data.detector_execution import DetectOnlyExecution, MineAndDetectExecution, Result, DetectorExecution, DetectorMode
+from data.detector_execution import DetectorExecution, Result
 from data.finding import Finding
-from data.findings_filters import PotentialHits, AllFindings, FindingsFilter
-from data.version_compile import VersionCompile
+from data.findings_filters import AllFindings
 from tests.data.stub_detector import StubDetector
-from tests.test_utils.data_util import create_misuse, create_version, create_project
+from tests.test_utils.data_util import create_version, create_project
 from utils.io import remove_tree
 from utils.shell import CommandFailedError
-
-
-class DetectorExecutionTestImpl(DetectorExecution):
-    def _get_findings_path(self):
-        return "-findings-"
-
-    def _load_findings(self):
-        pass
-
-    def _get_detector_arguments(self, project_compile: VersionCompile):
-        return dict()
 
 
 @patch("data.detector_execution.read_yaml_if_exists")
@@ -32,13 +20,15 @@ class TestExecutionState:
     def setup(self):
         self.temp_dir = mkdtemp(prefix='mubench-run-test_')
         self.findings_path = join(self.temp_dir, "-findings-")
+        self.findings_file_path = join(self.findings_path, "FINDINGS_FILE")
+        self.run_file_path = join(self.findings_path, "RUN_FILE")
 
         self.detector = StubDetector()
         self.version = create_version("-v-")
         self.findings_base_path = "-findings-"
 
-        self.uut = DetectorExecutionTestImpl(DetectorMode.detect_only, self.detector, self.version,
-                                             self.findings_base_path, AllFindings())
+        self.uut = DetectorExecution(self.detector, self.version, self.findings_path, AllFindings(),
+                                     self.findings_file_path, self.run_file_path)
 
     def teardown(self):
         remove_tree(self.temp_dir)
@@ -47,8 +37,8 @@ class TestExecutionState:
         self.detector.md5 = "-md5-"
         read_run_info.return_value = {"md5": "-old-md5-"}
 
-        uut = DetectorExecutionTestImpl(DetectorMode.detect_only, self.detector, self.version, self.findings_base_path,
-                                        AllFindings())
+        uut = DetectorExecution(self.detector, self.version, self.findings_path, AllFindings(),
+                                self.findings_file_path, self.run_file_path)
 
         assert uut.is_outdated()
 
@@ -71,11 +61,12 @@ class TestExecutionState:
     def test_load(self, read_run_info):
         read_run_info.return_value = {"result": "success", "runtime": "23.42", "message": "-arbitrary text-"}
 
-        execution = MineAndDetectExecution(self.detector, self.version, self.findings_path, AllFindings())
+        uut = DetectorExecution(self.detector, self.version, self.findings_path, AllFindings(),
+                                self.findings_file_path, self.run_file_path)
 
-        assert execution.is_success()
-        assert_equals(execution.runtime, "23.42")
-        assert_equals(execution.message, "-arbitrary text-")
+        assert uut.is_success()
+        assert_equals(uut.runtime, "23.42")
+        assert_equals(uut.message, "-arbitrary text-")
 
 
 # noinspection PyUnusedLocal
@@ -86,12 +77,14 @@ class TestDetectorExecution:
     def setup(self):
         self.version = create_version("-version-", project=create_project("-project-"))
         self.detector = StubDetector()
-        self.findings_base_path = "-findings-"
+        self.findings_path = "-findings-"
+        self.findings_file_path = join(self.findings_path, "FINDINGS_FILE")
+        self.run_file_path = join(self.findings_path, "run.yml")
 
         self.logger = logging.getLogger("test")
 
-        self.uut = DetectorExecutionTestImpl(DetectorMode.detect_only, self.detector, self.version,
-                                             self.findings_base_path, AllFindings())
+        self.uut = DetectorExecution(self.detector, self.version, self.findings_path, AllFindings(),
+                                     self.findings_file_path, self.run_file_path)
 
     def test_execute_sets_success(self, write_yaml_mock):
         self.uut.execute("-compiles-", 42, self.logger)
@@ -141,9 +134,8 @@ class TestDetectorExecutionLoadFindings:
     @patch("data.detector_execution.open_yamls_if_exists")
     def test_adds_rank(self, read_yamls_mock):
         read_yamls_mock.return_value.__enter__.return_value = [{"name": "f1"}, {"name": "f2"}]
-        execution = DetectorExecution(DetectorMode.mine_and_detect, StubDetector(), create_version("-v-"),
-                                      "-findings-base-path-", FindingsFilter())
-        execution._get_findings_path = lambda: ""
+        execution = DetectorExecution(StubDetector(), create_version("-v-"), "-findings-path-", AllFindings(),
+                                      "-findings-file-", "-run-file-")
 
         findings = execution._load_findings()
 
@@ -152,92 +144,3 @@ class TestDetectorExecutionLoadFindings:
             Finding({"name": "f2", "rank": 1})
         ])
 
-
-@patch("data.detector_execution.write_yaml")
-@patch("data.version_compile.VersionCompile.get_dependency_classpath")
-class TestDetectOnlyExecution:
-    # noinspection PyAttributeOutsideInit
-    def setup(self):
-        self.misuse = create_misuse('-misuse-', meta={"location": {"file": "a", "method": "m()"}})
-        self.version = create_version("-version-", misuses=[self.misuse], project=create_project("-project-"))
-        self.detector = StubDetector()
-        self.findings_base_path = "-findings-"
-
-        self.logger = logging.getLogger("test")
-
-        self.uut = DetectOnlyExecution(self.detector, self.version, self.misuse, self.findings_base_path,
-                                       PotentialHits(self.misuse))
-
-    # noinspection PyUnusedLocal
-    # patch prevents write to filesystem
-    def test_execute_per_misuse(self, get_dependencies_classpath_mock, write_yaml_mock):
-        findings_path = join("-findings-", "detect_only", "StubDetector", "-project-", "-version-", "-misuse-")
-        target = join(findings_path, "findings.yml")
-        run_info = join(findings_path, "run.yml")
-        project_compiles_path = join("-compiles-", "-project-", "-version-")
-        patterns_compiles_path = join("-compiles-", "-project-", "-misuse-")
-        training_src_path = join(patterns_compiles_path, "patterns-src")
-        training_classpath = join(patterns_compiles_path, "patterns-classes")
-        target_src_path = join(patterns_compiles_path, "misuse-src")
-        target_classpath = join(patterns_compiles_path, "misuse-classes")
-        original_classpath = join(project_compiles_path, "original-classes.jar")
-        dependencies_classpath = "-dependencies-classpath-"
-        get_dependencies_classpath_mock.return_value = dependencies_classpath
-
-        self.uut.execute("-compiles-", 42, self.logger)
-
-        self.detector.runner_interface.execute.assert_called_with(
-            self.version,
-            {
-                'target': target,
-                'run_info': run_info,
-                'detector_mode': "1",
-                'training_src_path': training_src_path,
-                'training_classpath': training_classpath,
-                'target_src_path': target_src_path,
-                'target_classpath': target_classpath,
-                'dep_classpath': dependencies_classpath + ":" + original_classpath
-            },
-            42, self.logger)
-
-
-@patch("data.detector_execution.write_yaml")
-@patch("data.version_compile.VersionCompile.get_dependency_classpath")
-class TestMineAndDetectExecution:
-    # noinspection PyAttributeOutsideInit
-    def setup(self):
-        self.version = create_version("-version-", project=create_project("-project-"))
-        self.detector = StubDetector()
-        self.findings_base_path = "-findings-"
-
-        self.logger = logging.getLogger("test")
-
-        self.uut = MineAndDetectExecution(self.detector, self.version, self.findings_base_path,
-                                          AllFindings())
-
-    # noinspection PyUnusedLocal
-    # patch prevents write to filesystem
-    def test_execute(self, get_dependencies_classpath_mock, write_yaml_mock):
-        findings_path = join("-findings-", "mine_and_detect", "StubDetector", "-project-", "-version-")
-        target = join(findings_path, "findings.yml")
-        run_info = join(findings_path, "run.yml")
-        compiles_path = join("-compiles-", "-project-", "-version-")
-        target_src_path = join(compiles_path, "original-src")
-        target_classpath = join(compiles_path, "original-classes")
-        original_classpath = join(compiles_path, "original-classes.jar")
-        dependencies_classpath = "-dependencies-classpath-"
-        get_dependencies_classpath_mock.return_value = dependencies_classpath
-
-        self.uut.execute("-compiles-", 42, self.logger)
-
-        self.detector.runner_interface.execute.assert_called_with(
-            self.version,
-            {
-                'target': target,
-                'run_info': run_info,
-                'detector_mode': "0",
-                'target_src_path': target_src_path,
-                'target_classpath': target_classpath,
-                'dep_classpath': '{}:{}'.format(dependencies_classpath, original_classpath)
-            },
-            42, self.logger)

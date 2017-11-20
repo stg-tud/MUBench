@@ -1,0 +1,11 @@
+RUN_FILE = "run.yml"
+FINDINGS_FILE = "findings.yml"
+
+key_findings_file = "target"
+key_run_file = "run_info"
+key_detector_mode = "detector_mode"
+key_training_src_path = "training_src_path"
+key_training_classpath = "training_classpath"
+key_target_src_path = "target_src_path"
+key_target_classpath = "target_classpath"
+key_dependency_classpath = "dep_classpath"

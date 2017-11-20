@@ -1,7 +1,6 @@
 from typing import List
 
 from data.detectors import find_detector
-from data.experiments import ProvidedPatternsExperiment, TopFindingsExperiment, BenchmarkExperiment
 from tasks.implementations import stats
 from tasks.implementations.checkout import CheckoutTask
 from tasks.implementations.collect_misuses import CollectMisusesTask
