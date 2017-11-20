@@ -9,8 +9,11 @@ from data.project_version import ProjectVersion
 from data.run import Run
 from utils.web_util import download_file
 
+RUN_MODE_NAME = "mine_and_detect"
+DETECTOR_MODE = 0
 
-class DetectTask:
+
+class DetectAllFindingsTask:
     def __init__(self, compiles_base_path: str, experiment: Experiment, timeout: Optional[int], force_detect: bool):
         super().__init__()
         self.force_detect = force_detect

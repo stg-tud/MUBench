@@ -10,7 +10,7 @@ from tasks.implementations.collect_versions import CollectVersionsTask
 from tasks.implementations.compile_version import CompileVersionTask
 from tasks.implementations.compile_misuse import CompileMisuseTask
 from tasks.implementations.dataset_check import DatasetCheckTask
-from tasks.implementations.detect import DetectTask
+from tasks.implementations.detect_all_findings import DetectAllFindingsTask
 from tasks.implementations.info import ProjectInfoTask, VersionInfoTask, MisuseInfoTask
 from tasks.implementations.publish_findings import PublishFindingsTask
 from tasks.implementations.publish_metadata import PublishMetadataTask
@@ -97,7 +97,7 @@ class DetectTaskConfiguration(TaskConfiguration):
         collect_versions = CollectVersionsTask()
         checkout = CheckoutTask(config.checkouts_path, config.force_checkout, config.use_tmp_wrkdir)
         compile_version = CompileVersionTask(config.compiles_path, config.force_compile, config.use_tmp_wrkdir)
-        detect = DetectTask(config.compiles_path, experiment, config.timeout, config.force_detect)
+        detect = DetectAllFindingsTask(config.compiles_path, experiment, config.timeout, config.force_detect)
 
         if experiment.ID == ProvidedPatternsExperiment.ID:
             compile_misuse = CompileMisuseTask(config.compiles_path, config.force_compile)
@@ -119,7 +119,7 @@ class PublishFindingsTaskConfiguration(TaskConfiguration):
         collect_versions = CollectVersionsTask()
         checkout = CheckoutTask(config.checkouts_path, config.force_checkout, config.use_tmp_wrkdir)
         compile_version = CompileVersionTask(config.compiles_path, config.force_compile, config.use_tmp_wrkdir)
-        detect = DetectTask(config.compiles_path, experiment, config.timeout, config.force_detect)
+        detect = DetectAllFindingsTask(config.compiles_path, experiment, config.timeout, config.force_detect)
         publish = PublishFindingsTask(_get_experiment(config), config.dataset, config.compiles_path,
                                       config.review_site_url, config.review_site_user, config.review_site_password)
 
