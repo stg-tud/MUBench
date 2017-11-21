@@ -52,7 +52,7 @@ LOG_DIR = "logs"
 if not exists(LOG_DIR):
     makedirs(LOG_DIR)
 log_name = datetime.now().strftime("run_%Y%m%d_%H%M%S") + ".log"
-handler = logging.FileHandler(join(LOG_DIR, log_name))
+handler = logging.FileHandler(join(LOG_DIR, log_name), encoding='utf-8')
 handler.setFormatter(logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s'))
 handler.setLevel(logging.DEBUG)
 logger.addHandler(handler)
