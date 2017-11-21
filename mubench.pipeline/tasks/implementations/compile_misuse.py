@@ -61,7 +61,7 @@ class CompileMisuseTask:
     @staticmethod
     def _compile(source_files: Set[str], destination: str, classpath: str):
         logger = logging.getLogger("task.compile_patterns.compile")
-        Shell.exec('javac -cp "{}" {}'.format(classpath, ' '.join(source_files)), logger=logger)
+        Shell.exec('javac -cp "{}" "{}"'.format(classpath, '" "'.join(source_files)), logger=logger)
         logger.debug('Copying class files to "{}"'.format(destination))
         makedirs(destination, exist_ok=True)
         for source_file in source_files:
