@@ -10,6 +10,7 @@ from tasks.implementations.compile_version import CompileVersionTask
 from tasks.implementations.compile_misuse import CompileMisuseTask
 from tasks.implementations.dataset_check import DatasetCheckTask
 from tasks.implementations.detect_all_findings import DetectAllFindingsTask
+from tasks.implementations.detect_providing_patterns import DetectProvidingPatternsTask
 from tasks.implementations.info import ProjectInfoTask, VersionInfoTask, MisuseInfoTask
 from tasks.implementations.publish_findings import PublishFindingsTask
 from tasks.implementations.publish_metadata import PublishMetadataTask
@@ -28,8 +29,6 @@ class TaskConfiguration:
 
 def get_task_configuration(config) -> List:
     mode = config.task
-    if hasattr(config, 'publish_task'):
-        mode += " " + config.publish_task
 
     requested_configurations = [task_config() for task_config in
                                 TaskConfiguration.__subclasses__() if task_config.mode() == mode]
@@ -84,56 +83,71 @@ class CompileTaskConfiguration(TaskConfiguration):
         return [collect_projects, collect_versions, checkout, compile_version, collect_misuses, compile_misuse]
 
 
-class DetectTaskConfiguration(TaskConfiguration):
+class ProvidedPatternsExperiment(TaskConfiguration):
+    ID = "ex1"
+
     @staticmethod
     def mode() -> str:
-        return "detect"
+        return ProvidedPatternsExperiment.ID
 
     def tasks(self, config) -> List:
-        experiment = _get_experiment(config)
-
         collect_projects = CollectProjectsTask(config.data_path)
         collect_versions = CollectVersionsTask()
         checkout = CheckoutTask(config.checkouts_path, config.force_checkout, config.use_tmp_wrkdir)
         compile_version = CompileVersionTask(config.compiles_path, config.force_compile, config.use_tmp_wrkdir)
-        detect = DetectAllFindingsTask(config.compiles_path, experiment, config.timeout, config.force_detect)
-
-        if experiment.ID == ProvidedPatternsExperiment.ID:
-            compile_misuse = CompileMisuseTask(config.compiles_path, config.force_compile)
-            return [collect_projects, collect_versions, checkout, compile_version,
-                    TaskRunner([CollectMisusesTask(), compile_misuse]), detect]
-
-        return [collect_projects, collect_versions, checkout, compile_version, detect]
-
-
-class PublishFindingsTaskConfiguration(TaskConfiguration):
-    @staticmethod
-    def mode() -> str:
-        return "publish findings"
-
-    def tasks(self, config) -> List:
-        experiment = _get_experiment(config)
-
-        collect_projects = CollectProjectsTask(config.data_path)
-        collect_versions = CollectVersionsTask()
-        checkout = CheckoutTask(config.checkouts_path, config.force_checkout, config.use_tmp_wrkdir)
-        compile_version = CompileVersionTask(config.compiles_path, config.force_compile, config.use_tmp_wrkdir)
-        detect = DetectAllFindingsTask(config.compiles_path, experiment, config.timeout, config.force_detect)
-        publish = PublishFindingsTask(_get_experiment(config), config.dataset, config.compiles_path,
+        compile_misuse = CompileMisuseTask(config.compiles_path, config.force_compile)
+        detect = DetectProvidingPatternsTask(_get_detector(config), config.findings_path, config.force_detect,
+                                             config.timeout)
+        publish = PublishFindingsTask(ProvidedPatternsExperiment.ID, config.dataset, config.compiles_path,
                                       config.review_site_url, config.review_site_user, config.review_site_password)
+        return [collect_projects, collect_versions, checkout, compile_version, CollectMisusesTask(), compile_misuse,
+                detect, publish]
 
-        if experiment.ID == ProvidedPatternsExperiment.ID:
-            compile_misuse = CompileMisuseTask(config.compiles_path, config.force_compile)
-            return [collect_projects, collect_versions, checkout, compile_version,
-                    TaskRunner([CollectMisusesTask(), compile_misuse]), detect, publish]
 
+class AllFindingsExperiment(TaskConfiguration):
+    ID = "ex2"
+
+    @staticmethod
+    def mode() -> str:
+        return AllFindingsExperiment.ID
+
+    def tasks(self, config) -> List:
+        collect_projects = CollectProjectsTask(config.data_path)
+        collect_versions = CollectVersionsTask()
+        checkout = CheckoutTask(config.checkouts_path, config.force_checkout, config.use_tmp_wrkdir)
+        compile_version = CompileVersionTask(config.compiles_path, config.force_compile, config.use_tmp_wrkdir)
+        detect = DetectAllFindingsTask(config.compiles_path, config.findings_path, _get_detector(config),
+                                       config.timeout, config.force_detect, config.limit)
+        publish = PublishFindingsTask(AllFindingsExperiment.ID, config.dataset, config.compiles_path,
+                                      config.review_site_url, config.review_site_user, config.review_site_password)
         return [collect_projects, collect_versions, checkout, compile_version, detect, publish]
+
+
+class BenchmarkExperiment(TaskConfiguration):
+    ID = "ex3"
+
+    @staticmethod
+    def mode() -> str:
+        return BenchmarkExperiment.ID
+
+    def tasks(self, config) -> List:
+        collect_projects = CollectProjectsTask(config.data_path)
+        collect_versions = CollectVersionsTask()
+        checkout = CheckoutTask(config.checkouts_path, config.force_checkout, config.use_tmp_wrkdir)
+        compile_version = CompileVersionTask(config.compiles_path, config.force_compile, config.use_tmp_wrkdir)
+        compile_misuse = CompileMisuseTask(config.compiles_path, config.force_compile)
+        detect = DetectAllFindingsTask(config.compiles_path, config.findings_path, _get_detector(config),
+                                       config.timeout, config.force_detect, config.limit)
+        publish = PublishFindingsTask(BenchmarkExperiment.ID, config.dataset, config.compiles_path,
+                                      config.review_site_url, config.review_site_user, config.review_site_password)
+        return [collect_projects, collect_versions, checkout, compile_version,
+                TaskRunner([CollectMisusesTask(), compile_misuse]), detect, publish]
 
 
 class PublishMetadataTaskConfiguration(TaskConfiguration):
     @staticmethod
     def mode() -> str:
-        return "publish metadata"
+        return "publish"
 
     def tasks(self, config) -> List:
         collect_projects = CollectProjectsTask(config.data_path)
@@ -172,19 +186,6 @@ class DatasetCheckTaskConfiguration(TaskConfiguration):
         return [collect_projects, collect_versions, collect_misuses, dataset_check]
 
 
-def _get_experiment(config):
-    if config.experiment == 1:
-        return ProvidedPatternsExperiment(__get_detector(config), config.findings_path)
-    elif config.experiment == 2:
-        try:
-            limit = config.limit
-        except AttributeError:
-            limit = 0
-        return TopFindingsExperiment(__get_detector(config), config.findings_path, limit)
-    elif config.experiment == 3:
-        return BenchmarkExperiment(__get_detector(config), config.findings_path)
-
-
-def __get_detector(config):
+def _get_detector(config):
     java_options = ['-' + option for option in config.java_options]
     return find_detector(config.detectors_path, config.detector, java_options, config.requested_release)

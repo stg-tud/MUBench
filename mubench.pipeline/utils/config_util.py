@@ -11,7 +11,6 @@ from tasks.implementations import stats
 from utils.dataset_util import get_available_dataset_ids
 from utils.io import read_yaml
 
-
 MUBENCH_ROOT_PATH = abspath(join(dirname(abspath(__file__)), os.pardir, os.pardir))
 DATA_PATH = join(MUBENCH_ROOT_PATH, "data")
 CHECKOUTS_PATH = join(MUBENCH_ROOT_PATH, "checkouts")
@@ -82,8 +81,10 @@ def get_command_line_parser(available_detectors: List[str], available_scripts: L
     __add_info_subprocess(available_datasets, subparsers)
     __add_checkout_subprocess(available_datasets, subparsers)
     __add_compile_subprocess(available_datasets, subparsers)
-    __add_detect_subprocess(available_detectors, available_datasets, subparsers)
-    __add_publish_subprocess(available_detectors, available_datasets, subparsers)
+    __add_provided_patterns_experiment_subprocess(available_detectors, available_datasets, subparsers)
+    __add_all_findings_experiment_subprocess(available_detectors, available_datasets, subparsers)
+    __add_benchmark_experiment_subprocess(available_detectors, available_datasets, subparsers)
+    __add_publish_subprocess(available_datasets, subparsers)
     __add_stats_subprocess(available_scripts, available_datasets, subparsers)
     __add_dataset_check_subprocess(available_datasets, subparsers)
 
@@ -142,57 +143,58 @@ def __add_compile_subprocess(available_datasets: List[str], subparsers) -> None:
     __setup_checkout_arguments(compile_parser)
 
 
-def __add_detect_subprocess(available_detectors: List[str], available_datasets: List[str], subparsers) -> None:
-    detect_parser = subparsers.add_parser('detect', formatter_class=SortingHelpFormatter,
-                                          help="Run a detector on the checkouts. Run `compile`, if necessary. ",
-                                          description="Run a detector on the checkouts. Run `compile`, if necessary. "
-                                                      "Run `detect -h` to see a list of available detectors.",
-                                          epilog="The findings are written to `findings/`.")  # type: ArgumentParser
-    __setup_misuse_filter_arguments(detect_parser, available_datasets)
-    __setup_detector_arguments(detect_parser, available_detectors)
-    __setup_checkout_arguments(detect_parser)
-    __setup_compile_arguments(detect_parser)
+def __add_provided_patterns_experiment_subprocess(available_detectors: List[str], available_datasets: List[str],
+                                                  subparsers) -> None:
+    experiment_parser = subparsers.add_parser("ex1", formatter_class=SortingHelpFormatter,
+                                              help="Run a detector on the checkouts. Run `compile`, if necessary. ",
+                                              description="Run a detector on the checkouts. Run `compile`, if necessary. "
+                                                          "Run `detect -h` to see a list of available detectors.",
+                                              epilog="The findings are written to `findings/`.")  # type: ArgumentParser
+    __setup_misuse_filter_arguments(experiment_parser, available_datasets)
+    __setup_detector_arguments(experiment_parser, available_detectors)
+    __setup_checkout_arguments(experiment_parser)
+    __setup_compile_arguments(experiment_parser)
+    __setup_publish_arguments(experiment_parser)
 
 
-def __add_publish_subprocess(available_detectors: List[str], available_datasets: List[str], subparsers) -> None:
+def __add_all_findings_experiment_subprocess(available_detectors: List[str], available_datasets: List[str],
+                                             subparsers) -> None:
+    experiment_parser = subparsers.add_parser("ex2", formatter_class=SortingHelpFormatter,
+                                              help="Run a detector on the checkouts. Run `compile`, if necessary. ",
+                                              description="Run a detector on the checkouts. Run `compile`, if necessary. "
+                                                          "Run `detect -h` to see a list of available detectors.",
+                                              epilog="The findings are written to `findings/`.")  # type: ArgumentParser
+    __setup_misuse_filter_arguments(experiment_parser, available_datasets)
+    __setup_detector_arguments(experiment_parser, available_detectors)
+    __setup_checkout_arguments(experiment_parser)
+    __setup_compile_arguments(experiment_parser)
+    __setup_publish_arguments(experiment_parser)
+
+
+def __add_benchmark_experiment_subprocess(available_detectors: List[str], available_datasets: List[str],
+                                          subparsers) -> None:
+    experiment_parser = subparsers.add_parser("ex3", formatter_class=SortingHelpFormatter,
+                                              help="Run a detector on the checkouts. Run `compile`, if necessary. ",
+                                              description="Run a detector on the checkouts. Run `compile`, if necessary. "
+                                                          "Run `detect -h` to see a list of available detectors.",
+                                              epilog="The findings are written to `findings/`.")  # type: ArgumentParser
+    __setup_misuse_filter_arguments(experiment_parser, available_datasets)
+    __setup_detector_arguments(experiment_parser, available_detectors)
+    __setup_checkout_arguments(experiment_parser)
+    __setup_compile_arguments(experiment_parser)
+    __setup_publish_arguments(experiment_parser)
+
+
+def __add_publish_subprocess(available_datasets: List[str], subparsers) -> None:
     publish_parser = subparsers.add_parser('publish', formatter_class=SortingHelpFormatter,
-                                           help="Tasks to publish data to a review site.",
-                                           description="Tasks to publish data to a review site.")  # type: ArgumentParser
-    publish_subparsers = publish_parser.add_subparsers(
-        help="MUBench provides multiple publishing tasks. Run `mubench publish <task> -h` for details. "
-             "See https://github.com/stg-tud/MUBench#review-setup for details on how to setup a review site.",
-        dest='publish_task')
+                                           help="Publish misuse metadata to the review site. "
+                                                "Run `checkout`, if necessary.",
+                                           description="Publish misuse metadata to the review site. "
+                                                       "Run `checkout`, if necessary.")  # type: ArgumentParser
 
-    findings_parser = publish_subparsers.add_parser("findings", formatter_class=SortingHelpFormatter,
-                                                    help="Publish detection findings to the review site. "
-                                                         "Run `detect`, if necessary.",
-                                                    description="Publish detection findings to the review site. "
-                                                                "Run `detect`, if necessary.")  # type: ArgumentParser
-    __setup_misuse_filter_arguments(findings_parser, available_datasets)
-    __setup_detector_arguments(findings_parser, available_detectors)
-    __setup_checkout_arguments(findings_parser)
-    __setup_compile_arguments(findings_parser)
-    __setup_publish_arguments(findings_parser)
-
-    def upload_limit(x):
-        limit = int(x)
-        if limit < 1:
-            raise ArgumentTypeError("invalid value: {}, must be positive".format(limit))
-        return limit
-
-    findings_parser.add_argument('--limit', type=upload_limit, default=get_default('limit', 50), metavar='n',
-                                 dest="limit",
-                                 help="publish only a specified number of potential hits. Defaults to 50")
-
-    metadata_parser = publish_subparsers.add_parser("metadata", formatter_class=SortingHelpFormatter,
-                                                    help="Publish misuse metadata to the review site. "
-                                                         "Run `checkout`, if necessary.",
-                                                    description="Publish misuse metadata to the review site. "
-                                                                "Run `checkout`, if necessary.")  # type: ArgumentParser
-
-    __setup_misuse_filter_arguments(metadata_parser, available_datasets)
-    __setup_checkout_arguments(metadata_parser)
-    __setup_publish_arguments(metadata_parser)
+    __setup_misuse_filter_arguments(publish_parser, available_datasets)
+    __setup_checkout_arguments(publish_parser)
+    __setup_publish_arguments(publish_parser)
 
 
 def __add_stats_subprocess(available_scripts: List[str], available_datasets: List[str], subparsers) -> None:
@@ -236,8 +238,6 @@ def __setup_compile_arguments(parser: ArgumentParser):
 def __setup_detector_arguments(parser: ArgumentParser, available_detectors: List[str]) -> None:
     parser.add_argument('detector', help="the detector whose findings to evaluate",
                         choices=available_detectors)
-    parser.add_argument('experiment', help="configures the detector for the experiment", type=int,
-                        choices=[1, 2, 3])
     parser.add_argument('--force-detect', dest='force_detect', action='store_true',
                         default=get_default('force-detect', False),
                         help="force a clean detection, deleting the any previous findings")
@@ -265,3 +265,13 @@ def __setup_publish_arguments(parser: ArgumentParser) -> None:
                         help="use the specified password for authenticating as the specified user."
                              " If a user is provided, but no password,"
                              " you will be prompted for the password before publication.")
+
+    def upload_limit(x):
+        limit = int(x)
+        if limit < 1:
+            raise ArgumentTypeError("invalid value: {}, must be positive".format(limit))
+        return limit
+
+    parser.add_argument('--limit', type=upload_limit, default=get_default('limit', 50), metavar='n',
+                        dest="limit",
+                        help="publish only a specified number of potential hits. Defaults to 50")
