@@ -8,6 +8,7 @@ from data.misuse import Misuse, Pattern
 from data.project_checkout import ProjectCheckout, GitProjectCheckout, SVNProjectCheckout, \
     SyntheticProjectCheckout, ZipProjectCheckout
 from data.version_compile import VersionCompile
+from utils.io import read_yaml
 
 
 class ProjectVersion:
@@ -41,9 +42,7 @@ class ProjectVersion:
     @property
     def _yaml(self) -> Dict[str, Any]:
         if not self._YAML:
-            with open(self._version_file) as stream:
-                version_yml = yaml.load(stream)
-            self._YAML = version_yml
+            self._YAML = read_yaml(self._version_file)
         return self._YAML
 
     def get_checkout(self, base_path: str) -> ProjectCheckout:
