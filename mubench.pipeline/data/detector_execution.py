@@ -5,8 +5,7 @@ from os import makedirs
 from typing import Optional, List, Dict
 
 from data.detector import Detector
-from data.finding import Finding, SpecializedFinding
-from data.findings_filters import FindingsFilter
+from data.finding import Finding
 from data.project_version import ProjectVersion
 from utils.io import write_yaml, remove_tree, read_yaml_if_exists, open_yamls_if_exists
 from utils.shell import CommandFailedError
@@ -19,11 +18,10 @@ class Result(Enum):
 
 
 class DetectorExecution:
-    def __init__(self, detector: Detector, version: ProjectVersion, findings_path: str,
-                 findings_filter: FindingsFilter, findings_file_path: str, run_file_path: str):
+    def __init__(self, detector: Detector, version: ProjectVersion, findings_path: str, findings_file_path: str,
+                 run_file_path: str):
         self.detector = detector
         self.version = version
-        self._findings_filter = findings_filter
         self._findings_path = findings_path
         self.__FINDINGS = None
         self.__POTENTIAL_HITS = None
@@ -102,21 +100,14 @@ class DetectorExecution:
         self.__run_info = run_info
 
     @property
-    def potential_hits(self):
-        if not self.__POTENTIAL_HITS:
-            potential_hits = self._findings_filter.get_potential_hits(self.__findings)
-            self.__POTENTIAL_HITS = self.detector.specialize_findings(self._findings_path, potential_hits)
-        return self.__POTENTIAL_HITS
-
-    @property
-    def __findings(self) -> List[Finding]:
+    def findings(self) -> List[Finding]:
         if not self.__FINDINGS:
             self.__FINDINGS = self._load_findings()
         return self.__FINDINGS
 
     @property
     def number_of_findings(self):
-        return len(self.__findings)
+        return len(self.findings)
 
     def _load_findings(self):
         with open_yamls_if_exists(self._findings_file_path) as findings:
@@ -130,8 +121,8 @@ class DetectorExecution:
     def reset(self):
         remove_tree(self._findings_path)
         makedirs(self._findings_path, exist_ok=True)
-        DetectorExecution.__init__(self, self.detector, self.version, self._findings_path,
-                                   self._findings_filter, self._findings_file_path, self._run_file_path)
+        DetectorExecution.__init__(self, self.detector, self.version, self._findings_path, self._findings_file_path,
+                                   self._run_file_path)
 
     def is_success(self):
         return self.result == Result.success

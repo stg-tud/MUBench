@@ -5,7 +5,6 @@ from urllib.error import URLError
 
 from data.detector import Detector
 from data.detector_execution import DetectorExecution
-from data.findings_filters import AllFindings
 from data.project_version import ProjectVersion
 from data.version_compile import VersionCompile
 from tasks.configurations.detector_interface_configuration import key_findings_file, key_run_file, key_detector_mode, \
@@ -87,8 +86,7 @@ class DetectAllFindingsTask:
         return run
 
     def _get_execution(self, version: ProjectVersion) -> DetectorExecution:
-        findings_filter = AllFindings(self.limit)
-        return DetectorExecution(self.detector, version, self._get_findings_path(version), findings_filter,
+        return DetectorExecution(self.detector, version, self._get_findings_path(version),
                                  self._get_findings_file_path(version), self._get_run_file_path(version))
 
     def _get_run_file_path(self, version: ProjectVersion):

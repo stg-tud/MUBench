@@ -12,6 +12,7 @@ from data.project import Project
 from data.version_compile import VersionCompile
 from data.project_version import ProjectVersion
 from data.snippets import SnippetUnavailableException
+from tasks.implementations.findings_filters import PotentialHits
 from utils.web_util import post, as_markdown
 
 
@@ -39,11 +40,11 @@ class PublishFindingsTask:
                          self.detector, experiment_id, self.__upload_url)
 
     def run(self, project: Project, version: ProjectVersion, detector_execution: DetectorExecution,
-            version_compile: VersionCompile) -> List:
+            findings: PotentialHits, version_compile: VersionCompile) -> List:
         logger = self.logger.getChild("version")
 
         run_info = detector_execution.get_run_info()
-        potential_hits = detector_execution.potential_hits
+        potential_hits = findings
 
         if detector_execution.is_success():
             logger.info("Preparing findings in %s...", version)
@@ -78,8 +79,8 @@ class PublishFindingsTask:
             else:
                 logger.error("ERROR: %s", e)
 
-    def __slice_by_max_files_per_post(self, potential_hits: List[SpecializedFinding]) -> List[List[SpecializedFinding]]:
-        potential_hits_slice = []
+    def __slice_by_max_files_per_post(self, potential_hits: PotentialHits) -> List[PotentialHits]:
+        potential_hits_slice = PotentialHits([])
         number_of_files_in_slice = 0
         for potential_hit in potential_hits:
             number_of_files_in_hit = len(potential_hit.files)

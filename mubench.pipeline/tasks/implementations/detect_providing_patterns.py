@@ -5,7 +5,6 @@ from urllib.error import URLError
 
 from data.detector import Detector
 from data.detector_execution import DetectorExecution
-from data.findings_filters import PotentialHits
 from data.misuse import Misuse
 from data.misuse_compile import MisuseCompile
 from data.project_version import ProjectVersion
@@ -97,8 +96,7 @@ class DetectProvidingPatternsTask:
                     version.project_id, version.version_id, misuse.misuse_id)
 
     def get_run(self, version: ProjectVersion, misuse: Misuse):
-        findings_filter = PotentialHits([misuse])
-        return DetectorExecution(self.detector, version, self._get_findings_path(version, misuse), findings_filter,
+        return DetectorExecution(self.detector, version, self._get_findings_path(version, misuse),
                                  self._get_findings_file(version, misuse), self._get_run_file_path(version, misuse))
 
     def _get_run_file_path(self, version, misuse):

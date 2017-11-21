@@ -11,6 +11,7 @@ from tasks.implementations.compile_misuse import CompileMisuseTask
 from tasks.implementations.dataset_check import DatasetCheckTask
 from tasks.implementations.detect_all_findings import DetectAllFindingsTask
 from tasks.implementations.detect_providing_patterns import DetectProvidingPatternsTask
+from tasks.implementations.findings_filters import AllFindingsFilterTask, PotentialHitsFilterTask
 from tasks.implementations.info import ProjectInfoTask, VersionInfoTask, MisuseInfoTask
 from tasks.implementations.publish_findings import PublishFindingsTask
 from tasks.implementations.publish_metadata import PublishMetadataTask
@@ -98,10 +99,11 @@ class ProvidedPatternsExperiment(TaskConfiguration):
         compile_misuse = CompileMisuseTask(config.compiles_path, config.force_compile)
         detect = DetectProvidingPatternsTask(_get_detector(config), config.findings_path, config.force_detect,
                                              config.timeout)
+        filter_ = PotentialHitsFilterTask()
         publish = PublishFindingsTask(ProvidedPatternsExperiment.ID, config.dataset, config.compiles_path,
                                       config.review_site_url, config.review_site_user, config.review_site_password)
         return [collect_projects, collect_versions, checkout, compile_version, CollectMisusesTask(), compile_misuse,
-                detect, publish]
+                detect, filter_, publish]
 
 
 class AllFindingsExperiment(TaskConfiguration):
@@ -118,9 +120,10 @@ class AllFindingsExperiment(TaskConfiguration):
         compile_version = CompileVersionTask(config.compiles_path, config.force_compile, config.use_tmp_wrkdir)
         detect = DetectAllFindingsTask(config.compiles_path, config.findings_path, _get_detector(config),
                                        config.timeout, config.force_detect, config.limit)
+        filter_ = AllFindingsFilterTask()
         publish = PublishFindingsTask(AllFindingsExperiment.ID, config.dataset, config.compiles_path,
                                       config.review_site_url, config.review_site_user, config.review_site_password)
-        return [collect_projects, collect_versions, checkout, compile_version, detect, publish]
+        return [collect_projects, collect_versions, checkout, compile_version, detect, filter_, publish]
 
 
 class BenchmarkExperiment(TaskConfiguration):
@@ -135,13 +138,13 @@ class BenchmarkExperiment(TaskConfiguration):
         collect_versions = CollectVersionsTask()
         checkout = CheckoutTask(config.checkouts_path, config.force_checkout, config.use_tmp_wrkdir)
         compile_version = CompileVersionTask(config.compiles_path, config.force_compile, config.use_tmp_wrkdir)
-        compile_misuse = CompileMisuseTask(config.compiles_path, config.force_compile)
         detect = DetectAllFindingsTask(config.compiles_path, config.findings_path, _get_detector(config),
                                        config.timeout, config.force_detect, config.limit)
+        filter_ = PotentialHitsFilterTask()
         publish = PublishFindingsTask(BenchmarkExperiment.ID, config.dataset, config.compiles_path,
                                       config.review_site_url, config.review_site_user, config.review_site_password)
-        return [collect_projects, collect_versions, checkout, compile_version,
-                TaskRunner([CollectMisusesTask(), compile_misuse]), detect, publish]
+        return [collect_projects, collect_versions, checkout, compile_version, detect,
+                CollectMisusesTask(), filter_, publish]
 
 
 class PublishMetadataTaskConfiguration(TaskConfiguration):

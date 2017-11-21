@@ -1,14 +1,14 @@
 from copy import deepcopy
 from typing import List
 
-from data.detector import Detector
-from data.finding import Finding, SpecializedFinding
+from data.detector_execution import DetectorExecution
+from data.finding import SpecializedFinding, Finding
 from data.misuse import Misuse
 
 
-class FindingsFilter:
-    def get_potential_hits(self, findings: List[Finding]) -> List[SpecializedFinding]:
-        raise NotImplementedError()
+class PotentialHits(list):
+    def __init__(self, findings: SpecializedFinding):
+        super().__init__(findings)
 
 
 def _to_potential_hit(misuse_id, finding: Finding):
@@ -17,18 +17,13 @@ def _to_potential_hit(misuse_id, finding: Finding):
     return potential_hit
 
 
-class PotentialHits(FindingsFilter):
-    def __init__(self, misuses: List[Misuse]):
-        self.misuses = misuses
-
-    def get_potential_hits(self, findings: List[Finding]):
-        potential_hits = []
-        for misuse in self.misuses:
-            misuse_potential_hits = self._get_potential_hits(misuse, findings, False)
-            if not misuse_potential_hits:
-                misuse_potential_hits = self._get_potential_hits(misuse, findings, True)
-            potential_hits.extend(misuse_potential_hits)
-        return potential_hits
+class PotentialHitsFilterTask:
+    def run(self, misuse: Misuse, detector_execution: DetectorExecution) -> PotentialHits:
+        findings = detector_execution.findings
+        misuse_potential_hits = self._get_potential_hits(misuse, findings, False)
+        if not misuse_potential_hits:
+            misuse_potential_hits = self._get_potential_hits(misuse, findings, True)
+        return PotentialHits(misuse_potential_hits)
 
     @staticmethod
     def _get_potential_hits(misuse: Misuse, findings: List[Finding], method_name_only: bool):
@@ -39,16 +34,17 @@ class PotentialHits(FindingsFilter):
         return potential_hits
 
 
-class AllFindings(FindingsFilter):
+class AllFindingsFilterTask:
     def __init__(self, limit: int = 0):
         self.limit = limit
 
-    def get_potential_hits(self, findings: List[Finding]):
+    def run(self, detector_execution: DetectorExecution) -> PotentialHits:
+        findings = detector_execution.findings
         top_findings = self.__get_top_findings(findings)
         potential_hits = []
         for rank, top_finding in enumerate(top_findings):
             potential_hits.append(_to_potential_hit("finding-{}".format(rank), top_finding))
-        return potential_hits
+        return PotentialHits(potential_hits)
 
     def __get_top_findings(self, findings):
         if self.limit:
