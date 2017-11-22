@@ -190,7 +190,7 @@ class DatasetCheckTask:
             if id_ in entries:
                 entries.remove(id_)
 
-        if not id_ in self.registered_entries:
+        if id_ not in self.registered_entries:
             self.registered_entries.add(id_)
         else:
             if not _is_synthetic(project):
