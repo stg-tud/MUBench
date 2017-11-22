@@ -13,5 +13,5 @@ fix:
     synchonize on the map.
 internal: false
 source:
-  name: What should developers be aware of? An empirical study on the directives of API documentation
+  name: What should developers be aware of? an empirical study on the directives of API documentation., Monperrus et al., ESE'12
   url: http://link.springer.com/article/10.1007/s10664-011-9186-4

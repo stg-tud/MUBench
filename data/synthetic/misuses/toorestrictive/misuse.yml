@@ -13,4 +13,5 @@ fix:
     Change the condition to i <= l.size().
 internal: false
 source:
-  name: Survey
+  name: Improving API documentation usability with knowledge pushing, Herbsleb et al., ICSE'09
+  url: https://dl.acm.org/citation.cfm?id=1555047

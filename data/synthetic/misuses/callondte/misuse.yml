@@ -13,4 +13,5 @@ fix:
     Use invokeLater() to displatch UI creation to the EDT.
 internal: false
 source:
-  name: Survey
+  name: What should developers be aware of? An empirical study on the directives of API documentation
+  url: http://link.springer.com/article/10.1007/s10664-011-9186-4
