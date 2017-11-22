@@ -8,13 +8,7 @@ description: >
 location:
   file: "org/w3c/jigsaw/map/MapEntry.java"
   method: "parseRestNCSA(string line)"
-fix:
-  commit:
-  files:
-  revision:
-internal: true
-pattern:
-report:
+internal: false
 source:
-  name:
-  url:
+  name: Graph-based mining of multiple object usage patterns, Nguyen et al., FSE'09
+  url: http://portal.acm.org/citation.cfm?doid=1595696.1595767
