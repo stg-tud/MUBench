@@ -63,7 +63,7 @@ class DetectProvidingPatternsTask:
 
     def run(self, version: ProjectVersion, misuse: Misuse, version_compile: VersionCompile,
             misuse_compile: MisuseCompile) -> List[DetectorExecution]:
-        detector_execution = self.get_run(version, misuse)
+        detector_execution = self._get_execution(version, misuse)
 
         if detector_execution.is_outdated() or self.force_detect:
             pass
@@ -95,7 +95,7 @@ class DetectProvidingPatternsTask:
         return join(self.findings_base_path, RUN_MODE_NAME, self.detector.id,
                     version.project_id, version.version_id, misuse.misuse_id)
 
-    def get_run(self, version: ProjectVersion, misuse: Misuse):
+    def _get_execution(self, version: ProjectVersion, misuse: Misuse):
         return DetectorExecution(self.detector, version, self._get_findings_path(version, misuse),
                                  self._get_findings_file(version, misuse), self._get_run_file_path(version, misuse))
 
