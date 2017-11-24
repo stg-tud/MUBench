@@ -7,7 +7,7 @@ from data.misuse import Misuse
 
 
 class PotentialHits(list):
-    def __init__(self, findings: SpecializedFinding):
+    def __init__(self, findings: List[SpecializedFinding]):
         super().__init__(findings)
 
 
