@@ -1,6 +1,5 @@
 from typing import List
 
-from data.detectors import find_detector
 from tasks.implementations import stats
 from tasks.implementations.checkout import CheckoutTask
 from tasks.implementations.collect_misuses import CollectMisusesTask
@@ -13,6 +12,7 @@ from tasks.implementations.detect_all_findings import DetectAllFindingsTask
 from tasks.implementations.detect_providing_patterns import DetectProvidingPatternsTask
 from tasks.implementations.findings_filters import AllFindingsFilterTask, PotentialHitsFilterTask
 from tasks.implementations.info import ProjectInfoTask, VersionInfoTask, MisuseInfoTask
+from tasks.implementations.load_detector import LoadDetectorTask
 from tasks.implementations.publish_findings import PublishFindingsTask
 from tasks.implementations.publish_metadata import PublishMetadataTask
 from utils.dataset_util import get_available_datasets
@@ -100,9 +100,11 @@ class RunProvidedPatternsExperiment(TaskConfiguration):
         compile_version = CompileVersionTask(config.compiles_path, config.force_compile, config.use_tmp_wrkdir)
         collect_misuses = CollectMisusesTask()
         compile_misuse = CompileMisuseTask(config.compiles_path, config.force_compile)
-        detect = DetectProvidingPatternsTask(_get_detector(config), config.findings_path, config.force_detect,
-                                             config.timeout)
-        return [collect_projects, collect_versions, checkout, compile_version, collect_misuses, compile_misuse, detect]
+        load_detector = LoadDetectorTask(config.detectors_path, config.detector, config.requested_release,
+                                         config.java_options)
+        detect = DetectProvidingPatternsTask(config.findings_path, config.force_detect, config.timeout)
+        return [collect_projects, collect_versions, checkout, compile_version, collect_misuses, compile_misuse,
+                load_detector, detect]
 
 
 class PublishProvidedPatternsExperiment(TaskConfiguration):
@@ -129,9 +131,10 @@ class RunAllFindingsExperiment(TaskConfiguration):
         collect_versions = CollectVersionsTask()
         checkout = CheckoutTask(config.checkouts_path, config.force_checkout, config.use_tmp_wrkdir)
         compile_version = CompileVersionTask(config.compiles_path, config.force_compile, config.use_tmp_wrkdir)
-        detect = DetectAllFindingsTask(_get_detector(config), config.findings_path, config.force_detect, config.timeout,
-                                       config.limit)
-        return [collect_projects, collect_versions, checkout, compile_version, detect]
+        load_detector = LoadDetectorTask(config.detectors_path, config.detector, config.requested_release,
+                                         config.java_options)
+        detect = DetectAllFindingsTask(config.findings_path, config.force_detect, config.timeout, config.limit)
+        return [collect_projects, collect_versions, checkout, compile_version, load_detector, detect]
 
 
 class PublishAllFindingsExperiment(TaskConfiguration):
@@ -158,9 +161,10 @@ class RunBenchmarkExperiment(TaskConfiguration):
         collect_versions = CollectVersionsTask()
         checkout = CheckoutTask(config.checkouts_path, config.force_checkout, config.use_tmp_wrkdir)
         compile_version = CompileVersionTask(config.compiles_path, config.force_compile, config.use_tmp_wrkdir)
-        detect = DetectAllFindingsTask(_get_detector(config), config.findings_path, config.force_detect, config.timeout,
-                                       config.limit)
-        return [collect_projects, collect_versions, checkout, compile_version, detect]
+        load_detector = LoadDetectorTask(config.detectors_path, config.detector, config.requested_release,
+                                         config.java_options)
+        detect = DetectAllFindingsTask(config.findings_path, config.force_detect, config.timeout, config.limit)
+        return [collect_projects, collect_versions, checkout, compile_version, load_detector, detect]
 
 
 class PublishBenchmarkExperiment(TaskConfiguration):
@@ -218,6 +222,3 @@ class DatasetCheckTaskConfiguration(TaskConfiguration):
         return [collect_projects, collect_versions, collect_misuses, dataset_check]
 
 
-def _get_detector(config):
-    java_options = ['-' + option for option in config.java_options]
-    return find_detector(config.detectors_path, config.detector, java_options, config.requested_release)

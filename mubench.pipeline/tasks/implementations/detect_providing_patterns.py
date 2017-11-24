@@ -1,7 +1,6 @@
 import logging
-from os.path import exists, join
-from typing import Optional, List
-from urllib.error import URLError
+from os.path import join
+from typing import Optional
 
 from data.detector import Detector
 from data.detector_execution import DetectorExecution
@@ -11,7 +10,6 @@ from data.project_version import ProjectVersion
 from data.version_compile import VersionCompile
 from tasks.configurations.detector_interface_configuration import key_findings_file, key_run_file, key_detector_mode, \
     key_training_src_path, key_training_classpath, key_target_src_path, key_target_classpath, key_dependency_classpath
-from utils.web_util import download_file
 
 RUN_MODE_NAME = "detect_only"
 DETECTOR_MODE = 1
@@ -21,46 +19,16 @@ class DetectProvidingPatternsTask:
     RUN_FILE = "run.yml"
     FINDINGS_FILE = "findings.yml"
 
-    def __init__(self, detector: Detector, findings_base_path: str, force_detect: bool, timeout: Optional[int]):
-        self.detector = detector
+    def __init__(self, findings_base_path: str, force_detect: bool, timeout: Optional[int]):
         self.findings_base_path = findings_base_path
         self.force_detect = force_detect
         self.timeout = timeout
 
         self.logger = logging.getLogger("task.detect")
 
-        msg = "Running '{}' detector".format(self.detector)
-        if self.force_detect:
-            msg += " with forced detection and"
-        if self.timeout:
-            msg += " with a timeout of {}s".format(self.timeout)
-        else:
-            msg += " without timeout."
-        self.logger.info(msg)
-
-        if not self._detector_available():
-            self._download()
-
-    def _detector_available(self) -> bool:
-        return exists(self.detector.jar_path)
-
-    def _download(self):
-        url = self.detector.jar_url
-        self.logger.info("Loading detector from '%s'...", url)
-        file = self.detector.jar_path
-
-        try:
-            md5 = self.detector.md5
-            if md5 == Detector.NO_MD5:
-                raise ValueError("Missing MD5 for {}".format(self.detector.id))
-            download_file(url, file, md5)
-        except (FileNotFoundError, ValueError, URLError) as e:
-            self.logger.error("Download failed: %s", e)
-            exit(1)
-
-    def run(self, version: ProjectVersion, version_compile: VersionCompile, misuse: Misuse,
+    def run(self, detector: Detector, version: ProjectVersion, version_compile: VersionCompile, misuse: Misuse,
             misuse_compile: MisuseCompile):
-        run = self._get_execution(version, misuse)
+        run = self._get_execution(detector, version, misuse)
 
         if run.is_outdated() or self.force_detect:
             pass
@@ -74,8 +42,8 @@ class DetectProvidingPatternsTask:
 
         self.logger.info("Executing %s...", run)
         logger = logging.getLogger("detect.run")
-        run.execute(self._get_detector_arguments(self._get_findings_file_path(version, misuse),
-                                                 self._get_run_file_path(version, misuse),
+        run.execute(self._get_detector_arguments(self._get_findings_file_path(detector, version, misuse),
+                                                 self._get_run_file_path(detector, version, misuse),
                                                  version_compile, misuse_compile),
                     self.timeout, logger)
 
@@ -84,21 +52,21 @@ class DetectProvidingPatternsTask:
 
         return run
 
-    def _get_execution(self, version: ProjectVersion, misuse: Misuse):
-        return DetectorExecution(self.detector, version,
-                                 self._get_findings_path(version, misuse),
-                                 self._get_findings_file_path(version, misuse),
-                                 self._get_run_file_path(version, misuse))
+    def _get_execution(self, detector: Detector, version: ProjectVersion, misuse: Misuse):
+        return DetectorExecution(detector, version,
+                                 self._get_findings_path(detector, version, misuse),
+                                 self._get_findings_file_path(detector, version, misuse),
+                                 self._get_run_file_path(detector, version, misuse))
 
-    def _get_run_file_path(self, version: ProjectVersion, misuse: Misuse):
-        return join(self._get_findings_path(version, misuse), self.RUN_FILE)
+    def _get_run_file_path(self, detector: Detector, version: ProjectVersion, misuse: Misuse):
+        return join(self._get_findings_path(detector, version, misuse), self.RUN_FILE)
 
-    def _get_findings_path(self, version: ProjectVersion, misuse: Misuse):
-        return join(self.findings_base_path, RUN_MODE_NAME, self.detector.id,
+    def _get_findings_path(self, detector: Detector, version: ProjectVersion, misuse: Misuse):
+        return join(self.findings_base_path, RUN_MODE_NAME, detector.id,
                     version.project_id, version.version_id, misuse.misuse_id)
 
-    def _get_findings_file_path(self, version: ProjectVersion, misuse: Misuse):
-        return join(self._get_findings_path(version, misuse), self.FINDINGS_FILE)
+    def _get_findings_file_path(self, detector: Detector, version: ProjectVersion, misuse: Misuse):
+        return join(self._get_findings_path(detector, version, misuse), self.FINDINGS_FILE)
 
     @staticmethod
     def _get_detector_arguments(findings_file_path: str, run_file_path: str, version_compile: VersionCompile,
