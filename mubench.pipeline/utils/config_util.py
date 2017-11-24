@@ -152,6 +152,7 @@ def __add_publish_subprocess(available_detectors: List[str], available_datasets:
 
     publish_subparsers = publish_parser.add_subparsers(dest='sub_task',
                                                        help="Mubench provides several publish tasks. Run `publish -h` for details.")
+    publish_subparsers.required = True
 
     __add_publish_metadata(available_datasets, publish_subparsers)
     __add_provided_patterns_experiment(available_detectors, available_datasets, publish_subparsers)
@@ -168,6 +169,7 @@ def __add_run_subprocess(available_detectors: List[str], available_datasets: Lis
 
     run_subparsers = run_parser.add_subparsers(dest='sub_task',
                                                help="Mubench provides several experiments. Run `run -h` for details.")
+    run_subparsers.required = True
 
     __add_provided_patterns_experiment(available_detectors, available_datasets, run_subparsers)
     __add_all_findings_experiment_subprocess(available_detectors, available_datasets, run_subparsers)

@@ -149,3 +149,13 @@ def test_dataset_check():
     parser = _get_command_line_parser([], [], [])
     result = parser.parse_args(['dataset-check'])
     assert_equals('dataset-check', result.task)
+
+
+def test_fails_without_run_subtask():
+    parser = _get_command_line_parser([], [], [])
+    assert_raises(SystemExit, parser.parse_args, ['run'])
+
+
+def test_fails_without_publish_subtask():
+    parser = _get_command_line_parser([], [], [])
+    assert_raises(SystemExit, parser.parse_args, ['publish'])
