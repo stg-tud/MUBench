@@ -5,7 +5,7 @@ from unittest.mock import MagicMock, patch, ANY
 
 from nose.tools import assert_equals
 
-from data.detector_execution import DetectorExecution, Result
+from data.detector_run import DetectorRun, Result
 from data.finding import Finding
 from tests.data.stub_detector import StubDetector
 from tests.test_utils.data_util import create_version, create_project
@@ -26,8 +26,8 @@ class TestExecutionState:
         self.version = create_version("-v-")
         self.findings_base_path = "-findings-"
 
-        self.uut = DetectorExecution(self.detector, self.version, self.findings_path,
-                                     self.findings_file_path, self.run_file_path)
+        self.uut = DetectorRun(self.detector, self.version, self.findings_path,
+                               self.findings_file_path, self.run_file_path)
 
     def teardown(self):
         remove_tree(self.temp_dir)
@@ -36,8 +36,8 @@ class TestExecutionState:
         self.detector.md5 = "-md5-"
         read_run_info.return_value = {"md5": "-old-md5-"}
 
-        uut = DetectorExecution(self.detector, self.version, self.findings_path,
-                                self.findings_file_path, self.run_file_path)
+        uut = DetectorRun(self.detector, self.version, self.findings_path,
+                          self.findings_file_path, self.run_file_path)
 
         assert uut.is_outdated()
 
@@ -60,8 +60,8 @@ class TestExecutionState:
     def test_load(self, read_run_info):
         read_run_info.return_value = {"result": "success", "runtime": "23.42", "message": "-arbitrary text-"}
 
-        uut = DetectorExecution(self.detector, self.version, self.findings_path,
-                                self.findings_file_path, self.run_file_path)
+        uut = DetectorRun(self.detector, self.version, self.findings_path,
+                          self.findings_file_path, self.run_file_path)
 
         assert uut.is_success()
         assert_equals(uut.runtime, "23.42")
@@ -71,7 +71,7 @@ class TestExecutionState:
 # noinspection PyUnusedLocal
 # patch prevent write to filesystem
 @patch("data.detector_execution.write_yaml")
-class TestDetectorExecution:
+class TestDetectorRun:
     # noinspection PyAttributeOutsideInit
     def setup(self):
         self.version = create_version("-version-", project=create_project("-project-"))
@@ -82,8 +82,8 @@ class TestDetectorExecution:
 
         self.logger = logging.getLogger("test")
 
-        self.uut = DetectorExecution(self.detector, self.version, self.findings_path,
-                                     self.findings_file_path, self.run_file_path)
+        self.uut = DetectorRun(self.detector, self.version, self.findings_path,
+                               self.findings_file_path, self.run_file_path)
 
     def test_execute_sets_success(self, write_yaml_mock):
         self.uut.execute("-compiles-", 42, self.logger)
@@ -133,7 +133,7 @@ class TestDetectorExecutionLoadFindings:
     @patch("data.detector_execution.open_yamls_if_exists")
     def test_adds_rank(self, read_yamls_mock):
         read_yamls_mock.return_value.__enter__.return_value = [{"name": "f1"}, {"name": "f2"}]
-        execution = DetectorExecution(StubDetector(), create_version("-v-"), "-findings-path-",
+        execution = DetectorRun(StubDetector(), create_version("-v-"), "-findings-path-",
                                       "-findings-file-", "-run-file-")
 
         findings = execution._load_findings()

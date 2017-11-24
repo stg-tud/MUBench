@@ -1,7 +1,7 @@
 from copy import deepcopy
 from typing import List
 
-from data.detector_execution import DetectorExecution
+from data.detector_run import DetectorRun
 from data.finding import SpecializedFinding, Finding
 from data.misuse import Misuse
 
@@ -18,8 +18,8 @@ def _to_potential_hit(misuse_id, finding: Finding):
 
 
 class PotentialHitsFilterTask:
-    def run(self, misuse: Misuse, detector_execution: DetectorExecution) -> PotentialHits:
-        findings = detector_execution.findings
+    def run(self, misuse: Misuse, detector_run: DetectorRun) -> PotentialHits:
+        findings = detector_run.findings
         misuse_potential_hits = self._get_potential_hits(misuse, findings, False)
         if not misuse_potential_hits:
             misuse_potential_hits = self._get_potential_hits(misuse, findings, True)
@@ -38,8 +38,8 @@ class AllFindingsFilterTask:
     def __init__(self, limit: int = 0):
         self.limit = limit
 
-    def run(self, detector_execution: DetectorExecution) -> PotentialHits:
-        findings = detector_execution.findings
+    def run(self, detector_run: DetectorRun) -> PotentialHits:
+        findings = detector_run.findings
         top_findings = self.__get_top_findings(findings)
         potential_hits = []
         for rank, top_finding in enumerate(top_findings):

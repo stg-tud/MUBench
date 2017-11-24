@@ -17,7 +17,7 @@ class Result(Enum):
     timeout = 2
 
 
-class DetectorExecution:
+class DetectorRun:
     def __init__(self, detector: Detector, version: ProjectVersion, findings_path: str, findings_file_path: str,
                  run_file_path: str):
         self.detector = detector
@@ -121,8 +121,8 @@ class DetectorExecution:
     def reset(self):
         remove_tree(self._findings_path)
         makedirs(self._findings_path, exist_ok=True)
-        DetectorExecution.__init__(self, self.detector, self.version, self._findings_path, self._findings_file_path,
-                                   self._run_file_path)
+        DetectorRun.__init__(self, self.detector, self.version, self._findings_path, self._findings_file_path,
+                             self._run_file_path)
 
     def is_success(self):
         return self.result == Result.success

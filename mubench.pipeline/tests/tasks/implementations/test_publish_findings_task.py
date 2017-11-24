@@ -4,7 +4,7 @@ from unittest.mock import MagicMock, patch
 from nose.tools import assert_equals
 
 from data.detector import Detector
-from data.detector_execution import DetectorExecution
+from data.detector_run import DetectorRun
 from data.finding import SpecializedFinding
 from data.snippets import Snippet, SnippetUnavailableException
 from tasks.implementations.findings_filters import PotentialHits
@@ -24,7 +24,7 @@ class TestPublishFindingsTask:
         self.version = create_version("-v-", project=self.project, misuses=[self.misuse])
         self.version_compile = self.version.get_compile("/sources")
 
-        self.test_detector_execution = MagicMock()  # type: DetectorExecution
+        self.test_detector_execution = MagicMock()  # type: DetectorRun
         self.test_detector_execution.is_success = lambda: False
         self.test_detector_execution.is_error = lambda: False
         self.test_detector_execution.is_timeout = lambda: False

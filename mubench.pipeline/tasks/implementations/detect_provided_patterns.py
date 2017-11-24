@@ -3,7 +3,7 @@ from os.path import join
 from typing import Optional
 
 from data.detector import Detector
-from data.detector_execution import DetectorExecution
+from data.detector_run import DetectorRun
 from data.misuse import Misuse
 from data.misuse_compile import MisuseCompile
 from data.project_version import ProjectVersion
@@ -28,7 +28,7 @@ class DetectProvidedPatternsTask:
 
     def run(self, detector: Detector, version: ProjectVersion, version_compile: VersionCompile, misuse: Misuse,
             misuse_compile: MisuseCompile):
-        run = self._get_execution(detector, version, misuse)
+        run = self._get_run(detector, version, misuse)
 
         if run.is_outdated() or self.force_detect:
             pass
@@ -52,11 +52,11 @@ class DetectProvidedPatternsTask:
 
         return run
 
-    def _get_execution(self, detector: Detector, version: ProjectVersion, misuse: Misuse):
-        return DetectorExecution(detector, version,
-                                 self._get_findings_path(detector, version, misuse),
-                                 self._get_findings_file_path(detector, version, misuse),
-                                 self._get_run_file_path(detector, version, misuse))
+    def _get_run(self, detector: Detector, version: ProjectVersion, misuse: Misuse):
+        return DetectorRun(detector, version,
+                           self._get_findings_path(detector, version, misuse),
+                           self._get_findings_file_path(detector, version, misuse),
+                           self._get_run_file_path(detector, version, misuse))
 
     def _get_run_file_path(self, detector: Detector, version: ProjectVersion, misuse: Misuse):
         return join(self._get_findings_path(detector, version, misuse), self.RUN_FILE)

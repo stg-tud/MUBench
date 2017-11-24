@@ -13,14 +13,14 @@ class TestPotentialHits:
     def setup(self):
         self.detector = StubDetector()
         self.uut = PotentialHitsFilterTask()
-        self.detector_execution = MagicMock()
+        self.detector_run = MagicMock()
 
     def test_no_hit(self):
         finding = Finding({"rank": "no potential hit"})
         finding.is_potential_hit = lambda misuse, y: False
-        self.detector_execution.findings = [finding]
+        self.detector_run.findings = [finding]
 
-        potential_hits = self.uut.run(create_misuse("-m1-"), self.detector_execution)
+        potential_hits = self.uut.run(create_misuse("-m1-"), self.detector_run)
 
         assert_equals([], potential_hits)
 
@@ -28,9 +28,9 @@ class TestPotentialHits:
         finding = Finding({"rank": ":potential hit for m1:"})
         misuse = create_misuse("-m1-")
         finding.is_potential_hit = lambda m, y: m == misuse
-        self.detector_execution.findings = [finding]
+        self.detector_run.findings = [finding]
 
-        potential_hits = self.uut.run(misuse, self.detector_execution)
+        potential_hits = self.uut.run(misuse, self.detector_run)
 
         assert_equals(misuse.misuse_id, potential_hits[0]["misuse"])
 
@@ -43,7 +43,7 @@ class TestAllFindings:
         self.misuse = create_misuse("-m1-")
         self.misuses = [self.misuse, create_misuse("-m2-")]
 
-        self.detector_execution = MagicMock()
+        self.detector_run = MagicMock()
 
         self.uut = AllFindingsFilterTask()
 
@@ -52,9 +52,9 @@ class TestAllFindings:
             Finding({"rank": "1", "misuse": "finding-0", "file": ""}),
             Finding({"rank": "2", "misuse": "finding-1", "file": ""})
         ]
-        self.detector_execution.findings = expected
+        self.detector_run.findings = expected
 
-        actual = self.uut.run(self.detector_execution)
+        actual = self.uut.run(self.detector_run)
 
         assert_equals(expected, actual)
 

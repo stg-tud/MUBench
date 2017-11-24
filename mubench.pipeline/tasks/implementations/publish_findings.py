@@ -6,7 +6,7 @@ from urllib.parse import urljoin
 from requests import RequestException
 
 from data.detector import Detector
-from data.detector_execution import DetectorExecution
+from data.detector_run import DetectorRun
 from data.finding import SpecializedFinding
 from data.project import Project
 from data.version_compile import VersionCompile
@@ -39,7 +39,7 @@ class PublishFindingsTask:
         self.logger.info("Prepare findings of %s in %s for upload to %s...",
                          self.detector, experiment_id, self.__upload_url)
 
-    def run(self, project: Project, version: ProjectVersion, detector_execution: DetectorExecution,
+    def run(self, project: Project, version: ProjectVersion, detector_execution: DetectorRun,
             potential_hits: PotentialHits, version_compile: VersionCompile):
         logger = self.logger.getChild("version")
 

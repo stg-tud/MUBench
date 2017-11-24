@@ -3,7 +3,7 @@ from os.path import join
 from typing import Optional
 
 from data.detector import Detector
-from data.detector_execution import DetectorExecution
+from data.detector_run import DetectorRun
 from data.project_version import ProjectVersion
 from data.version_compile import VersionCompile
 from tasks.configurations.detector_interface_configuration import key_findings_file, key_run_file, key_detector_mode, \
@@ -26,7 +26,7 @@ class DetectAllFindingsTask:
         self.logger = logging.getLogger("task.detect")
 
     def run(self, detector: Detector, version: ProjectVersion, version_compile: VersionCompile):
-        run = self._get_execution(detector, version)
+        run = self._get_run(detector, version)
 
         if run.is_outdated() or self.force_detect:
             pass
@@ -50,11 +50,11 @@ class DetectAllFindingsTask:
 
         return run
 
-    def _get_execution(self, detector: Detector, version: ProjectVersion):
-        return DetectorExecution(detector, version,
-                                 self._get_findings_path(detector, version),
-                                 self._get_findings_file_path(detector, version),
-                                 self._get_run_file_path(detector, version))
+    def _get_run(self, detector: Detector, version: ProjectVersion):
+        return DetectorRun(detector, version,
+                           self._get_findings_path(detector, version),
+                           self._get_findings_file_path(detector, version),
+                           self._get_run_file_path(detector, version))
 
     def _get_run_file_path(self, detector: Detector, version: ProjectVersion):
         return join(self._get_findings_path(detector, version), self.RUN_FILE)

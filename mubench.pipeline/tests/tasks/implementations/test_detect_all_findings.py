@@ -15,7 +15,7 @@ from tests.test_utils.data_util import create_project, create_version
 
 
 # noinspection PyAttributeOutsideInit
-@patch("tasks.implementations.detect_all_findings.DetectAllFindingsTask._get_execution")
+@patch("tasks.implementations.detect_all_findings.DetectAllFindingsTask._get_run")
 class TestDetectAllFindingsTask:
     def setup(self):
         self.temp_dir = mkdtemp(prefix='mubench-detect-test_')
@@ -39,9 +39,9 @@ class TestDetectAllFindingsTask:
     def teardown(self):
         rmtree(self.temp_dir, ignore_errors=True)
 
-    def test_invokes_with_detector_args(self, get_execution_mock):
+    def test_invokes_with_detector_args(self, get_run_mock):
         execution_mock = MagicMock()
-        get_execution_mock.return_value = execution_mock
+        get_run_mock.return_value = execution_mock
         uut = DetectAllFindingsTask(self.findings_base_path, False, None, None)
 
         try:
@@ -64,9 +64,9 @@ class TestDetectAllFindingsTask:
         actual_args = execution_mock.execute.call_args[0][0]
         assert_equals(set(expected_args), set(actual_args))
 
-    def test_continues_without_detect_if_previous_run_succeeded(self, get_execution_mock):
+    def test_continues_without_detect_if_previous_run_succeeded(self, get_run_mock):
         execution_mock = MagicMock()
-        get_execution_mock.return_value = execution_mock
+        get_run_mock.return_value = execution_mock
         uut = DetectAllFindingsTask(self.findings_base_path, False, None, None)
 
         execution_mock.is_outdated = lambda: False
@@ -78,9 +78,9 @@ class TestDetectAllFindingsTask:
         execution_mock.execute.assert_not_called()
         assert_equals(execution_mock, response)
 
-    def test_skips_detect_if_previous_run_was_error(self, get_execution_mock):
+    def test_skips_detect_if_previous_run_was_error(self, get_run_mock):
         execution_mock = MagicMock()
-        get_execution_mock.return_value = execution_mock
+        get_run_mock.return_value = execution_mock
         uut = DetectAllFindingsTask(self.findings_base_path, False, None, None)
 
         execution_mock.is_outdated = lambda: False
@@ -90,9 +90,9 @@ class TestDetectAllFindingsTask:
 
         execution_mock.execute.assert_not_called()
 
-    def test_force_detect_on_new_detector(self, get_execution_mock):
+    def test_force_detect_on_new_detector(self, get_run_mock):
         execution_mock = MagicMock()
-        get_execution_mock.return_value = execution_mock
+        get_run_mock.return_value = execution_mock
         uut = DetectAllFindingsTask(self.findings_base_path, False, None, None)
 
         execution_mock.is_success = lambda: True
