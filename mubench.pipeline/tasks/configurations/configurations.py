@@ -129,8 +129,8 @@ class RunAllFindingsExperiment(TaskConfiguration):
         collect_versions = CollectVersionsTask()
         checkout = CheckoutTask(config.checkouts_path, config.force_checkout, config.use_tmp_wrkdir)
         compile_version = CompileVersionTask(config.compiles_path, config.force_compile, config.use_tmp_wrkdir)
-        detect = DetectAllFindingsTask(config.compiles_path, config.findings_path, _get_detector(config),
-                                       config.timeout, config.force_detect, config.limit)
+        detect = DetectAllFindingsTask(_get_detector(config), config.findings_path, config.force_detect, config.timeout,
+                                       config.limit)
         return [collect_projects, collect_versions, checkout, compile_version, detect]
 
 
@@ -158,8 +158,8 @@ class RunBenchmarkExperiment(TaskConfiguration):
         collect_versions = CollectVersionsTask()
         checkout = CheckoutTask(config.checkouts_path, config.force_checkout, config.use_tmp_wrkdir)
         compile_version = CompileVersionTask(config.compiles_path, config.force_compile, config.use_tmp_wrkdir)
-        detect = DetectAllFindingsTask(config.compiles_path, config.findings_path, _get_detector(config),
-                                       config.timeout, config.force_detect, config.limit)
+        detect = DetectAllFindingsTask(_get_detector(config), config.findings_path, config.force_detect, config.timeout,
+                                       config.limit)
         return [collect_projects, collect_versions, checkout, compile_version, detect]
 
 
