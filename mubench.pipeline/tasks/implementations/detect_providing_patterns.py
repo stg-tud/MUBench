@@ -1,5 +1,5 @@
 import logging
-from os.path import join, exists
+from os.path import exists, join
 from typing import Optional, List
 from urllib.error import URLError
 
@@ -24,9 +24,6 @@ class DetectProvidingPatternsTask:
     def __init__(self, detector: Detector, findings_base_path: str, force_detect: bool, timeout: Optional[int]):
         self.detector = detector
         self.findings_base_path = findings_base_path
-        self.detector = detector
-        self._findings_base_path = findings_base_path
-
         self.force_detect = force_detect
         self.timeout = timeout
 
@@ -61,46 +58,47 @@ class DetectProvidingPatternsTask:
             self.logger.error("Download failed: %s", e)
             exit(1)
 
-    def run(self, version: ProjectVersion, misuse: Misuse, version_compile: VersionCompile,
-            misuse_compile: MisuseCompile) -> List[DetectorExecution]:
-        detector_execution = self._get_execution(version, misuse)
+    def run(self, version: ProjectVersion, version_compile: VersionCompile, misuse: Misuse,
+            misuse_compile: MisuseCompile):
+        run = self._get_execution(version, misuse)
 
-        if detector_execution.is_outdated() or self.force_detect:
+        if run.is_outdated() or self.force_detect:
             pass
-        elif detector_execution.is_error():
-            raise UserWarning("Error in previous {}. Skipping.".format(str(detector_execution)))
-        elif detector_execution.is_success():
-            self.logger.info("Successful previous %s. Skipping.", detector_execution)
-            return detector_execution
+        elif run.is_error():
+            raise UserWarning("Error in previous {}. Skipping.".format(str(run)))
+        elif run.is_success():
+            self.logger.info("Successful previous %s. Skipping.", run)
+            return run
 
-        detector_execution.reset()
+        run.reset()
 
-        self.logger.info("Executing %s...", detector_execution)
+        self.logger.info("Executing %s...", run)
         logger = logging.getLogger("detect.run")
-        detector_execution.execute(self._get_detector_arguments(self._get_findings_path(version, misuse),
-                                                                self._get_run_file_path(version, misuse),
-                                                                version_compile,
-                                                                misuse_compile),
-                                   self.timeout, logger)
+        run.execute(self._get_detector_arguments(self._get_findings_file_path(version, misuse),
+                                                 self._get_run_file_path(version, misuse),
+                                                 version_compile, misuse_compile),
+                    self.timeout, logger)
 
-        if not detector_execution.is_success():
-            raise UserWarning("Run {} failed.".format(str(detector_execution)))
+        if not run.is_success():
+            raise UserWarning("Run {} failed.".format(str(run)))
 
-        return detector_execution
+        return run
 
-    def _get_findings_file(self, version, misuse):
-        return join(self._get_findings_path(version, misuse), self.FINDINGS_FILE)
+    def _get_execution(self, version: ProjectVersion, misuse: Misuse):
+        return DetectorExecution(self.detector, version,
+                                 self._get_findings_path(version, misuse),
+                                 self._get_findings_file_path(version, misuse),
+                                 self._get_run_file_path(version, misuse))
+
+    def _get_run_file_path(self, version: ProjectVersion, misuse: Misuse):
+        return join(self._get_findings_path(version, misuse), self.RUN_FILE)
 
     def _get_findings_path(self, version: ProjectVersion, misuse: Misuse):
         return join(self.findings_base_path, RUN_MODE_NAME, self.detector.id,
                     version.project_id, version.version_id, misuse.misuse_id)
 
-    def _get_execution(self, version: ProjectVersion, misuse: Misuse):
-        return DetectorExecution(self.detector, version, self._get_findings_path(version, misuse),
-                                 self._get_findings_file(version, misuse), self._get_run_file_path(version, misuse))
-
-    def _get_run_file_path(self, version, misuse):
-        return join(self._get_findings_path(version, misuse), self.RUN_FILE)
+    def _get_findings_file_path(self, version: ProjectVersion, misuse: Misuse):
+        return join(self._get_findings_path(version, misuse), self.FINDINGS_FILE)
 
     @staticmethod
     def _get_detector_arguments(findings_file_path: str, run_file_path: str, version_compile: VersionCompile,

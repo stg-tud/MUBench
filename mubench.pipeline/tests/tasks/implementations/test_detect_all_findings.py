@@ -43,7 +43,7 @@ class TestDetectAllFindingsTask:
     def test_invokes_with_detector_args(self, get_execution_mock, _):
         execution_mock = MagicMock()
         get_execution_mock.return_value = execution_mock
-        uut = DetectAllFindingsTask(self.compiles_path, self.findings_base_path, self.detector, None, False, None)
+        uut = DetectAllFindingsTask(self.detector, self.findings_base_path, False, None, None)
 
         try:
             uut.run(self.version, self.version_compile)
@@ -68,7 +68,7 @@ class TestDetectAllFindingsTask:
     def test_continues_without_detect_if_previous_run_succeeded(self, get_execution_mock, _):
         execution_mock = MagicMock()
         get_execution_mock.return_value = execution_mock
-        uut = DetectAllFindingsTask(self.compiles_path, self.findings_base_path, self.detector, None, False, None)
+        uut = DetectAllFindingsTask(self.detector, self.findings_base_path, False, None, None)
 
         execution_mock.is_outdated = lambda: False
         execution_mock.is_error = lambda: False
@@ -82,7 +82,7 @@ class TestDetectAllFindingsTask:
     def test_skips_detect_if_previous_run_was_error(self, get_execution_mock, _):
         execution_mock = MagicMock()
         get_execution_mock.return_value = execution_mock
-        uut = DetectAllFindingsTask(self.compiles_path, self.findings_base_path, self.detector, None, False, None)
+        uut = DetectAllFindingsTask(self.detector, self.findings_base_path, False, None, None)
 
         execution_mock.is_outdated = lambda: False
         execution_mock.is_error = lambda: True
@@ -94,7 +94,7 @@ class TestDetectAllFindingsTask:
     def test_force_detect_on_new_detector(self, get_execution_mock, _):
         execution_mock = MagicMock()
         get_execution_mock.return_value = execution_mock
-        uut = DetectAllFindingsTask(self.compiles_path, self.findings_base_path, self.detector, None, False, None)
+        uut = DetectAllFindingsTask(self.detector, self.findings_base_path, False, None, None)
 
         execution_mock.is_success = lambda: True
         execution_mock.is_outdated = lambda: True
@@ -120,12 +120,11 @@ class TestDetectorDownload:
         detector_available_mock.return_value = False
         self.detector.md5 = ":some-md5:"
 
-        DetectAllFindingsTask(self.compiles_path, self.findings_path, self.detector, None, False, None)
+        DetectAllFindingsTask(self.detector, self.findings_path, False, None, None)
 
         download_mock.assert_called_with(self.detector.jar_url, self.detector.jar_path, self.detector.md5)
 
     def test_aborts_download_if_detector_md5_is_missing(self, download_mock, detector_available_mock):
         detector_available_mock.return_value = False
-        assert_raises(SystemExit, DetectAllFindingsTask, self.compiles_path, self.findings_path, self.detector, None,
-                      False, None)
+        assert_raises(SystemExit, DetectAllFindingsTask, self.detector, self.findings_path, False, None, None)
         download_mock.assert_not_called()

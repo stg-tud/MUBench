@@ -118,8 +118,8 @@ class AllFindingsExperiment(TaskConfiguration):
         collect_versions = CollectVersionsTask()
         checkout = CheckoutTask(config.checkouts_path, config.force_checkout, config.use_tmp_wrkdir)
         compile_version = CompileVersionTask(config.compiles_path, config.force_compile, config.use_tmp_wrkdir)
-        detect = DetectAllFindingsTask(config.compiles_path, config.findings_path, _get_detector(config),
-                                       config.timeout, config.force_detect, config.limit)
+        detect = DetectAllFindingsTask(_get_detector(config), config.findings_path, config.force_detect, config.timeout,
+                                       config.limit)
         filter_ = AllFindingsFilterTask()
         publish = PublishFindingsTask(AllFindingsExperiment.ID, config.dataset, config.compiles_path,
                                       config.review_site_url, config.review_site_user, config.review_site_password)
@@ -138,8 +138,8 @@ class BenchmarkExperiment(TaskConfiguration):
         collect_versions = CollectVersionsTask()
         checkout = CheckoutTask(config.checkouts_path, config.force_checkout, config.use_tmp_wrkdir)
         compile_version = CompileVersionTask(config.compiles_path, config.force_compile, config.use_tmp_wrkdir)
-        detect = DetectAllFindingsTask(config.compiles_path, config.findings_path, _get_detector(config),
-                                       config.timeout, config.force_detect, config.limit)
+        detect = DetectAllFindingsTask(_get_detector(config), config.findings_path, config.force_detect, config.timeout,
+                                       config.limit)
         filter_ = PotentialHitsFilterTask()
         publish = PublishFindingsTask(BenchmarkExperiment.ID, config.dataset, config.compiles_path,
                                       config.review_site_url, config.review_site_user, config.review_site_password)

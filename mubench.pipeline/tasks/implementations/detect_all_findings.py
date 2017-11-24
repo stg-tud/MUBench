@@ -19,13 +19,11 @@ class DetectAllFindingsTask:
     RUN_FILE = "run.yml"
     FINDINGS_FILE = "findings.yml"
 
-    def __init__(self, compiles_base_path: str, findings_base_path: str, detector: Detector, timeout: Optional[int],
-                 force_detect: bool, limit: Optional[int]):
-        super().__init__()
-        self.force_detect = force_detect
-        self.compiles_base_path = compiles_base_path
-        self.findings_base_path = findings_base_path
+    def __init__(self, detector: Detector, findings_base_path: str, force_detect: bool, timeout: Optional[int],
+                 limit: Optional[int]):
         self.detector = detector
+        self.findings_base_path = findings_base_path
+        self.force_detect = force_detect
         self.timeout = timeout
         self.limit = limit
 
@@ -60,7 +58,7 @@ class DetectAllFindingsTask:
             self.logger.error("Download failed: %s", e)
             exit(1)
 
-    def run(self, version: ProjectVersion, version_compile: VersionCompile) -> List[DetectorExecution]:
+    def run(self, version: ProjectVersion, version_compile: VersionCompile):
         run = self._get_execution(version)
 
         if run.is_outdated() or self.force_detect:
@@ -85,16 +83,17 @@ class DetectAllFindingsTask:
 
         return run
 
-    def _get_execution(self, version: ProjectVersion) -> DetectorExecution:
-        return DetectorExecution(self.detector, version, self._get_findings_path(version),
-                                 self._get_findings_file_path(version), self._get_run_file_path(version))
+    def _get_execution(self, version: ProjectVersion):
+        return DetectorExecution(self.detector, version,
+                                 self._get_findings_path(version),
+                                 self._get_findings_file_path(version),
+                                 self._get_run_file_path(version))
 
     def _get_run_file_path(self, version: ProjectVersion):
         return join(self._get_findings_path(version), self.RUN_FILE)
 
     def _get_findings_path(self, version: ProjectVersion):
-        return join(self.findings_base_path,
-                    RUN_MODE_NAME, self.detector.id,
+        return join(self.findings_base_path, RUN_MODE_NAME, self.detector.id,
                     version.project_id, version.version_id)
 
     def _get_findings_file_path(self, version: ProjectVersion):
