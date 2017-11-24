@@ -15,7 +15,7 @@ RUN_MODE_NAME = "detect_only"
 DETECTOR_MODE = 1
 
 
-class DetectProvidingPatternsTask:
+class DetectProvidedPatternsTask:
     RUN_FILE = "run.yml"
     FINDINGS_FILE = "findings.yml"
 

@@ -9,7 +9,7 @@ from tasks.implementations.compile_misuse import CompileMisuseTask
 from tasks.implementations.compile_version import CompileVersionTask
 from tasks.implementations.dataset_check import DatasetCheckTask
 from tasks.implementations.detect_all_findings import DetectAllFindingsTask
-from tasks.implementations.detect_providing_patterns import DetectProvidingPatternsTask
+from tasks.implementations.detect_provided_patterns import DetectProvidedPatternsTask
 from tasks.implementations.findings_filters import AllFindingsFilterTask, PotentialHitsFilterTask
 from tasks.implementations.info import ProjectInfoTask, VersionInfoTask, MisuseInfoTask
 from tasks.implementations.load_detector import LoadDetectorTask
@@ -102,7 +102,7 @@ class RunProvidedPatternsExperiment(TaskConfiguration):
         compile_misuse = CompileMisuseTask(config.compiles_path, config.force_compile)
         load_detector = LoadDetectorTask(config.detectors_path, config.detector, config.requested_release,
                                          config.java_options)
-        detect = DetectProvidingPatternsTask(config.findings_path, config.force_detect, config.timeout)
+        detect = DetectProvidedPatternsTask(config.findings_path, config.force_detect, config.timeout)
         return [collect_projects, collect_versions, checkout, compile_version, collect_misuses, compile_misuse,
                 load_detector, detect]
 
