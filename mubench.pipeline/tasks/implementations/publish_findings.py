@@ -40,11 +40,10 @@ class PublishFindingsTask:
                          self.detector, experiment_id, self.__upload_url)
 
     def run(self, project: Project, version: ProjectVersion, detector_execution: DetectorExecution,
-            findings: PotentialHits, version_compile: VersionCompile) -> List:
+            potential_hits: PotentialHits, version_compile: VersionCompile):
         logger = self.logger.getChild("version")
 
         run_info = detector_execution.get_run_info()
-        potential_hits = findings
 
         if detector_execution.is_success():
             logger.info("Preparing findings in %s...", version)
@@ -62,7 +61,7 @@ class PublishFindingsTask:
                 result = "not run"
 
         try:
-            logger.info("Publishing findings...")
+            logger.info("Publishing potential hits...")
             for potential_hits_slice in self.__slice_by_max_files_per_post(potential_hits):
                 post_data_slice = []
                 for potential_hit in potential_hits_slice:
@@ -71,7 +70,7 @@ class PublishFindingsTask:
 
                 file_paths = PublishFindingsTask.get_file_paths(potential_hits_slice)
                 self.__post(project, version, run_info, result, post_data_slice, file_paths)
-            logger.info("Findings published.")
+            logger.info("Potential hits published.")
         except RequestException as e:
             response = e.response
             if response:
