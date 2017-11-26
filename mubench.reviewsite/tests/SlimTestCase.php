@@ -36,23 +36,37 @@ class SlimTestCase extends TestCase
     protected $schema;
 
     public function setUp(){
-        $settings = require __DIR__ . '/../src/settings.php';
+        $settings = [
+            'displayErrorDetails' => true, // set to false in production
+            'addContentLengthHeader' => false, // Allow the web server to send the content-length header
+
+            'db' => [
+                'driver' => 'sqlite',
+                'host' => 'localhost',
+                'database' => ':memory:',
+                'username' => 'admin',
+                'password' => 'admin',
+                'charset'   => 'utf8',
+                'collation' => 'utf8_unicode_ci',
+                'prefix'    => '',
+            ],
+
+            // Monolog settings
+            'logger' => [
+                'name' => 'mubench',
+                'path' => __DIR__ . '/../logs/app.log',
+                'level' => \Monolog\Logger::DEBUG,
+            ],
+            'site_base_url' => '/',
+            'upload' => "./upload",
+            'users' => [
+                "admin" => "pass"
+            ],
+            'default_ex2_review_size' => '20'
+        ];
         $app = new \Slim\App($settings);
         require __DIR__ . '/../bootstrap/bootstrap.php';
         $this->logger = new \Monolog\Logger("test");
-        $capsule = new \Illuminate\Database\Capsule\Manager;
-        $capsule->addConnection(['driver' => 'sqlite', 'database' => ':memory:']);
-        $capsule->setAsGlobal();
-        $capsule->setEventDispatcher(new Dispatcher(new Container()));
-        $capsule->bootEloquent();
-        $this->db = $capsule;
-        $this->schema = $capsule->schema();
-
-        // The schema accesses the database through the app, which we do not have in
-        // this context. Therefore, use an array to provide the database. This seems
-        // to work fine.
-        /** @noinspection PhpParamsInspection */
-        \Illuminate\Support\Facades\Schema::setFacadeApplication(["db" => $capsule]);
 
         require __DIR__ . '/../setup/create_database_tables.php';
         require __DIR__ . '/../src/routes.php';

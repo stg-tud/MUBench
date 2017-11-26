@@ -159,6 +159,7 @@ out.log*
 mubench.reviewsite/upload/
 mubench.reviewsite/vendor/
 mubench.reviewsite/composer.phar
+mubench.reviewsite/settings.php
 
 # review-site database for local testing
 mubench.reviewsite/*.sqlite

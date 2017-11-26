@@ -23,10 +23,7 @@ return [
     'site_base_url' => '/',
     'upload' => "./upload",
     'users' => [
-        "admin" => "pass",
-        "admin2" => "pass",
-        "reviewer" => "pass"
+        "admin" => "pass"
     ],
-    'site_base_url' => '/',
     'default_ex2_review_size' => '20'
 ];
