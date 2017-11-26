@@ -190,6 +190,8 @@ class RunsController extends Controller
             $new_run = Run::of($detector)->in($experiment)->where(['project_muid' => $projectId, 'version_muid' => $versionId])->first();
             $this->createOrUpdateFindingsTable($detector, $potential_hits);
             $this->storeFindings($detector, $experiment, $projectId, $versionId, $new_run, $potential_hits);
+        }else{
+            $this->createOrUpdateFindingsTable($detector, []);
         }
     }
 
