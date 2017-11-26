@@ -15,15 +15,16 @@ The [MUBench Pipeline](../mubench.pipeline) publishes the detectors' results to 
 ## Setup
 
 1. `$> ./mubench configure review-site`
-2. Adjust [`mubench.reviewsite/src/settings.php`](src/settings.php) to your environment:
-  - Enter your database configuration below `db`.
-  - Enter a prefix (possibly empty) for your database tables in `db/prefix`.
+2. Copy [`mubench.reviewsite/settings.default.php`](settings.default.php) to `settings.php`.
+3. Adjust `settings.php` to your environment:
+  - Enter your database-connection details below `db`.
+  - Set `db/prefix` to a database-table prefix of your choice (possible empty).
   - List your reviewer credentials below `users`.
-3. Upload the contents of `mubench.reviewsite/` to your webserver.
-4. Grant the server read/write permissions on the `upload` and `logs` directories.
-5. Run [`mubench.reviewsite/setup/setup.php`](https://github.com/stg-tud/MUBench/blob/master/mubench.reviewsite/setup/setup.php) to create the basic database tables.
-6. [Publish the misuse metadata](#publish-misuse-metadata) to your review site.
-7. Go to `http://<your-site.url>/`.
+4. Upload the contents of `mubench.reviewsite/` to your webserver.
+5. Grant the server read/write permissions on the `upload` and `logs` directories.
+6. Go to `http://<your-site.url/`[`setup/setup.php`](https://github.com/stg-tud/MUBench/blob/master/mubench.reviewsite/setup/setup.php) to initialize your database.
+7. [Publish the misuse metadata](#publish-misuse-metadata) to your review site.
+8. Go to `http://<your-site.url>/`.
 
 ## Publish Misuse Metadata
 

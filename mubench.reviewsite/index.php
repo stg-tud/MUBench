@@ -5,7 +5,7 @@ date_default_timezone_set('Europe/Berlin');
 
 require __DIR__ . '/vendor/autoload.php';
 
-$settings = require __DIR__ . '/src/settings.php';
+$settings = require __DIR__ . '/settings.php';
 $app = new \Slim\App($settings);
 
 $container = $app->getContainer();
