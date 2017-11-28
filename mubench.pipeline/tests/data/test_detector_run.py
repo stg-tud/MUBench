@@ -13,7 +13,7 @@ from utils.io import remove_tree
 from utils.shell import CommandFailedError
 
 
-@patch("data.detector_execution.read_yaml_if_exists")
+@patch("data.detector_run.read_yaml_if_exists")
 class TestExecutionState:
     # noinspection PyAttributeOutsideInit
     def setup(self):
@@ -70,7 +70,7 @@ class TestExecutionState:
 
 # noinspection PyUnusedLocal
 # patch prevent write to filesystem
-@patch("data.detector_execution.write_yaml")
+@patch("data.detector_run.write_yaml")
 class TestDetectorRun:
     # noinspection PyAttributeOutsideInit
     def setup(self):
@@ -130,7 +130,7 @@ class TestDetectorRun:
 
 
 class TestDetectorExecutionLoadFindings:
-    @patch("data.detector_execution.open_yamls_if_exists")
+    @patch("data.detector_run.open_yamls_if_exists")
     def test_adds_rank(self, read_yamls_mock):
         read_yamls_mock.return_value.__enter__.return_value = [{"name": "f1"}, {"name": "f2"}]
         execution = DetectorRun(StubDetector(), create_version("-v-"), "-findings-path-",
