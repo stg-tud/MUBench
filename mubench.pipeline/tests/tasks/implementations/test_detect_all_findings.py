@@ -40,8 +40,8 @@ class TestDetectAllFindingsTask:
         rmtree(self.temp_dir, ignore_errors=True)
 
     def test_invokes_with_detector_args(self, get_run_mock):
-        execution_mock = MagicMock()
-        get_run_mock.return_value = execution_mock
+        run_mock = MagicMock()
+        get_run_mock.return_value = run_mock
         uut = DetectAllFindingsTask(self.findings_base_path, False, None, None)
 
         try:
@@ -60,45 +60,46 @@ class TestDetectAllFindingsTask:
                                "run.yml"),
         }
 
-        execution_mock.execute.assert_called_with(ANY, None, ANY)
-        actual_args = execution_mock.execute.call_args[0][0]
+        run_mock.execute.assert_called_with(ANY, None, ANY)
+        actual_args = run_mock.execute.call_args[0][0]
         assert_equals(set(expected_args), set(actual_args))
 
     def test_continues_without_detect_if_previous_run_succeeded(self, get_run_mock):
-        execution_mock = MagicMock()
-        get_run_mock.return_value = execution_mock
+        run_mock = MagicMock()
+        get_run_mock.return_value = run_mock
         uut = DetectAllFindingsTask(self.findings_base_path, False, None, None)
 
-        execution_mock.is_outdated = lambda: False
-        execution_mock.is_error = lambda: False
-        execution_mock.is_success = lambda: True
+        run_mock.is_outdated = lambda: False
+        run_mock.is_error = lambda: False
+        run_mock.is_success = lambda: True
 
         response = uut.run(self.detector, self.version, self.version_compile)
 
-        execution_mock.execute.assert_not_called()
-        assert_equals(execution_mock, response)
+        run_mock.execute.assert_not_called()
+        assert_equals(run_mock, response)
 
     def test_skips_detect_if_previous_run_was_error(self, get_run_mock):
-        execution_mock = MagicMock()
-        get_run_mock.return_value = execution_mock
+        run_mock = MagicMock()
+        get_run_mock.return_value = run_mock
         uut = DetectAllFindingsTask(self.findings_base_path, False, None, None)
 
-        execution_mock.is_outdated = lambda: False
-        execution_mock.is_error = lambda: True
+        run_mock.is_outdated = lambda: False
+        run_mock.is_error = lambda: True
+        
+        actual_result = uut.run(self.detector, self.version, self.version_compile)
 
-        assert_raises(UserWarning, uut.run, self.detector, self.version, self.version_compile)
-
-        execution_mock.execute.assert_not_called()
+        assert_equals(run_mock, actual_result)
+        run_mock.execute.assert_not_called()
 
     def test_force_detect_on_new_detector(self, get_run_mock):
-        execution_mock = MagicMock()
-        get_run_mock.return_value = execution_mock
+        run_mock = MagicMock()
+        get_run_mock.return_value = run_mock
         uut = DetectAllFindingsTask(self.findings_base_path, False, None, None)
 
-        execution_mock.is_success = lambda: True
-        execution_mock.is_outdated = lambda: True
+        run_mock.is_success = lambda: True
+        run_mock.is_outdated = lambda: True
 
         response = uut.run(self.detector, self.version, self.version_compile)
 
-        execution_mock.execute.assert_called_with(ANY, None, ANY)
-        assert_equals(execution_mock, response)
+        run_mock.execute.assert_called_with(ANY, None, ANY)
+        assert_equals(run_mock, response)
