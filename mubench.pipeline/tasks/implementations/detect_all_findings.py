@@ -17,11 +17,10 @@ class DetectAllFindingsTask:
     RUN_FILE = "run.yml"
     FINDINGS_FILE = "findings.yml"
 
-    def __init__(self, findings_base_path: str, force_detect: bool, timeout: Optional[int], limit: Optional[int]):
+    def __init__(self, findings_base_path: str, force_detect: bool, timeout: Optional[int]):
         self.findings_base_path = findings_base_path
         self.force_detect = force_detect
         self.timeout = timeout
-        self.limit = limit
 
         self.logger = logging.getLogger("task.detect")
 

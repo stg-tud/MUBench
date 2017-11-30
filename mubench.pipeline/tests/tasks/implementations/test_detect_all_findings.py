@@ -42,7 +42,7 @@ class TestDetectAllFindingsTask:
     def test_invokes_with_detector_args(self, get_run_mock):
         run_mock = MagicMock()
         get_run_mock.return_value = run_mock
-        uut = DetectAllFindingsTask(self.findings_base_path, False, None, None)
+        uut = DetectAllFindingsTask(self.findings_base_path, False, None)
 
         try:
             uut.run(self.detector, self.version, self.version_compile)
@@ -67,7 +67,7 @@ class TestDetectAllFindingsTask:
     def test_continues_without_detect_if_previous_run_succeeded(self, get_run_mock):
         run_mock = MagicMock()
         get_run_mock.return_value = run_mock
-        uut = DetectAllFindingsTask(self.findings_base_path, False, None, None)
+        uut = DetectAllFindingsTask(self.findings_base_path, False, None)
 
         run_mock.is_outdated = lambda: False
         run_mock.is_error = lambda: False
@@ -81,7 +81,7 @@ class TestDetectAllFindingsTask:
     def test_skips_detect_if_previous_run_was_error(self, get_run_mock):
         run_mock = MagicMock()
         get_run_mock.return_value = run_mock
-        uut = DetectAllFindingsTask(self.findings_base_path, False, None, None)
+        uut = DetectAllFindingsTask(self.findings_base_path, False, None)
 
         run_mock.is_outdated = lambda: False
         run_mock.is_error = lambda: True
@@ -94,7 +94,7 @@ class TestDetectAllFindingsTask:
     def test_force_detect_on_new_detector(self, get_run_mock):
         run_mock = MagicMock()
         get_run_mock.return_value = run_mock
-        uut = DetectAllFindingsTask(self.findings_base_path, False, None, None)
+        uut = DetectAllFindingsTask(self.findings_base_path, False, None)
 
         run_mock.is_success = lambda: True
         run_mock.is_outdated = lambda: True

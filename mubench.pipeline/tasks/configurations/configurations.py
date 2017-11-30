@@ -133,7 +133,7 @@ class RunAllFindingsExperiment(TaskConfiguration):
         compile_version = CompileVersionTask(config.compiles_path, config.force_compile, config.use_tmp_wrkdir)
         load_detector = LoadDetectorTask(config.detectors_path, config.detector, config.requested_release,
                                          config.java_options)
-        detect = DetectAllFindingsTask(config.findings_path, config.force_detect, config.timeout, config.limit)
+        detect = DetectAllFindingsTask(config.findings_path, config.force_detect, config.timeout)
         return [collect_projects, collect_versions, checkout, compile_version, load_detector, detect]
 
 
@@ -163,7 +163,7 @@ class RunBenchmarkExperiment(TaskConfiguration):
         compile_version = CompileVersionTask(config.compiles_path, config.force_compile, config.use_tmp_wrkdir)
         load_detector = LoadDetectorTask(config.detectors_path, config.detector, config.requested_release,
                                          config.java_options)
-        detect = DetectAllFindingsTask(config.findings_path, config.force_detect, config.timeout, config.limit)
+        detect = DetectAllFindingsTask(config.findings_path, config.force_detect, config.timeout)
         return [collect_projects, collect_versions, checkout, compile_version, load_detector, detect]
 
 
