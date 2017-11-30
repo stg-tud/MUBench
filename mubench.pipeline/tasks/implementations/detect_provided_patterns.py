@@ -33,7 +33,9 @@ class DetectProvidedPatternsTask:
         if run.is_outdated() or self.force_detect:
             pass
         elif run.is_failure():
-            raise UserWarning("Error in previous {}. Skipping.".format(str(run)))
+            self.logger.info("Error in previous {}. Skipping.".format(str(run)))
+            self.logger.debug("Full exception:", exc_info=True)
+            return run
         elif run.is_success():
             self.logger.info("Successful previous %s. Skipping.", run)
             return run
@@ -48,7 +50,8 @@ class DetectProvidedPatternsTask:
                     self.timeout, logger)
 
         if not run.is_success():
-            raise UserWarning("Run {} failed.".format(str(run)))
+            self.logger.info("Run {} failed.".format(str(run)))
+            self.logger.debug("Full exception:", exc_info=True)
 
         return run
 
