@@ -12,12 +12,12 @@ from utils.dataset_util import get_available_dataset_ids
 from utils.io import read_yaml
 
 MUBENCH_ROOT_PATH = abspath(join(dirname(abspath(__file__)), os.pardir, os.pardir))
-DATA_PATH = join(MUBENCH_ROOT_PATH, "data")
-CHECKOUTS_PATH = join(MUBENCH_ROOT_PATH, "checkouts")
-COMPILES_PATH = CHECKOUTS_PATH
-FINDINGS_PATH = join(MUBENCH_ROOT_PATH, "findings")
-DATASETS_FILE_PATH = join(MUBENCH_ROOT_PATH, 'data', 'datasets.yml')
-DETECTORS_PATH = join(MUBENCH_ROOT_PATH, "detectors")
+__DATA_PATH = join(MUBENCH_ROOT_PATH, "data")
+__CHECKOUTS_PATH = join(MUBENCH_ROOT_PATH, "checkouts")
+__COMPILES_PATH = __CHECKOUTS_PATH
+__FINDINGS_PATH = join(MUBENCH_ROOT_PATH, "findings")
+__DATASETS_FILE_PATH = join(MUBENCH_ROOT_PATH, 'data', 'datasets.yml')
+__DETECTORS_PATH = join(MUBENCH_ROOT_PATH, "detectors")
 
 
 class SortingHelpFormatter(HelpFormatter):
@@ -34,16 +34,20 @@ class CaseInsensitiveChoices(list):
         return any([element for element in self if element.lower() == other.lower()])
 
 
-try:
-    config = read_yaml("./default.config")
-except FileNotFoundError:
-    config = None
+def get_config(args: List[str]) -> Any:
+    available_detectors = get_available_detector_ids(__DETECTORS_PATH)
+    available_scripts = stats.get_available_calculator_names()
+    available_datasets = get_available_dataset_ids(__DATASETS_FILE_PATH)
+    parser = _get_command_line_parser(available_detectors, available_scripts, available_datasets)
 
+    # remove first arg which always contains the script name
+    args = args[1:]
 
-def get_default(parameter: str, default):
-    if config is not None and parameter in config:
-        return config[parameter]
-    return default
+    # add an invalid mode if no mode was given
+    if not args:
+        args.append("")
+
+    return parser.parse_args(args)
 
 
 def _get_command_line_parser(available_detectors: List[str], available_scripts: List[str],
@@ -62,20 +66,20 @@ def _get_command_line_parser(available_detectors: List[str], available_scripts: 
         help="MUBench provides several tasks. Run `mubench <task> -h` for details.",
         dest='task')
 
-    parser.add_argument('--use-tmp-wrkdir', dest='use_tmp_wrkdir', default=get_default('use-tmp-wrkdir', False),
+    parser.add_argument('--use-tmp-wrkdir', dest='use_tmp_wrkdir', default=__get_default('use-tmp-wrkdir', False),
                         help=argparse.SUPPRESS, action='store_true')
-    parser.add_argument('--data-path', dest='data_path', default=get_default('data-path', DATA_PATH),
+    parser.add_argument('--data-path', dest='data_path', default=__get_default('data-path', __DATA_PATH),
                         help=argparse.SUPPRESS)
     parser.add_argument('--checkouts-path', dest='checkouts_path',
-                        default=get_default('checkouts-path', CHECKOUTS_PATH), help=argparse.SUPPRESS)
-    parser.add_argument('--compiles-path', dest='compiles_path', default=get_default('compiles-path', COMPILES_PATH),
+                        default=__get_default('checkouts-path', __CHECKOUTS_PATH), help=argparse.SUPPRESS)
+    parser.add_argument('--compiles-path', dest='compiles_path', default=__get_default('compiles-path', __COMPILES_PATH),
                         help=argparse.SUPPRESS)
-    parser.add_argument('--findings-path', dest='findings_path', default=get_default('findings-path', FINDINGS_PATH),
+    parser.add_argument('--findings-path', dest='findings_path', default=__get_default('findings-path', __FINDINGS_PATH),
                         help=argparse.SUPPRESS)
     parser.add_argument('--datasets-file-path', dest='datasets_file_path',
-                        default=get_default('datasets-file-path', DATASETS_FILE_PATH), help=argparse.SUPPRESS)
+                        default=__get_default('datasets-file-path', __DATASETS_FILE_PATH), help=argparse.SUPPRESS)
     parser.add_argument('--detectors-path', dest='detectors_path',
-                        default=get_default('detectors-path', DETECTORS_PATH), help=argparse.SUPPRESS)
+                        default=__get_default('detectors-path', __DETECTORS_PATH), help=argparse.SUPPRESS)
 
     __add_check_subprocess(subparsers)
     __add_info_subprocess(available_datasets, subparsers)
@@ -89,20 +93,16 @@ def _get_command_line_parser(available_detectors: List[str], available_scripts: 
     return parser
 
 
-def get_config(args: List[str]) -> Any:
-    available_detectors = get_available_detector_ids(DETECTORS_PATH)
-    available_scripts = stats.get_available_calculator_names()
-    available_datasets = get_available_dataset_ids(DATASETS_FILE_PATH)
-    parser = _get_command_line_parser(available_detectors, available_scripts, available_datasets)
+try:
+    __default_config = read_yaml("./default.config")
+except FileNotFoundError:
+    __default_config = None
 
-    # remove first arg which always contains the script name
-    args = args[1:]
 
-    # add an invalid mode if no mode was given
-    if not args:
-        args.append("")
-
-    return parser.parse_args(args)
+def __get_default(parameter: str, default):
+    if __default_config is not None and parameter in __default_config:
+        return __default_config[parameter]
+    return default
 
 
 def __add_check_subprocess(subparsers) -> None:
@@ -241,23 +241,23 @@ def __add_dataset_check_subprocess(available_datasets: List[str], subparsers) ->
 
 
 def __setup_misuse_filter_arguments(parser: ArgumentParser, available_datasets: List[str]):
-    parser.add_argument('--only', metavar='X', nargs='+', dest='white_list', default=get_default('only', []),
+    parser.add_argument('--only', metavar='X', nargs='+', dest='white_list', default=__get_default('only', []),
                         help="process only projects or project versions whose names are given")
-    parser.add_argument('--skip', metavar='Y', nargs='+', dest='black_list', default=get_default('skip', []),
+    parser.add_argument('--skip', metavar='Y', nargs='+', dest='black_list', default=__get_default('skip', []),
                         help="skip all projects or project versions whose names are given")
-    parser.add_argument('--dataset', metavar='DATASET', dest='dataset', default=get_default('dataset', None),
+    parser.add_argument('--dataset', metavar='DATASET', dest='dataset', default=__get_default('dataset', None),
                         choices=available_datasets, help="process only misuses in the specified data set")
 
 
 def __setup_checkout_arguments(parser: ArgumentParser):
     parser.add_argument('--force-checkout', dest='force_checkout', action='store_true',
-                        default=get_default('force-checkout', False),
+                        default=__get_default('force-checkout', False),
                         help="force a clean checkout, deleting any existing files")
 
 
 def __setup_compile_arguments(parser: ArgumentParser):
     parser.add_argument('--force-compile', dest='force_compile', action='store_true',
-                        default=get_default('force-compile', False),
+                        default=__get_default('force-compile', False),
                         help="force a clean compilation")
 
 
@@ -265,29 +265,29 @@ def __setup_detector_arguments(parser: ArgumentParser, available_detectors: List
     parser.add_argument('detector', help="the detector whose findings to evaluate",
                         choices=available_detectors)
     parser.add_argument('--force-detect', dest='force_detect', action='store_true',
-                        default=get_default('force-detect', False),
+                        default=__get_default('force-detect', False),
                         help="force a clean detection, deleting the any previous findings")
-    parser.add_argument('--timeout', type=int, default=get_default('timeout', None), metavar='s',
+    parser.add_argument('--timeout', type=int, default=__get_default('timeout', None), metavar='s',
                         help="abort detection after the provided number of seconds")
     parser.add_argument('--java-options', metavar='option', nargs='+', dest='java_options',
-                        default=get_default('java-options', []),
+                        default=__get_default('java-options', []),
                         help="pass options to the java subprocess running the detector "
                              "(example: `--java-options Xmx4G` runs `java -Xmx4G`)")
-    parser.add_argument('--tag', dest='requested_release', default=get_default('requested_release', None),
+    parser.add_argument('--tag', dest='requested_release', default=__get_default('requested_release', None),
                         metavar='rel', help="use a specific detector release by tag")
 
 
 def __setup_publish_arguments(parser: ArgumentParser) -> None:
-    default_review_site = get_default('review-site', None)
+    default_review_site = __get_default('review-site', None)
     parser.add_argument("-s", "--review-site", required=(not default_review_site), metavar="URL",
                         dest="review_site_url", default=default_review_site, help="use the specified review site")
     parser.add_argument("-u", "--username", metavar="USER", dest="review_site_user",
-                        default=get_default('username', None),
+                        default=__get_default('username', None),
                         help="use the specified user to authenticate with the review site."
                              " If a user is provided, but no password,"
                              " you will be prompted for the password before publication.")
     parser.add_argument("-p", "--password", metavar="PASS", dest="review_site_password",
-                        default=get_default('password', None),
+                        default=__get_default('password', None),
                         help="use the specified password for authenticating as the specified user."
                              " If a user is provided, but no password,"
                              " you will be prompted for the password before publication.")
@@ -298,6 +298,6 @@ def __setup_publish_arguments(parser: ArgumentParser) -> None:
             raise ArgumentTypeError("invalid value: {}, must be positive".format(limit))
         return limit
 
-    parser.add_argument('--limit', type=upload_limit, default=get_default('limit', 50), metavar='n',
+    parser.add_argument('--limit', type=upload_limit, default=__get_default('limit', 50), metavar='n',
                         dest="limit",
                         help="publish only a specified number of potential hits. Defaults to 50")
