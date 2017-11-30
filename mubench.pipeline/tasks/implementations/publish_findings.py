@@ -39,21 +39,21 @@ class PublishFindingsTask:
         self.logger.info("Prepare findings of %s in %s for upload to %s...",
                          self.detector, experiment_id, self.__upload_url)
 
-    def run(self, project: Project, version: ProjectVersion, detector_execution: DetectorRun,
+    def run(self, project: Project, version: ProjectVersion, detector_run: DetectorRun,
             potential_hits: PotentialHits, version_compile: VersionCompile):
         logger = self.logger.getChild("version")
 
-        run_info = detector_execution.get_run_info()
+        run_info = detector_run.get_run_info()
 
-        if detector_execution.is_success():
+        if detector_run.is_success():
             logger.info("Preparing findings in %s...", version)
             result = "success"
             logger.info("Found %s potential hits.", len(potential_hits))
         else:
-            if detector_execution.is_error():
+            if detector_run.is_error():
                 logger.info("Run on %s produced an error.", version)
                 result = "error"
-            elif detector_execution.is_timeout():
+            elif detector_run.is_timeout():
                 logger.info("Run on %s timed out.", version)
                 result = "timeout"
             else:
