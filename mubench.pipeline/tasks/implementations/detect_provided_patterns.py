@@ -28,7 +28,10 @@ class DetectProvidedPatternsTask:
 
     def run(self, detector: Detector, version: ProjectVersion, version_compile: VersionCompile, misuse: Misuse,
             misuse_compile: MisuseCompile):
-        run = self._get_run(detector, version, misuse)
+        findings_path = self._get_findings_path(detector, version, misuse)
+        findings_file_path = self._get_findings_file_path(findings_path)
+        run_file_path = self._get_run_file_path(findings_path)
+        run = self._get_run(detector, version, findings_path, findings_file_path, run_file_path)
 
         if run.is_outdated() or self.force_detect:
             pass
@@ -44,9 +47,7 @@ class DetectProvidedPatternsTask:
 
         self.logger.info("Executing %s...", run)
         logger = logging.getLogger("detect.run")
-        run.execute(self._get_detector_arguments(self._get_findings_file_path(detector, version, misuse),
-                                                 self._get_run_file_path(detector, version, misuse),
-                                                 version_compile, misuse_compile),
+        run.execute(self._get_detector_arguments(findings_file_path, run_file_path, version_compile, misuse_compile),
                     self.timeout, logger)
 
         if not run.is_success():
@@ -55,21 +56,18 @@ class DetectProvidedPatternsTask:
 
         return run
 
-    def _get_run(self, detector: Detector, version: ProjectVersion, misuse: Misuse):
-        return DetectorRun(detector, version,
-                           self._get_findings_path(detector, version, misuse),
-                           self._get_findings_file_path(detector, version, misuse),
-                           self._get_run_file_path(detector, version, misuse))
+    def _get_run(self, detector: Detector, version: ProjectVersion, findings_path, findings_file_path, run_file_path):
+        return DetectorRun(detector, version, findings_path, findings_file_path, run_file_path)
 
-    def _get_run_file_path(self, detector: Detector, version: ProjectVersion, misuse: Misuse):
-        return join(self._get_findings_path(detector, version, misuse), self.RUN_FILE)
+    def _get_run_file_path(self, findings_path):
+        return join(findings_path, self.RUN_FILE)
+
+    def _get_findings_file_path(self, findings_path):
+        return join(findings_path, self.FINDINGS_FILE)
 
     def _get_findings_path(self, detector: Detector, version: ProjectVersion, misuse: Misuse):
         return join(self.findings_base_path, RUN_MODE_NAME, detector.id,
                     version.project_id, version.version_id, misuse.misuse_id)
-
-    def _get_findings_file_path(self, detector: Detector, version: ProjectVersion, misuse: Misuse):
-        return join(self._get_findings_path(detector, version, misuse), self.FINDINGS_FILE)
 
     @staticmethod
     def _get_detector_arguments(findings_file_path: str, run_file_path: str, version_compile: VersionCompile,
