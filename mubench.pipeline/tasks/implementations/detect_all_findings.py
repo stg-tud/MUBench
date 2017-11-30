@@ -30,7 +30,7 @@ class DetectAllFindingsTask:
 
         if run.is_outdated() or self.force_detect:
             pass
-        elif run.is_error():
+        elif run.is_failure():
             self.logger.info("Error in previous {}. Skipping.".format(str(run)))
             self.logger.debug("Full exception:", exc_info=True)
             return run

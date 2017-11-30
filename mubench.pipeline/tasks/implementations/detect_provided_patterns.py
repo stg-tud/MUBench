@@ -32,7 +32,7 @@ class DetectProvidedPatternsTask:
 
         if run.is_outdated() or self.force_detect:
             pass
-        elif run.is_error():
+        elif run.is_failure():
             raise UserWarning("Error in previous {}. Skipping.".format(str(run)))
         elif run.is_success():
             self.logger.info("Successful previous %s. Skipping.", run)
