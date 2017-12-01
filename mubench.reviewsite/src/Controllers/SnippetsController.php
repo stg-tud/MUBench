@@ -34,6 +34,8 @@ class SnippetsController extends Controller
 
     static function createSnippet($projectId, $versionId, $misuseId, $code, $line)
     {
-        Snippet::create(['snippet'=> $code, 'line' => $line, 'misuse_muid' => $misuseId, 'project_muid' => $projectId, 'version_muid' => $versionId]);
+        $snippet = Snippet::firstOrNew(['misuse_muid' => $misuseId, 'project_muid' => $projectId, 'version_muid' => $versionId, 'line' => $line]);
+        $snippet->snippet = $code;
+        $snippet->save();
     }
 }

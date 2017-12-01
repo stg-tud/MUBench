@@ -45,7 +45,7 @@ class RunsControllerTest extends SlimTestCase
                     "misuse" => "-m-",
                     "rank" => 0,
                     "target_snippets" => [
-                        ["first_line_number" => 5, "code" => "-code-"]
+                        ["first_line_number" => 6, "code" => "-code-"]
                     ],
                     "custom1" => "-val1-",
                     "custom2" => "-val2-"

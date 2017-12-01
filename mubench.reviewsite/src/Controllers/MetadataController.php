@@ -81,10 +81,7 @@ class MetadataController extends Controller
     {
         if ($targetSnippets) {
             foreach ($targetSnippets as $snippet) {
-                $s = Snippet::firstOrNew(['project_muid' => $projectId, 'version_muid' => $versionId, 'misuse_muid' => $misuseId]);
-                $s->snippet = $snippet['code'];
-                $s->line = $snippet['first_line_number'];
-                $s->save();
+                SnippetsController::createSnippet($projectId, $versionId, $misuseId, $snippet['code'], $snippet['first_line_number']);
             }
         }
     }
