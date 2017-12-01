@@ -63,7 +63,8 @@ def _get_command_line_parser(available_detectors: List[str], available_scripts: 
         formatter_class=SortingHelpFormatter)
 
     subparsers = parser.add_subparsers(
-        help="MUBench provides several tasks. Run `mubench <task> -h` for details.",
+        help="MUBench provides several tasks. "
+             "Run `./mubench <task> -h` for details.",
         dest='task')
 
     parser.add_argument('--use-tmp-wrkdir', dest='use_tmp_wrkdir', default=__get_default('use-tmp-wrkdir', False),
@@ -81,14 +82,14 @@ def _get_command_line_parser(available_detectors: List[str], available_scripts: 
     parser.add_argument('--detectors-path', dest='detectors_path',
                         default=__get_default('detectors-path', __DETECTORS_PATH), help=argparse.SUPPRESS)
 
-    __add_check_subprocess(subparsers)
+    __add_check_requirements_subprocess(subparsers)
     __add_info_subprocess(available_datasets, subparsers)
     __add_checkout_subprocess(available_datasets, subparsers)
     __add_compile_subprocess(available_datasets, subparsers)
     __add_run_subprocess(available_detectors, available_datasets, subparsers)
     __add_publish_subprocess(available_detectors, available_datasets, subparsers)
     __add_stats_subprocess(available_scripts, available_datasets, subparsers)
-    __add_dataset_check_subprocess(available_datasets, subparsers)
+    __add_check_dataset_subprocess(available_datasets, subparsers)
 
     return parser
 
@@ -105,10 +106,20 @@ def __get_default(parameter: str, default):
     return default
 
 
-def __add_check_subprocess(subparsers) -> None:
+def __add_check_requirements_subprocess(subparsers) -> None:
     subparsers.add_parser('check', formatter_class=SortingHelpFormatter,
-                          help="Validate whether the environment meets the prerequisites to run MUBench.",
-                          description="Validate whether the environment meets the prerequisites to run MUBench.")
+                          help="Check whether the environment meets the prerequisites to run MUBench.",
+                          description="Check whether the environment meets the prerequisites to run MUBench.")
+
+
+def __add_check_dataset_subprocess(available_datasets: List[str], subparsers) -> None:
+    dataset_check_parser = subparsers.add_parser('dataset-check', formatter_class=SortingHelpFormatter,
+                                                 help="Check the consistency of MUBench's dataset.",
+                                                 description="Check the consistency of MUBench's dataset. "
+                                                             "Checks misuse locations only in project versions that "
+                                                             "are already checked out. Manually run `checkout` first, "
+                                                             "to ensure this check.")
+    __setup_filter_arguments(dataset_check_parser, available_datasets)
 
 
 def __add_info_subprocess(available_datasets: List[str], subparsers) -> None:
@@ -118,129 +129,187 @@ def __add_info_subprocess(available_datasets: List[str], subparsers) -> None:
     __setup_filter_arguments(parser, available_datasets)
 
 
+def __add_stats_subprocess(available_scripts: List[str], available_datasets: List[str], subparsers) -> None:
+    stats_parser = subparsers.add_parser('stats', formatter_class=SortingHelpFormatter,
+                                         description="Print statistics on the MUBench dataset.",
+                                         help="Print statistics on the MUBench dataset.")
+    stats_parser.add_argument('script', help="MUBench provides several statistics.",
+                              choices=available_scripts)
+    __setup_filter_arguments(stats_parser, available_datasets)
+
+
 def __add_checkout_subprocess(available_datasets: List[str], subparsers) -> None:
     checkout_parser = subparsers.add_parser('checkout', formatter_class=SortingHelpFormatter,
-                                            help="Clone the project versions with the misuses "
-                                                 "from the MUBench dataset.",
-                                            description="Clone the project versions with the misuses "
-                                                        "from the MUBench dataset.",
-                                            epilog="The clones will be created below `checkouts/`.")  # type: ArgumentParser
+                                            help="Checkout project versions.",
+                                            description="Checkout project versions with known misuses in the MUBench "
+                                                        "dataset. "
+                                                        "Requires internet connection to access respective code "
+                                                        "repositories. "
+                                                        "Places checkouts in `checkouts`.")
     __setup_filter_arguments(checkout_parser, available_datasets)
     __setup_checkout_arguments(checkout_parser)
 
 
 def __add_compile_subprocess(available_datasets: List[str], subparsers) -> None:
     compile_parser = subparsers.add_parser('compile', formatter_class=SortingHelpFormatter,
-                                           help="Compile the projects and the patterns. "
-                                                "Run `checkout`, if necessary.",
-                                           description="Compile the projects and patterns. "
-                                                       "Run `checkout`, if necessary.",
-                                           epilog="Compilation data is store below `checkouts/`.")  # type: ArgumentParser
+                                           help="Compile project versions. "
+                                                "Runs `checkout`, if necessary.",
+                                           description="Compile project versions and correct usages (patterns) "
+                                                       "corresponding to the known misuses in these versions. "
+                                                       "Runs `checkout`, if necessary. "
+                                                       "Places compile results in `checkouts`.")
     __setup_filter_arguments(compile_parser, available_datasets)
     __setup_compile_arguments(compile_parser)
     __setup_checkout_arguments(compile_parser)
 
 
+def __add_run_subprocess(available_detectors: List[str], available_datasets: List[str], subparsers) -> None:
+    run_parser = subparsers.add_parser('run', formatter_class=SortingHelpFormatter,
+                                       help="Run an experiment. "
+                                            "Runs `checkout` and `compile`, if necessary.",
+                                       description="Run an experiment, i.e., run a detector with the "
+                                                   "experiment-specific inputs. "
+                                                   "Runs `checkout` and `compile`, if necessary."
+                                                   "Stores detector findings in `findings`.")
+
+    run_subparsers = run_parser.add_subparsers(dest='sub_task',
+                                               help="MUBench supports several experiments. "
+                                                    "Run `./mubench run <experiment> -h` for details.")
+    run_subparsers.required = True
+
+    __add_run_ex1_subprocess(available_detectors, available_datasets, run_subparsers)
+    __add_run_ex2_subprocess(available_detectors, available_datasets, run_subparsers)
+    __add_run_ex3_subprocess(available_detectors, available_datasets, run_subparsers)
+
+
+def __add_run_ex1_subprocess(available_detectors: List[str], available_datasets: List[str], subparsers) -> None:
+    experiment_parser = subparsers.add_parser("ex1", formatter_class=SortingHelpFormatter,
+                                              help="Experiment 1: Run a detector on misuses, providing respective "
+                                                   "correct usages (patterns), to measure its recall.",
+                                              description="Experiment 1: Run a detector on misuses, providing "
+                                                          "respective correct usages (patterns), to measure the recall "
+                                                          "of the detector's detection strategy in isolation.")
+    __setup_filter_arguments(experiment_parser, available_datasets)
+    __setup_checkout_arguments(experiment_parser)
+    __setup_compile_arguments(experiment_parser)
+    __setup_run_arguments(experiment_parser, available_detectors)
+
+
+def __add_run_ex2_subprocess(available_detectors: List[str], available_datasets: List[str], subparsers) -> None:
+    experiment_parser = subparsers.add_parser("ex2", formatter_class=SortingHelpFormatter,
+                                              help="Experiment 2: Run a detector on project versions, to measure its "
+                                                   "precision.",
+                                              description="Experiment 2: Run a detector on project versions, to "
+                                                          "measure the precision of the entire detector (mining and "
+                                                          "detection).")
+    __setup_filter_arguments(experiment_parser, available_datasets)
+    __setup_checkout_arguments(experiment_parser)
+    __setup_compile_arguments(experiment_parser)
+    __setup_run_arguments(experiment_parser, available_detectors)
+    __setup_publish_precision_arguments(experiment_parser)
+
+
+def __add_run_ex3_subprocess(available_detectors: List[str], available_datasets: List[str], subparsers) -> None:
+    experiment_parser = subparsers.add_parser("ex3", formatter_class=SortingHelpFormatter,
+                                              help="Experiment 3: Run a detector on project versions, to measure its "
+                                                   "recall.",
+                                              description="Experiment 3: Run a detector on project versions, to "
+                                                          "measure the recall of the entire detector (mining and "
+                                                          "detection).")
+    __setup_filter_arguments(experiment_parser, available_datasets)
+    __setup_checkout_arguments(experiment_parser)
+    __setup_compile_arguments(experiment_parser)
+    __setup_run_arguments(experiment_parser, available_detectors)
+
+
 def __add_publish_subprocess(available_detectors: List[str], available_datasets: List[str], subparsers) -> None:
     publish_parser = subparsers.add_parser('publish', formatter_class=SortingHelpFormatter,
-                                           help="Publish data to the review site. "
-                                                "Run `checkout`, if necessary.",
-                                           description="Publish data to the review site. "
-                                                       "Run `checkout`, if necessary.")  # type: ArgumentParser
-
-    __setup_publish_arguments(publish_parser)
+                                           help="Publish data to a review site. "
+                                                "Runs `checkout`, `compile`, and `run` , if necessary.",
+                                           description="Publish data to a review site. "
+                                                       "Runs `checkout`, `compile`, and `run` , if necessary.")
 
     publish_subparsers = publish_parser.add_subparsers(dest='sub_task',
-                                                       help="Mubench provides several publish tasks. Run `publish -h` for details.")
+                                                       help="MUBench provides several publish tasks. "
+                                                            "Run `./mubench publish <task> -h` for details.")
     publish_subparsers.required = True
 
     __add_publish_metadata(available_datasets, publish_subparsers)
-    __add_ex1_subprocess(available_detectors, available_datasets, publish_subparsers)
-    __add_ex2_subprocess(available_detectors, available_datasets, publish_subparsers)
-    __add_ex3_subprocess(available_detectors, available_datasets, publish_subparsers)
+    __add_publish_ex1_subprocess(available_detectors, available_datasets, publish_subparsers)
+    __add_publish_ex2_subprocess(available_detectors, available_datasets, publish_subparsers)
+    __add_publish_ex3_subprocess(available_detectors, available_datasets, publish_subparsers)
 
 
-def __add_run_subprocess(available_detectors: List[str], available_datasets: List[str], subparsers) -> None:
-    run_parser = subparsers.add_parser('run', formatter_class=SortingHelpFormatter,
-                                       help="Run an experiment. Run `run -h` for details and available experiments. "
-                                            "Run `checkout`, if necessary.",
-                                       description="Run an experiment. Run `run -h` for details and available experiments. "
-                                                   "Run `checkout`, if necessary.")  # type: ArgumentParser
-
-    run_subparsers = run_parser.add_subparsers(dest='sub_task',
-                                               help="Mubench provides several experiments. Run `run -h` for details.")
-    run_subparsers.required = True
-
-    __add_ex1_subprocess(available_detectors, available_datasets, run_subparsers)
-    __add_ex2_subprocess(available_detectors, available_datasets, run_subparsers)
-    __add_ex3_subprocess(available_detectors, available_datasets, run_subparsers)
-
-
-def __add_publish_metadata(available_datasets, publish_subparsers):
+def __add_publish_metadata(available_datasets, publish_subparsers) -> None:
     publish_metadata_parser = publish_subparsers.add_parser('metadata', formatter_class=SortingHelpFormatter,
                                                             help="Publish misuse metadata.",
-                                                            description="Publish misuse metadata.")  # type: ArgumentParser
+                                                            description="Publish misuse metadata. "
+                                                                        "This metadata is displayed on the review site "
+                                                                        "for the recall experiments, to assist "
+                                                                        "reviewers in deciding whether a potential hit "
+                                                                        "corresponds to the known misuse from the "
+                                                                        "MUBench dataset.")
     __setup_filter_arguments(publish_metadata_parser, available_datasets)
     __setup_checkout_arguments(publish_metadata_parser)
+    __setup_publish_arguments(publish_metadata_parser)
 
 
-def __add_ex1_subprocess(available_detectors: List[str], available_datasets: List[str],
-                         subparsers):
+def __add_publish_ex1_subprocess(available_detectors: List[str], available_datasets: List[str], subparsers) -> None:
     experiment_parser = subparsers.add_parser("ex1", formatter_class=SortingHelpFormatter,
-                                              help="Run a detector on the checkouts. Run `compile`, if necessary. ",
-                                              description="Run a detector on the checkouts. Run `compile`, if necessary. "
-                                                          "Run `run ex1 -h` to see a list of available detectors.",
-                                              epilog="The findings are written to `findings/`.")  # type: ArgumentParser
+                                              help="Experiment 1: Publish potential hits for known misuses to assess "
+                                                   "a detector's recall when it uses provided correct usages "
+                                                   "(patterns).",
+                                              description="Experiment 1: Publish potential hits for known misuses, "
+                                                          "i.e., detector findings in the same file and method as a "
+                                                          "known misuse, to assess the detector's recall. "
+                                                          "Considers the detector's findings when run on misuses, "
+                                                          "providing respective correct usages (patterns). "
+                                                          "This measures the recall of the detector's detection "
+                                                          "strategy in isolation.")
     __setup_filter_arguments(experiment_parser, available_datasets)
-    __setup_run_arguments(experiment_parser, available_detectors)
     __setup_checkout_arguments(experiment_parser)
     __setup_compile_arguments(experiment_parser)
+    __setup_run_arguments(experiment_parser, available_detectors)
+    __setup_publish_arguments(experiment_parser)
 
 
-def __add_ex2_subprocess(available_detectors: List[str], available_datasets: List[str],
-                         subparsers) -> None:
+def __add_publish_ex2_subprocess(available_detectors: List[str], available_datasets: List[str], subparsers) -> None:
     experiment_parser = subparsers.add_parser("ex2", formatter_class=SortingHelpFormatter,
-                                              help="Run a detector on the checkouts. Run `compile`, if necessary. ",
-                                              description="Run a detector on the checkouts. Run `compile`, if necessary. "
-                                                          "Run `run -h` to see a list of available detectors.",
-                                              epilog="The findings are written to `findings/`.")  # type: ArgumentParser
+                                              help="Experiment 2: Publish top findings to assess a detector's "
+                                                   "precision when it uses its own specifications/patterns.",
+                                              description="Experiment 2: Publish top findings of a detector, to assess "
+                                                          "its precision. Considers the detector's top findings when "
+                                                          "run on individual project versions. "
+                                                          "This measure the precision of the entire detector (both "
+                                                          "mining and detection).")
     __setup_filter_arguments(experiment_parser, available_datasets)
-    __setup_run_arguments(experiment_parser, available_detectors)
     __setup_checkout_arguments(experiment_parser)
     __setup_compile_arguments(experiment_parser)
+    __setup_run_arguments(experiment_parser, available_detectors)
+    __setup_publish_arguments(experiment_parser)
+    __setup_publish_precision_arguments(experiment_parser)
 
 
-def __add_ex3_subprocess(available_detectors: List[str], available_datasets: List[str],
-                         subparsers) -> None:
+def __add_publish_ex3_subprocess(available_detectors: List[str], available_datasets: List[str],
+                             subparsers) -> None:
     experiment_parser = subparsers.add_parser("ex3", formatter_class=SortingHelpFormatter,
-                                              help="Run a detector on the checkouts. Run `compile`, if necessary. ",
-                                              description="Run a detector on the checkouts. Run `compile`, if necessary. "
-                                                          "Run `detect -h` to see a list of available detectors.",
-                                              epilog="The findings are written to `findings/`.")  # type: ArgumentParser
+                                              help="Experiment 3: Publish potential hits for known misuses to assess "
+                                                   "a detector's recall when it uses its own specifications/patterns.",
+                                              description="Experiment 3: Publish potential hits for known misuses, "
+                                                          "i.e., detector findings in the same file and method as a "
+                                                          "known misuse, to assess the detector's recall. "
+                                                          "Considers the detector's finding when run on individual "
+                                                          "project versions. "
+                                                          "This measures the recall of the entire detector (both "
+                                                          "mining and detection).")
     __setup_filter_arguments(experiment_parser, available_datasets)
-    __setup_run_arguments(experiment_parser, available_detectors)
     __setup_checkout_arguments(experiment_parser)
     __setup_compile_arguments(experiment_parser)
+    __setup_run_arguments(experiment_parser, available_detectors)
+    __setup_publish_arguments(experiment_parser)
 
 
-def __add_stats_subprocess(available_scripts: List[str], available_datasets: List[str], subparsers) -> None:
-    stats_parser = subparsers.add_parser('stats', formatter_class=SortingHelpFormatter,
-                                         description="Calculate statistics using the given script",
-                                         help="Calculate statistics using the given script")  # type: ArgumentParser
-    stats_parser.add_argument('script', help="the calculation strategy to use (case insensitive)",
-                              choices=available_scripts)
-    __setup_filter_arguments(stats_parser, available_datasets)
-
-
-def __add_dataset_check_subprocess(available_datasets: List[str], subparsers) -> None:
-    dataset_check_parser = subparsers.add_parser('dataset-check', formatter_class=SortingHelpFormatter,
-                                                 help="Check the consistency of MUBench's dataset.",
-                                                 description="Check the consistency of MUBench's dataset."
-                                                             "Run `checkout` first, to also check misuse locations.")  # type: ArgumentParser
-    __setup_filter_arguments(dataset_check_parser, available_datasets)
-
-
-def __setup_filter_arguments(parser: ArgumentParser, available_datasets: List[str]):
+def __setup_filter_arguments(parser: ArgumentParser, available_datasets: List[str]) -> None:
     parser.add_argument('--only', metavar='X', nargs='+', dest='white_list', default=__get_default('only', []),
                         help="process only projects or project versions whose names are given")
     parser.add_argument('--skip', metavar='Y', nargs='+', dest='black_list', default=__get_default('skip', []),
@@ -249,13 +318,13 @@ def __setup_filter_arguments(parser: ArgumentParser, available_datasets: List[st
                         choices=available_datasets, help="process only misuses in the specified data set")
 
 
-def __setup_checkout_arguments(parser: ArgumentParser):
+def __setup_checkout_arguments(parser: ArgumentParser) -> None:
     parser.add_argument('--force-checkout', dest='force_checkout', action='store_true',
                         default=__get_default('force-checkout', False),
                         help="force a clean checkout, deleting any existing files")
 
 
-def __setup_compile_arguments(parser: ArgumentParser):
+def __setup_compile_arguments(parser: ArgumentParser) -> None:
     parser.add_argument('--force-compile', dest='force_compile', action='store_true',
                         default=__get_default('force-compile', False),
                         help="force a clean compilation")
@@ -292,6 +361,8 @@ def __setup_publish_arguments(parser: ArgumentParser) -> None:
                              " If a user is provided, but no password,"
                              " you will be prompted for the password before publication.")
 
+
+def __setup_publish_precision_arguments(parser: ArgumentParser) -> None:
     def upload_limit(x):
         limit = int(x)
         if limit < 1:
@@ -300,4 +371,4 @@ def __setup_publish_arguments(parser: ArgumentParser) -> None:
 
     parser.add_argument('--limit', type=upload_limit, default=__get_default('limit', 50), metavar='n',
                         dest="limit",
-                        help="publish only a specified number of potential hits. Defaults to 50")
+                        help="publish only the top-n findings. Defaults to 50")
