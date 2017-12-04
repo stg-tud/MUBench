@@ -4,9 +4,12 @@ from logging import Logger
 from os import makedirs
 from typing import Optional, List, Dict
 
+from os.path import join
+
 from data.detector import Detector
 from data.finding import Finding
 from data.project_version import ProjectVersion
+from tasks.configurations.detector_interface_configuration import key_findings_file, key_run_file
 from utils.io import write_yaml, remove_tree, read_yaml_if_exists, open_yamls_if_exists
 from utils.shell import CommandFailedError
 
@@ -18,16 +21,18 @@ class Result(Enum):
 
 
 class DetectorRun:
-    def __init__(self, detector: Detector, version: ProjectVersion, findings_path: str, findings_file_path: str,
-                 run_file_path: str):
+    __FINDINGS_FILE = "findings.yml"
+    __RUN_FILE = "run.yml"
+
+    def __init__(self, detector: Detector, version: ProjectVersion, findings_path: str):
         self.detector = detector
         self.version = version
         self._findings_path = findings_path
         self.__FINDINGS = None
         self.__POTENTIAL_HITS = None
         self.__run_info = None
-        self._findings_file_path = findings_file_path
-        self._run_file_path = run_file_path
+        self._findings_file_path = join(findings_path, DetectorRun.__FINDINGS_FILE)
+        self._run_file_path = join(findings_path, DetectorRun.__RUN_FILE)
 
     def __get_run_info(self, key: str, default):
         if not self.__run_info:
@@ -76,6 +81,11 @@ class DetectorRun:
         self.reset()
 
         logger.info("Executing %s...", self)
+
+        detector_args.update({
+            key_findings_file: self._findings_file_path,
+            key_run_file: self._run_file_path
+        })
 
         self._execute(detector_args, timeout, logger)
 
@@ -143,8 +153,7 @@ class DetectorRun:
     def reset(self):
         remove_tree(self._findings_path)
         makedirs(self._findings_path, exist_ok=True)
-        DetectorRun.__init__(self, self.detector, self.version, self._findings_path, self._findings_file_path,
-                             self._run_file_path)
+        DetectorRun.__init__(self, self.detector, self.version, self._findings_path)
 
     def is_success(self):
         return self.result == Result.success

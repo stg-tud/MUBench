@@ -7,6 +7,7 @@ from nose.tools import assert_equals
 
 from data.detector_run import DetectorRun, Result
 from data.finding import Finding
+from tasks.configurations.detector_interface_configuration import key_findings_file, key_run_file
 from tests.data.stub_detector import StubDetector
 from tests.test_utils.data_util import create_version, create_project
 from utils.io import remove_tree
@@ -26,8 +27,7 @@ class TestExecutionState:
         self.version = create_version("-v-")
         self.findings_base_path = "-findings-"
 
-        self.uut = DetectorRun(self.detector, self.version, self.findings_path,
-                               self.findings_file_path, self.run_file_path)
+        self.uut = DetectorRun(self.detector, self.version, self.findings_path)
 
     def teardown(self):
         remove_tree(self.temp_dir)
@@ -36,8 +36,7 @@ class TestExecutionState:
         self.detector.md5 = "-md5-"
         read_run_info.return_value = {"md5": "-old-md5-"}
 
-        uut = DetectorRun(self.detector, self.version, self.findings_path,
-                          self.findings_file_path, self.run_file_path)
+        uut = DetectorRun(self.detector, self.version, self.findings_path)
 
         assert uut.is_outdated()
 
@@ -60,8 +59,7 @@ class TestExecutionState:
     def test_load(self, read_run_info):
         read_run_info.return_value = {"result": "success", "runtime": "23.42", "message": "-arbitrary text-"}
 
-        uut = DetectorRun(self.detector, self.version, self.findings_path,
-                          self.findings_file_path, self.run_file_path)
+        uut = DetectorRun(self.detector, self.version, self.findings_path)
 
         assert uut.is_success()
         assert_equals(uut.runtime, "23.42")
@@ -84,8 +82,7 @@ class TestDetectorRun:
 
         self.logger = logging.getLogger("test")
 
-        self.uut = DetectorRun(self.detector, self.version, self.findings_path,
-                               self.findings_file_path, self.run_file_path)
+        self.uut = DetectorRun(self.detector, self.version, self.findings_path)
 
     def test_execute_sets_success(self, write_yaml_mock):
         self.uut._execute("-compiles-", 42, self.logger)
@@ -131,7 +128,7 @@ class TestDetectorRun:
         )
 
     def test_skips_execution_if_previous_run_succeeded(self, _):
-        uut = DetectorRun(self.detector, self.version, self.findings_path, self.findings_file_path, self.run_file_path)
+        uut = DetectorRun(self.detector, self.version, self.findings_path)
         uut._execute = MagicMock()
 
         uut.is_outdated = lambda: False
@@ -143,7 +140,7 @@ class TestDetectorRun:
         uut._execute.assert_not_called()
 
     def test_skips_detect_if_previous_run_was_error(self, _):
-        uut = DetectorRun(self.detector, self.version, self.findings_path, self.findings_file_path, self.run_file_path)
+        uut = DetectorRun(self.detector, self.version, self.findings_path)
         uut._execute = MagicMock()
 
         uut.is_outdated = lambda: False
@@ -154,7 +151,7 @@ class TestDetectorRun:
         uut._execute.assert_not_called()
 
     def test_force_detect_on_new_detector(self, _):
-        uut = DetectorRun(self.detector, self.version, self.findings_path, self.findings_file_path, self.run_file_path)
+        uut = DetectorRun(self.detector, self.version, self.findings_path)
         uut._execute = MagicMock()
 
         uut.is_success = lambda: True
@@ -164,13 +161,30 @@ class TestDetectorRun:
 
         uut._execute.assert_called_with(ANY, None, ANY)
 
+    def test_adds_run_file_path_arg(self, _):
+        uut = DetectorRun(self.detector, self.version, self.findings_path)
+        uut._execute = MagicMock()
+
+        uut.ensure_executed(self.detector_args, None, True, self.logger)
+
+        args = uut._execute.call_args[0][0]
+        assert key_run_file in args
+
+    def test_adds_findings_file_path_arg(self, _):
+        uut = DetectorRun(self.detector, self.version, self.findings_path)
+        uut._execute = MagicMock()
+
+        uut.ensure_executed(self.detector_args, None, True, self.logger)
+
+        args = uut._execute.call_args[0][0]
+        assert key_findings_file in args
+
 
 class TestDetectorExecutionLoadFindings:
     @patch("data.detector_run.open_yamls_if_exists")
     def test_adds_rank(self, read_yamls_mock):
         read_yamls_mock.return_value.__enter__.return_value = [{"name": "f1"}, {"name": "f2"}]
-        execution = DetectorRun(StubDetector(), create_version("-v-"), "-findings-path-",
-                                      "-findings-file-", "-run-file-")
+        execution = DetectorRun(StubDetector(), create_version("-v-"), "-findings-path-")
 
         findings = execution._load_findings()
 
