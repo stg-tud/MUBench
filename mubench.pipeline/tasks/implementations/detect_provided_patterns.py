@@ -24,8 +24,6 @@ class DetectProvidedPatternsTask:
         self.force_detect = force_detect
         self.timeout = timeout
 
-        self.logger = logging.getLogger("task.detect")
-
     def run(self, detector: Detector, version: ProjectVersion, version_compile: VersionCompile, misuse: Misuse,
             misuse_compile: MisuseCompile):
         findings_path = self._get_findings_path(detector, version, misuse)
@@ -33,26 +31,9 @@ class DetectProvidedPatternsTask:
         run_file_path = self._get_run_file_path(findings_path)
         run = self._get_run(detector, version, findings_path, findings_file_path, run_file_path)
 
-        if run.is_outdated() or self.force_detect:
-            pass
-        elif run.is_failure():
-            self.logger.info("Error in previous {}. Skipping.".format(str(run)))
-            self.logger.debug("Full exception:", exc_info=True)
-            return run
-        elif run.is_success():
-            self.logger.info("Successful previous %s. Skipping.", run)
-            return run
-
-        run.reset()
-
-        self.logger.info("Executing %s...", run)
-        logger = logging.getLogger("detect.run")
-        run.execute(self._get_detector_arguments(findings_file_path, run_file_path, version_compile, misuse_compile),
-                    self.timeout, logger)
-
-        if not run.is_success():
-            self.logger.info("Run {} failed.".format(str(run)))
-            self.logger.debug("Full exception:", exc_info=True)
+        run.ensure_executed(self._get_detector_arguments(findings_file_path, run_file_path, version_compile,
+                                                         misuse_compile),
+                            self.timeout, self.force_detect, logging.getLogger("task.detect"))
 
         return run
 

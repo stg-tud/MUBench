@@ -80,27 +80,29 @@ class TestDetectorRun:
         self.findings_file_path = join(self.findings_path, "FINDINGS_FILE")
         self.run_file_path = join(self.findings_path, "run.yml")
 
+        self.detector_args = {}
+
         self.logger = logging.getLogger("test")
 
         self.uut = DetectorRun(self.detector, self.version, self.findings_path,
                                self.findings_file_path, self.run_file_path)
 
     def test_execute_sets_success(self, write_yaml_mock):
-        self.uut.execute("-compiles-", 42, self.logger)
+        self.uut._execute("-compiles-", 42, self.logger)
 
         assert_equals(Result.success, self.uut.result)
 
     def test_execute_sets_error(self, write_yaml_mock):
         self.detector.runner_interface.execute = MagicMock(side_effect=CommandFailedError("-cmd-", "-out-"))
 
-        self.uut.execute("-compiles-", 42, self.logger)
+        self.uut._execute("-compiles-", 42, self.logger)
 
         assert_equals(Result.error, self.uut.result)
 
     def test_execute_captures_error_output(self, write_yaml_mock):
         self.detector.runner_interface.execute = MagicMock(side_effect=CommandFailedError("-cmd-", "-out-"))
 
-        self.uut.execute("-compiles-", 42, self.logger)
+        self.uut._execute("-compiles-", 42, self.logger)
 
         assert_equals("Failed to execute '-cmd-': -out-", self.uut.message)
 
@@ -108,7 +110,7 @@ class TestDetectorRun:
         long_output = "\n".join(["line " + str(i) for i in range(1, 8000)])
         self.detector.runner_interface.execute = MagicMock(side_effect=CommandFailedError("-cmd-", long_output))
 
-        self.uut.execute("-compiles-", 42, self.logger)
+        self.uut._execute("-compiles-", 42, self.logger)
 
         print(self.uut.message)
         assert_equals(5000, len(str.splitlines(self.uut.message)))
@@ -116,17 +118,51 @@ class TestDetectorRun:
     def test_execute_sets_timeout(self, write_yaml_mock):
         self.detector.runner_interface.execute = MagicMock(side_effect=TimeoutError())
 
-        self.uut.execute("-compiles-", 42, self.logger)
+        self.uut._execute("-compiles-", 42, self.logger)
 
         assert_equals(Result.timeout, self.uut.result)
 
     def test_saves_after_execution(self, write_yaml_mock):
-        self.uut.execute("-compiles-", 42, self.logger)
+        self.uut._execute("-compiles-", 42, self.logger)
 
         write_yaml_mock.assert_called_with(
             {'result': 'success', 'message': '', 'md5': self.detector.md5, 'runtime': ANY},
             file='-findings-/run.yml'
         )
+
+    def test_skips_execution_if_previous_run_succeeded(self, _):
+        uut = DetectorRun(self.detector, self.version, self.findings_path, self.findings_file_path, self.run_file_path)
+        uut._execute = MagicMock()
+
+        uut.is_outdated = lambda: False
+        uut.is_error = lambda: False
+        uut.is_success = lambda: True
+
+        uut.ensure_executed(self.detector_args, None, False, self.logger)
+
+        uut._execute.assert_not_called()
+
+    def test_skips_detect_if_previous_run_was_error(self, _):
+        uut = DetectorRun(self.detector, self.version, self.findings_path, self.findings_file_path, self.run_file_path)
+        uut._execute = MagicMock()
+
+        uut.is_outdated = lambda: False
+        uut.is_error = lambda: True
+
+        uut.ensure_executed(self.detector_args, None, False, self.logger)
+
+        uut._execute.assert_not_called()
+
+    def test_force_detect_on_new_detector(self, _):
+        uut = DetectorRun(self.detector, self.version, self.findings_path, self.findings_file_path, self.run_file_path)
+        uut._execute = MagicMock()
+
+        uut.is_success = lambda: True
+        uut.is_outdated = lambda: True
+
+        uut.ensure_executed(self.detector_args, None, False, self.logger)
+
+        uut._execute.assert_called_with(ANY, None, ANY)
 
 
 class TestDetectorExecutionLoadFindings:

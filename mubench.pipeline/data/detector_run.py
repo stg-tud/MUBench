@@ -61,7 +61,29 @@ class DetectorRun:
         }
         return run_info.update(self.__run_info)
 
-    def execute(self, detector_args: Dict[str, str], timeout: Optional[int], logger: Logger):
+    def ensure_executed(self, detector_args: Dict[str, str], timeout: Optional[int], force_detect: bool,
+                        logger: Logger) -> None:
+        if self.is_outdated() or force_detect:
+            pass
+        elif self.is_failure():
+            logger.info("Error in previous {}. Skipping.".format(str(self)))
+            logger.debug("Full exception:", exc_info=True)
+            return
+        elif self.is_success():
+            logger.info("Successful previous %s. Skipping.", self)
+            return
+
+        self.reset()
+
+        logger.info("Executing %s...", self)
+
+        self._execute(detector_args, timeout, logger)
+
+        if not self.is_success():
+            logger.info("Run {} failed.".format(str(self)))
+            logger.debug("Full exception:", exc_info=True)
+
+    def _execute(self, detector_args: Dict[str, str], timeout: Optional[int], logger: Logger):
         start = time.time()
         message = ""
         try:
