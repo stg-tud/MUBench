@@ -11,11 +11,10 @@ from data.version_compile import VersionCompile
 from tasks.configurations.detector_interface_configuration import key_findings_file, key_run_file, key_detector_mode, \
     key_training_src_path, key_training_classpath, key_target_src_path, key_target_classpath, key_dependency_classpath
 
-RUN_MODE_NAME = "detect_only"
-DETECTOR_MODE = 1
-
 
 class DetectProvidedPatternsTask:
+    __RUN_MODE_NAME = "detect_only"
+    __DETECTOR_MODE = 1
     RUN_FILE = "run.yml"
     FINDINGS_FILE = "findings.yml"
 
@@ -47,7 +46,7 @@ class DetectProvidedPatternsTask:
         return join(findings_path, self.FINDINGS_FILE)
 
     def _get_findings_path(self, detector: Detector, version: ProjectVersion, misuse: Misuse):
-        return join(self.findings_base_path, RUN_MODE_NAME, detector.id,
+        return join(self.findings_base_path, DetectProvidedPatternsTask.__RUN_MODE_NAME, detector.id,
                     version.project_id, version.version_id, misuse.misuse_id)
 
     @staticmethod
@@ -56,7 +55,7 @@ class DetectProvidedPatternsTask:
         return {
             key_findings_file: findings_file_path,
             key_run_file: run_file_path,
-            key_detector_mode: DETECTOR_MODE,
+            key_detector_mode: DetectProvidedPatternsTask.__DETECTOR_MODE,
             key_training_src_path: misuse_compile.pattern_sources_path,
             key_training_classpath: misuse_compile.pattern_classes_path,
             key_target_src_path: misuse_compile.misuse_source_path,

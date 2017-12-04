@@ -9,11 +9,10 @@ from data.version_compile import VersionCompile
 from tasks.configurations.detector_interface_configuration import key_findings_file, key_run_file, key_detector_mode, \
     key_target_src_path, key_target_classpath, key_dependency_classpath
 
-RUN_MODE_NAME = "mine_and_detect"
-DETECTOR_MODE = 0
-
 
 class DetectAllFindingsTask:
+    __RUN_MODE_NAME = "mine_and_detect"
+    __DETECTOR_MODE = 0
     RUN_FILE = "run.yml"
     FINDINGS_FILE = "findings.yml"
 
@@ -43,7 +42,7 @@ class DetectAllFindingsTask:
         return join(findings_path, self.FINDINGS_FILE)
 
     def _get_findings_path(self, detector: Detector, version: ProjectVersion):
-        return join(self.findings_base_path, RUN_MODE_NAME, detector.id,
+        return join(self.findings_base_path, DetectAllFindingsTask.__RUN_MODE_NAME, detector.id,
                     version.project_id, version.version_id)
 
     @staticmethod
@@ -51,7 +50,7 @@ class DetectAllFindingsTask:
         return {
             key_findings_file: findings_file_path,
             key_run_file: run_file_path,
-            key_detector_mode: DETECTOR_MODE,
+            key_detector_mode: DetectAllFindingsTask.__DETECTOR_MODE,
             key_target_src_path: version_compile.original_sources_path,
             key_target_classpath: version_compile.original_classes_path,
             key_dependency_classpath: version_compile.get_full_classpath()
