@@ -1,6 +1,3 @@
-RUN_FILE = "run.yml"
-FINDINGS_FILE = "findings.yml"
-
 key_findings_file = "target"
 key_run_file = "run_info"
 key_detector_mode = "detector_mode"
