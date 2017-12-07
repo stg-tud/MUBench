@@ -1,6 +1,5 @@
 import logging
 from os.path import join
-from tempfile import mkdtemp
 from unittest.mock import MagicMock, patch, ANY
 
 from nose.tools import assert_equals
@@ -10,60 +9,7 @@ from data.finding import Finding
 from tasks.configurations.detector_interface_configuration import key_findings_file, key_run_file
 from tests.data.stub_detector import StubDetector
 from tests.test_utils.data_util import create_version, create_project
-from utils.io import remove_tree
 from utils.shell import CommandFailedError
-
-
-@patch("data.detector_run.read_yaml_if_exists")
-class TestExecutionState:
-    # noinspection PyAttributeOutsideInit
-    def setup(self):
-        self.temp_dir = mkdtemp(prefix='mubench-run-test_')
-        self.findings_path = join(self.temp_dir, "-findings-")
-        self.findings_file_path = join(self.findings_path, "FINDINGS_FILE")
-        self.run_file_path = join(self.findings_path, "RUN_FILE")
-
-        self.detector = StubDetector()
-        self.version = create_version("-v-")
-        self.findings_base_path = "-findings-"
-
-        self.uut = DetectorRun(self.detector, self.version, self.findings_path)
-
-    def teardown(self):
-        remove_tree(self.temp_dir)
-
-    def test_run_outdated(self, read_run_info):
-        self.detector.md5 = "-md5-"
-        read_run_info.return_value = {"md5": "-old-md5-"}
-
-        uut = DetectorRun(self.detector, self.version, self.findings_path)
-
-        assert uut.is_outdated()
-
-    def test_run_up_to_date(self, read_run_info):
-        self.detector.md5 = "-md5-"
-        read_run_info.return_value = {"md5": "-md5-"}
-
-        assert not self.uut.is_outdated()
-
-    def test_error_is_failure(self, read_run_info):
-        read_run_info.return_value = {"result": "error"}
-
-        assert self.uut.is_failure()
-
-    def test_timeout_is_failure(self, read_run_info):
-        read_run_info.return_value = {"result": "timeout"}
-
-        assert self.uut.is_failure()
-
-    def test_load(self, read_run_info):
-        read_run_info.return_value = {"result": "success", "runtime": "23.42", "message": "-arbitrary text-"}
-
-        uut = DetectorRun(self.detector, self.version, self.findings_path)
-
-        assert uut.is_success()
-        assert_equals(uut.runtime, "23.42")
-        assert_equals(uut.message, "-arbitrary text-")
 
 
 # noinspection PyUnusedLocal
@@ -83,6 +29,44 @@ class TestDetectorRun:
         self.logger = logging.getLogger("test")
 
         self.uut = DetectorRun(self.detector, self.version, self.findings_path)
+
+    @patch("data.detector_run.read_yaml_if_exists")
+    def test_run_outdated(self, read_run_info, _):
+        self.detector.md5 = "-md5-"
+        read_run_info.return_value = {"md5": "-old-md5-"}
+
+        uut = DetectorRun(self.detector, self.version, self.findings_path)
+
+        assert uut.is_outdated()
+
+    @patch("data.detector_run.read_yaml_if_exists")
+    def test_run_up_to_date(self, read_run_info, _):
+        self.detector.md5 = "-md5-"
+        read_run_info.return_value = {"md5": "-md5-"}
+
+        assert not self.uut.is_outdated()
+
+    @patch("data.detector_run.read_yaml_if_exists")
+    def test_error_is_failure(self, read_run_info, _):
+        read_run_info.return_value = {"result": "error"}
+
+        assert self.uut.is_failure()
+
+    @patch("data.detector_run.read_yaml_if_exists")
+    def test_timeout_is_failure(self, read_run_info, _):
+        read_run_info.return_value = {"result": "timeout"}
+
+        assert self.uut.is_failure()
+
+    @patch("data.detector_run.read_yaml_if_exists")
+    def test_load(self, read_run_info, _):
+        read_run_info.return_value = {"result": "success", "runtime": "23.42", "message": "-arbitrary text-"}
+
+        uut = DetectorRun(self.detector, self.version, self.findings_path)
+
+        assert uut.is_success()
+        assert_equals(uut.runtime, "23.42")
+        assert_equals(uut.message, "-arbitrary text-")
 
     def test_execute_sets_success(self, write_yaml_mock):
         self.uut._execute("-compiles-", 42, self.logger)
