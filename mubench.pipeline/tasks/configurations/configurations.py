@@ -76,14 +76,10 @@ class CompileTaskConfiguration(TaskConfiguration):
         return "compile"
 
     def tasks(self, config) -> List:
-        collect_projects = CollectProjectsTask(config.data_path)
-        collect_versions = CollectVersionsTask()
-        collect_misuses = CollectMisusesTask()
-        checkout = CheckoutTask(config.checkouts_path, config.force_checkout, config.use_tmp_wrkdir)
         compile_version = CompileVersionTask(config.compiles_path, config.force_compile, config.use_tmp_wrkdir)
+        collect_misuses = CollectMisusesTask()
         compile_misuse = CompileMisuseTask(config.compiles_path, config.force_compile)
-
-        return [collect_projects, collect_versions, checkout, compile_version, collect_misuses, compile_misuse]
+        return CheckoutTaskConfiguration().tasks(config) + [compile_version, collect_misuses, compile_misuse]
 
 
 class RunProvidedPatternsExperiment(TaskConfiguration):
@@ -94,17 +90,14 @@ class RunProvidedPatternsExperiment(TaskConfiguration):
         return "run {}".format(RunProvidedPatternsExperiment.ID)
 
     def tasks(self, config) -> List:
-        collect_projects = CollectProjectsTask(config.data_path)
-        collect_versions = CollectVersionsTask()
-        checkout = CheckoutTask(config.checkouts_path, config.force_checkout, config.use_tmp_wrkdir)
         compile_version = CompileVersionTask(config.compiles_path, config.force_compile, config.use_tmp_wrkdir)
         collect_misuses = CollectMisusesTask()
         compile_misuse = CompileMisuseTask(config.compiles_path, config.force_compile)
         load_detector = LoadDetectorTask(config.detectors_path, config.detector, config.requested_release,
                                          config.java_options)
         detect = DetectProvidedPatternsTask(config.findings_path, config.force_detect, config.timeout)
-        return [collect_projects, collect_versions, checkout, compile_version, collect_misuses, compile_misuse,
-                load_detector, detect]
+        return CheckoutTaskConfiguration().tasks(config) + [compile_version, collect_misuses, compile_misuse,
+                                                            load_detector, detect]
 
 
 class PublishProvidedPatternsExperiment(TaskConfiguration):
@@ -127,14 +120,11 @@ class RunAllFindingsExperiment(TaskConfiguration):
         return "run {}".format(RunAllFindingsExperiment.ID)
 
     def tasks(self, config) -> List:
-        collect_projects = CollectProjectsTask(config.data_path)
-        collect_versions = CollectVersionsTask()
-        checkout = CheckoutTask(config.checkouts_path, config.force_checkout, config.use_tmp_wrkdir)
         compile_version = CompileVersionTask(config.compiles_path, config.force_compile, config.use_tmp_wrkdir)
         load_detector = LoadDetectorTask(config.detectors_path, config.detector, config.requested_release,
                                          config.java_options)
         detect = DetectAllFindingsTask(config.findings_path, config.force_detect, config.timeout)
-        return [collect_projects, collect_versions, checkout, compile_version, load_detector, detect]
+        return CheckoutTaskConfiguration().tasks(config) + [compile_version, load_detector, detect]
 
 
 class PublishAllFindingsExperiment(TaskConfiguration):
@@ -157,14 +147,11 @@ class RunBenchmarkExperiment(TaskConfiguration):
         return "run {}".format(RunBenchmarkExperiment.ID)
 
     def tasks(self, config) -> List:
-        collect_projects = CollectProjectsTask(config.data_path)
-        collect_versions = CollectVersionsTask()
-        checkout = CheckoutTask(config.checkouts_path, config.force_checkout, config.use_tmp_wrkdir)
         compile_version = CompileVersionTask(config.compiles_path, config.force_compile, config.use_tmp_wrkdir)
         load_detector = LoadDetectorTask(config.detectors_path, config.detector, config.requested_release,
                                          config.java_options)
         detect = DetectAllFindingsTask(config.findings_path, config.force_detect, config.timeout)
-        return [collect_projects, collect_versions, checkout, compile_version, load_detector, detect]
+        return CheckoutTaskConfiguration().tasks(config) + [compile_version, load_detector, detect]
 
 
 class PublishBenchmarkExperiment(TaskConfiguration):
@@ -186,13 +173,10 @@ class PublishMetadataTaskConfiguration(TaskConfiguration):
         return "publish metadata"
 
     def tasks(self, config) -> List:
-        collect_projects = CollectProjectsTask(config.data_path)
-        collect_versions = CollectVersionsTask()
-        checkout = CheckoutTask(config.checkouts_path, config.force_checkout, config.use_tmp_wrkdir)
         collect_misuses = CollectMisusesTask()
         publish = PublishMetadataTask(config.compiles_path, config.review_site_url, config.review_site_user,
                                       config.review_site_password)
-        return [collect_projects, collect_versions, checkout, collect_misuses, publish]
+        return CheckoutTaskConfiguration().tasks(config) + [collect_misuses, publish]
 
 
 class StatsTaskConfiguration(TaskConfiguration):
