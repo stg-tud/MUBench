@@ -5,28 +5,28 @@ from urllib.parse import urljoin
 
 from requests import RequestException
 
-from data.experiments import Experiment
+from data.detector import Detector
+from data.detector_run import DetectorRun
 from data.finding import SpecializedFinding
 from data.project import Project
 from data.version_compile import VersionCompile
 from data.project_version import ProjectVersion
-from data.run import Run
 from data.snippets import SnippetUnavailableException
+from tasks.implementations.findings_filters import PotentialHits
 from utils.web_util import post, as_markdown
 
 
 class PublishFindingsTask:
-    def __init__(self, experiment: Experiment, dataset: str, compiles_base_path: str, review_site_url: str,
-                 review_site_user: str= "", review_site_password: str= ""):
+    def __init__(self, experiment_id: str, detector: Detector, dataset: str, compiles_base_path: str,
+                 review_site_url: str, review_site_user: str= "", review_site_password: str= ""):
         super().__init__()
         self.max_files_per_post = 20  # 20 is PHP's default limit to the number of files per request
 
-        self.experiment = experiment
-        self.detector = experiment.detector
+        self.detector = detector
         self.dataset = dataset
         self.compiles_base_path = compiles_base_path
         self.review_site_url = review_site_url
-        self.__upload_url = urljoin(self.review_site_url, "api/upload/" + self.experiment.id)
+        self.__upload_url = urljoin(self.review_site_url, "api/upload/" + experiment_id)
         self.review_site_user = review_site_user
         self.review_site_password = review_site_password
 
@@ -37,14 +37,13 @@ class PublishFindingsTask:
                 "Enter review-site password for '{}': ".format(self.review_site_user))
 
         self.logger.info("Prepare findings of %s in %s for upload to %s...",
-                         self.detector, self.experiment, self.__upload_url)
+                         self.detector, experiment_id, self.__upload_url)
 
-    def run(self, project: Project, version: ProjectVersion, detector_run: Run,
-            version_compile: VersionCompile) -> List:
+    def run(self, project: Project, version: ProjectVersion, detector_run: DetectorRun,
+            potential_hits: PotentialHits, version_compile: VersionCompile):
         logger = self.logger.getChild("version")
 
         run_info = detector_run.get_run_info()
-        potential_hits = detector_run.get_potential_hits()
 
         if detector_run.is_success():
             logger.info("Preparing findings in %s...", version)
@@ -62,7 +61,7 @@ class PublishFindingsTask:
                 result = "not run"
 
         try:
-            logger.info("Publishing findings...")
+            logger.info("Publishing potential hits...")
             for potential_hits_slice in self.__slice_by_max_files_per_post(potential_hits):
                 post_data_slice = []
                 for potential_hit in potential_hits_slice:
@@ -71,7 +70,7 @@ class PublishFindingsTask:
 
                 file_paths = PublishFindingsTask.get_file_paths(potential_hits_slice)
                 self.__post(project, version, run_info, result, post_data_slice, file_paths)
-            logger.info("Findings published.")
+            logger.info("Potential hits published.")
         except RequestException as e:
             response = e.response
             if response:
@@ -79,8 +78,8 @@ class PublishFindingsTask:
             else:
                 logger.error("ERROR: %s", e)
 
-    def __slice_by_max_files_per_post(self, potential_hits: List[SpecializedFinding]) -> List[List[SpecializedFinding]]:
-        potential_hits_slice = []
+    def __slice_by_max_files_per_post(self, potential_hits: PotentialHits) -> List[PotentialHits]:
+        potential_hits_slice = PotentialHits([])
         number_of_files_in_slice = 0
         for potential_hit in potential_hits:
             number_of_files_in_hit = len(potential_hit.files)

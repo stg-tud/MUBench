@@ -5,7 +5,7 @@ from data.pattern import Pattern
 from utils.io import remove_tree
 
 
-class PatternsCompile:
+class MisuseCompile:
     PATTERN_SOURCE_DIR = "patterns-src"
     PATTERN_CLASSES_DIR = "patterns-classes"
     MISUSE_SOURCE_DIR = "misuse-src"
@@ -15,10 +15,10 @@ class PatternsCompile:
         self.base_path = base_path
         self.patterns = patterns
 
-        self.pattern_sources_path = join(self.base_path, PatternsCompile.PATTERN_SOURCE_DIR)
-        self.pattern_classes_path = join(self.base_path, PatternsCompile.PATTERN_CLASSES_DIR)
-        self.misuse_source_path = join(self.base_path, PatternsCompile.MISUSE_SOURCE_DIR)
-        self.misuse_classes_path = join(self.base_path, PatternsCompile.MISUSE_CLASSES_DIR)
+        self.pattern_sources_path = join(self.base_path, MisuseCompile.PATTERN_SOURCE_DIR)
+        self.pattern_classes_path = join(self.base_path, MisuseCompile.PATTERN_CLASSES_DIR)
+        self.misuse_source_path = join(self.base_path, MisuseCompile.MISUSE_SOURCE_DIR)
+        self.misuse_classes_path = join(self.base_path, MisuseCompile.MISUSE_CLASSES_DIR)
 
     def needs_copy_sources(self):
         return self.patterns and not isdir(self.get_source_path())

@@ -21,7 +21,7 @@ script:
   
   # mubench.pipeline
   - nosetests -w mubench.pipeline --with-xunit --xunit-file=shippable/testresults/nosetests.xml
-  - "./mubench.pipeline/benchmark.py detect DemoDetector 1 --only synthetic"
+  - "./mubench.pipeline/benchmark.py run ex1 DemoDetector --only synthetic"
   
   # mubench.reviewsite
   - ./mubench.reviewsite/configure.sh

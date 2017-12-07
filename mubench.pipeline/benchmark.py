@@ -64,4 +64,9 @@ for key in config.__dict__:
     logger.debug("    - %s = %r", key.ljust(15), config.__dict__[key])
 
 benchmark = Benchmark(config)
-benchmark.run()
+try:
+    benchmark.run()
+except Exception as e:
+    logger.error(str(e))
+    logger.debug("Full exception: ", exc_info=True)
+    exit(1)
