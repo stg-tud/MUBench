@@ -6,7 +6,7 @@ description: >
   Uses AES with default mode and padding which is considered a bad practice since the default values may vary between providers.
 location:
   file: webtend/webtend/utils/Crypto.java
-  method: "decryptAES(String value, String privateKey)"
+  method: "decryptAES(String, String)"
 internal: false
 pattern:
 - single object

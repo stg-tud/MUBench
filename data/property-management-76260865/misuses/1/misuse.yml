@@ -6,7 +6,7 @@ description: >
   Uses DES which is considered unsafe.
 location:
   file: com/jason/property/encrypte/DesEncrypter.java
-  method: "enCrypto(String txt, String key)"
+  method: "enCrypto(String, String)"
 internal: false
 pattern:
 - single object

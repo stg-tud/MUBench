@@ -6,7 +6,7 @@ description: >
   Uses NullCipher as a default which doesn't encrypt the data.
 location:
   file: src/main/java/javax/crypto/CipherInputStream.java
-  method: "CipherInputStream(InputStream is)"
+  method: "CipherInputStream(InputStream)"
 internal: true
 pattern:
 - single object

@@ -7,7 +7,7 @@ description: >
   Since these values might change per crypto provider this is considered a bad practice.
 location:
   file: main/java/org/jclouds/encryption/bouncycastle/BouncyCastleEncryptionService.java
-  method: "rsaPrivateEncrypt(String toSign, Key key)"
+  method: "rsaPrivateEncrypt(String, Key)"
 internal: true
 pattern:
 - single object

@@ -6,7 +6,7 @@ description: >
   Uses DES which is considered unsafe.
 location:
   file: server/generateChecksumPostsAndReplies.java
-  method: "main(String[] args)"
+  method: "main(String[])"
 internal: true
 pattern:
 - single object

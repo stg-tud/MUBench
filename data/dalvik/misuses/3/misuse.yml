@@ -6,7 +6,7 @@ description: >
   Uses RSA with PKCS1Padding.
 location:
   file: main/java/org/apache/harmony/xnet/provider/jsse/ServerHandshakeImpl.java
-  method: "unwrap(byte[] bytes)"
+  method: "unwrap(byte[])"
 internal: true
 fix:
   description: >

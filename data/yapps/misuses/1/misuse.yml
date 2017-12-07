@@ -6,7 +6,7 @@ description: >
   Uses AES with default mode and padding which is considered a bad practice.
 location:
   file: com/vouov/yapps/util/AESUtils.java
-  method: "aes(int mode, String password, byte[] textBytes)"
+  method: "aes(int, String, byte[])"
 internal: false
 pattern:
 - single object

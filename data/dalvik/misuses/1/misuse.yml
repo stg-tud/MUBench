@@ -6,7 +6,7 @@ description: >
   Uses DES which is considered unsafe.
 location:
   file: main/java/org/apache/harmony/xnet/provider/jsse/CipherSuite.java
-  method: "CipherSuite(String name, boolean isExportable, int keyExchange, String cipherName, String hash, byte[] code)"
+  method: "CipherSuite(String, boolean, int, String, String, byte[])"
 internal: true
 pattern:
 - single object

@@ -6,7 +6,7 @@ description: >
   Uses PBEWithMD5AndDES which is considered unsafe.
 location:
   file: net/minecraft/launcher/authentication/BaseAuthenticationService.java
-  method: "getCipher(final int mode, final String password)"
+  method: "getCipher(int, String)"
 internal: false
 pattern:
 - single object

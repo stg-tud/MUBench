@@ -6,7 +6,7 @@ description: >
   Uses PBEWithMD5AndDES which is considered unsafe.
 location:
   file: main/java/org/alfresco/mobile/android/platform/security/EncryptionUtils.java
-  method: "generateKey(Context ctxt, int bits)"
+  method: "generateKey(Context, int)"
 internal: true
 pattern:
 - single object

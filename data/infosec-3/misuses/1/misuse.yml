@@ -6,7 +6,7 @@ description: >
   Uses DES which is considered unsafe.
 location:
   file: app/checker/PrivateKeyChecker.java
-  method: "decryptPKCS5(byte[] encoded, Key key)"
+  method: "decryptPKCS5(byte[], Key)"
 internal: true
 pattern:
 - single object

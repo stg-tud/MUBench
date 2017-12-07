@@ -6,7 +6,7 @@ description: >
   Uses DES which is considered unsafe.
 location:
   file: SaavnFileRunner.java
-  method: "decryptPlay(final String str)"
+  method: "decryptPlay(String)"
 internal: true
 pattern:
 - single object
