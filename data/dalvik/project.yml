@@ -1,0 +1,5 @@
+name: Dalvik virtual machine and core class library
+repository:
+  type: git
+  url: https://github.com/0-kaladin/dalvik
+url: https://github.com/0-kaladin/dalvik

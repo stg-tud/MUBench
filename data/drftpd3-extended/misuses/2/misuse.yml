@@ -1,0 +1,15 @@
+api:
+- javax.crypto.Cipher
+characteristics:
+- superfluous/call
+description: >
+  May call `init()` multiple times on the same Cipher instance.
+location:
+  file: org/drftpd/plugins/sitebot/Blowfish.java
+  method: "encrypt(String)"
+fix:
+  description: >
+    Create a new Cipher instance for each encryption.
+internal: true
+pattern:
+- single object

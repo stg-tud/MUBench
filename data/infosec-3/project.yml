@@ -1,0 +1,5 @@
+name: Third and last project for Information Security course at PUC Rio
+repository:
+  type: git
+  url: https://github.com/firstdoit/infosec-3
+url: https://github.com/firstdoit/infosec-3

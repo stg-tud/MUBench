@@ -1,0 +1,12 @@
+api:
+- javax.crypto.Cipher
+characteristics:
+- missing/condition/value_or_state
+description: >
+  Uses DES which is considered unsafe.
+location:
+  file: net/blackhack/warwalk/DatabaseHandler.java
+  method: "encryptDatabase()"
+internal: false
+pattern:
+- single object

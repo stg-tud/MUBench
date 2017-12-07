@@ -1,0 +1,12 @@
+api:
+- javax.crypto.Cipher
+characteristics:
+- missing/condition/value_or_state
+description: >
+  Uses DES which is considered unsafe.
+location:
+  file: main/java/org/apache/harmony/xnet/provider/jsse/CipherSuite.java
+  method: "CipherSuite(String, boolean, int, String, String, byte[])"
+internal: true
+pattern:
+- single object

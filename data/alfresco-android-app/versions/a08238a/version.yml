@@ -1,0 +1,7 @@
+build:
+  tentative-commands:
+    - echo 'RELEASE_STORE_FILE="" RELEASE_STORE_PASSWORD="" RELEASE_KEY_ALIAS="" RELEASE_KEY_PASSWORD=""' >> gradle.properties
+    - replace "        classpath 'com.android.tools.build:gradle:2.1.0'" by "        classpath 'com.android.tools.build:gradle:2.3.3'" in build.gradle
+misuses:
+- '1'
+revision: a08238aa79b6cec4d0a810f0d9aff223dd16af21

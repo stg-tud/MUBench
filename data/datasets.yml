@@ -69,6 +69,37 @@ QACrashFix: # All misuses identified in the bug dataset.
   - wordpressa.780.3
   - wordpressa.1928.1
 
+JCA-Usages: # All misuses identified among mined Cipher usages (commented out versions do not compile).
+  #- alfresco-android-app.a08238a.1
+  - chensun.cf23b99.1
+  - chensun.cf23b99.2
+  - corona-old.0d0d18b.1
+  - corona-old.0d0d18b.2
+  - corona-old.0d0d18b.3
+  - corona-old.0d0d18b.4
+  #- dalvik.2ad60cf.1
+  #- dalvik.2ad60cf.2
+  #- dalvik.2ad60cf.3
+  #- drftpd3-extended.beeaae2.1
+  #- drftpd3-extended.beeaae2.2
+  #- ekool.33b8dd6.1
+  #- infosec-3.ae0fd5f.1
+  #- jclouds.7e12d36.1
+  - minecraft-launcher.e62d1bb.1
+  - progin5.3c01e7a.1
+  #- property-management-76260865.cf89bff.1
+  #- red5-server.f468609.1
+  #- red5-server.f468609.2
+  - saavn.e576758.1
+  - secure-tcp.aeba19a.1
+  - synthetic.siemens-i-ras.aes-ecb-mode
+  - synthetic.siemens-i-ras.static-key
+  - technic-launcher-sp.7809682.1
+  #- warwalk.9c85f74.1
+  #- webtend.8fe8f4f.1
+  #- webtend.8fe8f4f.2
+  - yapps.1ae52b0.1
+
 JCA-Changes-GH: # All misuses identified among mined changes to Cipher usages on GitHub.
   - alibaba-druid.e10f28.1
   - alibaba-druid.e10f28.2

@@ -1,0 +1,9 @@
+build:
+  classes: $gradle.default.classes
+  commands:
+  - gradle :compileJava
+  src: CS5430/src/
+misuses:
+- '1'
+- '2'
+revision: cf23b99a0c78596b5dc5bb25691736c9abd0a84d

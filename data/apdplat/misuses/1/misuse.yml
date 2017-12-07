@@ -1,0 +1,12 @@
+api:
+- javax.crypto.Cipher
+characteristics:
+- missing/condition/value_or_state
+description: >
+  Uses DES which is unsafe.
+location:
+  file: org/apdplat/module/security/service/sequence/EncryptClassUtils.java
+  method: "encrypt(String keyFile, String classFile, String newClassFile)"
+internal: false
+pattern:
+- single object

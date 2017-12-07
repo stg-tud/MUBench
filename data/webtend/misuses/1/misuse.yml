@@ -1,0 +1,12 @@
+api:
+- javax.crypto.Cipher
+characteristics:
+- missing/condition/value_or_state
+description: >
+  Uses AES with default mode and padding which is considered a bad practice.
+location:
+  file: webtend/webtend/utils/Crypto.java
+  method: "encryptAES(String, String)"
+internal: false
+pattern:
+- single object

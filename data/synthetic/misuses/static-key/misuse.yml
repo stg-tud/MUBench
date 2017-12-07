@@ -1,0 +1,19 @@
+api:
+- javax.crypto
+characteristics:
+- missing/condition/value_or_state
+crash: false
+description: >
+  The key used is defined statically in the code.
+location:
+  file: Encrypting.java
+  method: encryptWithKey(byte[])
+fix:
+  description: >
+    Generate a non-predictable key.
+internal: false
+pattern:
+- single object
+source:
+  name: Analyse der Verwendung von Kryptographie-APIs in Java-basierten Anwendungen
+
