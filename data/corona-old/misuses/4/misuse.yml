@@ -3,10 +3,9 @@ api:
 characteristics:
 - missing/condition/value_or_state
 description: >
-  Uses AES with default mode and padding. 
-  Since these values might change per crypto provider this is considered a bad practice.
+  Uses DES which is considered unsafe.
 location:
-  file: com/corona/crypto/AESCypher.java
+  file: com/corona/crypto/DESCypher.java
   method: "setDecryptKey(byte[])"
 internal: true
 pattern:

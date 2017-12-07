@@ -27,7 +27,7 @@ public class AES {
 
 			cipher.init(Cipher.ENCRYPT_MODE, secretKey, 
 					new IvParameterSpec(iv));
-			
+
 			byte[] byteDataToEncrypt = strDataToEncrypt.getBytes();
 			byte[] byteCipherText = cipher.doFinal(byteDataToEncrypt);
 		}
@@ -53,7 +53,7 @@ public class AES {
 
 	public void decrypt(byte[] cipherText, SecretKey secretKey, byte[] iv){
 		try {
-			Cipher cipher = Cipher.getInstance("AES/CBC/PKCS7Padding");
+			Cipher cipher = Cipher.getInstance("AES/CBC/PKCS7Padding");		
 			cipher.init(Cipher.DECRYPT_MODE, secretKey, new IvParameterSpec(iv));
 			byte[] byteDecryptedText = cipher.doFinal(cipherText);
 			String decryptedText = new String(byteDecryptedText);
