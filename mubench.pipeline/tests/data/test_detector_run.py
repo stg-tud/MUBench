@@ -179,10 +179,8 @@ class TestDetectorRun:
         args = uut._execute.call_args[0][0]
         assert key_findings_file in args
 
-
-class TestDetectorExecutionLoadFindings:
     @patch("data.detector_run.open_yamls_if_exists")
-    def test_adds_rank(self, read_yamls_mock):
+    def test_adds_rank(self, read_yamls_mock, _):
         read_yamls_mock.return_value.__enter__.return_value = [{"name": "f1"}, {"name": "f2"}]
         execution = DetectorRun(StubDetector(), create_version("-v-"), "-findings-path-")
 
@@ -192,4 +190,3 @@ class TestDetectorExecutionLoadFindings:
             Finding({"name": "f1", "rank": 0}),
             Finding({"name": "f2", "rank": 1})
         ])
-
