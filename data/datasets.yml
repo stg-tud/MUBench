@@ -1,159 +1,331 @@
-crypto:
-- adempiere.1
-- adempiere.2
-- alibaba-druid.1
-- alibaba-druid.2
-- android-rcs-rcsjta.1
-- battleforge.1
-- battleforge.2
-- battleforge.3
-- battleforge.4
-- itext.1
-- jmrtd.2
-- pawotag.1
-- tab-apps.1
-icse16ex1:
-- aclang.587
-- acmath.998
-- adempiere.1312
-- alibaba-druid.e10f28
-- closure.114
-- closure.884
-- closure.319
-- httpclient.302
-- httpclient.444
-- httpclient.452
-- itext.5091
-- jackrabbit.1601
-- jackrabbit.1678
-- jackrabbit.1694
-- jackrabbit.1750
-- jfreechart.2183
-- jfreechart.164
-- jfreechart.2266
-- jfreechart.881
-- jfreechart.1025
-- jfreechart.103
-- jmrtd.67
-- jmrtd.51
-- jodatime.1231
-- lucene.754
-- lucene.207
-- lucene.1251
-- lucene.1918
-- rhino.286251
-- synthetic
-icse16ex2:
-- closure.319
-- itext.5091
-- jmrtd.51
-- jodatime.1231
-- lucene.1918
-icse16ex3:
-- aclang.587
-- acmath.998
-- adempiere.1312
-- alibaba-druid.e10f28
-- closure.114
-- closure.884
-- closure.319
-- httpclient.302
-- httpclient.444
-- httpclient.452
-- itext.5091
-- jackrabbit.1601
-- jackrabbit.1678
-- jackrabbit.1694
-- jackrabbit.1750
-- jfreechart.2183
-- jfreechart.164
-- jfreechart.2266
-- jfreechart.881
-- jfreechart.1025
-- jfreechart.103
-- jmrtd.67
-- jmrtd.51
-- jodatime.1231
-- lucene.754
-- lucene.207
-- lucene.1251
-- lucene.1918
-- rhino.286251
-owolabi-ase16:
-- apache-gora.bb09d89-accumulo.56_1
-- apache-gora.bb09d89-core.56_2
-- asterisk-java.304421c.81
-- asterisk-java.41461b4.194
-- bcel.24014e5.101
-- hoverruan-weiboclient4j.6ca0c73.128
-- hoverruan-weiboclient4j.6ca0c73.129
-- hoverruan-weiboclient4j.6ca0c73.130
-- hoverruan-weiboclient4j.6ca0c73.131
-- hoverruan-weiboclient4j.6ca0c73.132
-- hoverruan-weiboclient4j.6ca0c73.133
-- hoverruan-weiboclient4j.6ca0c73.134
-- ivantrendafilov-confucius.2c30287.93
-- ivantrendafilov-confucius.2c30287.94
-- ivantrendafilov-confucius.2c30287.95
-- ivantrendafilov-confucius.2c30287.96
-- ivantrendafilov-confucius.2c30287.97
-- ivantrendafilov-confucius.2c30287.98
-- ivantrendafilov-confucius.2c30287.99
-- ivantrendafilov-confucius.2c30287.100
-- ivantrendafilov-confucius.2c30287.101
-- jodatime.cc35fb2.339
-- jodatime.cc35fb2.361
-- jodatime.cc35fb2.362
-- jodatime.cc35fb2.363
-- jodatime.cc35fb2-tests.269
-- jodatime.cc35fb2-tests.270
-- jodatime.cc35fb2-tests.271
-- jodatime.cc35fb2-tests.272
-- jodatime.cc35fb2-tests.273
-- jodatime.cc35fb2-tests.274
-- jodatime.cc35fb2-tests.275
-- jodatime.cc35fb2-tests.276
-- jodatime.cc35fb2-tests.277
-- jodatime.cc35fb2-tests.278
-- jodatime.cc35fb2-tests.279
-- jodatime.cc35fb2-tests.280
-- jodatime.cc35fb2-tests.281
-- jodatime.cc35fb2-tests.282
-- jodatime.cc35fb2-tests.283
-- jodatime.cc35fb2-tests.284
-- jodatime.cc35fb2-tests.285
-- jodatime.cc35fb2-tests.286
-- jodatime.cc35fb2-tests.287
-- jodatime.cc35fb2-tests.288
-- jodatime.cc35fb2-tests.289
-- jodatime.cc35fb2-tests.290
-- jodatime.cc35fb2-tests.291
-- jodatime.cc35fb2-tests.292
-- jodatime.cc35fb2-tests.293
-- jodatime.cc35fb2-tests.294
-- jodatime.cc35fb2-tests.295
-- jodatime.cc35fb2-tests.296
-- jodatime.cc35fb2-tests.297
-- jodatime.cc35fb2-tests.298
-- jodatime.cc35fb2-tests.299
-- jodatime.cc35fb2-tests.300
-- jodatime.cc35fb2-tests.301
-- jodatime.cc35fb2-tests.302
-- jodatime.cc35fb2-tests.303
-- jodatime.cc35fb2-tests.304
-- jriecken-gae-java-mini-profiler.80f3a59.39
-- logblock-logblock-2.40548aa.15
-- mqtt.f438425.389
-- mqtt.f438425.390
-- tbuktu-ntru.8126929.473
-- tbuktu-ntru.8126929.474
-- tbuktu-ntru.8126929.475
-- tbuktu-ntru.8126929.476
-- testng.677302c.22
-- testng.92e7da1.17
-- testng.92e7da1.18
-- testng.cd80791.21
-- testng.d6dfce3.16
-- thomas-s-b-visualee.410a80f.29
-- thomas-s-b-visualee.410a80f.30
-- thomas-s-b-visualee.410a80f.32
+###
+### Datasets that group misuses by the source we identified them from.
+###
+
+BugClassify: # All misuses identified in the bug dataset.
+  - httpclient.302.1
+  - httpclient.444.2
+  - httpclient.444.3
+  - httpclient.452.4
+  - jackrabbit.1601.1
+  - jackrabbit.1678.2
+  - jackrabbit.1694.3a
+  - jackrabbit.1694.3b
+  - jackrabbit.1750.5
+  - jackrabbit.2385.6
+  - jackrabbit.2580.7
+  - jackrabbit.2681.8
+  - jackrabbit.2984.9
+  - jackrabbit.3050.10
+  - jackrabbit.3090.11
+  - jackrabbit.3189.12
+  - jackrabbit-incubator.14.1
+  - jackrabbit-incubator.201.2
+  - lucene.207.3
+  - lucene.754.5
+  - lucene.1251.1
+  - lucene.1918.2
+  - lucene.2521.4
+  - rhino.286251.1
+
+Defects4J: # All misuses identified in the bug dataset.
+  - aclang.587.1
+  - aclang.587.2
+  - acmath.998.1
+  - acmath.998.2
+  - closure.114.1
+  - closure.319.2
+  - closure.884.3
+  - jfreechart.103.2
+  - jfreechart.164.3a
+  - jfreechart.164.3b
+  - jfreechart.164.4a
+  - jfreechart.164.4b
+  - jfreechart.881.7a
+  - jfreechart.881.7b
+  - jfreechart.1025.1
+  - jfreechart.2183.5
+  - jfreechart.2266.6
+
+iBugs: # All misuses identified in the bug dataset.
+  - jodatime.1231.1
+  # The other 45 misuses (in AspectJ) could not be located in source control.
+
+QACrashFix: # All misuses identified in the bug dataset.
+  - androiduil.660.1
+  - calligraphy.41.1
+  - calligraphy.41.2
+  - cgeo.887.1
+  - gnucrasha.221.1a
+  - gnucrasha.221.1b
+  - lnreadera.62.1
+  - lnreadera.62.2
+  - onosendai.100.1
+  - openiab.62.1
+  - screen-notifications.23.1
+  - thebluealliancea.253.1
+  - tucanmobile.27.1
+  - ushahidia.100.1
+  - wordpressa.780.3
+  - wordpressa.1928.1
+
+JCA-Changes-GH: # All misuses identified among mined changes to Cipher usages on GitHub.
+  - alibaba-druid.e10f28.1
+  - alibaba-druid.e10f28.2
+  - andoid-rcs-rcsjta.04d847.1
+
+JCA-Changes-SF: # All misuses identified among mined changes to Cipher usages on SourceForge. 
+  - adempiere.1312.1
+  - adempiere.1312.2
+  - battleforge.878.1
+  - battleforge.878.2
+  - battleforge.878.3
+  - battleforge.878.4
+  - itext.5091.1
+  - jmrtd.51.1
+  - jmrtd.67.2
+  - pawotag.82.1
+  - tab-apps.62.1
+
+DeveloperSurvey: # All misuses hand-crafted from responses to our developer survey.
+  - synthetic.androidactivity-1.androidactivity-1
+  - synthetic.androidactivity-2.androidactivity-2
+  - synthetic.close-1.close-1
+  - synthetic.close-2.close-2
+  - synthetic.cme.cme
+  - synthetic.fisexists.fisexists
+  - synthetic.flip-1.flip-1
+  - synthetic.flip-2.flip-2
+  - synthetic.flush.flush
+  - synthetic.hasnext.hasnext
+  - synthetic.listget.listget
+  - synthetic.mapkeynull.mapkeynull
+  - synthetic.mapnull.mapnull
+  - synthetic.nofile.nofile
+  - synthetic.pack-1.pack-1
+  - synthetic.pack-2.pack-2
+  - synthetic.setfirst.setfirst
+
+Legunsen-ASE16: # All misuses imported from Lagunsen et al.'s ASE'16 study.
+  - apache-gora.bb09d89-accumulo.56_1
+  - apache-gora.bb09d89-core.56_2
+  - asterisk-java.304421c.81
+  - asterisk-java.41461b4.194
+  - bcel.24014e5.101
+  - hoverruan-weiboclient4j.6ca0c73.128
+  - hoverruan-weiboclient4j.6ca0c73.129
+  - hoverruan-weiboclient4j.6ca0c73.130
+  - hoverruan-weiboclient4j.6ca0c73.131
+  - hoverruan-weiboclient4j.6ca0c73.132
+  - hoverruan-weiboclient4j.6ca0c73.133
+  - hoverruan-weiboclient4j.6ca0c73.134
+  - ivantrendafilov-confucius.2c30287.93
+  - ivantrendafilov-confucius.2c30287.94
+  - ivantrendafilov-confucius.2c30287.95
+  - ivantrendafilov-confucius.2c30287.96
+  - ivantrendafilov-confucius.2c30287.97
+  - ivantrendafilov-confucius.2c30287.98
+  - ivantrendafilov-confucius.2c30287.99
+  - ivantrendafilov-confucius.2c30287.100
+  - ivantrendafilov-confucius.2c30287.101
+  - jodatime.cc35fb2.339
+  - jodatime.cc35fb2.361
+  - jodatime.cc35fb2.362
+  - jodatime.cc35fb2.363
+  - jodatime.cc35fb2-tests.269
+  - jodatime.cc35fb2-tests.270
+  - jodatime.cc35fb2-tests.271
+  - jodatime.cc35fb2-tests.272
+  - jodatime.cc35fb2-tests.273
+  - jodatime.cc35fb2-tests.274
+  - jodatime.cc35fb2-tests.275
+  - jodatime.cc35fb2-tests.276
+  - jodatime.cc35fb2-tests.277
+  - jodatime.cc35fb2-tests.278
+  - jodatime.cc35fb2-tests.279
+  - jodatime.cc35fb2-tests.280
+  - jodatime.cc35fb2-tests.281
+  - jodatime.cc35fb2-tests.282
+  - jodatime.cc35fb2-tests.283
+  - jodatime.cc35fb2-tests.284
+  - jodatime.cc35fb2-tests.285
+  - jodatime.cc35fb2-tests.286
+  - jodatime.cc35fb2-tests.287
+  - jodatime.cc35fb2-tests.288
+  - jodatime.cc35fb2-tests.289
+  - jodatime.cc35fb2-tests.290
+  - jodatime.cc35fb2-tests.291
+  - jodatime.cc35fb2-tests.292
+  - jodatime.cc35fb2-tests.293
+  - jodatime.cc35fb2-tests.294
+  - jodatime.cc35fb2-tests.295
+  - jodatime.cc35fb2-tests.296
+  - jodatime.cc35fb2-tests.297
+  - jodatime.cc35fb2-tests.298
+  - jodatime.cc35fb2-tests.299
+  - jodatime.cc35fb2-tests.300
+  - jodatime.cc35fb2-tests.301
+  - jodatime.cc35fb2-tests.302
+  - jodatime.cc35fb2-tests.303
+  - jodatime.cc35fb2-tests.304
+  - jriecken-gae-java-mini-profiler.80f3a59.39
+  - logblock-logblock-2.40548aa.15
+  - mqtt.f438425.389
+  - mqtt.f438425.390
+  - tbuktu-ntru.8126929.473
+  - tbuktu-ntru.8126929.474
+  - tbuktu-ntru.8126929.475
+  - tbuktu-ntru.8126929.476
+  - testng.677302c.22
+  - testng.92e7da1.17
+  - testng.92e7da1.18
+  - testng.cd80791.21
+  - testng.d6dfce3.16
+  - thomas-s-b-visualee.410a80f.29
+  - thomas-s-b-visualee.410a80f.30
+  - thomas-s-b-visualee.410a80f.32
+
+###
+### The datasets used for the experiments in the TSE'17 paper.
+###
+
+Ex1-TSE17:
+  - aclang.587.1
+  - aclang.587.2
+  - acmath.998.1
+  - acmath.998.2
+  - adempiere.1312.1
+  - adempiere.1312.2
+  - alibaba-druid.e10f28.1
+  - alibaba-druid.e10f28.2
+  - closure.114.1
+  - closure.884.3
+  - closure.319.2
+  - httpclient.302.1
+  - httpclient.444.2
+  - httpclient.444.3
+  - httpclient.452.4
+  - itext.5091.1
+  - jackrabbit.1601.1
+  - jackrabbit.1678.2
+  - jackrabbit.1694.3a
+  - jackrabbit.1694.3b
+  - jackrabbit.1750.5
+  - jfreechart.2183.5
+  - jfreechart.164.3a
+  - jfreechart.164.3b
+  - jfreechart.164.4a
+  - jfreechart.164.4b
+  - jfreechart.2266.6
+  - jfreechart.881.7a
+  - jfreechart.881.7b
+  - jfreechart.1025.1
+  - jfreechart.103.2
+  - jmrtd.51.1
+  - jmrtd.67.2
+  - jodatime.1231.1
+  - lucene.754.5
+  - lucene.207.3
+  - lucene.1251.1
+  - lucene.1918.2
+  - rhino.286251.1
+  - synthetic.alreadyondte.alreadyondte
+  - synthetic.callondte.callondte
+  - synthetic.close-1.close-1
+  - synthetic.close-2.close-2
+  - synthetic.cme.cme
+  - synthetic.deadlock.deadlock
+  - synthetic.fisexists.fisexists
+  - synthetic.flip-1.flip-1
+  - synthetic.flip-2.flip-2
+  - synthetic.flush.flush
+  - synthetic.hasnext.hasnext
+  - synthetic.latenullcheck.latenullcheck
+  - synthetic.listget.listget
+  - synthetic.mapkeynull.mapkeynull
+  - synthetic.mapnull.mapnull
+  - synthetic.maybenull.maybenull
+  - synthetic.nofile.nofile
+  - synthetic.pack-1.pack-1
+  - synthetic.pack-2.pack-2
+  - synthetic.repetitive.repetitive
+  - synthetic.setfirst.setfirst
+  - synthetic.supresserror.supresserror
+  - synthetic.toorestrictive.toorestrictive
+  - synthetic.unsynchronized.unsynchronized
+  - synthetic.wait-loop.wait-loop
+
+Ex2-TSE17:
+  - closure.319
+  - itext.5091
+  - jmrtd.51
+  - jodatime.1231
+  - lucene.1918
+
+Ex3-TSE17:
+  - aclang.587.1
+  - aclang.587.2
+  - acmath.998.1
+  - acmath.998.2
+  - adempiere.1312.1
+  - adempiere.1312.2
+  - alibaba-druid.e10f28.1
+  - alibaba-druid.e10f28.2
+  - closure.114.1
+  - closure.884.3
+  - closure.319.2
+  - closure.319.dmmc-1023
+  - closure.319.dmmc-13
+  - closure.319.tikanga-2
+  - closure.319.tikanga-6
+  - httpclient.302.1
+  - httpclient.444.2
+  - httpclient.444.3
+  - httpclient.452.4
+  - itext.5091.1
+  - itext.5091.dmmc-15
+  - itext.5091.dmmc-16
+  - itext.5091.dmmc-18
+  - itext.5091.dmmc-61
+  - itext.5091.dmmc-357
+  - itext.5091.dmmc-937
+  - itext.5091.jadet-5
+  - itext.5091.jadet-9
+  - jackrabbit.1601.1
+  - jackrabbit.1678.2
+  - jackrabbit.1694.3a
+  - jackrabbit.1694.3b
+  - jackrabbit.1750.5
+  - jfreechart.2183.5
+  - jfreechart.164.3a
+  - jfreechart.164.3b
+  - jfreechart.164.4a
+  - jfreechart.164.4b
+  - jfreechart.2266.6
+  - jfreechart.881.7a
+  - jfreechart.881.7b
+  - jfreechart.1025.1
+  - jfreechart.103.2
+  - jmrtd.51.1
+  - jmrtd.67.2
+  - jodatime.1231.1
+  - lucene.754.5
+  - lucene.207.3
+  - lucene.1251.1
+  - lucene.1918.2
+  - lucene.1918.tikanga-0
+  - lucene.1918.tikanga-1
+  - rhino.286251.1
+
+###
+### Other experiment datasets.
+###
+
+JCA-All: # All JCA misuses.
+  - alibaba-druid.e10f28.1
+  - alibaba-druid.e10f28.2
+  - andoid-rcs-rcsjta.04d847.1
+  - itext.5091.1
+  - jmrtd.67.2
+  - pawotag.82.1
+  - tab-apps.62.1
