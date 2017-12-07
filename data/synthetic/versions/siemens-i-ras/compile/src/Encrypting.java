@@ -11,7 +11,7 @@ public class Encrypting {
 	}
 	
 	private static byte[] encrypt(byte[] key, byte[] content) throws Exception {
-		// "AES" has an unsafe default configuration of "AES/EBC/PKCS5Padding"
+		// "AES" has an unsafe default configuration of "AES/ECB/PKCS5Padding"
 		SecretKeySpec keySpec = new SecretKeySpec(key, "AES");
 		Cipher c = Cipher.getInstance("AES");
 		c.init(Cipher.ENCRYPT_MODE, keySpec);
