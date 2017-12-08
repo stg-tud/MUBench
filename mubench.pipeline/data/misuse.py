@@ -125,7 +125,7 @@ class Misuse:
     def get_snippets(self, source_base_path: str) -> List[Snippet]:
         return get_snippets(source_base_path, self.location.file, self.location.method)
 
-    def get_patterns_compile(self, base_path: str) -> MisuseCompile:
+    def get_misuse_compile(self, base_path: str) -> MisuseCompile:
         return MisuseCompile(join(base_path, self.project_id, self.misuse_id), self.patterns)
 
     def __str__(self):
