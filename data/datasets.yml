@@ -91,6 +91,7 @@ JCA-Usages: # All misuses identified among mined Cipher usages (commented out ve
   #- property-management-76260865.cf89bff.1
   #- red5-server.f468609.1
   - saavn.e576758.1
+  - saavn.e576758.2
   - secure-tcp.aeba19a.1
   - synthetic.siemens-i-ras.aes-ecb-mode
   - synthetic.siemens-i-ras.static-key

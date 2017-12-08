@@ -6,4 +6,5 @@ build:
   src: src/saavn/cz/vity/freerapid/plugins/services/saavn/
 misuses:
 - '1'
+- '2'
 revision: e576758041bfb787673311549568c1db119d6ffd

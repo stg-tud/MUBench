@@ -1,0 +1,12 @@
+api:
+- javax.crypto.spec.SecretKeySpec
+characteristics:
+- missing/condition/value_or_state
+description: >
+  Uses static key.
+location:
+  file: SaavnFileRunner.java
+  method: "decryptPlay(String)"
+internal: false
+pattern:
+- single object
