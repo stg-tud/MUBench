@@ -20,16 +20,17 @@ class TestCompilePatterns:
         self.compile_base_path = join(self.temp_dir, "-compile-")
 
         project = create_project("-project-", base_path=self.data_base_path)
+        self.pattern = Pattern(join(self.data_base_path, "-project-", "-misuse-", "patterns"),
+                               join("-package-", "-pattern-.java"))
         self.misuse = create_misuse("-misuse-", project=project,
-                                    patterns=[Pattern(self.data_base_path, join("-project-", "-misuse-", "patterns",
-                                                                                "-pattern-.java"))])
+                                    patterns=[self.pattern])
         version = create_version("-version-", project=project, misuses=[self.misuse])
 
         self.compile = version.get_compile(self.compile_base_path)
         self.compile.get_full_classpath = lambda: join(self.temp_dir, "dependencies.jar")
 
-        self.patterns_compile = self.misuse.get_patterns_compile(self.compile_base_path)
-        self.misuse.get_patterns_compile = lambda *_: self.patterns_compile
+        self.misuse_compile = self.misuse.get_misuse_compile(self.compile_base_path)
+        self.misuse.get_misuse_compile = lambda *_: self.misuse_compile
 
     def teardown(self):
         remove_tree(self.temp_dir)
@@ -39,20 +40,20 @@ class TestCompilePatterns:
 
         uut.run(self.misuse, self.compile)
 
-        copy_patterns_mock.assert_called_once_with(self.misuse.patterns, self.patterns_compile.get_source_path())
+        copy_patterns_mock.assert_called_once_with(self.misuse.patterns, self.misuse_compile.get_source_path())
 
     def test_compiles_patterns(self, compile_mock, _, __, ___):
         uut = CompileMisuseTask(self.compile_base_path, force_compile=False)
 
         uut.run(self.misuse, self.compile)
 
-        compile_mock.assert_called_once_with({join(self.patterns_compile.get_source_path(), "-pattern-.java")},
-                                             self.patterns_compile.get_classes_path(),
+        compile_mock.assert_called_once_with({self.pattern.path},
+                                             self.misuse_compile.get_classes_path(),
                                              self.compile.get_full_classpath())
 
     def test_skips_compile_if_not_needed(self, compile_mock, _, __, ___):
         uut = CompileMisuseTask(self.compile_base_path, force_compile=False)
-        self.patterns_compile.needs_compile = lambda: False
+        self.misuse_compile.needs_compile = lambda: False
 
         uut.run(self.misuse, self.compile)
 
@@ -60,13 +61,13 @@ class TestCompilePatterns:
 
     def test_forces_compile_patterns(self, compile_mock, _, __, ___):
         uut = CompileMisuseTask(self.compile_base_path, force_compile=True)
-        self.patterns_compile.delete = MagicMock()
+        self.misuse_compile.delete = MagicMock()
 
         uut.run(self.misuse, self.compile)
 
-        self.patterns_compile.delete.assert_called_once_with()
-        compile_mock.assert_called_once_with({join(self.patterns_compile.get_source_path(), "-pattern-.java")},
-                                             self.patterns_compile.get_classes_path(),
+        self.misuse_compile.delete.assert_called_once_with()
+        compile_mock.assert_called_once_with({self.pattern.path},
+                                             self.misuse_compile.get_classes_path(),
                                              self.compile.get_full_classpath())
 
 

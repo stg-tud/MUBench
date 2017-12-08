@@ -21,7 +21,7 @@ class CompileMisuseTask:
     def run(self, misuse: Misuse, version_compile: VersionCompile):
         logger = logging.getLogger("task.compile_patterns")
 
-        pattern_compile = misuse.get_patterns_compile(self.compile_base_path)
+        pattern_compile = misuse.get_misuse_compile(self.compile_base_path)
 
         if self.force_compile:
             pattern_compile.delete()
@@ -45,7 +45,7 @@ class CompileMisuseTask:
 
                 source_files = set()
                 for pattern in pattern_compile.patterns:
-                    source_files.add(join(pattern_compile.get_source_path(), pattern.name + ".java"))
+                    source_files.add(pattern.path)
 
                 CompileMisuseTask._compile(source_files,
                                            pattern_compile.get_classes_path(),
