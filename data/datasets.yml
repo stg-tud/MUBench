@@ -70,6 +70,7 @@ QACrashFix: # All misuses identified in the bug dataset.
   - wordpressa.1928.1
 
 JCA-Usages: # All misuses identified among mined Cipher usages (commented out versions do not compile).
+  #- apdplat.c0cb90e.1
   #- alfresco-android-app.a08238a.1
   - chensun.cf23b99.1
   - chensun.cf23b99.2
@@ -89,7 +90,6 @@ JCA-Usages: # All misuses identified among mined Cipher usages (commented out ve
   - progin5.3c01e7a.1
   #- property-management-76260865.cf89bff.1
   #- red5-server.f468609.1
-  #- red5-server.f468609.2
   - saavn.e576758.1
   - secure-tcp.aeba19a.1
   - synthetic.siemens-i-ras.aes-ecb-mode
