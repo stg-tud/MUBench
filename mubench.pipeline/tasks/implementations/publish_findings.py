@@ -30,18 +30,15 @@ class PublishFindingsTask:
         self.review_site_user = review_site_user
         self.review_site_password = review_site_password
 
-        self.logger = logging.getLogger("tasks.review_findings")
-
         if self.review_site_user and not self.review_site_password:
             self.review_site_password = getpass.getpass(
                 "Enter review-site password for '{}': ".format(self.review_site_user))
 
-        self.logger.info("Prepare findings of %s in %s for upload to %s...",
-                         self.detector, self.experiment_id, self.review_site_url)
-
     def run(self, project: Project, version: ProjectVersion, detector_run: DetectorRun,
             potential_hits: PotentialHits, version_compile: VersionCompile):
-        logger = self.logger.getChild("version")
+        logger = logging.getLogger("tasks.publish_findings.version")
+        logger.info("Prepare findings of %s in %s for upload to %s...",
+                    self.detector, self.experiment_id, self.review_site_url)
 
         run_info = detector_run.get_run_info()
 
