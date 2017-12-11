@@ -1,0 +1,15 @@
+api:
+- java.lang.String
+characteristics:
+- superfluous/call
+- missing/call
+crash: false
+description: >
+   Method invokes inefficient new String(String) constructor.
+location:
+  file: sos/util/Hex.java
+  method: "pad(String, int, char, boolean)"
+internal: false
+source:
+  name: Findbugs
+  url: http://findbugs.sourceforge.net/index.html

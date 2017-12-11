@@ -1,0 +1,15 @@
+api:
+- java.lang.String
+characteristics:
+- superfluous/call
+- missing/call
+crash: false
+description: >
+   Comparison of String objects using == or != and not using equals().
+location:
+  file: org/apache/lucene/analysis/standard/StandardFilter.java
+  method: "incrementToken()"
+internal: false
+source:
+  name: Findbugs
+  url: http://findbugs.sourceforge.net/index.html

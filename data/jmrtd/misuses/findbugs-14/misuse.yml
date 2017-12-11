@@ -1,0 +1,15 @@
+api:
+- java.lang.Short
+characteristics:
+- superfluous/call
+- missing/call
+crash: false
+description: >
+   Method invokes inefficient new Short(short) constructor, better to use Short.valueOf(short) instead.
+location:
+  file: sos/mrtd/PassportFileService.java
+  method: "readFile(short)"
+internal: false
+source:
+  name: Findbugs
+  url: http://findbugs.sourceforge.net/index.html

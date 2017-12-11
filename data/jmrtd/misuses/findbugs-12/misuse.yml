@@ -1,0 +1,15 @@
+api:
+- java.lang.Exception
+characteristics:
+- superfluous/exception handling
+- missing/exception handling
+crash: false
+description: >
+   Exception is caught when Exception is not thrown.
+location:
+  file: sos/mrtd/sample/PassportGUI.java
+  method: "(String[])"
+internal: false
+source:
+  name: Findbugs
+  url: http://findbugs.sourceforge.net/index.html

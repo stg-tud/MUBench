@@ -1,0 +1,14 @@
+api:
+- byte array
+characteristics:
+- superfluous/call
+crash: false
+description: >
+   Invocation of toString on buffer variable which is a byte array.
+location:
+  file: org/apache/lucene/store/BufferedIndexInput.java
+  method: "setBufferSize(int)"
+internal: false
+source:
+  name: Findbugs
+  url: http://findbugs.sourceforge.net/index.html

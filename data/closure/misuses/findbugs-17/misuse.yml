@@ -1,0 +1,15 @@
+api:
+- java.lang.IllegalArgumentException
+- java.lang.String
+characteristics:
+- superfluous/value_or_state
+crash: true
+description: >
+  Load of known null value as argument.
+location:
+  file: com/google/javascript/jscomp/graph/LinkedDirectedGraph.java
+  method: "getDirectedSuccNodes(DiGraphNode)"
+internal: false
+source:
+  name: Findbugs
+  url: http://findbugs.sourceforge.net/index.html

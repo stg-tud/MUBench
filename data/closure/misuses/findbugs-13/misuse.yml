@@ -1,0 +1,14 @@
+api:
+- java.io.File
+characteristics:
+- missing/condition/value_or_state
+crash: false
+description: >
+  Exceptional return value of java.io.File.mkdirs() ignored.
+location:
+  file: com/google/javascript/jscomp/AbstractCommandLineRunner.java
+  method: "maybeCreateDirsForPath(String)"
+internal: false
+source:
+  name: Findbugs
+  url: http://findbugs.sourceforge.net/index.html

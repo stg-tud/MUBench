@@ -1,0 +1,15 @@
+api:
+- java.lang.String
+- com.google.javascript.rhino.Node
+characteristics:
+- missing/condition/null_check
+crash: true
+description: >
+  Node.getQualifiedName() may return null as mentioned in its contract.
+location:
+  file: com/google/javascript/jscomp/ProcessClosurePrimitives.java
+  method: "processBaseClassCall(NodeTraversal, Node)"
+internal: false
+source:
+  name: Findbugs
+  url: http://findbugs.sourceforge.net/index.html

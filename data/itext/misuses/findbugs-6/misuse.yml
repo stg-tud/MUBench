@@ -1,0 +1,14 @@
+api:
+- org.w3c.dom.Node
+characteristics:
+- missing/condition/null_check
+crash: true
+description: >
+   Node.getNextSibling() may return a null value.
+location:
+  file: com/itextpdf/text/pdf/XfaForm.java
+  method: "createDatasetsNode(Node)"
+internal: false
+source:
+  name: Findbugs
+  url: http://findbugs.sourceforge.net/index.html

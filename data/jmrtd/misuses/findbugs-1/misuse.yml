@@ -1,0 +1,15 @@
+api:
+- byte array
+- java.io.DataInputStream
+characteristics:
+- missing/condition/null_check
+crash: false
+description: >
+   Possible null passed for non-null parameter of new java.io.ByteArrayInputStream(byte[])
+location:
+  file: sos/mrtd/PassportService.java
+  method: "readFace()"
+internal: false
+source:
+  name: Findbugs
+  url: http://findbugs.sourceforge.net/index.html

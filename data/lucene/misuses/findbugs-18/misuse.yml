@@ -1,0 +1,14 @@
+api:
+- org.apache.lucene.index.MergeScheduler
+characteristics:
+- missing/condition/synchronization
+crash: false
+description: >
+   setMergeScheduler(MergeScheduler) is synchronized but not getMergeScheduler()
+location:
+  file: org/apache/lucene/index/IndexWriter.java
+  method: "getMergeScheduler()"
+internal: false
+source:
+  name: Findbugs
+  url: http://findbugs.sourceforge.net/index.html

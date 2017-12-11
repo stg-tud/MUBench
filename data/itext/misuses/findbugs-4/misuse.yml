@@ -1,0 +1,14 @@
+api:
+- byte array
+characteristics:
+- missing/condition/null_check
+crash: true
+description: >
+   Possible null pointer dereference of variable bars.
+location:
+  file: com/itextpdf/text/pdf/BarcodeEAN.java
+  method: "placeBarcode(PdfContentByte, BaseColor, BaseColor)"
+internal: false
+source:
+  name: Findbugs
+  url: http://findbugs.sourceforge.net/index.html

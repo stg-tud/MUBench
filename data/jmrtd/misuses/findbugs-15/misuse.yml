@@ -1,0 +1,15 @@
+api:
+- java.lang.Integer
+characteristics:
+- superfluous/call
+- missing/call
+crash: false
+description: >
+   Method invokes inefficient new Integer(int) constructor, better to use Integer.valueOf(int) instead.
+location:
+  file: sos/smartcards/BERTLVObject.java
+  method: "readTag(DataInputStream)"
+internal: false
+source:
+  name: Findbugs
+  url: http://findbugs.sourceforge.net/index.html

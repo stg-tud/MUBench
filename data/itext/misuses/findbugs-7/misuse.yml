@@ -1,0 +1,14 @@
+api:
+- java.lang.Exception
+characteristics:
+- missing/call
+crash: false
+description: >
+   Method might ignore java.lang.Exception.
+location:
+  file: com/itextpdf/text/Jpeg2000.java
+  method: "processParameters()"
+internal: false
+source:
+  name: Findbugs
+  url: http://findbugs.sourceforge.net/index.html

@@ -1,0 +1,14 @@
+api:
+- java.io.DataInputStream
+characteristics:
+- missing/condition/value_or_state
+crash: false
+description: >
+   Method ignores the result of java.io.DataInputStream.skip(long)
+location:
+  file: sos/mrtd/PassportService.java
+  method: "readDateOfBirth()"
+internal: false
+source:
+  name: Findbugs
+  url: http://findbugs.sourceforge.net/index.html

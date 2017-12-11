@@ -1,0 +1,14 @@
+api:
+- com.google.javascript.rhino.Node
+characteristics:
+- missing/condition/null_check
+crash: true
+description: >
+  Formal parameter fnNode may have a null value.
+location:
+  file: com/google/javascript/jscomp/TypedCodeGenerator.java
+  method: "getFunctionAnnotation(Node)"
+internal: true
+source:
+  name: Findbugs
+  url: http://findbugs.sourceforge.net/index.html

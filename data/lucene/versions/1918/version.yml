@@ -7,6 +7,11 @@ misuses:
 - '2'
 - 'mudetect-5'
 - 'mudetect-9'
+- 'findbugs-0'
+- 'findbugs-16'
+- 'findbugs-17'
+- 'findbugs-18'
+- 'findbugs-19'
 - 'tikanga-0'
 - 'tikanga-1'
 revision: 0cb96adf12063c1ec2d586d0cec6a209abe9a2dd~1
