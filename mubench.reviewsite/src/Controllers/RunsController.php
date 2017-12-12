@@ -485,7 +485,7 @@ class RunsController extends Controller
         if(file_exists($file)) {
             unlink($file);
         }
-        mkdir($path, 0745, true);
+        mkdir($path, 0755, true);
         $img->moveTo($file);
     }
 }
