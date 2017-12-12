@@ -149,7 +149,8 @@ class MisuseCheckTask:
 
     def _register_existing_dataset_entry(self, misuse_id: str):
         for dataset, entries in self.datasets.items():
-            entries.remove(misuse_id)
+            if misuse_id in entries:
+                entries.remove(misuse_id)
 
     def _register_misuse_is_linked_from_version(self, project_id: str, misuse_id: str):
         misuse = "{}.{}".format(project_id, misuse_id)
@@ -157,10 +158,16 @@ class MisuseCheckTask:
             self.misuses_not_listed_in_any_version.remove(misuse)
 
     def _report_invalid_dataset_entries(self):
+        datasets_without_invalid_entries = dict()
         for dataset, entries in self.datasets.items():
+            datasets_without_invalid_entries[dataset] = []
             for entry in entries:
                 if len(entry.split('.')) < 3:
                     self._report_invalid_dataset_entry(dataset, entry)
+                else:
+                    datasets_without_invalid_entries[dataset].append(entry)
+        self.datasets = datasets_without_invalid_entries
+
 
     def _report_unknown_dataset_entries(self):
         for dataset, entries in self.datasets.items():
