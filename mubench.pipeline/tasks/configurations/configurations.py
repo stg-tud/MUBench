@@ -7,7 +7,9 @@ from tasks.implementations.collect_projects import CollectProjectsTask
 from tasks.implementations.collect_versions import CollectVersionsTask
 from tasks.implementations.compile_misuse import CompileMisuseTask
 from tasks.implementations.compile_version import CompileVersionTask
-from tasks.implementations.dataset_check import MisuseCheckTask, VersionCheckTask, ProjectCheckTask
+from tasks.implementations.dataset_check_misuse import MisuseCheckTask
+from tasks.implementations.dataset_check_project import ProjectCheckTask
+from tasks.implementations.dataset_check_version import VersionCheckTask
 from tasks.implementations.detect_all_findings import DetectAllFindingsTask
 from tasks.implementations.detect_provided_patterns import DetectProvidedPatternsTask
 from tasks.implementations.findings_filters import AllFindingsFilterTask, PotentialHitsFilterTask

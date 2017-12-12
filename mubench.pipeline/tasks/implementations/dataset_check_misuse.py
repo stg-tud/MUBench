@@ -27,75 +27,21 @@ VALID_VIOLATION_TYPES = [
 ]
 
 
-def _is_synthetic(project: Project) -> bool:
-    return project._yaml.get("repository", {}).get("type", '') == "synthetic"
+def _get_all_misuses(data_base_path: str) -> List[str]:
+    misuses = []
 
+    project_dirs = [join(data_base_path, subdir) for subdir in
+                    listdir(data_base_path) if isdir(join(data_base_path, subdir))]
+    for project_dir in project_dirs:
+        misuses_dir = join(project_dir, "misuses")
+        if not exists(misuses_dir):
+            continue
 
-class ProjectCheckTask:
-    def __init__(self):
-        self.logger = logging.getLogger("datasetcheck.project")
+        misuse_ids = [subdir for subdir in listdir(misuses_dir) if isdir(join(misuses_dir, subdir))]
+        misuse_ids = ["{}.{}".format(basename(project_dir), misuse) for misuse in misuse_ids]
+        misuses.extend(misuse_ids)
 
-    def run(self, project: Project):
-        self._check_required_keys_in_project_yaml(project)
-
-    def _check_required_keys_in_project_yaml(self, project: Project):
-        yaml_path = "{}/project.yml".format(project.id)
-        project_yaml = project._yaml
-
-        if "name" not in project_yaml:
-            self._report_missing_key("name", yaml_path)
-
-        if "repository" not in project_yaml:
-            self._report_missing_key("repository", yaml_path)
-        else:
-            if "type" not in project_yaml["repository"]:
-                self._report_missing_key("repository.type", yaml_path)
-            if "url" not in project_yaml["repository"] and not _is_synthetic(project):
-                self._report_missing_key("repository.url", yaml_path)
-
-    def _report_missing_key(self, tag: str, file_path: str):
-        self.logger.warning('Missing "{}" in "{}".'.format(tag, file_path))
-
-
-class VersionCheckTask:
-    def __init__(self):
-        self.logger = logging.getLogger("datasetcheck.project.version")
-
-    def run(self, project: Project, version: ProjectVersion):
-        self._check_required_keys_in_version_yaml(project, version)
-        self._check_misuses_listed_in_version_exist(project, version)
-
-    def _check_required_keys_in_version_yaml(self, project: Project, version: ProjectVersion):
-        yaml_path = "{}/versions/{}/version.yml".format(project.id, version.version_id)
-        version_yaml = version._yaml
-
-        if "revision" not in version_yaml and not _is_synthetic(project):
-            self._report_missing_key("revision", yaml_path)
-
-        if "build" not in version_yaml:
-            self._report_missing_key("build", yaml_path)
-        else:
-            build = version_yaml["build"]
-            if "classes" not in build:
-                self._report_missing_key("build.classes", yaml_path)
-            if not build.get("commands", None):
-                self._report_missing_key("build.commands", yaml_path)
-            if "src" not in build:
-                self._report_missing_key("build.src", yaml_path)
-
-        if not version_yaml.get("misuses", None):
-            self._report_missing_key("misuses", yaml_path)
-
-    def _check_misuses_listed_in_version_exist(self, project: Project, version: ProjectVersion):
-        for misuse_id in version._yaml.get("misuses", []) or []:
-            if not Misuse.is_misuse(join(project.path, project.MISUSES_DIR, misuse_id)):
-                self._report_unknown_misuse(version.id, misuse_id)
-
-    def _report_missing_key(self, tag: str, file_path: str):
-        self.logger.warning('Missing "{}" in "{}".'.format(tag, file_path))
-
-    def _report_unknown_misuse(self, version_id: str, unknown_misuse_id: str):
-        self.logger.warning('Unknown misuse "{}" in "{}".'.format(unknown_misuse_id, version_id))
+    return misuses
 
 
 class MisuseCheckTask:
@@ -105,7 +51,7 @@ class MisuseCheckTask:
         self.datasets = datasets
         self.checkout_base_path = checkout_base_path
         self.registered_entries = set()
-        self.misuses_not_listed_in_any_version = self._get_all_misuses(data_base_path)
+        self.misuses_not_listed_in_any_version = _get_all_misuses(data_base_path)
 
     def run(self, project: Project, version: ProjectVersion, misuse: Misuse):
         self.logger = logging.getLogger("datasetcheck.project.version.misuse")
@@ -143,7 +89,7 @@ class MisuseCheckTask:
         if not misuse_yaml.get("description", None):
             self._report_missing_key("description", yaml_path)
 
-        if not _is_synthetic(project):
+        if not project.repository.vcstype == "synthetic":
             if "fix" not in misuse_yaml:
                 self._report_missing_key("fix", yaml_path)
             else:
@@ -172,10 +118,7 @@ class MisuseCheckTask:
         if "location" in misuse._yaml:
             location = misuse.location
             if location.file and location.method:
-                try:
-                    checkout = version.get_checkout(self.checkout_base_path)
-                except Exception:
-                    checkout = None
+                checkout = version.get_checkout(self.checkout_base_path)
                 if not checkout or not checkout.exists():
                     self.logger.debug(
                         'Skipping location check for "{}": requires checkout of "{}".'.format(
@@ -238,20 +181,3 @@ class MisuseCheckTask:
 
     def _report_invalid_violation_type(self, violation_type: str, file_path: str):
         self.logger.warning('Invalid violation type "{}" in "{}"'.format(violation_type, file_path))
-
-    @staticmethod
-    def _get_all_misuses(data_base_path: str) -> List[str]:
-        misuses = []
-
-        project_dirs = [join(data_base_path, subdir) for subdir in
-                        listdir(data_base_path) if isdir(join(data_base_path, subdir))]
-        for project_dir in project_dirs:
-            misuses_dir = join(project_dir, "misuses")
-            if not exists(misuses_dir):
-                continue
-
-            misuse_ids = [subdir for subdir in listdir(misuses_dir) if isdir(join(misuses_dir, subdir))]
-            misuse_ids = ["{}.{}".format(basename(project_dir), misuse) for misuse in misuse_ids]
-            misuses.extend(misuse_ids)
-
-        return misuses
