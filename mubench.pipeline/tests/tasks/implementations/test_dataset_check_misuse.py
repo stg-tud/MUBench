@@ -1,5 +1,7 @@
 from unittest.mock import call, MagicMock, patch
 
+from nose.tools import assert_equals
+
 from tasks.implementations.dataset_check_misuse import MisuseCheckTask
 from tests.test_utils.data_util import create_project, create_version, create_misuse
 
@@ -285,6 +287,11 @@ class TestMisuseCheckTask:
     def test_reports_non_fully_specified_dataset_entry(self, report_invalid_dataset_entry_mock, _, __):
         MisuseCheckTask({'-dataset-': ['-project-.-misuse-']}, '', '')
         report_invalid_dataset_entry_mock.assert_called_with('-dataset-', '-project-.-misuse-')
+
+    @patch("tasks.implementations.dataset_check_misuse.MisuseCheckTask._report_invalid_dataset_entry")
+    def test_removes_non_fully_specified_dataset_entries(self, report_invalid_dataset_entry_mock, _, __):
+        uut = MisuseCheckTask({'-dataset-': ['-project-.-misuse-']}, '', '')
+        assert_equals({'-dataset-': []}, uut.datasets)
 
 
 @patch('tasks.implementations.dataset_check_misuse.Project.repository')
