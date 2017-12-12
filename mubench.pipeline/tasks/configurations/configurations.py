@@ -7,7 +7,7 @@ from tasks.implementations.collect_projects import CollectProjectsTask
 from tasks.implementations.collect_versions import CollectVersionsTask
 from tasks.implementations.compile_misuse import CompileMisuseTask
 from tasks.implementations.compile_version import CompileVersionTask
-from tasks.implementations.dataset_check import DatasetCheckTask
+from tasks.implementations.dataset_check import MisuseCheckTask, VersionCheckTask, ProjectCheckTask
 from tasks.implementations.detect_all_findings import DetectAllFindingsTask
 from tasks.implementations.detect_provided_patterns import DetectProvidedPatternsTask
 from tasks.implementations.findings_filters import AllFindingsFilterTask, PotentialHitsFilterTask
@@ -201,8 +201,8 @@ class DatasetCheckTaskConfiguration(TaskConfiguration):
         collect_projects = CollectProjectsTask(config.data_path)
         collect_versions = CollectVersionsTask()
         collect_misuses = CollectMisusesTask()
-        dataset_check = DatasetCheckTask(get_available_datasets(config.datasets_file_path), config.checkouts_path,
-                                         config.data_path)
-        return [collect_projects, collect_versions, collect_misuses, dataset_check]
-
-
+        project_check = ProjectCheckTask()
+        version_check = VersionCheckTask()
+        misuse_check = MisuseCheckTask(get_available_datasets(config.datasets_file_path), config.checkouts_path,
+                                       config.data_path)
+        return [collect_projects, project_check, collect_versions, version_check, collect_misuses, misuse_check]
