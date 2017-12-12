@@ -49,12 +49,19 @@ use MuBench\ReviewSite\Models\Experiment;
                 </ul>
             </li>
             <?php if($user) : ?>
+                    <li class="right <?= strpos($path, '/stats') !== false ? "active" : "" ?>">
+                    <span>Reviewer: <?= htmlspecialchars($user->name) ?></span>
+                    <ul>
                 <?php if($experiment) : ?>
                     <li class="right <?= $isCurrentPath('overview', array('experiment_id' => $experiment->id, 'reviewer_name' => $user->name)) ? "active" : "" ?>">
-                        <a href="<?= $pathFor('overview', array('experiment_id' => $experiment->id, 'reviewer_name' => $user->name)) ?>">My Reviews</a></li>
-                    <li class="right <?= $isCurrentPath('todo',  array('experiment_id' => $experiment->id, 'reviewer_name' => $user->name)) ? "active" : "" ?>">
-                        <a href="<?= $pathFor('todo', array('experiment_id' => $experiment->id, 'reviewer_name' => $user->name)) ?>">Open Reviews</a></li>
+                            <a href="<?= $pathFor('overview', array('experiment_id' => $experiment->id, 'reviewer_name' => $user->name)) ?>">My Reviews</a></li>
+                        <li class="right <?= $isCurrentPath('todo',  array('experiment_id' => $experiment->id, 'reviewer_name' => $user->name)) ? "active" : "" ?>">
+                            <a href="<?= $pathFor('todo', array('experiment_id' => $experiment->id, 'reviewer_name' => $user->name)) ?>">Open Reviews</a></li>
                 <?php endif; ?>
+                        <li class="right <?= $isCurrentPath('management') ? "active" : "" ?>">
+                            <a href="<?= $pathFor('management') ?>">Management</a></li>
+                    </ul>
+                    </li>
             <?php else: ?>
                 <li class="right"><a href="<?= $loginPath ?>">Login</a></li>
             <?php endif; ?>

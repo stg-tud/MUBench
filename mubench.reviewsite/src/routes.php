@@ -32,6 +32,7 @@ $app->get('/types', \MuBench\ReviewSite\Controllers\TypesController::class.":get
 
 $app->group('/private', function () use ($app) {
     $app->get('/', \MuBench\ReviewSite\Controllers\ExperimentsController::class.":index")->setName('private./');
+    $app->get('/management', \MuBench\ReviewSite\Controllers\ManagementController::class.":manage")->setName('private.management');
     $app->group('/experiments/{experiment_id}', function() use ($app) {
         $app->group('/detectors/{detector_muid}', function() use ($app) {
             $app->get('/runs', \MuBench\ReviewSite\Controllers\RunsController::class . ":getIndex")->setName('private.experiment.detector');
