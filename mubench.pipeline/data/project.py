@@ -19,7 +19,7 @@ class Project:
         self.path = join(base_path, id)
         self._versions_path = join(self.path, Project.VERSIONS_DIR)  # type: str
         self._project_file = join(self.path, Project.PROJECT_FILE)  # type: str
-        self._YAML = {}
+        self._YAML = None
         self._VERSIONS = []
         self._REPOSITORY = None
 
@@ -29,7 +29,7 @@ class Project:
 
     @property
     def _yaml(self) -> Dict[str, Any]:
-        if not self._YAML:
+        if self._YAML is None:
             with open(self._project_file) as project_file:
                 project_yml = yaml.load(project_file)
             self._YAML = project_yml

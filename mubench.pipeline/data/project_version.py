@@ -32,7 +32,7 @@ class ProjectVersion:
         self.path = join(self.__project.path, Project.VERSIONS_DIR, version_id)
         self._version_file = join(self.path, ProjectVersion.VERSION_FILE)  # type: str
         self._misuses_dir = join(self.__project.path, Project.MISUSES_DIR)  # type: str
-        self._YAML = {}
+        self._YAML = None
         self._MISUSES = None
         self._PATTERNS = None
 
@@ -42,7 +42,7 @@ class ProjectVersion:
 
     @property
     def _yaml(self) -> Dict[str, Any]:
-        if not self._YAML:
+        if self._YAML is None:
             self._YAML = read_yaml(self._version_file)
         return self._YAML
 

@@ -57,7 +57,7 @@ class Misuse:
 
     @property
     def _yaml(self):
-        if not self._YAML:
+        if self._YAML is None:
             with open(self.misuse_file, 'r') as stream:
                 self._YAML = yaml.load(stream)
         return self._YAML
