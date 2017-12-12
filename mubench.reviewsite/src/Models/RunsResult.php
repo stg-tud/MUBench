@@ -95,11 +95,17 @@ abstract class RunsResult
 
     public function getKappaP0()
     {
+        if($this->misuses_to_review == 0){
+            return 0;
+        }
         return $this->getNumberOfAgreements() / $this->misuses_to_review;
     }
 
     public function getKappaPe()
     {
+        if($this->misuses_to_review == 0){
+            return 0;
+        }
         $yes_faction = $this->yes_agreements / $this->misuses_to_review;
         $no_fraction = $this->no_agreements / $this->misuses_to_review;
         $yes_no_fraction = $this->yes_no_disagreements / $this->misuses_to_review;
@@ -109,11 +115,17 @@ abstract class RunsResult
 
     public function getRecall()
     {
+        if($this->number_of_misuses == 0){
+            return 0;
+        }
         return $this->number_of_hits / $this->number_of_misuses;
     }
 
     public function getPrecision()
     {
+        if($this->misuses_to_review == 0){
+            return 0;
+        }
         return $this->number_of_hits / $this->misuses_to_review;
     }
 }
