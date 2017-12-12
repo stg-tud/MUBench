@@ -54,6 +54,8 @@ use MuBench\ReviewSite\Models\Experiment;
             <head>
                 <link rel="stylesheet" type="text/css" href="<?= $site_base_url ?>css/style.css" />
                 <link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+                <link rel="stylesheet" href="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.css">
+                <script src="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.js"></script>
                 <script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js?autoload=true&amp;skin=sunburst"></script>
                 <script src="http://cdn.rawgit.com/ariutta/svg-pan-zoom/master/dist/svg-pan-zoom.min.js"></script>
                 <style>
@@ -342,7 +344,7 @@ use MuBench\ReviewSite\Models\Experiment;
                         <td><?= htmlspecialchars($review->reviewer->name); ?></td></tr>
                     <tr><td class="vtop"><label for="review_comment">Comment</label>:</td>
                         <td>
-                                <textarea disabled id="review_comment" name="review_comment" cols="80" rows="5"><?= htmlspecialchars($review->comment); ?></textarea>
+                            <?= $markdown_parser->text($review->comment); ?>
                         </td></tr>
                 </table>
         <?php endif; ?>
@@ -356,6 +358,10 @@ use MuBench\ReviewSite\Models\Experiment;
                     }
                     b.type = "hidden";
                 }
+                var simplemde = new SimpleMDE({
+                    spellChecker: false,
+                    element: document.getElementById("review_comment")
+                });
             </script>
             </body>
         </html>
