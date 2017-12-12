@@ -19,6 +19,9 @@ class TestProject:
         self.uut = Project(self.temp_dir, self.project_id)
 
     def mock_meta_data(self, meta):
+        if self.uut._YAML is None:
+            self.uut._YAML = {}
+
         self.uut._YAML.update(meta)
 
     def teardown(self):

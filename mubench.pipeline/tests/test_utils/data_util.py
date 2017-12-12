@@ -7,7 +7,7 @@ from data.project_version import ProjectVersion
 
 def create_project(project_id: str, base_path: str = "-test-", meta: Dict[str, Any] = None):
     project = Project(base_path, project_id)
-    project._YAML = {} if meta is None else meta
+    project._YAML = meta
     return project
 
 
@@ -17,7 +17,7 @@ def create_version(version_id: str, misuses: List[Misuse] = None, meta: Dict[str
     version = ProjectVersion(project._base_path, project.id, version_id)
     version._ProjectVersion__project = project
     version._MISUSES = [create_misuse("-misuse-")] if misuses is None else misuses
-    version._YAML = {} if meta is None else meta
+    version._YAML = meta
     project._VERSIONS.append(version)
     return version
 
