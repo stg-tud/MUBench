@@ -6,67 +6,37 @@ from typing import Dict, List
 from data.misuse import Misuse
 from data.project import Project
 from data.project_version import ProjectVersion
-from data.snippets import get_snippets
+from data.snippets import get_snippets, SnippetUnavailableException
 
 VALID_VIOLATION_TYPES = [
-        'missing/call',
-        'missing/condition/null_check',
-        'missing/condition/synchronization',
-        'missing/condition/value_or_state',
-        'missing/condition/context',
-        'missing/iteration',
-        'missing/exception_handling',
-        'superfluous/call',
-        'superfluous/condition/null_check',
-        'superfluous/condition/synchronization',
-        'superfluous/condition/value_or_state',
-        'superfluous/condition/context',
-        'superfluous/iteration',
-        'superfluous/exception_handling',
-        'misplaced/call',
-    ]
+    'missing/call',
+    'missing/condition/null_check',
+    'missing/condition/synchronization',
+    'missing/condition/value_or_state',
+    'missing/condition/context',
+    'missing/iteration',
+    'missing/exception_handling',
+    'superfluous/call',
+    'superfluous/condition/null_check',
+    'superfluous/condition/synchronization',
+    'superfluous/condition/value_or_state',
+    'superfluous/condition/context',
+    'superfluous/iteration',
+    'superfluous/exception_handling',
+    'misplaced/call',
+]
 
 
-class DatasetCheckTask:
-    def __init__(self, datasets: Dict[str, List[str]], checkout_base_path: str, data_base_path: str):
-        super().__init__()
-        self.logger = logging.getLogger("tasks.datasetcheck")
-        self.datasets = datasets
-        self.checkout_base_path = checkout_base_path
-        self.misuses_not_listed_in_any_version = []
-        self.registered_entries = set()
-        self.misuses_not_listed_in_any_version = self._get_all_misuses(data_base_path)
+def _is_synthetic(project: Project) -> bool:
+    return project._yaml.get("repository", {}).get("type", '') == "synthetic"
 
-    def run(self, project: Project, version: ProjectVersion, misuse: Misuse):
-        self.check_project(project)
-        self.check_project_version(project, version)
-        self.check_project_version_misuse(project, version, misuse)
-        return []
 
-    def check_project(self, project: Project):
+class ProjectCheckTask:
+    def __init__(self):
         self.logger = logging.getLogger("datasetcheck.project")
-        self._register_entry(project, project.id)
+
+    def run(self, project: Project):
         self._check_required_keys_in_project_yaml(project)
-
-    def check_project_version(self, project: Project, version: ProjectVersion):
-        self.logger = logging.getLogger("datasetcheck.project.version")
-        self._register_entry(project, version.id)
-        self._check_required_keys_in_version_yaml(project, version)
-        self._check_misuses_listed_in_version_exist(project, version)
-
-    def check_project_version_misuse(self, project: Project, version: ProjectVersion, misuse: Misuse):
-        self.logger = logging.getLogger("datasetcheck.project.version.misuse")
-        self._register_entry(project, misuse.id)
-        self._register_misuse_is_linked_from_version(misuse.id)
-        self._check_required_keys_in_misuse_yaml(project, version, misuse)
-        self._check_misuse_location_exists(project, version, misuse)
-        self._check_violation_types(project, misuse)
-
-    def end(self):
-        self.logger = logging.getLogger("datasetcheck.misuse")
-        # self._report_misuses_not_listed_in_any_version()
-        self.logger = logging.getLogger("datasetcheck")
-        self._report_unknown_dataset_entries()
 
     def _check_required_keys_in_project_yaml(self, project: Project):
         yaml_path = "{}/project.yml".format(project.id)
@@ -82,6 +52,18 @@ class DatasetCheckTask:
                 self._report_missing_key("repository.type", yaml_path)
             if "url" not in project_yaml["repository"] and not _is_synthetic(project):
                 self._report_missing_key("repository.url", yaml_path)
+
+    def _report_missing_key(self, tag: str, file_path: str):
+        self.logger.warning('Missing "{}" in "{}".'.format(tag, file_path))
+
+
+class VersionCheckTask:
+    def __init__(self):
+        self.logger = logging.getLogger("datasetcheck.project.version")
+
+    def run(self, project: Project, version: ProjectVersion):
+        self._check_required_keys_in_version_yaml(project, version)
+        self._check_misuses_listed_in_version_exist(project, version)
 
     def _check_required_keys_in_version_yaml(self, project: Project, version: ProjectVersion):
         yaml_path = "{}/versions/{}/version.yml".format(project.id, version.version_id)
@@ -104,7 +86,42 @@ class DatasetCheckTask:
         if not version_yaml.get("misuses", None):
             self._report_missing_key("misuses", yaml_path)
 
-    def _check_required_keys_in_misuse_yaml(self, project: Project, version: ProjectVersion, misuse: Misuse):
+    def _check_misuses_listed_in_version_exist(self, project: Project, version: ProjectVersion):
+        for misuse_id in version._yaml.get("misuses", []) or []:
+            if not Misuse.is_misuse(join(project.path, project.MISUSES_DIR, misuse_id)):
+                self._report_unknown_misuse(version.id, misuse_id)
+
+    def _report_missing_key(self, tag: str, file_path: str):
+        self.logger.warning('Missing "{}" in "{}".'.format(tag, file_path))
+
+    def _report_unknown_misuse(self, version_id: str, unknown_misuse_id: str):
+        self.logger.warning('Unknown misuse "{}" in "{}".'.format(unknown_misuse_id, version_id))
+
+
+class MisuseCheckTask:
+    def __init__(self, datasets: Dict[str, List[str]], checkout_base_path: str, data_base_path: str):
+        super().__init__()
+        self.logger = logging.getLogger("tasks.datasetcheck")
+        self.datasets = datasets
+        self.checkout_base_path = checkout_base_path
+        self.registered_entries = set()
+        self.misuses_not_listed_in_any_version = self._get_all_misuses(data_base_path)
+
+    def run(self, project: Project, version: ProjectVersion, misuse: Misuse):
+        self.logger = logging.getLogger("datasetcheck.project.version.misuse")
+        self._register_existing_dataset_entry(misuse.id)
+        self._register_misuse_is_linked_from_version(project.id, misuse.misuse_id)
+        self._check_required_keys_in_misuse_yaml(project, misuse)
+        self._check_misuse_location_exists(project, version, misuse)
+        self._check_violation_types(project, misuse)
+
+    def end(self):
+        self.logger = logging.getLogger("datasetcheck.misuse")
+        self._report_misuses_not_listed_in_any_version()
+        self.logger = logging.getLogger("datasetcheck")
+        self._report_unknown_dataset_entries()
+
+    def _check_required_keys_in_misuse_yaml(self, project: Project, misuse: Misuse):
         yaml_path = "{}/misuses/{}/misuse.yml".format(project.id, misuse.misuse_id)
         misuse_yaml = misuse._yaml
 
@@ -151,29 +168,30 @@ class DatasetCheckTask:
                 if "url" not in source:
                     self._report_missing_key("source.url", yaml_path)
 
-    def _check_misuses_listed_in_version_exist(self, project: Project, version: ProjectVersion):
-        for misuse_id in version._yaml.get("misuses", []) or []:
-            if not Misuse.is_misuse(join(project.path, project.MISUSES_DIR, misuse_id)):
-                self._report_unknown_misuse(version.id, misuse_id)
-
     def _check_misuse_location_exists(self, project: Project, version: ProjectVersion, misuse: Misuse):
         if "location" in misuse._yaml:
             location = misuse.location
             if location.file and location.method:
-                checkout = version.get_checkout(self.checkout_base_path)
-                if not checkout.exists():
+                try:
+                    checkout = version.get_checkout(self.checkout_base_path)
+                except Exception:
+                    checkout = None
+                if not checkout or not checkout.exists():
                     self.logger.debug(
-                            'Skipping location check for "{}": requires checkout of "{}".'.format(
-                                misuse.id, version.id))
+                        'Skipping location check for "{}": requires checkout of "{}".'.format(
+                            misuse.id, version.id))
                 else:
                     source_base_path = join(checkout.checkout_dir, version.source_dir)
                     if not self._location_exists(source_base_path, location.file, location.method):
-                        self._report_cannot_find_location(str(location), "{}/misuses/{}/misuse.yml".format(project.id, misuse.misuse_id))
+                        self._report_cannot_find_location(str(location),
+                                                          "{}/misuses/{}/misuse.yml".format(project.id,
+                                                                                            misuse.misuse_id))
 
-    def _location_exists(self, source_base_path, file_, method) -> bool:
+    @staticmethod
+    def _location_exists(source_base_path, file_, method) -> bool:
         try:
             snippets = get_snippets(source_base_path, file_, method)
-        except:
+        except SnippetUnavailableException:
             return False
         else:
             return len(snippets) > 0
@@ -185,18 +203,12 @@ class DatasetCheckTask:
                 file_path = "{}/misuses/{}/misuse.yml".format(project.id, misuse.misuse_id)
                 self._report_invalid_violation_type(violation_type, file_path)
 
-    def _register_entry(self, project: Project, id_: str):
+    def _register_existing_dataset_entry(self, misuse_id: str):
         for dataset, entries in self.datasets.items():
-            if id_ in entries:
-                entries.remove(id_)
+            entries.remove(misuse_id)
 
-        if id_ not in self.registered_entries:
-            self.registered_entries.add(id_)
-        else:
-            if not _is_synthetic(project):
-                self._report_id_conflict(id_)
-
-    def _register_misuse_is_linked_from_version(self, misuse: str):
+    def _register_misuse_is_linked_from_version(self, project_id: str, misuse_id: str):
+        misuse = "{}.{}".format(project_id, misuse_id)
         if misuse in self.misuses_not_listed_in_any_version:
             self.misuses_not_listed_in_any_version.remove(misuse)
 
@@ -215,9 +227,6 @@ class DatasetCheckTask:
     def _report_id_conflict(self, conflicting_id: str):
         self.logger.warning('ID "{}" is used for multiple data entries.'.format(conflicting_id))
 
-    def _report_unknown_misuse(self, version_id: str, unknown_misuse_id: str):
-        self.logger.warning('Unknown misuse "{}" in "{}".'.format(unknown_misuse_id, version_id))
-
     def _report_cannot_find_location(self, location: str, misuse_yaml_path: str):
         self.logger.warning('Cannot find "{}" listed in "{}".'.format(location, misuse_yaml_path))
 
@@ -230,10 +239,12 @@ class DatasetCheckTask:
     def _report_invalid_violation_type(self, violation_type: str, file_path: str):
         self.logger.warning('Invalid violation type "{}" in "{}"'.format(violation_type, file_path))
 
-    def _get_all_misuses(self, data_base_path: str) -> List[str]:
+    @staticmethod
+    def _get_all_misuses(data_base_path: str) -> List[str]:
         misuses = []
 
-        project_dirs = [join(data_base_path, subdir) for subdir in listdir(data_base_path) if isdir(join(data_base_path, subdir))]
+        project_dirs = [join(data_base_path, subdir) for subdir in
+                        listdir(data_base_path) if isdir(join(data_base_path, subdir))]
         for project_dir in project_dirs:
             misuses_dir = join(project_dir, "misuses")
             if not exists(misuses_dir):
@@ -244,7 +255,3 @@ class DatasetCheckTask:
             misuses.extend(misuse_ids)
 
         return misuses
-
-
-def _is_synthetic(project: Project) -> bool:
-    return project._yaml.get("repository", {}).get("type", '') == "synthetic"
