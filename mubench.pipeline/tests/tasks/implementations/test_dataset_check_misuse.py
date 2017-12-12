@@ -281,6 +281,11 @@ class TestMisuseCheckTask:
 
         report_misuse_not_listed_mock.assert_not_called()
 
+    @patch("tasks.implementations.dataset_check_misuse.MisuseCheckTask._report_invalid_dataset_entry")
+    def test_reports_non_fully_specified_dataset_entry(self, report_invalid_dataset_entry_mock, _, __):
+        MisuseCheckTask({'-dataset-': ['-project-.-misuse-']}, '', '')
+        report_invalid_dataset_entry_mock.assert_called_with('-dataset-', '-project-.-misuse-')
+
 
 @patch('tasks.implementations.dataset_check_misuse.Project.repository')
 @patch('tasks.implementations.dataset_check_misuse._get_all_misuses')

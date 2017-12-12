@@ -52,6 +52,7 @@ class MisuseCheckTask:
         self.checkout_base_path = checkout_base_path
         self.registered_entries = set()
         self.misuses_not_listed_in_any_version = _get_all_misuses(data_base_path)
+        self._report_invalid_dataset_entries()
 
     def run(self, project: Project, version: ProjectVersion, misuse: Misuse):
         self.logger = logging.getLogger("datasetcheck.project.version.misuse")
@@ -155,6 +156,12 @@ class MisuseCheckTask:
         if misuse in self.misuses_not_listed_in_any_version:
             self.misuses_not_listed_in_any_version.remove(misuse)
 
+    def _report_invalid_dataset_entries(self):
+        for dataset, entries in self.datasets.items():
+            for entry in entries:
+                if len(entry.split('.')) < 3:
+                    self._report_invalid_dataset_entry(dataset, entry)
+
     def _report_unknown_dataset_entries(self):
         for dataset, entries in self.datasets.items():
             for entry in entries:
@@ -181,3 +188,7 @@ class MisuseCheckTask:
 
     def _report_invalid_violation_type(self, violation_type: str, file_path: str):
         self.logger.warning('Invalid violation type "{}" in "{}"'.format(violation_type, file_path))
+
+    def _report_invalid_dataset_entry(self, dataset: str, invalid_entry: str):
+        self.logger.warning('Invalid dataset entry "{}" in "{}". '
+                            'Entries must be "project.version.misuse".'.format(invalid_entry, dataset))
