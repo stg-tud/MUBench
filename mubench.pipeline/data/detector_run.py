@@ -64,7 +64,8 @@ class DetectorRun:
             "number_of_findings": self.number_of_findings,
             "runtime": self.runtime
         }
-        return run_info.update(self.__run_info)
+        run_info.update(self.__run_info)
+        return run_info
 
     def ensure_executed(self, detector_args: Dict[str, str], timeout: Optional[int], force_detect: bool,
                         logger: Logger) -> None:
