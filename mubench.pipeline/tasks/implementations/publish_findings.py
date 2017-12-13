@@ -45,7 +45,7 @@ class PublishFindingsTask:
         if detector_run.is_success():
             logger.info("Preparing findings in %s...", version)
             result = "success"
-            logger.info("Found %s potential hits.", len(potential_hits))
+            logger.info("Found %s potential hits.", len(potential_hits.findings))
         else:
             if detector_run.is_error():
                 logger.info("Run on %s produced an error.", version)
@@ -59,7 +59,7 @@ class PublishFindingsTask:
 
         try:
             logger.info("Publishing potential hits...")
-            for potential_hits_slice in self.__slice_by_max_files_per_post(potential_hits):
+            for potential_hits_slice in self.__slice_by_max_files_per_post(potential_hits.findings):
                 post_data_slice = []
                 for potential_hit in potential_hits_slice:
                     postable_data = self._prepare_post(potential_hit, version_compile, logger)
@@ -76,7 +76,7 @@ class PublishFindingsTask:
                 logger.error("ERROR: %s", e)
 
     def __slice_by_max_files_per_post(self, potential_hits: PotentialHits) -> List[PotentialHits]:
-        potential_hits_slice = PotentialHits([])
+        potential_hits_slice = []
         number_of_files_in_slice = 0
         for potential_hit in potential_hits:
             number_of_files_in_hit = len(potential_hit.files)

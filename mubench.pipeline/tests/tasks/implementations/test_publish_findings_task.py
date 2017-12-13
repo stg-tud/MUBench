@@ -140,7 +140,7 @@ class TestPublishFindingsTask:
 
     def test_publish_successful_run_code_snippets(self, post_mock):
         self.test_detector_execution.is_success = lambda: True
-        self.test_potential_hits = [_create_finding({"rank": "42"}, snippets=[Snippet("-code-", 23)])]
+        self.test_potential_hits = PotentialHits([_create_finding({"rank": "42"}, snippets=[Snippet("-code-", 23)])])
 
         self.uut.run(self.project, self.version, self.test_detector_execution, self.test_potential_hits,
                      self.version_compile)

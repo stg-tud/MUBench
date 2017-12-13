@@ -6,9 +6,9 @@ from data.finding import SpecializedFinding, Finding
 from data.misuse import Misuse
 
 
-class PotentialHits(list):
+class PotentialHits:
     def __init__(self, findings: List[SpecializedFinding]):
-        super().__init__(findings)
+        self.findings = findings
 
 
 def _to_potential_hit(misuse_id, finding: Finding):

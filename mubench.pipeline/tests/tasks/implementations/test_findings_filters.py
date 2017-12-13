@@ -22,7 +22,7 @@ class TestPotentialHits:
 
         potential_hits = self.uut.run(create_misuse("-m1-"), self.detector_run)
 
-        assert_equals([], potential_hits)
+        assert_equals([], potential_hits.findings)
 
     def test_potential_hit(self):
         finding = Finding({"rank": ":potential hit for m1:"})
@@ -32,7 +32,7 @@ class TestPotentialHits:
 
         potential_hits = self.uut.run(misuse, self.detector_run)
 
-        assert_equals(misuse.misuse_id, potential_hits[0]["misuse"])
+        assert_equals(misuse.misuse_id, potential_hits.findings[0]["misuse"])
 
 
 class TestAllFindings:
@@ -56,7 +56,7 @@ class TestAllFindings:
 
         actual = self.uut.run(self.detector_run)
 
-        assert_equals(expected, actual)
+        assert_equals(expected, actual.findings)
 
     def test_limits_number_of_findings(self):
         detector_execution = MagicMock()
@@ -66,4 +66,4 @@ class TestAllFindings:
 
         actual = self.uut.run(detector_execution)
 
-        assert_equals(1, len(actual))
+        assert_equals(1, len(actual.findings))
