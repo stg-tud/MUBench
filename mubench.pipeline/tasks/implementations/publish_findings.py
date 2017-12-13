@@ -17,13 +17,12 @@ from utils.web_util import post, as_markdown
 
 
 class PublishFindingsTask:
-    def __init__(self, experiment_id: str, detector: Detector, dataset: str, compiles_base_path: str,
+    def __init__(self, experiment_id: str, dataset: str, compiles_base_path: str,
                  review_site_url: str, review_site_user: str= "", review_site_password: str= ""):
         super().__init__()
         self.max_files_per_post = 20  # 20 is PHP's default limit to the number of files per request
 
         self.experiment_id = experiment_id
-        self.detector = detector
         self.dataset = dataset
         self.compiles_base_path = compiles_base_path
         self.review_site_url = review_site_url
@@ -35,10 +34,10 @@ class PublishFindingsTask:
                 "Enter review-site password for '{}': ".format(self.review_site_user))
 
     def run(self, project: Project, version: ProjectVersion, detector_run: DetectorRun,
-            potential_hits: PotentialHits, version_compile: VersionCompile):
+            potential_hits: PotentialHits, version_compile: VersionCompile, detector: Detector):
         logger = logging.getLogger("tasks.publish_findings.version")
         logger.info("Prepare findings of %s in %s for upload to %s...",
-                    self.detector, self.experiment_id, self.review_site_url)
+                    detector, self.experiment_id, self.review_site_url)
 
         run_info = detector_run.get_run_info()
 
@@ -66,7 +65,7 @@ class PublishFindingsTask:
                     post_data_slice.append(postable_data)
 
                 file_paths = PublishFindingsTask.get_file_paths(potential_hits_slice)
-                self.__post(project, version, run_info, result, post_data_slice, file_paths)
+                self.__post(project, version, detector, run_info, result, post_data_slice, file_paths)
             logger.info("Potential hits published.")
         except RequestException as e:
             response = e.response
@@ -103,7 +102,7 @@ class PublishFindingsTask:
         markdown_dict["target_snippets"] = [snippet.__dict__ for snippet in snippets]
         return markdown_dict
 
-    def __post(self, project, version, run_info, result, upload_data, file_paths):
+    def __post(self, project, version, detector, run_info, result, upload_data, file_paths):
         data = {}
         data.update(self._to_markdown_dict(run_info))
         data.update({
@@ -111,7 +110,7 @@ class PublishFindingsTask:
             "potential_hits": upload_data
         })
         url = urljoin(self.review_site_url, "experiments/{}/detectors/{}/projects/{}/versions/{}/runs".format(
-            self.experiment_id, self.detector.id, project.id, version.version_id))
+            self.experiment_id, detector.id, project.id, version.version_id))
         post(url, data, file_paths=file_paths, username=self.review_site_user, password=self.review_site_password)
 
     @staticmethod
