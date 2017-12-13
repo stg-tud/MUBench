@@ -42,12 +42,12 @@ class TestPublishFindingsTask:
 
         self.test_potential_hits = PotentialHits([])
 
-        self.uut = PublishFindingsTask(self.experiment_id, self.detector, self.dataset, "/sources", "http://dummy.url",
+        self.uut = PublishFindingsTask(self.experiment_id, self.dataset, "/sources", "http://dummy.url",
                                        "-username-", "-password-")
 
     def test_post_url(self, post_mock):
         self.uut.run(self.project, self.version, self.test_detector_execution, self.test_potential_hits,
-                     self.version_compile)
+                     self.version_compile, self.detector)
 
         assert_equals(post_mock.call_args[0][0],
                       "http://dummy.url/experiments/{}/detectors/{}/projects/{}/versions/{}/runs".format(
@@ -58,7 +58,7 @@ class TestPublishFindingsTask:
         pass_mock.return_value = "-password-"
 
         self.uut.run(self.project, self.version, self.test_detector_execution, self.test_potential_hits,
-                     self.version_compile)
+                     self.version_compile, self.detector)
 
         assert_equals(post_mock.call_args[1]["username"], "-username-")
         assert_equals(post_mock.call_args[1]["password"], "-password-")
@@ -69,7 +69,7 @@ class TestPublishFindingsTask:
         self.uut.review_site_password = "-password-"
 
         self.uut.run(self.project, self.version, self.test_detector_execution, self.test_potential_hits,
-                     self.version_compile)
+                     self.version_compile, self.detector)
 
         assert_equals(post_mock.call_args[1]["username"], "-username-")
         assert_equals(post_mock.call_args[1]["password"], "-password-")
@@ -85,7 +85,7 @@ class TestPublishFindingsTask:
         self.test_potential_hits = PotentialHits(potential_hits)
 
         self.uut.run(self.project, self.version, self.test_detector_execution, self.test_potential_hits,
-                     self.version_compile)
+                     self.version_compile, self.detector)
 
         assert_equals(post_mock.call_args[0][1], {
             "result": "success",
@@ -106,7 +106,7 @@ class TestPublishFindingsTask:
         ])
 
         self.uut.run(self.project, self.version, self.test_detector_execution, self.test_potential_hits,
-                     self.version_compile)
+                     self.version_compile, self.detector)
 
         assert_equals(post_mock.call_args[1]["file_paths"], ["-file1-", "-file2-"])
 
@@ -119,7 +119,7 @@ class TestPublishFindingsTask:
         ])
 
         self.uut.run(self.project, self.version, self.test_detector_execution, self.test_potential_hits,
-                     self.version_compile)
+                     self.version_compile, self.detector)
 
         assert_equals(len(post_mock.call_args_list), 2)
         assert_equals(post_mock.call_args_list[0][1]["file_paths"], ["-file1-"])
@@ -134,16 +134,16 @@ class TestPublishFindingsTask:
         ])
 
         self.uut.run(self.project, self.version, self.test_detector_execution, self.test_potential_hits,
-                     self.version_compile)
+                     self.version_compile, self.detector)
 
         assert_equals(len(post_mock.call_args_list), 2)
 
     def test_publish_successful_run_code_snippets(self, post_mock):
         self.test_detector_execution.is_success = lambda: True
-        self.test_potential_hits = [_create_finding({"rank": "42"}, snippets=[Snippet("-code-", 23)])]
+        self.test_potential_hits = PotentialHits([_create_finding({"rank": "42"}, snippets=[Snippet("-code-", 23)])])
 
         self.uut.run(self.project, self.version, self.test_detector_execution, self.test_potential_hits,
-                     self.version_compile)
+                     self.version_compile, self.detector)
 
         assert_equals(post_mock.call_args[0][1]["potential_hits"][0]["target_snippets"],
                       [{"code": "-code-", "first_line_number": 23}])
@@ -155,7 +155,7 @@ class TestPublishFindingsTask:
         self.test_potential_hits = PotentialHits([finding])
 
         self.uut.run(self.project, self.version, self.test_detector_execution, self.test_potential_hits,
-                     self.version_compile)
+                     self.version_compile, self.detector)
 
         assert_equals(post_mock.call_args[0][1]["potential_hits"][0]["target_snippets"], [])
 
@@ -165,7 +165,7 @@ class TestPublishFindingsTask:
         self.test_detector_execution.runtime = 1337
 
         self.uut.run(self.project, self.version, self.test_detector_execution, self.test_potential_hits,
-                     self.version_compile)
+                     self.version_compile, self.detector)
 
         assert_equals(post_mock.call_args[0][1], {
             "result": "error",
@@ -180,7 +180,7 @@ class TestPublishFindingsTask:
         self.test_detector_execution.number_of_findings = 0
 
         self.uut.run(self.project, self.version, self.test_detector_execution, self.test_potential_hits,
-                     self.version_compile)
+                     self.version_compile, self.detector)
 
         assert_equals(post_mock.call_args[0][1], {
             "result": "timeout",
@@ -194,7 +194,7 @@ class TestPublishFindingsTask:
         self.test_detector_execution.number_of_findings = 0
 
         self.uut.run(self.project, self.version, self.test_detector_execution, self.test_potential_hits,
-                     self.version_compile)
+                     self.version_compile, self.detector)
 
         assert_equals(post_mock.call_args[0][1], {
             "result": "not run",
@@ -210,7 +210,7 @@ class TestPublishFindingsTask:
         self.test_detector_execution.get_run_info = lambda: {"info": {"k1": "v1"}}
 
         self.uut.run(self.project, self.version, self.test_detector_execution, self.test_potential_hits,
-                     self.version_compile)
+                     self.version_compile, self.detector)
 
         assert_equals(post_mock.call_args[0][1], {
             "result": "success",
