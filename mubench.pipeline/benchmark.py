@@ -66,7 +66,7 @@ for key in config.__dict__:
 benchmark = Benchmark(config)
 try:
     benchmark.run()
-except Exception as e:
-    logger.error(str(e))
+except BaseException as e:
+    logger.error("{}: {}".format(type(e).__name__, str(e)))
     logger.debug("Full exception: ", exc_info=True)
     exit(1)
