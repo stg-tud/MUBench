@@ -104,6 +104,52 @@ class RunsController extends Controller
         return $response->withStatus(200);
     }
 
+    public function manageRuns(Request $request, Response $response)
+    {
+        $experiments = Experiment::all();
+        $detectors = Detector::all();
+        $experiment_runs = [];
+
+        foreach($experiments as $experiment){
+            $experiment_runs[$experiment->id] = [];
+            foreach($detectors as $detector){
+                $experiment_runs[$experiment->id][$detector->muid] = Run::of($detector)->in($experiment)->get();
+            }
+        }
+
+        return $this->renderer->render($response, 'manage_runs.phtml', ['experiment_runs' => $experiment_runs]);
+    }
+
+    public function deleteRun(Request $request, Response $response, array $args)
+    {
+        $experimentId = $args['experiment_id'];
+        $detector_muid = $args['detector_muid'];
+        $project_muid = $args['project_muid'];
+        $version_muid = $args['version_muid'];
+        $run = Run::of(Detector::find($detector_muid))->in(Experiment::find($experimentId))->get()->where('project_muid', $project_muid);
+        $run = $run->where('version_muid', $version_muid);
+        $run = $run->first();
+        if($run){
+            foreach($run->misuses as $misuse){
+                foreach($misuse->reviews as $review){
+                    $findings_reviews = $review->finding_reviews;
+                    foreach($findings_reviews as $finding_review){
+                        $finding_review->violation_types()->detach();
+                    }
+                    $review->finding_reviews()->delete();
+                    $review->reviewer()->dissociate();
+                }
+                $misuse->reviews()->delete();
+                $misuse->metadata()->dissociate();
+                $misuse->misuse_tags()->detach();
+                $misuse->findings()->delete();
+            }
+            $run->misuses()->delete();
+            $run->delete();
+        }
+        return $response->withRedirect($this->router->pathFor('private.manage.runs'));
+    }
+
     static function getRuns($detector, $experiment, $max_reviews)
     {
         $runs = Run::of($detector)->in($experiment)->orderBy('project_muid')->orderBy('version_muid')->get();

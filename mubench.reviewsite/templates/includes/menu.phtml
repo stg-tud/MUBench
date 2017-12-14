@@ -58,8 +58,8 @@ use MuBench\ReviewSite\Models\Experiment;
                         <li class="right <?= $isCurrentPath('todo',  array('experiment_id' => $experiment->id, 'reviewer_name' => $user->name)) ? "active" : "" ?>">
                             <a href="<?= $pathFor('todo', array('experiment_id' => $experiment->id, 'reviewer_name' => $user->name)) ?>">Open Reviews</a></li>
                 <?php endif; ?>
-                        <li class="right <?= $isCurrentPath('management') ? "active" : "" ?>">
-                            <a href="<?= $pathFor('management') ?>">Management</a></li>
+                        <li class="right <?= $isCurrentPath('manage.runs') ? "active" : "" ?>">
+                            <a href="<?= $pathFor('manage.runs') ?>">Manage runs</a></li>
                     </ul>
                     </li>
             <?php else: ?>
