@@ -24,20 +24,20 @@ class CompileVersionTask:
         logger = logging.getLogger("task.compile")
         logger.info("Compiling %s...", version)
 
-        project_compile = version.get_compile(self.compiles_base_path)
+        version_compile = version.get_compile(self.compiles_base_path)
 
-        build_path = mkdtemp(prefix='mubench-compile_') if self.use_temp_dir else project_compile.build_dir
+        build_path = mkdtemp(prefix='mubench-compile_') if self.use_temp_dir else version_compile.build_dir
 
         sources_path = join(build_path, version.source_dir)
         classes_path = join(build_path, version.classes_dir)
 
         if self.force_compile:
             logger.debug("Force compile - removing previous compiles...")
-            project_compile.delete()
+            version_compile.delete()
 
         try:
-            needs_copy_sources = project_compile.needs_copy_sources()
-            needs_compile = project_compile.needs_compile()
+            needs_copy_sources = version_compile.needs_copy_sources()
+            needs_compile = version_compile.needs_compile()
 
             if needs_copy_sources or needs_compile:
                 logger.debug("Copying checkout to build directory...")
@@ -51,7 +51,7 @@ class CompileVersionTask:
             else:
                 logger.info("Copying sources...")
                 logger.debug("Copying project sources...")
-                copy_tree(sources_path, project_compile.original_sources_path)
+                copy_tree(sources_path, version_compile.original_sources_path)
 
             if not version.compile_commands:
                 raise UserWarning("Skipping compilation: not configured.")
@@ -62,23 +62,23 @@ class CompileVersionTask:
                 logger.info("Compiling project...")
                 self._compile(version.compile_commands,
                               build_path,
-                              project_compile.dependencies_path,
+                              version_compile.dependencies_path,
                               self.compiles_base_path,
                               logger)
                 logger.debug("Copy project classes...")
-                copy_tree(classes_path, project_compile.original_classes_path)
+                copy_tree(classes_path, version_compile.original_classes_path)
                 logger.debug("Create project jar...")
-                self.__create_jar(project_compile.original_classes_path, project_compile.original_classpath)
+                self.__create_jar(version_compile.original_classes_path, version_compile.original_classpath)
 
             if self.use_temp_dir:
                 logger.debug("Moving complete build to persistent directory...")
-                copy_tree(build_path, project_compile.build_dir)
+                copy_tree(build_path, version_compile.build_dir)
                 remove_tree(build_path)
         except Exception:
-            project_compile.delete()
+            version_compile.delete()
             raise
 
-        return project_compile
+        return version_compile
 
     @staticmethod
     def __copy_additional_compile_sources(version: ProjectVersion, checkout_dir: str):
