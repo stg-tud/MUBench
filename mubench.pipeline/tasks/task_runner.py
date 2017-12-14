@@ -58,7 +58,6 @@ class TaskRunner:
                 else:
                     next_results = previous_results + [result]
 
-                self.logger.info("Running %s on %s", next_task, result)
                 self.__run(current_task_index + 1, next_results)
 
     @staticmethod
