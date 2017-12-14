@@ -7,7 +7,7 @@ crash: false
 description: >
    Exception is caught when Exception is not thrown.
 location:
-  file: sos/mrtd/sample/BACPanel$MRZPanel.java
+  file: sos/mrtd/sample/BACPanel.java
   method: "actionPerformed(ActionEvent)"
 internal: false
 source:

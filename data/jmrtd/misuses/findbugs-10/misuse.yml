@@ -7,7 +7,7 @@ description: >
    Method invokes System.exit(...), which shuts down the entire virtual machine.
 location:
   file: sos/mrtd/sample/PassportGUI.java
-  method: "(String[])"
+  method: "<init>(String[])"
 internal: false
 source:
   name: Findbugs

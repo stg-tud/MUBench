@@ -6,7 +6,7 @@ crash: true
 description: >
   Possible null pointer dereference of firstArgument variable.
 location:
-  file: com/google/javascript/jscomp/TightenTypes$NativeCallFunctionCall.java
+  file: com/google/javascript/jscomp/TightenTypes.java
   method: "getAssignments(ConcreteScope)"
 internal: true
 source:

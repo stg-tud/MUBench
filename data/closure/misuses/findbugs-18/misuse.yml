@@ -6,7 +6,7 @@ crash: false
 description: >
   Load of known null value as argument.
 location:
-  file: com/google/javascript/jscomp/ConcreteType$ConcreteFunctionType.java
+  file: com/google/javascript/jscomp/ConcreteType.java
   method: "toString()"
 internal: true
 source:

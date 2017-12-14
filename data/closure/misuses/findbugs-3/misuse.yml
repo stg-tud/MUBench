@@ -6,7 +6,7 @@ crash: true
 description: >
   Possible null pointer dereference of addingRoot variable.
 location:
-  file: com/google/javascript/jscomp/InstrumentFunctions$InstrumentCallback.java
+  file: com/google/javascript/jscomp/InstrumentFunctions.java
   method: "visit(NodeTraversal, Node, Node)"
 internal: true
 source:
