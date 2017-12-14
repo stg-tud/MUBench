@@ -126,28 +126,31 @@ class RunsController extends Controller
         $detector_muid = $args['detector_muid'];
         $project_muid = $args['project_muid'];
         $version_muid = $args['version_muid'];
-        $run = Run::of(Detector::find($detector_muid))->in(Experiment::find($experimentId))->get()->where('project_muid', $project_muid);
-        $run = $run->where('version_muid', $version_muid);
-        $run = $run->first();
+        $run = Run::of(Detector::find($detector_muid))->in(Experiment::find($experimentId))->get()->where('project_muid', $project_muid)->where('version_muid', $version_muid)->first();
         if($run){
-            foreach($run->misuses as $misuse){
-                foreach($misuse->reviews as $review){
-                    $findings_reviews = $review->finding_reviews;
-                    foreach($findings_reviews as $finding_review){
-                        $finding_review->violation_types()->detach();
-                    }
-                    $review->finding_reviews()->delete();
-                    $review->reviewer()->dissociate();
-                }
-                $misuse->reviews()->delete();
-                $misuse->metadata()->dissociate();
-                $misuse->misuse_tags()->detach();
-                $misuse->findings()->delete();
-            }
-            $run->misuses()->delete();
-            $run->delete();
+            $this->deleteRunAndRelated($run);
         }
         return $response->withRedirect($this->router->pathFor('private.manage.runs'));
+    }
+
+    static function deleteRunAndRelated(Run $run)
+    {
+        foreach($run->misuses as $misuse){
+            foreach($misuse->reviews as $review){
+                $findings_reviews = $review->finding_reviews;
+                foreach($findings_reviews as $finding_review){
+                    $finding_review->violation_types()->detach();
+                }
+                $review->finding_reviews()->delete();
+                $review->reviewer()->dissociate();
+            }
+            $misuse->reviews()->delete();
+            $misuse->metadata()->dissociate();
+            $misuse->misuse_tags()->detach();
+            $misuse->findings()->delete();
+        }
+        $run->misuses()->delete();
+        $run->delete();
     }
 
     static function getRuns($detector, $experiment, $max_reviews)
