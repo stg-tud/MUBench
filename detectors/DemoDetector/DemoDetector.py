@@ -9,5 +9,5 @@ class DemoDetector(Detector):
                 requested_release: Optional[str] = None):
         super().__init__(detectors_path, detector_id, java_options or [])
 
-    def _specialize_finding(self, findings_path: str, finding: Finding) -> SpecializedFinding:
+    def specialize_finding(self, findings_path: str, finding: Finding) -> SpecializedFinding:
         return SpecializedFinding(finding)

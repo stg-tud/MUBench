@@ -1,11 +1,11 @@
-from typing import Dict
+from typing import Dict, List
 from unittest.mock import MagicMock, patch
 
 from nose.tools import assert_equals
 
 from data.detector import Detector
 from data.detector_run import DetectorRun
-from data.finding import SpecializedFinding
+from data.finding import Finding, SpecializedFinding
 from data.snippets import Snippet, SnippetUnavailableException
 from tasks.implementations.findings_filters import PotentialHits
 from tasks.implementations.publish_findings import PublishFindingsTask
@@ -79,8 +79,8 @@ class TestPublishFindingsTask:
         self.test_detector_execution.runtime = 42
         self.test_detector_execution.number_of_findings = 5
         potential_hits = [
-            _create_finding({"rank": "-1-"}),
-            _create_finding({"rank": "-2-"})
+            self._create_finding({"rank": "-1-"}),
+            self._create_finding({"rank": "-2-"})
         ]
         self.test_potential_hits = PotentialHits(potential_hits)
 
@@ -101,8 +101,8 @@ class TestPublishFindingsTask:
         self.test_detector_execution.is_success = lambda: True
 
         self.test_potential_hits = PotentialHits([
-            _create_finding({"rank": "-1-"}, file_paths=["-file1-"]),
-            _create_finding({"rank": "-2-"}, file_paths=["-file2-"])
+            self._create_finding({"rank": "-1-"}, file_paths=["-file1-"]),
+            self._create_finding({"rank": "-2-"}, file_paths=["-file2-"])
         ])
 
         self.uut.run(self.project, self.version, self.test_detector_execution, self.test_potential_hits,
@@ -114,8 +114,8 @@ class TestPublishFindingsTask:
         self.uut.max_files_per_post = 1
         self.test_detector_execution.is_success = lambda: True
         self.test_potential_hits = PotentialHits([
-            _create_finding({"rank": "-1-"}, file_paths=["-file1-"]),
-            _create_finding({"rank": "-2-"}, file_paths=["-file2-"])
+            self._create_finding({"rank": "-1-"}, file_paths=["-file1-"]),
+            self._create_finding({"rank": "-2-"}, file_paths=["-file2-"])
         ])
 
         self.uut.run(self.project, self.version, self.test_detector_execution, self.test_potential_hits,
@@ -129,8 +129,8 @@ class TestPublishFindingsTask:
         self.uut.max_files_per_post = 3
         self.test_detector_execution.is_success = lambda: True
         self.test_potential_hits = PotentialHits([
-            _create_finding({"rank": "-1-"}, file_paths=["-file1-", "-file2-"]),
-            _create_finding({"rank": "-2-"}, file_paths=["-file3-", "-file4-"])
+            self._create_finding({"rank": "-1-"}, file_paths=["-file1-", "-file2-"]),
+            self._create_finding({"rank": "-2-"}, file_paths=["-file3-", "-file4-"])
         ])
 
         self.uut.run(self.project, self.version, self.test_detector_execution, self.test_potential_hits,
@@ -140,7 +140,8 @@ class TestPublishFindingsTask:
 
     def test_publish_successful_run_code_snippets(self, post_mock):
         self.test_detector_execution.is_success = lambda: True
-        self.test_potential_hits = PotentialHits([_create_finding({"rank": "42"}, snippets=[Snippet("-code-", 23)])])
+        self.test_potential_hits = PotentialHits(
+            [self._create_finding({"rank": "42"}, snippets=[Snippet("-code-", 23)])])
 
         self.uut.run(self.project, self.version, self.test_detector_execution, self.test_potential_hits,
                      self.version_compile, self.detector)
@@ -150,7 +151,7 @@ class TestPublishFindingsTask:
 
     def test_publish_successful_run_code_snippets_extraction_fails(self, post_mock):
         self.test_detector_execution.is_success = lambda: True
-        finding = _create_finding({"rank": "42"})
+        finding = self._create_finding({"rank": "42"})
         finding.get_snippets = MagicMock(side_effect=SnippetUnavailableException('-file-', ValueError('-failure-')))
         self.test_potential_hits = PotentialHits([finding])
 
@@ -205,7 +206,7 @@ class TestPublishFindingsTask:
 
     def test_with_markdown(self, post_mock):
         self.test_detector_execution.is_success = lambda: True
-        potential_hits = [_create_finding({"list": ["hello", "world"], "dict": {"key": "value"}})]
+        potential_hits = [self._create_finding({"list": ["hello", "world"], "dict": {"key": "value"}})]
         self.test_potential_hits = PotentialHits(potential_hits)
         self.test_detector_execution.get_run_info = lambda: {"info": {"k1": "v1"}}
 
@@ -218,13 +219,19 @@ class TestPublishFindingsTask:
             "potential_hits": [{"list": "* hello\n* world", "dict": "key: \nvalue", "target_snippets": []}]
         })
 
+    def _create_finding(self, data: Dict, file_paths=None, snippets=None):
+        if snippets is None:
+            snippets = []
+        if file_paths is None:
+            file_paths = []
+        finding = Finding(data)
+        finding.files = file_paths
 
-def _create_finding(data: Dict, file_paths=None, snippets=None):
-    if snippets is None:
-        snippets = []
-    if file_paths is None:
-        file_paths = []
-    finding = SpecializedFinding(data, files=file_paths)
-    finding.get_snippets = lambda source_path: \
-        snippets if source_path == "/sources/-p-/-v-/original-src" else {}["illegal source path: %s" % source_path]
-    return finding
+        specialized_finding = SpecializedFinding(data, files=file_paths)
+        specialized_finding.get_snippets = lambda source_path: \
+            snippets if source_path == "/sources/-p-/-v-/original-src" else {}["illegal source path: %s" % source_path]
+        orig_specialize_finding = self.detector.specialize_finding
+        self.detector.specialize_finding = lambda p, f: \
+            specialized_finding if f is finding else orig_specialize_finding(p, f)
+
+        return finding

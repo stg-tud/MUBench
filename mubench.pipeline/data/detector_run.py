@@ -27,7 +27,7 @@ class DetectorRun:
     def __init__(self, detector: Detector, version: ProjectVersion, findings_path: str):
         self.detector = detector
         self.version = version
-        self._findings_path = findings_path
+        self.findings_path = findings_path
         self.__FINDINGS = None
         self.__POTENTIAL_HITS = None
         self.__run_info = None
@@ -152,9 +152,9 @@ class DetectorRun:
         return Finding(finding_data)
 
     def reset(self):
-        remove_tree(self._findings_path)
-        makedirs(self._findings_path, exist_ok=True)
-        DetectorRun.__init__(self, self.detector, self.version, self._findings_path)
+        remove_tree(self.findings_path)
+        makedirs(self.findings_path, exist_ok=True)
+        DetectorRun.__init__(self, self.detector, self.version, self.findings_path)
 
     def is_success(self):
         return self.result == Result.success

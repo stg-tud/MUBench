@@ -2,12 +2,12 @@ from copy import deepcopy
 from typing import List
 
 from data.detector_run import DetectorRun
-from data.finding import SpecializedFinding, Finding
+from data.finding import Finding
 from data.misuse import Misuse
 
 
 class PotentialHits:
-    def __init__(self, findings: List[SpecializedFinding]):
+    def __init__(self, findings: List[Finding]):
         self.findings = findings
 
 

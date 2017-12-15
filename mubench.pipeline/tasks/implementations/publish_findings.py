@@ -7,7 +7,7 @@ from requests import RequestException
 
 from data.detector import Detector
 from data.detector_run import DetectorRun
-from data.finding import SpecializedFinding
+from data.finding import SpecializedFinding, Finding
 from data.project import Project
 from data.version_compile import VersionCompile
 from data.project_version import ProjectVersion
@@ -61,7 +61,8 @@ class PublishFindingsTask:
             for potential_hits_slice in self.__slice_by_max_files_per_post(potential_hits.findings):
                 post_data_slice = []
                 for potential_hit in potential_hits_slice:
-                    postable_data = self._prepare_post(potential_hit, version_compile, logger)
+                    postable_data = self._prepare_post(potential_hit, detector, detector_run.findings_path,
+                                                       version_compile, logger)
                     post_data_slice.append(postable_data)
 
                 file_paths = PublishFindingsTask.get_file_paths(potential_hits_slice)
@@ -89,11 +90,13 @@ class PublishFindingsTask:
 
         yield potential_hits_slice
 
-    def _prepare_post(self, finding: SpecializedFinding, version_compile, logger) -> Dict[str, str]:
-        markdown_dict = self._to_markdown_dict(finding)
+    def _prepare_post(self, finding: Finding, detector: Detector, findings_path: str, version_compile: VersionCompile,
+                      logger) -> Dict[str, str]:
+        specialized_finding = detector.specialize_finding(findings_path, finding)
+        markdown_dict = self._to_markdown_dict(specialized_finding)
 
         try:
-            snippets = finding.get_snippets(version_compile.original_sources_path)
+            snippets = specialized_finding.get_snippets(version_compile.original_sources_path)
         except SnippetUnavailableException as e:
             logger.warning("No snippets added for %s", e.file)
             logger.debug("Failed to find snippets: %s", e.exception)
