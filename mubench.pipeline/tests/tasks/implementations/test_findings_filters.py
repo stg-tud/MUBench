@@ -2,7 +2,7 @@ from unittest.mock import MagicMock
 
 from nose.tools import assert_equals
 
-from data.finding import Finding
+from data.finding import SpecializedFinding, Finding
 from tasks.implementations.findings_filters import PotentialHitsFilterTask, AllFindingsFilterTask
 from tests.data.stub_detector import StubDetector
 from tests.test_utils.data_util import create_misuse
@@ -14,6 +14,7 @@ class TestPotentialHits:
         self.detector = StubDetector()
         self.uut = PotentialHitsFilterTask()
         self.detector_run = MagicMock()
+        self.detector_run.detector = self.detector
 
     def test_no_hit(self):
         finding = Finding({"rank": "no potential hit"})
@@ -44,6 +45,7 @@ class TestAllFindings:
         self.misuses = [self.misuse, create_misuse("-m2-")]
 
         self.detector_run = MagicMock()
+        self.detector_run.detector = self.detector
 
         self.uut = AllFindingsFilterTask()
 
@@ -59,11 +61,10 @@ class TestAllFindings:
         assert_equals(expected, actual.findings)
 
     def test_limits_number_of_findings(self):
-        detector_execution = MagicMock()
         all = [Finding({"rank": "1"}), Finding({"rank": "2"})]
-        detector_execution.findings = all
+        self.detector_run.findings = all
         self.uut.limit = 1
 
-        actual = self.uut.run(detector_execution)
+        actual = self.uut.run(self.detector_run)
 
         assert_equals(1, len(actual.findings))

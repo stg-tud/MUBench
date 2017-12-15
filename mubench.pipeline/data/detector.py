@@ -14,7 +14,8 @@ class Detector:
     RELEASES_FILE = "releases.yml"
     NO_MD5 = "md5 not specified"
 
-    def __init__(self, detectors_path: str, detector_id: str, java_options: List[str], requested_release: Optional[str] = None):
+    def __init__(self, detectors_path: str, detector_id: str, java_options: List[str],
+                 requested_release: Optional[str] = None):
         self.id = detector_id
         self.base_name = detector_id.split("_", 1)[0]
         self.path = join(detectors_path, self.id)
@@ -52,10 +53,7 @@ class Detector:
                 timeout: Optional[int], logger: Logger):
         return self.runner_interface.execute(version, arguments, timeout, logger)
 
-    def specialize_findings(self, findings_path: str, findings: List[Finding]) -> List[SpecializedFinding]:
-        return [self._specialize_finding(findings_path, finding) for finding in findings]
-
-    def _specialize_finding(self, findings_path: str, finding: Finding) -> SpecializedFinding:
+    def specialize_finding(self, findings_path: str, finding: Finding) -> SpecializedFinding:
         raise NotImplementedError
 
     def __str__(self):
