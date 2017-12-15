@@ -35,9 +35,12 @@ public class DemoRunner {
         }
 
         private List<DemoViolation> detectViolations(Path targetSourcePath) throws IOException {
-            return Files.find(targetSourcePath, Integer.MAX_VALUE, this::isJavaFile)
+            List<DemoViolation> violations = Files.find(targetSourcePath, Integer.MAX_VALUE, this::isJavaFile)
                     .map(file -> new DemoViolation(file.toAbsolutePath().toString(), "m()"))
                     .collect(Collectors.toList());
+            // Add synthetic.mapnull.mapnull to ensure we have a potential hit for debugging ex1/3
+            violations.add(new DemoViolation("MapNull.java", "misuse(Map)"));
+            return violations;
         }
 
         private DetectorFinding toDetectorFinding(DemoViolation violation) {
