@@ -1,0 +1,117 @@
+<?php
+/**
+ * @var \MuBench\ReviewSite\Models\Reviewer $user the logged in user, if any
+ *
+ * @var string $site_base_url
+ * @var string $public_url_prefix
+ * @var string $private_url_prefix
+ * @var callable $pathFor function to resolve router paths
+ * @var string $url_prefix the public or private url prefix, depending on whether the user is logged in
+ *
+ * @var string $path the current route path
+ * @var string $origin_param url parameter that carries the $path
+ * @var string $origin_path referrer path
+ *
+ * @var array $experiments all experiments (Experiment)
+ * @var array $detectors detectors (Detector) with results per experiment
+ * @var Experiment $experiment the selected experiment, if any
+ * @var Detector $detector the selected detector, if any
+ * @var array $experiment_runs runs for each experiment
+ *
+ * @var array $runs the detectors experiment runs
+ */
+use MuBench\ReviewSite\Models\Detector;
+use MuBench\ReviewSite\Models\Experiment;
+use MuBench\ReviewSite\Models\Decision;
+use MuBench\ReviewSite\Models\ReviewState;
+
+$columns_to_ignore = array(
+    'exp',
+    'project',
+    'version',
+    'misuses',
+    'detector',
+    'result',
+    'number_of_findings',
+    'runtime',
+    'id',
+    'experiment_id',
+    'version_muid',
+    'project_muid'
+);
+
+$markdown_parser = new Parsedown();
+
+?>
+<html>
+<head>
+    <title>MuBench :: Manage Runs</title>
+    <link rel="stylesheet" type="text/css" href="<?= $site_base_url ?>css/style.css"/>
+    <link rel="stylesheet" type="text/css" href="<?= $site_base_url ?>css/modal.css"/>
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+</head>
+<body>
+<?php include "includes/menu.phtml"; ?>
+
+<?php foreach($experiments as $experiment): ?>
+<h1>Experiment <?= /* @var Experiment */ $experiment->id ?>: <?= htmlspecialchars($experiment->name) ?></h1>
+<table>
+    <thead>
+    <tr>
+        <th>Detector</th>
+        <th>Project</th>
+        <th>Version</th>
+        <th>Result</th>
+        <th># of Findings</th>
+        <th>Runtime</th>
+        <th></th>
+        <th></th>
+    </tr>
+    </thead>
+    <tbody>
+    <?php
+    $last_project = ""
+    ?>
+    <?php foreach ($experiment_runs[$experiment->id] as $detector => $runs) : ?>
+        <?php $first_detector = True; ?>
+        <?php foreach($runs as $run) : ?>
+        <?php
+        $project = $run->project_muid;
+        $version = $run->version_muid;
+        $attr = $run->getAttributes();
+        $additional_stats = array_filter(array_keys($attr), function ($key) use ($columns_to_ignore, $attr) {
+            return !in_array($key, $columns_to_ignore) && array_key_exists($key, $attr) && !empty($attr[$key]);
+        });
+        sort($additional_stats);
+        ?>
+            <tr>
+                <td class="top">
+                    <?= $first_detector ? $markdown_parser->text($detector) : ""; ?></td>
+                <td class="top">
+                    <?= $markdown_parser->text($project); ?></td>
+                <td class="top">
+                    <?= $markdown_parser->text($version); ?></td>
+                <td class="top">
+                    <?= $markdown_parser->text($run['result']); ?></td>
+                <td class="top right">
+                    <?= $markdown_parser->text($run['number_of_findings']); ?></td>
+                <td class="top right">
+                    <?= $markdown_parser->text(substr($run['runtime'], 0, 4)) . "s"; ?></td>
+                <td class="top right">
+                    <?php include "includes/modal.phtml"; ?>
+                </td>
+                <td>
+                    <form action="<?= $pathFor('runs.delete', array('experiment_id' => $experiment->id, 'detector_muid' => $detector, 'project_muid' => $project, 'version_muid' => $version)) ?>" method="post" target="">
+                        <button style="border:none;background-color:gray;outline:none;margin:0;padding:0" type="submit"><i class="fa fa-window-close"></i></button>
+                    </form>
+                </td>
+            </tr>
+            <?php $first_detector = False; ?>
+            <?php endforeach; ?>
+<?php endforeach; ?>
+    </tbody>
+</table>
+<?php endforeach; ?>
+
+</body>
+</html>

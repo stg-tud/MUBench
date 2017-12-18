@@ -15,6 +15,7 @@ use MuBench\ReviewSite\Models\DetectorResult;
 use MuBench\ReviewSite\Models\Experiment;
 use MuBench\ReviewSite\Models\ExperimentResult;
 use MuBench\ReviewSite\Models\Misuse;
+use MuBench\ReviewSite\Models\Review;
 use MuBench\ReviewSite\Models\Reviewer;
 use MuBench\ReviewSite\Models\Run;
 
@@ -28,9 +29,11 @@ class RunsControllerTest extends SlimTestCase
     /** @var  Detector */
     private $detector2;
 
+    /** @var RunsController */
+    private $runsController;
+
     function setUp()
     {
-        parent::setUp();
         parent::setUp();
         $this->runsController = new RunsController($this->container);
         $this->detector1 = Detector::create(['muid' => '-d1-']);
@@ -242,6 +245,25 @@ EOT
         ]);
 
         self::assertEquals($expected_csv, RunsController::exportRunStatistics($runs));
+    }
+
+    function test_run_deletion()
+    {
+        $this->runsController->addRun(3, '-d-', '-p-', '-v-', $this->request_body);
+        $detector = Detector::where('muid', '=', '-d-')->first();
+        $run = Run::of($detector)->in(Experiment::find(3))->where(['project_muid' => '-p-', 'version_muid' => '-v-'])->first();
+        $misuses = $run->misuses;
+
+        RunsController::deleteRunAndRelated($run);
+        $actual_run = Run::of(Detector::find('-d-'))->in(Experiment::find(3))->where('project', '-p-')->where('version', '-v-')->first();
+
+        self::assertNull($actual_run);
+        foreach($misuses as $misuse){
+            self::assertNull(Misuse::find($misuse->id));
+            foreach($misuse->reviews as $review){
+                self::assertNull(Review::find($review->id));
+            }
+        }
     }
 
     private function createSomeRun($id, Experiment $experiment, Detector $detector, $misuses)
