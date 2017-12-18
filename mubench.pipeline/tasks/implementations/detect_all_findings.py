@@ -35,7 +35,7 @@ class DetectAllFindingsTask:
     def _get_detector_arguments(version_compile: VersionCompile):
         return {
             key_detector_mode: DetectAllFindingsTask.__DETECTOR_MODE,
-            key_target_src_path: version_compile.original_sources_path,
-            key_target_classpath: version_compile.original_classes_path,
+            key_target_src_path: version_compile.original_sources_paths,
+            key_target_classpath: version_compile.original_classes_paths,
             key_dependency_classpath: version_compile.get_full_classpath()
         }

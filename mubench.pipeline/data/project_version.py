@@ -62,20 +62,27 @@ class ProjectVersion:
             raise ValueError("unknown repository type: {}".format(repository.vcstype))
 
     def get_compile(self, base_path: str) -> VersionCompile:
-        return VersionCompile(join(base_path, self.project_id, self.version_id), self.misuses)
+        return VersionCompile(join(base_path, self.project_id, self.version_id), self.source_dirs, self.classes_dirs)
 
     @property
     def __compile_config(self):
-        compile = {"src": "", "commands": [], "classes": ""}
+        compile = {"src": [""], "commands": [], "classes": [""]}
         compile.update(self._yaml.get("build", {}))
 
+        src = compile["src"]
+        if type(src) == str:
+            compile["src"] = [src]
+        classes = compile["classes"]
+        if type(classes) == str:
+            compile["classes"] = [classes]
+
         for key, value in self.VARS_CLASSES.items():
-            compile["classes"] = compile["classes"].replace(key, value)
+            compile["classes"] = [classes.replace(key, value) for classes in compile["classes"]]
 
         return compile
 
     @property
-    def source_dir(self):
+    def source_dirs(self) -> List[str]:
         return self.__compile_config["src"]
 
     @property
@@ -83,7 +90,7 @@ class ProjectVersion:
         return self.__compile_config["commands"]
 
     @property
-    def classes_dir(self):
+    def classes_dirs(self) -> List[str]:
         return self.__compile_config["classes"]
 
     @property

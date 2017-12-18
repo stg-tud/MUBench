@@ -13,7 +13,9 @@ from utils.dataset_util import get_white_list
 
 class Task:
     def run(self, project: Project, version: ProjectVersion, misuse: Misuse) -> List[str]:
-        print("{}\t{}\t{}\t{}\t{}\t{}\t{}".format(project.id, version.version_id, misuse.misuse_id, version.source_dir, misuse.location.file, misuse.location.method, misuse.apis[0]))
+        print("{}\t{}\t{}\t{}\t{}\t{}\t{}".format(project.id, version.version_id, misuse.misuse_id,
+                                                  ':'.join(version.source_dirs),
+                                                  misuse.location.file, misuse.location.method, misuse.apis[0]))
 
 
 white_list = get_white_list("../data/datasets.yml", "icse16ex1")

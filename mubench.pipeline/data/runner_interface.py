@@ -11,6 +11,7 @@ from utils.shell import Shell
 def _quote(value: str):
     return "\"{}\"".format(value)
 
+
 def _as_list(dictionary: Dict) -> List:
     l = list()
     for key, value in dictionary.items():
@@ -195,6 +196,21 @@ class RunnerInterface_0_0_8(CommandLineArgsRunnerInterface):
             "dep_classpath"
         ]
 
+    @staticmethod
+    def _get_cli_args(detector_arguments: Dict[str, str]):
+        target_src_paths = detector_arguments.get("target_src_path", ())
+        target_classpaths = detector_arguments.get("target_classpath", ())
+
+        if len(target_src_paths) > 1 or len(target_classpaths) > 1:
+            raise ValueError("This legacy interface version can not handle multiple src/classes paths.")
+
+        if len(target_src_paths) == 1:
+            detector_arguments["target_src_path"] = target_src_paths[0]
+        if len(target_classpaths) == 1:
+            detector_arguments["target_classpath"] = target_classpaths[0]
+
+        return CommandLineArgsRunnerInterface._get_cli_args(detector_arguments)
+
 
 # noinspection PyPep8Naming
 class RunnerInterface_0_0_10(RunnerInterface_0_0_8):
@@ -205,3 +221,20 @@ class RunnerInterface_0_0_10(RunnerInterface_0_0_8):
     @staticmethod
     def changelog():
         return ""  # Only changed Java-side interface.
+
+
+# noinspection PyPep8Naming
+class RunnerInterface_0_0_11(RunnerInterface_0_0_8):
+    @staticmethod
+    def version():
+        return StrictVersion("0.0.11")
+
+    @staticmethod
+    def changelog():
+        return "Now handles multiple src/classes target paths."
+
+    @staticmethod
+    def _get_cli_args(detector_arguments: Dict[str, str]):
+        detector_arguments["target_src_path"] = ":".join(detector_arguments["target_src_path"])
+        detector_arguments["target_classpath"] = ":".join(detector_arguments["target_classpath"])
+        return CommandLineArgsRunnerInterface._get_cli_args(detector_arguments)

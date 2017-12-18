@@ -39,9 +39,8 @@ public class DetectorArgsTest {
 		DetectorArgs actual = DetectorArgs.parse(
 				new String[] { DetectorArgs.keyTrainingSrcPath, "psrc", DetectorArgs.keyTrainingClassPath, "pclasspath" });
 
-		CodePath patternPath = actual.getPatternPath();
-		assertEquals("psrc", patternPath.srcPath);
-		assertEquals("pclasspath", patternPath.classPath);
+        assertEquals("psrc", actual.getPatternSrcPath());
+		assertEquals("pclasspath", actual.getPatternClassPath());
 	}
 
 	@Test
@@ -49,10 +48,25 @@ public class DetectorArgsTest {
 		DetectorArgs actual = DetectorArgs
 				.parse(new String[] { DetectorArgs.keyTargetSrcPath, "msrc", DetectorArgs.keyTargetClassPath, "mclasspath" });
 
-        CodePath targetPath = actual.getTargetPath();
-        assertEquals("msrc", targetPath.srcPath);
-		assertEquals("mclasspath", targetPath.classPath);
+        String[] targetSrcPaths = actual.getTargetSrcPaths();
+        String[] targetClassPaths = actual.getTargetClassPaths();
+        assertEquals("msrc", targetSrcPaths[0]);
+		assertEquals("mclasspath", targetClassPaths[0]);
 	}
+
+	@Test
+    public void parsesTargetPaths() throws FileNotFoundException {
+        DetectorArgs actual = DetectorArgs
+                .parse(new String[] { DetectorArgs.keyTargetSrcPath, "msrc1:msrc2",
+                                      DetectorArgs.keyTargetClassPath, "mclasspath1:mclasspath2" });
+
+        String[] targetSrcPaths = actual.getTargetSrcPaths();
+        String[] targetClassPaths = actual.getTargetClassPaths();
+        assertEquals("msrc1", targetSrcPaths[0]);
+        assertEquals("msrc2", targetSrcPaths[1]);
+        assertEquals("mclasspath1", targetClassPaths[0]);
+        assertEquals("mclasspath2", targetClassPaths[1]);
+    }
 
 	@Test
 	public void parsesDependenciesClassPath() throws Exception {
@@ -92,12 +106,12 @@ public class DetectorArgsTest {
 
     @Test(expected = FileNotFoundException.class)
     public void throwsOnNoTargetSrcPath() throws FileNotFoundException {
-        DetectorArgs.parse(new String[0]).getTargetSrcPath();
+        DetectorArgs.parse(new String[0]).getTargetSrcPaths();
     }
 
     @Test(expected = FileNotFoundException.class)
     public void throwsOnNoTargetClassPath() throws FileNotFoundException {
-        DetectorArgs.parse(new String[0]).getTargetClassPath();
+        DetectorArgs.parse(new String[0]).getTargetClassPaths();
     }
 
     @Test

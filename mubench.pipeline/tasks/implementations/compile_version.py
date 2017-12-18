@@ -3,14 +3,14 @@ import os
 import shutil
 from logging import Logger
 from os import makedirs
-from os.path import join, exists
+from os.path import exists
 from tempfile import mkdtemp
 from typing import List, Set
 
 from data.build_command import BuildCommand
 from data.project_checkout import ProjectCheckout
 from data.project_version import ProjectVersion
-from utils.io import remove_tree, copy_tree
+from utils.io import remove_tree, copy_tree, zip_dirs
 
 
 class CompileVersionTask:
@@ -29,46 +29,31 @@ class CompileVersionTask:
 
         build_path = mkdtemp(prefix='mubench-compile_') if self.use_temp_dir else version_compile.build_dir
 
-        sources_path = join(build_path, version.source_dir)
-        classes_path = join(build_path, version.classes_dir)
-
         if self.force_compile or checkout.timestamp > version_compile.timestamp:
             logger.debug("Force compile - removing previous compiles...")
             version_compile.delete()
 
         try:
-            needs_copy_sources = version_compile.needs_copy_sources()
-            needs_compile = version_compile.needs_compile()
+            if not version.compile_commands:
+                raise UserWarning("Skipping compilation: not configured.")
 
-            if needs_copy_sources or needs_compile:
+            if not version_compile.needs_compile():
+                logger.debug("Already compiled project.")
+            else:
                 logger.debug("Copying checkout to build directory...")
                 checkout_path = checkout.checkout_dir
                 copy_tree(checkout_path, build_path)
                 logger.debug("Copying additional resources...")
                 self.__copy_additional_compile_sources(version, build_path)
 
-            if not needs_copy_sources:
-                logger.debug("Already copied source.")
-            else:
-                logger.debug("Copying project sources...")
-                copy_tree(sources_path, version_compile.original_sources_path)
-
-            if not version.compile_commands:
-                raise UserWarning("Skipping compilation: not configured.")
-
-            if not needs_compile:
-                logger.debug("Already compiled project.")
-            else:
                 logger.debug("Compiling project...")
                 self._compile(version.compile_commands,
                               build_path,
                               version_compile.dependencies_path,
                               self.compiles_base_path,
                               logger)
-                logger.debug("Copy project classes...")
-                copy_tree(classes_path, version_compile.original_classes_path)
                 logger.debug("Create project jar...")
-                self.__create_jar(version_compile.original_classes_path, version_compile.original_classpath)
+                zip_dirs(version_compile.original_classes_paths, version_compile.original_classpath)
 
                 version_compile.save(self.run_timestamp)
 

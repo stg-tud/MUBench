@@ -14,7 +14,7 @@ from utils.web_util import post
 
 class PublishMetadataTask:
     def __init__(self, compiles_base_path: str,
-                 review_site_url: str, review_site_user: str="", review_site_password: str=""):
+                 review_site_url: str, review_site_user: str = "", review_site_password: str = ""):
         super().__init__()
         self.compiles_base_path = compiles_base_path
         self.review_site_url = review_site_url
@@ -48,13 +48,13 @@ class PublishMetadataTask:
                 "description": misuse.fix.description,
                 "diff-url": misuse.fix.commit
             },
-            "target_snippets": self.__get_snippets(misuse, version),
+            "target_snippets": [snippet.__dict__ for snippet in self.__get_snippets(misuse, version)],
             "patterns": self.__get_patterns(misuse)
         })
 
     def __get_snippets(self, misuse, version):
         version_compile = version.get_compile(self.compiles_base_path)
-        return [snippet.__dict__ for snippet in misuse.get_snippets(version_compile.original_sources_path)]
+        return misuse.get_snippets(version_compile.original_sources_paths)
 
     def __get_patterns(self, misuse: Misuse):
         patterns = []

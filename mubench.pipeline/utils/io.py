@@ -1,11 +1,12 @@
-from os import makedirs, chmod, remove, listdir, readlink, symlink, stat
-from os.path import dirname, exists, isfile, join, isdir, basename, islink
+import zipfile
+from os import makedirs, chmod, remove, listdir, readlink, symlink, stat, walk
+from os.path import dirname, exists, isfile, join, isdir, basename, islink, relpath
 from shutil import rmtree, copy
 from stat import S_IWRITE
 from typing import Dict, List
-from utils.shell import Shell
 
 import yaml
+
 try:
     from yaml import CLoader as Loader, CDumper as Dumper
 except ImportError:
@@ -147,3 +148,12 @@ class open_yamls_if_exists(open_yamls):
     def __exit__(self, exc_type, exc_val, exc_tb):
         if self._file:
             open_yamls.__exit__(self, exc_type, exc_val, exc_tb)
+
+
+def zip_dirs(sources: List[str], destination: str):
+    with zipfile.ZipFile(destination, 'w', zipfile.ZIP_DEFLATED) as zip_file:
+        for source in sources:
+            for root, dirs, files in walk(source):
+                for file in files:
+                    file_path_in_archive = relpath(join(root, file), join(source, '..'))
+                    zip_file.write(join(root, file), file_path_in_archive)

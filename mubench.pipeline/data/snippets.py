@@ -1,13 +1,25 @@
 import os
 import re
 from os.path import join
+from typing import List
 
 from utils import io
 from utils.java_utils import exec_util
-from utils.shell import CommandFailedError
 
 
-def get_snippets(source_base_path, file, method):
+def get_snippets(source_base_paths: List[str], file: str, method: str) -> List['Snippet']:
+    snippets = []
+
+    for source_base_path in source_base_paths:
+        try:
+            snippets.extend(__get_snippets(source_base_path, file, method))
+        except SnippetUnavailableException:
+            continue
+
+    return snippets
+
+
+def __get_snippets(source_base_path: str, file: str, method: str) -> List['Snippet']:
     target_file = join(source_base_path, file)
     snippets = []
     try:

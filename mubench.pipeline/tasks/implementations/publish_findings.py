@@ -11,7 +11,6 @@ from data.finding import SpecializedFinding, Finding
 from data.project import Project
 from data.version_compile import VersionCompile
 from data.project_version import ProjectVersion
-from data.snippets import SnippetUnavailableException
 from tasks.implementations.findings_filters import PotentialHits
 from utils.web_util import post, as_markdown
 
@@ -75,7 +74,7 @@ class PublishFindingsTask:
             else:
                 logger.error("ERROR: %s", e)
 
-    def __slice_by_max_files_per_post(self, potential_hits: PotentialHits) -> List[PotentialHits]:
+    def __slice_by_max_files_per_post(self, potential_hits: List[Finding]) -> List[List[Finding]]:
         potential_hits_slice = []
         number_of_files_in_slice = 0
         for potential_hit in potential_hits:
@@ -95,12 +94,9 @@ class PublishFindingsTask:
         specialized_finding = detector.specialize_finding(findings_path, finding)
         markdown_dict = self._to_markdown_dict(specialized_finding)
 
-        try:
-            snippets = specialized_finding.get_snippets(version_compile.original_sources_path)
-        except SnippetUnavailableException as e:
-            logger.warning("No snippets added for %s", e.file)
-            logger.debug("Failed to find snippets: %s", e.exception)
-            snippets = []
+        snippets = finding.get_snippets(version_compile.original_sources_paths)
+        if not snippets:
+            logger.warning("No snippets added.")
 
         markdown_dict["target_snippets"] = [snippet.__dict__ for snippet in snippets]
         return markdown_dict

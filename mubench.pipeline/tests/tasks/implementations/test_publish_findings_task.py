@@ -6,7 +6,7 @@ from nose.tools import assert_equals
 from data.detector import Detector
 from data.detector_run import DetectorRun
 from data.finding import Finding, SpecializedFinding
-from data.snippets import Snippet, SnippetUnavailableException
+from data.snippets import Snippet
 from tasks.implementations.findings_filters import PotentialHits
 from tasks.implementations.publish_findings import PublishFindingsTask
 from tests.data.stub_detector import StubDetector
@@ -21,7 +21,8 @@ class TestPublishFindingsTask:
         self.dataset = "-d-"
         self.project = create_project("-p-")
         self.misuse = create_misuse("-m-", project=self.project)
-        self.version = create_version("-v-", project=self.project, misuses=[self.misuse])
+        self.version = create_version("-v-", project=self.project, misuses=[self.misuse],
+                                      meta={"build": {"src": "", "classes": ""}})
         self.version_compile = self.version.get_compile("/sources")
 
         self.test_detector_execution = MagicMock()  # type: DetectorRun
@@ -152,7 +153,7 @@ class TestPublishFindingsTask:
     def test_publish_successful_run_code_snippets_extraction_fails(self, post_mock):
         self.test_detector_execution.is_success = lambda: True
         finding = self._create_finding({"rank": "42"})
-        finding.get_snippets = MagicMock(side_effect=SnippetUnavailableException('-file-', ValueError('-failure-')))
+        finding.get_snippets = MagicMock(return_value=[])
         self.test_potential_hits = PotentialHits([finding])
 
         self.uut.run(self.project, self.version, self.test_detector_execution, self.test_potential_hits,
@@ -219,19 +220,13 @@ class TestPublishFindingsTask:
             "potential_hits": [{"list": "* hello\n* world", "dict": "key: \nvalue", "target_snippets": []}]
         })
 
-    def _create_finding(self, data: Dict, file_paths=None, snippets=None):
+    @staticmethod
+    def _create_finding(data: Dict, file_paths=None, snippets=None):
         if snippets is None:
             snippets = []
         if file_paths is None:
             file_paths = []
-        finding = Finding(data)
-        finding.files = file_paths
-
-        specialized_finding = SpecializedFinding(data, files=file_paths)
-        specialized_finding.get_snippets = lambda source_path: \
-            snippets if source_path == "/sources/-p-/-v-/original-src" else {}["illegal source path: %s" % source_path]
-        orig_specialize_finding = self.detector.specialize_finding
-        self.detector.specialize_finding = lambda p, f: \
-            specialized_finding if f is finding else orig_specialize_finding(p, f)
-
+        finding = SpecializedFinding(data, files=file_paths)
+        finding.get_snippets = lambda source_paths: \
+            snippets if source_paths == ["/sources/-p-/-v-/build/"] else {}["illegal source path: %s" % source_path]
         return finding

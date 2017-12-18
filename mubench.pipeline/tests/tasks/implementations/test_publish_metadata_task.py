@@ -14,10 +14,10 @@ class TestPublishMetadataTask:
     # noinspection PyAttributeOutsideInit
     def setup(self):
         self.project = create_project("-p-")
+        self.version = create_version("-v-", project=self.project, meta={"build": {"src": "", "classes": ""}})
 
     def test_publish_url(self, post_mock, snippets_mock):
-        misuse = create_misuse("-m-", project=self.project)
-        create_version("-v-", project=self.project, misuses=[misuse])
+        misuse = create_misuse("-m-", project=self.project, version=self.version)
 
         task = PublishMetadataTask("-compiles-path-", "http://test.url")
         task.run(self.project, misuse)
@@ -27,8 +27,7 @@ class TestPublishMetadataTask:
 
     @patch("tasks.implementations.publish_metadata.getpass.getpass")
     def test_post_auth_prompt(self, pass_mock, post_mock, snippets_mock):
-        misuse = create_misuse("-m-", project=self.project)
-        create_version("-v-", project=self.project, misuses=[misuse])
+        misuse = create_misuse("-m-", project=self.project, version=self.version)
         pass_mock.return_value = "-password-"
 
         task = PublishMetadataTask("-compiles-path-", "http://test.url", "-username-")
@@ -40,8 +39,7 @@ class TestPublishMetadataTask:
 
     @patch("tasks.implementations.publish_metadata.getpass.getpass")
     def test_post_auth_provided(self, pass_mock, post_mock, snippets_mock):
-        misuse = create_misuse("-m-", project=self.project)
-        create_version("-v-", project=self.project, misuses=[misuse])
+        misuse = create_misuse("-m-", project=self.project, version=self.version)
         pass_mock.side_effect = UserWarning("should skip prompt")
 
         task = PublishMetadataTask("-compiles-path-", "http://test.url", "-username-", "-password-")
@@ -66,8 +64,7 @@ class TestPublishMetadataTask:
                 "file": "/some/file.java",
                 "method": "-some.method()-"
             }
-        }, project=self.project)
-        create_version("-v-", project=self.project, misuses=[misuse])
+        }, project=self.project, version=self.version)
         snippets_mock.return_value = [Snippet("-code-", 42)]
 
         task = PublishMetadataTask("-compiles-path-", "http://test.url")
@@ -101,8 +98,8 @@ class TestPublishMetadataTask:
             "  void m() { return; }\n" \
             "}"
         read_mock.return_value = pattern_code
-        misuse = create_misuse("-m-", project=self.project, patterns=[Pattern("/base/path", "P1.java")])
-        create_version("-v-", project=self.project, misuses=[misuse])
+        misuse = create_misuse("-m-", project=self.project, patterns=[Pattern("/base/path", "P1.java")],
+                               version=self.version)
 
         task = PublishMetadataTask("-compiles-path-", "http://test.url")
         task.run(self.project, misuse)
@@ -121,8 +118,7 @@ class TestPublishMetadataTask:
                        "  void m() { return; }\n" \
                        "}"
         read_mock.return_value = pattern_preamble + pattern_code
-        misuse = create_misuse("-m-", project=self.project, patterns=[Pattern("/", "P1.java")])
-        create_version("-v-", project=self.project, misuses=[misuse])
+        misuse = create_misuse("-m-", project=self.project, patterns=[Pattern("/", "P1.java")], version=self.version)
 
         task = PublishMetadataTask("-compiles-path-", "http://test.url")
         task.run(self.project, misuse)
@@ -134,8 +130,7 @@ class TestPublishMetadataTask:
     def test_publishes_pattern_code_without_trailing_newlines(self, read_mock, post_mock, snippets_mock):
         pattern_code = "public class P1 {}"
         read_mock.return_value = pattern_code + "\n\n\n"
-        misuse = create_misuse("-m-", project=self.project, patterns=[Pattern("/", "P1.java")])
-        create_version("-v-", project=self.project, misuses=[misuse])
+        misuse = create_misuse("-m-", project=self.project, patterns=[Pattern("/", "P1.java")], version=self.version)
 
         task = PublishMetadataTask("-compiles-path-", "http://test.url")
         task.run(self.project, misuse)

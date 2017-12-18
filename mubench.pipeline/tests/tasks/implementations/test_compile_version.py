@@ -41,10 +41,6 @@ class TestCompileVersion:
 
         self.base_path = dirname(self.checkout_path)
         self.build_path = join(self.base_path, "build")
-        self.original_sources_path = join(self.base_path, "original-src")
-        self.original_classes_path = join(self.base_path, "original-classes")
-        self.pattern_sources_path = join(self.base_path, "patterns-src")
-        self.pattern_classes_path = join(self.base_path, "patterns-classes")
         self.dep_path = join(self.base_path, "dependencies")
 
         self.run_timestamp = 1516186439
@@ -67,33 +63,6 @@ class TestCompileVersion:
                     print("fake compile: {}".format(join(class_path, package, file)))
 
         self.uut._compile = MagicMock(side_effect=mock_compile)
-
-    def test_copies_original_sources(self):
-        self.mock_with_fake_compile()
-        create_file(join(self.source_path, "a.file"))
-
-        self.uut.run(self.version, self.checkout)
-
-        assert exists(join(self.original_sources_path, "a.file"))
-
-    def test_forces_copy_of_original_sources(self):
-        self.mock_with_fake_compile()
-        makedirs(self.original_sources_path)
-        create_file(join(self.source_path, "a.file"))
-        self.uut.force_compile = True
-
-        self.uut.run(self.version, self.checkout)
-
-        assert exists(join(self.original_sources_path, "a.file"))
-
-    def test_forces_clean_copy_of_original_sources(self):
-        self.mock_with_fake_compile()
-        create_file(join(self.original_sources_path, "old.file"))
-        self.uut.force_compile = True
-
-        self.uut.run(self.version, self.checkout)
-
-        assert not exists(join(self.original_sources_path, "old.file"))
 
     def test_skips_if_no_config(self):
         self.mock_with_fake_compile()
@@ -121,25 +90,6 @@ class TestCompileVersion:
 
         assert exists(join(self.build_path, "additional.file"))
 
-    def test_skips_compile_if_classes_exist(self):
-        self.mock_with_fake_compile()
-        makedirs(self.original_classes_path)
-        create_file(join(self.source_path, "some.file"))
-
-        self.uut.run(self.version, self.checkout)
-
-        assert not exists(join(self.original_classes_path, "some.file"))
-
-    def test_forces_compile(self):
-        makedirs(self.original_classes_path)
-        makedirs(self.pattern_classes_path)
-        self.mock_with_fake_compile()
-        self.uut.force_compile = True
-
-        self.uut.run(self.version, self.checkout)
-
-        assert self.uut._compile.call_args_list, "not called"
-
     def test_skips_on_build_error(self):
         self.mock_with_fake_compile()
         self.uut._compile.side_effect = CommandFailedError("-cmd-", "-error message-")
@@ -153,11 +103,27 @@ class TestCompileVersion:
 
         assert_equals(self.run_timestamp, self.version.get_compile(self.base_path).timestamp)
 
+    def test_skips_compile_if_saved_compile_exists(self):
+        self.mock_with_fake_compile()
+        self.version.get_compile(self.project_path).save(self.run_timestamp)
+
+        self.uut.run(self.version, self.checkout)
+
+        self.uut._compile.assert_not_called()
+
+    def test_forces_compile(self):
+        self.mock_with_fake_compile()
+        self.version.get_compile(self.project_path).save(self.run_timestamp)
+        self.uut.force_compile = True
+
+        self.uut.run(self.version, self.checkout)
+
+        assert self.uut._compile.call_args_list, "not called"
+
     @patch("data.project_checkout.ProjectCheckout.timestamp", new_callable=PropertyMock)
     @patch("data.version_compile.VersionCompile.timestamp", new_callable=PropertyMock)
     def test_forces_compile_if_checkout_is_more_recent(self, compile_timestamp_mock, checkout_timestamp_mock):
-        makedirs(self.original_classes_path)
-        makedirs(self.pattern_classes_path)
+        self.version.get_compile(self.project_path).save(self.run_timestamp)
         self.mock_with_fake_compile()
         self.uut.force_compile = False
         compile_timestamp_mock.return_value = 1

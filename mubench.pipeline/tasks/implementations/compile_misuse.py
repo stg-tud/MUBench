@@ -1,9 +1,8 @@
 import logging
 import shutil
 from glob import glob
-from os import makedirs, walk
-from os.path import join, dirname, splitext, relpath
-from typing import List
+from os.path import join, basename, dirname, splitext, relpath, exists
+from os import makedirs
 
 from data.misuse import Misuse
 from data.version_compile import VersionCompile
@@ -28,13 +27,11 @@ class CompileMisuseTask:
         logger.info("Compiling %s...", misuse)
 
         logger.debug("Copying misuse sources...")
-        CompileMisuseTask._copy_misuse_sources(version_compile.original_sources_path,
-                                               misuse,
-                                               misuse_compile.misuse_source_path)
+        for source_path in version_compile.original_sources_paths:
+            CompileMisuseTask._copy_misuse_sources(source_path, misuse, misuse_compile.misuse_source_path)
         logger.debug("Copying misuse classes...")
-        CompileMisuseTask._copy_misuse_classes(version_compile.original_classes_path,
-                                               misuse,
-                                               misuse_compile.misuse_classes_path)
+        for classes_path in version_compile.original_classes_paths:
+            CompileMisuseTask._copy_misuse_classes(classes_path, misuse, misuse_compile.misuse_classes_path)
 
         try:
             logger.info("Compiling correct usage for %s...", misuse)
@@ -68,9 +65,10 @@ class CompileMisuseTask:
     @staticmethod
     def _copy_misuse_sources(sources_path, misuse, destination):
         file = misuse.location.file
-        dst = join(destination, file)
-        makedirs(dirname(dst), exist_ok=True)
-        shutil.copy(join(sources_path, file), dst)
+        if exists(join(sources_path, file)):
+            dst = join(destination, file)
+            makedirs(dirname(dst), exist_ok=True)
+            shutil.copy(join(sources_path, file), dst)
 
     @staticmethod
     def _copy_misuse_classes(classes_path, misuse, destination):
