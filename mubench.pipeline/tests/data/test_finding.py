@@ -1,9 +1,9 @@
 from typing import Dict
 from unittest.mock import patch
 
-from nose.tools import assert_equals, assert_raises
+from nose.tools import assert_equals
 
-from data.snippets import Snippet, SnippetUnavailableException
+from data.snippets import Snippet
 from data.finding import Finding
 from utils.shell import CommandFailedError
 from tests.test_utils.data_util import create_misuse
@@ -78,7 +78,7 @@ class TestTargetCode:
 
         finding = Finding({"file": "-file-"})
 
-        assert_equals(finding.get_snippets("/base"), [])
+        assert_equals(finding.get_snippets(["/base"]), [])
 
     def test_loads_snippet(self, utils_mock):
         utils_mock.side_effect = lambda tool, args:\
@@ -86,7 +86,7 @@ class TestTargetCode:
 
         finding = Finding({"file": "-file-", "method": "-method-"})
 
-        assert_equals([Snippet("class T {\n-code-\n}", 41)], finding.get_snippets("/base"))
+        assert_equals([Snippet("class T {\n-code-\n}", 41)], finding.get_snippets(["/base"]))
 
     def test_loads_snippet_absolute_path(self, utils_mock):
         utils_mock.side_effect = lambda tool, args: \
@@ -94,29 +94,27 @@ class TestTargetCode:
 
         finding = Finding({"file": "/-absolute-file-", "method": "-method-"})
 
-        assert_equals(1, len(finding.get_snippets("/base")))
+        assert_equals(1, len(finding.get_snippets(["/base"])))
 
     def test_loads_multiple_snippets(self, utils_mock):
         utils_mock.return_value = "42:T:t-code\n===\n32:A:a-code"
 
         finding = Finding({"file": "-file-", "method": "-method-"})
 
-        assert_equals(2, len(finding.get_snippets("/base")))
+        assert_equals(2, len(finding.get_snippets(["/base"])))
 
     def test_strips_additional_output(self, utils_mock):
         utils_mock.return_value = "Arbitrary additional output\n1:C:code"
 
         finding = Finding({"file": "-file-", "method": "-method-"})
 
-        assert_equals(1, len(finding.get_snippets("/base")))
+        assert_equals(1, len(finding.get_snippets(["/base"])))
 
     def test_extraction_error(self, utils_mock):
         utils_mock.side_effect = CommandFailedError("cmd", "output")
 
         finding = Finding({"file": "-file-", "method": "-method-"})
 
-        with assert_raises(SnippetUnavailableException) as context:
-            finding.get_snippets("/base")
+        snippets = finding.get_snippets(["/base"])
 
-        assert_equals('/base/-file-', context.exception.file)
-        assert_equals(utils_mock.side_effect, context.exception.exception)
+        assert_equals([], snippets)

@@ -6,7 +6,8 @@ from unittest.mock import MagicMock, patch
 
 from nose.tools import assert_equals, assert_true, assert_false, assert_raises
 
-from data.runner_interface import RunnerInterface, RunnerInterface_0_0_8, NoCompatibleRunnerInterface
+from data.runner_interface import RunnerInterface, RunnerInterface_0_0_8, NoCompatibleRunnerInterface, \
+    RunnerInterface_0_0_11
 from tests.test_utils.data_util import create_version
 from tests.test_utils.runner_interface_test_impl import RunnerInterfaceTestImpl
 
@@ -123,7 +124,6 @@ class TestRunnerInterface_0_0_8:
         training_classpath = join(compiles_path, "patterns-classes", "-misuse-")
         target_src_path = join(compiles_path, "misuse-src")
         target_classpath = join(compiles_path, "misuse-classes")
-        original_classpath = join(compiles_path, "original-classes.jar")
         dependencies_classpath = "-dependencies-classpath-"
 
         detector_args = OrderedDict([
@@ -132,8 +132,8 @@ class TestRunnerInterface_0_0_8:
                 ("detector_mode", "1"),
                 ("training_src_path", training_src_path),
                 ("training_classpath", training_classpath),
-                ("target_src_path", target_src_path),
-                ("target_classpath", target_classpath),
+                ("target_src_path", [target_src_path]),
+                ("target_classpath", [target_classpath]),
                 ("dep_classpath", dependencies_classpath)
             ])
 
@@ -159,4 +159,47 @@ class TestRunnerInterface_0_0_8:
         uut.execute(self.version, {"-incompatible-" : "-value-"}, timeout=42, logger=self.logger)
 
         shell_mock.exec.assert_called_with('java -jar "{}"'.format(jar),
+                                           logger=self.logger, timeout=42)
+
+    def test_raises_on_multiple_target_paths(self, _):
+        jar = "-detector-"
+        compiles_path = join("-compiles-", "-project-", "-version-")
+        target_src_paths = [join(compiles_path, "misuse-src"), join(compiles_path, "misuse-tests-src")]
+        target_classpaths = [join(compiles_path, "misuse-classes"), join(compiles_path, "misuse-tests-src")]
+
+        detector_args = OrderedDict([
+            ("target_src_path", target_src_paths),
+            ("target_classpath", target_classpaths),
+        ])
+
+        uut = RunnerInterface_0_0_8(jar, [])
+
+        assert_raises(ValueError, uut.execute, self.version, detector_args, timeout=42, logger=self.logger)
+
+
+@patch("data.runner_interface.Shell")
+class TestRunnerInterface_0_0_11:
+    # noinspection PyAttributeOutsideInit
+    def setup(self):
+        self.uut = RunnerInterface_0_0_11("-detector-", [])
+        self.logger = logging.getLogger("test")
+        self.version = create_version("-version-")
+
+    def test_joins_target_paths(self, shell_mock):
+        jar = "-detector-"
+        compiles_path = join("-compiles-", "-project-", "-version-")
+        target_src_paths = [join(compiles_path, "misuse-src"), join(compiles_path, "misuse-tests-src")]
+        target_classpaths = [join(compiles_path, "misuse-classes"), join(compiles_path, "misuse-tests-src")]
+
+        detector_args = OrderedDict([
+            ("target_src_path", target_src_paths),
+            ("target_classpath", target_classpaths),
+        ])
+
+        uut = RunnerInterface_0_0_11(jar, [])
+        uut.execute(self.version, detector_args, timeout=42, logger=self.logger)
+
+        shell_mock.exec.assert_called_with('java -jar "{}" '.format(jar) +
+                                           'target_src_path "{}" '.format(":".join(target_src_paths)) +
+                                           'target_classpath "{}"'.format(":".join(target_classpaths)),
                                            logger=self.logger, timeout=42)

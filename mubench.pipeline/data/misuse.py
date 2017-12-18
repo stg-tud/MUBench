@@ -126,8 +126,8 @@ class Misuse:
             self._characteristics = self._yaml.get('characteristics', [])
         return self._characteristics
 
-    def get_snippets(self, source_base_path: str) -> List[Snippet]:
-        return get_snippets(source_base_path, self.location.file, self.location.method)
+    def get_snippets(self, source_base_paths: List[str]) -> List[Snippet]:
+        return get_snippets(source_base_paths, self.location.file, self.location.method)
 
     def get_misuse_compile(self, base_path: str) -> MisuseCompile:
         return MisuseCompile(join(base_path, self.project_id, "misuses", self.misuse_id), self.patterns)

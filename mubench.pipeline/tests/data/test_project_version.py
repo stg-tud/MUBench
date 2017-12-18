@@ -72,19 +72,19 @@ class TestProjectVersion:
 
     def test_creates_build_config(self):
         self.uut._YAML = {"build": {"src": "src/java/", "commands": ["mvn compile"], "classes": "target/classes/"}}
-        assert_equals("src/java/", self.uut.source_dir)
+        assert_equals(["src/java/"], self.uut.source_dirs)
         assert_equals(["mvn compile"], self.uut.compile_commands)
-        assert_equals("target/classes/", self.uut.classes_dir)
+        assert_equals(["target/classes/"], self.uut.classes_dirs)
 
     def test_replaces_classes_variables_in_build_config(self):
         self.uut._YAML = {"build": {"classes": "$gradle.default.classes"}}
-        assert_equals("build/classes/java/main/", self.uut.classes_dir)
+        assert_equals(["build/classes/java/main/"], self.uut.classes_dirs)
 
     def test_creates_build_config_with_defaults(self):
         self.uut._YAML = {"-no-build-key-": ""}
-        assert_equals("", self.uut.source_dir)
+        assert_equals([""], self.uut.source_dirs)
         assert_equals([], self.uut.compile_commands)
-        assert_equals("", self.uut.classes_dir)
+        assert_equals([""], self.uut.classes_dirs)
 
     def test_id(self):
         assert_equals("{}.{}".format(self.project_id, self.version_id), self.uut.id)
@@ -92,12 +92,13 @@ class TestProjectVersion:
     def test_derives_additional_compile_sources_path(self):
         assert_equals(join(self.uut.path, "compile"), self.uut.additional_compile_sources)
 
-    def test_derives_compile_base_path(self):
+    def test_derives_build_dir(self):
+        self.uut._YAML = {"build": {"src": "src/java/", "classes": "/target/classes/"}}
         self.uut._MISUSES = [create_misuse("m")]  # prevent version from loading misuses
 
-        project_compile = self.uut.get_compile("/base/path")
+        version_compile = self.uut.get_compile("/base/path")
 
-        assert_equals(join("/base/path", self.project_id, self.version_id), project_compile.base_path)
+        assert_equals(join("/base/path/", self.project_id, self.version_id, "build"), version_compile.build_dir)
 
 
 class TestProjectCheckout:

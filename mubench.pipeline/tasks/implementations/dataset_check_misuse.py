@@ -6,7 +6,7 @@ from typing import Dict, List
 from data.misuse import Misuse
 from data.project import Project
 from data.project_version import ProjectVersion
-from data.snippets import get_snippets, SnippetUnavailableException
+from data.snippets import get_snippets
 
 VALID_VIOLATION_TYPES = [
     'missing/call',
@@ -125,20 +125,15 @@ class MisuseCheckTask:
                         'Skipping location check for "{}": requires checkout of "{}".'.format(
                             misuse.id, version.id))
                 else:
-                    source_base_path = join(checkout.checkout_dir, version.source_dir)
-                    if not self._location_exists(source_base_path, location.file, location.method):
+                    source_base_paths = [join(checkout.base_path, src_dir) for src_dir in version.source_dirs]
+                    if not self._location_exists(source_base_paths, location.file, location.method):
                         self._report_cannot_find_location(str(location),
                                                           "{}/misuses/{}/misuse.yml".format(project.id,
                                                                                             misuse.misuse_id))
 
     @staticmethod
-    def _location_exists(source_base_path, file_, method) -> bool:
-        try:
-            snippets = get_snippets(source_base_path, file_, method)
-        except SnippetUnavailableException:
-            return False
-        else:
-            return len(snippets) > 0
+    def _location_exists(source_base_paths, file_, method) -> bool:
+        return len(get_snippets(source_base_paths, file_, method)) > 0
 
     def _check_violation_types(self, project: Project, misuse: Misuse):
         violation_types = misuse._yaml.get("characteristics", [])

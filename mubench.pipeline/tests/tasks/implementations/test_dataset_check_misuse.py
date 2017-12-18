@@ -305,7 +305,7 @@ class TestDatasetCheckMisuseLocation:
         self.misuse = create_misuse("-misuse-", version=self.version)
         checkout = MagicMock()
         checkout.exists = MagicMock(return_value=True)
-        checkout.checkout_dir = "-checkout_dir-"
+        checkout.base_path = "-checkout_dir-"
         self.version.get_checkout = MagicMock(return_value=checkout)
 
     def test_unknown_location(self, _, __):
@@ -315,7 +315,7 @@ class TestDatasetCheckMisuseLocation:
 
         uut.run(self.project, self.version, self.misuse)
 
-        uut._location_exists.assert_called_once_with("-checkout_dir-/-source_dir-", "-dummy-/-file-", "-method-()")
+        uut._location_exists.assert_called_once_with(["-checkout_dir-/-source_dir-"], "-dummy-/-file-", "-method-()")
         uut._report_cannot_find_location.assert_called_once_with("Location(-dummy-/-file-, -method-())",
                                                                  "-project-/misuses/-misuse-/misuse.yml")
 
@@ -326,5 +326,5 @@ class TestDatasetCheckMisuseLocation:
 
         uut.run(self.project, self.version, self.misuse)
 
-        uut._location_exists.assert_called_once_with("-checkout_dir-/-source_dir-", "-dummy-/-file-", "-method-()")
+        uut._location_exists.assert_called_once_with(["-checkout_dir-/-source_dir-"], "-dummy-/-file-", "-method-()")
         uut._report_cannot_find_location.assert_not_called()

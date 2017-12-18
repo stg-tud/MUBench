@@ -7,6 +7,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -24,9 +25,10 @@ public class DemoRunner {
         public DetectorOutput detectViolations(DetectorArgs args) throws Exception {
             long startTime = System.currentTimeMillis();
 
-            Path targetSourcePath = Paths.get(args.getTargetPath().srcPath);
-            List<DemoViolation> violations = detectViolations(targetSourcePath);
-
+            List<DemoViolation> violations = new ArrayList<>();
+            for (String targetSourcePath : args.getTargetSrcPaths()) {
+                violations.addAll(detectViolations(Paths.get(targetSourcePath)));
+            }
             long endTime = System.currentTimeMillis();
 
             return createOutput()

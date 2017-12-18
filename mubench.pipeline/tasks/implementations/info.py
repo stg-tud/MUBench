@@ -1,5 +1,4 @@
 import logging
-from os.path import join
 
 from data.misuse import Misuse
 from data.project import Project
@@ -52,7 +51,7 @@ class MisuseInfoTask:
         self.__checkouts_path = checkouts_path
         self.__compiles_path = compiles_path
 
-    def run(self, project: Project, version: ProjectVersion, misuse: Misuse):
+    def run(self, misuse: Misuse):
         self.__logger.info("    - Misuse           : %s", misuse.misuse_id)
         self.__logger.info("      Description      : %s", misuse.description.strip())
         self.__logger.info("      Fix Description  : %s", misuse.fix.description.strip())
@@ -60,22 +59,4 @@ class MisuseInfoTask:
         for characteristic in misuse.characteristics[1:]:
             self.__logger.info("                         - %s", characteristic)
 
-        checkout = version.get_checkout(self.__checkouts_path)
-        if checkout.exists():
-            location = misuse.location
-            if project.repository.vcstype == "synthetic":
-                checkout_path = join(version.path, "compile")
-            else:
-                checkout_path = checkout.checkout_dir
-            source_file_path = join(checkout_path, version.source_dir, location.file)
-            self.__logger.info("      Source File      : %s", source_file_path)
-            self.__logger.info("      Enclosing Method : %s", location.method)
-
         self.__logger.info("      Fix Diff         : %s", misuse.fix.commit)
-        if not misuse.patterns:
-            pattern_compile_state = "no patterns to compile"
-        elif version.get_compile(self.__compiles_path).needs_compile_patterns(misuse):
-            pattern_compile_state = "patterns not compiled"
-        else:
-            pattern_compile_state = "patterns compiled"
-        self.__logger.info("      Compile          : %s", pattern_compile_state)

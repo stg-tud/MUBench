@@ -1,42 +1,33 @@
 import os
 from os.path import join, isdir, exists
-from typing import List
 
-from data.misuse import Misuse
 from utils.io import remove_tree, write_yaml, read_yaml
 
 
 class VersionCompile:
-    ORIGINAL_SOURCE_DIR = "original-src"
-    ORIGINAL_CLASSES_DIR = "original-classes"
-    MISUSE_SOURCE_DIR = "misuse-src"
-    MISUSE_CLASSES_DIR = "misuse-classes"
     DEPENDENCY_DIR = "dependencies"
     __BUILD_DIR = "build"
     __COMPILE_INFO_FILE = "compile.yml"
     __KEY_TIMESTAMP = "timestamp"
     __DEFAULT_TIMESTAMP = 0
 
-    def __init__(self, base_path: str, misuses: List[Misuse]):
-        self.base_path = base_path
-        self.misuses = misuses
-
-        self.original_sources_path = join(self.base_path, VersionCompile.ORIGINAL_SOURCE_DIR)
-        self.original_classes_path = join(self.base_path, VersionCompile.ORIGINAL_CLASSES_DIR)
-        self.original_classpath = self.original_classes_path + ".jar"
-        self.dependencies_path = join(self.base_path, VersionCompile.DEPENDENCY_DIR)
-        self.build_dir = join(self.base_path, VersionCompile.__BUILD_DIR)
+    def __init__(self, base_path: str, relative_sources_paths: str, relative_classes_path: str):
+        self.build_dir = join(base_path, VersionCompile.__BUILD_DIR)
+        self.original_sources_paths = [join(self.build_dir, rel_path.lstrip(os.path.sep))
+                                       for rel_path in relative_sources_paths]
+        self.original_classes_paths = [join(self.build_dir, rel_path.lstrip(os.path.sep))
+                                       for rel_path in relative_classes_path]
+        self.original_classpath = join(base_path, "original-classes.jar")
+        self.dependencies_path = join(base_path, VersionCompile.DEPENDENCY_DIR)
         self._compile_info_file = join(self.build_dir, self.__COMPILE_INFO_FILE)
 
-    def needs_copy_sources(self):
-        return not isdir(self.original_classes_path)
-
     def needs_compile(self):
-        return not isdir(self.original_classes_path)
+        return not exists(self._compile_info_file)
 
     def get_dependency_classpath(self):
         if isdir(self.dependencies_path):
-            return ":".join([join(self.dependencies_path, file) for file in os.listdir(self.dependencies_path) if file.endswith(".jar")])
+            return ":".join([join(self.dependencies_path, file)
+                             for file in os.listdir(self.dependencies_path) if file.endswith(".jar")])
         else:
             return ""
 
@@ -62,6 +53,4 @@ class VersionCompile:
         write_yaml(compile_info, self._compile_info_file)
 
     def delete(self):
-        remove_tree(self.original_sources_path)
-        remove_tree(self.original_classes_path)
         remove_tree(self.build_dir)
