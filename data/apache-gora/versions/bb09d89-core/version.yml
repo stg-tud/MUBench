@@ -1,8 +1,0 @@
-build:
-  classes: gora-core/$mvn.default.test-classes
-  commands:
-  - mvn test-compile
-  src: gora-core/src/test/java/
-misuses:
-- '56_2'
-revision: bb09d8916736e3e572eef2cb5e79fe11c80ad1de
