@@ -78,7 +78,7 @@ $markdown_parser = new Parsedown();
         <th>Decision</th>
         <th>Reviews</th>
         <th>Your Review</th>
-        <th>Your Comment</th>
+        <th></th>
         <th>Tags</th>
     </tr>
     </thead>
@@ -225,7 +225,9 @@ $markdown_parser = new Parsedown();
                     <?php endif; ?>
                 </td>
                 <td class="<?= $style_classes ?>" style="max-width: 300px;">
-                    <?= $misuse->hasReviewed($user) ? $misuse->getReview($user)->comment : "" ?>
+                    <?php if($misuse->hasSufficientReviews() || ($user && $misuse->hasReviewed($user))) : ?>
+                        <?php include "includes/review_modal.phtml"; ?>
+                    <?php endif; ?>
                 </td>
                 <td class="<?= $style_classes ?>">
                     <?php if($misuse->hasConclusiveReviewState()) : ?>
