@@ -97,7 +97,7 @@ $markdown_parser = new Parsedown();
                 <td class="top right">
                     <?= $markdown_parser->text(substr($run['runtime'], 0, 4)) . "s"; ?></td>
                 <td class="top right">
-                    <?php include "includes/modal.phtml"; ?>
+                    <?php include "includes/stats_modal.phtml"; ?>
                 </td>
                 <td>
                     <form action="<?= $pathFor('runs.delete', array('experiment_id' => $experiment->id, 'detector_muid' => $detector, 'project_muid' => $project, 'version_muid' => $version)) ?>" method="post" target="">

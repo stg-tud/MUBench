@@ -119,7 +119,7 @@ $markdown_parser = new Parsedown();
                     <?= $new_version ? $markdown_parser->text(number_format($run->runtime, 1)) . "s" : ""; ?></td>
                 <td class="<?= $style_classes ?> right">
                     <?php if ($new_version) : ?>
-                        <?php include "includes/modal.phtml"; ?>
+                        <?php include "includes/stats_modal.phtml"; ?>
                     <?php endif; ?>
                 </td>
                 <td class="<?= $style_classes ?>">
@@ -263,7 +263,7 @@ $markdown_parser = new Parsedown();
                     <?= $new_version ? $markdown_parser->text(substr($run['runtime'], 0, 4)) . "s" : ""; ?></td>
                 <td class="<?= $style_classes ?> right">
                     <?php if ($new_version) : ?>
-                        <?php include "includes/modal.phtml"; ?>
+                        <?php include "includes/stats_modal.phtml"; ?>
                     <?php endif; ?>
                 </td>
                 <td class="<?= $style_classes ?>"></td>
