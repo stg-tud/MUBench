@@ -10,8 +10,9 @@ from utils.io import remove_tree, create_file
 
 @patch('tasks.implementations.compile_misuse.CompileMisuseTask._copy_misuse_sources')
 @patch('tasks.implementations.compile_misuse.CompileMisuseTask._copy_misuse_classes')
-@patch('tasks.implementations.compile_misuse.CompileMisuseTask._copy_patterns')
-@patch('tasks.implementations.compile_misuse.CompileMisuseTask._compile')
+@patch('tasks.implementations.compile_misuse.CompileMisuseTask._copy_pattern_sources')
+@patch('tasks.implementations.compile_misuse.CompileMisuseTask._copy_pattern_classes')
+@patch('tasks.implementations.compile_misuse.CompileMisuseTask._compile_patterns')
 class TestCompilePatterns:
     # noinspection PyAttributeOutsideInit
     def setup(self):
@@ -35,23 +36,21 @@ class TestCompilePatterns:
     def teardown(self):
         remove_tree(self.temp_dir)
 
-    def test_copies_pattern_sources(self, _, copy_patterns_mock, __, ___):
+    def test_copies_pattern_sources(self, _, __, copy_patterns_mock, ___, ____):
         uut = CompileMisuseTask(self.compile_base_path, force_compile=False)
 
         uut.run(self.misuse, self.compile)
 
         copy_patterns_mock.assert_called_once_with(self.misuse.patterns, self.misuse_compile.get_source_path())
 
-    def test_compiles_patterns(self, compile_mock, _, __, ___):
+    def test_compiles_patterns(self, compile_mock, _, __, ___, ____):
         uut = CompileMisuseTask(self.compile_base_path, force_compile=False)
 
         uut.run(self.misuse, self.compile)
 
-        compile_mock.assert_called_once_with({self.pattern.path},
-                                             self.misuse_compile.get_classes_path(),
-                                             self.compile.get_full_classpath())
+        compile_mock.assert_called_once_with({self.pattern.path}, self.compile.get_full_classpath())
 
-    def test_skips_compile_if_not_needed(self, compile_mock, _, __, ___):
+    def test_skips_compile_if_not_needed(self, compile_mock, _, __, ___, ____):
         uut = CompileMisuseTask(self.compile_base_path, force_compile=False)
         self.misuse_compile.needs_compile = lambda: False
 
@@ -59,16 +58,14 @@ class TestCompilePatterns:
 
         compile_mock.assert_not_called()
 
-    def test_forces_compile_patterns(self, compile_mock, _, __, ___):
+    def test_forces_compile_patterns(self, compile_mock, _, __, ___, ____):
         uut = CompileMisuseTask(self.compile_base_path, force_compile=True)
         self.misuse_compile.delete = MagicMock()
 
         uut.run(self.misuse, self.compile)
 
         self.misuse_compile.delete.assert_called_once_with()
-        compile_mock.assert_called_once_with({self.pattern.path},
-                                             self.misuse_compile.get_classes_path(),
-                                             self.compile.get_full_classpath())
+        compile_mock.assert_called_once_with({self.pattern.path}, self.compile.get_full_classpath())
 
 
 class TestCopyMisuseFiles:
