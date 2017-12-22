@@ -21,16 +21,10 @@ class MisuseCompile:
         self.misuse_classes_path = join(self.base_path, MisuseCompile.MISUSE_CLASSES_DIR)
 
     def needs_copy_sources(self):
-        return self.patterns and not isdir(self.get_source_path())
+        return self.patterns and not isdir(self.pattern_sources_path)
 
     def needs_compile(self):
-        return self.patterns and not isdir(self.get_classes_path())
-
-    def get_source_path(self):
-        return self.pattern_sources_path
-
-    def get_classes_path(self):
-        return self.pattern_classes_path
+        return self.patterns and not isdir(self.pattern_classes_path)
 
     def delete(self):
         remove_tree(self.pattern_sources_path)

@@ -23,14 +23,6 @@ class TestPattern:
     def teardown(self):
         rmtree(self.temp_dir, ignore_errors=True)
 
-    def test_copy(self):
-        destination = "copy"
-        uut = Pattern(self.temp_dir, self.pattern_file_name)
-
-        uut.copy(join(self.temp_dir, destination))
-
-        assert exists(join(self.temp_dir, join(destination, self.pattern_file_name)))
-
     def test_equality(self):
         assert Pattern("p", "a") == Pattern("p", "a")
 

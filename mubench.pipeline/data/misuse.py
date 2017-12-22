@@ -65,7 +65,7 @@ class Misuse:
     @property
     def patterns(self) -> Set[Pattern]:
         if not self._PATTERNS:
-            pattern_path = join(self.path, "patterns")
+            pattern_path = self.pattern_path
             if isdir(pattern_path):
                 self._PATTERNS = set(
                     [Pattern(pattern_path, y[len(pattern_path) + 1:]) for x in os.walk(pattern_path) for y in
@@ -74,6 +74,10 @@ class Misuse:
                 self._PATTERNS = set()
 
         return self._PATTERNS
+
+    @property
+    def pattern_path(self) -> str:
+        return join(self.path, "patterns")
 
     @property
     def location(self) -> Location:

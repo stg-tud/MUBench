@@ -24,11 +24,6 @@ class Pattern:
     def relative_path_without_extension(self):
         return splitext(self.__relative_pattern_path)[0]
 
-    def copy(self, destination: str):
-        new_pattern = Pattern(destination, self.__relative_pattern_path)
-        makedirs(new_pattern.orig_dir, exist_ok=True)
-        copy_file(self.path, new_pattern.path)
-
     def _get_destination_file(self, destination: str) -> str:
         return join(destination, self.__relative_pattern_path)
 

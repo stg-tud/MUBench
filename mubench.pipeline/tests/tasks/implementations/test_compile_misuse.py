@@ -1,4 +1,5 @@
-from os.path import join, exists, splitext
+import os
+from os.path import join, exists, relpath, basename
 from tempfile import mkdtemp
 from unittest.mock import patch, MagicMock
 
@@ -17,7 +18,7 @@ class TestCompilePatterns:
 
         self.project = create_project("-project-", base_path=self.data_base_path)
         self.version = create_version("-version-", project=self.project)
-        self.pattern = Pattern(join(self.data_base_path, "-project-", "-misuse-", "patterns"),
+        self.pattern = Pattern(join(self.data_base_path, "-project-", "misuses", "-misuse-", "patterns"),
                                join("-package-", "-pattern-.java"))
         create_file(self.pattern.path)
 
@@ -34,9 +35,13 @@ class TestCompilePatterns:
         self.compile_patch = patch('tasks.implementations.compile_misuse.CompileMisuseTask._compile_patterns')
         self.compile_mock = self.compile_patch.start()
 
-        def create_classes(sources, _):
-            for source in sources:
-                create_file(splitext(source)[0] + '.class')
+        def create_classes(source, destination, _):
+            for root, dirs, files in os.walk(source):
+                package = relpath(root, source)
+                for file in files:
+                    file = file.replace(".java", ".class")
+                    create_file(join(destination, package, file))
+                    print("fake compile: {}".format(join(destination, package, file)))
 
         self.compile_mock.side_effect = create_classes
 
@@ -49,14 +54,15 @@ class TestCompilePatterns:
 
         uut.run(self.misuse, self.compile)
 
-        assert exists(self.misuse_compile.get_source_path())
+        assert exists(self.misuse_compile.pattern_sources_path)
 
     def test_compiles_patterns(self):
         uut = CompileMisuseTask(self.compile_base_path, force_compile=False)
 
         uut.run(self.misuse, self.compile)
 
-        self.compile_mock.assert_called_once_with({self.pattern.path}, self.compile.get_full_classpath())
+        self.compile_mock.assert_called_once_with(self.misuse.pattern_path, self.misuse_compile.pattern_classes_path,
+                                                  self.compile.get_full_classpath())
 
     def test_skips_compile_if_not_needed(self):
         uut = CompileMisuseTask(self.compile_base_path, force_compile=False)
@@ -73,7 +79,8 @@ class TestCompilePatterns:
 
         uut.run(self.misuse, self.compile)
 
-        self.compile_mock.assert_called_once_with({self.pattern.path}, self.compile.get_full_classpath())
+        self.compile_mock.assert_called_once_with(self.misuse.pattern_path, self.misuse_compile.pattern_classes_path,
+                                                  self.compile.get_full_classpath())
 
     def test_copies_misuse_sources(self):
         uut = CompileMisuseTask(self.compile_base_path, force_compile=False)
