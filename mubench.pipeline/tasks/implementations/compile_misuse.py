@@ -1,15 +1,13 @@
 import logging
-from glob import glob
-from os import makedirs
-from os.path import join, basename, dirname, splitext, relpath
-from shutil import move
-from typing import Set
-
 import shutil
+from glob import glob
+from os import makedirs, walk
+from os.path import join, dirname, splitext, relpath
+from typing import List
 
 from data.misuse import Misuse
-from data.pattern import Pattern
 from data.version_compile import VersionCompile
+from utils.io import copy_tree
 from utils.shell import Shell
 
 
@@ -37,19 +35,14 @@ class CompileMisuseTask:
 
         try:
             if pattern_compile.needs_copy_sources():
-                logger.info("Copying patterns...")
-                CompileMisuseTask._copy_patterns(misuse.patterns, pattern_compile.get_source_path())
+                logger.info("Copying pattern sources...")
+                copy_tree(misuse.pattern_path, pattern_compile.pattern_sources_path)
 
             if pattern_compile.needs_compile():
                 logger.info("Compiling patterns...")
-
-                source_files = set()
-                for pattern in pattern_compile.patterns:
-                    source_files.add(pattern.path)
-
-                CompileMisuseTask._compile(source_files,
-                                           pattern_compile.get_classes_path(),
-                                           version_compile.get_full_classpath())
+                CompileMisuseTask._compile_patterns(misuse.pattern_path,
+                                                    pattern_compile.pattern_classes_path,
+                                                    version_compile.get_full_classpath())
             else:
                 logger.info("Patterns already compiled.")
         except Exception:
@@ -59,20 +52,10 @@ class CompileMisuseTask:
         return pattern_compile
 
     @staticmethod
-    def _compile(source_files: Set[str], destination: str, classpath: str):
-        logger = logging.getLogger("task.compile_patterns.compile")
-        Shell.exec('javac -cp "{}" "{}"'.format(classpath, '" "'.join(source_files)), logger=logger)
-        logger.debug('Copying class files to "{}"'.format(destination))
+    def _compile_patterns(source: str, destination: str, classpath: str):
         makedirs(destination, exist_ok=True)
-        for source_file in source_files:
-            class_file = source_file.split('.')[0] + '.class'
-            logger.debug('Copying class file "{}"...'.format(class_file))
-            move(class_file, join(destination, basename(class_file)))
-
-    @staticmethod
-    def _copy_patterns(patterns: Set[Pattern], destination: str):
-        for pattern in patterns:
-            pattern.copy(destination)
+        Shell.exec('javac $(find {} -name "*.java") -d "{}" -cp "{}"'.format(source, destination, classpath),
+                   logger=logging.getLogger("task.compile_patterns.compile"))
 
     @staticmethod
     def _copy_misuse_sources(sources_path, misuse, destination):
