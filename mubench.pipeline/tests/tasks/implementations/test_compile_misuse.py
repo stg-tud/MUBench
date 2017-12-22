@@ -1,4 +1,4 @@
-from os.path import join, exists
+from os.path import join, exists, splitext
 from tempfile import mkdtemp
 from unittest.mock import patch, MagicMock
 
@@ -8,67 +8,7 @@ from tests.test_utils.data_util import create_misuse, create_project, create_ver
 from utils.io import remove_tree, create_file
 
 
-@patch('tasks.implementations.compile_misuse.CompileMisuseTask._copy_misuse_sources')
-@patch('tasks.implementations.compile_misuse.CompileMisuseTask._copy_misuse_classes')
-@patch('tasks.implementations.compile_misuse.CompileMisuseTask._copy_pattern_sources')
-@patch('tasks.implementations.compile_misuse.CompileMisuseTask._copy_pattern_classes')
-@patch('tasks.implementations.compile_misuse.CompileMisuseTask._compile_patterns')
 class TestCompilePatterns:
-    # noinspection PyAttributeOutsideInit
-    def setup(self):
-        self.temp_dir = mkdtemp(prefix="mubench-compile-patterns-test_")
-        self.data_base_path = join(self.temp_dir, "data")
-        self.compile_base_path = join(self.temp_dir, "-compile-")
-
-        project = create_project("-project-", base_path=self.data_base_path)
-        self.pattern = Pattern(join(self.data_base_path, "-project-", "-misuse-", "patterns"),
-                               join("-package-", "-pattern-.java"))
-        self.misuse = create_misuse("-misuse-", project=project,
-                                    patterns=[self.pattern])
-        version = create_version("-version-", project=project, misuses=[self.misuse])
-
-        self.compile = version.get_compile(self.compile_base_path)
-        self.compile.get_full_classpath = lambda: join(self.temp_dir, "dependencies.jar")
-
-        self.misuse_compile = self.misuse.get_misuse_compile(self.compile_base_path)
-        self.misuse.get_misuse_compile = lambda *_: self.misuse_compile
-
-    def teardown(self):
-        remove_tree(self.temp_dir)
-
-    def test_copies_pattern_sources(self, _, __, copy_patterns_mock, ___, ____):
-        uut = CompileMisuseTask(self.compile_base_path, force_compile=False)
-
-        uut.run(self.misuse, self.compile)
-
-        copy_patterns_mock.assert_called_once_with(self.misuse.patterns, self.misuse_compile.get_source_path())
-
-    def test_compiles_patterns(self, compile_mock, _, __, ___, ____):
-        uut = CompileMisuseTask(self.compile_base_path, force_compile=False)
-
-        uut.run(self.misuse, self.compile)
-
-        compile_mock.assert_called_once_with({self.pattern.path}, self.compile.get_full_classpath())
-
-    def test_skips_compile_if_not_needed(self, compile_mock, _, __, ___, ____):
-        uut = CompileMisuseTask(self.compile_base_path, force_compile=False)
-        self.misuse_compile.needs_compile = lambda: False
-
-        uut.run(self.misuse, self.compile)
-
-        compile_mock.assert_not_called()
-
-    def test_forces_compile_patterns(self, compile_mock, _, __, ___, ____):
-        uut = CompileMisuseTask(self.compile_base_path, force_compile=True)
-        self.misuse_compile.delete = MagicMock()
-
-        uut.run(self.misuse, self.compile)
-
-        self.misuse_compile.delete.assert_called_once_with()
-        compile_mock.assert_called_once_with({self.pattern.path}, self.compile.get_full_classpath())
-
-
-class TestCopyMisuseFiles:
     # noinspection PyAttributeOutsideInit
     def setup(self):
         self.temp_dir = mkdtemp(prefix="mubench-compile-patterns-test_")
@@ -77,11 +17,63 @@ class TestCopyMisuseFiles:
 
         self.project = create_project("-project-", base_path=self.data_base_path)
         self.version = create_version("-version-", project=self.project)
+        self.pattern = Pattern(join(self.data_base_path, "-project-", "-misuse-", "patterns"),
+                               join("-package-", "-pattern-.java"))
+        create_file(self.pattern.path)
+
+        self.misuse = create_misuse("-misuse-", project=self.project, version=self.version, patterns=[self.pattern])
 
         self.compile = self.version.get_compile(self.compile_base_path)
+        self.compile.get_full_classpath = lambda: join(self.temp_dir, "dependencies.jar")
+
+        create_file(join(self.compile.original_sources_path, self.misuse.location.file))
+
+        self.misuse_compile = self.misuse.get_misuse_compile(self.compile_base_path)
+        self.misuse.get_misuse_compile = lambda *_: self.misuse_compile
+
+        self.compile_patch = patch('tasks.implementations.compile_misuse.CompileMisuseTask._compile_patterns')
+        self.compile_mock = self.compile_patch.start()
+
+        def create_classes(sources, _):
+            for source in sources:
+                create_file(splitext(source)[0] + '.class')
+
+        self.compile_mock.side_effect = create_classes
 
     def teardown(self):
         remove_tree(self.temp_dir)
+        self.compile_patch.stop()
+
+    def test_copies_pattern_sources(self):
+        uut = CompileMisuseTask(self.compile_base_path, force_compile=False)
+
+        uut.run(self.misuse, self.compile)
+
+        assert exists(self.misuse_compile.get_source_path())
+
+    def test_compiles_patterns(self):
+        uut = CompileMisuseTask(self.compile_base_path, force_compile=False)
+
+        uut.run(self.misuse, self.compile)
+
+        self.compile_mock.assert_called_once_with({self.pattern.path}, self.compile.get_full_classpath())
+
+    def test_skips_compile_if_not_needed(self):
+        uut = CompileMisuseTask(self.compile_base_path, force_compile=False)
+        self.misuse_compile.needs_compile = lambda: False
+
+        uut.run(self.misuse, self.compile)
+
+        self.compile_mock.assert_not_called()
+
+    def test_forces_compile_patterns(self):
+        uut = CompileMisuseTask(self.compile_base_path, force_compile=True)
+        self.misuse_compile.delete = MagicMock()
+        self.misuse_compile.needs_compile = lambda: self.misuse_compile.delete.calls
+
+        uut.run(self.misuse, self.compile)
+
+        self.compile_mock.assert_called_once_with({self.pattern.path}, self.compile.get_full_classpath())
 
     def test_copies_misuse_sources(self):
         uut = CompileMisuseTask(self.compile_base_path, force_compile=False)
