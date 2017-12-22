@@ -122,6 +122,7 @@ JCA-Changes-SF: # All misuses identified among mined changes to Cipher usages on
 DeveloperSurvey: # All misuses hand-crafted from responses to our developer survey.
   - synthetic.androidactivity-1.androidactivity-1
   - synthetic.androidactivity-2.androidactivity-2
+  - synthetic.arrayaccess.arrayaccess
   - synthetic.close-1.close-1
   - synthetic.close-2.close-2
   - synthetic.cme.cme

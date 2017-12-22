@@ -1,0 +1,13 @@
+api:
+- array
+characteristics:
+- missing/condition/value_or_state
+crash: true
+description: >
+  Misses to check the array's size before accessing the array.
+location:
+  file: ArrayAccess.java
+  method: misuse(int[], int)
+internal: false
+source:
+  name: Survey
