@@ -1,2 +1,3 @@
-composer install -d mubench.reviewsite --no-interaction
-mkdir -p mubench.reviewsite/upload
+composer install --no-interaction
+mkdir -p upload
+mkdir -p logs

@@ -9,7 +9,6 @@ language: python
 before_script:
   - mkdir -p shippable/testresults
   - sudo chmod +x ./mubench.pipeline/benchmark.py
-  - sudo chmod +x ./mubench.reviewsite/configure.sh
 
 script: 
   # mubench.cli
@@ -24,7 +23,7 @@ script:
   - "./mubench.pipeline/benchmark.py run ex1 DemoDetector --only synthetic_survey"
   
   # mubench.reviewsite
-  - ./mubench.reviewsite/configure.sh
+  - cd mubench.reviewsite && ./configure.sh
   - phpunit --bootstrap mubench.reviewsite/vendor/autoload.php mubench.reviewsite/tests/
 
 notifications:
