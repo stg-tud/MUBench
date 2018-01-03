@@ -8,19 +8,18 @@ language: python
 
 before_script:
   - mkdir -p shippable/testresults
-  - sudo chmod +x ./mubench.pipeline/benchmark.py
 
 script: 
   # mubench.cli
-  - mvn install -f mubench.cli/pom.xml
-  - cp mubench.cli/target/DemoDetector.jar detectors/DemoDetector/DemoDetector.jar
+  - mvn verify -f mubench.cli/pom.xml
   
   # mubench.utils
   - mvn verify -f mubench.utils/pom.xml
   
   # mubench.pipeline
   - nosetests -w mubench.pipeline --with-xunit --xunit-file=shippable/testresults/nosetests.xml
-  - "./mubench.pipeline/benchmark.py run ex1 DemoDetector --only synthetic_survey"
+  - cp mubench.cli/target/DemoDetector.jar detectors/DemoDetector/DemoDetector.jar
+  - python ./mubench.pipeline/benchmark.py run ex1 DemoDetector --only synthetic_survey
   
   # mubench.reviewsite
   - cd mubench.reviewsite && ./configure.sh
