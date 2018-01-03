@@ -1,6 +1,7 @@
 <?php
 
 use Interop\Container\ContainerInterface;
+use MuBench\ReviewSite\Error;
 
 $container['logger'] = function (ContainerInterface $c) {
     $settings = $c->get('settings')['logger'];
