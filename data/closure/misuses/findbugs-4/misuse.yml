@@ -1,0 +1,14 @@
+api:
+- com.google.javascript.rhino.Node
+characteristics:
+- missing/condition/null_check
+crash: true
+description: >
+  Possible null pointer dereference of addingRoot variable which is obtained from Node.getParent().
+location:
+  file: com/google/javascript/jscomp/NodeUtil.java
+  method: "getAddingRoot(Node)"
+internal: true
+source:
+  name: Findbugs
+  url: http://findbugs.sourceforge.net/index.html

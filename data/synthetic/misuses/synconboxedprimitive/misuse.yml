@@ -1,0 +1,16 @@
+api:
+- java.lang.Integer
+characteristics:
+- superfluous/condition/synchronization
+crash: false
+description: >
+  The code synchronizes on a boxed primitive constant, for example, an Integer, which may be cached and shared.
+location:
+  file: SyncOnBoxedPrimitive.java
+  method: foo()
+fix:
+  description: >
+    Remove the synchronization on Integer constant.
+internal: false
+source:
+  name: Findbugs documentation

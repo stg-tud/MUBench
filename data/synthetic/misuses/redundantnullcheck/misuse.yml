@@ -1,0 +1,16 @@
+api:
+- NullCheck
+characteristics:
+- superfluous/condition/null_check
+crash: false
+description: >
+  Redundant null check for an object which is guaranteed to be non-null
+location:
+  file: NullCheck.java
+  method: main(String[])
+fix:
+  description: >
+    Remove the redundant null check
+internal: false
+source:
+  name: Findbugs documentation

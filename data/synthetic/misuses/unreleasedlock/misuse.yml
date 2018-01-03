@@ -1,0 +1,16 @@
+api:
+- java.util.concurrent.locks.Lock
+characteristics:
+- missing/condition/synchronization
+crash: false
+description: >
+  The method does not release the lock in finally block.
+location:
+  file: UnReleasedLock.java
+  method: foo()
+fix:
+  description: >
+    Release the lock in finally block.
+internal: false
+source:
+  name: Findbugs documentation

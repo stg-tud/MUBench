@@ -1,0 +1,17 @@
+api:
+- java.lang.Exception
+characteristics:
+- superfluous/exception_handling
+- missing/exception_handling
+crash: false
+description: >
+  Exception created but later dropped, rather than thrown 
+location:
+  file: ExceptionNotThrown.java
+  method: foo()
+fix:
+  description: >
+    Throw the created exception.
+internal: false
+source:
+  name: Findbugs documentation

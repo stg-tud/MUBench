@@ -1,0 +1,16 @@
+api:
+- java.lang.Cloneable
+characteristics:
+- missing/method_call
+crash: false
+description: >
+  Class implements Cloneable but does not define or use the clone method.
+location:
+  file: NonExistingClone.java
+  method: NonExistingClone(int)
+fix:
+  description: >
+    Define the clone method.
+internal: false
+source:
+  name: Findbugs documentation

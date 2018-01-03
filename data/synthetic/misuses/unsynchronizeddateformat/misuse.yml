@@ -1,0 +1,16 @@
+api:
+- import java.text.DateFormat;
+characteristics:
+- missing/condition/synchronization
+crash: false
+description: >
+  DateFormat is inherently unsafe.
+location:
+  file: UnsynchronizedDateFormat.java
+  method: convert(String)
+fix:
+  description: >
+    Use DateFormat with synchronization.
+internal: false
+source:
+  name: Findbugs documentation

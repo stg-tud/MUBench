@@ -1,0 +1,14 @@
+api:
+- java.io.FileInputStream
+characteristics:
+- missing/condition/null_check
+crash: true
+description: >
+   Possible null pointer dereference of variable fs.
+location:
+  file: com/itextpdf/text/pdf/ICC_Profile.java
+  method: "GetInstance(String)"
+internal: false
+source:
+  name: Findbugs
+  url: http://findbugs.sourceforge.net/index.html

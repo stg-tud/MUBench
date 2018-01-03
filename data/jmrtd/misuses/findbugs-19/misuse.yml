@@ -1,0 +1,16 @@
+api:
+- java.lang.String
+- java.lang.StringBuffer
+characteristics:
+- superfluous/call
+- missing/call
+crash: false
+description: >
+   Method concatenates strings using + in a loop
+location:
+  file: sos/util/Hex.java
+  method: "bytesToPrettyString(byte[], int, boolean, int, String, boolean)"
+internal: false
+source:
+  name: Findbugs
+  url: http://findbugs.sourceforge.net/index.html

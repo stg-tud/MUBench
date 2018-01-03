@@ -1,0 +1,16 @@
+api:
+- java.util.NoSuchElementException
+characteristics:
+- missing/exception_handling
+crash: false
+description: >
+  next() must throw NoSuchElementException
+location:
+  file: NoSuchElementExceptionNotThrown.java
+  method: next()
+fix:
+  description: >
+    Throw the NoSuchElementException.
+internal: false
+source:
+  name: Findbugs documentation

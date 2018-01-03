@@ -1,0 +1,14 @@
+api:
+- com.google.javascript.jscomp.ConcreteType
+characteristics:
+- superfluous/call
+crash: false
+description: >
+  Load of known null value as argument.
+location:
+  file: com/google/javascript/jscomp/ConcreteType.java
+  method: "toString()"
+internal: true
+source:
+  name: Findbugs
+  url: http://findbugs.sourceforge.net/index.html

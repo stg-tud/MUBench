@@ -1,0 +1,15 @@
+api:
+- java.lang.Integer
+characteristics:
+- superfluous/call
+- missing/call
+crash: false
+description: >
+   Invocation of inefficient new Integer(int) constructor, better to use Integer.valueOf(int) instead.
+location:
+  file: org/joda/time/contrib/hibernate/PersistentLocalTimeExact.java
+  method: "nullSafeSet(PreparedStatement, Object, int)"
+internal: false
+source:
+  name: Findbugs
+  url: http://findbugs.sourceforge.net/index.html

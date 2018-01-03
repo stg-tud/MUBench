@@ -1,0 +1,14 @@
+api:
+- com.google.javascript.rhino.jstype.JSType
+characteristics:
+- missing/condition/null_check
+crash: true
+description: >
+  Formal parameter that may have a null value.
+location:
+  file: com/google/javascript/rhino/jstype/PrototypeObjectType.java
+  method: "isSubtype(JSType)"
+internal: true
+source:
+  name: Findbugs
+  url: http://findbugs.sourceforge.net/index.html

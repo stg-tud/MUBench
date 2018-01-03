@@ -1,0 +1,17 @@
+api:
+- InfiniteRecursion
+characteristics:
+- superfluos/method_call
+- missing/condition/value
+crash: false
+description: >
+  Method by mistake calls itself resulting in infinite calls.
+location:
+  file: InfiniteRecursion.java
+  method: foundType()
+fix:
+  description: >
+    Method must return the variable.
+internal: false
+source:
+  name: Findbugs documentation

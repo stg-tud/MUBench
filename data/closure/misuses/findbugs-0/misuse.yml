@@ -1,0 +1,14 @@
+api:
+- com.google.javascript.rhino.Node
+characteristics:
+- missing/condition/null_check
+crash: true
+description: >
+  Possible null pointer dereference of firstArgument variable.
+location:
+  file: com/google/javascript/jscomp/TightenTypes.java
+  method: "getAssignments(ConcreteScope)"
+internal: true
+source:
+  name: Findbugs
+  url: http://findbugs.sourceforge.net/index.html

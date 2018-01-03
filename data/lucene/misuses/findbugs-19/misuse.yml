@@ -1,0 +1,14 @@
+api:
+- org.apache.lucene.index.IndexReader
+characteristics:
+- missing/call
+crash: false
+description: >
+   clone() does not call super.clone()
+location:
+  file: org/apache/lucene/index/SegmentReader.java
+  method: "clone()"
+internal: true
+source:
+  name: Findbugs
+  url: http://findbugs.sourceforge.net/index.html
