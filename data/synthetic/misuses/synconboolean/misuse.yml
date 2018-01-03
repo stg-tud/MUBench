@@ -1,0 +1,16 @@
+api:
+- java.lang.Integer
+characteristics:
+- superfluous/condition/synchronization
+crash: false
+description: >
+  The code synchronizes on a boxed class Boolean which has only two objects.
+location:
+  file: SyncOnBoolean.java
+  method: foo()
+fix:
+  description: >
+    Remove the synchronization on Boolean objects.
+internal: false
+source:
+  name: Findbugs documentation

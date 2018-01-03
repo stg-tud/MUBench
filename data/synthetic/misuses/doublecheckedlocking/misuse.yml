@@ -1,0 +1,17 @@
+api:
+- DoubleCheckedLocking
+characteristics:
+- superfluous/condition/synchronization
+- missing/condition/synchronization
+crash: false
+description: >
+  Avoid double checked locking as the Java memory model does not guarantee that the threads that see a non-null field value but do not acquire the lock will see all of the writes used to initialize the object.
+location:
+  file: DoubleCheckedLocking.java
+  method: getResource()
+fix:
+  description: >
+    Use the volatile field for double checked locking.
+internal: false
+source:
+  name: Findbugs documentation

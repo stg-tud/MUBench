@@ -1,0 +1,16 @@
+api:
+- java.lang.Object (and subclasses)
+characteristics:
+- missing/condition/context
+crash: false
+description: >
+  Only the equals() method of a class has been overridden.
+location:
+  file: Count.java
+  method: main(String[])
+fix:
+  description: >
+    Override hashCode() method also as equal objects must have equal hash codes.
+internal: false
+source:
+  name: Findbugs documentation

@@ -1,0 +1,16 @@
+api:
+- java.lang.String
+characteristics:
+- superfluous/condition/synchronization
+crash: false
+description: >
+  The code synchronizes on a string constant which is interned and shared accross all the classes.
+location:
+  file: SyncOnStringLiteral.java
+  method: foo()
+fix:
+  description: >
+    Remove the synchronization on string constant.
+internal: false
+source:
+  name: Findbugs documentation
