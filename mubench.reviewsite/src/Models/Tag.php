@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Tag extends Model
 {
 
-    protected $fillable = ['name'];
+    protected $fillable = ['name', 'color'];
     public $timestamps = false;
 
     public function misuses()
