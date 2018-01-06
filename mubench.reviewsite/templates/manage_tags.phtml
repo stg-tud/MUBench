@@ -1,0 +1,70 @@
+<?php
+/**
+ * @var \MuBench\ReviewSite\Models\Reviewer $user the logged in user, if any
+ *
+ * @var string $site_base_url
+ * @var string $public_url_prefix
+ * @var string $private_url_prefix
+ * @var callable $pathFor function to resolve router paths
+ * @var string $url_prefix the public or private url prefix, depending on whether the user is logged in
+ *
+ * @var string $path the current route path
+ * @var string $origin_param url parameter that carries the $path
+ * @var string $origin_path referrer path
+ *
+ * @var array $experiments all experiments (Experiment)
+ * @var array $detectors detectors (Detector) with results per experiment
+ * @var Experiment $experiment the selected experiment, if any
+ * @var Detector $detector the selected detector, if any
+ * @var array $experiment_runs runs for each experiment
+ *
+ * @var array $runs the detectors experiment runs
+ */
+use MuBench\ReviewSite\Models\Detector;
+use MuBench\ReviewSite\Models\Experiment;
+use MuBench\ReviewSite\Models\Decision;
+use MuBench\ReviewSite\Models\ReviewState;
+
+?>
+<html>
+<head>
+    <title>MuBench :: Manage Tags</title>
+    <link rel="stylesheet" type="text/css" href="<?= $site_base_url ?>css/style.css"/>
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script   src="https://code.jquery.com/jquery-3.2.1.slim.min.js"   integrity="sha256-k2WSCIexGzOj3Euiig+TlR8gA0EmPjuc79OEeY5L45g="   crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/spectrum/1.8.0/spectrum.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/spectrum/1.8.0/spectrum.min.css">
+</head>
+<body>
+<?php include "includes/menu.phtml"; ?>
+<form action="<?= $pathFor('tags.update', array()) ?>" method="post" target="">
+<table>
+    <thead>
+    <tr>
+        <th>Tag</th>
+        <th>Color</th>
+        <th></th>
+    </tr>
+    </thead>
+    <tbody>
+    <?php foreach($tags as $tag) : ?>
+            <tr>
+                <td>
+                    <input id="tag-input" name="tags[<?= htmlspecialchars($tag->id); ?>][name]" value="<?= htmlspecialchars($tag->name) ?>">
+                </td>
+                <td>
+                    <input id="tag-input" name="tags[<?= htmlspecialchars($tag->id); ?>][color]" value="<?= htmlspecialchars($tag->color) ?>">
+                </td>
+                <td>
+                    <form action="<?= $pathFor('tags.delete', array('tag_id' => $tag->id)) ?>" method="post" target="">
+                        <button style="border:none;color:darkred;outline:none;margin:0;padding:0" type="submit"><i class="fa fa-trash fa-1"></i></button>
+                    </form>
+                </td>
+            </tr>
+    <?php endforeach; ?>
+    </tbody>
+</table>
+<input type="submit" value="Update tags" />
+</form>
+</body>
+</html>

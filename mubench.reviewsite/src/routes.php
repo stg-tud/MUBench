@@ -44,11 +44,14 @@ $app->group('/private', function () use ($app) {
     });
     $app->get('/results', \MuBench\ReviewSite\Controllers\RunsController::class.":getResults")->setName('private.stats.results');
     $app->get('/tags', \MuBench\ReviewSite\Controllers\TagsController::class.":getTags")->setName('private.stats.tags');
+    $app->get('/tags/manage', \MuBench\ReviewSite\Controllers\TagsController::class.":manageTags")->setName('private.tags.manage');
     $app->get('/types', \MuBench\ReviewSite\Controllers\TypesController::class.":getTypes")->setName('private.stats.types');
 })->add(new \MuBench\ReviewSite\Middleware\AuthMiddleware($container));
 
 $app->group('', function () use ($app, $settings) {
     $app->post('/metadata', \MuBench\ReviewSite\Controllers\MetadataController::class.":putMetadata");
+    $app->post('/tags/rename', \MuBench\ReviewSite\Controllers\TagsController::class.":updateTags")->setName('private.tags.update');
+    $app->post('/tags/{tag_id}/delete', \MuBench\ReviewSite\Controllers\TagsController::class.":deleteTags")->setName('private.tags.delete');
     $app->group('/experiments/{experiment_id}/detectors/{detector_muid}/projects/{project_muid}/versions/{version_muid}', function() use ($app) {
         $app->post('/runs', \MuBench\ReviewSite\Controllers\RunsController::class.":postRun");
         $app->post('/runs/delete', MuBench\ReviewSite\Controllers\RunsController::class.":deleteRun")->setName('private.runs.delete');
