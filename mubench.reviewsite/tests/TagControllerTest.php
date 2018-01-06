@@ -6,6 +6,7 @@ require_once "SlimTestCase.php";
 
 use DatabaseTestCase;
 use MuBench\ReviewSite\Models\Misuse;
+use MuBench\ReviewSite\Models\Tag;
 use SlimTestCase;
 
 class TagControllerTest extends SlimTestCase
@@ -63,5 +64,19 @@ class TagControllerTest extends SlimTestCase
         $misuseTags = Misuse::find(1)->misuse_tags;
 
         self::assertEquals('test-tag', $misuseTags->get(0)->name);
+    }
+
+    function update_tag()
+    {
+        $this->tagController->addTagToMisuse(1, 'test-tag');
+
+        $misuseTags = Misuse::find(1)->misuse_tags;
+        $tag = Tag::where('name', 'test-tag')->first();
+        $this->tagController->updateTag($tag->id, ['name' => 'new-name', 'color' => '#555555']);
+
+        $updatedTag = Tag::where('name', 'test-tag')->first();
+
+        self::assertEquals('new-name', $updatedTag->name);
+        self::assertEquals('#555555', $updatedTag->color);
     }
 }
