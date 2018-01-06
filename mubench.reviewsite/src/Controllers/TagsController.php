@@ -17,8 +17,32 @@ class TagsController extends Controller
         $misuse_id = $formData['misuse_id'];
 
         $this->addTagToMisuse($misuse_id, $tag_id);
-
         return $response->withRedirect("{$this->settings['site_base_url']}{$formData['path']}");
+    }
+
+    public function manageTags(Request $request, Response $response, array $args)
+    {
+        return $this->renderer->render($response, 'manage_tags.phtml', ['tags' => Tag::all()]);
+    }
+
+    public function updateTags(Request $request, Response $response, array $args)
+    {
+        $formData = $request->getParsedBody();
+        $tags = $formData['tags'];
+        foreach ($tags as $key => $t) {
+            $tag = Tag::find($key);
+            $tag->name = $t['name'];
+            $tag->color = $t['color'];
+            $tag->save();
+        }
+        return $response->withRedirect($this->router->pathFor('private.tags.manage'));
+    }
+
+    public function deleteTags(Request $request, Response $response, array $args)
+    {
+        $tag_id = $args['tag_id'];
+        Tag::find($tag_id)->delete();
+        return $response->withRedirect($this->router->pathFor('private.tags.manage'));
     }
 
     public function deleteTag(Request $request, Response $response, array $args)
@@ -53,7 +77,13 @@ class TagsController extends Controller
 
     function addTagToMisuse($misuseId, $tagName)
     {
-        $tag = Tag::firstOrCreate(['name' => $tagName]);
+        $tag = Tag::where('name', $tagName)->first();
+        if(!$tag){
+            $tag = new Tag();
+            $tag->name = $tagName;
+            $tag->color = '#808080';
+            $tag->save();
+        }
         Misuse::find($misuseId)->misuse_tags()->syncWithoutDetaching($tag->id);
     }
 
