@@ -152,6 +152,7 @@ Schema::dropIfExists($tag->getTable());
 Schema::create($tag->getTable(), function (Blueprint $table) {
     $table->increments('id');
     $table->text('name');
+    $table->text('color');
 });
 
 echo 'Creating MisuseTag<br/>';
