@@ -6,7 +6,7 @@ return [
     'db' => [
         'driver' => 'sqlite',
         'host' => 'localhost',
-        'database' => __DIR__ . '/../test.sqlite',
+        'database' => __DIR__ . '/test.sqlite',
         'username' => 'admin',
         'password' => 'admin',
         'charset'   => 'utf8',
@@ -17,7 +17,7 @@ return [
     // Monolog settings
     'logger' => [
         'name' => 'mubench',
-        'path' => __DIR__ . '/../logs/app.log',
+        'path' => __DIR__ . '/logs/app.log',
         'level' => \Monolog\Logger::DEBUG,
     ],
     'site_base_url' => '/',
