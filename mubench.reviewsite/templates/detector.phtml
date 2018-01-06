@@ -233,7 +233,7 @@ $columns_to_ignore = array(
                     <?php if($misuse->hasConclusiveReviewState()) : ?>
                         <?php if($misuse->misuse_tags): ?>
                             <?php foreach($misuse->misuse_tags as $tag) : ?>
-                                <div class="misuse-tag">
+                                <div class="misuse-tag" style="background-color:<?= htmlspecialchars($tag->color) ?>">
                                     <span><?= htmlspecialchars($tag->name) ?></span>
                                 </div>
                             <?php endforeach; ?>

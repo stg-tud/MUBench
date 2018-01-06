@@ -97,7 +97,7 @@ $columns_to_ignore = array(
                 <td>
                     <?php if($misuse->misuse_tags): ?>
                         <?php foreach($misuse->misuse_tags as $tag) : ?>
-                            <div class="misuse-tag">
+                            <div class="misuse-tag" style="background-color:<?= htmlspecialchars($tag->color) ?>">
                                 <span><?= htmlspecialchars($tag->name) ?></span>
                                 <?php if($user) : ?>
                                 <div style="display:inline-block;padding-right:2px;margin:0;color:black">
