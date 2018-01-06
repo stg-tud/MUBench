@@ -17,7 +17,7 @@ class TagsController extends Controller
         $misuse_id = $formData['misuse_id'];
 
         $this->addTagToMisuse($misuse_id, $tag_id);
-        return $response->withRedirect("{$this->settings['site_base_url']}{$formData['path']}");
+        return $response->withRedirect($this->router->pathFor('private.view', $args));
     }
 
     public function manageTags(Request $request, Response $response, array $args)
@@ -53,7 +53,7 @@ class TagsController extends Controller
 
         $this->deleteTagFromMisuse($misuse_id, $tag_id);
 
-        return $response->withRedirect("{$this->settings['site_base_url']}{$formData['path']}");
+        return $response->withRedirect($this->router->pathFor('private.view', $args));
     }
 
     public function getTags(Request $request, Response $response, array $args)
