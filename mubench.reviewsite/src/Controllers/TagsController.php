@@ -30,22 +30,26 @@ class TagsController extends Controller
         $formData = $request->getParsedBody();
         $tags = $formData['tags'];
         foreach ($tags as $key => $t) {
-            $tag = Tag::find($key);
-            $tag->name = $t['name'];
-            $tag->color = $t['color'];
-            $tag->save();
+            $this->updateTag($key, $t);
         }
         return $response->withRedirect($this->router->pathFor('private.tags.manage'));
     }
 
-    public function deleteTags(Request $request, Response $response, array $args)
+    public function updateTag($id, $tagInfo){
+        $tag = Tag::find($id);
+        $tag->name = $tagInfo['name'];
+        $tag->color = $tagInfo['color'];
+        $tag->save();
+    }
+
+    public function deleteTag(Request $request, Response $response, array $args)
     {
         $tag_id = $args['tag_id'];
         Tag::find($tag_id)->delete();
         return $response->withRedirect($this->router->pathFor('private.tags.manage'));
     }
 
-    public function deleteTag(Request $request, Response $response, array $args)
+    public function removeTag(Request $request, Response $response, array $args)
     {
         $formData = $request->getParsedBody();
         $tag_id = $args['tag_id'];
