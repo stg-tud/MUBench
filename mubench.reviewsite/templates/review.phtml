@@ -345,7 +345,7 @@ $columns_to_ignore = array(
        <?php endforeach; ?>
        </table>
         <?php endif; ?>
-            <?php if($is_reviewer && $reviewer) :?>
+        <?php if($is_reviewer && $reviewer) :?>
                 <table class="invisible">
                 <tr><td>Reviewer Name:</td>
                     <td><?= htmlspecialchars($reviewer->name); ?></td></tr>
@@ -360,8 +360,13 @@ $columns_to_ignore = array(
                 </table>
                 <input type="hidden" name="origin" value="<?= htmlspecialchars($origin_path); ?>">
                 <input type="hidden" name="misuse_id" value="<?= htmlspecialchars($misuse->id); ?>">
-                <input type="submit" value="Save Review" />
-                </form>
+                <div style="position:fixed;bottom:0;left:0;width:100%;background-color:#333;z-index:1">
+                    <a href="<?= $pathFor('view', array('experiment_id' => $previous_misuse->run->experiment_id, 'detector_muid' => $previous_misuse->detector->muid, 'project_muid' => $previous_misuse->getProject(), 'version_muid' => $previous_misuse->getVersion(), 'misuse_muid' => $previous_misuse->misuse_muid)); ?>" class="button">previous misuse</a>
+                    <input type="submit" value="Save Review" />
+                    <a href="<?= $pathFor('view', array('experiment_id' => $next_misuse->run->experiment_id, 'detector_muid' => $next_misuse->detector->muid, 'project_muid' => $next_misuse->getProject(), 'version_muid' => $next_misuse->getVersion(), 'misuse_muid' => $next_misuse->misuse_muid)); ?>" class="button">next misuse</a>
+                </div>
+
+            </form>
         <?php elseif($review && (!$user || !$is_reviewer)) :?>
                 <table class="invisible">
                     <tr><td>Reviewer Name:</td>
