@@ -27,21 +27,68 @@ class ReviewsController extends Controller
 
         $experiment = Experiment::find($experiment_id);
         $detector = Detector::find($detector_muid);
+        $ex2_review_size = $request->getQueryParam("ex2_review_size", $this->default_ex2_review_size);
 
         $reviewer = array_key_exists('reviewer_name', $args) ? Reviewer::where(['name' => $args['reviewer_name']])->first() : $this->user;
         $resolution_reviewer = Reviewer::where(['name' => 'resolution'])->first();
         $is_reviewer = ($this->user && $reviewer && $this->user->id == $reviewer->id) || ($reviewer && $reviewer->id == $resolution_reviewer->id);
 
-        $misuse = Run::of($detector)->in($experiment)->where(['project_muid' => $project_muid, 'version_muid' => $version_muid])->first()->misuses()->where('misuse_muid', $misuse_muid)->first();
+        $runs = RunsController::getRuns($detector, $experiment, $ex2_review_size);
+        $current_run = Run::of($detector)->in($experiment)->where(['project_muid' => $project_muid, 'version_muid' => $version_muid])->first();
+
+        $previous_run = $this->getRunWithMisuses($runs, $current_run->id, False);
+        $next_run = $this->getRunWithMisuses($runs, $current_run->id, True);
+
+        $misuse = $current_run->misuses()->where('misuse_muid', $misuse_muid)->first();
+
+        $previous_misuse = $previous_run->misuses->last();
+        $next_misuse = $next_run->misuses->first();
+        $idx = 0;
+        while($current_run->misuses[$idx]->misuse_muid !== $misuse_muid){
+            $previous_misuse = $current_run->misuses[$idx];
+            $idx = $idx + 1;
+            if($current_run->misuses->count() === ($idx + 1)){
+                $next_misuse = $next_run->misuses->first();
+            }else{
+                $next_misuse = $current_run->misuses[$idx + 1];
+            }
+        }
+        if($idx == 0 && $current_run->misuses->count() > 1){
+            $next_misuse = $current_run->misuses[$idx + 1];
+        }
+
         $all_violation_types = Type::all();
         $all_tags = Tag::all();
-
         $review = $misuse->getReview($reviewer);
-
         return $this->renderer->render($response, 'review.phtml', ['reviewer' => $reviewer, 'is_reviewer' => $is_reviewer,
             'misuse' => $misuse, 'experiment' => $experiment,
             'detector' => $detector, 'review' => $review,
-            'violation_types' => $all_violation_types, 'tags' => $all_tags]);
+            'violation_types' => $all_violation_types, 'tags' => $all_tags, 'next_misuse' => $next_misuse, 'previous_misuse' => $previous_misuse]);
+    }
+
+    private function getRunWithMisuses($runs, $run_id, $forward)
+    {
+        foreach($runs as $key => $run){
+            if($run->id === $run_id){
+                $run_idx = $key;
+                break;
+            }
+        }
+        $idx = $run_idx + ($forward ?  1 : -1);
+        if($idx === -1){
+            $idx = $runs->count() - 1;
+        }else if($idx === $runs->count()){
+            $idx = 0;
+        }
+        $run = $runs[$idx];
+        while($run->misuses->isEmpty() && $idx !== ($forward ? $runs->count() : -1)){
+            $run = $runs[$idx];
+            $idx = $forward ? ($idx + 1) : ($idx - 1);
+        }
+        if($run->misuses->isEmpty()){
+            $run = $runs[$run_idx];
+        }
+        return $run;
     }
 
     public function getTodo(Request $request, Response $response, array $args)
@@ -131,7 +178,9 @@ class ReviewsController extends Controller
             $findingReview = FindingReview::firstOrNew(['review_id' => $review->id, 'rank' => $rank]);
             $findingReview->decision = $findings_review['hit'];
             $findingReview->save();
-            $findingReview->violation_types()->sync($findings_review['types']);
+            if($findings_review['types']){
+                $findingReview->violation_types()->sync($findings_review['types']);
+            }
         }
     }
 }
