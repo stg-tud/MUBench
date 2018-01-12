@@ -1,0 +1,19 @@
+api:
+- java.io.PrintWriter
+characteristics:
+- missing/exception_handling
+crash: false
+description: >
+  Calls Closeable.close() outside of finally block, which might fail to
+  close the resource in case of an exception.
+location:
+  file: mubench/examples/survey/Close.java
+  method: misuse(File)
+fix:
+  description: >
+    Call close() in finally block.
+internal: false
+pattern:
+- single object
+source:
+  name: Survey

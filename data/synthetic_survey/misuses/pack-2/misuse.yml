@@ -1,0 +1,19 @@
+api:
+- javax.swing.JFrame
+characteristics:
+- missing/call
+crash: false
+description: >
+  Calls JFrame.setVisible(true) without calling JFrame.pack(), such that the
+  frame is not layouted before being shown.
+location:
+  file: mubench/examples/survey/JFramePack.java
+  method: "needsPackToLayout(JFrame)"
+fix:
+  description: >
+    Call JFrame.pack() before JFrame.setVisible(true).
+internal: false
+pattern:
+- single object
+source:
+  name: Survey

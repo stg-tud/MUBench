@@ -93,8 +93,8 @@ JCA-Usages: # All misuses identified among mined Cipher usages (commented out ve
   - saavn.e576758.1
   - saavn.e576758.2
   - secure-tcp.aeba19a.1
-  - synthetic.siemens-i-ras.aes-ecb-mode
-  - synthetic.siemens-i-ras.static-key
+  - synthetic_jca.jsl.aes-ecb-mode
+  - synthetic_jca.jsl.static-key
   - technic-launcher-sp.7809682.1
   #- warwalk.9c85f74.1
   #- webtend.8fe8f4f.1
@@ -119,25 +119,37 @@ JCA-Changes-SF: # All misuses identified among mined changes to Cipher usages on
   - pawotag.82.1
   - tab-apps.62.1
 
-DeveloperSurvey: # All misuses hand-crafted from responses to our developer survey.
-  - synthetic.androidactivity-1.androidactivity-1
-  - synthetic.androidactivity-2.androidactivity-2
-  - synthetic.arrayaccess.arrayaccess
-  - synthetic.close-1.close-1
-  - synthetic.close-2.close-2
-  - synthetic.cme.cme
-  - synthetic.fisexists.fisexists
-  - synthetic.flip-1.flip-1
-  - synthetic.flip-2.flip-2
-  - synthetic.flush.flush
-  - synthetic.hasnext.hasnext
-  - synthetic.listget.listget
-  - synthetic.mapkeynull.mapkeynull
-  - synthetic.mapnull.mapnull
-  - synthetic.nofile.nofile
-  - synthetic.pack-1.pack-1
-  - synthetic.pack-2.pack-2
-  - synthetic.setfirst.setfirst
+DeveloperSurvey: # All misuses hand-crafted from responses to our developer survey (commented out versions do not compile).
+  #- synthetic_survey.android.androidactivity-1
+  #- synthetic_survey.android.androidactivity-2
+  - synthetic_survey.jsl.arrayaccess
+  - synthetic_survey.jsl.close-1
+  - synthetic_survey.jsl.close-2
+  - synthetic_survey.jsl.cme
+  - synthetic_survey.jsl.fisexists
+  - synthetic_survey.jsl.flip-1
+  - synthetic_survey.jsl.flip-2
+  - synthetic_survey.jsl.flush
+  - synthetic_survey.jsl.hasnext
+  - synthetic_survey.jsl.listget
+  - synthetic_survey.jsl.mapkeynull
+  - synthetic_survey.jsl.mapnull
+  - synthetic_survey.jsl.nofile
+  - synthetic_survey.jsl.pack-1
+  - synthetic_survey.jsl.pack-2
+  - synthetic_survey.jsl.setfirst
+
+DirectivesStudies: # All hand-crafted misuses derived from empirical studies of API-usage directives.
+  - synthetic_directives.jsl.alreadyondte
+  - synthetic_directives.jsl.callondte
+  - synthetic_directives.jsl.deadlock
+  - synthetic_directives.jsl.latenullcheck
+  - synthetic_directives.jsl.maybenull
+  - synthetic_directives.jsl.repetitive
+  - synthetic_directives.jsl.supresserror
+  - synthetic_directives.jsl.toorestrictive
+  - synthetic_directives.jsl.unsynchronized
+  - synthetic_directives.jsl.wait-loop
 
 Legunsen-ASE16: # All misuses imported from Lagunsen et al.'s ASE'16 study.
   - apache-gora.bb09d89-accumulo.56_1
@@ -262,31 +274,32 @@ Ex1-TSE17:
   - lucene.1251.1
   - lucene.1918.2
   - rhino.286251.1
-  - synthetic.alreadyondte.alreadyondte
-  - synthetic.callondte.callondte
-  - synthetic.close-1.close-1
-  - synthetic.close-2.close-2
-  - synthetic.cme.cme
-  - synthetic.deadlock.deadlock
-  - synthetic.fisexists.fisexists
-  - synthetic.flip-1.flip-1
-  - synthetic.flip-2.flip-2
-  - synthetic.flush.flush
-  - synthetic.hasnext.hasnext
-  - synthetic.latenullcheck.latenullcheck
-  - synthetic.listget.listget
-  - synthetic.mapkeynull.mapkeynull
-  - synthetic.mapnull.mapnull
-  - synthetic.maybenull.maybenull
-  - synthetic.nofile.nofile
-  - synthetic.pack-1.pack-1
-  - synthetic.pack-2.pack-2
-  - synthetic.repetitive.repetitive
-  - synthetic.setfirst.setfirst
-  - synthetic.supresserror.supresserror
-  - synthetic.toorestrictive.toorestrictive
-  - synthetic.unsynchronized.unsynchronized
-  - synthetic.wait-loop.wait-loop
+  - synthetic_directives.jsl.alreadyondte
+  - synthetic_directives.jsl.callondte
+  - synthetic_directives.jsl.deadlock
+  - synthetic_directives.jsl.latenullcheck
+  - synthetic_directives.jsl.maybenull
+  - synthetic_directives.jsl.repetitive
+  - synthetic_directives.jsl.supresserror
+  - synthetic_directives.jsl.toorestrictive
+  - synthetic_directives.jsl.unsynchronized
+  - synthetic_directives.jsl.wait-loop
+  - synthetic_survey.jsl.arrayaccess
+  - synthetic_survey.jsl.close-1
+  - synthetic_survey.jsl.close-2
+  - synthetic_survey.jsl.cme
+  - synthetic_survey.jsl.fisexists
+  - synthetic_survey.jsl.flip-1
+  - synthetic_survey.jsl.flip-2
+  - synthetic_survey.jsl.flush
+  - synthetic_survey.jsl.hasnext
+  - synthetic_survey.jsl.listget
+  - synthetic_survey.jsl.mapkeynull
+  - synthetic_survey.jsl.mapnull
+  - synthetic_survey.jsl.nofile
+  - synthetic_survey.jsl.pack-1
+  - synthetic_survey.jsl.pack-2
+  - synthetic_survey.jsl.setfirst
 
 Ex2-TSE17:
   - closure.319

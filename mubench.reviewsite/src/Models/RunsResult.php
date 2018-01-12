@@ -27,10 +27,12 @@ abstract class RunsResult
             if ($run->result === "not run") {
                 continue;
             }
-            if ($run->project_muid === "synthetic") {
-                $synthetics[$run->version_muid] = 1;
+
+            $id = $run->project_muid . "." . $run->version_muid;
+            if (strpos($run->project_muid, "synthetic_") === 0) {
+                $synthetics[$id] = 1;
             } else {
-                $projects[$run->project_muid . "." . $run->version_muid] = 1;
+                $projects[$id] = 1;
             }
 
             foreach ($run->misuses as $misuse) {

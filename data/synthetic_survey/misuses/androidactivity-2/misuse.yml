@@ -1,0 +1,18 @@
+api:
+- android.app.Activity
+characteristics:
+- misplaced/call
+crash: true
+description: >
+  Fails to set content view on onCreate().
+location:
+  file: mubench/examples/survey/ActivityDelegateCreateTooLate.java
+  method: onCreate(Bundle)
+fix:
+  description: >
+    Call super.onCreate() before calling setContentView().
+internal: false
+pattern:
+- single object
+source:
+  name: Survey

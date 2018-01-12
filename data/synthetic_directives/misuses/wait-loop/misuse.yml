@@ -1,0 +1,18 @@
+api:
+- java.lang.Object
+characteristics:
+- missing/iteration
+crash: false
+description: >
+  Object.wait() should be called in a loop that iteratively checks the
+  condition waited for.
+location:
+  file: mubench/examples/directives/WaitWithoutLoop.java
+  method: misuse(Target)
+fix:
+  description: >
+    Check condition in a loop.
+internal: false
+source:
+  name: Improving API documentation usability with knowledge pushing, Herbsleb et al., ICSE'09
+  url: https://dl.acm.org/citation.cfm?id=1555047

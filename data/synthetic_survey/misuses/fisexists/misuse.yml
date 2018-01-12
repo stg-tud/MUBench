@@ -1,0 +1,19 @@
+api:
+- java.io.FileInputStream
+- java.io.File
+characteristics:
+- missing/condition/value_or_state
+crash: true
+description: >
+  Open a FileInputStream on a non-existing file throws.
+location:
+  file: mubench/examples/survey/FISExists.java
+  method: misuse(File)
+fix:
+  description: >
+    Check File.exists() first.
+internal: false
+pattern:
+- multiple objects
+source:
+  name: Survey
