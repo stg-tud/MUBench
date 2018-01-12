@@ -50,6 +50,7 @@ class RunsControllerTest extends SlimTestCase
                     "target_snippets" => [
                         ["first_line_number" => 6, "code" => "-code-"]
                     ],
+                    "file" => "//src/file",
                     "custom1" => "-val1-",
                     "custom2" => "-val2-"
                 ],
@@ -59,6 +60,7 @@ class RunsControllerTest extends SlimTestCase
                     "target_snippets" => [
                         ["first_line_number" => 5, "code" => "-code-"]
                     ],
+                    "file" => "//src/file",
                     "custom1" => "-val1-",
                     "custom2" => "-val2-"
                 ]]
