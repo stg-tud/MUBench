@@ -151,6 +151,13 @@ DirectivesStudies: # All hand-crafted misuses derived from empirical studies of 
   - synthetic_directives.jsl.unsynchronized
   - synthetic_directives.jsl.wait-loop
 
+Java8-Misuses: # All hand-crafted misuses of Java 8 APIs
+  - synthetic_java8-misuses.96d0ccb.optional-map-unchecked-get
+  - synthetic_java8-misuses.96d0ccb.stream-closed
+  - synthetic_java8-misuses.96d0ccb.stream-infinite
+  - synthetic_java8-misuses.96d0ccb.stream-infinite2
+  - synthetic_java8-misuses.96d0ccb.stream-without-terminal
+
 Legunsen-ASE16: # All misuses imported from Lagunsen et al.'s ASE'16 study.
   - apache-gora.bb09d89-accumulo.56_1
   - apache-gora.bb09d89-core.56_2

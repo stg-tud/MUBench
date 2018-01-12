@@ -1,0 +1,5 @@
+name: Common misuses of new Java 8 features and other mistakes
+url: https://github.com/xpinjection/java8-misuses/
+repository:
+  type: git
+  url: https://github.com/xpinjection/java8-misuses.git

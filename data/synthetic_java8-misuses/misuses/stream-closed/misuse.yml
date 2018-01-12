@@ -1,0 +1,16 @@
+api:
+- java.util.stream.IntStream
+characteristics:
+- superfluous/call
+crash: false
+description: >
+  Invokes a second terminal operation on a stream, which causes an
+  "`IllegalStateException`: stream has already been operated upon or closed".
+  Remove the second terminal operation to prevent this.
+location:
+  file: com/xpinjection/java8/misused/stream/incorrect/UseStreamMoreThanOnce.java
+  method: streamIsClosedAfterTerminalOperation()
+internal: false
+source:
+  name: Common misuses of new Java 8 features and other mistakes
+  url: https://github.com/xpinjection/java8-misuses/blob/master/src/com/xpinjection/java8/misused/stream/incorrect/UseStreamMoreThanOnce.java

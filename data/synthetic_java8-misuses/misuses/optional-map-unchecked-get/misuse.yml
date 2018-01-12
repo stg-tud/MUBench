@@ -1,0 +1,18 @@
+api:
+- java.util.Optional
+characteristics:
+- missing/call
+- superfluous/call
+crash: true
+description: >
+  Uses `Optional.get()` without prior check of `isPresent()` within
+  `Optional.map()`, which may cause a `NullPointerException`. Safe
+  way is to use `flatMap` instead, which takes care of potential
+  `null` values.
+location:
+  file: com/xpinjection/java8/misused/optional/HundredAndOneApproach.java
+  method: getPersonCarInsuranceName(Person)
+internal: false
+source:
+  name: Common misuses of new Java 8 features and other mistakes
+  url: https://github.com/xpinjection/java8-misuses/blob/master/src/com/xpinjection/java8/misused/optional/HundredAndOneApproach.java
