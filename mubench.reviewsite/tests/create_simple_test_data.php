@@ -81,7 +81,7 @@ Schema::create($finding->getTable(), function (Blueprint $table) {
     $table->string('misuse_muid', 30);
     $table->integer('startline')->nullable();
     $table->integer('rank');
-    $table->text('file')->nullable();
+    $table->text('file');
     $table->text('method')->nullable();
     $table->text('additional_column')->nullable();
     $table->dateTime('created_at');
@@ -155,7 +155,7 @@ echo 'Creating finding snippets<br/>';
 $snippet = new \MuBench\ReviewSite\Models\Snippet;
 $snippet->project_muid = 'mubench';
 $snippet->version_muid = '42';
-$snippet->misuse_muid = '1';
+$snippet->file = 'Test.java';
 $snippet->line = 112;
 $snippet->snippet = "test snippet\ntest";
 $snippet->save();

@@ -41,7 +41,7 @@ class MetadataController extends Controller
         $metadata = $this->saveMetadata($projectId, $versionId, $misuseId, $description, $fix, $location);
         $this->saveViolationTypes($metadata, $violationTypes);
         $this->savePatterns($metadata->id, $patterns);
-        $this->saveTargetSnippets($misuseId, $projectId, $versionId, $targetSnippets, $location['file']);
+        $this->saveTargetSnippets($projectId, $versionId, $targetSnippets, $location['file']);
     }
 
     private function saveMetadata($projectId, $versionId, $misuseId, $description, $fix, $location)
@@ -77,11 +77,11 @@ class MetadataController extends Controller
         }
     }
 
-    private function saveTargetSnippets($misuseId, $projectId, $versionId, $targetSnippets, $file)
+    private function saveTargetSnippets($projectId, $versionId, $targetSnippets, $file)
     {
         if ($targetSnippets) {
             foreach ($targetSnippets as $snippet) {
-                SnippetsController::createSnippet($projectId, $versionId, $misuseId, $snippet['code'], $snippet['first_line_number'], $file);
+                SnippetsController::createSnippet($projectId, $versionId, $snippet['code'], $snippet['first_line_number'], $file);
             }
         }
     }

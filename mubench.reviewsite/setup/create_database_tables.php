@@ -38,8 +38,7 @@ Schema::create($snippet->getTable(), function (Blueprint $table) {
     $table->increments('id');
     $table->string('project_muid', 30);
     $table->string('version_muid', 30);
-    $table->string('misuse_muid', 30);
-    $table->string('file', 100);
+    $table->string('file');
     $table->integer('line');
     $table->text('snippet');
     $table->unique(['project_muid', 'version_muid', 'file', 'line']);

@@ -382,7 +382,7 @@ class RunsController extends Controller
             }
             $this->storeFinding($detector, $experiment, $projectId, $versionId, $misuseId, $misuse, $finding);
             if ($experiment->id === 2) {
-                $this->storeFindingTargetSnippets($projectId, $versionId, $misuseId, $finding->{'rank'}, $finding->{'file'}, $finding->{'target_snippets'});
+                $this->storeFindingTargetSnippets($projectId, $versionId, $finding->{'file'}, $finding->{'target_snippets'});
             }
         }
     }
@@ -438,10 +438,10 @@ class RunsController extends Controller
         $savedRun->save();
     }
 
-    private function storeFindingTargetSnippets($projectId, $versionId, $misuseId, $rank, $file, $snippets)
+    private function storeFindingTargetSnippets($projectId, $versionId, $file, $snippets)
     {
         foreach ($snippets as $snippet) {
-            SnippetsController::createSnippet($projectId, $versionId, $misuseId, $snippet->{'code'}, $snippet->{'first_line_number'}, $file);
+            SnippetsController::createSnippet($projectId, $versionId, $snippet->{'code'}, $snippet->{'first_line_number'}, $file);
         }
     }
 

@@ -43,7 +43,7 @@ class Misuse extends Model
 
     public function snippets()
     {
-        return Snippet::where(['project_muid'=> $this->getProject(), 'version_muid' => $this->getVersion(), 'misuse_muid' => $this->misuse_muid], '=')->get();
+        return Snippet::where(['project_muid'=> $this->getProject(), 'version_muid' => $this->getVersion(), 'file' => $this->findings->first()->file], '=')->get();
     }
 
     public function getFile()
