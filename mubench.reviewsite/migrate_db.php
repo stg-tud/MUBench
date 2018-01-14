@@ -1,12 +1,14 @@
 <?php
 
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Events\Dispatcher;
 use Illuminate\Support\Facades\Schema;
 use MuBench\ReviewSite\Controllers\RunsController;
 use MuBench\ReviewSite\Models\Detector;
 use MuBench\ReviewSite\Models\Experiment;
 use MuBench\ReviewSite\Models\Metadata;
 use MuBench\ReviewSite\Models\Type;
+use Illuminate\Container\Container;
 
 session_start();
 date_default_timezone_set('Europe/Berlin');
@@ -43,6 +45,7 @@ $capsule = new \Illuminate\Database\Capsule\Manager;
 $capsule->addConnection($new_db);
 $capsule->addConnection($old_db, 'old_db');
 $capsule->setAsGlobal();
+$capsule->setEventDispatcher(new Dispatcher(new Container()));
 $capsule->bootEloquent();
 
 // The schema accesses the database through the app, which we do not have in
@@ -91,7 +94,6 @@ foreach($metadata as $old_metadata){
     }
 
 }
-
 $detectors = \MuBench\ReviewSite\Old\Detector::all();
 $runsController = new RunsController($container);
 echo 'migrating detectors' . "\n";
@@ -160,7 +162,7 @@ foreach($detectors as $index => $old_detector){
                 } else if($key === 'version'){
                     $new_finding->version_muid = $value;
                 } else if($key === 'misuse'){
-                    $new_finding->misuse_muid = $value;
+                    $new_finding->misuse_muid = getShortId($value, $finding->getAttributes()['project']);
                 }
                 else {
                     $new_finding[$key] = $value;
