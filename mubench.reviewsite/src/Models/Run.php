@@ -12,6 +12,6 @@ class Run extends DetectorDependent
 
     public function misuses()
     {
-        return $this->hasMany(Misuse::class, 'run_id', 'id')->where('detector_muid', $this->detector->muid);
+        return $this->hasMany(Misuse::class, 'run_id', 'id')->where('detector_id', $this->detector->id);
     }
 }

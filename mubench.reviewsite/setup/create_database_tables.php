@@ -83,7 +83,7 @@ Schema::dropIfExists($misuse->getTable());
 Schema::create($misuse->getTable(), function (Blueprint $table) {
     $table->increments('id');
     $table->integer('metadata_id')->nullable();
-    $table->string('detector_muid');
+    $table->integer('detector_id');
     $table->integer('run_id');
     $table->string('misuse_muid', 30);
     $table->dateTime('created_at');

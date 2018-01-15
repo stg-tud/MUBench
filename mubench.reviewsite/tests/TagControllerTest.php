@@ -24,7 +24,7 @@ class TagControllerTest extends SlimTestCase
         $misuse->metadata_id = 1;
         $misuse->misuse_muid = '1';
         $misuse->run_id = 1;
-        $misuse->detector_muid = 'test-detector';
+        $misuse->detector_id = 42;
         $misuse->save();
     }
 

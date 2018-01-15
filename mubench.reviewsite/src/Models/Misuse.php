@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 class Misuse extends Model
 {
 
-    protected $fillable = ['misuse_muid', 'run_id', 'detector_muid', 'metadata_id'];
+    protected $fillable = ['misuse_muid', 'run_id', 'detector_id', 'metadata_id'];
 
     public function metadata()
     {
@@ -28,7 +28,7 @@ class Misuse extends Model
 
     public function detector()
     {
-        return $this->belongsTo(Detector::class, 'detector_muid', 'muid');
+        return $this->belongsTo(Detector::class, 'detector_id', 'id');
     }
 
     public function run()

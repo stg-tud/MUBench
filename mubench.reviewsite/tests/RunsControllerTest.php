@@ -109,7 +109,7 @@ class RunsControllerTest extends SlimTestCase
         self::assertEquals(42.1, $run->runtime);
         self::assertEquals(23, $run->number_of_findings);
         self::assertEquals('-stat-val-', $run["-custom-stat-"]);
-        self::assertEquals($detector->muid, $misuse->detector_muid);
+        self::assertEquals($detector->id, $misuse->detector_id);
         self::assertEquals('-m-', $misuse->misuse_muid);
         self::assertEquals(null, $misuse->metadata_id);
         self::assertEquals($run->id, $misuse->run_id);
@@ -281,7 +281,7 @@ EOT
         $run->runtime = 42.1;
         $run->misuses = new Collection;
         foreach($misuses as $key => $misuse){
-            $new_misuse = Misuse::create(['misuse_muid' => $key, 'run_id' => $run->id, 'detector_muid' => $detector->muid]);
+            $new_misuse = Misuse::create(['misuse_muid' => $key, 'run_id' => $run->id, 'detector_id' => $detector->id]);
             $this->createFindingWith($experiment, $detector, $new_misuse);
             $this->addReviewsForMisuse($new_misuse, $misuse[0], sizeof($misuse) > 1 ? $misuse[1] : null);
             $new_misuse->findings;

@@ -22,7 +22,7 @@ class ReviewControllerTest extends SlimTestCase
     {
         parent::setUp();
         $this->reviewController = new ReviewsController($this->container);
-        Misuse::create(['misuse_muid' => '0', 'run_id' => 1, 'detector_muid' => 'test-detector']);
+        Misuse::create(['misuse_muid' => '0', 'run_id' => 1, 'detector_id' => 42]);
         Reviewer::create(['name' => 'reviewer1']);
     }
 

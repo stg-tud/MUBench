@@ -392,12 +392,12 @@ class RunsController extends Controller
         if ($experiment->id == 1 || $experiment->id == 3) {
             $metadata = Metadata::where(['project_muid' => $projectId, 'version_muid' => $versionId, 'misuse_muid' => $misuseId])->first();
             if($metadata){
-                $misuse = Misuse::create(['metadata_id' => $metadata->id, 'misuse_muid' => $misuseId, 'run_id' => $runId, 'detector_muid' => $detector->muid]);
+                $misuse = Misuse::create(['metadata_id' => $metadata->id, 'misuse_muid' => $misuseId, 'run_id' => $runId, 'detector_id' => $detector->id]);
             } else {
-                $misuse = Misuse::create(['misuse_muid' => $misuseId, 'run_id' => $runId, 'detector_muid' => $detector->muid]);
+                $misuse = Misuse::create(['misuse_muid' => $misuseId, 'run_id' => $runId, 'detector_id' => $detector->id]);
             }
         } else {
-            $misuse = Misuse::create(['misuse_muid' => $misuseId, 'run_id' => $runId, 'detector_muid' => $detector->muid]);
+            $misuse = Misuse::create(['misuse_muid' => $misuseId, 'run_id' => $runId, 'detector_id' => $detector->id]);
         }
         return $misuse;
     }
