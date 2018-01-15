@@ -48,14 +48,15 @@ $capsule->bootEloquent();
 
 require __DIR__ . '/setup/create_database_tables.php';
 
-echo 'Imigrating DB' . "\n";
-echo 'migrating types' . "\n";
+echo '<h2>Migrating DB</h2><br/>';
+
+echo 'Migrating types...<br/>';
 $types = MuBench\ReviewSite\Old\Type::all();
 foreach($types as $type){
     MuBench\ReviewSite\Models\Type::create(['name' => $type->name]);
 }
 
-echo 'migrating metadata' . "\n";
+echo 'Migrating metadata...<br/>';
 $metadata = \MuBench\ReviewSite\Old\Metadata::all();
 foreach($metadata as $old_metadata){
     $misuseId = $old_metadata->misuse;
@@ -88,94 +89,99 @@ foreach($metadata as $old_metadata){
 }
 $detectors = \MuBench\ReviewSite\Old\Detector::all();
 $runsController = new RunsController($container);
-echo 'migrating detectors' . "\n";
-foreach($detectors as $index => $old_detector){
-    echo "migrating everything for " . $old_detector->name . " - " . $index . "/". sizeof($detectors) . "\n";
-    $new_detector = $runsController->createDetector($old_detector->name);
-    $runs = MuBench\ReviewSite\Old\Run::of($old_detector)->get();
-    foreach($runs as $index => $run){
-        createOrUpdateRunTable($new_detector, $run);
-        if($run['exp'] === 'ex1'){
-            $experiment = $experiment1;
-        }else if($run['exp'] === 'ex2'){
-            $experiment = $experiment2;
-        }else {
-            $experiment = $experiment3;
-        }
-        $new_run = new \MuBench\ReviewSite\Models\Run;
-        $new_run->setDetector($new_detector);
-        $new_run = $capsule->table($new_run->getTable())->where(['experiment_id' => $experiment->id,
-            'project_muid' => $run['project'], 'version_muid' => $run['version']])->first();
-        if(!$new_run){
+echo 'Migrating detectors...<br/>';
+try {
+    foreach ($detectors as $index => $old_detector) {
+        echo "Migrating everything for " . $old_detector->name . " - " . ($index + 1) . "/" . sizeof($detectors) . "...<br/>";
+        $new_detector = $runsController->createDetector($old_detector->name);
+        $runs = MuBench\ReviewSite\Old\Run::of($old_detector)->get();
+        foreach ($runs as $index => $run) {
+            createOrUpdateRunTable($new_detector, $run);
+            if ($run['exp'] === 'ex1') {
+                $experiment = $experiment1;
+            } else if ($run['exp'] === 'ex2') {
+                $experiment = $experiment2;
+            } else {
+                $experiment = $experiment3;
+            }
             $new_run = new \MuBench\ReviewSite\Models\Run;
             $new_run->setDetector($new_detector);
-            foreach($run->getAttributes() as $key => $value){
-                if($key === 'exp'){
-                    $new_run->experiment_id = $experiment->id;
-                } else if($key === 'project'){
-                    $new_run->project_muid = $value;
-                } else if($key === 'version'){
-                    $new_run->version_muid = $value;
-                } else {
-                    $new_run[$key] = $value;
+            $new_run = $capsule->table($new_run->getTable())->where(['experiment_id' => $experiment->id,
+                'project_muid' => $run['project'], 'version_muid' => $run['version']])->first();
+            if (!$new_run) {
+                $new_run = new \MuBench\ReviewSite\Models\Run;
+                $new_run->setDetector($new_detector);
+                foreach ($run->getAttributes() as $key => $value) {
+                    if ($key === 'exp') {
+                        $new_run->experiment_id = $experiment->id;
+                    } else if ($key === 'project') {
+                        $new_run->project_muid = $value;
+                    } else if ($key === 'version') {
+                        $new_run->version_muid = $value;
+                    } else {
+                        $new_run[$key] = $value;
+                    }
                 }
+                $new_run->save();
             }
-            $new_run->save();
-        }
 
-        $findings = MuBench\ReviewSite\Old\Finding::of($old_detector)
-            ->where('exp', $run->exp)
-            ->where('project', $run->project)
-            ->where('version', $run->version)->get();
-        // echo 'Migrating ' . $index . '. run with ' . sizeof($findings) . ' findings<br/>';
-        if($experiment->id === 1 || $experiment->id === 3){
-            $metadata = \MuBench\ReviewSite\Models\Metadata::where(['project_muid' => $run->project, 'version_muid' => $run->version])->get();
-            foreach($metadata as $data){
-                if(sizeof($data->patterns) === 0 && $experiment->id === 1){
-                    continue;
-                }
-                \MuBench\ReviewSite\Models\Misuse::firstOrCreate(['metadata_id' => $data->id, 'misuse_muid' => $data->misuse_muid, 'run_id' => $new_run->id, 'detector_id' => $new_detector->id]);
-            }
-        }
-        foreach($findings as $finding){
-            $projectId = $finding['project'];
-            $versionId = $finding['version'];
-            $misuseId = $finding['misuse'];
-            createOrUpdateFindingsTable($new_detector, $finding);
-            $new_misuse = getOrCreateMisuse($new_detector, $experiment, $projectId, $versionId, $misuseId, $new_run->id);
-            $new_finding = new \MuBench\ReviewSite\Models\Finding;
-            $new_finding->setDetector($new_detector);
-            $new_finding->misuse_id = $new_misuse->id;
-            foreach($finding->getAttributes() as $key => $value){
-                if($key === 'exp'){
-                    $new_finding->experiment_id = $experiment->id;
-                } else if($key === 'project'){
-                    $new_finding->project_muid = $value;
-                } else if($key === 'version'){
-                    $new_finding->version_muid = $value;
-                } else if($key === 'misuse'){
-                    $new_finding->misuse_muid = getShortId($value, $finding->getAttributes()['project']);
-                }
-                else {
-                    $new_finding[$key] = $value;
+            $findings = MuBench\ReviewSite\Old\Finding::of($old_detector)
+                ->where('exp', $run->exp)
+                ->where('project', $run->project)
+                ->where('version', $run->version)->get();
+            // echo 'Migrating ' . $index . '. run with ' . sizeof($findings) . ' findings<br/>';
+            if ($experiment->id === 1 || $experiment->id === 3) {
+                $metadata = \MuBench\ReviewSite\Models\Metadata::where(['project_muid' => $run->project, 'version_muid' => $run->version])->get();
+                foreach ($metadata as $data) {
+                    if (sizeof($data->patterns) === 0 && $experiment->id === 1) {
+                        continue;
+                    }
+                    \MuBench\ReviewSite\Models\Misuse::firstOrCreate(['metadata_id' => $data->id, 'misuse_muid' => $data->misuse_muid, 'run_id' => $new_run->id, 'detector_id' => $new_detector->id]);
                 }
             }
-            $new_finding->save();
-            $findingSnippets = \MuBench\ReviewSite\Old\FindingSnippet::where('project', $projectId)
-                ->where('version', $versionId)
-                ->where('finding', $misuseId)
-                ->where('detector', $old_detector->id)->get();
-            saveSnippets($projectId, $versionId, $new_finding->misuse_muid, $new_finding->file, $findingSnippets);
-            $reviews = \MuBench\ReviewSite\Old\Review::where('exp', $run['exp'])
-                ->where('detector', $old_detector->id)
-                ->where('project', $projectId)
-                ->where('version', $versionId)
-                ->where('misuse', $misuseId)->get();
-            foreach($reviews as $review){
-                createReview($new_misuse->id, $review);
+            foreach ($findings as $finding) {
+                $projectId = $finding['project'];
+                $versionId = $finding['version'];
+                $misuseId = $finding['misuse'];
+                createOrUpdateFindingsTable($new_detector, $finding);
+                $new_misuse = getOrCreateMisuse($new_detector, $experiment, $projectId, $versionId, $misuseId, $new_run->id);
+                $new_finding = new \MuBench\ReviewSite\Models\Finding;
+                $new_finding->setDetector($new_detector);
+                $new_finding->misuse_id = $new_misuse->id;
+                foreach ($finding->getAttributes() as $key => $value) {
+                    if ($key === 'exp') {
+                        $new_finding->experiment_id = $experiment->id;
+                    } else if ($key === 'project') {
+                        $new_finding->project_muid = $value;
+                    } else if ($key === 'version') {
+                        $new_finding->version_muid = $value;
+                    } else if ($key === 'misuse') {
+                        $new_finding->misuse_muid = getShortId($value, $finding->getAttributes()['project']);
+                    } else {
+                        $new_finding[$key] = $value;
+                    }
+                }
+                $new_finding->save();
+                $findingSnippets = \MuBench\ReviewSite\Old\FindingSnippet::where('project', $projectId)
+                    ->where('version', $versionId)
+                    ->where('finding', $misuseId)
+                    ->where('detector', $old_detector->id)->get();
+                saveSnippets($projectId, $versionId, $new_finding->misuse_muid, $new_finding->file, $findingSnippets);
+                $reviews = \MuBench\ReviewSite\Old\Review::where('exp', $run['exp'])
+                    ->where('detector', $old_detector->id)
+                    ->where('project', $projectId)
+                    ->where('version', $versionId)
+                    ->where('misuse', $misuseId)->get();
+                foreach ($reviews as $review) {
+                    createReview($new_misuse->id, $review);
+                }
             }
         }
     }
+} catch (Exception $e) {
+    echo '<br/>';
+    echo '<b>' . $e->getMessage() . '</b>';
+    echo nl2br($e->getTraceAsString());
 }
 
 function addColumns($old_obj, $new_obj, $ignore_columns)
