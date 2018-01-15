@@ -31,6 +31,7 @@ Schema::create('detectors', function (Blueprint $table) {
     $table->integer('id');
     $table->string('muid', 100);
     $table->unique(['id']);
+    $table->unique(['muid']);
 });
 
 echo 'Creating finding snippet<br/>';
