@@ -26,6 +26,8 @@ $experiment3->save();
 echo 'Creating detectors table<br/>';
 Schema::dropIfExists('detectors');
 Schema::create('detectors', function (Blueprint $table) {
+    // 'muid' is the primary key here, therefore, we cannot define 'id' as increments, because if we do Eloquent
+    // automatically uses it as primary key. To fix this, we manage the id ourselves in the Detector class.
     $table->integer('id');
     $table->string('muid', 100);
     $table->unique(['id']);
