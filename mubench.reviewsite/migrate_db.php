@@ -234,7 +234,7 @@ function saveSnippets($projectId, $versionId, $misuseId, $file, $snippets)
 {
     if ($snippets) {
         foreach ($snippets as $snippet) {
-            \MuBench\ReviewSite\Controllers\SnippetsController::createSnippet($projectId, $versionId, $misuseId, $file, $snippet->line, $snippet->snippet);
+            \MuBench\ReviewSite\Controllers\SnippetsController::createSnippetIfNotExists($projectId, $versionId, $misuseId, $file, $snippet->line, $snippet->snippet);
         }
     }
 }
