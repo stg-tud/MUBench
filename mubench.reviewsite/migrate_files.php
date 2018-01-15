@@ -16,13 +16,16 @@ $capsule->bootEloquent();
 $detectors = \MuBench\ReviewSite\Models\Detector::all();
 $experiments = \MuBench\ReviewSite\Models\Experiment::all();
 
+$old_upload_path = $settings['upload'];
+$new_upload_path = $settings['upload'];
+
 foreach($experiments as $experiment){
     foreach($detectors as $detector){
         $runs = \MuBench\ReviewSite\Models\Run::of($detector)->in($experiment)->get();
         foreach($runs as $run){
-            $old_dir = $settings['upload'] . "/ex$experiment->id/$detector->muid/$run->project_muid/$run->version_muid";
+            $old_dir = $old_upload_path . "/ex$experiment->id/$detector->muid/$run->project_muid/$run->version_muid";
             if(is_dir($old_dir)){
-                $new_dir = $settings['upload'] . "/$experiment->id/$detector->id/$run->project_muid/$run->version_muid";
+                $new_dir = $new_upload_path . "/$experiment->id/$detector->id/$run->project_muid/$run->version_muid";
                 mkdir($new_dir, 0745, true);
                 $files = glob("$old_dir/*.*");
                 foreach($files as $file){
