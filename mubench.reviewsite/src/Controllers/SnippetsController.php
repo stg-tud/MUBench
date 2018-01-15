@@ -20,7 +20,7 @@ class SnippetsController extends Controller
         $code = $form['snippet'];
         $line = $form['line'];
         $misuse = Misuse::find($form['misuse_id']);
-        self::createSnippet($projectId, $versionId, $code, $line, $misuse->getFile());
+        self::createSnippet($projectId, $versionId, $misuseId, $misuse->getFile(), $line, $code);
         return $response->withRedirect("{$this->site_base_url}{$form['path']}");
     }
 
@@ -34,9 +34,12 @@ class SnippetsController extends Controller
         return $response->withRedirect("{$this->site_base_url}{$form['path']}");
     }
 
-    static function createSnippet($projectId, $versionId, $code, $line, $file)
+    static function createSnippet($projectId, $versionId, $misuseId, $file, $line, $code)
     {
-        $snippet = Snippet::firstOrNew(['project_muid' => $projectId, 'version_muid' => $versionId, 'file' => $file, 'line' => $line]);
+        $snippet = Snippet::firstOrNew([
+            'project_muid' => $projectId, 'version_muid' => $versionId, 'misuse_muid' => $misuseId,
+            'file' => $file, 'line' => $line
+        ]);
         $snippet->snippet = $code;
         $snippet->save();
     }

@@ -19,10 +19,11 @@ class SnippetControllerTest extends SlimTestCase
 
     function test_snippet_creation()
     {
-        $this->snippetController->createSnippet('-p-', '-v-', '-code-', 10, '//src/file');
-        $actualSnippet = Snippet::where(['project_muid' => '-p-', 'version_muid' => '-v-', 'snippet' => '-code-', 'line' => 10, 'file' => '//src/file'])->first();
+        $this->snippetController->createSnippet('-p-', '-v-', '-m-', '//src/file', 10, '-code-');
+        $actualSnippet = Snippet::where(['project_muid' => '-p-', 'version_muid' => '-v-', 'misuse_muid' => '-m-', 'file' => '//src/file', 'line' => 10])->first();
         self::assertEquals('-p-', $actualSnippet->project_muid);
         self::assertEquals('-v-', $actualSnippet->version_muid);
+        self::assertEquals('-m-', $actualSnippet->misuse_muid);
         self::assertEquals('-code-', $actualSnippet->snippet);
         self::assertEquals(10, $actualSnippet->line);
         self::assertEquals('//src/file', $actualSnippet->file);
