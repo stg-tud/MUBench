@@ -7,7 +7,7 @@ require_once 'SlimTestCase.php';
 
 class SnippetControllerTest extends SlimTestCase
 {
-
+    /** @var SnippetsController */
     private $snippetController;
 
 

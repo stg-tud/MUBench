@@ -2,11 +2,9 @@
 
 use Illuminate\Container\Container;
 use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Events\Dispatcher;
 use Illuminate\Support\Facades\Schema;
 use PHPUnit\Framework\TestCase;
 use Monolog\Logger;
-use Pixie\QueryBuilder\QueryBuilderHandler;
 use Slim\Http\Environment;
 use Slim\Http\Headers;
 use Slim\Http\Request;
@@ -17,6 +15,9 @@ use Slim\Http\Uri;
 class SlimTestCase extends TestCase
 {
     protected $app;
+
+    /** @var Container */
+    protected $container;
 
     /** @var Request */
     protected $request;
