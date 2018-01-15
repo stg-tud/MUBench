@@ -78,7 +78,7 @@ class MetadataController extends Controller
     {
         if ($targetSnippets) {
             foreach ($targetSnippets as $snippet) {
-                SnippetsController::createSnippet($projectId, $versionId, $misuseId, $file, $snippet['first_line_number'], $snippet['code']);
+                SnippetsController::createSnippetIfNotExists($projectId, $versionId, $misuseId, $file, $snippet['first_line_number'], $snippet['code']);
             }
         }
     }

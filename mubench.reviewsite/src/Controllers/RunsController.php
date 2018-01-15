@@ -441,7 +441,7 @@ class RunsController extends Controller
     private function storeFindingTargetSnippets($projectId, $versionId, $misuseId, $file, $snippets)
     {
         foreach ($snippets as $snippet) {
-            SnippetsController::createSnippet($projectId, $versionId, $misuseId, $file, $snippet->{'first_line_number'}, $snippet->{'code'});
+            SnippetsController::createSnippetIfNotExists($projectId, $versionId, $misuseId, $file, $snippet->{'first_line_number'}, $snippet->{'code'});
         }
     }
 

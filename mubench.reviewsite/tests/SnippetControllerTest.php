@@ -19,13 +19,21 @@ class SnippetControllerTest extends SlimTestCase
 
     function test_snippet_creation()
     {
-        $this->snippetController->createSnippet('-p-', '-v-', '-m-', '//src/file', 10, '-code-');
-        $actualSnippet = Snippet::where(['project_muid' => '-p-', 'version_muid' => '-v-', 'misuse_muid' => '-m-', 'file' => '//src/file', 'line' => 10])->first();
+        $this->snippetController->createSnippetIfNotExists('-p-', '-v-', '-m-', '//src/file', 10, '-code-');
+        $actualSnippets = Snippet::of('-p-', '-v-', '-m-', '//src/file')->get();
+        self::assertEquals(1, $actualSnippets->count());
+        $actualSnippet = $actualSnippets->first();
         self::assertEquals('-p-', $actualSnippet->project_muid);
         self::assertEquals('-v-', $actualSnippet->version_muid);
         self::assertEquals('-m-', $actualSnippet->misuse_muid);
         self::assertEquals('-code-', $actualSnippet->snippet);
         self::assertEquals(10, $actualSnippet->line);
-        self::assertEquals('//src/file', $actualSnippet->file);
+    }
+
+    function test_no_duplicates()
+    {
+        $this->snippetController->createSnippetIfNotExists('-p-', '-v-', '-m-', '//src/file', 10, '-code-');
+        $this->snippetController->createSnippetIfNotExists('-p-', '-v-', '-m-', '//src/file', 10, '-code-');
+        self::assertEquals(1, Snippet::all()->count());
     }
 }

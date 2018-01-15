@@ -42,10 +42,10 @@ Schema::create($snippet->getTable(), function (Blueprint $table) {
     $table->string('project_muid', 30);
     $table->string('version_muid', 30);
     $table->string('misuse_muid', 30);
-    $table->string('file');
+    $table->string('file', 32);
     $table->integer('line');
     $table->text('snippet');
-    $table->unique(['project_muid', 'version_muid', 'misuse_muid', 'file', 'line']);
+    $table->unique(['project_muid', 'version_muid', 'misuse_muid', 'file', 'line'], 'misuse_snippets');
 });
 
 echo 'Creating misuses (metadata)<br/>';
