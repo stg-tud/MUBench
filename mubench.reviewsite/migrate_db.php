@@ -134,7 +134,7 @@ foreach($detectors as $index => $old_detector){
                 if(sizeof($data->patterns) === 0 && $experiment->id === 1){
                     continue;
                 }
-                \MuBench\ReviewSite\Models\Misuse::firstOrCreate(['metadata_id' => $data->id, 'misuse_muid' => $data->misuse_muid, 'run_id' => $new_run->id, 'detector_muid' => $new_detector->muid]);
+                \MuBench\ReviewSite\Models\Misuse::firstOrCreate(['metadata_id' => $data->id, 'misuse_muid' => $data->misuse_muid, 'run_id' => $new_run->id, 'detector_id' => $new_detector->id]);
             }
         }
         foreach($findings as $finding){
@@ -197,10 +197,10 @@ function getOrCreateMisuse(Detector $detector, Experiment $experiment, $projectI
     if ($experiment->id === 1 || $experiment->id === 3) {
         $new_metadata = getOrCreateMetadata($projectId, $versionId, $misuseId);
         if($new_metadata){
-            $misuse = \MuBench\ReviewSite\Models\Misuse::firstOrCreate(['metadata_id' => $new_metadata->id, 'misuse_muid' => $misuseId, 'run_id' => $runId, 'detector_muid' => $detector->muid]);
+            $misuse = \MuBench\ReviewSite\Models\Misuse::firstOrCreate(['metadata_id' => $new_metadata->id, 'misuse_muid' => $misuseId, 'run_id' => $runId, 'detector_id' => $detector->id]);
         }
     } else {
-        $misuse = \MuBench\ReviewSite\Models\Misuse::firstOrCreate(['misuse_muid' => $misuseId, 'run_id' => $runId, 'detector_muid' => $detector->muid]);
+        $misuse = \MuBench\ReviewSite\Models\Misuse::firstOrCreate(['misuse_muid' => $misuseId, 'run_id' => $runId, 'detector_id' => $detector->id]);
     }
     return $misuse;
 }
