@@ -36,7 +36,7 @@ class SnippetsController extends Controller
 
     static function createSnippet($projectId, $versionId, $code, $line, $file)
     {
-        $snippet = Snippet::firstOrNew(['project_muid' => $projectId, 'version_muid' => $versionId, 'line' => $line, 'file' => $file]);
+        $snippet = Snippet::firstOrNew(['project_muid' => $projectId, 'version_muid' => $versionId, 'file' => $file, 'line' => $line]);
         $snippet->snippet = $code;
         $snippet->save();
     }
