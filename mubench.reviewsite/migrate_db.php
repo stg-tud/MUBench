@@ -81,7 +81,7 @@ foreach($metadata as $old_metadata){
     $metadata_snippets = \MuBench\ReviewSite\Old\MetadataSnippet::where('project', $projectId)
         ->where('version', $versionId)
         ->where('misuse', $misuseId)->get();
-    saveSnippets($projectId, $versionId, $new_metadata->file, $metadata_snippets);
+    saveSnippets($projectId, $versionId, $new_metadata->misuse_muid, $new_metadata->file, $metadata_snippets);
     if($old_metadata->violation_types){
         saveViolationTypes($new_metadata->id, explode(';', $old_metadata->violation_types));
     }else{
@@ -173,7 +173,7 @@ foreach($detectors as $index => $old_detector){
                 ->where('version', $versionId)
                 ->where('finding', $misuseId)
                 ->where('detector', $old_detector->id)->get();
-            saveSnippets($projectId, $versionId, $new_finding->file, $findingSnippets);
+            saveSnippets($projectId, $versionId, $new_finding->misuse_muid, $new_finding->file, $findingSnippets);
             $reviews = \MuBench\ReviewSite\Old\Review::where('exp', $run['exp'])
                 ->where('detector', $old_detector->id)
                 ->where('project', $projectId)
@@ -239,11 +239,11 @@ function savePatterns($metadataId, $patterns)
     }
 }
 
-function saveSnippets($projectId, $versionId, $file, $snippets)
+function saveSnippets($projectId, $versionId, $misuseId, $file, $snippets)
 {
     if ($snippets) {
         foreach ($snippets as $snippet) {
-            \MuBench\ReviewSite\Controllers\SnippetsController::createSnippet($projectId, $versionId, $snippet->snippet, $snippet->line, $file);
+            \MuBench\ReviewSite\Controllers\SnippetsController::createSnippet($projectId, $versionId, $misuseId, $file, $snippet->line, $snippet->snippet);
         }
     }
 }
