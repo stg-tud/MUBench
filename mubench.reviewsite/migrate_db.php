@@ -12,6 +12,7 @@ use Illuminate\Container\Container;
 
 session_start();
 date_default_timezone_set('Europe/Berlin');
+set_time_limit(0);
 
 require __DIR__ . '/vendor/autoload.php';
 

@@ -1,4 +1,7 @@
 <?php
+
+set_time_limit(0);
+
 require __DIR__ . '/vendor/autoload.php';
 $settings = require __DIR__ . '/settings.php';
 $new_db = $settings["db"];
