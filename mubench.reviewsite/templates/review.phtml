@@ -289,7 +289,7 @@ use MuBench\ReviewSite\Models\Experiment;
             <td>
                 <?php if(strlen($hit[$column]) > 4 && substr($hit[$column], -4) === ".svg") : ?>
                     <?php $object_id = $column . $hit['rank'] ?>
-                    <object id="<?= $object_id ?>" type="image/svg+xml" data="<?= "{$uploads_url_prefix}/{$experiment->id}/{$detector->muid}/{$misuse->getProject()}/{$misuse->getVersion()}/{$hit[$column]}" ?>" style="width: 750px; height: 750px;"></object>
+                    <object id="<?= $object_id ?>" type="image/svg+xml" data="<?= "{$uploads_url_prefix}/{$experiment->id}/{$detector->id}/{$misuse->getProject()}/{$misuse->getVersion()}/{$hit[$column]}" ?>" style="width: 750px; height: 750px;"></object>
                     <script>
                         document.getElementById("<?= $object_id ?>").onload = function() {
                             svgPanZoom("#<?= $object_id ?>", {
@@ -298,7 +298,7 @@ use MuBench\ReviewSite\Models\Experiment;
                         };
                     </script>
                 <?php elseif(strlen($hit[$column]) > 4 && substr($hit[$column], -4) === ".png") : ?>
-                    <img src="<?= "{$uploads_url_prefix}/{$experiment->id}/{$detector->muid}/{$misuse->getProject()}/{$misuse->getVersion()}/{$hit[$column]}" ?>" />
+                    <img src="<?= "{$uploads_url_prefix}/{$experiment->id}/{$detector->id}/{$misuse->getProject()}/{$misuse->getVersion()}/{$hit[$column]}" ?>" />
                 <?php else : ?>
                     <?= $markdown_parser->text($hit[$column]); ?>
                 <?php endif; ?>
