@@ -40,7 +40,7 @@ class CompileMisuseTask:
 
             if pattern_compile.needs_compile():
                 logger.info("Compiling patterns...")
-                CompileMisuseTask._compile_patterns(misuse.pattern_path,
+                CompileMisuseTask._compile_patterns(pattern_compile.pattern_sources_path,
                                                     pattern_compile.pattern_classes_path,
                                                     version_compile.get_full_classpath())
             else:
