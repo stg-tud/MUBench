@@ -2,11 +2,8 @@
 
 namespace MuBench\ReviewSite\Controllers;
 
-use Monolog\Logger;
-use MuBench\ReviewSite\DBConnection;
 use MuBench\ReviewSite\Models\Metadata;
 use MuBench\ReviewSite\Models\Pattern;
-use MuBench\ReviewSite\Models\Snippet;
 use MuBench\ReviewSite\Models\Type;
 use Slim\Http\Request;
 use Slim\Http\Response;
