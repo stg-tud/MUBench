@@ -3,7 +3,7 @@
 use MuBench\ReviewSite\Models\Reviewer;
 use Slim\Views\PhpRenderer;
 
-$container['renderer'] = function ($container) {
+$container['renderer'] = function ($container) use ($settings) {
     /** @var \Slim\Http\Request $request */
     $request = $container->request;
     $user = $container->user;
@@ -44,6 +44,7 @@ $container['renderer'] = function ($container) {
         'public_url_prefix' => $publicURLPrefix,
         'private_url_prefix' => $privateURLPrefix,
         'url_prefix' => $user ? $privateURLPrefix : $publicURLPrefix,
+        'uploads_url_prefix' => $publicURLPrefix . $settings['upload'],
 
         'path' => $path,
         'origin_param' => htmlspecialchars("?origin=$path"),
