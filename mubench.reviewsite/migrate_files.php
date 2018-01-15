@@ -1,16 +1,7 @@
 <?php
 require __DIR__ . '/vendor/autoload.php';
 $settings = require __DIR__ . '/settings.php';
-$new_db = [
-    'driver' => 'mysql',
-    'host' => 'localhost:8888',
-    'database' => 'mubench_new',
-    'username' => 'root',
-    'password' => 'root',
-    'charset'   => 'utf8',
-    'collation' => 'utf8_unicode_ci',
-    'prefix'    => 'mubench_icse18_',
-];
+$new_db = $settings["db"];
 
 $capsule = new \Illuminate\Database\Capsule\Manager;
 $capsule->addConnection($new_db);
