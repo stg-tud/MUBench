@@ -39,7 +39,7 @@ $snippet = new \MuBench\ReviewSite\Models\Snippet;
 Schema::dropIfExists($snippet->getTable());
 Schema::create($snippet->getTable(), function (Blueprint $table) {
     $table->increments('id');
-    $table->string('project_muid', 30);
+    $table->string('project_muid', 50);
     $table->string('version_muid', 30);
     $table->string('misuse_muid', 30);
     $table->string('file', 32);
@@ -53,7 +53,7 @@ $metadata = new \MuBench\ReviewSite\Models\Metadata;
 Schema::dropIfExists($metadata->getTable());
 Schema::create($metadata->getTable(), function (Blueprint $table) {
     $table->increments('id');
-    $table->string('project_muid', 30);
+    $table->string('project_muid', 50);
     $table->string('version_muid', 30);
     $table->string('misuse_muid', 30);
     $table->text('description');

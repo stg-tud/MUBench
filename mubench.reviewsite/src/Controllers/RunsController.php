@@ -296,7 +296,7 @@ class RunsController extends Controller
             $table->increments('id');
             $table->integer('experiment_id');
             $table->integer('misuse_id');
-            $table->string('project_muid', 30);
+            $table->string('project_muid', 50);
             $table->string('version_muid', 30);
             $table->string('misuse_muid', 30);
             $table->integer('startline')->nullable();
@@ -314,7 +314,7 @@ class RunsController extends Controller
         Schema::create($table_name, function (Blueprint $table) {
             $table->increments('id');
             $table->integer('experiment_id');
-            $table->string('project_muid', 30);
+            $table->string('project_muid', 50);
             $table->string('version_muid', 30);
             $table->float('runtime');
             $table->integer('number_of_findings');
