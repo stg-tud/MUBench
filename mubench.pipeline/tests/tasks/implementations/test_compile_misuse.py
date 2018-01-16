@@ -61,7 +61,8 @@ class TestCompilePatterns:
 
         uut.run(self.misuse, self.compile)
 
-        self.compile_mock.assert_called_once_with(self.misuse.pattern_path, self.misuse_compile.pattern_classes_path,
+        self.compile_mock.assert_called_once_with(self.misuse_compile.pattern_sources_path,
+                                                  self.misuse_compile.pattern_classes_path,
                                                   self.compile.get_full_classpath())
 
     def test_skips_compile_if_not_needed(self):
@@ -79,7 +80,8 @@ class TestCompilePatterns:
 
         uut.run(self.misuse, self.compile)
 
-        self.compile_mock.assert_called_once_with(self.misuse.pattern_path, self.misuse_compile.pattern_classes_path,
+        self.compile_mock.assert_called_once_with(self.misuse_compile.pattern_sources_path,
+                                                  self.misuse_compile.pattern_classes_path,
                                                   self.compile.get_full_classpath())
 
     def test_copies_misuse_sources(self):

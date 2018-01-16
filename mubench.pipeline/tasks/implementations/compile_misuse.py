@@ -40,7 +40,7 @@ class CompileMisuseTask:
 
             if pattern_compile.needs_compile():
                 logger.info("Compiling patterns...")
-                CompileMisuseTask._compile_patterns(misuse.pattern_path,
+                CompileMisuseTask._compile_patterns(pattern_compile.pattern_sources_path,
                                                     pattern_compile.pattern_classes_path,
                                                     version_compile.get_full_classpath())
             else:
@@ -54,8 +54,11 @@ class CompileMisuseTask:
     @staticmethod
     def _compile_patterns(source: str, destination: str, classpath: str):
         makedirs(destination, exist_ok=True)
-        Shell.exec('javac $(find {} -name "*.java") -d "{}" -cp "{}"'.format(source, destination, classpath),
-                   logger=logging.getLogger("task.compile_patterns.compile"))
+        for root, dirs, files in walk(source):
+            for java_file in [f for f in files if f.endswith(".java")]:
+                destination = dirname(join(destination, java_file))
+                Shell.exec('javac "{}" -d "{}" -cp "{}"'.format(join(root, java_file), destination, classpath),
+                           logger=logging.getLogger("task.compile_patterns.compile"))
 
     @staticmethod
     def _copy_misuse_sources(sources_path, misuse, destination):
