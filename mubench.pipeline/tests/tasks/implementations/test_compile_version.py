@@ -5,9 +5,9 @@ from os.path import join, exists, dirname, relpath
 from shutil import rmtree
 from tempfile import mkdtemp
 from typing import List
-from unittest.mock import MagicMock, ANY
+from unittest.mock import MagicMock, ANY, patch, PropertyMock
 
-from nose.tools import assert_raises
+from nose.tools import assert_raises, assert_equals
 
 from tasks.implementations.compile_version import CompileVersionTask
 from tests.test_utils.data_util import create_version, create_project
@@ -47,7 +47,8 @@ class TestCompileVersion:
         self.pattern_classes_path = join(self.base_path, "patterns-classes")
         self.dep_path = join(self.base_path, "dependencies")
 
-        self.uut = CompileVersionTask(self.compile_base_path, False, False)
+        self.run_timestamp = 1516186439
+        self.uut = CompileVersionTask(self.compile_base_path, self.run_timestamp, False, False)
 
     def teardown(self):
         rmtree(self.temp_dir, ignore_errors=True)
@@ -137,10 +138,31 @@ class TestCompileVersion:
 
         self.uut.run(self.version, self.checkout)
 
-        assert self.uut._compile.call_args_list
+        assert self.uut._compile.call_args_list, "not called"
 
     def test_skips_on_build_error(self):
         self.mock_with_fake_compile()
         self.uut._compile.side_effect = CommandFailedError("-cmd-", "-error message-")
 
         assert_raises(CommandFailedError, self.uut.run, self.version, self.checkout)
+
+    def test_saves_compile_timestamp(self):
+        self.mock_with_fake_compile()
+
+        self.uut.run(self.version, self.checkout)
+
+        assert_equals(self.run_timestamp, self.version.get_compile(self.base_path).timestamp)
+
+    @patch("data.project_checkout.ProjectCheckout.timestamp", new_callable=PropertyMock)
+    @patch("data.version_compile.VersionCompile.timestamp", new_callable=PropertyMock)
+    def test_forces_compile_if_checkout_is_more_recent(self, compile_timestamp_mock, checkout_timestamp_mock):
+        makedirs(self.original_classes_path)
+        makedirs(self.pattern_classes_path)
+        self.mock_with_fake_compile()
+        self.uut.force_compile = False
+        compile_timestamp_mock.return_value = 1
+        checkout_timestamp_mock.return_value = 2
+
+        self.uut.run(self.version, self.checkout)
+
+        assert self.uut._compile.call_args_list, "not called"

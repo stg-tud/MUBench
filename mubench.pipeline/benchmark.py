@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-
+import calendar
 import logging.handlers
 import sys
 from datetime import datetime
@@ -40,7 +40,8 @@ class Benchmark:
 
 
 config = config_util.get_config(sys.argv)
-
+now = datetime.utcnow()
+config.run_timestamp = calendar.timegm(now.timetuple())
 
 logger = logging.getLogger()
 logger.setLevel(logging.DEBUG)

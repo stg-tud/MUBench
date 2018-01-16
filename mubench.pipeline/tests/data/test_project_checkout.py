@@ -1,15 +1,57 @@
 import os
 from os.path import join, exists, realpath, dirname
+from pathlib import Path
 from shutil import rmtree
 from tempfile import mkdtemp
+from unittest.mock import MagicMock
 
 from nose.tools import assert_equals
-from pathlib import Path
 
 from data.project_checkout import GitProjectCheckout, LocalProjectCheckout, SVNProjectCheckout, \
-    SyntheticProjectCheckout, ZipProjectCheckout
+    SyntheticProjectCheckout, ZipProjectCheckout, ProjectCheckout
 from utils.io import remove_tree, copy_tree, create_file
 from utils.shell import Shell
+
+
+class ProjectCheckoutTestImpl(ProjectCheckout):
+    def __init__(self, base_path: str, url: str = "-url-", name: str = "-test-checkout-"):
+        super().__init__(url, base_path, name)
+
+        self.exists = MagicMock()
+        self._create = MagicMock()
+        self.delete = MagicMock()
+
+    def exists(self) -> bool:
+        pass
+
+    def _create(self):
+        pass
+
+    def delete(self) -> None:
+        pass
+
+
+class TestProjectCheckout:
+    def setup(self):
+        self.temp_dir = mkdtemp(prefix="mubench-checkout-base_")
+
+    def teardown(self):
+        rmtree(self.temp_dir)
+
+    def test_uses_zero_time_if_never_created(self):
+        uut = ProjectCheckoutTestImpl(self.temp_dir)
+        assert_equals(0, uut.timestamp)
+
+    def test_saves_checkout_time(self):
+        test_timestamp = 1516183458
+        uut = ProjectCheckoutTestImpl(self.temp_dir)
+        uut.create(test_timestamp)
+        assert_equals(test_timestamp, uut.timestamp)
+
+    def create_calls_subclass(self):
+        uut = ProjectCheckoutTestImpl(self.temp_dir)
+        uut.create(0)
+        uut._create().assert_called_once()
 
 
 class TestLocalProjectCheckout:
@@ -30,7 +72,7 @@ class TestLocalProjectCheckout:
     def test_create(self):
         uut = LocalProjectCheckout(self.local_url, self.checkouts_dir, "-project-")
 
-        uut.create()
+        uut.create(0)
 
         expected_checkout_path = join(self.checkouts_dir, "-project-", "checkout")
         assert_equals(expected_checkout_path, uut.checkout_dir)
@@ -42,7 +84,7 @@ class TestLocalProjectCheckout:
 
     def test_exists_after_create(self):
         uut = LocalProjectCheckout(self.local_url, self.checkouts_dir, "-project-")
-        uut.create()
+        uut.create(0)
         assert uut.exists()
 
     def test_not_exists_empty(self):
@@ -52,7 +94,7 @@ class TestLocalProjectCheckout:
 
     def test_delete(self):
         uut = LocalProjectCheckout(self.local_url, self.checkouts_dir, "-project-")
-        uut.create()
+        uut.create(0)
         uut.delete()
         assert not exists(uut.checkout_dir)
 
@@ -73,7 +115,7 @@ class TestSyntheticCheckout:
         assert not self.uut.exists()
 
     def test_create_passes(self):
-        self.uut.create()
+        self.uut.create(0)
 
         assert exists(self.uut.checkout_dir)
 
@@ -100,7 +142,7 @@ class TestZipProjectCheckout:
         self.uut = ZipProjectCheckout("-project-", "-version-", self.url, revision_md5, self.checkouts_dir)
 
     def test_create_download_and_unzips(self):
-        self.uut.create()
+        self.uut.create(0)
 
         assert exists(join(self.checkouts_dir, "-project-", "-version-", "checkout", "foo"))
 
@@ -147,14 +189,14 @@ class TestGitProjectCheckout:
     def test_create_clones_repo(self):
         uut = GitProjectCheckout("-project-", "-id-", self.git_url, "HEAD", self.checkouts_dir)
 
-        uut.create()
+        uut.create(0)
 
         assert exists(join(self.checkouts_dir, "-project-", "checkout", ".git"))
 
     def test_create_copies_and_checks_out_repo(self):
         uut = GitProjectCheckout("-project-", "-id-", self.git_url, "HEAD", self.checkouts_dir)
 
-        uut.create()
+        uut.create(0)
 
         expected_checkout_path = join(self.checkouts_dir, "-project-", "-id-", "checkout")
         assert_equals(expected_checkout_path, uut.checkout_dir)
@@ -177,7 +219,7 @@ class TestGitProjectCheckout:
 
     def test_delete(self):
         uut = GitProjectCheckout("-project-", "-id-", self.git_url, "HEAD", self.checkouts_dir)
-        uut.create()
+        uut.create(0)
         uut.delete()
         assert not exists(join(self.checkouts_dir, "-project-", "checkout"))
         assert not exists(uut.checkout_dir)
@@ -204,12 +246,12 @@ class TestSVNProjectCheckout:
         assert not self.uut.exists()
 
     def test_create_checks_repo_out(self):
-        self.uut.create()
+        self.uut.create(0)
 
         assert exists(join(self.checkouts_dir, "-project-", "-version-", "checkout"))
 
     def test_exists(self):
-        self.uut.create()
+        self.uut.create(0)
 
         assert self.uut.exists()
 
@@ -219,7 +261,7 @@ class TestSVNProjectCheckout:
         assert not self.uut.exists()
 
     def test_delete(self):
-        self.uut.create()
+        self.uut.create(0)
         self.uut.delete()
 
         assert not exists(self.uut.checkout_dir)
@@ -227,8 +269,8 @@ class TestSVNProjectCheckout:
     def test_multiple_versions(self):
         checkout_version2 = SVNProjectCheckout(self.uut.name, "other-version", self.svn_url, "1", self.checkouts_dir)
 
-        self.uut.create()
-        checkout_version2.create()
+        self.uut.create(0)
+        checkout_version2.create(0)
 
         assert checkout_version2.exists()
 
