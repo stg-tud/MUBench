@@ -1,7 +1,7 @@
 import os
 from os.path import join, exists, relpath, basename
 from tempfile import mkdtemp
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch, MagicMock, PropertyMock
 
 from data.pattern import Pattern
 from tasks.implementations.compile_misuse import CompileMisuseTask
@@ -50,14 +50,14 @@ class TestCompilePatterns:
         self.compile_patch.stop()
 
     def test_copies_pattern_sources(self):
-        uut = CompileMisuseTask(self.compile_base_path, force_compile=False)
+        uut = CompileMisuseTask(self.compile_base_path, 0, force_compile=False)
 
         uut.run(self.misuse, self.compile)
 
         assert exists(self.misuse_compile.pattern_sources_path)
 
     def test_compiles_patterns(self):
-        uut = CompileMisuseTask(self.compile_base_path, force_compile=False)
+        uut = CompileMisuseTask(self.compile_base_path, 0, force_compile=False)
 
         uut.run(self.misuse, self.compile)
 
@@ -66,7 +66,7 @@ class TestCompilePatterns:
                                                   self.compile.get_full_classpath())
 
     def test_skips_compile_if_not_needed(self):
-        uut = CompileMisuseTask(self.compile_base_path, force_compile=False)
+        uut = CompileMisuseTask(self.compile_base_path, 0, force_compile=False)
         self.misuse_compile.needs_compile = lambda: False
 
         uut.run(self.misuse, self.compile)
@@ -74,7 +74,7 @@ class TestCompilePatterns:
         self.compile_mock.assert_not_called()
 
     def test_forces_compile_patterns(self):
-        uut = CompileMisuseTask(self.compile_base_path, force_compile=True)
+        uut = CompileMisuseTask(self.compile_base_path, 0, force_compile=True)
         self.misuse_compile.delete = MagicMock()
         self.misuse_compile.needs_compile = lambda: self.misuse_compile.delete.calls
 
@@ -85,7 +85,7 @@ class TestCompilePatterns:
                                                   self.compile.get_full_classpath())
 
     def test_copies_misuse_sources(self):
-        uut = CompileMisuseTask(self.compile_base_path, force_compile=False)
+        uut = CompileMisuseTask(self.compile_base_path, 0, force_compile=False)
 
         create_file(join(self.compile.original_sources_path, "mu.file"))
         misuse = create_misuse("1", meta={"location": {"file": "mu.file"}}, project=self.project, version=self.version)
@@ -95,7 +95,7 @@ class TestCompilePatterns:
         assert exists(join(pattern_compile.misuse_source_path, "mu.file"))
 
     def test_copies_misuse_classes(self):
-        uut = CompileMisuseTask(self.compile_base_path, force_compile=False)
+        uut = CompileMisuseTask(self.compile_base_path, 0, force_compile=False)
 
         create_file(join(self.compile.original_sources_path, "mu.java"))
         create_file(join(self.compile.original_classes_path, "mu.class"))
@@ -106,7 +106,7 @@ class TestCompilePatterns:
         assert exists(join(pattern_compile.misuse_classes_path, "mu.class"))
 
     def test_copies_misuse_inner_classes(self):
-        uut = CompileMisuseTask(self.compile_base_path, force_compile=False)
+        uut = CompileMisuseTask(self.compile_base_path, 0, force_compile=False)
 
         misuse = create_misuse("1", meta={"location": {"file": "mu.java"}}, project=self.project, version=self.version)
         create_file(join(self.compile.original_sources_path, "mu.java"))
@@ -119,3 +119,20 @@ class TestCompilePatterns:
         assert exists(join(pattern_compile.misuse_classes_path, "mu.class"))
         assert exists(join(pattern_compile.misuse_classes_path, "mu$1.class"))
         assert exists(join(pattern_compile.misuse_classes_path, "mu$Inner.class"))
+
+    @patch("data.version_compile.VersionCompile.timestamp", new_callable=PropertyMock)
+    @patch("data.misuse_compile.MisuseCompile.timestamp", new_callable=PropertyMock)
+    def test_force_compile_if_version_compile_is_more_recent(self, misuse_compile_timestamp_mock,
+                                                             version_compile_timestamp_mock):
+        uut = CompileMisuseTask(self.compile_base_path, 0, force_compile=False)
+        uut.force_compile = False
+        self.misuse_compile.delete = MagicMock()
+        self.misuse_compile.needs_compile = lambda: self.misuse_compile.delete.calls
+        misuse_compile_timestamp_mock.return_value = 1
+        version_compile_timestamp_mock.return_value = 2
+
+        uut.run(self.misuse, self.compile)
+
+        self.compile_mock.assert_called_once_with(self.misuse_compile.pattern_sources_path,
+                                                  self.misuse_compile.pattern_classes_path,
+                                                  self.compile.get_full_classpath())

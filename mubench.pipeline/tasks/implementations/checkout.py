@@ -8,13 +8,14 @@ from utils.io import copy_tree, remove_tree
 
 
 class CheckoutTask:
-    def __init__(self, checkouts_path: str, force_checkout: bool, use_temp_dir: bool):
+    def __init__(self, checkouts_path: str, run_timestamp: int, force_checkout: bool, use_temp_dir: bool):
         super().__init__()
         self.checkouts_path = checkouts_path
         self.force_checkout = force_checkout
         self.use_temp_dir = use_temp_dir
+        self.run_timestamp = run_timestamp
 
-    def run(self, version: ProjectVersion) -> ProjectCheckout:
+    def run(self, version: ProjectVersion):
         logger = logging.getLogger("tasks.checkout")
 
         try:
@@ -33,11 +34,11 @@ class CheckoutTask:
             if self.use_temp_dir:
                 temp_dir = mkdtemp(prefix="mubench-checkout_")
                 temp_checkout = version.get_checkout(temp_dir)
-                temp_checkout.create()
+                temp_checkout.create(self.run_timestamp)
                 logger.debug("Copying checkout to persistent directory...")
                 copy_tree(temp_dir, self.checkouts_path)
                 remove_tree(temp_dir)
             else:
-                checkout.create()
+                checkout.create(self.run_timestamp)
 
         return checkout

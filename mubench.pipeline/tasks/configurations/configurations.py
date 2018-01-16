@@ -65,10 +65,10 @@ class CheckoutTaskConfiguration(TaskConfiguration):
     def mode() -> str:
         return "checkout"
 
-    def tasks(self, config):
+    def tasks(self, config) -> List:
         collect_projects = CollectProjectsTask(config.data_path)
         collect_versions = CollectVersionsTask()
-        checkout = CheckoutTask(config.checkouts_path, config.force_checkout, config.use_tmp_wrkdir)
+        checkout = CheckoutTask(config.checkouts_path, config.run_timestamp, config.force_checkout, config.use_tmp_wrkdir)
         return [collect_projects, collect_versions, checkout]
 
 
@@ -78,9 +78,10 @@ class CompileTaskConfiguration(TaskConfiguration):
         return "compile"
 
     def tasks(self, config) -> List:
-        compile_version = CompileVersionTask(config.compiles_path, config.force_compile, config.use_tmp_wrkdir)
+        compile_version = CompileVersionTask(config.compiles_path, config.run_timestamp, config.force_compile,
+                                             config.use_tmp_wrkdir)
         collect_misuses = CollectMisusesTask()
-        compile_misuse = CompileMisuseTask(config.compiles_path, config.force_compile)
+        compile_misuse = CompileMisuseTask(config.compiles_path, config.run_timestamp, config.force_compile)
         return CheckoutTaskConfiguration().tasks(config) + [compile_version, collect_misuses, compile_misuse]
 
 
@@ -92,9 +93,10 @@ class RunProvidedPatternsExperiment(TaskConfiguration):
         return "run {}".format(RunProvidedPatternsExperiment.ID)
 
     def tasks(self, config) -> List:
-        compile_version = CompileVersionTask(config.compiles_path, config.force_compile, config.use_tmp_wrkdir)
+        compile_version = CompileVersionTask(config.compiles_path, config.run_timestamp, config.force_compile,
+                                             config.use_tmp_wrkdir)
         collect_misuses = CollectMisusesTask()
-        compile_misuse = CompileMisuseTask(config.compiles_path, config.force_compile)
+        compile_misuse = CompileMisuseTask(config.compiles_path, config.run_timestamp, config.force_compile)
         load_detector = LoadDetectorTask(config.detectors_path, config.detector, config.requested_release,
                                          config.java_options)
         detect = DetectProvidedPatternsTask(config.findings_path, config.force_detect, config.timeout)

@@ -20,7 +20,9 @@ class TestCheckout(unittest.TestCase):
         self.version = create_version("-version-", project=self.project)
         self.version.get_checkout = MagicMock(return_value=self.checkout)
 
-        self.uut = CheckoutTask("-checkouts-", force_checkout=False, use_temp_dir=False)
+        self.run_timestamp = 1516186439
+
+        self.uut = CheckoutTask("-checkouts-", self.run_timestamp, force_checkout=False, use_temp_dir=False)
 
     def test_initial_checkout(self):
         self.checkout.exists = MagicMock(return_value=False)
@@ -28,7 +30,7 @@ class TestCheckout(unittest.TestCase):
         response = self.uut.run(self.version)
 
         self.checkout.delete.assert_not_called()
-        self.checkout.create.assert_called_with()
+        self.checkout.create.assert_called_with(self.run_timestamp)
         assert_equals(self.checkout, response)
 
     def test_exists(self):
@@ -58,4 +60,4 @@ class TestCheckout(unittest.TestCase):
         self.uut.run(self.version)
 
         self.checkout.delete.assert_called_with()
-        self.checkout.create.assert_called_with()
+        self.checkout.create.assert_called_with(self.run_timestamp)

@@ -12,8 +12,9 @@ from utils.shell import Shell
 
 
 class CompileMisuseTask:
-    def __init__(self, compile_base_path: str, force_compile: bool):
+    def __init__(self, compile_base_path: str, run_timestamp: int, force_compile: bool):
         self.compile_base_path = compile_base_path
+        self.run_timestamp = run_timestamp
         self.force_compile = force_compile
 
     def run(self, misuse: Misuse, version_compile: VersionCompile):
@@ -21,7 +22,7 @@ class CompileMisuseTask:
 
         pattern_compile = misuse.get_misuse_compile(self.compile_base_path)
 
-        if self.force_compile:
+        if self.force_compile or version_compile.timestamp > pattern_compile.timestamp:
             pattern_compile.delete()
 
         logger.info("Compiling %s...", misuse)
@@ -46,6 +47,7 @@ class CompileMisuseTask:
                 CompileMisuseTask._compile_patterns(pattern_compile.pattern_sources_path,
                                                     pattern_compile.pattern_classes_path,
                                                     version_compile.get_full_classpath())
+                pattern_compile.save(self.run_timestamp)
             else:
                 logger.info("Correct usage already compiled.")
         except Exception:

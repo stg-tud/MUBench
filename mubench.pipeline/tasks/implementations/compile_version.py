@@ -14,9 +14,10 @@ from utils.io import remove_tree, copy_tree
 
 
 class CompileVersionTask:
-    def __init__(self, compiles_base_path: str, force_compile: bool, use_temp_dir: bool):
+    def __init__(self, compiles_base_path: str, run_timestamp: int, force_compile: bool, use_temp_dir: bool):
         super().__init__()
         self.compiles_base_path = compiles_base_path
+        self.run_timestamp = run_timestamp
         self.force_compile = force_compile
         self.use_temp_dir = use_temp_dir
 
@@ -31,7 +32,7 @@ class CompileVersionTask:
         sources_path = join(build_path, version.source_dir)
         classes_path = join(build_path, version.classes_dir)
 
-        if self.force_compile:
+        if self.force_compile or checkout.timestamp > version_compile.timestamp:
             logger.debug("Force compile - removing previous compiles...")
             version_compile.delete()
 
@@ -68,6 +69,8 @@ class CompileVersionTask:
                 copy_tree(classes_path, version_compile.original_classes_path)
                 logger.debug("Create project jar...")
                 self.__create_jar(version_compile.original_classes_path, version_compile.original_classpath)
+
+                version_compile.save(self.run_timestamp)
 
             if self.use_temp_dir:
                 logger.debug("Moving complete build to persistent directory...")

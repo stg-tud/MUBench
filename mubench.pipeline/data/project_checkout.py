@@ -3,23 +3,43 @@ from os import listdir, makedirs
 from os.path import join, exists
 from zipfile import ZipFile
 
-from utils.io import copy_tree, remove_tree
+from utils.io import copy_tree, remove_tree, write_yaml, read_yaml
 from utils.shell import Shell
 from utils.web_util import download_file
 
 
 class ProjectCheckout:
+    __CHECKOUT_INFO_FILE = "checkout.yml"
+    __KEY_TIMESTAMP = "timestamp"
+    __DEFAULT_TIMESTAMP = 0
+
     def __init__(self, url: str, base_path: str, name: str):
         self._logger = logging.getLogger("checkout.project")
         self.url = url
         self.base_path = base_path
         self.name = name
         self.checkout_dir = join(self.base_path, name, "checkout")
+        self._checkout_info_file = join(self.checkout_dir, ProjectCheckout.__CHECKOUT_INFO_FILE)
+
+    @property
+    def timestamp(self) -> int:
+        timestamp = self.__DEFAULT_TIMESTAMP
+
+        if exists(self._checkout_info_file):
+            checkout_info = read_yaml(self._checkout_info_file)
+            timestamp = checkout_info.get(ProjectCheckout.__KEY_TIMESTAMP, self.__DEFAULT_TIMESTAMP)
+
+        return timestamp
 
     def exists(self) -> bool:
         raise NotImplementedError
 
-    def create(self) -> None:
+    def create(self, current_timestamp: int) -> None:
+        self._create()
+        checkout_info = {ProjectCheckout.__KEY_TIMESTAMP: current_timestamp}
+        write_yaml(checkout_info, self._checkout_info_file)
+
+    def _create(self):
         raise NotImplementedError
 
     def delete(self) -> None:
@@ -30,7 +50,7 @@ class LocalProjectCheckout(ProjectCheckout):
     def exists(self):
         return exists(self.checkout_dir) and listdir(self.checkout_dir)
 
-    def create(self):
+    def _create(self):
         if not exists(self.checkout_dir):
             self._logger.debug("Create checkout directory %s", self.checkout_dir)
             makedirs(self.checkout_dir)
@@ -59,7 +79,7 @@ class SyntheticProjectCheckout(ProjectCheckout):
         self._logger.debug("Delete %s", self.checkout_dir)
         remove_tree(self.checkout_dir)
 
-    def create(self) -> None:
+    def _create(self) -> None:
         if not exists(self.checkout_dir):
             self._logger.debug("Create checkout directory %s", self.checkout_dir)
             makedirs(self.checkout_dir)
@@ -80,7 +100,7 @@ class ZipProjectCheckout(ProjectCheckout):
     def delete(self) -> None:
         remove_tree(self.checkout_dir)
 
-    def create(self) -> None:
+    def _create(self) -> None:
         makedirs(self.checkout_dir, exist_ok=True)
         bundle_file = join(self.checkout_dir, "bundle.zip")
         download_file(self.url, bundle_file, self.md5_checksum)
@@ -106,7 +126,7 @@ class RepoProjectCheckout(ProjectCheckout):
     def exists(self):
         return self.__child.exists() and self._is_repo(self.checkout_dir)
 
-    def create(self):
+    def _create(self):
         if not self._is_repo(self.__base_checkout_dir):
             self._logger.debug("Create base checkout directory %s", self.__base_checkout_dir)
             makedirs(self.__base_checkout_dir, exist_ok=True)
@@ -114,7 +134,7 @@ class RepoProjectCheckout(ProjectCheckout):
             self._clone(self.url, self.revision, self.__base_checkout_dir)
 
         if not self._is_repo(self.__child.checkout_dir):
-            self.__child.create()
+            self.__child._create()
             self._logger.debug("Update to revision %s", self.revision)
             self._update(self.url, self.revision, self.__child.checkout_dir)
 
@@ -158,7 +178,7 @@ class SVNProjectCheckout(ProjectCheckout):
         self.__base_checkout_dir = self.checkout_dir
         self.checkout_dir = join(self.base_path, name, version, "checkout")
 
-    def create(self) -> None:
+    def _create(self) -> None:
         self._logger.debug("Create checkout directory %s", self.checkout_dir)
         makedirs(self.checkout_dir, exist_ok=True)
         self._logger.debug("Checkout from %s", self.url)
