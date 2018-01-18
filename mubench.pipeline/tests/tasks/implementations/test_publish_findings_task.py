@@ -5,7 +5,7 @@ from nose.tools import assert_equals
 
 from data.detector import Detector
 from data.detector_run import DetectorRun
-from data.finding import SpecializedFinding, Finding
+from data.finding import Finding
 from data.snippets import Snippet
 from tasks.implementations.findings_filters import PotentialHits
 from tasks.implementations.publish_findings import PublishFindingsTask
@@ -43,8 +43,10 @@ class TestPublishFindingsTask:
 
         self.test_potential_hits = PotentialHits([])
 
-        self.uut = PublishFindingsTask(self.experiment_id, self.dataset, "/sources", "http://dummy.url",
-                                       "-username-", "-password-")
+        self.test_run_timestamp = 1337
+
+        self.uut = PublishFindingsTask(self.experiment_id, self.dataset, "/sources", self.test_run_timestamp,
+                                       "http://dummy.url", "-username-", "-password-")
 
     def test_post_url(self, post_mock):
         self.uut.run(self.project, self.version, self.test_detector_execution, self.test_potential_hits,
@@ -95,7 +97,8 @@ class TestPublishFindingsTask:
             "potential_hits": [
                 {"rank": "-1-", "target_snippets": []},
                 {"rank": "-2-", "target_snippets": []}
-            ]
+            ],
+            "timestamp": self.test_run_timestamp
         })
 
     def test_publish_successful_run_files(self, post_mock):
@@ -173,7 +176,8 @@ class TestPublishFindingsTask:
             "result": "error",
             "runtime": 1337,
             "number_of_findings": 0,
-            "potential_hits": []
+            "potential_hits": [],
+            "timestamp": self.test_run_timestamp
         })
 
     def test_publish_timeout_run(self, post_mock):
@@ -188,7 +192,8 @@ class TestPublishFindingsTask:
             "result": "timeout",
             "runtime": 1000000,
             "number_of_findings": 0,
-            "potential_hits": []
+            "potential_hits": [],
+            "timestamp": self.test_run_timestamp
         })
 
     def test_publish_not_run(self, post_mock):
@@ -202,7 +207,8 @@ class TestPublishFindingsTask:
             "result": "not run",
             "runtime": 0,
             "number_of_findings": 0,
-            "potential_hits": []
+            "potential_hits": [],
+            "timestamp": self.test_run_timestamp
         })
 
     def test_with_markdown(self, post_mock):
@@ -214,11 +220,9 @@ class TestPublishFindingsTask:
         self.uut.run(self.project, self.version, self.test_detector_execution, self.test_potential_hits,
                      self.version_compile, self.detector)
 
-        assert_equals(post_mock.call_args[0][1], {
-            "result": "success",
-            "info": "k1: \nv1",
-            "potential_hits": [{"list": "* hello\n* world", "dict": "key: \nvalue", "target_snippets": []}]
-        })
+        assert_equals(post_mock.call_args[0][1]["info"], "k1: \nv1")
+        assert_equals(post_mock.call_args[0][1]["potential_hits"],
+                      [{"list": "* hello\n* world", "dict": "key: \nvalue", "target_snippets": []}])
 
     def _create_finding(self, data: Dict, file_paths=None, snippets=None):
         if snippets is None:

@@ -1,5 +1,6 @@
 import getpass
 import logging
+
 from typing import List, Dict
 from urllib.parse import urljoin
 
@@ -18,7 +19,7 @@ _SNIPPETS_KEY = "target_snippets"
 
 
 class PublishFindingsTask:
-    def __init__(self, experiment_id: str, dataset: str, compiles_base_path: str,
+    def __init__(self, experiment_id: str, dataset: str, compiles_base_path: str, run_timestamp: int,
                  review_site_url: str, review_site_user: str= "", review_site_password: str= ""):
         super().__init__()
         self.max_files_per_post = 20  # 20 is PHP's default limit to the number of files per request
@@ -26,6 +27,7 @@ class PublishFindingsTask:
         self.experiment_id = experiment_id
         self.dataset = dataset
         self.compiles_base_path = compiles_base_path
+        self.run_timestamp = run_timestamp
         self.review_site_url = review_site_url
         self.review_site_user = review_site_user
         self.review_site_password = review_site_password
@@ -110,6 +112,7 @@ class PublishFindingsTask:
         data = self._to_markdown_dict(run_info)
         data["result"] = result
         data["potential_hits"] = postable_potential_hits
+        data["timestamp"] = self.run_timestamp
 
         return data
 
