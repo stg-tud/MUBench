@@ -43,6 +43,7 @@ class RunsControllerTest extends SlimTestCase
             "runtime" => 42.1,
             "number_of_findings" => 23,
             "-custom-stat-" => "-stat-val-",
+            "timestamp" => 12,
             "potential_hits" => [
                 [
                     "misuse" => "-m-",
@@ -135,6 +136,61 @@ class RunsControllerTest extends SlimTestCase
         self::assertEquals('-stat-val-', $run["-custom-stat-"]);
     }
 
+    function test_add_run_twice_with_different_timestamp()
+    {
+        $first_request = [
+            "result" => "success",
+            "runtime" => 42.1,
+            "number_of_findings" => 23,
+            "-custom-stat-" => "-stat-val-",
+            "timestamp" => 12,
+            "potential_hits" => []
+        ];
+        $second_request = [
+            "result" => "success",
+            "runtime" => 42.1,
+            "number_of_findings" => 23,
+            "-custom-stat-" => "-stat-val-",
+            "timestamp" => 14,
+            "potential_hits" => []
+        ];
+        
+        $firstRequestResult = $this->runsController->addRun(1, '-d-', '-p-', '-v-',  json_decode(json_encode($first_request)));
+        $secondRequestResult = $this->runsController->addRun(1, '-d-', '-p-', '-v-',  json_decode(json_encode($second_request)));
+
+        self::assertTrue($firstRequestResult);
+        self::assertFalse($secondRequestResult);
+    }
+
+    function test_add_run_in_multiple_requests()
+    {
+        $first_request = [
+            "result" => "success",
+            "runtime" => 42.1,
+            "number_of_findings" => 23,
+            "custom1" => "-stat-val1-",
+            "timestamp" => 12,
+            "potential_hits" => []
+        ];
+        $second_request = [
+            "result" => "success",
+            "runtime" => 42.1,
+            "number_of_findings" => 23,
+            "custom2" => "-stat-val2-",
+            "timestamp" => 12,
+            "potential_hits" => []
+        ];
+
+        $firstRequestResult = $this->runsController->addRun(1, $this->detector1->muid, '-p-', '-v-',  json_decode(json_encode($first_request)));
+        $secondRequestResult = $this->runsController->addRun(1, $this->detector1->muid, '-p-', '-v-',  json_decode(json_encode($second_request)));
+        $run = Run::of($this->detector1)->in(Experiment::find(1))->where(['project_muid' => '-p-', 'version_muid' => '-v-'])->first();
+
+        self::assertTrue($firstRequestResult);
+        self::assertTrue($secondRequestResult);
+        self::assertEquals("-stat-val1-", $run->custom1);
+        self::assertEquals("-stat-val2-", $run->custom2);
+    }
+
     function test_get_misuse_ex1(){
         $metadataController = new MetadataController($this->container);
         // SMELL currently, this test depends on a pattern in the metadata, because otherwise the metadata is not
@@ -149,6 +205,7 @@ class RunsControllerTest extends SlimTestCase
         "result": "success",
         "runtime": 42.1,
         "number_of_findings": 23,
+        "timestamp": 12,
         "potential_hits": [
             {
                 "misuse": "-m-",
@@ -277,6 +334,7 @@ EOT
         $run->project_muid = '-p-';
         $run->version_muid = '-v-';
         $run->result = 'success';
+        $run->timestamp = 12;
         $run->number_of_findings = 23;
         $run->runtime = 42.1;
         $run->misuses = new Collection;

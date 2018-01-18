@@ -88,9 +88,13 @@ class RunsController extends Controller
         if (!$run) {
             return error_response($response,400, "empty: " . print_r($_POST, true));
         }
+
         $hits = $run->{'potential_hits'};
         $this->logger->info("received data for '" . $experimentId . "', '" . $detector_muid . "." . $project_muid . "." . $version_muid . "' with " . count($hits) . " potential hits.");
-        $this->addRun($experimentId, $detector_muid, $project_muid, $version_muid, $run);
+        if(!$this->addRun($experimentId, $detector_muid, $project_muid, $version_muid, $run)){
+            return error_response($response, 400, "runs for $project_muid with $version_muid already exists for $detector_muid in experiment $experimentId");
+        }
+
         $files = $request->getUploadedFiles();
         $this->logger->info("received " . count($files) . " files");
         if ($files) {
@@ -226,23 +230,37 @@ class RunsController extends Controller
 
     function addRun($experimentId, $detectorId, $projectId, $versionId, $run)
     {
-        $detector = $this->findOrCreateDetector($detectorId);
+        $detector = $this->getOrCreateDetector($detectorId);
         $experiment = Experiment::find($experimentId);
+
+        if($this->hasRunTable($detector)){
+            $saved_run = Run::of($detector)->in($experiment)->where(['project_muid' => $projectId, 'version_muid' => $versionId])->first();
+            if(intval($saved_run->timestamp) !== $run->{'timestamp'}){
+                return False;
+            }
+        }
 
         $potential_hits = $run->{'potential_hits'};
 
         $this->createOrUpdateRunsTable($detector, $run);
-        $this->updateRun($detector, $experiment, $projectId, $versionId, $run);
+        $new_run = $this->createOrUpdateRun($detector, $experiment, $projectId, $versionId, $run);
         if ($potential_hits) {
-            $new_run = Run::of($detector)->in($experiment)->where(['project_muid' => $projectId, 'version_muid' => $versionId])->first();
             $this->createOrUpdateFindingsTable($detector, $potential_hits);
             $this->storeFindings($detector, $experiment, $projectId, $versionId, $new_run, $potential_hits);
         }else{
             $this->createOrUpdateFindingsTable($detector, []);
         }
+        return True;
     }
 
-    function findOrCreateDetector($detector_muid)
+    private function hasRunTable(Detector $detector)
+    {
+        $r = new Run;
+        $r->setDetector($detector);
+        return Schema::hasTable($r->getTable());
+    }
+
+    function getOrCreateDetector($detector_muid)
     {
         $detector = Detector::find($detector_muid);
         if(!$detector){
@@ -317,6 +335,7 @@ class RunsController extends Controller
             $table->float('runtime');
             $table->integer('number_of_findings');
             $table->string('result', 30);
+            $table->integer('timestamp');
             $table->dateTime('created_at');
             $table->dateTime('updated_at');
         });
@@ -417,7 +436,7 @@ class RunsController extends Controller
         $finding->save();
     }
 
-    private function updateRun(Detector $detector, Experiment $experiment, $projectId, $versionId, $run)
+    private function createOrUpdateRun(Detector $detector, Experiment $experiment, $projectId, $versionId, $run)
     {
         $savedRun = Run::of($detector)->in($experiment)->where(['project_muid' => $projectId, 'version_muid' => $versionId])->first();
         if (!$savedRun) {
@@ -434,6 +453,7 @@ class RunsController extends Controller
             $savedRun[$column] = $value;
         }
         $savedRun->save();
+        return $savedRun;
     }
 
     private function storeFindingTargetSnippets($projectId, $versionId, $misuseId, $file, $snippets)
