@@ -194,10 +194,19 @@ class StatsTaskConfiguration(TaskConfiguration):
         return [collect_projects, collect_versions, collect_misuses, calculator]
 
 
+class SetupCheckTaskConfiguration(TaskConfiguration):
+    @staticmethod
+    def mode() -> str:
+        return "check setup"
+
+    def tasks(self, config) -> List:
+        return []
+
+
 class DatasetCheckTaskConfiguration(TaskConfiguration):
     @staticmethod
     def mode() -> str:
-        return "dataset-check"
+        return "check dataset"
 
     def tasks(self, config) -> List:
         collect_projects = CollectProjectsTask(config.data_path)

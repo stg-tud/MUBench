@@ -17,12 +17,6 @@ def test_invalid_mode():
     assert_raises(SystemExit, parser.parse_args, ['invalid'])
 
 
-def test_mode_check():
-    parser = _get_command_line_parser([], [], [])
-    result = parser.parse_args(['check'])
-    assert result.task == 'check'
-
-
 def test_checkout():
     parser = _get_command_line_parser([], [], [])
     result = parser.parse_args(['checkout'])
@@ -147,8 +141,16 @@ def test_release_default():
 
 def test_dataset_check():
     parser = _get_command_line_parser([], [], [])
-    result = parser.parse_args(['dataset-check'])
-    assert_equals('dataset-check', result.task)
+    result = parser.parse_args(['check', 'dataset'])
+    assert_equals('check', result.task)
+    assert_equals('dataset', result.sub_task)
+
+
+def test_setup_check():
+    parser = _get_command_line_parser([], [], [])
+    result = parser.parse_args(['check', 'setup'])
+    assert_equals('check', result.task)
+    assert_equals('setup', result.sub_task)
 
 
 def test_fails_without_run_subtask():

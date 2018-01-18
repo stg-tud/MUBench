@@ -82,14 +82,13 @@ def _get_command_line_parser(available_detectors: List[str], available_scripts: 
     parser.add_argument('--detectors-path', dest='detectors_path',
                         default=__get_default('detectors-path', __DETECTORS_PATH), help=argparse.SUPPRESS)
 
-    __add_check_requirements_subprocess(subparsers)
+    __add_check_subprocess(available_datasets, subparsers)
     __add_info_subprocess(available_datasets, subparsers)
     __add_checkout_subprocess(available_datasets, subparsers)
     __add_compile_subprocess(available_datasets, subparsers)
     __add_run_subprocess(available_detectors, available_datasets, subparsers)
     __add_publish_subprocess(available_detectors, available_datasets, subparsers)
     __add_stats_subprocess(available_scripts, available_datasets, subparsers)
-    __add_check_dataset_subprocess(available_datasets, subparsers)
 
     return parser
 
@@ -106,19 +105,33 @@ def __get_default(parameter: str, default):
     return default
 
 
+def __add_check_subprocess(available_datasets: List[str], subparsers) -> None:
+    check_parser = subparsers.add_parser('check', formatter_class=SortingHelpFormatter,
+                                         help="Check MUBench runtime requirements or dataset consistency.",
+                                         description="Check MUBench runtime requirements or dataset consistency.")
+
+    check_subparsers = check_parser.add_subparsers(dest='sub_task',
+                                                   help="MUBench supports several checks. "
+                                                        "Run `./mubench check <check> -h` for details.")
+    check_subparsers.required = True
+
+    __add_check_requirements_subprocess(check_subparsers)
+    __add_check_dataset_subprocess(available_datasets, check_subparsers)
+
+
 def __add_check_requirements_subprocess(subparsers) -> None:
-    subparsers.add_parser('check', formatter_class=SortingHelpFormatter,
+    subparsers.add_parser('setup', formatter_class=SortingHelpFormatter,
                           help="Check whether the environment meets the prerequisites to run MUBench.",
                           description="Check whether the environment meets the prerequisites to run MUBench.")
 
 
 def __add_check_dataset_subprocess(available_datasets: List[str], subparsers) -> None:
-    dataset_check_parser = subparsers.add_parser('dataset-check', formatter_class=SortingHelpFormatter,
+    dataset_check_parser = subparsers.add_parser('dataset', formatter_class=SortingHelpFormatter,
                                                  help="Check the consistency of MUBench's dataset.",
                                                  description="Check the consistency of MUBench's dataset. "
                                                              "Checks misuse locations only in project versions that "
-                                                             "are already checked out. Manually run `checkout` first, "
-                                                             "to ensure this check.")
+                                                             "are already checked out. Run `checkout` first, to ensure "
+                                                             "this check.")
     __setup_filter_arguments(dataset_check_parser, available_datasets)
 
 
