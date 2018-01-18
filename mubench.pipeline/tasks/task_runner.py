@@ -15,6 +15,9 @@ class TaskRunner:
         self.logger = logging.getLogger("task_runner")
 
     def run(self, *initial_parameters: Tuple[Any]):
+        if not self.tasks:
+            return
+
         self.__run(0, list(initial_parameters))
         for task in self.tasks:
             if callable(getattr(task, 'end', None)):

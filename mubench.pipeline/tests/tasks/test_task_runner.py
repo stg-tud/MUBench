@@ -182,6 +182,10 @@ class TestTaskRunner:
         second_inner_task.assert_called_once_with("-some string-", 42)
         second_outer_task.assert_called_once_with("-some string-")
 
+    def test_handles_empty_tasks(self):
+        uut = TaskRunner([])
+        uut.run()
+
 
 class MockTask:
     def __init__(self, results: List = None):
