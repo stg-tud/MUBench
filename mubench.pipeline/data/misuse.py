@@ -130,7 +130,7 @@ class Misuse:
         return get_snippets(source_base_path, self.location.file, self.location.method)
 
     def get_misuse_compile(self, base_path: str) -> MisuseCompile:
-        return MisuseCompile(join(base_path, self.project_id, self.misuse_id), self.patterns)
+        return MisuseCompile(join(base_path, self.project_id, "misuses", self.misuse_id), self.patterns)
 
     def __str__(self):
         return "misuse '{}'".format(self.id)
