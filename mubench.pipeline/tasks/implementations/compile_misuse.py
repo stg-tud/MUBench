@@ -20,41 +20,41 @@ class CompileMisuseTask:
     def run(self, misuse: Misuse, version_compile: VersionCompile):
         logger = logging.getLogger("task.compile_patterns")
 
-        pattern_compile = misuse.get_misuse_compile(self.compile_base_path)
+        misuse_compile = misuse.get_misuse_compile(self.compile_base_path)
 
-        if self.force_compile or version_compile.timestamp > pattern_compile.timestamp:
-            pattern_compile.delete()
+        if self.force_compile or version_compile.timestamp > misuse_compile.timestamp:
+            misuse_compile.delete()
 
         logger.info("Compiling %s...", misuse)
 
         logger.debug("Copying misuse sources...")
         CompileMisuseTask._copy_misuse_sources(version_compile.original_sources_path,
                                                misuse,
-                                               pattern_compile.misuse_source_path)
+                                               misuse_compile.misuse_source_path)
         logger.debug("Copying misuse classes...")
         CompileMisuseTask._copy_misuse_classes(version_compile.original_classes_path,
                                                misuse,
-                                               pattern_compile.misuse_classes_path)
+                                               misuse_compile.misuse_classes_path)
 
         try:
             logger.info("Compiling correct usage for %s...", misuse)
-            if pattern_compile.needs_copy_sources():
+            if misuse_compile.needs_copy_sources():
                 logger.debug("Copying correct-usage sources...")
-                copy_tree(misuse.pattern_path, pattern_compile.pattern_sources_path)
+                copy_tree(misuse.pattern_path, misuse_compile.pattern_sources_path)
 
-            if pattern_compile.needs_compile():
+            if misuse_compile.needs_compile():
                 logger.debug("Compiling correct usages...")
-                CompileMisuseTask._compile_patterns(pattern_compile.pattern_sources_path,
-                                                    pattern_compile.pattern_classes_path,
+                CompileMisuseTask._compile_patterns(misuse_compile.pattern_sources_path,
+                                                    misuse_compile.pattern_classes_path,
                                                     version_compile.get_full_classpath())
-                pattern_compile.save(self.run_timestamp)
+                misuse_compile.save(self.run_timestamp)
             else:
                 logger.info("Correct usage already compiled.")
         except Exception:
-            pattern_compile.delete()
+            misuse_compile.delete()
             raise
 
-        return pattern_compile
+        return misuse_compile
 
     @staticmethod
     def _compile_patterns(source: str, destination: str, classpath: str):
