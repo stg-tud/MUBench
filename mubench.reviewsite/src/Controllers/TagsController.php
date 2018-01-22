@@ -45,7 +45,7 @@ class TagsController extends Controller
     public function deleteTag(Request $request, Response $response, array $args)
     {
         $tag_id = $args['tag_id'];
-        Tag::find($tag_id)->delete();
+        $this->deleteTagAndRemoveFromMisuses($tag_id);
         return $response->withRedirect($this->router->pathFor('private.tags.manage'));
     }
 
@@ -77,6 +77,15 @@ class TagsController extends Controller
         }
         return $this->renderer->render($response, 'tag_stats.phtml',
             ['results' => $results, 'tags' => $tags]);
+    }
+
+    function deleteTagAndRemoveFromMisuses($tag_id)
+    {
+        $tag = Tag::find($tag_id);
+        foreach($tag->misuses as $misuse){
+            $misuse->misuse_tags()->detach($tag_id);
+        }
+        $tag->delete();
     }
 
     function addTagToMisuse($misuseId, $tagName)

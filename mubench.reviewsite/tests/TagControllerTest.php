@@ -66,17 +66,28 @@ class TagControllerTest extends SlimTestCase
         self::assertEquals('test-tag', $misuseTags->get(0)->name);
     }
 
-    function update_tag()
+    function test_update_tag()
     {
         $this->tagController->addTagToMisuse(1, 'test-tag');
 
-        $misuseTags = Misuse::find(1)->misuse_tags;
         $tag = Tag::where('name', 'test-tag')->first();
+        $tag_id = $tag->id;
         $this->tagController->updateTag($tag->id, ['name' => 'new-name', 'color' => '#555555']);
 
-        $updatedTag = Tag::where('name', 'test-tag')->first();
+        $updatedTag = Tag::find($tag_id);
 
         self::assertEquals('new-name', $updatedTag->name);
         self::assertEquals('#555555', $updatedTag->color);
+    }
+
+    function test_delete_tag()
+    {
+        $this->tagController->addTagToMisuse(1, 'test-tag');
+        $tag_id = Tag::where('name', 'test-tag')->first()->id;
+
+
+        $this->tagController->deleteTagAndRemoveFromMisuses($tag_id);
+        self::assertEmpty(Misuse::find(1)->misuse_tags);
+        self::assertNull(Tag::find($tag_id));
     }
 }
