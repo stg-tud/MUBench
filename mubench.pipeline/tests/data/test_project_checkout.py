@@ -237,7 +237,7 @@ class TestSVNProjectCheckout:
         self.svn_url = Path(join(dirname(realpath(__file__)), "test_svn")).as_uri()
         self.checkouts_dir = join(self.temp_dir, "checkouts")
 
-        self.uut = SVNProjectCheckout("-project-", "-version-", self.svn_url, "1", self.checkouts_dir)
+        self.uut = SVNProjectCheckout("-project-", "-version-", self.svn_url, "", "", "1", self.checkouts_dir)
 
     def teardown(self):
         remove_tree(self.temp_dir)
@@ -267,7 +267,8 @@ class TestSVNProjectCheckout:
         assert not exists(self.uut.checkout_dir)
 
     def test_multiple_versions(self):
-        checkout_version2 = SVNProjectCheckout(self.uut.name, "other-version", self.svn_url, "1", self.checkouts_dir)
+        checkout_version2 = SVNProjectCheckout(self.uut.name, "other-version",
+                                               self.svn_url, "", "", "1", self.checkouts_dir)
 
         self.uut.create(0)
         checkout_version2.create(0)

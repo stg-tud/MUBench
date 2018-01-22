@@ -171,9 +171,11 @@ class GitProjectCheckout(RepoProjectCheckout):
 
 
 class SVNProjectCheckout(ProjectCheckout):
-    def __init__(self, name: str, version: str, url: str, revision: str, base_path: str):
+    def __init__(self, name: str, version: str, url: str, username: str, password: str, revision: str, base_path: str):
         super().__init__(url, base_path, name)
         self.version = version
+        self.__username = username
+        self.__password = password
         self.revision = revision
         self.__base_checkout_dir = self.checkout_dir
         self.checkout_dir = join(self.base_path, name, version, "checkout")
@@ -182,7 +184,14 @@ class SVNProjectCheckout(ProjectCheckout):
         self._logger.debug("Create checkout directory %s", self.checkout_dir)
         makedirs(self.checkout_dir, exist_ok=True)
         self._logger.debug("Checkout from %s", self.url)
-        Shell.exec("svn checkout \"{}@{}\" .".format(self.url, self.revision), cwd=self.checkout_dir)
+
+        parameters = ""
+        if self.__username:
+            parameters += " --username {}".format(self.__username)
+        if self.__password:
+            parameters += " --password {}".format(self.__password)
+
+        Shell.exec("svn checkout \"{}@{}\" . {}".format(self.url, self.revision, parameters), cwd=self.checkout_dir)
         Shell.exec("svn upgrade", cwd=self.checkout_dir)
 
     def exists(self) -> bool:

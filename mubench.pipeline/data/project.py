@@ -47,7 +47,9 @@ class Project:
                 raise ValueError("Repository not defined")
             repository_type = repository.get("type", None)
             repository_url = repository.get("url", None)
-            self._REPOSITORY = Repository(repository_type, repository_url)
+            repository_username = repository.get("username", None)
+            repository_password = repository.get("password", None)
+            self._REPOSITORY = Repository(repository_type, repository_url, repository_username, repository_password)
         return self._REPOSITORY
 
     @property

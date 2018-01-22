@@ -51,7 +51,10 @@ class ProjectVersion:
             return GitProjectCheckout(self.__project.id, self.version_id, url, self.revision, base_path)
         elif repository.vcstype == "svn":
             url = repository.url
-            return SVNProjectCheckout(self.__project.id, self.version_id, url, self.revision, base_path)
+            username = repository.username
+            password = repository.password
+            return SVNProjectCheckout(self.__project.id, self.version_id,
+                                      url, username, password, self.revision, base_path)
         elif repository.vcstype == "synthetic":
             return SyntheticProjectCheckout(self.__project.id, self.version_id, base_path)
         elif repository.vcstype == "zip":

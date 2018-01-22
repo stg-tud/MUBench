@@ -2,4 +2,5 @@ name: Argouml
 repository:
   type: svn
   url: http://argouml.tigris.org/svn/argouml/trunk
+  username: guest
 url: http://argouml.tigris.org/
