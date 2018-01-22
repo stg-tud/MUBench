@@ -61,10 +61,11 @@ $markdown_parser = new Parsedown();
                     </tr>
                     <tr>
                         <td><b>Comment:</b></td>
-                            <td>
-                                <?= $markdown_parser->text($review->comment); ?>
-                            </td>
+
                     </tr>
+                    <tr><td colspan="2">
+                            <?= $markdown_parser->text($review->comment); ?>
+                        </td></tr>
                 </table>
                 </div>
             </td>
