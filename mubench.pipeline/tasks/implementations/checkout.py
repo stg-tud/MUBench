@@ -14,7 +14,7 @@ class CheckoutTask:
         self.force_checkout = force_checkout
         self.use_temp_dir = use_temp_dir
 
-    def run(self, version: ProjectVersion) -> List[ProjectCheckout]:
+    def run(self, version: ProjectVersion) -> ProjectCheckout:
         logger = logging.getLogger("tasks.checkout")
 
         try:

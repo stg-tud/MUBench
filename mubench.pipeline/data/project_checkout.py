@@ -47,7 +47,7 @@ class LocalProjectCheckout(ProjectCheckout):
 
 
 class SyntheticProjectCheckout(ProjectCheckout):
-    def __init__(self, base_path: str, name: str, version: str):
+    def __init__(self, name: str, version: str, base_path: str):
         super().__init__("-synthetic-", join(base_path, name), version)
         self.name = name
         self.version = version
@@ -69,7 +69,7 @@ class SyntheticProjectCheckout(ProjectCheckout):
 
 
 class ZipProjectCheckout(ProjectCheckout):
-    def __init__(self, revision_url: str, md5_checksum: str, base_path: str, name: str, version: str):
+    def __init__(self, name: str, version: str, revision_url: str, md5_checksum: str, base_path: str):
         super().__init__(revision_url, base_path, name)
         self.md5_checksum = md5_checksum
         self.version = version
@@ -95,7 +95,7 @@ class ZipProjectCheckout(ProjectCheckout):
 
 
 class RepoProjectCheckout(ProjectCheckout):
-    def __init__(self, url: str, base_path: str, name: str, version: str, revision: str):
+    def __init__(self, name: str, version: str, url: str, revision: str, base_path: str):
         super(RepoProjectCheckout, self).__init__(url, base_path, name)
         self.version = version
         self.revision = revision
@@ -151,7 +151,7 @@ class GitProjectCheckout(RepoProjectCheckout):
 
 
 class SVNProjectCheckout(ProjectCheckout):
-    def __init__(self, url: str, base_path: str, name: str, version: str, revision: str):
+    def __init__(self, name: str, version: str, url: str, revision: str, base_path: str):
         super().__init__(url, base_path, name)
         self.version = version
         self.revision = revision

@@ -67,7 +67,7 @@ class TestSyntheticCheckout:
     def setup(self):
         self.checkouts_path = mkdtemp(prefix="mubench-checkout-local_")
 
-        self.uut = SyntheticProjectCheckout(self.checkouts_path, "-project-", "-id-")
+        self.uut = SyntheticProjectCheckout("-project-", "-id-", self.checkouts_path)
 
     def test_exists_always(self):
         assert not self.uut.exists()
@@ -97,7 +97,7 @@ class TestZipProjectCheckout:
 
         revision_md5 = "d2046c17a1ea90a45eb4d20429cd46c8"
 
-        self.uut = ZipProjectCheckout(self.url, revision_md5, self.checkouts_dir, "-project-", "-version-")
+        self.uut = ZipProjectCheckout("-project-", "-version-", self.url, revision_md5, self.checkouts_dir)
 
     def test_create_download_and_unzips(self):
         self.uut.create()
@@ -145,14 +145,14 @@ class TestGitProjectCheckout:
         remove_tree(self.temp_dir)
 
     def test_create_clones_repo(self):
-        uut = GitProjectCheckout(self.git_url, self.checkouts_dir, "-project-", "-id-", "HEAD")
+        uut = GitProjectCheckout("-project-", "-id-", self.git_url, "HEAD", self.checkouts_dir)
 
         uut.create()
 
         assert exists(join(self.checkouts_dir, "-project-", "checkout", ".git"))
 
     def test_create_copies_and_checks_out_repo(self):
-        uut = GitProjectCheckout(self.git_url, self.checkouts_dir, "-project-", "-id-", "HEAD")
+        uut = GitProjectCheckout("-project-", "-id-", self.git_url, "HEAD", self.checkouts_dir)
 
         uut.create()
 
@@ -161,29 +161,29 @@ class TestGitProjectCheckout:
         assert exists(join(expected_checkout_path, ".git"))
 
     def test_not_exists(self):
-        uut = GitProjectCheckout(self.git_url, self.checkouts_dir, "-project-", "-id-", "HEAD")
+        uut = GitProjectCheckout("-project-", "-id-", self.git_url, "HEAD", self.checkouts_dir)
         assert not uut.exists()
 
     def test_exists(self):
-        uut = GitProjectCheckout(self.git_url, self.checkouts_dir, "-project-", "-id-", "HEAD")
+        uut = GitProjectCheckout("-project-", "-id-", self.git_url, "HEAD", self.checkouts_dir)
         copy_tree(self.git_url, uut.checkout_dir)
 
         assert uut.exists()
 
     def test_not_exists_broken(self):
-        uut = GitProjectCheckout(self.git_url, self.checkouts_dir, "-project-", "-id-", "HEAD")
+        uut = GitProjectCheckout("-project-", "-id-", self.git_url, "HEAD", self.checkouts_dir)
         os.makedirs(join(uut.checkout_dir, ".git"))
         assert not uut.exists()
 
     def test_delete(self):
-        uut = GitProjectCheckout(self.git_url, self.checkouts_dir, "-project-", "-id-", "HEAD")
+        uut = GitProjectCheckout("-project-", "-id-", self.git_url, "HEAD", self.checkouts_dir)
         uut.create()
         uut.delete()
         assert not exists(join(self.checkouts_dir, "-project-", "checkout"))
         assert not exists(uut.checkout_dir)
 
     def test_to_string(self):
-        uut = GitProjectCheckout(self.git_url, self.checkouts_dir, "-project-", "-id-", "-revision-")
+        uut = GitProjectCheckout("-project-", "-id-", self.git_url, "-revision-", self.checkouts_dir)
 
         assert_equals("git:{}#-revisio".format(self.git_url), str(uut))
 
@@ -195,7 +195,7 @@ class TestSVNProjectCheckout:
         self.svn_url = Path(join(dirname(realpath(__file__)), "test_svn")).as_uri()
         self.checkouts_dir = join(self.temp_dir, "checkouts")
 
-        self.uut = SVNProjectCheckout(self.svn_url, self.checkouts_dir, "-project-", "-version-", "1")
+        self.uut = SVNProjectCheckout("-project-", "-version-", self.svn_url, "1", self.checkouts_dir)
 
     def teardown(self):
         remove_tree(self.temp_dir)
@@ -225,7 +225,7 @@ class TestSVNProjectCheckout:
         assert not exists(self.uut.checkout_dir)
 
     def test_multiple_versions(self):
-        checkout_version2 = SVNProjectCheckout(self.svn_url, self.checkouts_dir, self.uut.name, "other-version", "1")
+        checkout_version2 = SVNProjectCheckout(self.uut.name, "other-version", self.svn_url, "1", self.checkouts_dir)
 
         self.uut.create()
         checkout_version2.create()

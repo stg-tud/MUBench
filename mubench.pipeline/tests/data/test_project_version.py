@@ -114,7 +114,7 @@ class TestProjectCheckout:
         project = create_project("-project-", meta={"repository": {"type": "git", "url": "ssh://foobar.git"}})
         version = create_version("-version-", meta={"revision": "-revision-"}, project=project)
 
-        checkout = version.get_checkout( "-base_path-")
+        checkout = version.get_checkout("-base_path-")
 
         assert isinstance(checkout, GitProjectCheckout)
         assert_equals("ssh://foobar.git", checkout.url)

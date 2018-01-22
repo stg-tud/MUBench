@@ -50,14 +50,14 @@ class ProjectVersion:
         repository = self.__project.repository
         if repository.vcstype == "git":
             url = repository.url
-            return GitProjectCheckout(url, base_path, self.__project.id, self.version_id, self.revision)
+            return GitProjectCheckout(self.__project.id, self.version_id, url, self.revision, base_path)
         elif repository.vcstype == "svn":
             url = repository.url
-            return SVNProjectCheckout(url, base_path, self.__project.id, self.version_id, self.revision)
+            return SVNProjectCheckout(self.__project.id, self.version_id, url, self.revision, base_path)
         elif repository.vcstype == "synthetic":
-            return SyntheticProjectCheckout(base_path, self.__project.id, self.version_id)
+            return SyntheticProjectCheckout(self.__project.id, self.version_id, base_path)
         elif repository.vcstype == "zip":
-            return ZipProjectCheckout(self.revision, self._yaml["md5"], base_path, self.__project.id, self.version_id)
+            return ZipProjectCheckout(self.__project.id, self.version_id, self.revision, self._yaml["md5"], base_path)
         else:
             raise ValueError("unknown repository type: {}".format(repository.vcstype))
 

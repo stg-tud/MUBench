@@ -9,8 +9,8 @@ from utils.shell import Shell
 
 
 class GitProjectShallowCheckout(RepoProjectCheckout):
-    def __init__(self, url: str, base_path: str, name: str):
-        super().__init__(url, base_path, name, "latest", "HEAD")
+    def __init__(self, name: str, url: str, base_path: str):
+        super().__init__(name, "latest", url, "HEAD", base_path)
 
     def _clone(self, url: str, revision: str, path: str):
         pass
@@ -34,7 +34,7 @@ class GitHubProject:
         return "http://github.com/{}".format(self.id)
 
     def get_checkout(self, checkout_base_path: str):
-        return GitProjectShallowCheckout(self.repository_url, checkout_base_path, self.id)
+        return GitProjectShallowCheckout(self.id, self.repository_url, checkout_base_path)
 
     def __str__(self):
         return self.repository_url
