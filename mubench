@@ -1,18 +1,48 @@
-#!/bin/sh
+#!/bin/bash
 
-realpath() {
-    [[ $1 = /* ]] && echo "$1" || echo "$PWD/${1#./}"
-}
+DOCKER_IMAGE_USERNAME=svamann
+DOCKER_IMAGE_TAG=latest
+PIPELINE_CHECKOUTS_VOLUME=mubench-checkouts
+PIPELINE_FINDINGS_VOLUME=mubench-findings
+REVIEWSITE_DOCKER_CID=mubench-reviewsite-standalone
+REVIEWSITE_PORT=8080
+REVIEWSITE_DATA_VOLUME=mubench-reviews
 
-SCRIPT_DIR=$(dirname "$(realpath "$0")")
+SCRIPT_DIR=$(dirname "$([[ "$0" = /* ]] && echo "$0" || echo "$PWD/${0#./}")")
+MUBENCH_ROOT=$SCRIPT_DIR
 
-if [ "$1" = 'configure' ]; then 
-  if [ "$2" = 'review-site' ]; then
-    docker run --rm -v "$SCRIPT_DIR":/mubench svamann/mubench-ci /bin/bash ./mubench.reviewsite/configure.sh
+if [ "$1" = 'reviewsite' ]; then
+  DOCKER_IMAGE=${DOCKER_IMAGE_USERNAME}/mubench-reviewsite:${DOCKER_IMAGE_TAG}
+  REVIEWSITE_ROOT=${MUBENCH_ROOT}/mubench.reviewsite
+
+  if [ "$2" = 'init' ]; then
+    echo "Initializing MUBench review site..."
+    docker run --rm -v "$REVIEWSITE_ROOT":/mubench-reviewsite ${DOCKER_IMAGE} /bin/sh ./configure.sh
+  elif [ "$2" = 'start' ]; then
+    echo "Starting MUBench review site at http://localhost:${REVIEWSITE_PORT}..."
+    output=$(docker run --rm -itd -p ${REVIEWSITE_PORT}:80 -v "$REVIEWSITE_ROOT":/mubench-reviewsite --name ${REVIEWSITE_DOCKER_CID} ${DOCKER_IMAGE} 2>&1) || echo $output
+  elif [ "$2" = 'stop' ]; then
+    echo "Stopping MUBench review site..."
+    docker stop ${REVIEWSITE_DOCKER_CID}
+  elif [ "$2" = 'standalone' ]; then
+    if [ "$3" = 'start' ]; then
+      echo "Starting MUBench review site at http://localhost:${REVIEWSITE_PORT}..."
+      output=$(docker run --rm -itd -p ${REVIEWSITE_PORT}:80 -v ${REVIEWSITE_DATA_VOLUME}:/mubench-reviewsite-data --name ${REVIEWSITE_DOCKER_CID} ${DOCKER_IMAGE} 2>&1) || echo $output
+    elif [ "$3" = 'stop' ]; then
+      echo "Stopping MUBench review site..."
+      docker stop ${REVIEWSITE_DOCKER_CID}
+    elif [ "$3" = 'reset' ]; then
+      echo "Resetting MUBench review site..."
+      docker volume rm ${REVIEWSITE_DATA_VOLUME}
+    else
+      echo "Unknown task:" $3
+      echo "Chose one of {start,stop,reset}"
+    fi;
   else
-    echo "Unknown configuration target:" $2
-    echo "Chose one of {review-site}"
+    echo "Unknown task:" $2
+    echo "Chose one of {init,start,stop,standalone}"
   fi;
 else
-  docker run --rm -v "$SCRIPT_DIR":/mubench svamann/mubench python ./mubench.pipeline/benchmark.py "$@" 
+  DOCKER_IMAGE=${DOCKER_IMAGE_USERNAME}/mubench-pipeline:${DOCKER_IMAGE_TAG}
+  docker run --rm -v "$MUBENCH_ROOT":/mubench -v ${PIPELINE_CHECKOUTS_VOLUME}:/mubench/checkouts -v ${PIPELINE_FINDINGS_VOLUME}:/mubench/findings ${DOCKER_IMAGE} python ./mubench.pipeline/benchmark.py "$@"
 fi;
