@@ -22,8 +22,9 @@ script:
   - python ./mubench.pipeline/benchmark.py run ex1 DemoDetector --only synthetic_survey
   
   # mubench.reviewsite
-  - cd mubench.reviewsite && ./configure.sh
-  - phpunit --bootstrap mubench.reviewsite/vendor/autoload.php mubench.reviewsite/tests/
+  - cd mubench.reviewsite
+  - ./configure.sh
+  - phpunit --bootstrap vendor/autoload.php tests/
 
 notifications:
   email:
