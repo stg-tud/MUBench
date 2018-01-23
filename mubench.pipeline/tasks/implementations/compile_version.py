@@ -49,7 +49,6 @@ class CompileVersionTask:
             if not needs_copy_sources:
                 logger.debug("Already copied source.")
             else:
-                logger.info("Copying sources...")
                 logger.debug("Copying project sources...")
                 copy_tree(sources_path, version_compile.original_sources_path)
 
@@ -59,7 +58,7 @@ class CompileVersionTask:
             if not needs_compile:
                 logger.debug("Already compiled project.")
             else:
-                logger.info("Compiling project...")
+                logger.debug("Compiling project...")
                 self._compile(version.compile_commands,
                               build_path,
                               version_compile.dependencies_path,

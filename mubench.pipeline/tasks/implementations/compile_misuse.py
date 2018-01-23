@@ -24,27 +24,30 @@ class CompileMisuseTask:
         if self.force_compile:
             pattern_compile.delete()
 
-        logger.debug("Copy misuse sources...")
+        logger.info("Compiling %s...", misuse)
+
+        logger.debug("Copying misuse sources...")
         CompileMisuseTask._copy_misuse_sources(version_compile.original_sources_path,
                                                misuse,
                                                pattern_compile.misuse_source_path)
-        logger.debug("Copy misuse classes...")
+        logger.debug("Copying misuse classes...")
         CompileMisuseTask._copy_misuse_classes(version_compile.original_classes_path,
                                                misuse,
                                                pattern_compile.misuse_classes_path)
 
         try:
+            logger.info("Compiling correct usage for %s...", misuse)
             if pattern_compile.needs_copy_sources():
-                logger.info("Copying pattern sources...")
+                logger.debug("Copying correct-usage sources...")
                 copy_tree(misuse.pattern_path, pattern_compile.pattern_sources_path)
 
             if pattern_compile.needs_compile():
-                logger.info("Compiling patterns...")
+                logger.debug("Compiling correct usages...")
                 CompileMisuseTask._compile_patterns(pattern_compile.pattern_sources_path,
                                                     pattern_compile.pattern_classes_path,
                                                     version_compile.get_full_classpath())
             else:
-                logger.info("Patterns already compiled.")
+                logger.info("Correct usage already compiled.")
         except Exception:
             pattern_compile.delete()
             raise
