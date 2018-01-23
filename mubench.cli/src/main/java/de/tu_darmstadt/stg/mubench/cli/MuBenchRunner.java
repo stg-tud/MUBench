@@ -68,7 +68,8 @@ public class MuBenchRunner {
         if (strategy == null) {
             throw new UnsupportedOperationException("detector mode not supported");
         }
-        return strategy.detectViolations(args);
+        DetectorOutput.Builder builder = new DetectorOutput.Builder();
+        return strategy.detectViolations(args, builder);
     }
 
     protected void report(YamlEntity entity, Path findingsFile) throws IOException {

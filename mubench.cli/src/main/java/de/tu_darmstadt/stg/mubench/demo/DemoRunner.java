@@ -9,7 +9,6 @@ import java.nio.file.Paths;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class DemoRunner {
@@ -22,7 +21,7 @@ public class DemoRunner {
 
     private static class DemoStrategy implements DetectionStrategy {
         @Override
-        public DetectorOutput detectViolations(DetectorArgs args) throws Exception {
+        public DetectorOutput detectViolations(DetectorArgs args, DetectorOutput.Builder output) throws Exception {
             long startTime = System.currentTimeMillis();
 
             List<DemoViolation> violations = new ArrayList<>();
@@ -31,7 +30,7 @@ public class DemoRunner {
             }
             long endTime = System.currentTimeMillis();
 
-            return createOutput()
+            return output
                     .withRunInfo("runtime", endTime - startTime)
                     .withFindings(violations, this::toDetectorFinding);
         }
