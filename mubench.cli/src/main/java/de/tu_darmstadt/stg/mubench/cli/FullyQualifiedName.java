@@ -19,4 +19,9 @@ public class FullyQualifiedName {
             return fqn;
         }
     }
+
+    @Override
+    public String toString() {
+        return fqn;
+    }
 }
