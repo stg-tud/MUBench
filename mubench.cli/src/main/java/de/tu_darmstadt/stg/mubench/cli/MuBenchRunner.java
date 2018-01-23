@@ -13,22 +13,31 @@ import java.nio.file.Path;
  * public class XYRunner {
  *   public static void main(String[] args) {
  *     new MuBenchRunner().
- *       .withDetectOnlyStrategy(DetectorArgs as -> List&lt;Violation&gt;()) // detection using provided patterns
- *       .withMineAndDetectStrategy(DetectorArgs as -> List&lt;Violation&gt;()) // detected using own patterns
+ *       .withDetectOnlyStrategy((DetectorArgs as, DetectorOutput.Builder output) -> {
+ *          return output
+ *            .withRunInfo("detection using provided patterns", "true")
+ *            .withFindings(findMisuses(da));
+ *       })
+ *       .withMineAndDetectStrategy((DetectorArgs as, DetectorOutput.Builder output) -> {
+ *          return output
+ *            .withRunInfo("detection using mined patterns", "true")
+ *            .withFindings(findMisuses(da));
+ *       })
  *       .run(args);
  *   }
  * }
  * </code></pre>
  */
 @SuppressWarnings("WeakerAccess")
-public class MuBenchRunner {
+public final class MuBenchRunner {
     private DetectionStrategy detectOnlyStrategy;
     private DetectionStrategy mineAndDetectStrategy;
 
     /**
-     * @param detectOnlyStrategy    Run detection in detect-only mode. Should use {@link DetectorArgs#getPatternPath()}
-     *                              to extract patterns and identify respective violations in
-     *                              {@link DetectorArgs#getTargetPath()}.
+     * @param detectOnlyStrategy Run detection in detect-only mode. Should use {@link DetectorArgs#getPatternSrcPath()}
+     *                           or {@link DetectorArgs#getPatternClassPath()} to learn patterns and identify
+     *                           respective violations in {@link DetectorArgs#getTargetSrcPaths()} or
+     *                           {@link DetectorArgs#getTargetClassPaths()}, respectively.
      */
     public MuBenchRunner withDetectOnlyStrategy(DetectionStrategy detectOnlyStrategy) {
         this.detectOnlyStrategy = detectOnlyStrategy;
@@ -37,8 +46,9 @@ public class MuBenchRunner {
 
     /**
      * @param mineAndDetectStrategy Run detection in mine-and-detect mode. Should identify misuses in
-     *                              {@link DetectorArgs#getTargetPath()}. May use {@link DetectorArgs#getTargetPath()}
-     *                              for pattern mining.
+     *                              {@link DetectorArgs#getTargetSrcPaths()} or {@link DetectorArgs#getTargetClassPaths()}.
+     *                              May use {@link DetectorArgs#getTargetSrcPaths()} and
+     *                              {@link DetectorArgs#getTargetClassPaths()} for pattern mining.
      */
     public MuBenchRunner withMineAndDetectStrategy(DetectionStrategy mineAndDetectStrategy) {
         this.mineAndDetectStrategy = mineAndDetectStrategy;
