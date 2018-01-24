@@ -1,0 +1,14 @@
+api:
+- java.util.List
+characteristics:
+- missing/condition/value_or_state
+crash: true
+description: >
+  List.get() in line 176 is invoked without a prior check whether the list
+  contains sufficiently many elements.
+location:
+  file: com/google/javascript/jscomp/deps/SortedDependencies.java
+  method: "cycleToString(List)"
+internal: false
+source:
+  name: Identified during reviews.
