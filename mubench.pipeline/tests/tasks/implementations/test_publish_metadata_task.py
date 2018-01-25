@@ -13,13 +13,13 @@ from tests.test_utils.data_util import create_misuse, create_project, create_ver
 class TestPublishMetadataTask:
     # noinspection PyAttributeOutsideInit
     def setup(self):
-        self.project = create_project("-p-")
+        self.project = create_project("-p-", meta={"repository": {"type": "synthetic"}})
         self.version = create_version("-v-", project=self.project, meta={"build": {"src": "", "classes": ""}})
 
     def test_publish_url(self, post_mock, snippets_mock):
         misuse = create_misuse("-m-", project=self.project, version=self.version)
 
-        task = PublishMetadataTask("-compiles-path-", "http://test.url")
+        task = PublishMetadataTask("-checkouts-path-", "http://test.url")
         task.run(self.project, misuse)
         task.end()
 
@@ -30,7 +30,7 @@ class TestPublishMetadataTask:
         misuse = create_misuse("-m-", project=self.project, version=self.version)
         pass_mock.return_value = "-password-"
 
-        task = PublishMetadataTask("-compiles-path-", "http://test.url", "-username-")
+        task = PublishMetadataTask("-checkouts-path-", "http://test.url", "-username-")
         task.run(self.project, misuse)
         task.end()
 
@@ -42,7 +42,7 @@ class TestPublishMetadataTask:
         misuse = create_misuse("-m-", project=self.project, version=self.version)
         pass_mock.side_effect = UserWarning("should skip prompt")
 
-        task = PublishMetadataTask("-compiles-path-", "http://test.url", "-username-", "-password-")
+        task = PublishMetadataTask("-checkouts-path-", "http://test.url", "-username-", "-password-")
         task.run(self.project, misuse)
         task.end()
 
@@ -67,7 +67,7 @@ class TestPublishMetadataTask:
         }, project=self.project, version=self.version)
         snippets_mock.return_value = [Snippet("-code-", 42)]
 
-        task = PublishMetadataTask("-compiles-path-", "http://test.url")
+        task = PublishMetadataTask("-checkouts-path-", "http://test.url")
         task.run(self.project, misuse)
         task.end()
 
@@ -101,7 +101,7 @@ class TestPublishMetadataTask:
         misuse = create_misuse("-m-", project=self.project, patterns=[Pattern("/base/path", "P1.java")],
                                version=self.version)
 
-        task = PublishMetadataTask("-compiles-path-", "http://test.url")
+        task = PublishMetadataTask("-checkouts-path-", "http://test.url")
         task.run(self.project, misuse)
         task.end()
 
@@ -120,7 +120,7 @@ class TestPublishMetadataTask:
         read_mock.return_value = pattern_preamble + pattern_code
         misuse = create_misuse("-m-", project=self.project, patterns=[Pattern("/", "P1.java")], version=self.version)
 
-        task = PublishMetadataTask("-compiles-path-", "http://test.url")
+        task = PublishMetadataTask("-checkouts-path-", "http://test.url")
         task.run(self.project, misuse)
         task.end()
 
@@ -132,7 +132,7 @@ class TestPublishMetadataTask:
         read_mock.return_value = pattern_code + "\n\n\n"
         misuse = create_misuse("-m-", project=self.project, patterns=[Pattern("/", "P1.java")], version=self.version)
 
-        task = PublishMetadataTask("-compiles-path-", "http://test.url")
+        task = PublishMetadataTask("-checkouts-path-", "http://test.url")
         task.run(self.project, misuse)
         task.end()
 

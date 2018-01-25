@@ -1,5 +1,7 @@
 import getpass
 import logging
+import os
+
 from typing import Dict
 from typing import List
 from urllib.parse import urljoin
@@ -13,10 +15,10 @@ from utils.web_util import post
 
 
 class PublishMetadataTask:
-    def __init__(self, compiles_base_path: str,
+    def __init__(self, checkouts_base_path: str,
                  review_site_url: str, review_site_user: str = "", review_site_password: str = ""):
         super().__init__()
-        self.compiles_base_path = compiles_base_path
+        self.checkouts_base_path = checkouts_base_path
         self.review_site_url = review_site_url
         self.review_site_user = review_site_user
         self.review_site_password = review_site_password
@@ -53,8 +55,10 @@ class PublishMetadataTask:
         })
 
     def __get_snippets(self, misuse, version):
-        version_compile = version.get_compile(self.compiles_base_path)
-        return misuse.get_snippets(version_compile.original_sources_paths)
+        checkout_base_path = version.get_checkout(self.checkouts_base_path).checkout_dir
+        checkout_source_paths = [os.path.join(checkout_base_path, rel_path.lstrip(os.path.sep))
+                                 for rel_path in version.source_dirs]
+        return misuse.get_snippets(checkout_source_paths)
 
     def __get_patterns(self, misuse: Misuse):
         patterns = []
