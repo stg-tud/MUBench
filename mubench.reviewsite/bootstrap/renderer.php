@@ -14,6 +14,9 @@ $container['renderer'] = function ($container) {
 
     $path = $request->getUri()->getPath();
     $path = htmlspecialchars($path === '/' ? '' : $path);
+    if($path !== '' && $path[0] !== '/'){
+        $path = "/$path";
+    }
 
     $experiments = \MuBench\ReviewSite\Models\Experiment::all();
     $detectors = [];
