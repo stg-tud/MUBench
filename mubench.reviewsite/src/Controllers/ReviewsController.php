@@ -28,7 +28,7 @@ class ReviewsController extends Controller
 
         $experiment = Experiment::find($experiment_id);
         $detector = Detector::find($detector_muid);
-        $ex2_review_size = $request->getQueryParam("ex2_review_size", $this->default_ex2_review_size);
+        $ex2_review_size = $request->getQueryParam("ex2_review_size", $this->settings['default_ex2_review_size']);
 
         $reviewer = array_key_exists('reviewer_name', $args) ? Reviewer::where(['name' => $args['reviewer_name']])->first() : $this->user;
         $resolution_reviewer = Reviewer::where(['name' => 'resolution'])->first();
