@@ -14,7 +14,7 @@ class MetadataController extends Controller
     public function putMetadata(Request $request, Response $response, array $args)
     {
         $this->logger->info("Put metadata.");
-        $metadata = decodeJsonBody($request);
+        $metadata = decodeJsonBody($request, true);
         if (!$metadata) {
             return error_response($response,400, 'empty: ' . print_r($request->getBody(), true));
         }
