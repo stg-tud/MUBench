@@ -1,9 +1,8 @@
 <?php
 
-use Interop\Container\ContainerInterface;
-use MuBench\ReviewSite\Error;
+use MuBench\ReviewSite\LoggingError;
 
-$container['logger'] = function (ContainerInterface $c) {
+$container['logger'] = function ($c) {
     $settings = $c->settings['logger'];
     $logger = new Monolog\Logger($settings['name']);
     $logger->pushProcessor(new Monolog\Processor\UidProcessor());
@@ -15,6 +14,6 @@ $container['logger'] = function (ContainerInterface $c) {
     return $logger;
 };
 
-$container['errorHandler'] = function (ContainerInterface $c) {
-    return new Error($c['logger'], $c->settings['displayErrorDetails']);
+$container['errorHandler'] = function ($c) {
+    return new LoggingError($c->logger, $c->settings['displayErrorDetails']);
 };
