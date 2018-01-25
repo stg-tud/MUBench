@@ -13,6 +13,7 @@ class MetadataController extends Controller
 
     public function putMetadata(Request $request, Response $response, array $args)
     {
+        $this->logger->info("Put metadata.");
         $metadata = decodeJsonBody($request);
         if (!$metadata) {
             return error_response($response,400, 'empty: ' . print_r($request->getBody(), true));
@@ -35,6 +36,7 @@ class MetadataController extends Controller
 
     function updateMetadata($projectId, $versionId, $misuseId, $description, $fix, $location, $violationTypes, $patterns, $targetSnippets)
     {
+        $this->logger->info("Update metadata for $projectId, $versionId, $misuseId");
         $metadata = $this->saveMetadata($projectId, $versionId, $misuseId, $description, $fix, $location);
         $this->saveViolationTypes($metadata, $violationTypes);
         $this->savePatterns($metadata->id, $patterns);
@@ -55,6 +57,7 @@ class MetadataController extends Controller
 
     private function saveViolationTypes($metadata, $violationTypeNames)
     {
+        $this->logger->info("Save violation types.");
         $violationTypes = [];
         foreach ($violationTypeNames as $typeName) {
             $violationTypes[] = Type::firstOrCreate(['name' => $typeName])->id;
@@ -64,6 +67,7 @@ class MetadataController extends Controller
 
     private function savePatterns($metadataId, $patterns)
     {
+        $this->logger->info("Save patterns.");
         if ($patterns) {
             foreach ($patterns as $pattern) {
                 $p = Pattern::firstOrNew(['metadata_id' => $metadataId]);
@@ -76,6 +80,7 @@ class MetadataController extends Controller
 
     private function saveTargetSnippets($projectId, $versionId, $misuseId, $targetSnippets, $file)
     {
+        $this->logger->info("Save target snippets.");
         if ($targetSnippets) {
             foreach ($targetSnippets as $snippet) {
                 SnippetsController::createSnippetIfNotExists($projectId, $versionId, $misuseId, $file, $snippet['first_line_number'], $snippet['code']);
