@@ -17,3 +17,7 @@ $container['logger'] = function ($c) {
 $container['errorHandler'] = function ($c) {
     return new LoggingError($c->logger, $c->settings['displayErrorDetails']);
 };
+
+$container['phpErrorHandler'] = function($c) {
+    return new LoggingError($c->logger, $c->settings['displayErrorDetails']);
+};
