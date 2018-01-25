@@ -21,7 +21,7 @@ class SnippetsController extends Controller
         $line = $form['line'];
         $misuse = Misuse::find($form['misuse_id']);
         self::createSnippetIfNotExists($projectId, $versionId, $misuseId, $misuse->getFile(), $line, $code);
-        return $response->withRedirect("{$this->site_base_url}{$form['path']}");
+        return $response->withRedirect("{$this->settings['site_base_url']}{$form['path']}");
     }
 
     public function deleteSnippet(Request $request, Response $response, array $args)
@@ -31,7 +31,7 @@ class SnippetsController extends Controller
 
         Snippet::find($snippetId)->delete();
 
-        return $response->withRedirect("{$this->site_base_url}{$form['path']}");
+        return $response->withRedirect("{$this->settings['site_base_url']}{$form['path']}");
     }
 
     static function createSnippetIfNotExists($projectId, $versionId, $misuseId, $file, $line, $code)

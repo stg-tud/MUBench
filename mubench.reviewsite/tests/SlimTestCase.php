@@ -38,32 +38,34 @@ class SlimTestCase extends TestCase
 
     public function setUp(){
         $settings = [
-            'displayErrorDetails' => true, // set to false in production
-            'addContentLengthHeader' => false, // Allow the web server to send the content-length header
+            'settings' => [
+                'displayErrorDetails' => true, // set to false in production
+                'addContentLengthHeader' => false, // Allow the web server to send the content-length header
 
-            'db' => [
-                'driver' => 'sqlite',
-                'host' => 'localhost',
-                'database' => ':memory:',
-                'username' => 'admin',
-                'password' => 'admin',
-                'charset'   => 'utf8',
-                'collation' => 'utf8_unicode_ci',
-                'prefix'    => '',
-            ],
+                'db' => [
+                    'driver' => 'sqlite',
+                    'host' => 'localhost',
+                    'database' => ':memory:',
+                    'username' => 'admin',
+                    'password' => 'admin',
+                    'charset'   => 'utf8',
+                    'collation' => 'utf8_unicode_ci',
+                    'prefix'    => '',
+                ],
 
-            // Monolog settings
-            'logger' => [
-                'name' => 'mubench',
-                'path' => __DIR__ . '/../logs/app.log',
-                'level' => \Monolog\Logger::DEBUG,
+                // Monolog settings
+                'logger' => [
+                    'name' => 'mubench',
+                    'path' => __DIR__ . '/../logs/app.log',
+                    'level' => \Monolog\Logger::DEBUG,
+                ],
+                'site_base_url' => '/',
+                'upload' => "./upload",
+                'default_ex2_review_size' => '20'
             ],
-            'site_base_url' => '/',
-            'upload' => "./upload",
             'users' => [
                 "admin" => "pass"
-            ],
-            'default_ex2_review_size' => '20'
+            ]
         ];
         $app = new \Slim\App($settings);
         require __DIR__ . '/../bootstrap/bootstrap.php';

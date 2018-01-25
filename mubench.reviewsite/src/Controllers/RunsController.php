@@ -29,7 +29,7 @@ class RunsController extends Controller
 
         $experiment = Experiment::find($experiment_id);
         $detector = Detector::find($detector_muid);
-        $ex2_review_size = $request->getQueryParam("ex2_review_size", $this->default_ex2_review_size);
+        $ex2_review_size = $request->getQueryParam("ex2_review_size", $this->settings['default_ex2_review_size']);
 
         $runs = $this->getRuns($detector, $experiment, $ex2_review_size);
 
@@ -47,7 +47,7 @@ class RunsController extends Controller
 
         $detector = Detector::find($detector_muid);
         $experiment = Experiment::find($experiment_id);
-        $ex2_review_size = $request->getQueryParam("ex2_review_size", $this->default_ex2_review_size);
+        $ex2_review_size = $request->getQueryParam("ex2_review_size", $this->settings['default_ex2_review_size']);
 
         $runs = $this->getRuns($detector, $experiment, $ex2_review_size);
 
@@ -56,7 +56,7 @@ class RunsController extends Controller
 
     public function getResults(Request $request, Response $response, array $args)
     {
-        $ex2_review_size = $request->getQueryParam("ex2_review_size", $this->default_ex2_review_size);
+        $ex2_review_size = $request->getQueryParam("ex2_review_size", $this->settings['default_ex2_review_size']);
         $experiments = Experiment::all();
 
         $results = array();
@@ -70,7 +70,7 @@ class RunsController extends Controller
 
     public function downloadResults(Request $request, Response $response, array $args)
     {
-        $ex2_review_size = $request->getQueryParam("ex2_review_size", $this->default_ex2_review_size);
+        $ex2_review_size = $request->getQueryParam("ex2_review_size", $this->settings['default_ex2_review_size']);
         $experiment_id = $args['experiment_id'];
         $experiment = Experiment::find($experiment_id);
         $detectors = Detector::all();

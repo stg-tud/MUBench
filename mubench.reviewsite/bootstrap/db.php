@@ -3,7 +3,7 @@
 /** @var \Slim\Container $container */
 
 $capsule = new \Illuminate\Database\Capsule\Manager;
-$capsule->addConnection($container['db']);
+$capsule->addConnection($container->settings['db']);
 $capsule->setAsGlobal();
 use Illuminate\Events\Dispatcher;
 use Illuminate\Container\Container;

@@ -56,7 +56,7 @@ class ReviewsController extends Controller
 
         $open_misuses = [];
         foreach($detectors as $detector){
-            $runs = RunsController::getRuns($detector, $experiment, $this->default_ex2_review_size);
+            $runs = RunsController::getRuns($detector, $experiment, $this->settings['default_ex2_review_size']);
             foreach($runs as $run){
                 foreach($run->misuses as $misuse) {
                     /** @var Misuse $misuse */
@@ -113,7 +113,7 @@ class ReviewsController extends Controller
         $this->updateOrCreateReview($misuse_id, $reviewer->id, $comment, $hits);
 
         if ($review["origin"] != "") {
-            return $response->withRedirect("{$this->site_base_url}{$review["origin"]}");
+            return $response->withRedirect("{$this->settings['site_base_url']}{$review["origin"]}");
         }else {
             return $response->withRedirect($this->router->pathFor("private.review", ["experiment_id" => $experiment_id,
                 "detector_muid" => $detector_muid, "project_muid" => $project_muid, "version_muid" => $version_muid,

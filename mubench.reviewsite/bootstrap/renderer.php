@@ -3,7 +3,7 @@
 use MuBench\ReviewSite\Models\Reviewer;
 use Slim\Views\PhpRenderer;
 
-$container['renderer'] = function ($container) use ($settings) {
+$container['renderer'] = function ($container) {
     /** @var \Slim\Http\Request $request */
     $request = $container->request;
     $user = $container->user;
@@ -44,7 +44,7 @@ $container['renderer'] = function ($container) use ($settings) {
         'public_url_prefix' => $publicURLPrefix,
         'private_url_prefix' => $privateURLPrefix,
         'url_prefix' => $user ? $privateURLPrefix : $publicURLPrefix,
-        'uploads_url_prefix' => $publicURLPrefix . $settings['upload'],
+        'uploads_url_prefix' => $publicURLPrefix . $container->settings['upload'],
 
         'path' => $path,
         'origin_param' => htmlspecialchars("?origin=$path"),
@@ -56,7 +56,7 @@ $container['renderer'] = function ($container) use ($settings) {
         'detector' => null,
         'resolution_reviewer' => Reviewer::where('name' ,'resolution')->first(),
 
-        'ex2_review_size' => $request->getQueryParam("ex2_review_size", $container["default_ex2_review_size"])
+        'ex2_review_size' => $request->getQueryParam("ex2_review_size", $container->settings["default_ex2_review_size"])
     ];
 
     return new PhpRenderer(__DIR__ . '/../templates/', $defaultTemplateVariables);

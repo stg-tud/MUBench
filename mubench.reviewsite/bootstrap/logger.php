@@ -4,7 +4,7 @@ use Interop\Container\ContainerInterface;
 use MuBench\ReviewSite\Error;
 
 $container['logger'] = function (ContainerInterface $c) {
-    $settings = $c->get('settings')['logger'];
+    $settings = $c->settings['logger'];
     $logger = new Monolog\Logger($settings['name']);
     $logger->pushProcessor(new Monolog\Processor\UidProcessor());
     $formatter = new \Monolog\Formatter\LineFormatter();
@@ -16,5 +16,5 @@ $container['logger'] = function (ContainerInterface $c) {
 };
 
 $container['errorHandler'] = function (ContainerInterface $c) {
-    return new Error($c['logger'], $c->get('settings')['displayErrorDetails']);
+    return new Error($c['logger'], $c->settings['displayErrorDetails']);
 };
