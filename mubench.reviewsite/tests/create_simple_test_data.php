@@ -155,6 +155,7 @@ echo 'Creating finding snippets<br/>';
 $snippet = new \MuBench\ReviewSite\Models\Snippet;
 $snippet->project_muid = 'mubench';
 $snippet->version_muid = '42';
+$snippet->misuse_muid = '1';
 $snippet->file = 'Test.java';
 $snippet->line = 112;
 $snippet->snippet = "test snippet\ntest";
