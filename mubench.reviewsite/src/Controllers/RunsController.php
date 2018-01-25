@@ -306,7 +306,7 @@ class RunsController extends Controller
     }
 
     /** @noinspection PhpUnusedPrivateMethodInspection used in createOrUpdateFindingsTable */
-    private function createFindingsTable($table_name)
+    function createFindingsTable($table_name)
     {
         Schema::create($table_name, function (Blueprint $table) {
             $table->increments('id');
@@ -325,7 +325,7 @@ class RunsController extends Controller
     }
 
     /** @noinspection PhpUnusedPrivateMethodInspection used in createOrUpdateRunsTable */
-    private function createRunsTable($table_name)
+    function createRunsTable($table_name)
     {
         Schema::create($table_name, function (Blueprint $table) {
             $table->increments('id');
@@ -382,7 +382,7 @@ class RunsController extends Controller
         return $columns;
     }
 
-    private function addColumnToTable($table_name, $column)
+    function addColumnToTable($table_name, $column)
     {
         Schema::table($table_name, function ($table) use ($column) {
             $table->text($column)->nullable();

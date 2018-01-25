@@ -1,6 +1,6 @@
 <?php
+/** @var $container Interop\Container\ContainerInterface */
 
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
 echo '<br/>Inserting simple test data<br/>';
@@ -11,23 +11,15 @@ $detector->muid = "TestDetector";
 $detector->id = 1;
 $detector->save();
 
+$runsController = new \MuBench\ReviewSite\Controllers\RunsController($container);
+
 echo 'Creating run entries<br/>';
 $run = new \MuBench\ReviewSite\Models\Run;
 $run->setDetector($detector);
 Schema::dropIfExists($run->getTable());
-Schema::create($run->getTable(), function (Blueprint $table) {
-    $table->increments('id');
-    $table->integer('experiment_id');
-    $table->string('project_muid', 30);
-    $table->string('version_muid', 30);
-    $table->float('runtime');
-    $table->integer('number_of_findings');
-    $table->string('result', 30);
-    $table->integer('timestamp');
-    $table->text('additional_stat')->nullable();
-    $table->dateTime('created_at');
-    $table->dateTime('updated_at');
-});
+$runsController->createRunsTable($run->getTable());
+$runsController->addColumnToTable($run->getTable(), 'additional_stat');
+
 $run->id = 1;
 $run->experiment_id = $experiment1->id;
 $run->project_muid = 'mubench';
@@ -77,21 +69,9 @@ echo 'Creating findings entries<br/>';
 $finding = new \MuBench\ReviewSite\Models\Finding;
 $finding->setDetector($detector);
 Schema::dropIfExists($finding->getTable());
-Schema::create($finding->getTable(), function (Blueprint $table) {
-    $table->increments('id');
-    $table->integer('experiment_id');
-    $table->integer('misuse_id');
-    $table->string('project_muid', 30);
-    $table->string('version_muid', 30);
-    $table->string('misuse_muid', 30);
-    $table->integer('startline')->nullable();
-    $table->integer('rank');
-    $table->text('file');
-    $table->text('method')->nullable();
-    $table->text('additional_column')->nullable();
-    $table->dateTime('created_at');
-    $table->dateTime('updated_at');
-});
+$runsController->createFindingsTable($finding->getTable());
+$runsController->addColumnToTable($finding->getTable(), 'additional_column');
+
 $finding->experiment_id = $experiment1->id;
 $finding->misuse_id = 1;
 $finding->project_muid = 'mubench';
