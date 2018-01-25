@@ -178,7 +178,7 @@ class PublishMetadataTaskConfiguration(TaskConfiguration):
 
     def tasks(self, config) -> List:
         collect_misuses = CollectMisusesTask()
-        publish = PublishMetadataTask(config.compiles_path, config.review_site_url, config.review_site_user,
+        publish = PublishMetadataTask(config.checkouts_path, config.review_site_url, config.review_site_user,
                                       config.review_site_password)
         return CheckoutTaskConfiguration().tasks(config) + [collect_misuses, publish]
 
