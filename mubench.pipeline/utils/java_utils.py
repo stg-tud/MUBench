@@ -1,6 +1,5 @@
-from os.path import dirname, join, exists
-
 from os import remove
+from os.path import dirname, join, exists
 from typing import Optional
 from urllib.error import URLError
 

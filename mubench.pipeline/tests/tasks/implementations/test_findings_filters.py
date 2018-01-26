@@ -2,7 +2,7 @@ from unittest.mock import MagicMock
 
 from nose.tools import assert_equals
 
-from data.finding import SpecializedFinding, Finding
+from data.finding import Finding
 from tasks.implementations.findings_filters import PotentialHitsFilterTask, AllFindingsFilterTask
 from tests.data.stub_detector import StubDetector
 from tests.test_utils.data_util import create_misuse

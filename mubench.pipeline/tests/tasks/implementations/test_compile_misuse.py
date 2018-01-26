@@ -1,5 +1,5 @@
 import os
-from os.path import join, exists, relpath, basename
+from os.path import join, exists, relpath
 from tempfile import mkdtemp
 from unittest.mock import patch, MagicMock, PropertyMock
 

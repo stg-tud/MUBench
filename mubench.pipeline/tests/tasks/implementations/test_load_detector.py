@@ -1,7 +1,6 @@
+from os.path import join
 from tempfile import mkdtemp
 from unittest.mock import patch
-
-from os.path import join
 
 from nose.tools import assert_raises
 

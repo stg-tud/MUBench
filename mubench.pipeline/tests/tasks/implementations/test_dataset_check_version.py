@@ -1,7 +1,6 @@
+from os.path import join
 from tempfile import mkdtemp
 from unittest.mock import MagicMock, patch, call
-
-from os.path import join
 
 from data.misuse import Misuse
 from data.project import Project

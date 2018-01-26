@@ -1,4 +1,5 @@
 import sys
+
 from nose.tools import assert_raises, assert_equals, nottest
 
 from utils.config_util import _get_command_line_parser

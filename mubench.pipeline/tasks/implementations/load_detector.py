@@ -1,5 +1,4 @@
 import logging
-
 from os.path import exists
 from typing import List
 from urllib.error import URLError

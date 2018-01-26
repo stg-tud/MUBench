@@ -1,5 +1,4 @@
 import logging
-
 from os.path import join
 
 from data.misuse import Misuse

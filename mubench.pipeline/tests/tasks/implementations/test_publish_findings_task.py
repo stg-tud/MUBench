@@ -1,11 +1,11 @@
-from typing import Dict, List
+from typing import Dict
 from unittest.mock import MagicMock, patch
 
 from nose.tools import assert_equals
 
 from data.detector import Detector
 from data.detector_run import DetectorRun
-from data.finding import Finding, SpecializedFinding
+from data.finding import SpecializedFinding
 from data.snippets import Snippet
 from tasks.implementations.findings_filters import PotentialHits
 from tasks.implementations.publish_findings import PublishFindingsTask

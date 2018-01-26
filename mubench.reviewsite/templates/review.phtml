@@ -23,10 +23,11 @@
  * @var bool $is_reviewer whether the user is the author of this review
  * @var array $violation_types all violation types of this misuse in exp1/3, all possible violation types in exp2
  */
+
 use MuBench\ReviewSite\Models\Detector;
 use MuBench\ReviewSite\Models\Experiment;
 
-    $columns_to_ignore = array(
+$columns_to_ignore = array(
         "target_snippets",
         "file",
         "method",

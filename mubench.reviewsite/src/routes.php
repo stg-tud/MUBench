@@ -4,14 +4,10 @@
 use MuBench\ReviewSite\Controllers\DownloadController;
 use MuBench\ReviewSite\Controllers\FindingsController;
 use MuBench\ReviewSite\Controllers\FindingsUploader;
-use MuBench\ReviewSite\Controllers\MetadataController;
 use MuBench\ReviewSite\Controllers\MisuseTagsController;
-use MuBench\ReviewSite\Controllers\ReviewsController;
 use MuBench\ReviewSite\Controllers\SnippetUploader;
 use MuBench\ReviewSite\DirectoryHelper;
 use MuBench\ReviewSite\RoutesHelper;
-use Slim\Http\Request;
-use Slim\Http\Response;
 
 $app->get('/', \MuBench\ReviewSite\Controllers\ExperimentsController::class.":index")->setName('/');
 $app->group('/experiments/{experiment_id}', function() use ($app) {

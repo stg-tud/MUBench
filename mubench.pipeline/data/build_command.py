@@ -1,13 +1,9 @@
-import shutil
 import os
 import shlex
-from glob import glob
+import shutil
 from logging import Logger
-from os import makedirs
-from os.path import join, exists, dirname, splitext, relpath
 from typing import List, Set
 
-from utils.io import remove_tree, copy_tree
 from utils.shell import Shell, CommandFailedError
 
 

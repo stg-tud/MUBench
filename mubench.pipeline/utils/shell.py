@@ -2,7 +2,7 @@ import locale
 import logging
 import os
 from platform import platform
-from subprocess import PIPE, STDOUT, CalledProcessError, run, TimeoutExpired
+from subprocess import PIPE, CalledProcessError, run, TimeoutExpired
 from typing import Optional
 
 

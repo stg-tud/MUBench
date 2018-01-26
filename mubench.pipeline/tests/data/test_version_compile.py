@@ -1,10 +1,10 @@
+from shutil import rmtree
 from tempfile import mkdtemp
 from unittest.mock import patch
 
-from shutil import rmtree
+from nose.tools import assert_equals
 
 from data.version_compile import VersionCompile
-from nose.tools import assert_equals
 
 
 @patch("data.version_compile.isdir")

@@ -1,8 +1,6 @@
 import logging
 from tempfile import mkdtemp
-from typing import List
 
-from data.project_checkout import ProjectCheckout
 from data.project_version import ProjectVersion
 from utils.io import copy_tree, remove_tree
 

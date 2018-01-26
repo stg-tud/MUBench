@@ -5,7 +5,6 @@ namespace MuBench\ReviewSite\Controllers;
 require_once 'SlimTestCase.php';
 
 use MuBench\ReviewSite\Models\Decision;
-use MuBench\ReviewSite\Models\Review;
 use MuBench\ReviewSite\Models\Misuse;
 use MuBench\ReviewSite\Models\Reviewer;
 use MuBench\ReviewSite\Models\Type;

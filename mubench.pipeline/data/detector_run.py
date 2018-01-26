@@ -2,9 +2,8 @@ import time
 from enum import Enum
 from logging import Logger
 from os import makedirs
-from typing import Optional, List, Dict
-
 from os.path import join
+from typing import Optional, List, Dict
 
 from data.detector import Detector
 from data.finding import Finding

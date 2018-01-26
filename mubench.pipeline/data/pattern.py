@@ -1,5 +1,3 @@
-from distutils.file_util import copy_file
-from os import makedirs
 from os.path import join, dirname, basename, splitext
 
 

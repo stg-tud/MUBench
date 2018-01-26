@@ -1,10 +1,9 @@
 import argparse
+import os
 from argparse import ArgumentParser, HelpFormatter, ArgumentTypeError
 from operator import attrgetter
 from os.path import join, abspath, dirname
 from typing import List, Any
-
-import os
 
 from data.detectors import get_available_detector_ids
 from tasks.implementations import stats

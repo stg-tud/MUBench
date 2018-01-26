@@ -1,10 +1,8 @@
+import sys
 from importlib import import_module
 from os import listdir
-
 from os.path import isdir, join
 from typing import List, Optional
-
-import sys
 
 
 def find_detector(detectors_path: str, detector_id_prefix: str, java_options: List[str], release_tag: Optional[str] = None):

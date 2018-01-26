@@ -1,7 +1,7 @@
 import os
+from os.path import join, dirname, abspath
 
 from nose.tools import assert_equals, assert_is_instance
-from os.path import join, dirname, abspath
 
 from data.detector import Detector
 from data.detectors import find_detector

@@ -5,8 +5,8 @@ import yaml
 from nose.tools import assert_equals
 
 from data.project import Project
-from utils.io import remove_tree, create_file, safe_open
 from tests.test_utils.data_util import create_version
+from utils.io import remove_tree, create_file, safe_open
 
 
 class TestProject:

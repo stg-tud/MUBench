@@ -15,8 +15,6 @@ use MuBench\ReviewSite\Models\Metadata;
 use MuBench\ReviewSite\Models\Misuse;
 use MuBench\ReviewSite\Models\ReviewState;
 use MuBench\ReviewSite\Models\Run;
-use RecursiveDirectoryIterator;
-use RecursiveIteratorIterator;
 use Slim\Http\Request;
 use Slim\Http\Response;
 

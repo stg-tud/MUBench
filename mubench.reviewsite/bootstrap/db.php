@@ -5,8 +5,10 @@
 $capsule = new \Illuminate\Database\Capsule\Manager;
 $capsule->addConnection($container->settings['db']);
 $capsule->setAsGlobal();
-use Illuminate\Events\Dispatcher;
+
 use Illuminate\Container\Container;
+use Illuminate\Events\Dispatcher;
+
 $capsule->setEventDispatcher(new Dispatcher(new Container()));
 $capsule->bootEloquent();
 

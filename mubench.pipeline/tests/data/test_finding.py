@@ -3,10 +3,10 @@ from unittest.mock import patch
 
 from nose.tools import assert_equals
 
-from data.snippets import Snippet
 from data.finding import Finding
-from utils.shell import CommandFailedError
+from data.snippets import Snippet
 from tests.test_utils.data_util import create_misuse
+from utils.shell import CommandFailedError
 
 
 class TestPotentialHit:

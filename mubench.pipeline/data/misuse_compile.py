@@ -1,8 +1,6 @@
 from os.path import join, isdir, exists
 from typing import Set
 
-from os import remove
-
 from data.pattern import Pattern
 from utils.io import remove_tree, write_yaml, read_yaml
 

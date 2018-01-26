@@ -2,8 +2,6 @@ from os.path import exists
 from os.path import join
 from typing import List, Optional, Any, Dict, Set
 
-import yaml
-
 from data.misuse import Misuse, Pattern
 from data.project_checkout import ProjectCheckout, GitProjectCheckout, SVNProjectCheckout, \
     SyntheticProjectCheckout, ZipProjectCheckout

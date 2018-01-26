@@ -2,9 +2,9 @@ from os.path import join
 from tempfile import mkdtemp
 
 from nose.tools import assert_equals, assert_is_instance, assert_raises
-from tests.test_utils.runner_interface_test_impl import RunnerInterfaceTestImpl
 
 from data.detector import Detector
+from tests.test_utils.runner_interface_test_impl import RunnerInterfaceTestImpl
 from utils.io import remove_tree, write_yaml
 
 

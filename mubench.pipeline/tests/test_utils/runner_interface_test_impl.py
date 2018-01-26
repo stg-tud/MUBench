@@ -3,6 +3,7 @@ from unittest.mock import MagicMock
 
 from data.runner_interface import RunnerInterface
 
+
 class RunnerInterfaceTestImpl(RunnerInterface):
     TEST_VERSION = "0.0"
 

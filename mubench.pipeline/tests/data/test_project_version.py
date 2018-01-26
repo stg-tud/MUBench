@@ -1,16 +1,14 @@
-import yaml
 from os.path import join
 from tempfile import mkdtemp
 
+import yaml
 from nose.tools import assert_equals, assert_raises
 
 from data.project import Project
 from data.project_checkout import GitProjectCheckout, SVNProjectCheckout, SyntheticProjectCheckout, ZipProjectCheckout
 from data.project_version import ProjectVersion
-from utils.io import remove_tree, create_file, safe_open
-
-
 from tests.test_utils.data_util import create_project, create_version, create_misuse
+from utils.io import remove_tree, create_file, safe_open
 
 
 class TestProjectVersion:

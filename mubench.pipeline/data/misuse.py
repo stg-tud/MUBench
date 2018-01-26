@@ -5,8 +5,8 @@ from typing import Set, List
 
 import yaml
 
-from data.pattern import Pattern
 from data.misuse_compile import MisuseCompile
+from data.pattern import Pattern
 from data.snippets import get_snippets, Snippet
 
 

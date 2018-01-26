@@ -1,9 +1,10 @@
 import logging
-from utils.shell import CommandFailedError
-from data.build_command import BuildCommand, MavenCommand, GradleCommand, AntCommand
+from unittest.mock import patch, ANY
 
 from nose.tools import assert_equals, assert_is_instance, assert_raises, assert_in
-from unittest.mock import MagicMock, patch, call, ANY
+
+from data.build_command import BuildCommand, MavenCommand, GradleCommand, AntCommand
+from utils.shell import CommandFailedError
 
 
 class BuildCommandTestImpl(BuildCommand):

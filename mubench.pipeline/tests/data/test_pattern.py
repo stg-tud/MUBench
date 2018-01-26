@@ -1,11 +1,11 @@
 from os import makedirs
-from os.path import join, exists, dirname
+from os.path import join
 from shutil import rmtree
 from tempfile import mkdtemp
 
-from nose.tools import assert_raises, assert_equals
+from nose.tools import assert_equals
 
-from data.pattern import Pattern, NoPatternFileError
+from data.pattern import Pattern
 from utils.io import create_file
 
 

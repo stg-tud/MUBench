@@ -9,8 +9,8 @@ from data.detector import Detector
 from data.detector_run import DetectorRun
 from data.finding import SpecializedFinding, Finding
 from data.project import Project
-from data.version_compile import VersionCompile
 from data.project_version import ProjectVersion
+from data.version_compile import VersionCompile
 from tasks.implementations.findings_filters import PotentialHits
 from utils.web_util import post, as_markdown
 

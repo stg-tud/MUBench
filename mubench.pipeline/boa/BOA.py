@@ -1,9 +1,8 @@
 import os
-
 from os.path import exists
 from typing import List
 
-from data.project_checkout import GitProjectCheckout, RepoProjectCheckout
+from data.project_checkout import RepoProjectCheckout
 from utils import java_utils, io
 from utils.shell import Shell
 

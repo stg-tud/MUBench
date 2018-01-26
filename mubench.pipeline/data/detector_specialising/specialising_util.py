@@ -1,6 +1,5 @@
 from base64 import urlsafe_b64encode
 from os import makedirs, remove
-
 from os.path import join, exists
 
 from utils.io import safe_write

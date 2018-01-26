@@ -1,9 +1,9 @@
 import logging
+import os
 import shutil
 from glob import glob
-from os.path import join, basename, dirname, splitext, relpath, exists
-import os
 from os import makedirs
+from os.path import join, dirname, splitext, relpath, exists
 
 from data.misuse import Misuse
 from data.version_compile import VersionCompile

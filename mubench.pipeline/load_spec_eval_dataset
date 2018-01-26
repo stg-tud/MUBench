@@ -1,10 +1,15 @@
 #!/usr/bin/env python3
-import csv, json, os, requests, sys, yaml
+import csv
+import json
+import os
+import requests
+import sys
 from io import TextIOWrapper
+from os import makedirs
 from os.path import join, dirname, abspath, exists
-from os import mkdir, makedirs
-from urllib.request import urlopen
 from urllib.error import HTTPError
+from urllib.request import urlopen
+
 from utils.io import write_yaml, read_yaml
 
 MUBENCH_ROOT_PATH = join(dirname(abspath(__file__)), os.pardir)

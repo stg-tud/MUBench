@@ -7,10 +7,11 @@ from contextlib import ExitStack
 from numbers import Number
 from os import remove
 from os.path import exists, basename
+from typing import List, Dict, Union
 from urllib.request import urlopen
 
 import requests
-from typing import List, Dict, Union
+
 from utils.json_float_encoder import JSONFloatEncoder
 
 
