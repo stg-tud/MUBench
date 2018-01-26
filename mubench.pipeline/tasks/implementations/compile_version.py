@@ -81,11 +81,6 @@ class CompileVersionTask:
             CompileVersionTask.__copy_dependencies(dependencies, dep_dir, compile_base_path)
 
     @staticmethod
-    def __create_jar(classes_path, jar_path):
-        zip_path = shutil.make_archive(jar_path, 'zip', classes_path)
-        os.rename(zip_path, jar_path)
-
-    @staticmethod
     def __copy_dependencies(dependencies: Set[str], dep_dir: str, compile_base_path: str):
         makedirs(dep_dir, exist_ok=True)
         for dependency in dependencies:
@@ -96,3 +91,8 @@ class CompileVersionTask:
                 CompileVersionTask.__create_jar(dependency, os.path.join(dep_dir, dep_name + ".jar"))
             else:
                 shutil.copy(dependency, dep_dir)
+
+    @staticmethod
+    def __create_jar(classes_path, jar_path):
+        zip_path = shutil.make_archive(jar_path, 'zip', classes_path)
+        os.rename(zip_path, jar_path)
