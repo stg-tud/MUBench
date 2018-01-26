@@ -124,7 +124,8 @@ class RunAllFindingsExperiment(TaskConfiguration):
         return "run {}".format(RunAllFindingsExperiment.ID)
 
     def tasks(self, config) -> List:
-        compile_version = CompileVersionTask(config.compiles_path, config.force_compile, config.use_tmp_wrkdir)
+        compile_version = CompileVersionTask(config.compiles_path, config.run_timestamp,
+                                             config.force_compile, config.use_tmp_wrkdir)
         load_detector = LoadDetectorTask(config.detectors_path, config.detector, config.requested_release,
                                          config.java_options)
         detect = DetectAllFindingsTask(config.findings_path, config.force_detect, config.timeout)
@@ -151,7 +152,8 @@ class RunBenchmarkExperiment(TaskConfiguration):
         return "run {}".format(RunBenchmarkExperiment.ID)
 
     def tasks(self, config) -> List:
-        compile_version = CompileVersionTask(config.compiles_path, config.force_compile, config.use_tmp_wrkdir)
+        compile_version = CompileVersionTask(config.compiles_path, config.run_timestamp,
+                                             config.force_compile, config.use_tmp_wrkdir)
         load_detector = LoadDetectorTask(config.detectors_path, config.detector, config.requested_release,
                                          config.java_options)
         detect = DetectAllFindingsTask(config.findings_path, config.force_detect, config.timeout)
