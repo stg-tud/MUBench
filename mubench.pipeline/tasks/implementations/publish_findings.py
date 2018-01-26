@@ -36,7 +36,7 @@ class PublishFindingsTask:
             potential_hits: PotentialHits, version_compile: VersionCompile, detector: Detector):
         logger = logging.getLogger("tasks.publish_findings.version")
         logger.info("Prepare findings of %s in %s for upload to %s...",
-                    detector, self.experiment_id, self.review_site_url)
+                    detector, self.experiment_id, self.__get_publish_findings_url(detector, project, version))
 
         run_info = detector_run.get_run_info()
 
@@ -108,9 +108,13 @@ class PublishFindingsTask:
             "result": result,
             "potential_hits": upload_data
         })
-        url = urljoin(self.review_site_url, "experiments/{}/detectors/{}/projects/{}/versions/{}/runs".format(
-            self.experiment_id, detector.id, project.id, version.version_id))
+        url = self.__get_publish_findings_url(detector, project, version)
         post(url, data, file_paths=file_paths, username=self.review_site_user, password=self.review_site_password)
+
+    def __get_publish_findings_url(self, detector, project, version):
+        experiment_id = self.experiment_id.rstrip('ex')  # the review site uses only the experiment number as Id
+        return urljoin(self.review_site_url, "experiments/{}/detectors/{}/projects/{}/versions/{}/runs".format(
+            experiment_id, detector.id, project.id, version.version_id))
 
     @staticmethod
     def get_file_paths(findings: List[SpecializedFinding]) -> List[str]:
