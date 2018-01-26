@@ -228,7 +228,7 @@ class RunsController extends Controller
 
     function addRun($experimentId, $detectorId, $projectId, $versionId, $run)
     {
-        $detector = $this->createDetector($detectorId);
+        $detector = $this->findOrCreateDetector($detectorId);
         $experiment = Experiment::find($experimentId);
 
         $potential_hits = $run->{'potential_hits'};
@@ -244,7 +244,7 @@ class RunsController extends Controller
         }
     }
 
-    function createDetector($detector_muid)
+    function findOrCreateDetector($detector_muid)
     {
         $detector = Detector::find($detector_muid);
         if(!$detector){
