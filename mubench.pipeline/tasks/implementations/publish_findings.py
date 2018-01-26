@@ -7,12 +7,14 @@ from requests import RequestException
 
 from data.detector import Detector
 from data.detector_run import DetectorRun
-from data.finding import SpecializedFinding, Finding
+from data.finding import SpecializedFinding
 from data.project import Project
 from data.project_version import ProjectVersion
 from data.version_compile import VersionCompile
 from tasks.implementations.findings_filters import PotentialHits
 from utils.web_util import post, as_markdown
+
+_SNIPPETS_KEY = "target_snippets"
 
 
 class PublishFindingsTask:
@@ -35,46 +37,54 @@ class PublishFindingsTask:
     def run(self, project: Project, version: ProjectVersion, detector_run: DetectorRun,
             potential_hits: PotentialHits, version_compile: VersionCompile, detector: Detector):
         logger = logging.getLogger("tasks.publish_findings.version")
-        logger.info("Prepare findings of %s in %s for upload to %s...",
-                    detector, self.experiment_id, self.review_site_url)
-
-        run_info = detector_run.get_run_info()
+        logger.info("Publishing findings of %s in %s on %s for upload to %s...",
+                    detector, self.experiment_id, version, self.review_site_url)
 
         if detector_run.is_success():
-            logger.info("Preparing findings in %s...", version)
+            logger.info("Detector reported %s potential hits.", len(potential_hits.findings))
             result = "success"
-            logger.info("Found %s potential hits.", len(potential_hits.findings))
+        elif detector_run.is_error():
+            logger.info("Detector produced an error.")
+            result = "error"
+        elif detector_run.is_timeout():
+            logger.info("Detector timed out.")
+            result = "timeout"
         else:
-            if detector_run.is_error():
-                logger.info("Run on %s produced an error.", version)
-                result = "error"
-            elif detector_run.is_timeout():
-                logger.info("Run on %s timed out.", version)
-                result = "timeout"
-            else:
-                logger.info("Not run on %s.", version)
-                result = "not run"
+            logger.info("Detector was not run.")
+            result = "not run"
+
+        run_info = detector_run.get_run_info()
+        specialized_potential_hits = self.__specialize(potential_hits, detector, detector_run, version_compile, logger)
 
         try:
-            logger.info("Publishing potential hits...")
-            for potential_hits_slice in self.__slice_by_max_files_per_post(potential_hits.findings):
-                post_data_slice = []
-                for potential_hit in potential_hits_slice:
-                    postable_data = self._prepare_post(potential_hit, detector, detector_run.findings_path,
-                                                       version_compile, logger)
-                    post_data_slice.append(postable_data)
-
-                file_paths = PublishFindingsTask.get_file_paths(potential_hits_slice)
-                self.__post(project, version, detector, run_info, result, post_data_slice, file_paths)
-            logger.info("Potential hits published.")
+            for potential_hits_slice in self.__slice_by_max_files_per_post(specialized_potential_hits):
+                postable_data = self.__to_postable_data(run_info, result, potential_hits_slice)
+                file_paths = self.__get_file_paths(potential_hits_slice)
+                self.__post(project, version, detector, postable_data, file_paths)
         except RequestException as e:
             response = e.response
             if response:
-                logger.error("ERROR: %d %s: %s", response.status_code, response.reason, response.text)
+                logger.error("%d %s: %s", response.status_code, response.reason, response.text)
             else:
-                logger.error("ERROR: %s", e)
+                logger.error("%s", e)
 
-    def __slice_by_max_files_per_post(self, potential_hits: List[Finding]) -> List[List[Finding]]:
+    @staticmethod
+    def __specialize(potential_hits, detector, detector_run, version_compile, logger):
+        specialized_findings = []
+
+        for finding in potential_hits.findings:
+            specialize_finding = detector.specialize_finding(detector_run.findings_path, finding)
+
+            snippets = finding.get_snippets(version_compile.original_sources_paths)
+            if not snippets:
+                logger.warning("No snippets added.")
+            specialize_finding[_SNIPPETS_KEY] = snippets
+
+            specialized_findings.append(specialize_finding)
+
+        return specialized_findings
+
+    def __slice_by_max_files_per_post(self, potential_hits: List[SpecializedFinding]) -> List[List[SpecializedFinding]]:
         potential_hits_slice = []
         number_of_files_in_slice = 0
         for potential_hit in potential_hits:
@@ -89,43 +99,41 @@ class PublishFindingsTask:
 
         yield potential_hits_slice
 
-    def _prepare_post(self, finding: Finding, detector: Detector, findings_path: str, version_compile: VersionCompile,
-                      logger) -> Dict[str, str]:
-        specialized_finding = detector.specialize_finding(findings_path, finding)
-        markdown_dict = self._to_markdown_dict(specialized_finding)
+    def __to_postable_data(self, run_info, result, potential_hits_slice: List[SpecializedFinding]):
+        postable_potential_hits = []
 
-        snippets = finding.get_snippets(version_compile.original_sources_paths)
-        if not snippets:
-            logger.warning("No snippets added.")
+        for potential_hit in potential_hits_slice:
+            postable_data = self._to_markdown_dict(potential_hit)
+            postable_data[_SNIPPETS_KEY] = [snippet.__dict__ for snippet in (potential_hit[_SNIPPETS_KEY])]
+            postable_potential_hits.append(postable_data)
 
-        markdown_dict["target_snippets"] = [snippet.__dict__ for snippet in snippets]
-        return markdown_dict
+        data = self._to_markdown_dict(run_info)
+        data["result"] = result
+        data["potential_hits"] = postable_potential_hits
 
-    def __post(self, project, version, detector, run_info, result, upload_data, file_paths):
-        data = {}
-        data.update(self._to_markdown_dict(run_info))
-        data.update({
-            "result": result,
-            "potential_hits": upload_data
-        })
-        url = self.__get_publish_findings_url(detector, project, version)
-        post(url, data, file_paths=file_paths, username=self.review_site_user, password=self.review_site_password)
-
-    def __get_publish_findings_url(self, detector, project, version):
-        experiment_id = self.experiment_id[2:]  # the review site uses only the experiment number as Id
-        return urljoin(self.review_site_url, "experiments/{}/detectors/{}/projects/{}/versions/{}/runs".format(
-            experiment_id, detector.id, project.id, version.version_id))
+        return data
 
     @staticmethod
-    def get_file_paths(findings: List[SpecializedFinding]) -> List[str]:
+    def _to_markdown_dict(finding: SpecializedFinding) -> Dict[str, str]:
+        markdown_dict = dict()
+        for key, value in finding.items():
+            if key != _SNIPPETS_KEY:
+                markdown_dict[key] = as_markdown(value)
+        return markdown_dict
+
+    @staticmethod
+    def __get_file_paths(findings: List[SpecializedFinding]) -> List[str]:
         files = []
         for finding in findings:
             files.extend(finding.files)
         return files
 
-    def _to_markdown_dict(self, finding: SpecializedFinding) -> Dict[str, str]:
-        markdown_dict = dict()
-        for key, value in finding.items():
-            markdown_dict[key] = as_markdown(value)
-        return markdown_dict
+    def __post(self, project, version, detector, postable_data, file_paths):
+        url = self.__get_publish_findings_url(detector, project, version)
+        post(url, postable_data, file_paths=file_paths,
+             username=self.review_site_user, password=self.review_site_password)
 
+    def __get_publish_findings_url(self, detector, project, version):
+        experiment_id = self.experiment_id[2:]  # the review site uses only the experiment number as Id
+        return urljoin(self.review_site_url, "experiments/{}/detectors/{}/projects/{}/versions/{}/runs".format(
+            experiment_id, detector.id, project.id, version.version_id))

@@ -5,7 +5,7 @@ from nose.tools import assert_equals
 
 from data.detector import Detector
 from data.detector_run import DetectorRun
-from data.finding import SpecializedFinding
+from data.finding import SpecializedFinding, Finding
 from data.snippets import Snippet
 from tasks.implementations.findings_filters import PotentialHits
 from tasks.implementations.publish_findings import PublishFindingsTask
@@ -220,13 +220,26 @@ class TestPublishFindingsTask:
             "potential_hits": [{"list": "* hello\n* world", "dict": "key: \nvalue", "target_snippets": []}]
         })
 
-    @staticmethod
-    def _create_finding(data: Dict, file_paths=None, snippets=None):
+    def _create_finding(self, data: Dict, file_paths=None, snippets=None):
         if snippets is None:
             snippets = []
         if file_paths is None:
             file_paths = []
-        finding = SpecializedFinding(data, files=file_paths)
+
+        finding = Finding(data)
         finding.get_snippets = lambda source_paths: \
-            snippets if source_paths == ["/sources/-p-/-v-/build/"] else {}["illegal source path: %s" % source_path]
+            snippets if source_paths == ["/sources/-p-/-v-/build/"] else {}["illegal source paths: %s" % source_paths]
+
+        # file_paths are added by the detector in its specialization step, hence, we need to mock this step such that
+        # it appends the file_paths to the specialized findings created for the finding we create here
+        orig_specialize_findings = self.detector.specialize_finding
+
+        def mock_specialize_finding(_path, _finding):
+            specialized_finding = orig_specialize_findings(_path, _finding)
+            if _finding is finding:
+                specialized_finding.files.extend(file_paths)
+            return specialized_finding
+
+        self.detector.specialize_finding = mock_specialize_finding
+
         return finding
