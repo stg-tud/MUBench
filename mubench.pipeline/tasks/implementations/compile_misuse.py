@@ -2,6 +2,7 @@ import logging
 import shutil
 from glob import glob
 from os.path import join, basename, dirname, splitext, relpath, exists
+import os
 from os import makedirs
 
 from data.misuse import Misuse
@@ -56,7 +57,7 @@ class CompileMisuseTask:
     @staticmethod
     def _compile_patterns(source: str, destination: str, classpath: str):
         makedirs(destination, exist_ok=True)
-        for root, dirs, files in walk(source):
+        for root, dirs, files in os.walk(source):
             for java_file in [f for f in files if f.endswith(".java")]:
                 destination = dirname(join(destination, java_file))
                 Shell.exec('javac "{}" -d "{}" -cp "{}"'.format(join(root, java_file), destination, classpath),
