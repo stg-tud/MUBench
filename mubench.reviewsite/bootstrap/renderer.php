@@ -18,7 +18,7 @@ $container['renderer'] = function ($container) {
     $experiments = \MuBench\ReviewSite\Models\Experiment::all();
     $detectors = [];
     foreach ($experiments as $experiment) { /** @var \MuBench\ReviewSite\Models\Experiment $experiment */
-        $detectors[$experiment->id] = \MuBench\ReviewSite\Models\Detector::withFindings($experiment);
+        $detectors[$experiment->id] = \MuBench\ReviewSite\Models\Detector::withRuns($experiment);
     }
 
     $pathFor = function ($routeName, $args = [], $private = false) use ($container, $user) {

@@ -22,6 +22,18 @@ class Detector extends Model
         });
     }
 
+    public static function withRuns(Experiment $experiment)
+    {
+        return Detector::all()->filter(function(Detector $detector) use ($experiment) {
+            return $detector->hasRuns($experiment);
+        })->sortBy('muid');
+    }
+
+    public function hasRuns(Experiment $experiment)
+    {
+        return Run::of($this)->in($experiment)->exists();
+    }
+
     public static function withFindings(Experiment $experiment)
     {
         return Detector::all()->filter(function(Detector $detector) use ($experiment) {

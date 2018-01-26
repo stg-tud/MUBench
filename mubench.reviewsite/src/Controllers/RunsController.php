@@ -61,7 +61,7 @@ class RunsController extends Controller
 
         $results = array();
         foreach($experiments as $experiment){
-            $detectors = Detector::withFindings($experiment);
+            $detectors = Detector::withRuns($experiment);
             $results[$experiment->id] = $this->getResultsForExperiment($experiment, $detectors, $ex2_review_size);
         }
 
