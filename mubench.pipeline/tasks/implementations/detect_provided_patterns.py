@@ -40,7 +40,7 @@ class DetectProvidedPatternsTask:
             key_detector_mode: DetectProvidedPatternsTask.__DETECTOR_MODE,
             key_training_src_path: misuse_compile.pattern_sources_path,
             key_training_classpath: misuse_compile.pattern_classes_path,
-            key_target_src_path: misuse_compile.misuse_source_path,
-            key_target_classpath: misuse_compile.misuse_classes_path,
+            key_target_src_path: [misuse_compile.misuse_source_path],
+            key_target_classpath: [misuse_compile.misuse_classes_path],
             key_dependency_classpath: version_compile.get_full_classpath()
         }
