@@ -9,7 +9,7 @@ from data.misuse_compile import MisuseCompile
 from data.project_version import ProjectVersion
 from data.version_compile import VersionCompile
 from tasks.configurations.detector_interface_configuration import key_detector_mode, \
-    key_training_src_path, key_training_classpath, key_target_src_path, key_target_classpath, key_dependency_classpath
+    key_training_src_path, key_training_classes_path, key_target_src_paths, key_target_classes_paths, key_dependency_classpath
 
 
 class DetectProvidedPatternsTask:
@@ -39,8 +39,8 @@ class DetectProvidedPatternsTask:
         return {
             key_detector_mode: DetectProvidedPatternsTask.__DETECTOR_MODE,
             key_training_src_path: misuse_compile.pattern_sources_path,
-            key_training_classpath: misuse_compile.pattern_classes_path,
-            key_target_src_path: [misuse_compile.misuse_source_path],
-            key_target_classpath: [misuse_compile.misuse_classes_path],
+            key_training_classes_path: misuse_compile.pattern_classes_path,
+            key_target_src_paths: [misuse_compile.misuse_source_path],
+            key_target_classes_paths: [misuse_compile.misuse_classes_path],
             key_dependency_classpath: version_compile.get_full_classpath()
         }

@@ -7,7 +7,7 @@ from data.detector_run import DetectorRun
 from data.project_version import ProjectVersion
 from data.version_compile import VersionCompile
 from tasks.configurations.detector_interface_configuration import key_detector_mode, \
-    key_target_src_path, key_target_classpath, key_dependency_classpath
+    key_target_src_paths, key_target_classes_paths, key_dependency_classpath
 
 
 class DetectAllFindingsTask:
@@ -35,7 +35,7 @@ class DetectAllFindingsTask:
     def _get_detector_arguments(version_compile: VersionCompile):
         return {
             key_detector_mode: DetectAllFindingsTask.__DETECTOR_MODE,
-            key_target_src_path: version_compile.original_sources_paths,
-            key_target_classpath: version_compile.original_classes_paths,
+            key_target_src_paths: version_compile.original_sources_paths,
+            key_target_classes_paths: version_compile.original_classes_paths,
             key_dependency_classpath: version_compile.get_full_classpath()
         }
