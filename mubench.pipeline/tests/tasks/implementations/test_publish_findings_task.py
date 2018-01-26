@@ -52,7 +52,7 @@ class TestPublishFindingsTask:
 
         assert_equals(post_mock.call_args[0][0],
                       "http://dummy.url/experiments/{}/detectors/{}/projects/{}/versions/{}/runs".format(
-                          self.experiment_id, self.detector.id, self.project.id, self.version.version_id))
+                          "1", self.detector.id, self.project.id, self.version.version_id))
 
     @patch("tasks.implementations.publish_findings.getpass.getpass")
     def test_post_auth_prompt(self, pass_mock, post_mock):
