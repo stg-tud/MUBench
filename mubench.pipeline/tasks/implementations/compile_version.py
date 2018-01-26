@@ -10,7 +10,7 @@ from typing import List, Set
 from data.build_command import BuildCommand
 from data.project_checkout import ProjectCheckout
 from data.project_version import ProjectVersion
-from utils.io import remove_tree, copy_tree, zip_dirs
+from utils.io import remove_tree, copy_tree, zip_dir_contents
 
 
 class CompileVersionTask:
@@ -53,7 +53,7 @@ class CompileVersionTask:
                               self.compiles_base_path,
                               logger)
                 logger.debug("Create project jar...")
-                zip_dirs(version_compile.original_classes_paths, version_compile.original_classpath)
+                zip_dir_contents(version_compile.original_classes_paths, version_compile.original_classpath)
 
                 version_compile.save(self.run_timestamp)
 

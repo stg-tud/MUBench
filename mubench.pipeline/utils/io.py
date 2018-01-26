@@ -150,10 +150,11 @@ class open_yamls_if_exists(open_yamls):
             open_yamls.__exit__(self, exc_type, exc_val, exc_tb)
 
 
-def zip_dirs(sources: List[str], destination: str):
-    with zipfile.ZipFile(destination, 'w', zipfile.ZIP_DEFLATED) as zip_file:
+def zip_dir_contents(sources: List[str], destination: str):
+    with zipfile.ZipFile(destination, 'w', zipfile.ZIP_DEFLATED) as archive:
         for source in sources:
             for root, dirs, files in walk(source):
                 for file in files:
-                    file_path_in_archive = relpath(join(root, file), join(source, '..'))
-                    zip_file.write(join(root, file), file_path_in_archive)
+                    file_path = join(root, file)
+                    file_path_in_archive = relpath(file_path, source)
+                    archive.write(file_path, file_path_in_archive)

@@ -7,7 +7,7 @@ from tempfile import mkdtemp
 import yaml
 from nose.tools import assert_raises, assert_equals
 
-from utils.io import create_file, create_file_path, safe_open, safe_write, remove_tree, copy_tree, write_yaml, zip_dirs
+from utils.io import create_file, create_file_path, safe_open, safe_write, remove_tree, copy_tree, write_yaml, zip_dir_contents
 
 
 class TestIo:
@@ -84,7 +84,7 @@ class TestIo:
         with assert_raises(FileNotFoundError):
             copy_tree(src, "-irrelevant-")
 
-    def test_zip_dirs(self):
+    def test_zip_dir_contents(self):
         src1 = join(self.temp_dir, "src1")
         src2 = join(self.temp_dir, "src2")
         create_file(join(src1, "file1"))
@@ -92,14 +92,14 @@ class TestIo:
         sources = [src1, src2]
         destination = join(self.temp_dir, "archive")
 
-        zip_dirs(sources, destination)
+        zip_dir_contents(sources, destination)
 
         extract_destination = join(self.temp_dir, "extracted")
         with zipfile.ZipFile(destination, 'r') as zip_file:
             zip_file.extractall(extract_destination)
 
-        assert exists(join(extract_destination, "src1", "file1"))
-        assert exists(join(extract_destination, "src2", "file2"))
+        assert exists(join(extract_destination, "file1"))
+        assert exists(join(extract_destination, "file2"))
 
 
 class TestIOYaml:
