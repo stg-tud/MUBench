@@ -1,5 +1,6 @@
 import os
 from os.path import join, isdir, exists
+from typing import List
 
 from utils.io import remove_tree, write_yaml, read_yaml
 
@@ -11,12 +12,12 @@ class VersionCompile:
     __KEY_TIMESTAMP = "timestamp"
     __DEFAULT_TIMESTAMP = 0
 
-    def __init__(self, base_path: str, relative_sources_paths: str, relative_classes_path: str):
+    def __init__(self, base_path: str, relative_sources_paths: List[str], relative_classes_paths: List[str]):
         self.build_dir = join(base_path, VersionCompile.__BUILD_DIR)
         self.original_sources_paths = [join(self.build_dir, rel_path.lstrip(os.path.sep))
                                        for rel_path in relative_sources_paths]
         self.original_classes_paths = [join(self.build_dir, rel_path.lstrip(os.path.sep))
-                                       for rel_path in relative_classes_path]
+                                       for rel_path in relative_classes_paths]
         self.original_classpath = join(base_path, "original-classes.jar")
         self.dependencies_path = join(base_path, VersionCompile.DEPENDENCY_DIR)
         self._compile_info_file = join(self.build_dir, self.__COMPILE_INFO_FILE)
