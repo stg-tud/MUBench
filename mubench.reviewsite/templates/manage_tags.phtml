@@ -37,6 +37,7 @@ use MuBench\ReviewSite\Models\ReviewState;
 </head>
 <body>
 <?php include "includes/menu.phtml"; ?>
+<form id="update.form" action="<?= $pathFor('tags.update', array()) ?>" method="post" target="">
 <table>
     <thead>
     <tr>
@@ -50,24 +51,21 @@ use MuBench\ReviewSite\Models\ReviewState;
     <?php foreach($tags as $tag) : ?>
             <tr>
                 <td>
-                    <input form="update.form" id="name-input" name="tags[<?= htmlspecialchars($tag->id); ?>][name]" value="<?= htmlspecialchars($tag->name) ?>">
+                    <input id="name-input" name="tags[<?= htmlspecialchars($tag->id); ?>][name]" value="<?= htmlspecialchars($tag->name) ?>">
                 </td>
                 <td>
                     <div id="color-field-<?= htmlspecialchars($tag->id) ?>" style="background-color:<?= htmlspecialchars($tag->color) ?>;width:15px;height:15px;margin-top:4px"></div>
                 </td>
                 <td>
-                    <input form="update.form" id="color-input-<?= htmlspecialchars($tag->id) ?>" name="tags[<?= htmlspecialchars($tag->id); ?>][color]" oninput="changeColor(this)" value="<?= htmlspecialchars($tag->color) ?>">
+                    <input id="color-input-<?= htmlspecialchars($tag->id) ?>" name="tags[<?= htmlspecialchars($tag->id); ?>][color]" oninput="changeColor(this)" value="<?= htmlspecialchars($tag->color) ?>">
                 </td>
                 <td>
-                    <form action="<?= $pathFor('tags.delete', array('tag_id' => $tag->id)) ?>" method="post" target="">
-                        <button style="border:none;color:darkred;outline:none;margin:5px;padding:0;background-color:white;cursor:pointer" type="submit"><i class="fa fa-trash fa-1"></i></button>
-                    </form>
+                    <a href="<?= $pathFor('tags.delete', array('tag_id' => $tag->id)) ?>"><i class="fa fa-trash fa-1"></i></a>
                 </td>
-            </tr>
+            </tr>^
     <?php endforeach; ?>
     </tbody>
 </table>
-<form id="update.form" action="<?= $pathFor('tags.update', array()) ?>" method="post" target="">
     <input type="submit" value="Update tags" />
 </form>
 
