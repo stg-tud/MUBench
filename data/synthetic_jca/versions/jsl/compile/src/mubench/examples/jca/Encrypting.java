@@ -1,3 +1,5 @@
+package mubench.examples.jca;
+
 import javax.crypto.spec.SecretKeySpec;
 import javax.crypto.Cipher;
 
