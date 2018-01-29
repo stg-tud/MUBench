@@ -3,6 +3,7 @@
 namespace MuBench\ReviewSite\Controllers;
 
 
+use Illuminate\Database\Eloquent\Collection;
 use MuBench\ReviewSite\Models\Detector;
 use MuBench\ReviewSite\Models\Experiment;
 use MuBench\ReviewSite\Models\FindingReview;
@@ -35,94 +36,47 @@ class ReviewsController extends Controller
         $is_reviewer = ($this->user && $reviewer && $this->user->id == $reviewer->id) || ($reviewer && $reviewer->id == $resolution_reviewer->id);
 
         $runs = RunsController::getRuns($detector, $experiment, $ex2_review_size);
-        $current_run = Run::of($detector)->in($experiment)->where(['project_muid' => $project_muid, 'version_muid' => $version_muid])->first();
-        $current_misuse = $current_run->misuses()->where('misuse_muid', $misuse_muid)->first();
 
-        $reviewable_runs_with_current = $runs->filter(function ($value, $key) use ($current_misuse) {
-            if ($value->misuses->isNotEmpty() && $value->misuses->contains(function ($value, $key) use ($current_misuse) {
-                    return $value->getReviewState() == ReviewState::NEEDS_REVIEW || $value->id == $current_misuse->id;
-                })) {
-                return True;
-            }
-            return False;
-        });
+        $all_misuses = new Collection;
+        foreach($runs as $run){
+            $all_misuses = $all_misuses->merge($run->misuses);
+        }
 
+        $previous_misuse = $all_misuses->last();
+        $next_misuse = $all_misuses->first();
 
-        $previous_misuse = NULL;
-        $next_misuse = NULL;
-        $next_run = NULL;
-        $previous_run = NULL;
-        $current_misuses = $current_run->misuses->filter(function ($value, $key) use ($current_misuse) {
-            return $value->getReviewState() == ReviewState::NEEDS_REVIEW || $value->id == $current_misuse->id;
-        });
-        if ($reviewable_runs_with_current->count() > 1 || ($reviewable_runs_with_current->count() == 1 && $current_misuses->count() > 1)) {
-            $found = False;
-            foreach ($current_misuses as $key => $misuse) {
-                if ($found) {
-                    $next_misuse = $misuse;
-                    break;
+        $next_reviewable_misuse = NULL;
+        $misuse = NULL;
+
+        foreach($all_misuses as $current_misuse){
+            if(!$misuse && $current_misuse->getProject() === $project_muid
+                && $current_misuse->getVersion() === $version_muid
+                && $current_misuse->misuse_muid === $misuse_muid){
+                    $misuse = $current_misuse;
+            }else{
+                if($misuse && $next_misuse->id === $all_misuses->first()->id){
+                    $next_misuse = $current_misuse;
                 }
-                if ($misuse->misuse_muid == $misuse_muid) {
-                    $found = True;
-                }
-                if (!$found) {
-                    $previous_misuse = $misuse;
-                }
-            }
-            if ($reviewable_runs_with_current->count() == 1) {
-                if (!$next_misuse) {
-                    $next_misuse = $current_misuses->first();
-                }
-                if (!$previous_misuse) {
-                    $previous_misuse = $current_misuses->last();
-                }
-            } else {
-                $found = False;
-                foreach ($runs as $key => $run) {
-                    if ($found) {
-                        $next_run = $run;
+                if((!$next_reviewable_misuse || $misuse) && !$current_misuse->hasReviewed($reviewer) && $current_misuse->getReviewState() === ReviewState::NEEDS_REVIEW){
+                    $next_reviewable_misuse = $current_misuse;
+                    if($misuse){
                         break;
                     }
-                    if ($run->run_id == $current_run->id) {
-                        $found = True;
-                    }
-                    if (!$found) {
-                        $previous_run = $run;
-                    }
-                }
-                $only_reviewable_runs = $reviewable_runs_with_current->filter(function ($value, $key) {
-                    if ($value->misuses->isNotEmpty() && $value->misuses->contains(function ($value, $key) {
-                            return $value->getReviewState() == ReviewState::NEEDS_REVIEW;
-                        })) {
-                        return True;
-                    }
-                    return False;
-                });
-                if (!$previous_run) {
-                    $previous_run = $only_reviewable_runs->last();
-                }
-                if (!$next_run) {
-                    $next_run = $only_reviewable_runs->first();
-                }
-                if (!$next_misuse) {
-                    $next_misuse = $next_run->misuses->filter(function ($value, $key) {
-                        return $value->getReviewState() == ReviewState::NEEDS_REVIEW;
-                    })->first();
-                }
-                if (!$previous_misuse) {
-                    $previous_misuse = $previous_run->misuses->filter(function ($value, $key) {
-                        return $value->getReviewState() == ReviewState::NEEDS_REVIEW;
-                    })->last();
                 }
             }
+            if(!$misuse){
+                $previous_misuse = $current_misuse;
+            }
+
         }
+
         $all_violation_types = Type::all();
         $all_tags = Tag::all();
-        $review = $current_misuse->getReview($reviewer);
+        $review = $misuse->getReview($reviewer);
         return $this->renderer->render($response, 'review.phtml', ['reviewer' => $reviewer, 'is_reviewer' => $is_reviewer,
-            'misuse' => $current_misuse, 'experiment' => $experiment,
+            'misuse' => $misuse, 'experiment' => $experiment,
             'detector' => $detector, 'review' => $review,
-            'violation_types' => $all_violation_types, 'tags' => $all_tags, 'next_misuse' => $next_misuse, 'previous_misuse' => $previous_misuse]);
+            'violation_types' => $all_violation_types, 'tags' => $all_tags, 'next_misuse' => $next_misuse, 'previous_misuse' => $previous_misuse, 'next_reviewable_misuse' => $next_reviewable_misuse]);
     }
 
     public function getTodo(Request $request, Response $response, array $args)
