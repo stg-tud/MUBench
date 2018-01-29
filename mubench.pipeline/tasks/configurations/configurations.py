@@ -52,7 +52,7 @@ class InfoTaskConfiguration(TaskConfiguration):
 
     def tasks(self, config) -> List:
         collect_projects = CollectProjectsTask(config.data_path)
-        collect_versions = CollectVersionsTask()
+        collect_versions = CollectVersionsTask(config.development_mode)
         collect_misuses = CollectMisusesTask()
         project_info = ProjectInfoTask(config.checkouts_path, config.compiles_path)
         version_info = VersionInfoTask(config.checkouts_path, config.compiles_path)
@@ -67,7 +67,7 @@ class CheckoutTaskConfiguration(TaskConfiguration):
 
     def tasks(self, config) -> List:
         collect_projects = CollectProjectsTask(config.data_path)
-        collect_versions = CollectVersionsTask()
+        collect_versions = CollectVersionsTask(config.development_mode)
         checkout = CheckoutTask(config.checkouts_path, config.run_timestamp, config.force_checkout, config.use_tmp_wrkdir)
         return [collect_projects, collect_versions, checkout]
 
@@ -192,7 +192,7 @@ class StatsTaskConfiguration(TaskConfiguration):
 
     def tasks(self, config) -> List:
         collect_projects = CollectProjectsTask(config.data_path)
-        collect_versions = CollectVersionsTask()
+        collect_versions = CollectVersionsTask(config.development_mode)
         collect_misuses = CollectMisusesTask()
         calculator = stats.get_calculator(config.script)
         return [collect_projects, collect_versions, collect_misuses, calculator]
@@ -214,7 +214,7 @@ class DatasetCheckTaskConfiguration(TaskConfiguration):
 
     def tasks(self, config) -> List:
         collect_projects = CollectProjectsTask(config.data_path)
-        collect_versions = CollectVersionsTask()
+        collect_versions = CollectVersionsTask(config.development_mode)
         collect_misuses = CollectMisusesTask()
         project_check = ProjectCheckTask()
         version_check = VersionCheckTask()

@@ -66,6 +66,8 @@ def _get_command_line_parser(available_detectors: List[str], available_scripts: 
              "Run `./mubench <task> -h` for details.",
         dest='task')
 
+    subparsers.required = True
+
     parser.add_argument('--use-tmp-wrkdir', dest='use_tmp_wrkdir', default=__get_default('use-tmp-wrkdir', False),
                         help=argparse.SUPPRESS, action='store_true')
     parser.add_argument('--data-path', dest='data_path', default=__get_default('data-path', __DATA_PATH),
@@ -80,6 +82,8 @@ def _get_command_line_parser(available_detectors: List[str], available_scripts: 
                         default=__get_default('datasets-file-path', __DATASETS_FILE_PATH), help=argparse.SUPPRESS)
     parser.add_argument('--detectors-path', dest='detectors_path',
                         default=__get_default('detectors-path', __DETECTORS_PATH), help=argparse.SUPPRESS)
+    parser.add_argument('--development-mode', dest='development_mode', default=__get_default('development-mode', False),
+                        help=argparse.SUPPRESS, action='store_true')
 
     __add_check_subprocess(available_datasets, subparsers)
     __add_info_subprocess(available_datasets, subparsers)

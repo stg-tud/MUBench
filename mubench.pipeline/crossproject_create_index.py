@@ -20,5 +20,5 @@ class Task:
 
 white_list = get_white_list("../data/datasets.yml", "icse16ex1")
 initial_parameters = [DataEntityLists(white_list, [])]
-runner = TaskRunner([CollectProjectsTask("../data/"), CollectVersionsTask(), CollectMisusesTask(), Task()])
+runner = TaskRunner([CollectProjectsTask("../data/"), CollectVersionsTask(False), CollectMisusesTask(), Task()])
 runner.run(*initial_parameters)
