@@ -208,7 +208,7 @@ $columns_to_ignore = array(
                         <?php if (!$user): ?>
                             <a href="<?= $pathFor('view', array('experiment_id' => $experiment->id, 'detector_muid' => $detector->muid, 'project_muid' => $project, 'version_muid' => $version, 'misuse_muid' => $misuse->misuse_muid)); ?>" class="<?= $button_classes ?>">view</a>
                         <?php elseif ($misuse->hasReviewed($user)): ?>
-                            <a href="<?= $pathFor('review', array('experiment_id' => $experiment->id, 'detector_muid' => $detector->muid, 'project_muid' => $project, 'version_muid' => $version, 'misuse_muid' => $misuse->misuse_muid, 'reviewer_name' => $user->name)) ?><?= $origin_param ?>" class="<?= $button_classes ?>">edit
+                            <a href="<?= $pathFor('review', array('experiment_id' => $experiment->id, 'detector_muid' => $detector->muid, 'project_muid' => $project, 'version_muid' => $version, 'misuse_muid' => $misuse->misuse_muid, 'reviewer_name' => $user->name)) ?><?= $origin_param ?><?= $experiment->id === 2 ? "&ex2_review_size=$ex2_review_size" : "" ?>" class="<?= $button_classes ?>">edit
                             <?php $your_decision = $misuse->getReview($user)->getDecision() ?>
                             <?php if ($your_decision == Decision::YES): ?>
                                 (<i class="fa fa-thumbs-o-up" aria-hidden="true" style="color:green;" title="Yes"></i>)
@@ -221,7 +221,7 @@ $columns_to_ignore = array(
                             <?php endif; ?>
                         </a>
                     <?php else: ?>
-                        <a href="<?= $pathFor('review', array('experiment_id' => $experiment->id, 'detector_muid' => $detector->muid, 'project_muid' => $project, 'version_muid' => $version, 'misuse_muid' => $misuse->misuse_muid, 'reviewer_name' => $user->name)); ?><?= $origin_param ?>" class="<?= $button_classes ?>">review</a>
+                        <a href="<?= $pathFor('review', array('experiment_id' => $experiment->id, 'detector_muid' => $detector->muid, 'project_muid' => $project, 'version_muid' => $version, 'misuse_muid' => $misuse->misuse_muid, 'reviewer_name' => $user->name)); ?><?= $origin_param ?><?= $experiment->id === 2 ? "&ex2_review_size=$ex2_review_size" : "" ?>" class="<?= $button_classes ?>">review</a>
                     <?php endif; ?>
                 </td>
                 <td class="<?= $style_classes ?>" style="max-width: 300px;">

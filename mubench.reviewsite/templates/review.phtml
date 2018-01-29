@@ -363,24 +363,30 @@ $columns_to_ignore = array(
                 </table>
                 <input type="hidden" name="misuse_id" value="<?= htmlspecialchars($misuse->id); ?>">
                 <div style="position:fixed;bottom:0;left:0;width:100%;background-color:#333;z-index:1">
-                    <a href="<?= $origin_path ? $origin_path : $pathFor('experiment.detector', array("experiment_id"=>$misuse->run->experiment_id, "detector_muid" => $misuse->detector->muid)) ?>" class="button">return</a>
-                    <?php if($previous_misuse): ?>
-                        <a href="<?= $pathFor('view', array('experiment_id' => $previous_misuse->run->experiment_id, 'detector_muid' => $previous_misuse->detector->muid, 'project_muid' => $previous_misuse->getProject(), 'version_muid' => $previous_misuse->getVersion(), 'misuse_muid' => $previous_misuse->misuse_muid)); ?>?origin=<?= $origin_path ?>" class="button"><</a>
+                    <?php
+                        $origin_path = $origin_path ? $origin_path : $pathFor('experiment.detector', array("experiment_id"=> $experiment->id, "detector_muid" => $detector->muid));
+                        $next_misuse_path = $next_misuse ? $pathFor('view', array('experiment_id' => $experiment->id, 'detector_muid' => $detector->muid, 'project_muid' => $next_misuse->getProject(), 'version_muid' => $next_misuse->getVersion(), 'misuse_muid' => $next_misuse->misuse_muid)) . "?origin=$origin_path" . ($experiment->id === 2 ? "&ex2_review_size=$ex2_review_size" : "") : "";
+                        $next_reviewable_misuse_path = $next_reviewable_misuse ? $pathFor('view', array('experiment_id' => $experiment->id, 'detector_muid' => $detector->muid, 'project_muid' => $next_reviewable_misuse->getProject(), 'version_muid' => $next_reviewable_misuse->getVersion(), 'misuse_muid' => $next_reviewable_misuse->misuse_muid)) . "?origin=$origin_path" . ($experiment->id === 2 ? "&ex2_review_size=$ex2_review_size" : "") : "";
+                        $previous_misuse_path = $previous_misuse ? $pathFor('view', array('experiment_id' => $experiment->id, 'detector_muid' => $detector->muid, 'project_muid' => $previous_misuse->getProject(), 'version_muid' => $previous_misuse->getVersion(), 'misuse_muid' => $previous_misuse->misuse_muid)) . "?origin=$origin_path" . ($experiment->id === 2 ? "&ex2_review_size=$ex2_review_size" : "") : "";
+                        ?>
+                    <a href="<?= $origin_path ?>" class="button">return</a>
+                    <?php if($previous_misuse_path): ?>
+                        <a href="<?= $previous_misuse_path ?>" class="button"><</a>
                     <?php endif; ?>
                     <select id="review_dropdown">
                         <option value="normal">Save</option>
                         <option value="return">Save and Return</option>
                         <option value="next">Save and Next</option>
-                        <?php if($next_reviewable_misuse) : ?>
+                        <?php if($next_reviewable_misuse_path) : ?>
                             <option value="review">Save and Next with Potential Hits</option>
                         <?php endif; ?>
                     </select>
                     <button onclick="saveReview()">Save</button>
-                    <?php if($next_misuse) : ?>
-                        <a href="<?= $pathFor('view', array('experiment_id' => $next_misuse->run->experiment_id, 'detector_muid' => $next_misuse->detector->muid, 'project_muid' => $next_misuse->getProject(), 'version_muid' => $next_misuse->getVersion(), 'misuse_muid' => $next_misuse->misuse_muid)); ?>?origin=<?= $origin_path ?>" class="button">></a>
+                    <?php if($next_misuse_path) : ?>
+                        <a href="<?= $next_misuse_path ?>" class="button">></a>
                     <?php endif; ?>
-                    <?php if($next_reviewable_misuse) : ?>
-                        <a href="<?= $pathFor('view', array('experiment_id' => $next_reviewable_misuse->run->experiment_id, 'detector_muid' => $next_reviewable_misuse->detector->muid, 'project_muid' => $next_reviewable_misuse->getProject(), 'version_muid' => $next_reviewable_misuse->getVersion(), 'misuse_muid' => $next_reviewable_misuse->misuse_muid)); ?>?origin=<?= $origin_path ?>" class="button">>></a>
+                    <?php if($next_reviewable_misuse_path) : ?>
+                        <a href="<?= $next_reviewable_misuse_path ?>" class="button">>></a>
                     <?php endif; ?>
                 </div>
 
@@ -398,9 +404,9 @@ $columns_to_ignore = array(
 
 
             <script>
-                var origin = "<?= $origin_path ? $origin_path : $pathFor('experiment.detector', array("experiment_id"=>$misuse->run->experiment_id, "detector_muid" => $misuse->detector->muid)) ?>";
-                var next = "<?= $next_misuse ? $pathFor('view', array('experiment_id' => $next_misuse->run->experiment_id, 'detector_muid' => $next_misuse->detector->muid, 'project_muid' => $next_misuse->getProject(), 'version_muid' => $next_misuse->getVersion(), 'misuse_muid' => $next_misuse->misuse_muid)) : ""; ?>";
-                var next_review = "<?= $next_reviewable_misuse ? $pathFor('view', array('experiment_id' => $next_reviewable_misuse->run->experiment_id, 'detector_muid' => $next_reviewable_misuse->detector->muid, 'project_muid' => $next_reviewable_misuse->getProject(), 'version_muid' => $next_reviewable_misuse->getVersion(), 'misuse_muid' => $next_reviewable_misuse->misuse_muid)) : ""; ?>";
+                var origin = "<?= $origin_path ?>";
+                var next = "<?= $next_misuse_path ?>";
+                var next_review = "<?= $next_reviewable_misuse_path ?>";
                 function show(b){
                     var elem = document.getElementById("snippet_form");
                     if(elem.style.display === "none"){
