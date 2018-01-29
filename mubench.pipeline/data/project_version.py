@@ -120,6 +120,10 @@ class ProjectVersion:
     def additional_compile_sources(self) -> str:
         return join(self.path, 'compile')
 
+    @property
+    def is_compilable(self) -> bool:
+        return self.source_dirs and self.compile_commands and self.classes_dirs
+
     def __str__(self):
         return "project '{}' version {}".format(self.project_id, self.version_id)
 

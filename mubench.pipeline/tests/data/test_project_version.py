@@ -98,6 +98,16 @@ class TestProjectVersion:
 
         assert_equals(join("/base/path/", self.project_id, self.version_id, "build"), version_compile.build_dir)
 
+    def test_is_not_compilable(self):
+        self.uut._YAML = {"build": {}}
+        assert not self.uut.is_compilable
+
+    def test_is_compilable(self):
+        self.uut._YAML = {"build": {"src": "src/java/",
+                                    "commands": ["mvn compile"],
+                                    "classes": "/target/classes/"}}
+        assert self.uut.is_compilable
+
 
 class TestProjectCheckout:
     def test_synthetic_project(self):
