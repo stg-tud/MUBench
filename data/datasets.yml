@@ -95,6 +95,7 @@ JCA-Usages: # All misuses identified among mined Cipher usages (commented out ve
   - secure-tcp.aeba19a.1
   - synthetic_jca.jsl.aes-ecb-mode
   - synthetic_jca.jsl.static-key
+  - synthetic_jca.jsl.loop-init
   - technic-launcher-sp.7809682.1
   #- warwalk.9c85f74.1
   #- webtend.8fe8f4f.1
