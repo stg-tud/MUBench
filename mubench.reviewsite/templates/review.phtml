@@ -22,6 +22,9 @@
  * @var Parsedown $markdown_parser markdown parser
  *
  * @var \MuBench\ReviewSite\Models\Misuse $misuse
+ * @var \MuBench\ReviewSite\Models\Misuse $next_misuse
+ * @var \MuBench\ReviewSite\Models\Misuse $next_reviewable_misuse
+ * @var \MuBench\ReviewSite\Models\Misuse $previous_misuse
  * @var \MuBench\ReviewSite\Models\Review $review
  * @var bool $is_reviewer whether the user is the author of this review
  * @var array $violation_types all violation types of this misuse in exp1/3, all possible violation types in exp2
@@ -361,12 +364,17 @@ $columns_to_ignore = array(
                 <input type="hidden" name="origin" value="<?= htmlspecialchars($origin_path); ?>">
                 <input type="hidden" name="misuse_id" value="<?= htmlspecialchars($misuse->id); ?>">
                 <div style="position:fixed;bottom:0;left:0;width:100%;background-color:#333;z-index:1">
+                    <a href="<?= $origin_path ? $origin_path : $pathFor('experiment.detector', array("experiment_id"=>$misuse->run->experiment_id, "detector_muid" => $misuse->detector->muid)) ?>" class="button">return</a>
                     <?php if($previous_misuse): ?>
                         <a href="<?= $pathFor('view', array('experiment_id' => $previous_misuse->run->experiment_id, 'detector_muid' => $previous_misuse->detector->muid, 'project_muid' => $previous_misuse->getProject(), 'version_muid' => $previous_misuse->getVersion(), 'misuse_muid' => $previous_misuse->misuse_muid)); ?>" class="button">previous misuse</a>
+                        <a href="<?= $pathFor('view', array('experiment_id' => $previous_misuse->run->experiment_id, 'detector_muid' => $previous_misuse->detector->muid, 'project_muid' => $previous_misuse->getProject(), 'version_muid' => $previous_misuse->getVersion(), 'misuse_muid' => $previous_misuse->misuse_muid)); ?>?origin=<?= $origin_path ?>" class="button"><</a>
                     <?php endif; ?>
                     <input type="submit" value="Save Review and return" />
                     <?php if($next_misuse) : ?>
-                        <a href="<?= $pathFor('view', array('experiment_id' => $next_misuse->run->experiment_id, 'detector_muid' => $next_misuse->detector->muid, 'project_muid' => $next_misuse->getProject(), 'version_muid' => $next_misuse->getVersion(), 'misuse_muid' => $next_misuse->misuse_muid)); ?>" class="button">next misuse</a>
+                        <a href="<?= $pathFor('view', array('experiment_id' => $next_misuse->run->experiment_id, 'detector_muid' => $next_misuse->detector->muid, 'project_muid' => $next_misuse->getProject(), 'version_muid' => $next_misuse->getVersion(), 'misuse_muid' => $next_misuse->misuse_muid)); ?>?origin=<?= $origin_path ?>" class="button">></a>
+                    <?php endif; ?>
+                    <?php if($next_reviewable_misuse) : ?>
+                        <a href="<?= $pathFor('view', array('experiment_id' => $next_reviewable_misuse->run->experiment_id, 'detector_muid' => $next_reviewable_misuse->detector->muid, 'project_muid' => $next_reviewable_misuse->getProject(), 'version_muid' => $next_reviewable_misuse->getVersion(), 'misuse_muid' => $next_reviewable_misuse->misuse_muid)); ?>?origin=<?= $origin_path ?>" class="button">>></a>
                     <?php endif; ?>
                 </div>
 
