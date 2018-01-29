@@ -12,7 +12,7 @@ class TestCollectVersions:
         project = create_project("-project-")
         v1 = create_version("-v1-", project=project)
         v2 = create_version("-v2-", project=project)
-        uut = CollectVersionsTask(False)
+        uut = CollectVersionsTask(True)
 
         actual = uut.run(project, DataEntityLists([], []))
 
@@ -21,7 +21,7 @@ class TestCollectVersions:
     def test_whitelisted_project(self):
         project = create_project("-project-")
         version = create_version("-id-", project=project)
-        uut = CollectVersionsTask(False)
+        uut = CollectVersionsTask(True)
 
         actual = uut.run(project, DataEntityLists(["-project-"], []))
 
@@ -30,7 +30,7 @@ class TestCollectVersions:
     def test_whitelisted_version(self):
         project = create_project("-project-")
         version = create_version("-id-", project=project)
-        uut = CollectVersionsTask(False)
+        uut = CollectVersionsTask(True)
 
         actual = uut.run(project, DataEntityLists(["-project-.-id-"], []))
 
@@ -39,7 +39,7 @@ class TestCollectVersions:
     def test_filters_if_not_whitelisted(self):
         project = create_project("-project-")
         create_version("-id-", project=project)
-        uut = CollectVersionsTask(False)
+        uut = CollectVersionsTask(True)
 
         actual = uut.run(project, DataEntityLists(["-project-.-other-id-"], []))
 
@@ -48,7 +48,7 @@ class TestCollectVersions:
     def test_filters_blacklisted(self):
         project = create_project("-project-")
         create_version("-id-", project=project)
-        uut = CollectVersionsTask(False)
+        uut = CollectVersionsTask(True)
 
         actual = uut.run(project, DataEntityLists([], ["-project-.-id-"]))
 
@@ -59,7 +59,7 @@ class TestCollectVersions:
         project = create_project("-project-")
         create_version("-id-", project=project)
         version_is_compilable_mock.return_value = False
-        uut = CollectVersionsTask(True)
+        uut = CollectVersionsTask(False)
 
         actual = uut.run(project, DataEntityLists([], []))
 
