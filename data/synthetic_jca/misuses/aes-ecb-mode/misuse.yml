@@ -1,5 +1,5 @@
 api:
-- javax.crypto
+- javax.crypto.Cipher
 characteristics:
 - missing/condition/value_or_state
 crash: false
