@@ -215,7 +215,7 @@ $columns_to_ignore = array(
                         </td></tr>
             <?php endif; ?>
         </table>
-            <form action="<?= $pathFor('update.review', array('experiment_id' => $experiment->id, 'detector_muid' => $detector->muid, 'project_muid' => $misuse->getProject(), 'version_muid' => $misuse->getVersion(), 'misuse_muid' => $misuse->misuse_muid, 'reviewer_name' => $reviewer->name), true) ?>" method="post" target="">
+            <form id="review_form" action="<?= $pathFor('update.review', array('experiment_id' => $experiment->id, 'detector_muid' => $detector->muid, 'project_muid' => $misuse->getProject(), 'version_muid' => $misuse->getVersion(), 'misuse_muid' => $misuse->misuse_muid, 'reviewer_name' => $reviewer->name), true) ?>" method="post" target="">
             <?php if($misuse->hasPotentialHits()) : ?>
 
             <?php if($experiment->id !== 2) : ?>
@@ -361,15 +361,21 @@ $columns_to_ignore = array(
                     <?php endif; ?>
                     </td></tr>
                 </table>
-                <input type="hidden" name="origin" value="<?= htmlspecialchars($origin_path); ?>">
                 <input type="hidden" name="misuse_id" value="<?= htmlspecialchars($misuse->id); ?>">
                 <div style="position:fixed;bottom:0;left:0;width:100%;background-color:#333;z-index:1">
                     <a href="<?= $origin_path ? $origin_path : $pathFor('experiment.detector', array("experiment_id"=>$misuse->run->experiment_id, "detector_muid" => $misuse->detector->muid)) ?>" class="button">return</a>
                     <?php if($previous_misuse): ?>
-                        <a href="<?= $pathFor('view', array('experiment_id' => $previous_misuse->run->experiment_id, 'detector_muid' => $previous_misuse->detector->muid, 'project_muid' => $previous_misuse->getProject(), 'version_muid' => $previous_misuse->getVersion(), 'misuse_muid' => $previous_misuse->misuse_muid)); ?>" class="button">previous misuse</a>
                         <a href="<?= $pathFor('view', array('experiment_id' => $previous_misuse->run->experiment_id, 'detector_muid' => $previous_misuse->detector->muid, 'project_muid' => $previous_misuse->getProject(), 'version_muid' => $previous_misuse->getVersion(), 'misuse_muid' => $previous_misuse->misuse_muid)); ?>?origin=<?= $origin_path ?>" class="button"><</a>
                     <?php endif; ?>
-                    <input type="submit" value="Save Review and return" />
+                    <select id="review_dropdown">
+                        <option value="normal">Save</option>
+                        <option value="return">Save and Return</option>
+                        <option value="next">Save and Next</option>
+                        <?php if($next_reviewable_misuse) : ?>
+                            <option value="review">Save and Next with Potential Hits</option>
+                        <?php endif; ?>
+                    </select>
+                    <button onclick="saveReview()">Save</button>
                     <?php if($next_misuse) : ?>
                         <a href="<?= $pathFor('view', array('experiment_id' => $next_misuse->run->experiment_id, 'detector_muid' => $next_misuse->detector->muid, 'project_muid' => $next_misuse->getProject(), 'version_muid' => $next_misuse->getVersion(), 'misuse_muid' => $next_misuse->misuse_muid)); ?>?origin=<?= $origin_path ?>" class="button">></a>
                     <?php endif; ?>
@@ -392,6 +398,9 @@ $columns_to_ignore = array(
 
 
             <script>
+                var origin = "<?= $origin_path ? $origin_path : $pathFor('experiment.detector', array("experiment_id"=>$misuse->run->experiment_id, "detector_muid" => $misuse->detector->muid)) ?>";
+                var next = "<?= $next_misuse ? $pathFor('view', array('experiment_id' => $next_misuse->run->experiment_id, 'detector_muid' => $next_misuse->detector->muid, 'project_muid' => $next_misuse->getProject(), 'version_muid' => $next_misuse->getVersion(), 'misuse_muid' => $next_misuse->misuse_muid)) : ""; ?>";
+                var next_review = "<?= $next_reviewable_misuse ? $pathFor('view', array('experiment_id' => $next_reviewable_misuse->run->experiment_id, 'detector_muid' => $next_reviewable_misuse->detector->muid, 'project_muid' => $next_reviewable_misuse->getProject(), 'version_muid' => $next_reviewable_misuse->getVersion(), 'misuse_muid' => $next_reviewable_misuse->misuse_muid)) : ""; ?>";
                 function show(b){
                     var elem = document.getElementById("snippet_form");
                     if(elem.style.display === "none"){
@@ -399,11 +408,37 @@ $columns_to_ignore = array(
                     }
                     b.type = "hidden";
                 }
+
                 var simplemde = new SimpleMDE({
                     element: document.getElementById("review_comment"),
                     spellChecker: false,
                     status: false
                 });
+
+                function saveReview(){
+                    var form = document.getElementById("review_form");
+                    var dropdown = document.getElementById("review_dropdown");
+                    var input = document.createElement("input");
+                    input.type = "hidden";
+                    input.name = "origin";
+                    switch(dropdown.value){
+                        case "save":
+                            form.submit();
+                            return;
+                        case "return":
+                            console.log("Hallo");
+                            input.value = origin;
+                            break;
+                        case "next":
+                            input.value = next;
+                            break;
+                        case "review":
+                            input.value = next_review;
+                            break;
+                    }
+                    form.appendChild(input);
+                    form.submit();
+                }
             </script>
             </body>
         </html>
