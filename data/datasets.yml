@@ -239,6 +239,81 @@ Legunsen-ASE16: # All misuses imported from Lagunsen et al.'s ASE'16 study.
   - thomas-s-b-visualee.410a80f.32
 
 ###
+### Misuses identified by detectors
+###
+
+DMMC: # Misuses identified by the DMMC detector
+  # Misuses identified in the FSE18 experiments
+  - lucene.1918.mudetect-5
+  - lucene.1918.mudetect-9
+  # Misuses identified in the TSE17 experiments
+  - closure.319.dmmc-1023
+  - closure.319.dmmc-13
+  - itext.5091.dmmc-15
+  - itext.5091.dmmc-16
+  - itext.5091.dmmc-18
+  - itext.5091.dmmc-61
+  - itext.5091.dmmc-357
+  - itext.5091.dmmc-937
+  - jackrabbit.1750.5
+  - jfreechart.1025.1
+  - lucene.1918.tikanga-1
+
+Jadet: # Misuses identified by the Jadet detector
+  # Misuses identified in the TSE17 experiments
+  - itext.5091.jadet-5
+  - itext.5091.jadet-9
+  - lucene.1918.tikanga-1
+
+Tikanga: # Misuses identified by the Tikanga detector
+  # Misuses identified in the FSE18 experiments
+  - closure.319.mudetect-12
+  - closure.319.mudetect-17
+  - lucene.1918.mudetect-5
+  # Misuses identified in the TSE17 experiments
+  - closure.319.tikanga-2
+  - closure.319.tikanga-6
+  - itext.5091.dmmc-357
+  - itext.5091.dmmc-937
+  - itext.5091.jadet-5
+  - itext.5091.jadet-9
+  - lucene.1918.tikanga-0
+  - lucene.1918.tikanga-1
+  # Misuses identified in the experiments from the original publication
+  - argouml.026.1
+  - argouml.026.2
+  - argouml.026.3
+  - argouml.026.4
+
+GrouMiner: # Misuses identified by the GrouMiner detector
+  # Misuses identified in the experiments from the original publication
+  - jigsaw.205.1
+
+MUDetect: # Misuses identified by the MUDetect detector
+  # Misuses identified in the FSE18 experiments
+  - aclang.587.1
+  - aclang.587.2
+  - closure.319.dmmc-1023
+  - closure.319.dmmc-13
+  - closure.319.mudetect-12
+  - closure.319.mudetect-13
+  - closure.319.mudetect-17
+  - closure.319.mudetect-18
+  - closure.319.tikanga-2
+  - closure.319.tikanga-6
+  - itext.5091.dmmc-15
+  - itext.5091.dmmc-16
+  - itext.5091.dmmc-18
+  - itext.5091.dmmc-61
+  - itext.5091.dmmc-357
+  - itext.5091.dmmc-937
+  - itext.5091.mudetect-15
+  - lucene.1918.mudetect-5
+  - lucene.1918.mudetect-9
+  - lucene.1918.tikanga-0
+  - lucene.1918.tikanga-1
+
+###
 ### The datasets used for the experiments in the TSE'17 paper.
 ###
 
