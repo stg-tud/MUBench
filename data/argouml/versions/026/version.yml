@@ -5,4 +5,7 @@ build:
   src: src/argouml-app/src/
 misuses:
 - '1'
+- '2'
+- '3'
+- '4'
 revision: 15810
