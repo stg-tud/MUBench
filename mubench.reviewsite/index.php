@@ -12,6 +12,11 @@ $container = $app->getContainer();
 
 require __DIR__ . '/bootstrap/bootstrap.php';
 
+$exp = new \MuBench\ReviewSite\Models\Experiment;
+if(!Schema::hasTable($exp->getTable())){
+    header('Location: '.'/../setup/setup.php');
+}
+
 require __DIR__ . '/src/routes.php';
 
 $app->run();
