@@ -26,8 +26,9 @@ class Benchmark:
         if 'black_list' in config:
             black_list.extend(config.black_list)
 
-        if 'dataset' in config:
-            white_list.extend(get_white_list(config.datasets_file_path, config.dataset))
+        if 'datasets' in config:
+            for dataset in config.datasets:
+                white_list.extend(get_white_list(config.datasets_file_path, dataset))
 
         self.data_entity_lists = DataEntityLists(white_list, black_list)
 
