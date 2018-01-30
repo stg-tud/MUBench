@@ -15,14 +15,7 @@ errors.
 location:
   file: org/argouml/persistence/ZargoFilePersister.java
   method: "loadFromZargo(File file, ProgressMgr progressMgr)"
-fix:
-  commit: 
-  description: 
-  revision: 
 internal: true
-pattern:
-- 
-report: 
 source:
-  name: 
-  url: 
+  name: Mining temporal specifications from object usage, Wasylkowski et al., ASE'11
+  url: https://link.springer.com/article/10.1007/s10515-011-0084-1

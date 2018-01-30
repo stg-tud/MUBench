@@ -13,14 +13,6 @@ reference to i1.
 location:
   file: org/argouml/uml/util/PathComparator.java
   method: "comparePaths(Object o1, Object o2)"
-fix:
-  commit: 
-  description: >
-  revision: 
-internal: true
-pattern:
-- 
-report: 
 source:
-  name: 
-  url: 
+  name: Mining temporal specifications from object usage, Wasylkowski et al., ASE'11
+  url: https://link.springer.com/article/10.1007/s10515-011-0084-1
