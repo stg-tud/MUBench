@@ -13,3 +13,5 @@ $container = $app->getContainer();
 require __DIR__ . '/../bootstrap/bootstrap.php';
 
 require __DIR__ . '/../setup/create_database_tables.php';
+
+header('Location: '.'/../index.php');
