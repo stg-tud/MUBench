@@ -1,3 +1,6 @@
+- tag: fse18
+  cli_version: 0.0.11
+  md5: c250f90fbc194609295073164c7c950a
 - cli_version: 0.0.10
   md5: 533ba658a244623e07aca6951e8ff50b
   tag: icse18
