@@ -5,11 +5,6 @@ require_once 'SlimTestCase.php';
 class SimpleDataTest extends SlimTestCase
 {
 
-    public function setUp()
-    {
-        parent::setUp();
-    }
-
     function test_simple_test_data_script()
     {
         $app = $this->app;
