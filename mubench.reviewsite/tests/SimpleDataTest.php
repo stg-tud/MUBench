@@ -9,8 +9,8 @@ class SimpleDataTest extends SlimTestCase
     {
         $app = $this->app;
         require __DIR__ . '/../bootstrap/bootstrap.php';
-        include __DIR__ . '/../setup/create_database_tables.php';
-        include 'create_simple_test_data.php';
+        require __DIR__ . '/../setup/create_database_tables.php';
+        require 'create_simple_test_data.php';
     }
 
 }
