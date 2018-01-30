@@ -160,8 +160,8 @@ Java8-Misuses: # All hand-crafted misuses of Java 8 APIs
   - synthetic_java8-misuses.96d0ccb.stream-without-terminal
 
 Legunsen-ASE16: # All misuses imported from Lagunsen et al.'s ASE'16 study.
-  - apache-gora.bb09d89-accumulo.56_1
-  - apache-gora.bb09d89-core.56_2
+  - apache-gora.bb09d89.56_1
+  - apache-gora.bb09d89.56_2
   - asterisk-java.304421c.81
   - asterisk-java.41461b4.194
   - bcel.24014e5.101
