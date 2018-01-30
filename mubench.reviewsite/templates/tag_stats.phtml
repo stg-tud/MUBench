@@ -34,7 +34,7 @@
     <tr>
         <td>Detector</td>
         <?php foreach($tags as $tag): ?>
-            <td><?= htmlspecialchars($tag->name) ?></td>
+            <td class="misuse-tag" style="background-color:<?= htmlspecialchars($tag->color) ?>;"><?= htmlspecialchars($tag->name) ?></td>
         <?php endforeach; ?>
     </tr>
 
