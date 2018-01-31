@@ -68,7 +68,11 @@ class SlimTestCase extends TestCase
             ]
         ];
         $app = new \Slim\App($settings);
-        require __DIR__ . '/../bootstrap/bootstrap.php';
+        $container = $app->getContainer();
+        require __DIR__ . '/../bootstrap/logger.php';
+        require __DIR__ . '/../bootstrap/db.php';
+        require __DIR__ . '/../bootstrap/auth.php';
+        require __DIR__ . '/../bootstrap/renderer.php';
         $this->logger = new \Monolog\Logger("test");
 
         require __DIR__ . '/../setup/create_database_tables.php';
@@ -78,7 +82,7 @@ class SlimTestCase extends TestCase
         \MuBench\ReviewSite\Models\Detector::flushEventListeners();
         \MuBench\ReviewSite\Models\Detector::boot();
         $this->app = $app;
-        $this->container = $app->getContainer();
+        $this->container = $container;
     }
 
     public function get($path, $data = array(), $optionalHeaders = array()){
