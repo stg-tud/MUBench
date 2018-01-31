@@ -7,7 +7,7 @@ description: >
   nextToken() on StringTokenizer without hasNext() call.
 location:
   file: "org/w3c/jigsaw/map/MapEntry.java"
-  method: "parseRestNCSA(string line)"
+  method: "parseRestNCSA(String)"
 internal: false
 source:
   name: Graph-based mining of multiple object usage patterns, Nguyen et al., FSE'09

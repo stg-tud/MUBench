@@ -1,14 +1,17 @@
 api:
 - org.argouml.persistence.ZargoFilePersister
 characteristics:
-- missing/exception_handling
+- missing/condition/value_or_state
 crash: true
 description: >
-  If the file to be loaded is a zip with an extension zargo, but there is no zargo file inside, this method will cause an exception to be thrown instead of handling the situation.
+  If the zargo file to be loaded contains no `.argo` file, this method will
+  throw an exception at line 261.
 location:
   file: org/argouml/persistence/ZargoFilePersister.java
-  method: "loadFromZargo(File file, ProgressMgr progressMgr)"
+  method: "loadFromZargo(File, ProgressMgr)"
 internal: true
+fix:
+  description: Check that the iterator contains a file to fix this.
 source:
   name: Mining temporal specifications from object usage, Wasylkowski et al., ASE'11
   url: https://link.springer.com/article/10.1007/s10515-011-0084-1
