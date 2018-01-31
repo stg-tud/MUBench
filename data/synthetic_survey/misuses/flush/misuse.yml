@@ -8,7 +8,7 @@ description: >
   before the next attempt to read from the underlying resource.
 location:
   file: mubench/examples/survey/ChannelFlush.java
-  method: misuse(ByteBuffer)
+  method: needsFlushToEnsureWrite(ByteBuffer)
 fix:
   description: >
     Add a call to FileChannel.force() or close() the channel.

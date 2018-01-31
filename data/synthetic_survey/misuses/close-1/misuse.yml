@@ -7,7 +7,7 @@ description: >
   Misses to call Closeable.close().
 location:
   file: mubench/examples/survey/Close.java
-  method: misuse(File)
+  method: missingClose(File)
 fix:
   description: >
     Call close() after using the Closable.

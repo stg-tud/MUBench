@@ -10,7 +10,7 @@ description: >
   StackOverflow: http://stackoverflow.com/questions/10166011/how-to-use-java-nio-channels-filechannel-to-write-a-byte-to-a-file-basics/10166055
 location:
   file: mubench/examples/survey/ByteBufferFlip.java
-  method: misuse(ByteBuffer, byte[])
+  method: needsFlipToReadWhatWasWritten(ByteBuffer, byte[])
 fix:
   description: >
     Add a call to ByteBuffer.flip()

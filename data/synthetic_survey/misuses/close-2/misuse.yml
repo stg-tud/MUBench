@@ -8,7 +8,7 @@ description: >
   close the resource in case of an exception.
 location:
   file: mubench/examples/survey/Close.java
-  method: misuse(File)
+  method: missingFinally(File)
 fix:
   description: >
     Call close() in finally block.
