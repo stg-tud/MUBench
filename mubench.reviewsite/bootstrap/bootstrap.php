@@ -1,7 +1,5 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
-
 $container = $app->getContainer();
 
 require __DIR__ . '/logger.php';

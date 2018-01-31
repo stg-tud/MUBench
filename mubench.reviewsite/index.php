@@ -1,5 +1,7 @@
 <?php
 
+use Illuminate\Support\Facades\Schema;
+
 session_start();
 date_default_timezone_set('Europe/Berlin');
 
