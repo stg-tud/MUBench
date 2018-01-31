@@ -21,7 +21,7 @@ use MuBench\ReviewSite\Models\Run;
 
 class RunsControllerTest extends SlimTestCase
 {
-    private $request_body;
+    private $run_with_two_potential_hits_for_one_misuse;
 
     /** @var  Detector */
     private $detector1;
@@ -38,7 +38,8 @@ class RunsControllerTest extends SlimTestCase
         $this->runsController = new RunsController($this->container);
         $this->detector1 = Detector::create(['muid' => '-d1-']);
         $this->detector2 = Detector::create(['muid' => '-d2-']);
-        $this->request_body = json_decode(json_encode([
+
+        $this->run_with_two_potential_hits_for_one_misuse = json_decode(json_encode([
             "result" => "success",
             "runtime" => 42.1,
             "number_of_findings" => 23,
@@ -80,7 +81,7 @@ class RunsControllerTest extends SlimTestCase
     function test_store_ex1()
     {
 
-        $this->runsController->addRun(1, '-d-', '-p-', '-v-',  $this->request_body);
+        $this->runsController->addRun(1, '-d-', '-p-', '-v-',  $this->run_with_two_potential_hits_for_one_misuse);
         $detector = Detector::where('muid', '=', '-d-')->first();
         $run = Run::of($detector)->in(Experiment::find(1))->where(['project_muid' => '-p-', 'version_muid' => '-v-'])->first();
 
@@ -94,7 +95,7 @@ class RunsControllerTest extends SlimTestCase
 
     function test_store_ex2()
     {
-        $this->runsController->addRun(2, '-d-', '-p-', '-v-', $this->request_body);
+        $this->runsController->addRun(2, '-d-', '-p-', '-v-', $this->run_with_two_potential_hits_for_one_misuse);
         $detector = Detector::where('muid', '=', '-d-')->first();
         $run = Run::of($detector)->in(Experiment::find(2))->where(['project_muid' => '-p-', 'version_muid' => '-v-'])->first();
 
@@ -126,7 +127,7 @@ class RunsControllerTest extends SlimTestCase
 
     function test_store_ex3()
     {
-        $this->runsController->addRun(3, '-d-', '-p-', '-v-', $this->request_body);
+        $this->runsController->addRun(3, '-d-', '-p-', '-v-', $this->run_with_two_potential_hits_for_one_misuse);
         $detector = Detector::where('muid', '=', '-d-')->first();
         $run = Run::of($detector)->in(Experiment::find(3))->where(['project_muid' => '-p-', 'version_muid' => '-v-'])->first();
 
@@ -138,25 +139,13 @@ class RunsControllerTest extends SlimTestCase
 
     function test_add_run_twice_with_different_timestamp()
     {
-        $first_request = [
-            "result" => "success",
-            "runtime" => 42.1,
-            "number_of_findings" => 23,
-            "-custom-stat-" => "-stat-val-",
-            "timestamp" => 12,
-            "potential_hits" => []
-        ];
-        $second_request = [
-            "result" => "success",
-            "runtime" => 42.1,
-            "number_of_findings" => 23,
-            "-custom-stat-" => "-stat-val-",
-            "timestamp" => 14,
-            "potential_hits" => []
-        ];
+        $first_request = $this->someValidRunRequestBody();
+        $first_request->timestamp = 12;
+        $second_request = $this->someValidRunRequestBody();
+        $second_request->timestamp = 14;
         
-        $firstRequestResult = $this->runsController->addRun(1, '-d-', '-p-', '-v-',  json_decode(json_encode($first_request)));
-        $secondRequestResult = $this->runsController->addRun(1, '-d-', '-p-', '-v-',  json_decode(json_encode($second_request)));
+        $firstRequestResult = $this->runsController->addRun(1, '-d-', '-p-', '-v-',  $first_request);
+        $secondRequestResult = $this->runsController->addRun(1, '-d-', '-p-', '-v-',  $second_request);
 
         self::assertTrue($firstRequestResult);
         self::assertFalse($secondRequestResult);
@@ -164,25 +153,15 @@ class RunsControllerTest extends SlimTestCase
 
     function test_add_run_in_multiple_requests()
     {
-        $first_request = [
-            "result" => "success",
-            "runtime" => 42.1,
-            "number_of_findings" => 23,
-            "custom1" => "-stat-val1-",
-            "timestamp" => 12,
-            "potential_hits" => []
-        ];
-        $second_request = [
-            "result" => "success",
-            "runtime" => 42.1,
-            "number_of_findings" => 23,
-            "custom2" => "-stat-val2-",
-            "timestamp" => 12,
-            "potential_hits" => []
-        ];
+        $first_request = $this->someValidRunRequestBody();
+        $first_request->timestamp = 12;
+        $first_request->custom1 = '-stat-val1-';
+        $second_request = $this->someValidRunRequestBody();
+        $second_request->timestamp = 12;
+        $second_request->custom2 = '-stat-val2-';
 
-        $firstRequestResult = $this->runsController->addRun(1, $this->detector1->muid, '-p-', '-v-',  json_decode(json_encode($first_request)));
-        $secondRequestResult = $this->runsController->addRun(1, $this->detector1->muid, '-p-', '-v-',  json_decode(json_encode($second_request)));
+        $firstRequestResult = $this->runsController->addRun(1, $this->detector1->muid, '-p-', '-v-',  $first_request);
+        $secondRequestResult = $this->runsController->addRun(1, $this->detector1->muid, '-p-', '-v-',  $second_request);
         $run = Run::of($this->detector1)->in(Experiment::find(1))->where(['project_muid' => '-p-', 'version_muid' => '-v-'])->first();
 
         self::assertTrue($firstRequestResult);
@@ -193,12 +172,9 @@ class RunsControllerTest extends SlimTestCase
 
     function test_get_misuse_ex1(){
         $metadataController = new MetadataController($this->container);
-        // SMELL currently, this test depends on a pattern in the metadata, because otherwise the metadata is not
-        // found for ex1. This should not be necessary anymore, once the findings controller is separated.
         $metadataController->updateMetadata('-p-', '-v-', '-m-', '-desc-',
             ['diff-url' => '-diff-', 'description' => '-fix-desc-'],
-            ['file' => '-file-location-', 'method' => '-method-location-'], [],
-            [['id' => '-p1-', 'snippet' => ['code' => '-code-', 'first_line' => 42]]], []);
+            ['file' => '-file-location-', 'method' => '-method-location-'], [], [], []);
 
         $this->runsController->addRun(1, '-d-', '-p-', '-v-', json_decode(<<<EOT
     {
@@ -308,7 +284,7 @@ EOT
 
     function test_run_deletion()
     {
-        $this->runsController->addRun(3, '-d-', '-p-', '-v-', $this->request_body);
+        $this->runsController->addRun(3, '-d-', '-p-', '-v-', $this->run_with_two_potential_hits_for_one_misuse);
         $detector = Detector::where('muid', '=', '-d-')->first();
         $run = Run::of($detector)->in(Experiment::find(3))->where(['project_muid' => '-p-', 'version_muid' => '-v-'])->first();
         $misuses = $run->misuses;
@@ -367,5 +343,24 @@ EOT
     {
         array_unshift($lines, "sep=,");
         return implode("\n", $lines);
+    }
+
+    private function someValidRunRequestBody()
+    {
+        return json_decode(json_encode([
+            "result" => "success",
+            "runtime" => 42.1,
+            "number_of_findings" => 23,
+            "timestamp" => 12,
+            "potential_hits" => [
+                [
+                    "misuse" => "-m-",
+                    "rank" => 0,
+                    "target_snippets" => [
+                        ["first_line_number" => 5, "code" => "-code-"]
+                    ]
+                ]
+            ]
+        ]));
     }
 }
