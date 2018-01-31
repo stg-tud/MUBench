@@ -40,4 +40,20 @@ public class ClassPathTest {
         uut.append(other);
         assertEquals("", uut.getClasspath());
     }
+
+    @Test
+    public void appendsEntry() {
+        ClassPath uut = new ClassPath("-We even finish each other's-");
+        String entry = "-sandwiches.-";
+        String expected = "-We even finish each other's-:-sandwiches.-";
+        uut.append(entry);
+        assertEquals(expected, uut.getClasspath());
+    }
+
+    @Test
+    public void appendsNothingOnEmptyEntry(){
+        ClassPath uut = new ClassPath("");
+        uut.append("");
+        assertEquals("", uut.getClasspath());
+    }
 }

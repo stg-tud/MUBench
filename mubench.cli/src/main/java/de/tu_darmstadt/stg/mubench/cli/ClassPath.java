@@ -24,4 +24,10 @@ public class ClassPath {
             this.path += ":" + other.getClasspath();
         }
     }
+
+    public void append(String entry) {
+        if (entry != null && !entry.isEmpty()) {
+            this.path += ":" + entry;
+        }
+    }
 }
