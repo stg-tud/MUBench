@@ -151,6 +151,18 @@ class RunsControllerTest extends SlimTestCase
         self::assertFalse($secondRequestResult);
     }
 
+    function test_add_independent_runs()
+    {
+        $first_request = $this->someValidRunRequestBody();
+        $second_request = $this->someValidRunRequestBody();
+
+        $firstRequestResult = $this->runsController->addRun(1, '-d-', '-p1-', '-v1-',  $first_request);
+        $secondRequestResult = $this->runsController->addRun(1, '-d-', '-p2-', '-v2-',  $second_request);
+
+        self::assertTrue($firstRequestResult);
+        self::assertTrue($secondRequestResult);
+    }
+
     function test_add_run_in_multiple_requests()
     {
         $first_request = $this->someValidRunRequestBody();

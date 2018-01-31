@@ -235,7 +235,8 @@ class RunsController extends Controller
 
         if($this->hasRunTable($detector)){
             $saved_run = Run::of($detector)->in($experiment)->where(['project_muid' => $projectId, 'version_muid' => $versionId])->first();
-            if(intval($saved_run->timestamp) !== $run->{'timestamp'}){
+            if($saved_run && intval($saved_run->timestamp) !== $run->{'timestamp'}){
+                $this->logger->warning("Run already exists ({$saved_run->timestamp}), rejecting update ({$run->timestamp}).");
                 return False;
             }
         }
