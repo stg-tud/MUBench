@@ -19,6 +19,8 @@
  * @var Experiment $experiment the selected experiment, if any
  * @var Detector $detector the selected detector, if any
  *
+ * @var Parsedown $markdown_parser markdown parser
+ *
  * @var \MuBench\ReviewSite\Models\Misuse $misuse
  * @var \MuBench\ReviewSite\Models\Review $review
  * @var bool $is_reviewer whether the user is the author of this review
@@ -50,7 +52,6 @@ $columns_to_ignore = array(
         "experiment_id"
     );
 
-    $markdown_parser = new Parsedown();
 ?>
         <html>
             <head>

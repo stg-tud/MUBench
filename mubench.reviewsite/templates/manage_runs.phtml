@@ -18,6 +18,8 @@
  * @var Detector $detector the selected detector, if any
  * @var array $experiment_runs runs for each experiment
  *
+ * @var Parsedown $markdown_parser markdown parser
+ *
  * @var array $runs the detectors experiment runs
  */
 
@@ -38,8 +40,6 @@ $columns_to_ignore = array(
     'version_muid',
     'project_muid'
 );
-
-$markdown_parser = new Parsedown();
 
 ?>
 <html>
