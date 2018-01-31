@@ -40,7 +40,7 @@ public class DetectorArgsTest {
 				new String[] { DetectorArgs.keyTrainingSrcPath, "psrc", DetectorArgs.keyTrainingClassPath, "pclasspath" });
 
         assertEquals("psrc", actual.getPatternSrcPath());
-		assertEquals("pclasspath", actual.getPatternClassPath());
+		assertEquals("pclasspath", actual.getPatternClassPath().getClasspath());
 	}
 
 	@Test
@@ -49,9 +49,9 @@ public class DetectorArgsTest {
 				.parse(new String[] { DetectorArgs.keyTargetSrcPath, "msrc", DetectorArgs.keyTargetClassPath, "mclasspath" });
 
         String[] targetSrcPaths = actual.getTargetSrcPaths();
-        String[] targetClassPaths = actual.getTargetClassPaths();
+        ClassPath targetClassPaths = actual.getTargetClassPath();
         assertEquals("msrc", targetSrcPaths[0]);
-		assertEquals("mclasspath", targetClassPaths[0]);
+		assertEquals("mclasspath", targetClassPaths.getClasspath());
 	}
 
 	@Test
@@ -61,11 +61,10 @@ public class DetectorArgsTest {
                                       DetectorArgs.keyTargetClassPath, "mclasspath1:mclasspath2" });
 
         String[] targetSrcPaths = actual.getTargetSrcPaths();
-        String[] targetClassPaths = actual.getTargetClassPaths();
+        ClassPath targetClassPath = actual.getTargetClassPath();
         assertEquals("msrc1", targetSrcPaths[0]);
         assertEquals("msrc2", targetSrcPaths[1]);
-        assertEquals("mclasspath1", targetClassPaths[0]);
-        assertEquals("mclasspath2", targetClassPaths[1]);
+        assertEquals("mclasspath1:mclasspath2", targetClassPath.getClasspath());
     }
 
 	@Test
@@ -111,7 +110,7 @@ public class DetectorArgsTest {
 
     @Test(expected = FileNotFoundException.class)
     public void throwsOnNoTargetClassPath() throws FileNotFoundException {
-        DetectorArgs.parse(new String[0]).getTargetClassPaths();
+        DetectorArgs.parse(new String[0]).getTargetClassPath();
     }
 
     @Test
