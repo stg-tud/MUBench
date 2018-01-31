@@ -8,7 +8,11 @@ public class ClassPath {
     }
 
     public String[] getPaths() {
-        return path.split(":");
+        if (path != null && !path.isEmpty()) {
+            return path.split(":");
+        } else {
+            return new String[0];
+        }
     }
 
     public String getClasspath() {

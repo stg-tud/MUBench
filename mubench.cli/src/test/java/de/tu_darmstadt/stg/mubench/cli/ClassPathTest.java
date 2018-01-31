@@ -17,4 +17,10 @@ public class ClassPathTest {
         ClassPath uut = new ClassPath("-path-:-other-path-");
         assertArrayEquals(new String[]{"-path-", "-other-path-"}, uut.getPaths());
     }
+
+    @Test
+    public void getPathsHandlesEmptyPath(){
+        ClassPath uut = new ClassPath("");
+        assertArrayEquals(new String[0], uut.getPaths());
+    }
 }
