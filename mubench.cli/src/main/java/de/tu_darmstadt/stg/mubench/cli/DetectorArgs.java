@@ -161,7 +161,7 @@ public class DetectorArgs {
     /**
      * @return a classpath referencing the dependencies of the code in the {@link #getTargetPath()}.
      */
-    public String[] getDependencyClassPath() throws FileNotFoundException {
-        return dependencyClassPath == null ? new String[0] : dependencyClassPath.split(":");
+    public ClassPath getDependencyClassPath() {
+        return dependencyClassPath == null ? new ClassPath("") : new ClassPath(dependencyClassPath);
     }
 }

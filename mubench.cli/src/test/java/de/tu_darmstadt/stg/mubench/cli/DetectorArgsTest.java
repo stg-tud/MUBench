@@ -1,6 +1,5 @@
 package de.tu_darmstadt.stg.mubench.cli;
 
-import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 
 import java.io.FileNotFoundException;
@@ -70,7 +69,7 @@ public class DetectorArgsTest {
 	@Test
 	public void parsesDependenciesClassPath() throws Exception {
 		DetectorArgs actual = DetectorArgs.parse(new String[]{DetectorArgs.keyDependenciesClassPath, "foo:bar"});
-		assertArrayEquals(new String[] {"foo", "bar"}, actual.getDependencyClassPath());
+		assertEquals("foo:bar", actual.getDependencyClassPath().getClasspath());
 	}
 
 	@Test(expected = IllegalArgumentException.class)
@@ -114,8 +113,8 @@ public class DetectorArgsTest {
     }
 
     @Test
-    public void noDependencyClassPath() throws FileNotFoundException {
+    public void noDependencyClassPath() {
         DetectorArgs actual = DetectorArgs.parse(new String[0]);
-        assertArrayEquals(new String[0], actual.getDependencyClassPath());
+        assertEquals("", actual.getDependencyClassPath().getClasspath());
     }
 }
