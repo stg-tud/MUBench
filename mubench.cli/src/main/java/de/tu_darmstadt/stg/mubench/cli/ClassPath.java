@@ -18,4 +18,10 @@ public class ClassPath {
     public String getClasspath() {
         return path;
     }
+
+    public void append(ClassPath other){
+        if (other.getClasspath() != null && !other.getClasspath().isEmpty()) {
+            this.path += ":" + other.getClasspath();
+        }
+    }
 }

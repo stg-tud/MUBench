@@ -23,4 +23,21 @@ public class ClassPathTest {
         ClassPath uut = new ClassPath("");
         assertArrayEquals(new String[0], uut.getPaths());
     }
+
+    @Test
+    public void appendsOtherClassPath() {
+        ClassPath uut = new ClassPath("-One more time-:-We're gonna celebrate-");
+        ClassPath other = new ClassPath("-Oh yeah, all right-:-Don't stop the dancing-");
+        String expected = "-One more time-:-We're gonna celebrate-:-Oh yeah, all right-:-Don't stop the dancing-";
+        uut.append(other);
+        assertEquals(expected, uut.getClasspath());
+    }
+
+    @Test
+    public void appendsNothingOnEmptyPath(){
+        ClassPath uut = new ClassPath("");
+        ClassPath other = new ClassPath("");
+        uut.append(other);
+        assertEquals("", uut.getClasspath());
+    }
 }
