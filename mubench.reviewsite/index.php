@@ -1,7 +1,5 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
-
 session_start();
 date_default_timezone_set('Europe/Berlin');
 
@@ -13,11 +11,6 @@ $app = new \Slim\App($settings);
 $container = $app->getContainer();
 
 require __DIR__ . '/bootstrap/bootstrap.php';
-
-$exp = new \MuBench\ReviewSite\Models\Experiment;
-if(!Schema::hasTable($exp->getTable())){
-    header('Location: '.'/../setup/setup.php');
-}
 
 require __DIR__ . '/src/routes.php';
 
