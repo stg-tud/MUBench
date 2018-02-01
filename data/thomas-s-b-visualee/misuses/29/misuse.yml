@@ -4,12 +4,12 @@ characteristics:
 - missing/condition/value_or_state
 crash: true
 description: |
-  In Examiner.java:259, 'scanner.next()' is called on 'java.util.Scanner scanner' without checking
-  if there are more elements. Because the scanner is built from the JavaSource parameter
-  that can be invalid (e.g., package keyword followed by an empty package name), this can lead to
-  a runtime exception without a useful error message.
-  This pull request adds an error message and a test.
+  In line 256, `scanner.next()` is called without checking if there are more
+  elements. Because the scanner is built from the `JavaSource` parameter,
+  which may be invalid (e.g., package keyword followed by an empty package
+  name), this may lead to a runtime exception without a useful error message.
 fix:
+  description: Add a check and report a meaningful error message.
   commit: https://github.com/emopers/visualee/commit/58fbf0b8274fd6d46b6a76ae08457386d31a6206
   revision: 58fbf0b8274fd6d46b6a76ae08457386d31a6206
 internal: false
