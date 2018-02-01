@@ -268,3 +268,7 @@ table.fw {width:100%;}
     min-height: 0;
     max-width: 500px;
 }
+
+a, a:visited, a:hover, a:active {
+    color: inherit;
+}

@@ -61,6 +61,8 @@ use MuBench\ReviewSite\Models\Experiment;
                 <?php endif; ?>
                         <li class="right <?= $isCurrentPath('manage.runs') ? "active" : "" ?>">
                             <a href="<?= $pathFor('manage.runs') ?>">Manage runs</a></li>
+                        <li class="right <?= $isCurrentPath('tags.manage') ? "active" : "" ?>">
+                            <a href="<?= $pathFor('tags.manage') ?>">Manage tags</a></li>
                     </ul>
                     </li>
             <?php else: ?>

@@ -17,11 +17,39 @@ class TagsController extends Controller
         $misuse_id = $formData['misuse_id'];
 
         $this->addTagToMisuse($misuse_id, $tag_id);
+        return $response->withRedirect($this->router->pathFor('private.view', $args));
+    }
 
-        return $response->withRedirect("{$this->settings['site_base_url']}{$formData['path']}");
+    public function manageTags(Request $request, Response $response, array $args)
+    {
+        return $this->renderer->render($response, 'manage_tags.phtml', ['tags' => Tag::all()]);
+    }
+
+    public function updateTags(Request $request, Response $response, array $args)
+    {
+        $formData = $request->getParsedBody();
+        $tags = $formData['tags'];
+        foreach ($tags as $key => $t) {
+            $this->updateTag($key, $t);
+        }
+        return $response->withRedirect($this->router->pathFor('private.tags.manage'));
+    }
+
+    public function updateTag($id, $tagInfo){
+        $tag = Tag::find($id);
+        $tag->name = $tagInfo['name'];
+        $tag->color = $tagInfo['color'];
+        $tag->save();
     }
 
     public function deleteTag(Request $request, Response $response, array $args)
+    {
+        $tag_id = $args['tag_id'];
+        $this->deleteTagAndRemoveFromMisuses($tag_id);
+        return $response->withRedirect($this->router->pathFor('private.tags.manage'));
+    }
+
+    public function removeTag(Request $request, Response $response, array $args)
     {
         $formData = $request->getParsedBody();
         $tag_id = $args['tag_id'];
@@ -29,7 +57,7 @@ class TagsController extends Controller
 
         $this->deleteTagFromMisuse($misuse_id, $tag_id);
 
-        return $response->withRedirect("{$this->settings['site_base_url']}{$formData['path']}");
+        return $response->withRedirect($this->router->pathFor('private.view', $args));
     }
 
     public function getTags(Request $request, Response $response, array $args)
@@ -51,9 +79,24 @@ class TagsController extends Controller
             ['results' => $results, 'tags' => $tags]);
     }
 
+    function deleteTagAndRemoveFromMisuses($tag_id)
+    {
+        $tag = Tag::find($tag_id);
+        foreach($tag->misuses as $misuse){
+            $misuse->misuse_tags()->detach($tag_id);
+        }
+        $tag->delete();
+    }
+
     function addTagToMisuse($misuseId, $tagName)
     {
-        $tag = Tag::firstOrCreate(['name' => $tagName]);
+        $tag = Tag::where('name', $tagName)->first();
+        if(!$tag){
+            $tag = new Tag();
+            $tag->name = $tagName;
+            $tag->color = '#808080';
+            $tag->save();
+        }
         Misuse::find($misuseId)->misuse_tags()->syncWithoutDetaching($tag->id);
     }
 

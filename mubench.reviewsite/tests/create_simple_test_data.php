@@ -293,9 +293,11 @@ $capsule->table('finding_review_types')->insert(array('finding_review_id' => 1, 
 echo 'Creating Tags<br/>';
 $tag = new \MuBench\ReviewSite\Models\Tag;
 $tag->name = 'test-dataset';
+$tag->color = '#808080';
 $tag->save();
 $tag = new \MuBench\ReviewSite\Models\Tag;
 $tag->name = 'test-dataset2';
+$tag->color = '#808080';
 $tag->save();
 
 echo 'Creating MisuseTags<br/>';
