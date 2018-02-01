@@ -244,3 +244,15 @@ table.fw {width:100%;}
     border: 0;
     outline: none;
 }
+
+
+/*
+ * SimpleMDE editor
+ */
+
+.CodeMirror,
+.CodeMirror-scroll {
+    height: 100px;
+    min-height: 0;
+    max-width: 500px;
+}
