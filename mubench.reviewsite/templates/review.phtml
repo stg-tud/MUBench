@@ -8,6 +8,7 @@
  * @var string $api_url_prefix
  * @var string $uploads_url_prefix
  * @var string $url_prefix the public or private url prefix, depending on whether the user is logged in
+ * @var string $uploads_path
  *
  * @var string $path the current route path
  * @var string $origin_param url parameter that carries the $path
@@ -290,8 +291,22 @@ $columns_to_ignore = array(
             <?php foreach($columns as $column) : ?>
             <td>
                 <?php if(strlen($hit[$column]) > 4 && substr($hit[$column], -4) === ".svg") : ?>
-                    <?php $object_id = $column . $hit['rank'] ?>
-                    <object id="<?= $object_id ?>" type="image/svg+xml" data="<?= "{$uploads_url_prefix}/{$experiment->id}/{$detector->id}/{$misuse->getProject()}/{$misuse->getVersion()}/{$hit[$column]}" ?>" style="width: 750px; height: 750px;"></object>
+                    <?php
+                        $object_id = $column . $hit['rank'];
+
+                        $svg_rel_path = "{$experiment->id}/{$detector->id}/{$misuse->getProject()}/{$misuse->getVersion()}/{$hit[$column]}";
+                        // obtain SVG view size
+                        try {
+                            $xmlget = simplexml_load_file("{$uploads_path}/{$svg_rel_path}");
+                            $xmlattributes = $xmlget->attributes();
+                            $svg_width = (string)$xmlattributes->width;
+                            $svg_height = (string)$xmlattributes->height;
+                        } catch (Exception $e) {
+                            $svg_width = "700px";
+                            $svg_height = "700px";
+                        }
+                    ?>
+                    <object id="<?= $object_id ?>" type="image/svg+xml" data="<?= "{$uploads_url_prefix}/{$svg_rel_path}" ?>" style="width: <?= $svg_width ?>; height: <?= $svg_height ?>; max-width: 700pt; max-height: 700pt;"></object>
                     <script>
                         document.getElementById("<?= $object_id ?>").onload = function() {
                             svgPanZoom("#<?= $object_id ?>", {

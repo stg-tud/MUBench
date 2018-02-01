@@ -48,6 +48,7 @@ $container['renderer'] = function ($container) {
         'private_url_prefix' => $privateURLPrefix,
         'url_prefix' => $user ? $privateURLPrefix : $publicURLPrefix,
         'uploads_url_prefix' => $publicURLPrefix . $container->settings['upload'],
+        'uploads_path' => $container->settings['upload'],
 
         'path' => $path,
         'origin_param' => htmlspecialchars("?origin=$path"),
