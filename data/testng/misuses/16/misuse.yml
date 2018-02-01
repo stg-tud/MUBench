@@ -15,7 +15,7 @@ fix:
 internal: false
 location:
   file: org/testng/reporters/jq/ChronologicalPanel.java
-  method: compare(IInvokedMethod, IInvokedMethod)
+  method: "getContent(ISuite, XMLStringBuffer)"
 report: https://github.com/cbeust/testng/pull/928
 source:
   name: Owolabi's Dataset ASE'16

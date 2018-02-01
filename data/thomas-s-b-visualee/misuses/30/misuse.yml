@@ -15,7 +15,7 @@ fix:
 internal: false
 location:
   file: de/strullerbaumann/visualee/examiner/Examiner.java 
-  method: isAJavaToken(String)
+  method: "jumpOverJavaToken(String, Scanner)"
 report: https://github.com/Thomas-S-B/visualee/pull/2
 source:
   name: Owolabi's Dataset ASE'16
