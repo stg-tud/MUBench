@@ -361,8 +361,9 @@ $columns_to_ignore = array(
                     b.type = "hidden";
                 }
                 var simplemde = new SimpleMDE({
+                    element: document.getElementById("review_comment"),
                     spellChecker: false,
-                    element: document.getElementById("review_comment")
+                    status: false
                 });
             </script>
             </body>
