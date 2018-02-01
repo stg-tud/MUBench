@@ -97,14 +97,14 @@ $columns_to_ignore = array(
                 <td>
                     <?php if($misuse->misuse_tags): ?>
                         <?php foreach($misuse->misuse_tags as $tag) : ?>
-                            <div class="misuse-tag" style="background-color:<?= htmlspecialchars($tag->color) ?>">
+                            <div class="misuse-tag" style="background-color:<?= htmlspecialchars($tag->color) ?>;color:<?= htmlspecialchars($tag->getFontColor()) ?>;">
                                 <span><?= htmlspecialchars($tag->name) ?></span>
                                 <?php if($user) : ?>
                                 <div style="display:inline-block;padding-right:2px;margin:0;color:black">
                                     <form action="<?= $pathFor('tag.remove', array('experiment_id' => $experiment->id, 'detector_muid' => $detector->muid, 'project_muid' => $misuse->getProject(), 'version_muid' => $misuse->getVersion(), 'misuse_muid' => $misuse->misuse_muid, 'tag_id' => $tag->id)) ?>" method="post" target="">
                                         <input type="hidden" name="path" value="<?= htmlspecialchars($path); ?>">
                                         <input type="hidden" name="misuse_id" value="<?= htmlspecialchars($misuse->id); ?>">
-                                        <button style="border:none;background-color:gray;outline:none;margin:0;padding:0" type="submit"><i class="fa fa-trash"></i></button>
+                                        <button style="border:none;outline:none;background-color:<?= htmlspecialchars($tag->color) ?>;margin:0;padding:0" type="submit"><i class="fa fa-trash"></i></button>
                                     </form>
                                 </div>
                                 <?php endif; ?>
@@ -382,7 +382,6 @@ $columns_to_ignore = array(
                     status: false
                 });
             </script>
-            <script src="<?= $site_base_url ?>scripts/tag-color-change.js"></script>
             </body>
         </html>
     

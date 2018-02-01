@@ -34,7 +34,7 @@
     <tr>
         <td>Detector</td>
         <?php foreach($tags as $tag): ?>
-            <td class="misuse-tag" style="background-color:<?= htmlspecialchars($tag->color) ?>;"><?= htmlspecialchars($tag->name) ?></td>
+            <td style="background-color:<?= htmlspecialchars($tag->color) ?>;color:<?= htmlspecialchars($tag->getFontColor()) ?>;"><?= htmlspecialchars($tag->name) ?></td>
         <?php endforeach; ?>
     </tr>
 
@@ -54,6 +54,5 @@
     <?php endforeach; ?>
 </table>
 <?php endforeach; ?>
-<script src="<?= $site_base_url ?>scripts/tag-color-change.js"></script>
 </body>
 </html>

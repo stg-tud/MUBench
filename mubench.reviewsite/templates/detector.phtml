@@ -233,7 +233,7 @@ $columns_to_ignore = array(
                     <?php if($misuse->hasConclusiveReviewState()) : ?>
                         <?php if($misuse->misuse_tags): ?>
                             <?php foreach($misuse->misuse_tags as $tag) : ?>
-                                <div class="misuse-tag" style="background-color:<?= htmlspecialchars($tag->color) ?>">
+                                <div class="misuse-tag" style="background-color:<?= htmlspecialchars($tag->color) ?>;color:<?= htmlspecialchars($tag->getFontColor()) ?>;">
                                     <span><?= htmlspecialchars($tag->name) ?></span>
                                 </div>
                             <?php endforeach; ?>
@@ -294,6 +294,5 @@ $columns_to_ignore = array(
         }
     }
 </script>
-<script src="<?= $site_base_url ?>scripts/tag-color-change.js"></script>
 </body>
 </html>
