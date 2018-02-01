@@ -163,9 +163,9 @@ $columns_to_ignore = array(
             <?php endif; ?>
             <td>
                 <?php if($misuse->hasSnippets()) : ?>
-                    <?php $multiple_snippets = (sizeof($misuse->snippets()) >= 2 && $user && $experiment->id == 2); ?>
+                    <?php $delete_snippets_enabled = (sizeof($misuse->snippets()) >= 2 && $user); ?>
                     <?php foreach($misuse->snippets() as $snippet): ?>
-                        <?php if($multiple_snippets): ?>
+                        <?php if($delete_snippets_enabled): ?>
                             <form id="delete_snippet_form" action="<?= $pathFor('snippet.remove', array('experiment_id' => $experiment->id, 'detector_muid' => $detector->muid, 'project_muid' => $misuse->getProject(), 'version_muid' => $misuse->getVersion(), 'misuse_muid' => $misuse->misuse_muid, 'snippet_id' => $snippet->id)) ?><?= $origin_param ?>" method="POST" target="">
                                 <input type="hidden" name="path" value="<?= htmlspecialchars($path); ?>">
                                 <button style="border:none;background-color:white;position:absolute;right:5px" type="submit"><i class="fa fa-trash"></i></button>
