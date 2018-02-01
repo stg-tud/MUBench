@@ -245,6 +245,18 @@ table.fw {width:100%;}
     outline: none;
 }
 
+.clickable-icon {
+    cursor:pointer;
+}
+
+.card-shadow {
+    border: 1px solid;
+    box-shadow: 5px 5px #888888;
+    width: 350px;
+    float: left;
+    margin: 10px;
+}
+
 
 /*
  * SimpleMDE editor

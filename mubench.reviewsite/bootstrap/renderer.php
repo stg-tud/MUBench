@@ -29,6 +29,9 @@ $container['renderer'] = function ($container) {
         return $container->router->pathFor($routeName, $args);
     };
 
+    $markdown_parser = new Parsedown();
+    $markdown_parser->setBreaksEnabled(True);
+
     $defaultTemplateVariables = [
         'user' => $user,
 
@@ -60,7 +63,9 @@ $container['renderer'] = function ($container) {
         'detector' => null,
         'resolution_reviewer' => Reviewer::where('name' ,'resolution')->first(),
 
-        'ex2_review_size' => $request->getQueryParam("ex2_review_size", $container->settings["default_ex2_review_size"])
+        'ex2_review_size' => $request->getQueryParam("ex2_review_size", $container->settings["default_ex2_review_size"]),
+
+        'markdown_parser' => $markdown_parser
     ];
 
     return new PhpRenderer(__DIR__ . '/../templates/', $defaultTemplateVariables);

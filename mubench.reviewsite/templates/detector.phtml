@@ -17,6 +17,8 @@
  * @var Experiment $experiment the selected experiment, if any
  * @var Detector $detector the selected detector, if any
  *
+ * @var Parsedown $markdown_parser markdown parser
+ *
  * @var array $runs the detectors experiment runs
  */
 
@@ -39,8 +41,6 @@ $columns_to_ignore = array(
     'version_muid',
     'project_muid'
 );
-
-$markdown_parser = new Parsedown();
 
 ?>
 <html>
@@ -78,7 +78,7 @@ $markdown_parser = new Parsedown();
         <th>Decision</th>
         <th>Reviews</th>
         <th>Your Review</th>
-        <th>Your Comment</th>
+        <th></th>
         <th>Tags</th>
     </tr>
     </thead>
@@ -119,7 +119,7 @@ $markdown_parser = new Parsedown();
                     <?= $new_version ? $markdown_parser->text(number_format($run->runtime, 1)) . "s" : ""; ?></td>
                 <td class="<?= $style_classes ?> right">
                     <?php if ($new_version) : ?>
-                        <?php include "includes/modal.phtml"; ?>
+                        <?php include "includes/stats_modal.phtml"; ?>
                     <?php endif; ?>
                 </td>
                 <td class="<?= $style_classes ?>">
@@ -225,7 +225,9 @@ $markdown_parser = new Parsedown();
                     <?php endif; ?>
                 </td>
                 <td class="<?= $style_classes ?>" style="max-width: 300px;">
-                    <?= $misuse->hasReviewed($user) ? $misuse->getReview($user)->comment : "" ?>
+                    <?php if($misuse->hasSufficientReviews() || ($user && $misuse->hasReviewed($user))) : ?>
+                        <?php include "includes/review_modal.phtml"; ?>
+                    <?php endif; ?>
                 </td>
                 <td class="<?= $style_classes ?>">
                     <?php if($misuse->hasConclusiveReviewState()) : ?>
@@ -263,7 +265,7 @@ $markdown_parser = new Parsedown();
                     <?= $new_version ? $markdown_parser->text(substr($run['runtime'], 0, 4)) . "s" : ""; ?></td>
                 <td class="<?= $style_classes ?> right">
                     <?php if ($new_version) : ?>
-                        <?php include "includes/modal.phtml"; ?>
+                        <?php include "includes/stats_modal.phtml"; ?>
                     <?php endif; ?>
                 </td>
                 <td class="<?= $style_classes ?>"></td>
