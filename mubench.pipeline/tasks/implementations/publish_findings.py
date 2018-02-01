@@ -19,13 +19,12 @@ _SNIPPETS_KEY = "target_snippets"
 
 
 class PublishFindingsTask:
-    def __init__(self, experiment_id: str, dataset: str, compiles_base_path: str, run_timestamp: int,
+    def __init__(self, experiment_id: str, compiles_base_path: str, run_timestamp: int,
                  review_site_url: str, review_site_user: str= "", review_site_password: str= ""):
         super().__init__()
         self.max_files_per_post = 20  # 20 is PHP's default limit to the number of files per request
 
         self.experiment_id = experiment_id
-        self.dataset = dataset
         self.compiles_base_path = compiles_base_path
         self.run_timestamp = run_timestamp
         self.review_site_url = review_site_url

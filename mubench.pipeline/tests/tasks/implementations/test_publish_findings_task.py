@@ -18,7 +18,6 @@ from tests.test_utils.data_util import create_project, create_version
 @patch("tasks.implementations.publish_findings.post")
 class TestPublishFindingsTask:
     def setup(self):
-        self.dataset = "-d-"
         self.project = create_project("-p-")
         self.misuse = create_misuse("-m-", project=self.project)
         self.version = create_version("-v-", project=self.project, misuses=[self.misuse],
@@ -45,7 +44,7 @@ class TestPublishFindingsTask:
 
         self.test_run_timestamp = 1337
 
-        self.uut = PublishFindingsTask(self.experiment_id, self.dataset, "/sources", self.test_run_timestamp,
+        self.uut = PublishFindingsTask(self.experiment_id, "/sources", self.test_run_timestamp,
                                        "http://dummy.url", "-username-", "-password-")
 
     def test_post_url(self, post_mock):
