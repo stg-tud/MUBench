@@ -317,7 +317,7 @@ MUDetect: # Misuses identified by the MUDetect detector
 ### The datasets used for the experiments in the TSE'17 paper.
 ###
 
-Ex1-TSE17:
+TSE17-ExRecallUpperBound:
   - aclang.587.1
   - aclang.587.2
   - acmath.998.1
@@ -384,14 +384,14 @@ Ex1-TSE17:
   - synthetic_survey.jsl.pack-2
   - synthetic_survey.jsl.setfirst
 
-Ex2-TSE17:
+TSE17-ExPrecision:
   - closure.319
   - itext.5091
   - jmrtd.51
   - jodatime.1231
   - lucene.1918
 
-Ex3-TSE17:
+TSE17-ExRecall:
   - aclang.587.1
   - aclang.587.2
   - acmath.998.1
@@ -446,7 +446,7 @@ Ex3-TSE17:
   - lucene.1918.tikanga-1
   - rhino.286251.1
 
-FSE18-Ext:
+FSE18-Extension:
   #  Dataset: Legunsen-ASE16
   - apache-gora.bb09d89.56_1
   - apache-gora.bb09d89.56_2
