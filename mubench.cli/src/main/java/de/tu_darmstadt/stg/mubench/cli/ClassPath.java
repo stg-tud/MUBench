@@ -1,7 +1,7 @@
 package de.tu_darmstadt.stg.mubench.cli;
 
 public class ClassPath {
-    private String path;
+    private final String path;
 
     public ClassPath(String path) {
         this.path = path;
@@ -19,15 +19,27 @@ public class ClassPath {
         return path;
     }
 
-    public void append(ClassPath other){
-        if (other.getClasspath() != null && !other.getClasspath().isEmpty()) {
-            this.path += ":" + other.getClasspath();
+    public ClassPath join(ClassPath other){
+        if (other.getClasspath() == null || other.getClasspath().isEmpty()) {
+            return new ClassPath(path);
         }
+
+        if (path == null || path.isEmpty()) {
+            return new ClassPath(other.getClasspath());
+        }
+
+        return new ClassPath(path + ":" + other.getClasspath());
     }
 
-    public void append(String entry) {
-        if (entry != null && !entry.isEmpty()) {
-            this.path += ":" + entry;
+    public ClassPath join(String entry) {
+        if (entry == null || entry.isEmpty()) {
+            return new ClassPath(path);
         }
+
+        if (path == null || path.isEmpty()) {
+            return new ClassPath(entry);
+        }
+
+        return new ClassPath(path + ":" + entry);
     }
 }
