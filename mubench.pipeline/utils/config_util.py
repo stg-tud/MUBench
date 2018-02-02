@@ -385,6 +385,5 @@ def __setup_publish_precision_arguments(parser: ArgumentParser) -> None:
             raise ArgumentTypeError("invalid value: {}, must be positive".format(limit))
         return limit
 
-    parser.add_argument('--limit', type=upload_limit, default=__get_default('limit', 50), metavar='n',
-                        dest="limit",
+    parser.add_argument('--limit', type=upload_limit, default=__get_default('limit', 50), metavar='n', dest="limit",
                         help="publish only the top-n findings. Defaults to 50")

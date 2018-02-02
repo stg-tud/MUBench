@@ -138,7 +138,7 @@ class PublishAllFindingsExperiment(TaskConfiguration):
         return "publish {}".format(RunAllFindingsExperiment.ID)
 
     def tasks(self, config) -> List:
-        filter_ = AllFindingsFilterTask()
+        filter_ = AllFindingsFilterTask(config.limit)
         publish = PublishFindingsTask(RunAllFindingsExperiment.ID, config.compiles_path, config.run_timestamp,
                                       config.review_site_url, config.review_site_user, config.review_site_password)
         return RunAllFindingsExperiment().tasks(config) + [filter_, publish]
