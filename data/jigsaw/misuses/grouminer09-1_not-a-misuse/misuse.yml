@@ -4,9 +4,12 @@ characteristics:
 - missing/call
 crash: false
 description: >
-  nextToken() on StringTokenizer without hasNext() call.
+  The usage calls `nextToken()` on `StringTokenizer` without checking
+  `hasMoreTokens()`. However, the usage handles `NoSuchElementException`,
+  which is a valid alternative. Therefore, we do not consider this a misuse.
 location:
   file: "org/w3c/jigsaw/map/MapEntry.java"
+  # There's three methods matching this signature in the file, all of which follow the same implementation pattern
   method: "parseRestNCSA(String)"
 internal: false
 source:
