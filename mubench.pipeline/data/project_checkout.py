@@ -67,10 +67,11 @@ class LocalProjectCheckout(ProjectCheckout):
 
 
 class SyntheticProjectCheckout(ProjectCheckout):
-    def __init__(self, name: str, version: str, base_path: str):
+    def __init__(self, name: str, version: str, data_path: str, base_path: str):
         super().__init__("-synthetic-", join(base_path, name), version)
         self.name = name
         self.version = version
+        self.data_path = data_path
 
     def exists(self) -> bool:
         return exists(self.checkout_dir)
@@ -83,6 +84,7 @@ class SyntheticProjectCheckout(ProjectCheckout):
         if not exists(self.checkout_dir):
             self._logger.debug("Create checkout directory %s", self.checkout_dir)
             makedirs(self.checkout_dir)
+            copy_tree(join(self.data_path, "repo"), self.checkout_dir)
 
     def __str__(self):
         return "synthetic:{}.{}".format(self.name, self.version)

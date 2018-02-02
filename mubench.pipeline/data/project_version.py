@@ -53,7 +53,7 @@ class ProjectVersion:
             url = repository.url
             return SVNProjectCheckout(self.__project.id, self.version_id, url, self.revision, base_path)
         elif repository.vcstype == "synthetic":
-            return SyntheticProjectCheckout(self.__project.id, self.version_id, base_path)
+            return SyntheticProjectCheckout(self.__project.id, self.version_id, self.path, base_path)
         elif repository.vcstype == "zip":
             return ZipProjectCheckout(self.__project.id, self.version_id, self.revision, self._yaml["md5"], base_path)
         else:

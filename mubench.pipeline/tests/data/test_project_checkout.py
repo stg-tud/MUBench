@@ -108,18 +108,21 @@ class TestSyntheticCheckout:
     # noinspection PyAttributeOutsideInit
     def setup(self):
         self.checkouts_path = mkdtemp(prefix="mubench-checkout-local_")
+        self.data_path = mkdtemp(prefix="mubench-checkout-local-data_")
+        self.data_file_name = "some.file"
+        create_file(join(self.data_path, "repo", self.data_file_name))
 
-        self.uut = SyntheticProjectCheckout("-project-", "-id-", self.checkouts_path)
+        self.uut = SyntheticProjectCheckout("-project-", "-id-", self.data_path, self.checkouts_path)
 
-    def test_exists_always(self):
+    def test_does_not_exist_initially(self):
         assert not self.uut.exists()
 
-    def test_create_passes(self):
+    def test_create_copies_sources(self):
         self.uut.create(0)
 
-        assert exists(self.uut.checkout_dir)
+        assert exists(join(self.uut.checkout_dir, self.data_file_name))
 
-    def test_delete_passes(self):
+    def test_delete_removes_directory(self):
         os.makedirs(self.uut.checkout_dir)
 
         self.uut.delete()
