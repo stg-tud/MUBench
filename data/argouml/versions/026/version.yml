@@ -4,8 +4,8 @@ build:
     - ant
   src: src/argouml-app/src/
 misuses:
-- '1'
-- '2'
-- '3'
-- '4'
+- 'tikanga11-1'
+- 'tikanga11-2'
+- 'tikanga11-3'
+- 'tikanga11-4'
 revision: 15810
