@@ -446,6 +446,10 @@ TSE17-ExRecall:
   - lucene.1918.tikanga-1
   - rhino.286251.1
 
+###
+### The datasets used for the experiments in the FSE'18 paper.
+###
+
 FSE18-Extension:
   #  Dataset: Legunsen-ASE16
   - apache-gora.bb09d89.56_1
@@ -562,6 +566,16 @@ FSE18-Extension:
   - argouml.026.4
   # Dataset: GrouMiner
   - jigsaw.205.1
+
+FSE18-ExPrecision:
+  # min
+  - asterisk-java.304421c
+  - chensun.cf23b99
+  # max
+  - bcel.24014e5
+  - jigsaw.205
+  # random
+  - testng.677302c
 
 ###
 ### Other experiment datasets.
