@@ -223,6 +223,12 @@ $columns_to_ignore = array(
         <?php endif; ?>
         <table class="potential_hits">
             <?php
+
+            function escape_detector_special($detector_value)
+            {
+                return str_replace(['<init>', '<clinit>'], ['&lt;init&gt;', '&lt;clinit&gt;'], $detector_value);
+            }
+
             /**
              * @param string $property the property to check for
              * @param array $potential_hits the potential hits to check
@@ -318,7 +324,7 @@ $columns_to_ignore = array(
                 <?php elseif(strlen($hit[$column]) > 4 && substr($hit[$column], -4) === ".png") : ?>
                     <img src="<?= "{$uploads_url_prefix}/{$experiment->id}/{$detector->id}/{$misuse->getProject()}/{$misuse->getVersion()}/{$hit[$column]}" ?>" />
                 <?php else : ?>
-                    <?= $markdown_parser->text($hit[$column]); ?>
+                    <?= $markdown_parser->text(escape_detector_special($hit[$column])); ?>
                 <?php endif; ?>
             </td>
             <?php endforeach; ?>
