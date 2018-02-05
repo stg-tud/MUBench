@@ -38,7 +38,7 @@ class Misuse extends Model
 
     public function findings()
     {
-        return $this->hasMany(Finding::class);
+        return $this->hasMany(Finding::class)->orderBy('rank');
     }
 
     public function snippets()
