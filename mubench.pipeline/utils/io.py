@@ -1,3 +1,4 @@
+import logging
 import zipfile
 from os import makedirs, chmod, remove, listdir, readlink, symlink, stat, walk
 from os.path import dirname, exists, isfile, join, isdir, basename, islink, relpath
@@ -157,4 +158,8 @@ def zip_dir_contents(sources: List[str], destination: str):
                 for file in files:
                     file_path = join(root, file)
                     file_path_in_archive = relpath(file_path, source)
-                    archive.write(file_path, file_path_in_archive)
+                    if not any(file.endswith(file_path_in_archive) for file in archive.namelist()):
+                        archive.write(file_path, file_path_in_archive)
+                    else:
+                        logger = logging.getLogger("io.zip_dir_contents")
+                        logger.debug("File conflict in zip {}: {}".format(destination, file_path_in_archive))
