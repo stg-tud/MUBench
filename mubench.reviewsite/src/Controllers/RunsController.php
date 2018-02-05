@@ -162,7 +162,7 @@ class RunsController extends Controller
         foreach($runs as $run){
             $conclusive_reviews = 0;
             $filtered_misuses = new Collection;
-            $misuses = $run->misuses->sortBy('misuse_muid', SORT_NATURAL, true);
+            $misuses = $run->misuses->sortBy('misuse_muid', SORT_NATURAL);
             if($experiment->id === 2) {
                 foreach ($misuses as $misuse) {
                     if ($conclusive_reviews >= $max_reviews) {
