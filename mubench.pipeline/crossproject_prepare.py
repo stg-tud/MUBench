@@ -1,3 +1,4 @@
+import calendar
 import csv
 import logging
 import os
@@ -23,6 +24,9 @@ _SUBTYPES = {}
 username = sys.argv[1]
 password = sys.argv[2]
 
+now = datetime.utcnow()
+run_timestamp = calendar.timegm(now.timetuple())
+
 
 def _get_subtypes(target_type):
     if not _SUBTYPES:
@@ -44,7 +48,7 @@ def _prepare_example_projects(target_type: str, boa: BOA, metadata_path: str):
             if not checkout.exists():
                 try:
                     logger.info("  Checking out %r...", str(project))
-                    checkout.create()
+                    checkout.create(run_timestamp)
                 except CommandFailedError as error:
                     logger.warning("    Checkout failed: %r", error)
                     checkout.delete()
