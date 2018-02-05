@@ -99,7 +99,7 @@ $columns_to_ignore = array(
         });
         sort($additional_stats);
         ?>
-        <?php foreach ($run->misuses->sortBy('misuse_muid') as $misuse) : /* @var $misuse \MuBench\ReviewSite\Models\Misuse */ ?>
+        <?php foreach ($run->misuses as $misuse) : /* @var $misuse \MuBench\ReviewSite\Models\Misuse */ ?>
             <?php
             $classes = [];
             if ($new_project) $classes[] = "top";
