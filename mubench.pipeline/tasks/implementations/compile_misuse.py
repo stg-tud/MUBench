@@ -47,7 +47,8 @@ class CompileMisuseTask:
                                                     version_compile.get_full_classpath())
                 misuse_compile.save(self.run_timestamp)
             else:
-                logger.info("Correct usage already compiled.")
+                if misuse.patterns:
+                    logger.info("Correct usage already compiled.")
         except Exception:
             misuse_compile.delete()
             raise
