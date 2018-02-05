@@ -173,10 +173,11 @@ class RunsController extends Controller
                         $conclusive_reviews++;
                     }
                 }
-            }
-            foreach($misuses as $misuse){
-                if($misuse->metadata){
-                    $filtered_misuses->add($misuse);
+            } else {
+                foreach($misuses as $misuse){
+                    if($misuse->metadata){
+                        $filtered_misuses->add($misuse);
+                    }
                 }
             }
             $run->misuses = $filtered_misuses;
