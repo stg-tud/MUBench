@@ -332,7 +332,8 @@ def __setup_filter_arguments(parser: ArgumentParser, available_datasets: List[st
                         help="skip all projects or project versions whose names are given")
     parser.add_argument('--datasets', metavar='DATASETS', nargs='+', dest='datasets',
                         default=__get_default('datasets', []), choices=available_datasets,
-                        help="process only misuses in the specified data set(s)")
+                        help="process only misuses in the specified data set(s) (case insensitive)",
+                        type=str.lower)
 
 
 def __setup_checkout_arguments(parser: ArgumentParser) -> None:
