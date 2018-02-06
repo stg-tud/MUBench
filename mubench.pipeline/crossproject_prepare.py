@@ -91,6 +91,10 @@ logger.addHandler(handler)
 with open(INDEX_PATH) as index:
     boa = BOA(username, password)
     for row in csv.reader(index, delimiter="\t"):
+        # skip blank lines, e.g., on trailing newline
+        if not row:
+            continue
+
         project_id = row[0]
         version_id = row[1]
         target_type = row[6]

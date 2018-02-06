@@ -30,6 +30,10 @@ logger.addHandler(handler)
 example_projects_by_API = {}
 with open(INDEX_PATH) as index:
     for row in csv.reader(index, delimiter="\t"):
+        # skip blank lines, e.g., on trailing newline
+        if not row:
+            continue
+
         target_type = row[6]
         try:
             if target_type not in example_projects_by_API:
