@@ -119,13 +119,19 @@ def test_script_is_case_insensitive():
 
 def test_dataset():
     parser = _get_command_line_parser(['Dummy'], [], ['valid-dataset'])
-    result = parser.parse_args(['run', 'ex1', 'Dummy', '--dataset', 'valid-dataset'])
-    assert_equals('valid-dataset', result.dataset)
+    result = parser.parse_args(['run', 'ex1', 'Dummy', '--datasets', 'valid-dataset'])
+    assert_equals(['valid-dataset'], result.datasets)
+
+
+def test_multiple_datasets():
+    parser = _get_command_line_parser(['Dummy'], [], ['valid-dataset', 'other-valid-dataset'])
+    result = parser.parse_args(['run', 'ex1', 'Dummy', '--datasets', 'valid-dataset', 'other-valid-dataset'])
+    assert_equals(['valid-dataset', 'other-valid-dataset'], result.datasets)
 
 
 def test_fails_for_invalid_dataset():
     parser = _get_command_line_parser(['valid-detector'], [], ['valid-dataset'])
-    assert_raises(SystemExit, parser.parse_args, ['run', 'ex1', 'valid-detector', '--dataset', 'invalid-dataset'])
+    assert_raises(SystemExit, parser.parse_args, ['run', 'ex1', 'valid-detector', '--datasets', 'invalid-dataset'])
 
 
 def test_release():
