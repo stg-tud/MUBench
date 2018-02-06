@@ -53,6 +53,7 @@ class MisuseCheckTask:
         self.registered_entries = set()
         self.misuses_not_listed_in_any_version = _get_all_misuses(data_base_path)
         self._report_invalid_dataset_entries()
+        self._check_for_conflicting_dataset_names(datasets.keys())
 
     def run(self, project: Project, version: ProjectVersion, misuse: Misuse):
         self.logger = logging.getLogger("datasetcheck.project.version.misuse")
@@ -163,6 +164,16 @@ class MisuseCheckTask:
                     datasets_without_invalid_entries[dataset].append(entry)
         self.datasets = datasets_without_invalid_entries
 
+    def _check_for_conflicting_dataset_names(self, dataset_names: List[str]):
+        seen_names = dict()
+        for name in dataset_names:
+            if name.lower() in seen_names:
+                self._report_conflicting_dataset_name(seen_names[name.lower()], name)
+            else:
+                seen_names[name.lower()] = name
+
+    def _report_conflicting_dataset_name(self, first_name: str, second_name: str):
+        self.logger.warning('Conflicting dataset names "{}" and "{}". Dataset names are case insensitive!'.format(first_name, second_name))
 
     def _report_unknown_dataset_entries(self):
         for dataset, entries in self.datasets.items():
