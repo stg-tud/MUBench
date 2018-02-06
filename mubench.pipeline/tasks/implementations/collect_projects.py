@@ -23,6 +23,6 @@ class CollectProjectsTask:
         white_list = data_entity_lists.get_project_white_list()
         black_list = data_entity_lists.black_list
 
-        is_whitelisted = not white_list or project_id in white_list
-        is_blacklisted = project_id in black_list
+        is_whitelisted = not white_list or white_list.case_insensitive_contains(project_id)
+        is_blacklisted = black_list.case_insensitive_contains(project_id)
         return is_blacklisted or not is_whitelisted

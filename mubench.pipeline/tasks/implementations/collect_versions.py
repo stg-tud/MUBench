@@ -16,8 +16,8 @@ class CollectVersionsTask:
         white_list = data_entity_lists.get_version_white_list(project_id)
         black_list = data_entity_lists.black_list
 
-        is_whitelisted = not white_list or version_id in white_list
-        is_blacklisted = version_id in black_list
+        is_whitelisted = not white_list or white_list.case_insensitive_contains(version_id)
+        is_blacklisted = black_list.case_insensitive_contains(version_id)
         is_not_compilable = self._filter_non_compilable_versions and not version.is_compilable
 
         return is_not_compilable or is_blacklisted or not is_whitelisted

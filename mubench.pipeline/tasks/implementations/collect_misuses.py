@@ -12,6 +12,6 @@ class CollectMisusesTask:
         white_list = data_entity_lists.get_misuse_white_list(version_id)
         black_list = data_entity_lists.black_list
 
-        is_whitelisted = not white_list or misuse_id in white_list
-        is_blacklisted = misuse_id in black_list
+        is_whitelisted = not white_list or white_list.case_insensitive_contains(misuse_id)
+        is_blacklisted = black_list.case_insensitive_contains(misuse_id)
         return is_blacklisted or not is_whitelisted
