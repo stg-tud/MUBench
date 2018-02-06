@@ -295,7 +295,7 @@ class TestMisuseCheckTask:
 
     @patch("tasks.implementations.dataset_check_misuse.MisuseCheckTask._report_conflicting_dataset_name")
     def test_checks_dataset_name_conflicts(self, report_conflicting_dataset_name_mock, _, __):
-        uut = MisuseCheckTask({'-DATAset-': [], '-datASET-': []}, '', '')
+        uut = MisuseCheckTask({'DATAset': [], 'datASET': []}, '', '')
 
         project = create_project("-project-", meta={})
         version = create_version("-version-", project=project, meta={})
@@ -305,7 +305,7 @@ class TestMisuseCheckTask:
 
         # The order of parameters may change since a dictionary is used internally
         actual_calls = report_conflicting_dataset_name_mock.call_args_list
-        assert call('-DATAset-', '-datASET-') in actual_calls or call('-datASET-', '-DATAset-') in actual_calls, "expected call not in [{}]".format(';'.join(actual_calls))
+        assert call('DATAset', 'datASET') in actual_calls or call('datASET', 'DATAset') in actual_calls, "expected call not in [{}]".format(';'.join(actual_calls))
 
 
 @patch('tasks.implementations.dataset_check_misuse.Project.repository')
