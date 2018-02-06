@@ -40,7 +40,7 @@ class Detector:
         if exists(releases_index_file_path):
             releases = read_yaml(releases_index_file_path)
             if requested_release:
-                releases = [r for r in releases if r.get("tag", "latest") == requested_release]
+                releases = [r for r in releases if r.get("tag", "latest").lower() == requested_release.lower()]
 
             if releases:
                 return releases[0]
