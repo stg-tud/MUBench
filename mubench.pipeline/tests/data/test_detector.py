@@ -73,14 +73,14 @@ class TestDetector:
 
     def test_release_is_case_insensitive(self):
         self.setup_releases([
-            {"md5": "-md5_1-", "tag": "-release_1-", "cli_version": "0.0.0"},
-            {"md5": "-md5_requested-", "tag": "-Release_requested-",
+            {"md5": "-md5_1-", "tag": "-release_1-", "cli_version": "-version-"},
+            {"md5": "-md5_requested-", "tag": "RELEASE_REQUESTED",
              "cli_version": RunnerInterfaceTestImpl.TEST_VERSION},
-            {"md5": "-md5_3-", "tag": "-release_3-", "cli_version": "0.0.2"}])
-        detector = Detector(self.temp_dir, self.detector_id, [], "-release_Requested-")
+            {"md5": "-md5_3-", "tag": "-release_3-", "cli_version": "-version-"}])
+        detector = Detector(self.temp_dir, self.detector_id, [], "Release_Requested")
 
-        expected_url = "{}/-Release_requested-/{}/{}.jar".format(Detector.BASE_URL,
-                                                                 RunnerInterfaceTestImpl.TEST_VERSION, self.detector_id)
+        expected_url = "{}/RELEASE_REQUESTED/{}/{}.jar".format(Detector.BASE_URL,
+                                                               RunnerInterfaceTestImpl.TEST_VERSION, self.detector_id)
         assert_equals(expected_url, detector.jar_url)
         assert_equals("-md5_requested-", detector.md5)
 
