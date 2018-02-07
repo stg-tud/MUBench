@@ -43,7 +43,9 @@ class Detector:
                 releases = [r for r in releases if r.get("tag", "latest").lower() == requested_release.lower()]
 
             if releases:
-                return releases[0]
+                requested_release = releases[0]
+                requested_release["tag"] = requested_release.get("tag", "latest").lower()
+                return requested_release
             else:
                 raise ValueError("No matching {} release for {}".format(self.id, requested_release))
 

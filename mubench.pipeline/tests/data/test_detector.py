@@ -79,7 +79,7 @@ class TestDetector:
             {"md5": "-md5_3-", "tag": "-release_3-", "cli_version": "-version-"}])
         detector = Detector(self.temp_dir, self.detector_id, [], "Release_Requested")
 
-        expected_url = "{}/RELEASE_REQUESTED/{}/{}.jar".format(Detector.BASE_URL,
+        expected_url = "{}/release_requested/{}/{}.jar".format(Detector.BASE_URL,
                                                                RunnerInterfaceTestImpl.TEST_VERSION, self.detector_id)
         assert_equals(expected_url, detector.jar_url)
         assert_equals("-md5_requested-", detector.md5)
