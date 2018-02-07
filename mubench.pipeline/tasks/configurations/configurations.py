@@ -101,7 +101,8 @@ class RunProvidedPatternsExperiment(TaskConfiguration):
         compile_misuse = CompileMisuseTask(config.compiles_path, config.run_timestamp, config.force_compile)
         load_detector = LoadDetectorTask(config.detectors_path, config.detector, config.requested_release,
                                          config.java_options)
-        detect = DetectProvidedPatternsTask(config.findings_path, config.force_detect, config.timeout)
+        detect = DetectProvidedPatternsTask(config.findings_path, config.force_detect, config.timeout,
+                                            config.run_timestamp)
         return CheckoutTaskConfiguration().tasks(config) + [compile_version, collect_misuses,
                                                             filter_misuses_without_patterns, compile_misuse,
                                                             load_detector, detect]
@@ -131,7 +132,7 @@ class RunAllFindingsExperiment(TaskConfiguration):
                                              config.force_compile, config.use_tmp_wrkdir)
         load_detector = LoadDetectorTask(config.detectors_path, config.detector, config.requested_release,
                                          config.java_options)
-        detect = DetectAllFindingsTask(config.findings_path, config.force_detect, config.timeout)
+        detect = DetectAllFindingsTask(config.findings_path, config.force_detect, config.timeout, config.run_timestamp)
         return CheckoutTaskConfiguration().tasks(config) + [compile_version, load_detector, detect]
 
 
@@ -159,7 +160,7 @@ class RunBenchmarkExperiment(TaskConfiguration):
                                              config.force_compile, config.use_tmp_wrkdir)
         load_detector = LoadDetectorTask(config.detectors_path, config.detector, config.requested_release,
                                          config.java_options)
-        detect = DetectAllFindingsTask(config.findings_path, config.force_detect, config.timeout)
+        detect = DetectAllFindingsTask(config.findings_path, config.force_detect, config.timeout, config.run_timestamp)
         return CheckoutTaskConfiguration().tasks(config) + [compile_version, load_detector, detect]
 
 

@@ -71,8 +71,8 @@ class DetectorRun:
         return run_info
 
     def ensure_executed(self, detector_args: Dict[str, str], timeout: Optional[int], force_detect: bool,
-                        current_timestamp: int, logger: Logger) -> None:
-        if self.is_outdated() or force_detect:
+                        current_timestamp: int, compile_timestamp: int, logger: Logger) -> None:
+        if self.is_outdated(compile_timestamp) or force_detect:
             pass
         elif self.is_failure():
             logger.info("Error in previous {}. Skipping.".format(str(self)))
@@ -172,8 +172,14 @@ class DetectorRun:
     def is_failure(self):
         return self.is_error() or self.is_timeout()
 
-    def is_outdated(self):
+    def is_outdated(self, compile_timestamp: int):
+        return self._is_outdated_detector() or self._newer_compile(compile_timestamp)
+
+    def _is_outdated_detector(self):
         return self.detector.md5 != self.__detector_md5
+
+    def _newer_compile(self, compile_timestamp: int):
+        return self.__timestamp < compile_timestamp
 
     def __str__(self):
         return "run on {}".format(self.version)

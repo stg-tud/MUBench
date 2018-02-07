@@ -37,14 +37,14 @@ class TestDetectorRun:
 
         uut = DetectorRun(self.detector, self.version, self.findings_path)
 
-        assert uut.is_outdated()
+        assert uut._is_outdated_detector()
 
     @patch("data.detector_run.read_yaml_if_exists")
     def test_run_up_to_date(self, read_run_info, _):
         self.detector.md5 = "-md5-"
         read_run_info.return_value = {"md5": "-md5-"}
 
-        assert not self.uut.is_outdated()
+        assert not self.uut._is_outdated_detector()
 
     @patch("data.detector_run.read_yaml_if_exists")
     def test_error_is_failure(self, read_run_info, _):
@@ -115,11 +115,11 @@ class TestDetectorRun:
         uut = DetectorRun(self.detector, self.version, self.findings_path)
         uut._execute = MagicMock()
 
-        uut.is_outdated = lambda: False
+        uut.is_outdated = lambda _: False
         uut.is_error = lambda: False
         uut.is_success = lambda: True
 
-        uut.ensure_executed(self.detector_args, None, False, 0, self.logger)
+        uut.ensure_executed(self.detector_args, None, False, 0, 0, self.logger)
 
         uut._execute.assert_not_called()
 
@@ -127,10 +127,10 @@ class TestDetectorRun:
         uut = DetectorRun(self.detector, self.version, self.findings_path)
         uut._execute = MagicMock()
 
-        uut.is_outdated = lambda: False
+        uut.is_outdated = lambda _: False
         uut.is_error = lambda: True
 
-        uut.ensure_executed(self.detector_args, None, False, 0, self.logger)
+        uut.ensure_executed(self.detector_args, None, False, 0, 0, self.logger)
 
         uut._execute.assert_not_called()
 
@@ -139,9 +139,9 @@ class TestDetectorRun:
         uut._execute = MagicMock()
 
         uut.is_success = lambda: True
-        uut.is_outdated = lambda: True
+        uut.is_outdated = lambda _: True
 
-        uut.ensure_executed(self.detector_args, None, False, 0, self.logger)
+        uut.ensure_executed(self.detector_args, None, False, 0, 0, self.logger)
 
         uut._execute.assert_called_with(ANY, None, 0, ANY)
 
@@ -149,7 +149,7 @@ class TestDetectorRun:
         uut = DetectorRun(self.detector, self.version, self.findings_path)
         uut._execute = MagicMock()
 
-        uut.ensure_executed(self.detector_args, None, True, 0, self.logger)
+        uut.ensure_executed(self.detector_args, None, True, 0, 0, self.logger)
 
         args = uut._execute.call_args[0][0]
         assert key_run_file in args
@@ -158,7 +158,7 @@ class TestDetectorRun:
         uut = DetectorRun(self.detector, self.version, self.findings_path)
         uut._execute = MagicMock()
 
-        uut.ensure_executed(self.detector_args, None, True, 0, self.logger)
+        uut.ensure_executed(self.detector_args, None, True, 0, 0, self.logger)
 
         args = uut._execute.call_args[0][0]
         assert key_findings_file in args
@@ -174,3 +174,12 @@ class TestDetectorRun:
             Finding({"name": "f1", "rank": 0}),
             Finding({"name": "f2", "rank": 1})
         ])
+
+    @patch("data.detector_run.open_yamls_if_exists")
+    def test_run_outdated_on_newer_compile(self, read_yamls_mock, _):
+        read_yamls_mock.return_value = {'timestamp': 0}
+        compile_timestamp = 1
+
+        uut = DetectorRun(self.detector, self.version, self.findings_path)
+
+        assert uut._newer_compile(compile_timestamp)

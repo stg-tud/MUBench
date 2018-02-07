@@ -14,16 +14,18 @@ class DetectAllFindingsTask:
     __RUN_MODE_NAME = "mine_and_detect"
     __DETECTOR_MODE = 0
 
-    def __init__(self, findings_base_path: str, force_detect: bool, timeout: Optional[int]):
+    def __init__(self, findings_base_path: str, force_detect: bool, timeout: Optional[int], current_timestamp: int):
         self.findings_base_path = findings_base_path
         self.force_detect = force_detect
         self.timeout = timeout
+        self.current_timestamp = current_timestamp
 
     def run(self, detector: Detector, version: ProjectVersion, version_compile: VersionCompile):
         run = DetectorRun(detector, version, self._get_findings_path(detector, version))
 
         run.ensure_executed(self._get_detector_arguments(version_compile),
-                            self.timeout, self.force_detect, logging.getLogger("task.detect"))
+                            self.timeout, self.force_detect, self.current_timestamp, version_compile.timestamp,
+                            logging.getLogger("task.detect"))
 
         return run
 
