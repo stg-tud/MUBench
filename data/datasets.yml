@@ -280,10 +280,10 @@ Tikanga: # Misuses identified by the Tikanga detector
   - lucene.1918.tikanga-0
   - lucene.1918.tikanga-1
   # Misuses identified in the experiments from the original publication
-  - argouml.026.1
-  - argouml.026.2
-  - argouml.026.3
-  - argouml.026.4
+  - argouml.026.tikanga11-1
+  - argouml.026.tikanga11-2
+  - argouml.026.tikanga11-3
+  - argouml.026.tikanga11-4
 
 GrouMiner: # Misuses identified by the GrouMiner detector
   # Misuses identified in the experiments from the original publication
@@ -560,10 +560,10 @@ FSE18-Extension:
   - technic-launcher-sp.7809682.1
   - yapps.1ae52b0.1
   # Dataset: Tikanga
-  - argouml.026.1
-  - argouml.026.2
-  - argouml.026.3
-  - argouml.026.4
+  - argouml.026.tikanga11-1
+  - argouml.026.tikanga11-2
+  - argouml.026.tikanga11-3
+  - argouml.026.tikanga11-4
   # Dataset: GrouMiner
   - jigsaw.205.1
 
