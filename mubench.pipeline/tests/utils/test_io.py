@@ -132,7 +132,6 @@ class TestIo:
         with zipfile.ZipFile(destination, 'r') as zip_file:
             zip_file.extractall(extract_destination)
 
-        assert_equals("a\n", safe_read(join(extract_destination, "-conflict-")))
         assert exists(join(extract_destination, "-conflict-")) and \
             exists(join(extract_destination, "-subdir-", "-conflict-"))
 
