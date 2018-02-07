@@ -158,7 +158,7 @@ def zip_dir_contents(sources: List[str], destination: str):
                 for file in files:
                     file_path = join(root, file)
                     file_path_in_archive = relpath(file_path, source)
-                    if not any(file.endswith(file_path_in_archive) for file in archive.namelist()):
+                    if not any(file == file_path_in_archive for file in archive.namelist()):
                         archive.write(file_path, file_path_in_archive)
                     else:
                         logger = logging.getLogger("io.zip_dir_contents")

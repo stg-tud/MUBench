@@ -118,6 +118,24 @@ class TestIo:
 
         assert_equals("a\n", safe_read(join(extract_destination, "-conflict-")))
 
+    def test_zip_dir_contents_suffix_is_not_a_conflict(self):
+        src1 = join(self.temp_dir, "src1")
+        src2 = join(self.temp_dir, "src2")
+        safe_write("a", join(src1, "-conflict-"), False)
+        safe_write("b", join(src2, "-subdir-", "-conflict-"), False)
+        sources = [src1, src2]
+        destination = join(self.temp_dir, "archive")
+
+        zip_dir_contents(sources, destination)
+
+        extract_destination = join(self.temp_dir, "extracted")
+        with zipfile.ZipFile(destination, 'r') as zip_file:
+            zip_file.extractall(extract_destination)
+
+        assert_equals("a\n", safe_read(join(extract_destination, "-conflict-")))
+        assert exists(join(extract_destination, "-conflict-")) and \
+            exists(join(extract_destination, "-subdir-", "-conflict-"))
+
 
 class TestIOYaml:
     def test_writes_single_line(self):
