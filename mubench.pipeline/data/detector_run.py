@@ -58,16 +58,20 @@ class DetectorRun:
     def __detector_md5(self):
         return self.__get_run_info("md5", None)
 
+    @property
+    def __timestamp(self):
+        return self.__get_run_info("timestamp", 0)
+
     def get_run_info(self):
         run_info = {
             "number_of_findings": self.number_of_findings,
-            "runtime": self.runtime
+            "runtime": self.runtime,
         }
         run_info.update(self.__run_info)
         return run_info
 
     def ensure_executed(self, detector_args: Dict[str, str], timeout: Optional[int], force_detect: bool,
-                        logger: Logger) -> None:
+                        current_timestamp: int, logger: Logger) -> None:
         if self.is_outdated() or force_detect:
             pass
         elif self.is_failure():
@@ -87,13 +91,13 @@ class DetectorRun:
             key_run_file: self._run_file_path
         })
 
-        self._execute(detector_args, timeout, logger)
+        self._execute(detector_args, timeout, current_timestamp, logger)
 
         if not self.is_success():
             logger.info("Run {} failed.".format(str(self)))
             logger.debug("Full exception:", exc_info=True)
 
-    def _execute(self, detector_args: Dict[str, str], timeout: Optional[int], logger: Logger):
+    def _execute(self, detector_args: Dict[str, str], timeout: Optional[int], current_timestamp: int, logger: Logger):
         start = time.time()
         message = ""
         try:
@@ -117,15 +121,16 @@ class DetectorRun:
             runtime = runtime
             logger.info("Run took {0:.2f} seconds.".format(runtime))
 
-        self.__save_run_info(result, runtime, message, self.detector.md5)
+        self.__save_run_info(result, runtime, message, self.detector.md5, current_timestamp)
 
-    def __save_run_info(self, result, runtime, message, detector_md5):
+    def __save_run_info(self, result, runtime, message, detector_md5, current_timestamp):
         # load and update, since an execution might have written additional fields to the file since initialization
         run_info = self.__load_run_info()
         run_info.update({
             "result": result.name,
             "runtime": runtime,
             "message": message,
+            "timestamp": current_timestamp,
             "md5": detector_md5
         })
         write_yaml(run_info, file=self._run_file_path)
