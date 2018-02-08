@@ -137,6 +137,53 @@ class RunsControllerTest extends SlimTestCase
         self::assertEquals('-stat-val-', $run["-custom-stat-"]);
     }
 
+    function test_store_run_with_only_metadata_ex3()
+    {
+        $run_without_hits = json_decode(json_encode([
+            "result" => "success",
+            "runtime" => 42.1,
+            "number_of_findings" => 23,
+            "-custom-stat-" => "-stat-val-",
+            "timestamp" => 12,
+            "potential_hits" => []]));
+        $metadataController = new MetadataController($this->container);
+        $metadataController->updateMetadata('-p-', '-v-', '-m1-', '-desc-',
+            ['diff-url' => '-diff-', 'description' => '-fix-desc-'],
+            ['file' => '-file-location-', 'method' => '-method-location-'], [], [], []);
+        $metadataController->updateMetadata('-p-', '-v-', '-m2-', '-desc-',
+            ['diff-url' => '-diff-', 'description' => '-fix-desc-'],
+            ['file' => '-file-location-', 'method' => '-method-location-'], [], [], []);
+
+        $this->runsController->addRun(3, '-d-', '-p-', '-v-', $run_without_hits);
+
+        $detector = Detector::where('muid', '=', '-d-')->first();
+        $run = Run::of($detector)->in(Experiment::find(3))->where(['project_muid' => '-p-', 'version_muid' => '-v-'])->first();
+
+        self::assertEquals(2, $run->misuses->count());
+    }
+
+    function test_store_run_with_only_metadata_ex2()
+    {
+        $run_without_hits = json_decode(json_encode([
+            "result" => "success",
+            "runtime" => 42.1,
+            "number_of_findings" => 23,
+            "-custom-stat-" => "-stat-val-",
+            "timestamp" => 12,
+            "potential_hits" => []]));
+        $metadataController = new MetadataController($this->container);
+        $metadataController->updateMetadata('-p-', '-v-', '-m-', '-desc-',
+            ['diff-url' => '-diff-', 'description' => '-fix-desc-'],
+            ['file' => '-file-location-', 'method' => '-method-location-'], [], [], []);
+
+        $this->runsController->addRun(2, '-d-', '-p-', '-v-', $run_without_hits);
+
+        $detector = Detector::where('muid', '=', '-d-')->first();
+        $run = Run::of($detector)->in(Experiment::find(2))->where(['project_muid' => '-p-', 'version_muid' => '-v-'])->first();
+
+        self::assertEmpty($run->misuses);
+    }
+
     function test_add_run_twice_with_different_timestamp()
     {
         $first_request = $this->someValidRunRequestBody();

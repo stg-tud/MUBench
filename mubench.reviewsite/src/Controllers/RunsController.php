@@ -246,6 +246,9 @@ class RunsController extends Controller
 
         $this->createOrUpdateRunsTable($detector, $run);
         $new_run = $this->createOrUpdateRun($detector, $experiment, $projectId, $versionId, $run);
+        if($experiment->id == 1 || $experiment->id == 3){
+            $this->createMisusesFromMetadata($detector, $projectId, $versionId, $new_run);
+        }
         if ($potential_hits) {
             $this->createOrUpdateFindingsTable($detector, $potential_hits);
             $this->storeFindings($detector, $experiment, $projectId, $versionId, $new_run, $potential_hits);
@@ -253,6 +256,13 @@ class RunsController extends Controller
             $this->createOrUpdateFindingsTable($detector, []);
         }
         return True;
+    }
+
+    private function createMisusesFromMetadata($detector, $projectId, $versionId, $run)
+    {
+        foreach(Metadata::where(['project_muid' => $projectId, 'version_muid' => $versionId])->get() as $metadata){
+            Misuse::create(['metadata_id' => $metadata->id, 'misuse_muid' => $metadata->misuse_muid, 'run_id' => $run->id, 'detector_id' => $detector->id]);
+        }
     }
 
     private function hasRunTable(Detector $detector)
