@@ -71,6 +71,19 @@ class TestDetector:
         self.setup_releases([{"md5": "-md5-", "tag": "-release-", "cli_version": "0.0.1"}])
         assert_raises(ValueError, Detector, self.temp_dir, self.detector_id, [], "-unavailable_release-")
 
+    def test_release_is_case_insensitive(self):
+        self.setup_releases([
+            {"md5": "-md5_1-", "tag": "-release_1-", "cli_version": "-version-"},
+            {"md5": "-md5_requested-", "tag": "RELEASE_REQUESTED",
+             "cli_version": RunnerInterfaceTestImpl.TEST_VERSION},
+            {"md5": "-md5_3-", "tag": "-release_3-", "cli_version": "-version-"}])
+        detector = Detector(self.temp_dir, self.detector_id, [], "release_requested")
+
+        expected_url = "{}/release_requested/{}/{}.jar".format(Detector.BASE_URL,
+                                                               RunnerInterfaceTestImpl.TEST_VERSION, self.detector_id)
+        assert_equals(expected_url, detector.jar_url)
+        assert_equals("-md5_requested-", detector.md5)
+
     def setup_releases(self, releases):
         releases_index = join(self.temp_dir, self.detector_id, Detector.RELEASES_FILE)
         write_yaml(releases, releases_index)
