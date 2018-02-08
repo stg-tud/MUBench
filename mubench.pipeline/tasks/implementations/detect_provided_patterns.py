@@ -16,17 +16,19 @@ class DetectProvidedPatternsTask:
     __RUN_MODE_NAME = "detect_only"
     __DETECTOR_MODE = 1
 
-    def __init__(self, findings_base_path: str, force_detect: bool, timeout: Optional[int]):
+    def __init__(self, findings_base_path: str, force_detect: bool, timeout: Optional[int], current_timestamp: int):
         self.findings_base_path = findings_base_path
         self.force_detect = force_detect
         self.timeout = timeout
+        self.current_timestamp = current_timestamp
 
     def run(self, detector: Detector, version: ProjectVersion, version_compile: VersionCompile, misuse: Misuse,
             misuse_compile: MisuseCompile):
         run = DetectorRun(detector, version, self._get_findings_path(detector, version, misuse))
 
         run.ensure_executed(self._get_detector_arguments(version_compile, misuse_compile),
-                            self.timeout, self.force_detect, logging.getLogger("task.detect"))
+                            self.timeout, self.force_detect, self.current_timestamp, misuse_compile.timestamp,
+                            logging.getLogger("task.detect"))
 
         return run
 
