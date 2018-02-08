@@ -10,7 +10,7 @@ from tasks.task_runner import TaskRunner
 from utils.data_entity_lists import DataEntityLists
 from utils.dataset_util import get_white_list
 
-DATASET_NAME = "FSE18-Extension"
+DATASET_NAME = "FSE18-Extension".lower()
 
 MUBENCH_ROOT_PATH = os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir))
 MUBENCH_DATA_PATH = os.path.join(MUBENCH_ROOT_PATH, "data")

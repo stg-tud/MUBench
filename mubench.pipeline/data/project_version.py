@@ -22,13 +22,13 @@ class ProjectVersion:
         self._base_path = base_path
         self.version_id = version_id
         self.project_id = project_id
-        self.id = "{}.{}".format(project_id, version_id)
+        self.id = "{}.{}".format(project_id, version_id).lower()
 
         from data.project import Project
         self.__project = Project(base_path, project_id)
 
         self.path = join(self.__project.path, Project.VERSIONS_DIR, version_id)
-        self._version_file = join(self.path, ProjectVersion.VERSION_FILE)  # type: str
+        self.version_file = join(self.path, ProjectVersion.VERSION_FILE)  # type: str
         self._misuses_dir = join(self.__project.path, Project.MISUSES_DIR)  # type: str
         self._YAML = None
         self._MISUSES = None
@@ -41,7 +41,7 @@ class ProjectVersion:
     @property
     def _yaml(self) -> Dict[str, Any]:
         if self._YAML is None:
-            self._YAML = read_yaml(self._version_file)
+            self._YAML = read_yaml(self.version_file)
         return self._YAML
 
     def get_checkout(self, base_path: str) -> ProjectCheckout:
@@ -128,4 +128,4 @@ class ProjectVersion:
         return "project '{}' version {}".format(self.project_id, self.version_id)
 
     def __eq__(self, other):
-        return isinstance(other, ProjectVersion) and self._version_file == other._version_file
+        return isinstance(other, ProjectVersion) and self.version_file == other.version_file

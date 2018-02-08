@@ -5,7 +5,7 @@ from data.project import Project
 from data.project_version import ProjectVersion
 
 
-def create_project(project_id: str, base_path: str = "-test-", meta: Dict[str, Any] = None):
+def create_project(project_id: str, base_path: str = "", meta: Dict[str, Any] = None):
     project = Project(base_path, project_id)
     project._YAML = meta
     return project

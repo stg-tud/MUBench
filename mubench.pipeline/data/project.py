@@ -15,7 +15,7 @@ class Project:
 
     def __init__(self, base_path: str, id: str):
         self._base_path = base_path
-        self.id = id
+        self.id = id.lower()
         self.path = join(base_path, id)
         self._versions_path = join(self.path, Project.VERSIONS_DIR)  # type: str
         self._project_file = join(self.path, Project.PROJECT_FILE)  # type: str

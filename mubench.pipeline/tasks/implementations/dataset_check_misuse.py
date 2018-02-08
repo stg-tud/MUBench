@@ -1,5 +1,5 @@
 import logging
-from os import listdir
+from os import listdir, path
 from os.path import join, isdir, basename, exists
 from typing import Dict, List
 
@@ -50,6 +50,7 @@ class MisuseCheckTask:
         self.logger = logging.getLogger("tasks.datasetcheck")
         self.datasets = datasets
         self.checkout_base_path = checkout_base_path
+        self.data_base_path = data_base_path
         self.registered_entries = set()
         self.misuses_not_listed_in_any_version = _get_all_misuses(data_base_path)
         self._report_invalid_dataset_entries()
@@ -60,8 +61,8 @@ class MisuseCheckTask:
         self._register_existing_dataset_entry(misuse.id)
         self._register_misuse_is_linked_from_version(project.id, misuse.misuse_id)
         self._check_required_keys_in_misuse_yaml(project, misuse)
-        self._check_misuse_location_exists(project, version, misuse)
-        self._check_violation_types(project, misuse)
+        self._check_misuse_location_exists(version, misuse)
+        self._check_violation_types(misuse)
 
     def end(self):
         self.logger = logging.getLogger("datasetcheck.misuse")
@@ -70,7 +71,7 @@ class MisuseCheckTask:
         self._report_unknown_dataset_entries()
 
     def _check_required_keys_in_misuse_yaml(self, project: Project, misuse: Misuse):
-        yaml_path = "{}/misuses/{}/misuse.yml".format(project.id, misuse.misuse_id)
+        yaml_path = self._get_rel_misuse_file_path(misuse)
         misuse_yaml = misuse._yaml
 
         if "location" not in misuse_yaml:
@@ -116,7 +117,10 @@ class MisuseCheckTask:
                 if "url" not in source:
                     self._report_missing_key("source.url", yaml_path)
 
-    def _check_misuse_location_exists(self, project: Project, version: ProjectVersion, misuse: Misuse):
+    def _get_rel_misuse_file_path(self, misuse):
+        return path.relpath(misuse.misuse_file, self.data_base_path)
+
+    def _check_misuse_location_exists(self, version: ProjectVersion, misuse: Misuse):
         if "location" in misuse._yaml:
             location = misuse.location
             if location.file and location.method:
@@ -128,19 +132,17 @@ class MisuseCheckTask:
                 else:
                     source_base_paths = [join(checkout.base_path, src_dir) for src_dir in version.source_dirs]
                     if not self._location_exists(source_base_paths, location.file, location.method):
-                        self._report_cannot_find_location(str(location),
-                                                          "{}/misuses/{}/misuse.yml".format(project.id,
-                                                                                            misuse.misuse_id))
+                        self._report_cannot_find_location(str(location), self._get_rel_misuse_file_path(misuse))
 
     @staticmethod
     def _location_exists(source_base_paths, file_, method) -> bool:
         return len(get_snippets(source_base_paths, file_, method)) > 0
 
-    def _check_violation_types(self, project: Project, misuse: Misuse):
+    def _check_violation_types(self, misuse: Misuse):
         violation_types = misuse._yaml.get("characteristics", [])
         for violation_type in violation_types:
             if violation_type not in VALID_VIOLATION_TYPES:
-                file_path = "{}/misuses/{}/misuse.yml".format(project.id, misuse.misuse_id)
+                file_path = self._get_rel_misuse_file_path(misuse)
                 self._report_invalid_violation_type(violation_type, file_path)
 
     def _register_existing_dataset_entry(self, misuse_id: str):
