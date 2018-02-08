@@ -185,7 +185,7 @@ td.top { border-top: 1px solid black; }
 td.right { text-align: right; }
 
 td.no-hit { color: lightgray; }
-a.button.no-hit { color: lightgray; }
+a.button.no-hit { color: #AAAAAA; }
 
 table.potential_hits th {
     border: 2px solid black;
@@ -195,13 +195,17 @@ table.potential_hits td {
     border: 2px solid grey;
 }
 
-a.button {
-    -webkit-appearance: button;
-    -moz-appearance: button;
-    appearance: button;
+a.button, input.button {
+    background-color: #CCCCCC;
+    border: none;
+    color: black;
+    padding: 5px 10px;
+    text-align: center;
     text-decoration: none;
-    color: initial;
-    padding: 2pt 5pt;
+    display: inline-block;
+    font-size: 12px;
+    margin: 4px 2px;
+    cursor: pointer;
 }
 
 ul.inline {

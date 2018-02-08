@@ -181,7 +181,7 @@ $columns_to_ignore = array(
                 <?php else : ?>
                     <pre class="prettyprint"><code class="language-java">code not found</code></pre>
                     <?php if($user) : ?>
-                        <input type="button" onclick="show(this);" value="Add code snippet">
+                        <input class="button" type="button" onclick="show(this);" value="Add code snippet">
                         <form  id="snippet_form" style="display:none;" action="<?= $pathFor('snippet.add', array('experiment_id' => $experiment->id, 'detector_muid' => $detector->muid, 'project_muid' => $misuse->getProject(), 'version_muid' => $misuse->getVersion(), 'misuse_muid' => $misuse->misuse_muid)) ?>" method="post" target="">
                             <table>
                             <tr>
@@ -199,7 +199,7 @@ $columns_to_ignore = array(
                                 </td>
                             </tr>
                             <tr>
-                                <td><input type="submit" value="Save snippet" /></td>
+                                <td><input class="button" type="submit" value="Save snippet" /></td>
                             </tr>
                             </table>
                         </form>
