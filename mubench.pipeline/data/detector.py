@@ -1,12 +1,12 @@
 from distutils.version import StrictVersion
 from logging import Logger
-from os.path import join, exists
+from os.path import join
 from typing import Dict, Optional, List
 
 from data.finding import Finding, SpecializedFinding
 from data.project_version import ProjectVersion
 from data.runner_interface import RunnerInterface
-from utils.io import read_yaml
+from utils.io import read_yaml_if_exists
 
 
 class Detector:
@@ -22,7 +22,7 @@ class Detector:
 
         releases_index_path = join(self.path, Detector.RELEASES_FILE)
         release = self._get_release(releases_index_path, requested_release)
-        release_tag = release.get("tag", "latest")
+        release_tag = release["tag"]
 
         if "cli_version" in release:
             cli_version = StrictVersion(release["cli_version"])
@@ -37,19 +37,21 @@ class Detector:
         self.runner_interface = RunnerInterface.get(cli_version, self.jar_path, java_options)
 
     def _get_release(self, releases_index_file_path: str, requested_release: Optional[str]) -> Dict[str, str]:
-        if exists(releases_index_file_path):
-            releases = read_yaml(releases_index_file_path)
-            if requested_release:
-                releases = [r for r in releases if r.get("tag", "latest").lower() == requested_release.lower()]
+        releases = self.__load_release_file(releases_index_file_path)
 
-            if releases:
-                requested_release = releases[0]
-                requested_release["tag"] = requested_release.get("tag", "latest").lower()
-                return requested_release
-            else:
-                raise ValueError("No matching {} release for {}".format(self.id, requested_release))
+        for release in releases:
+            release["tag"] = release.get("tag", "latest").lower()
 
-        raise ValueError("No releases for {}".format(self.id))
+        if requested_release:
+            releases = [r for r in releases if r["tag"] == requested_release]
+
+        if releases:
+            return releases[0]
+        else:
+            raise ValueError("No (matching) {} release for {}".format(self.id, requested_release))
+
+    def __load_release_file(self, releases_index_file_path):
+        return read_yaml_if_exists(releases_index_file_path)
 
     def execute(self, version: ProjectVersion, arguments: Dict[str, str],
                 timeout: Optional[int], logger: Logger):

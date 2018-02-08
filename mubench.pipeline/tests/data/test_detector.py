@@ -77,7 +77,7 @@ class TestDetector:
             {"md5": "-md5_requested-", "tag": "RELEASE_REQUESTED",
              "cli_version": RunnerInterfaceTestImpl.TEST_VERSION},
             {"md5": "-md5_3-", "tag": "-release_3-", "cli_version": "-version-"}])
-        detector = Detector(self.temp_dir, self.detector_id, [], "Release_Requested")
+        detector = Detector(self.temp_dir, self.detector_id, [], "release_requested")
 
         expected_url = "{}/release_requested/{}/{}.jar".format(Detector.BASE_URL,
                                                                RunnerInterfaceTestImpl.TEST_VERSION, self.detector_id)
