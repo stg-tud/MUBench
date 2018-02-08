@@ -121,8 +121,8 @@ class TestIo:
     def test_zip_dir_contents_suffix_is_not_a_conflict(self):
         src1 = join(self.temp_dir, "src1")
         src2 = join(self.temp_dir, "src2")
-        safe_write("a", join(src1, "-conflict-"), False)
-        safe_write("b", join(src2, "-subdir-", "-conflict-"), False)
+        safe_write("b", join(src1, "-subdir-", "-conflict-"), False)
+        safe_write("a", join(src2, "-conflict-"), False)
         sources = [src1, src2]
         destination = join(self.temp_dir, "archive")
 
