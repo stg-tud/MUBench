@@ -2,8 +2,13 @@
 
 namespace MuBench\ReviewSite\Controllers;
 
+use Illuminate\Database\Eloquent\Collection;
+use MuBench\ReviewSite\Models\Detector;
+use MuBench\ReviewSite\Models\Experiment;
 use MuBench\ReviewSite\Models\Metadata;
+use MuBench\ReviewSite\Models\Misuse;
 use MuBench\ReviewSite\Models\Pattern;
+use MuBench\ReviewSite\Models\Run;
 use MuBench\ReviewSite\Models\Type;
 use Slim\Http\Request;
 use Slim\Http\Response;
@@ -18,6 +23,9 @@ class MetadataController extends Controller
         if (!$metadata) {
             return error_response($response,400, 'empty: ' . print_r($request->getBody(), true));
         }
+
+        $new_metadata = new Collection;
+
         foreach ($metadata as $misuseMetadata) {
             $projectId = $misuseMetadata['project'];
             $versionId = $misuseMetadata['version'];
@@ -29,8 +37,11 @@ class MetadataController extends Controller
             $patterns = $misuseMetadata['patterns'];
             $targetSnippets = $misuseMetadata['target_snippets'];
 
-            $this->updateMetadata($projectId, $versionId, $misuseId, $description, $fix, $location, $violationTypes, $patterns, $targetSnippets);
+            $new_metadata->add($this->updateMetadata($projectId, $versionId, $misuseId, $description, $fix, $location, $violationTypes, $patterns, $targetSnippets));
         }
+
+        $this->createMissingMisusesFromMetadata($new_metadata);
+
         return $response->withStatus(200);
     }
 
@@ -41,6 +52,7 @@ class MetadataController extends Controller
         $this->saveViolationTypes($metadata, $violationTypes);
         $this->savePatterns($metadata->id, $patterns);
         $this->saveTargetSnippets($projectId, $versionId, $misuseId, $targetSnippets, $location['file']);
+        return $metadata;
     }
 
     private function saveMetadata($projectId, $versionId, $misuseId, $description, $fix, $location)
@@ -87,4 +99,21 @@ class MetadataController extends Controller
             }
         }
     }
+
+    function createMissingMisusesFromMetadata($new_metadata)
+    {
+        foreach(Detector::all() as $detector){
+            $runs = Run::of($detector)->where('experiment_id', 1)
+                ->orWhere('experiment_id', '3')->get();
+            foreach ($runs as $run) {
+                foreach ($new_metadata as $metadata) {
+                    if ($run->project_muid === $metadata->project_muid
+                        && $run->version_muid === $metadata->version_muid && $run->misuses->where('misuse_muid', $metadata->misuse_muid)->isEmpty()) {
+                        Misuse::create(['metadata_id' => $metadata->id, 'misuse_muid' => $metadata->misuse_muid, 'run_id' => $run->id, 'detector_id' => $detector->id]);
+                    }
+                }
+            }
+        }
+
+        }
 }
