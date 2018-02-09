@@ -260,8 +260,13 @@ class RunsController extends Controller
 
     private function createMisusesFromMetadata($detector, $projectId, $versionId, $run)
     {
-        foreach(Metadata::where(['project_muid' => $projectId, 'version_muid' => $versionId])->get() as $metadata){
-            Misuse::create(['metadata_id' => $metadata->id, 'misuse_muid' => $metadata->misuse_muid, 'run_id' => $run->id, 'detector_id' => $detector->id]);
+        if (!Misuse::where(['detector_id' => $detector->id, 'run_id' => $run->id])->exists()) {
+            foreach (Metadata::where(['project_muid' => $projectId, 'version_muid' => $versionId])->get() as $metadata) {
+                Misuse::create([
+                    'detector_id' => $detector->id, 'run_id' => $run->id,
+                    'misuse_muid' => $metadata->misuse_muid, 'metadata_id' => $metadata->id
+                ]);
+            }
         }
     }
 

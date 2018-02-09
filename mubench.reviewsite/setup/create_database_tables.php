@@ -82,12 +82,14 @@ $misuse = new \MuBench\ReviewSite\Models\Misuse;
 Schema::dropIfExists($misuse->getTable());
 Schema::create($misuse->getTable(), function (Blueprint $table) {
     $table->increments('id');
-    $table->integer('metadata_id')->nullable();
     $table->integer('detector_id');
     $table->integer('run_id');
     $table->string('misuse_muid', 30);
+    $table->integer('metadata_id')->nullable();
     $table->dateTime('created_at');
     $table->dateTime('updated_at');
+
+    $table->unique(['detector_id', 'run_id', 'misuse_muid']);
 });
 
 echo 'Creating review<br/>';
