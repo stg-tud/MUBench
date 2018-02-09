@@ -61,7 +61,7 @@ class TestProject:
 
     def test_finds_versions(self):
         version = create_version("v1", project=self.uut)
-        create_file(version._version_file)
+        create_file(version.version_file)
 
         versions = self.uut.versions
 

@@ -41,7 +41,7 @@ class Misuse:
         self.project_id = project_id
         self.version_id = version_id
         self.misuse_id = misuse_id
-        self.id = "{}.{}.{}".format(project_id, version_id, misuse_id)
+        self.id = "{}.{}.{}".format(project_id, version_id, misuse_id).lower()
 
         from data.project import Project
         self.__project = Project(base_path, project_id)

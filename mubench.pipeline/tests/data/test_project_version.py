@@ -30,12 +30,12 @@ class TestProjectVersion:
         assert not ProjectVersion.is_project_version(self.temp_dir)
 
     def test_accepts_project_version_directory(self):
-        create_file(self.uut._version_file)
+        create_file(self.uut.version_file)
         assert ProjectVersion.is_project_version(self.uut.path)
 
     def test_reads_version_file(self):
         test_dict = {"revision": "42"}
-        with safe_open(self.uut._version_file, 'w+') as stream:
+        with safe_open(self.uut.version_file, 'w+') as stream:
             yaml.dump(test_dict, stream)
 
         assert_equals(test_dict, self.uut._yaml)

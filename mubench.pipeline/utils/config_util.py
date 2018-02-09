@@ -327,12 +327,16 @@ def __add_publish_ex3_subprocess(available_detectors: List[str], available_datas
 
 def __setup_filter_arguments(parser: ArgumentParser, available_datasets: List[str]) -> None:
     parser.add_argument('--only', metavar='X', nargs='+', dest='white_list', default=__get_default('only', []),
-                        help="process only projects or project versions whose names are given")
+                        help="process only projects, project versions, or misuses whose names are given "
+                             "(case insensitive)",
+                        type=str.lower)
     parser.add_argument('--skip', metavar='Y', nargs='+', dest='black_list', default=__get_default('skip', []),
-                        help="skip all projects or project versions whose names are given")
+                        help="skip all projects, project versions, or misuses whose names are given (case insensitive)",
+                        type=str.lower)
     parser.add_argument('--datasets', metavar='DATASETS', nargs='+', dest='datasets',
                         default=__get_default('datasets', []), choices=available_datasets,
-                        help="process only misuses in the specified data set(s)")
+                        help="process only misuses in the specified data set(s) (case insensitive)",
+                        type=str.lower)
 
 
 def __setup_checkout_arguments(parser: ArgumentParser) -> None:

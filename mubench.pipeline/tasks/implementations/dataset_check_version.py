@@ -1,6 +1,8 @@
 import logging
 from os.path import join
 
+from os import path
+
 from data.misuse import Misuse
 from data.project import Project
 from data.project_version import ProjectVersion
@@ -15,7 +17,7 @@ class VersionCheckTask:
         self._check_misuses_listed_in_version_exist(project, version)
 
     def _check_required_keys_in_version_yaml(self, project: Project, version: ProjectVersion):
-        yaml_path = "{}/versions/{}/version.yml".format(project.id, version.version_id)
+        yaml_path = path.relpath(version.version_file, project._base_path)
         version_yaml = version._yaml
 
         if "revision" not in version_yaml and not project.repository.vcstype == 'synthetic':
