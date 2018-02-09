@@ -160,7 +160,7 @@ class RepoProjectCheckout(ProjectCheckout):
 
 class GitProjectCheckout(RepoProjectCheckout):
     def _clone(self, url: str, revision: str, path: str):
-        Shell.exec("git clone {} . --quiet".format(url), cwd=path, logger=self._logger)
+        Shell.exec("git clone {} . --quiet -c core.askpass=true".format(url), cwd=path, logger=self._logger)
 
     def _update(self, url: str, revision: str, path: str):
         Shell.exec("git checkout {} --quiet".format(revision), cwd=path, logger=self._logger)

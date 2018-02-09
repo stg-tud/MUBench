@@ -15,7 +15,7 @@ class GitProjectShallowCheckout(RepoProjectCheckout):
         pass
 
     def _update(self, url: str, revision: str, path: str):
-        Shell.exec("git clone --depth 1 {} . --quiet".format(url), cwd=path, logger=self._logger)
+        Shell.exec("git clone --depth 1 {} . --quiet -c core.askpass=true".format(url), cwd=path, logger=self._logger)
 
     def _is_repo(self, path: str):
         return exists(path) and Shell.try_exec("git status", cwd=path, logger=self._logger)
