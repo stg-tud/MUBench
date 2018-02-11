@@ -104,7 +104,7 @@ class MetadataController extends Controller
     {
         foreach(Detector::all() as $detector){
             $runs = Run::of($detector)->where('experiment_id', 1)
-                ->orWhere('experiment_id', '3')->get();
+                ->orWhere('experiment_id', '3')->with('misuses')->get();
             foreach ($runs as $run) {
                 foreach ($new_metadata as $metadata) {
                     if ($run->project_muid === $metadata->project_muid
