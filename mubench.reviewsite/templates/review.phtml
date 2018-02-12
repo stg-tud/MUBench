@@ -370,13 +370,13 @@ $columns_to_ignore = array(
                         ?>
                     <a href="<?= $origin_path ?>" style="padding:5px;text-align: center;" class="button">return</a>
                     <a href="<?= $previous_misuse_path ?>" style="padding:5px;text-align: center;" class="button <?= $previous_misuse_path ? "" :  "disabled" ?>"><</a>
-                    <div class="dropdown" style="position: relative; left: 45%;">
-                        <div class="dropdown-content" style="bottom:100%">
-                            <a class="<?= $next_reviewable_misuse_path ? "" :  "disabled" ?>" onclick="saveReview('next')">Save and Next</a>
+                    <div class="dropdown" style="padding:0;position: relative; left: 45%">
+                        <div class="dropdown-content" style="margin-left:-5px;margin-bottom:-3px;padding:0;bottom:100%;">
                             <a onclick="saveReview('return')">Save and Return</a>
                             <a onclick="saveReview('normal')">Save</a>
                         </div>
-                        <a class="button">Save</a>
+                        <a class="button <?= $next_reviewable_misuse_path ? "" :  "disabled" ?>" style="margin:-5px;padding:5px" onclick="saveReview('next')">Save and next misuse</a>
+                        <a class="button" style="padding:5px;" onclick="showDropdown()" ><i class="fa fa-angle-up"></i></a>
                     </div>
                     <a href="<?= $next_misuse_path ?>" style="position:fixed; right:35px;padding:5px;text-align: center;" class="button <?= $next_misuse_path ? "" :  "disabled" ?>">></a>
                     <a href="<?= $next_reviewable_misuse_path ?>" style="position:fixed; right:5px;padding:5px;text-align: center;"  class="button <?= $next_reviewable_misuse_path ? "" :  "disabled" ?>">>></a>
@@ -399,6 +399,17 @@ $columns_to_ignore = array(
                 var origin = "<?= $origin_path ?>";
                 var next = "<?= $next_misuse_path ?>";
                 var next_review = "<?= $next_reviewable_misuse_path ?>";
+
+                function showDropdown(){
+                    var dropdown = document.getElementsByClassName("dropdown-content");
+                    if(dropdown[0].style.display == "block"){
+                        dropdown[0].style.display = "none";
+                    }else{
+                        dropdown[0].style.display = "block";
+                    }
+                }
+
+
                 function show(b){
                     var elem = document.getElementById("snippet_form");
                     if(elem.style.display === "none"){
