@@ -4,7 +4,10 @@ namespace MuBench\ReviewSite\Controllers;
 
 require_once "SlimTestCase.php";
 
+use MuBench\ReviewSite\Models\Detector;
+use MuBench\ReviewSite\Models\Experiment;
 use MuBench\ReviewSite\Models\Metadata;
+use MuBench\ReviewSite\Models\Run;
 use SlimTestCase;
 
 class MetadataControllerTest extends SlimTestCase
@@ -74,4 +77,35 @@ class MetadataControllerTest extends SlimTestCase
         // TODO: snippet test if added
     }
 
+    function test_create_missing_misuses()
+    {
+        $run_without_hits = json_decode(json_encode([
+            "result" => "success",
+            "runtime" => 42.1,
+            "number_of_findings" => 23,
+            "-custom-stat-" => "-stat-val-",
+            "timestamp" => 12,
+            "potential_hits" => []]));
+        $detector = Detector::create(['muid' => '-d-']);
+        $experiment = Experiment::find(1);
+        $runsController = new RunsController($this->container);
+        $runsController->addRun($experiment->id, '-d-', '-p-', '-v-',  $run_without_hits);
+
+        $this->metadataController->updateMetadata('-p-', '-v-', '-m-', '-new-desc-',
+            ['diff-url' => '-diff-', 'description' => '-fix-desc-'],
+            ['file' => '-file-location-', 'method' => '-method-location-'],
+            ['missing/call'],
+            [['id' => '-p1-', 'snippet' => ['code' => '-pattern-code-', 'first_line' => 42]]],
+            [['code' => '-target-snippet-code-', 'first_line_number' => 273]]);
+
+        $run = Run::of($detector)->in($experiment)->where(['project_muid' => '-p-', 'version_muid' => '-v-'])->first();
+        self::assertEmpty($run->misuses);
+
+        $metadata = Metadata::where('project_muid', '-p-')->where('version_muid', '-v-')->where('misuse_muid', '-m-')->get();
+
+        $this->metadataController->createMissingMisusesFromMetadata($metadata);
+
+        $run = Run::of($detector)->in($experiment)->where(['project_muid' => '-p-', 'version_muid' => '-v-'])->first();
+        self::assertEquals(1, $run->misuses->count());
+    }
 }
