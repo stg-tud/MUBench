@@ -15,6 +15,8 @@ use MuBench\ReviewSite\Models\Metadata;
 use MuBench\ReviewSite\Models\Misuse;
 use MuBench\ReviewSite\Models\ReviewState;
 use MuBench\ReviewSite\Models\Run;
+use RecursiveDirectoryIterator;
+use RecursiveIteratorIterator;
 use Slim\Http\Request;
 use Slim\Http\Response;
 
@@ -130,13 +132,14 @@ class RunsController extends Controller
         $version_muid = $args['version_muid'];
         $run = Run::of(Detector::find($detector_muid))->in(Experiment::find($experimentId))->get()->where('project_muid', $project_muid)->where('version_muid', $version_muid)->first();
         if($run){
-            $this->deleteRunAndRelated($run);
+            $this->deleteRunAndRelated($run, Detector::find($detector_muid)->id);
         }
         return $response->withRedirect($this->router->pathFor('private.manage.runs'));
     }
 
-    static function deleteRunAndRelated(Run $run)
+    function deleteRunAndRelated(Run $run, $detectorId)
     {
+        $this->deleteOldImages($run->experiment_id, $detectorId, $run->project_muid, $run->version_muid);
         foreach($run->misuses as $misuse){
             foreach($misuse->reviews as $review){
                 $findings_reviews = $review->finding_reviews;
@@ -570,5 +573,21 @@ class RunsController extends Controller
         }
         mkdir($path, 0755, true);
         $img->moveTo($file);
+    }
+
+    private function deleteOldImages($experimentId, $detectorId, $projectId, $versionId){
+        $path = $this->settings['upload'] . "/$experimentId/$detectorId/$projectId/$versionId/";
+        if(file_exists($path)){
+            $it = new RecursiveDirectoryIterator($path, RecursiveDirectoryIterator::SKIP_DOTS);
+            $files = new RecursiveIteratorIterator($it, RecursiveIteratorIterator::CHILD_FIRST);
+            foreach($files as $file) {
+                if ($file->isDir()){
+                    rmdir($file->getRealPath());
+                } else {
+                    unlink($file->getRealPath());
+                }
+            }
+            rmdir($path);
+        }
     }
 }
