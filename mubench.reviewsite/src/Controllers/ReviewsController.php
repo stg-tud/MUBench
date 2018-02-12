@@ -37,38 +37,10 @@ class ReviewsController extends Controller
 
         $runs = RunsController::getRuns($detector, $experiment, $ex2_review_size);
 
-        $all_misuses = new Collection;
-        foreach($runs as $run){
-            $all_misuses = $all_misuses->merge($run->misuses);
-        }
+        $all_misuses = $this->collectAllMisuses($runs);
 
-        $previous_misuse = $all_misuses->last();
-        $next_misuse = $all_misuses->first();
-
-        $next_reviewable_misuse = NULL;
-        $misuse = NULL;
-
-        foreach($all_misuses as $current_misuse){
-            if(!$misuse && $current_misuse->getProject() === $project_muid
-                && $current_misuse->getVersion() === $version_muid
-                && $current_misuse->misuse_muid === $misuse_muid){
-                    $misuse = $current_misuse;
-            }else{
-                if($misuse && $next_misuse->id === $all_misuses->first()->id){
-                    $next_misuse = $current_misuse;
-                }
-                if((!$next_reviewable_misuse || $misuse) && !$current_misuse->hasReviewed($reviewer) && $current_misuse->getReviewState() === ReviewState::NEEDS_REVIEW){
-                    $next_reviewable_misuse = $current_misuse;
-                    if($misuse){
-                        break;
-                    }
-                }
-            }
-            if(!$misuse){
-                $previous_misuse = $current_misuse;
-            }
-
-        }
+        list($previous_misuse, $next_misuse, $next_reviewable_misuse, $misuse) =
+            $this->determineNavigationTargets($all_misuses, $project_muid, $version_muid, $misuse_muid, $reviewer);
 
         $all_violation_types = Type::all();
         $all_tags = Tag::all();
@@ -171,5 +143,51 @@ class ReviewsController extends Controller
                 $findingReview->violation_types()->sync($findings_review['types']);
             }
         }
+    }
+
+    private function collectAllMisuses($runs)
+    {
+        $all_misuses = new Collection;
+        foreach ($runs as $run) {
+            $all_misuses = $all_misuses->merge($run->misuses);
+        }
+        return $all_misuses;
+    }
+
+    private function determineNavigationTargets(Collection $all_misuses, $project_muid, $version_muid, $misuse_muid, $reviewer)
+    {
+        $previous_misuse = $all_misuses->last();
+        $misuse = NULL;
+        $next_misuse = NULL;
+        $next_reviewable_misuse = NULL;
+
+        foreach ($all_misuses as $current_misuse) { /** @var Misuse $current_misuse */
+            if (!$misuse && $current_misuse->getProject() === $project_muid
+                && $current_misuse->getVersion() === $version_muid
+                && $current_misuse->misuse_muid === $misuse_muid) {
+                $misuse = $current_misuse;
+            } else {
+                if ($misuse && !$next_misuse) {
+                    $next_misuse = $current_misuse;
+                }
+                if ((!$next_reviewable_misuse || $misuse)
+                    && $current_misuse->getReviewState() === ReviewState::NEEDS_REVIEW
+                    && !$current_misuse->hasReviewed($reviewer)) {
+                    $next_reviewable_misuse = $current_misuse;
+                    if ($misuse) {
+                        break;
+                    }
+                }
+            }
+            if (!$misuse) {
+                $previous_misuse = $current_misuse;
+            }
+        }
+
+        if (!$next_misuse) {
+            $next_misuse = $all_misuses->first();
+        }
+
+        return array($previous_misuse, $next_misuse, $next_reviewable_misuse, $misuse);
     }
 }
