@@ -53,7 +53,7 @@ class MisuseFilterTest extends SlimTestCase
             $this->detector->muid,
             '-project-muid-',
             '-version-muid-',
-            (object) [
+            [
                 'timestamp' => 1337,
                 'result' => 'success',
                 'runtime' => 42.0,

@@ -39,7 +39,7 @@ class RunsControllerTest extends SlimTestCase
         $this->detector1 = Detector::create(['muid' => '-d1-']);
         $this->detector2 = Detector::create(['muid' => '-d2-']);
 
-        $this->run_with_two_potential_hits_for_one_misuse = json_decode(json_encode([
+        $this->run_with_two_potential_hits_for_one_misuse = [
             "result" => "success",
             "runtime" => 42.1,
             "number_of_findings" => 23,
@@ -66,7 +66,7 @@ class RunsControllerTest extends SlimTestCase
                     "custom1" => "-val1-",
                     "custom2" => "-val2-"
                 ]]
-        ]));
+        ];
     }
 
     function test_detector_creation(){
@@ -139,13 +139,13 @@ class RunsControllerTest extends SlimTestCase
 
     function test_store_run_with_only_metadata_ex3()
     {
-        $run_without_hits = json_decode(json_encode([
+        $run_without_hits = [
             "result" => "success",
             "runtime" => 42.1,
             "number_of_findings" => 23,
             "-custom-stat-" => "-stat-val-",
             "timestamp" => 12,
-            "potential_hits" => []]));
+            "potential_hits" => []];
         $metadataController = new MetadataController($this->container);
         $metadataController->updateMetadata('-p-', '-v-', '-m1-', '-desc-',
             ['diff-url' => '-diff-', 'description' => '-fix-desc-'],
@@ -164,13 +164,13 @@ class RunsControllerTest extends SlimTestCase
 
     function test_store_run_in_two_chunks()
     {
-        $run_without_hits = json_decode(json_encode([
+        $run_without_hits = [
             "result" => "success",
             "runtime" => 42.1,
             "number_of_findings" => 23,
             "-custom-stat-" => "-stat-val-",
             "timestamp" => 12,
-            "potential_hits" => []]));
+            "potential_hits" => []];
         $metadataController = new MetadataController($this->container);
         $metadataController->updateMetadata('-p-', '-v-', '-m1-', '-desc-',
             ['diff-url' => '-diff-', 'description' => '-fix-desc-'],
@@ -186,13 +186,13 @@ class RunsControllerTest extends SlimTestCase
 
     function test_store_run_with_only_metadata_ex2()
     {
-        $run_without_hits = json_decode(json_encode([
+        $run_without_hits = [
             "result" => "success",
             "runtime" => 42.1,
             "number_of_findings" => 23,
             "-custom-stat-" => "-stat-val-",
             "timestamp" => 12,
-            "potential_hits" => []]));
+            "potential_hits" => []];
         $metadataController = new MetadataController($this->container);
         $metadataController->updateMetadata('-p-', '-v-', '-m-', '-desc-',
             ['diff-url' => '-diff-', 'description' => '-fix-desc-'],
@@ -209,9 +209,9 @@ class RunsControllerTest extends SlimTestCase
     function test_add_run_twice_with_different_timestamp()
     {
         $first_request = $this->someValidRunRequestBody();
-        $first_request->timestamp = 12;
+        $first_request['timestamp'] = 12;
         $second_request = $this->someValidRunRequestBody();
-        $second_request->timestamp = 14;
+        $second_request['timestamp'] = 14;
         
         $firstRequestResult = $this->runsController->addRun(1, '-d-', '-p-', '-v-',  $first_request);
         $secondRequestResult = $this->runsController->addRun(1, '-d-', '-p-', '-v-',  $second_request);
@@ -235,13 +235,14 @@ class RunsControllerTest extends SlimTestCase
     function test_add_run_in_multiple_requests()
     {
         $first_request = $this->someValidRunRequestBody();
-        $first_request->timestamp = 12;
-        $first_request->custom1 = '-stat-val1-';
-        $first_request->potential_hits[0]->rank = 0;
+        $first_request['timestamp'] = 12;
+        $first_request['custom1'] = '-stat-val1-';
+        $first_request['potential_hits'][0]['rank'] = 0;
         $second_request = $this->someValidRunRequestBody();
-        $second_request->timestamp = 12;
-        $second_request->custom2 = '-stat-val2-';
-        $second_request->potential_hits[0]->rank = 1;
+        $second_request['timestamp'] = 12;
+        $second_request['custom2'] = '-stat-val2-';
+        $second_request['potential_hits'][0]['rank'] = 1;
+
 
         $firstRequestResult = $this->runsController->addRun(1, $this->detector1->muid, '-p-', '-v-',  $first_request);
         $secondRequestResult = $this->runsController->addRun(1, $this->detector1->muid, '-p-', '-v-',  $second_request);
@@ -259,26 +260,23 @@ class RunsControllerTest extends SlimTestCase
             ['diff-url' => '-diff-', 'description' => '-fix-desc-'],
             ['file' => '-file-location-', 'method' => '-method-location-'], [], [], []);
 
-        $this->runsController->addRun(1, '-d-', '-p-', '-v-', json_decode(<<<EOT
-    {
-        "result": "success",
-        "runtime": 42.1,
-        "number_of_findings": 23,
-        "timestamp": 12,
-        "potential_hits": [
-            {
-                "misuse": "-m-",
-                "rank": 0,
-                "target_snippets": [
-                    {"first_line_number": 5, "code": "-code-"}
-                ],
-                "custom1": "-val1-",
-                "custom2": "-val2-"
-            }
-        ]
-    }
-EOT
-        ));
+        $this->runsController->addRun(1, '-d-', '-p-', '-v-', [
+            "result" =>"success",
+            "runtime" => 42.1,
+            "number_of_findings" => 23,
+            "timestamp" => 12,
+            "potential_hits" => [
+                [
+                    "misuse" => "-m-",
+                    "rank" => 0,
+                    "target_snippets" => [
+                        ["first_line_number" => 5, "code" => "-code-"]
+                    ],
+                    "custom1" => "-val1-",
+                    "custom2" => "-val2-"
+                ]
+            ]
+        ]);
 
         $detector = Detector::where('muid', '=', '-d-')->first();
         $run = Run::of($detector)->in(Experiment::find(1))->where(['project_muid' => '-p-', 'version_muid' => '-v-'])->first();
@@ -430,7 +428,7 @@ EOT
 
     private function someValidRunRequestBody()
     {
-        return json_decode(json_encode([
+        return [
             "result" => "success",
             "runtime" => 42.1,
             "number_of_findings" => 23,
@@ -444,6 +442,6 @@ EOT
                     ]
                 ]
             ]
-        ]));
+        ];
     }
 }
