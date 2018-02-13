@@ -357,6 +357,15 @@ public class MethodExtractorTest {
 		assertEquals(2, candidates.length);
 	}
 
+	@Test
+	public void handlesWhitespaceAfterMethodName() throws Exception {
+		testFindsMethod("class HTTPFrame {\n"
+						+ "    public Reply browse (Request request) {}\n"
+						+ "}",
+				"browse(Request)",
+				"    public Reply browse (Request request) {}");
+	}
+
 	private void testFindsMethod(String input, String methodSignature, String expectedOutput) throws Exception {
 		String output = runUUT(input, methodSignature);
         String[] data = output.split(":", 3);
