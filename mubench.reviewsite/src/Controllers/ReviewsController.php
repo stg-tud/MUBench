@@ -139,9 +139,7 @@ class ReviewsController extends Controller
             $findingReview = FindingReview::firstOrNew(['review_id' => $review->id, 'rank' => $rank]);
             $findingReview->decision = $findings_review['hit'];
             $findingReview->save();
-            if($findings_review['types']){
-                $findingReview->violation_types()->sync($findings_review['types']);
-            }
+            $findingReview->violation_types()->sync($findings_review['types']);
         }
     }
 
