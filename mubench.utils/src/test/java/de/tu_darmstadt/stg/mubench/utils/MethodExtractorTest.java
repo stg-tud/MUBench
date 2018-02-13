@@ -366,6 +366,15 @@ public class MethodExtractorTest {
 				"    public Reply browse (Request request) {}");
 	}
 
+	@Test
+	public void handlesGenericsInParameterType() throws Exception {
+		testFindsMethod("class Tarjan<T> {\n"
+						+ "    private void run(Graph<T> graph, T v) {}\n"
+						+ "}",
+				"run(Graph, Object)",
+				"    private void run(Graph<T> graph, T v) {}");
+	}
+
 	private void testFindsMethod(String input, String methodSignature, String expectedOutput) throws Exception {
 		String output = runUUT(input, methodSignature);
         String[] data = output.split(":", 3);
