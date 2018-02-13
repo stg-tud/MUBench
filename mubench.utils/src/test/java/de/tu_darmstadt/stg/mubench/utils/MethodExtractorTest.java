@@ -375,6 +375,15 @@ public class MethodExtractorTest {
 				"    private void run(Graph<T> graph, T v) {}");
 	}
 
+	@Test
+	public void handlesGenericArrayTypes() throws Exception {
+		testFindsMethod("class Utils {\n"
+						+ "    public static XmlClass[] classesToXmlClasses(Class<?>[] classes) {}\n"
+						+ "}",
+				"classesToXmlClasses(Class[])",
+				"    public static XmlClass[] classesToXmlClasses(Class<?>[] classes) {}");
+	}
+
 	private void testFindsMethod(String input, String methodSignature, String expectedOutput) throws Exception {
 		String output = runUUT(input, methodSignature);
         String[] data = output.split(":", 3);
