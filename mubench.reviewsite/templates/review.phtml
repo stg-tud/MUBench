@@ -361,25 +361,27 @@ $columns_to_ignore = array(
                     </td></tr>
                 </table>
                 <input type="hidden" name="misuse_id" value="<?= htmlspecialchars($misuse->id); ?>">
-                <div style="position:fixed;bottom:0;left:0;width:100%;background-color:#f1f1f1;z-index:1;padding:5px;">
+                <div class="review-nav-bar">
                     <?php
                         $origin_path = $origin_path ? $origin_path : $pathFor('experiment.detector', array("experiment_id"=> $experiment->id, "detector_muid" => $detector->muid));
                         $next_misuse_path = $next_misuse ? $pathFor('view', array('experiment_id' => $experiment->id, 'detector_muid' => $detector->muid, 'project_muid' => $next_misuse->getProject(), 'version_muid' => $next_misuse->getVersion(), 'misuse_muid' => $next_misuse->misuse_muid)) . "?origin=$origin_path" . ($experiment->id === 2 ? "&ex2_review_size=$ex2_review_size" : "") : "";
                         $next_reviewable_misuse_path = $next_reviewable_misuse ? $pathFor('view', array('experiment_id' => $experiment->id, 'detector_muid' => $detector->muid, 'project_muid' => $next_reviewable_misuse->getProject(), 'version_muid' => $next_reviewable_misuse->getVersion(), 'misuse_muid' => $next_reviewable_misuse->misuse_muid)) . "?origin=$origin_path" . ($experiment->id === 2 ? "&ex2_review_size=$ex2_review_size" : "") : "";
                         $previous_misuse_path = $previous_misuse ? $pathFor('view', array('experiment_id' => $experiment->id, 'detector_muid' => $detector->muid, 'project_muid' => $previous_misuse->getProject(), 'version_muid' => $previous_misuse->getVersion(), 'misuse_muid' => $previous_misuse->misuse_muid)) . "?origin=$origin_path" . ($experiment->id === 2 ? "&ex2_review_size=$ex2_review_size" : "") : "";
                         ?>
-                    <a href="<?= $origin_path ?>" style="padding:5px;text-align: center;" class="button">return</a>
-                    <a href="<?= $previous_misuse_path ?>" style="padding:5px;text-align: center;" class="button <?= $previous_misuse_path ? "" :  "disabled" ?>"><</a>
+                    <a href="<?= $origin_path ?>" class="button">return</a>
+                    <a href="<?= $previous_misuse_path ?>" class="button <?= $previous_misuse_path ? "" :  "disabled" ?>"><</a>
                     <div class="dropdown" style="padding:0;position: relative; left: 45%">
                         <div class="dropdown-content" style="margin-left:-5px;margin-bottom:-3px;padding:0;bottom:100%;">
                             <a onclick="saveReview('return')">Save and Return</a>
                             <a onclick="saveReview('normal')">Save</a>
                         </div>
-                        <a class="button <?= $next_reviewable_misuse_path ? "" :  "disabled" ?>" style="margin:-5px;padding:5px" onclick="saveReview('next')">Save and next misuse</a>
+                        <a class="button <?= $next_reviewable_misuse_path ? "" :  "disabled" ?>" style="margin:-5px" onclick="saveReview('next')">Save and next misuse</a>
                         <a class="button" style="padding:5px;" onclick="showDropdown()" ><i class="fa fa-angle-up"></i></a>
                     </div>
-                    <a href="<?= $next_misuse_path ?>" style="position:fixed; right:35px;padding:5px;text-align: center;" class="button <?= $next_misuse_path ? "" :  "disabled" ?>">></a>
-                    <a href="<?= $next_reviewable_misuse_path ?>" style="position:fixed; right:5px;padding:5px;text-align: center;"  class="button <?= $next_reviewable_misuse_path ? "" :  "disabled" ?>">>></a>
+                    <div style="display:inline-block;float:right;margin-right:10px;">
+                        <a href="<?= $next_misuse_path ?>" class="button <?= $next_misuse_path ? "" :  "disabled" ?>">></a>
+                        <a href="<?= $next_reviewable_misuse_path ?>" class="button <?= $next_reviewable_misuse_path ? "" :  "disabled" ?>">>></a>
+                    </div>
                 </div>
 
             </form>
