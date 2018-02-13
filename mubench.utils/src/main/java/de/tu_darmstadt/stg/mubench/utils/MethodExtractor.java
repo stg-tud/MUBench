@@ -171,8 +171,9 @@ public class MethodExtractor {
 					typeName = typeName.substring(endOfQualifier + 1);
 				}
 				int startOfTypeParameters = typeName.indexOf('<');
-				if (startOfTypeParameters > -1) {
-					typeName = typeName.substring(0, startOfTypeParameters);
+				int endOfTypeParameters = typeName.indexOf('>');
+				if (startOfTypeParameters > -1 && endOfTypeParameters > -1) {
+					typeName = typeName.substring(0, startOfTypeParameters) + typeName.substring(endOfTypeParameters + 1, typeName.length());
 				}
 				signature.append(typeName);
 				// if a parameter is declared like m(int foo[]), the parser drops the array brackets
