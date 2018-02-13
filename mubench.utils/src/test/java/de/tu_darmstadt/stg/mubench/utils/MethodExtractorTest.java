@@ -369,10 +369,10 @@ public class MethodExtractorTest {
 	@Test
 	public void handlesGenericsInParameterType() throws Exception {
 		testFindsMethod("class Tarjan<T> {\n"
-						+ "    private void run(Graph<T> graph, T v) {}\n"
+						+ "    private void run(T v) {}\n"
 						+ "}",
-				"run(Graph, Object)",
-				"    private void run(Graph<T> graph, T v) {}");
+				"run(Object)",
+				"    private void run(T v) {}");
 	}
 
 	@Test
