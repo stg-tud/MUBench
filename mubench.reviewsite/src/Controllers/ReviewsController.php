@@ -154,7 +154,7 @@ class ReviewsController extends Controller
         return $all_misuses;
     }
 
-    private function determineNavigationTargets(Collection $all_misuses, $project_muid, $version_muid, $misuse_muid, $reviewer)
+    function determineNavigationTargets(Collection $all_misuses, $project_muid, $version_muid, $misuse_muid, $reviewer)
     {
         $previous_misuse = $all_misuses->last();
         $misuse = NULL;
