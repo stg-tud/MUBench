@@ -5,4 +5,8 @@ build:
   src: src/main/java/
 misuses:
 - '22'
+- 'dmmc-0'
+- 'dmmc-4'
+- 'grouminer-4'
+- 'grouminer-17'
 revision: 677302cb8b5a2507df97c5822eef3a03ebc4e23a^1

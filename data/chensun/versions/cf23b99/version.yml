@@ -6,4 +6,10 @@ build:
 misuses:
 - '1'
 - '2'
+- 'grouminer-3'
+- 'grouminer-9'
+- 'jadet-1'
+- 'jadet-2'
+- 'jadet-5'
+- 'jadet-5a'
 revision: cf23b99a0c78596b5dc5bb25691736c9abd0a84d

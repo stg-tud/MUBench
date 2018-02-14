@@ -1,0 +1,15 @@
+api:
+- java.sql.ResultSet
+characteristics:
+- missing/call
+crash: false
+description: |
+  The `ResultSet` fetched in line 375 is not closed in case of an exception.
+internal: false
+location:
+  file: database/SocialNetworkDatabaseBoards.java
+  method: getBoardList(Connection, String)
+  line: 375
+source:
+  name: Jadet
+  url: https://www.st.cs.uni-saarland.de/models/jadet/

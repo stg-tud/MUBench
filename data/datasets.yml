@@ -577,6 +577,21 @@ FSE18-ExPrecision:
   # random
   - testng.677302c
 
+FSE18-ExPrecision-TruePositives:
+  - asterisk-java.304421c.dmmc-8
+  - asterisk-java.304421c.dmmc-9
+  - chensun.cf23b99.grouminer-3
+  - chensun.cf23b99.grouminer-9
+  - chensun.cf23b99.jadet-1
+  - chensun.cf23b99.jadet-2
+  - chensun.cf23b99.jadet-5
+  - chensun.cf23b99.jadet-5a
+  - jigsaw.205.tikanga-0
+  - testng.677302c.dmmc-0
+  - testng.677302c.dmmc-4
+  - testng.677302c.grouminer-4
+  - testng.677302c.grouminer-17
+
 ###
 ### Other experiment datasets.
 ###

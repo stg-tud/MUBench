@@ -5,4 +5,6 @@ build:
   src: src/main/java/
 misuses:
 - '81'
+- 'dmmc-8'
+- 'dmmc-9'
 revision: 304421c261da68df03ad2fb96683241c8df12c0a^1

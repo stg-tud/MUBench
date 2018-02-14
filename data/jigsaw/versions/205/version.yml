@@ -7,6 +7,7 @@ build:
     - sed -i '16iimport org.w3c.www.http.HttpCookie;' Jigsaw/src/classes/org/w3c/jigsaw/servlet/JigsawHttpServletResponse.java
     - mvn -f Jigsaw/pom.xml compile
   src: Jigsaw/src/classes
-misuses: []
+misuses:
+- tikanga-0
 revision: http://jigsaw.w3.org/Devel/Mirror/jigsaw_2.0.5.zip
 md5: e15460a3716c97e342ea7f44e36b2afc

@@ -1,0 +1,16 @@
+api:
+- org.testng.reporters.XMLStringBuffer
+characteristics:
+- missing/call
+crash: false
+description: |
+  In line 58, the `XMLStringBuffer` instance created in line 55 gets a new tag
+  pushed ("suite-content"). This tag is never poped, which results in a missing
+  closing tag in the XML retrieved via `toXML()` in line 119.
+internal: true
+location:
+  file: org/testng/reporters/JqReporter.java
+  method: generateSuites(List, List, XMLStringBuffer)
+  line: 55
+source:
+  name: GrouMiner
