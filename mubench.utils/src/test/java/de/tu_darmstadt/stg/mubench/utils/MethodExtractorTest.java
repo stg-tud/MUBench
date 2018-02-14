@@ -385,6 +385,15 @@ public class MethodExtractorTest {
 				"    public static XmlClass[] classesToXmlClasses(Class<?>[] classes) {}");
 	}
 
+	@Test
+	public void handlesStaticInitializationBlock() throws Exception {
+		testFindsMethod("class C {\n"
+						+ "    static {}\n"
+						+ "}",
+				"<clinit>",
+				"    static {}");
+	}
+
 	private void testFindsMethod(String input, String methodSignature, String expectedOutput) throws Exception {
 		String output = runUUT(input, methodSignature);
         String[] data = output.split(":", 3);
