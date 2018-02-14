@@ -390,7 +390,7 @@ public class MethodExtractorTest {
 		testFindsMethod("class C {\n"
 						+ "    static {}\n"
 						+ "}",
-				"<clinit>",
+				"<clinit>()",
 				"    static {}");
 	}
 
