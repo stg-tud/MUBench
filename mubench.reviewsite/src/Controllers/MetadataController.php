@@ -24,9 +24,17 @@ class MetadataController extends Controller
             return error_response($response,400, 'empty: ' . print_r($request->getBody(), true));
         }
 
+        $this->putMetadataCollection($metadata);
+
+        return $response->withStatus(200);
+    }
+
+
+    function putMetadataCollection($metadataCollection)
+    {
         $new_metadata = new Collection;
 
-        foreach ($metadata as $misuseMetadata) {
+        foreach ($metadataCollection as $misuseMetadata) {
             $projectId = $misuseMetadata['project'];
             $versionId = $misuseMetadata['version'];
             $misuseId = $misuseMetadata['misuse'];
@@ -40,9 +48,7 @@ class MetadataController extends Controller
             $new_metadata->add($this->updateMetadata($projectId, $versionId, $misuseId, $description, $fix, $location, $violationTypes, $patterns, $targetSnippets));
         }
 
-        $this->createMissingMisusesFromMetadata($new_metadata);
-
-        return $response->withStatus(200);
+        $this->updateMisusesByNewMetadata($new_metadata);
     }
 
     function updateMetadata($projectId, $versionId, $misuseId, $description, $fix, $location, $violationTypes, $patterns, $targetSnippets)
@@ -100,7 +106,7 @@ class MetadataController extends Controller
         }
     }
 
-    function createMissingMisusesFromMetadata($new_metadata)
+    private function updateMisusesByNewMetadata($new_metadata)
     {
         foreach(Detector::all() as $detector){
             $runs = Run::of($detector)->where('experiment_id', 1)
@@ -108,12 +114,23 @@ class MetadataController extends Controller
             foreach ($runs as $run) {
                 foreach ($new_metadata as $metadata) {
                     if ($run->project_muid === $metadata->project_muid
-                        && $run->version_muid === $metadata->version_muid && $run->misuses->where('misuse_muid', $metadata->misuse_muid)->isEmpty()) {
-                        Misuse::create(['metadata_id' => $metadata->id, 'misuse_muid' => $metadata->misuse_muid, 'run_id' => $run->id, 'detector_id' => $detector->id]);
+                        && $run->version_muid === $metadata->version_muid) {
+                        $misuses = $run->misuses->where('misuse_muid', $metadata->misuse_muid);
+                        if ($misuses->isEmpty()) {
+                            Misuse::create([
+                                'metadata_id' => $metadata->id,
+                                'detector_id' => $detector->id,
+                                'run_id' => $run->id,
+                                'misuse_muid' => $metadata->misuse_muid]);
+                        } else {
+                            foreach ($misuses as $misuse) {
+                                $misuse->metadata_id = $metadata->id;
+                                $misuse->save();
+                            }
+                        }
                     }
                 }
             }
         }
-
-        }
+    }
 }
