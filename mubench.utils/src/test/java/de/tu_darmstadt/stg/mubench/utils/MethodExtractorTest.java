@@ -401,6 +401,15 @@ public class MethodExtractorTest {
 				"class C {}");
 	}
 
+	@Test
+	public void HandlesStaticInitializationBlockOnSourceCodeDetection() throws Exception {
+		testFindsMethod("class C {\n"
+						+ "    static {}\n"
+						+ "}",
+				"static()",
+				"    static {}");
+	}
+
 	private void testFindsMethod(String input, String methodSignature, String expectedOutput) throws Exception {
 		String output = runUUT(input, methodSignature);
         String[] data = output.split(":", 3);
