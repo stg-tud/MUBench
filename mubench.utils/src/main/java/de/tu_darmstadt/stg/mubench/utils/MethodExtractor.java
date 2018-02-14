@@ -77,6 +77,7 @@ public class MethodExtractor {
 		private static final String ctorId = ".ctor";
 
 		private static final String bytecodeStaticInitializerId = "<clinit>()";
+		private static final String sourcecodeStaticInitializerId = "static()";
 
 		private String methodSignature;
 		private Stack<String> currentEnclosingType;
@@ -87,7 +88,8 @@ public class MethodExtractor {
 		}
 
 		private static String normalize(String methodSignature) {
-		    if (methodSignature.equals(MethodRetriever.bytecodeStaticInitializerId)) {
+		    if (methodSignature.equals(MethodRetriever.bytecodeStaticInitializerId) ||
+					methodSignature.equals(MethodRetriever.sourcecodeStaticInitializerId)) {
 		    	return methodSignature;
 			}
 			return removeGenericTypeParameters(removeOuterTypeQualifiers(methodSignature));
@@ -158,7 +160,8 @@ public class MethodExtractor {
 
 		@Override
 		public void visit(InitializerDeclaration initializer, List<MethodCodeFragment> matchingMethodsCode) {
-			if (methodSignature.equals(MethodRetriever.bytecodeStaticInitializerId) && initializer.isStatic()) {
+			if (methodSignature.equals(MethodRetriever.bytecodeStaticInitializerId) || methodSignature.equals(MethodRetriever.sourcecodeStaticInitializerId)
+					&& initializer.isStatic()) {
 				matchingMethodsCode.add(getCode(initializer, (decl -> MethodRetriever.bytecodeStaticInitializerId), InitializerDeclaration::getBlock));
 			}
 			super.visit(initializer, matchingMethodsCode);
