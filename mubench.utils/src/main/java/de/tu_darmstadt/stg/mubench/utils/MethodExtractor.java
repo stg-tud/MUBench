@@ -103,9 +103,18 @@ public class MethodExtractor {
 		}
 
 		@Override
-		public void visit(ClassOrInterfaceDeclaration type, List<MethodCodeFragment> arg) {
+		public void visit(ClassOrInterfaceDeclaration type, List<MethodCodeFragment> matchingMethodsCode) {
 			currentEnclosingType.push(type.getName());
-			super.visit(type, arg);
+			super.visit(type, matchingMethodsCode);
+
+			if (methodSignature.equals(MethodRetriever.ctorId + "()") && matchingMethodsCode.isEmpty()) {
+				MethodCodeFragment defaultConstructorFragment = new MethodCodeFragment();
+				defaultConstructorFragment.declaringTypeName = type.getName();
+				defaultConstructorFragment.firstLineNumber = type.getBegin().line;
+				defaultConstructorFragment.lastLineNumber = defaultConstructorFragment.firstLineNumber;
+				matchingMethodsCode.add(defaultConstructorFragment);
+			}
+
 			currentEnclosingType.pop();
 		}
 		
