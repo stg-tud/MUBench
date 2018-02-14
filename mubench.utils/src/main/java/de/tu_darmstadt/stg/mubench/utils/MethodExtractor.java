@@ -85,6 +85,9 @@ public class MethodExtractor {
 		}
 
 		private static String normalize(String methodSignature) {
+		    if (methodSignature.equals("<clinit>")) {
+		    	return methodSignature;
+			}
 			return removeGenericTypeParameters(removeOuterTypeQualifiers(methodSignature));
 		}
 
@@ -140,6 +143,14 @@ public class MethodExtractor {
 				matchingMethodsCode.add(getCode(method, MethodDeclaration::getDeclarationAsString, MethodDeclaration::getBody));
 			}
 			super.visit(method, matchingMethodsCode);
+		}
+
+		@Override
+		public void visit(InitializerDeclaration initializer, List<MethodCodeFragment> matchingMethodsCode) {
+			if (methodSignature.equals("<clinit>") && initializer.isStatic()) {
+				matchingMethodsCode.add(getCode(initializer, (decl -> "<clinit>"), InitializerDeclaration::getBlock));
+			}
+			super.visit(initializer, matchingMethodsCode);
 		}
 		
 		private <T extends Node> MethodCodeFragment getCode(T node, Function<T, String> getDeclarationAsString, Function<T, BlockStmt> getBody) {
