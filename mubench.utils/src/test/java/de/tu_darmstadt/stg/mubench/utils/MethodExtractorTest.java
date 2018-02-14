@@ -394,6 +394,13 @@ public class MethodExtractorTest {
 				"    static {}");
 	}
 
+	@Test
+	public void handlesDefaultConstructor() throws Exception {
+		testFindsMethod("class C {}",
+				"<init>()",
+				"class C {}");
+	}
+
 	private void testFindsMethod(String input, String methodSignature, String expectedOutput) throws Exception {
 		String output = runUUT(input, methodSignature);
         String[] data = output.split(":", 3);
