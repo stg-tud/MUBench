@@ -405,7 +405,11 @@ $columns_to_ignore = array(
                 window.onclick = function (event) {
                     var dropdown = document.getElementById("save-dropdown");
                     if(event.target.id == "dropdown-button" || event.target.parentElement.id == "dropdown-button"){
-                        dropdown.style.display = dropdown.style.display == "none" ? "block" : "none";
+                        if(dropdown.style.display == "none" || dropdown.style.display == ""){
+                            dropdown.style.display = "block";
+                        }else{
+                            dropdown.style.display = "none";
+                        }
                     }else{
                         dropdown.style.display = "none";
                     }
