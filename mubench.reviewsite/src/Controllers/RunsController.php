@@ -130,9 +130,12 @@ class RunsController extends Controller
         $detector_muid = $args['detector_muid'];
         $project_muid = $args['project_muid'];
         $version_muid = $args['version_muid'];
-        $run = Run::of(Detector::find($detector_muid))->in(Experiment::find($experimentId))->get()->where('project_muid', $project_muid)->where('version_muid', $version_muid)->first();
+
+        $detector = Detector::find($detector_muid);
+
+        $run = Run::of($detector)->in(Experiment::find($experimentId))->get()->where('project_muid', $project_muid)->where('version_muid', $version_muid)->first();
         if($run){
-            $this->deleteRunAndRelated($run, Detector::find($detector_muid)->id);
+            $this->deleteRunAndRelated($run, $detector->id);
         }
         return $response->withRedirect($this->router->pathFor('private.manage.runs'));
     }
