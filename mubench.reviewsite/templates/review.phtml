@@ -371,12 +371,12 @@ $columns_to_ignore = array(
                     <a href="<?= $origin_path ?>" class="button">return</a>
                     <a href="<?= $previous_misuse_path ?>" class="button <?= $previous_misuse_path ? "" :  "disabled" ?>"><</a>
                     <div class="dropdown" style="padding:0;position: relative; left: 45%">
-                        <div class="dropdown-content" style="margin-left:-5px;margin-bottom:-3px;padding:0;bottom:100%;">
+                        <div id="save-dropdown" class="dropdown-content" style="margin-left:-5px;margin-bottom:-3px;padding:0;bottom:100%;">
                             <a onclick="saveReview('return')">Save and Return</a>
                             <a onclick="saveReview('normal')">Save</a>
                         </div>
                         <a class="button <?= $next_reviewable_misuse_path ? "" :  "disabled" ?>" style="margin:-5px" onclick="saveReview('next')">Save and next misuse</a>
-                        <a class="button" style="padding:5px;" onclick="showDropdown()" ><i class="fa fa-angle-up"></i></a>
+                        <a id="dropdown-button" class="button" style="padding:5px;"><i class="fa fa-angle-up"></i></a>
                     </div>
                     <div style="display:inline-block;float:right;margin-right:10px;">
                         <a href="<?= $next_misuse_path ?>" class="button <?= $next_misuse_path ? "" :  "disabled" ?>">></a>
@@ -402,14 +402,14 @@ $columns_to_ignore = array(
                 var next = "<?= $next_misuse_path ?>";
                 var next_review = "<?= $next_reviewable_misuse_path ?>";
 
-                function showDropdown(){
-                    var dropdown = document.getElementsByClassName("dropdown-content");
-                    if(dropdown[0].style.display == "block"){
-                        dropdown[0].style.display = "none";
+                window.onclick = function (event) {
+                    var dropdown = document.getElementById("save-dropdown");
+                    if(event.target.id == "dropdown-button" || event.target.parentElement.id == "dropdown-button"){
+                        dropdown.style.display = dropdown.style.display == "none" ? "block" : "none";
                     }else{
-                        dropdown[0].style.display = "block";
+                        dropdown.style.display = "none";
                     }
-                }
+                };
 
 
                 function show(b){
