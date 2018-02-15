@@ -391,6 +391,22 @@ TSE17-ExPrecision:
   - jodatime.1231
   - lucene.1918
 
+TSE17-ExPrecision-TruePositives:
+  - closure.319.dmmc-1023
+  - closure.319.dmmc-13
+  - closure.319.tikanga-2
+  - closure.319.tikanga-6
+  - itext.5091.dmmc-15
+  - itext.5091.dmmc-16
+  - itext.5091.dmmc-18
+  - itext.5091.dmmc-61
+  - itext.5091.dmmc-357
+  - itext.5091.dmmc-937
+  - itext.5091.jadet-5
+  - itext.5091.jadet-9
+  - lucene.1918.tikanga-0
+  - lucene.1918.tikanga-1
+
 TSE17-ExRecall:
   - aclang.587.1
   - aclang.587.2
@@ -591,6 +607,13 @@ FSE18-ExPrecision-TruePositives:
   - testng.677302c.dmmc-4
   - testng.677302c.grouminer-4
   - testng.677302c.grouminer-17
+  - closure.319.mudetect-12
+  - closure.319.mudetect-13
+  - closure.319.mudetect-17
+  - closure.319.mudetect-18
+  - itext.5091.mudetect-15
+  - lucene.1918.mudetect-5
+  - lucene.1918.mudetect-9
 
 ###
 ### Other experiment datasets.
