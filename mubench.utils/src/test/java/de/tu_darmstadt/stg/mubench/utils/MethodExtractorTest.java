@@ -367,7 +367,7 @@ public class MethodExtractorTest {
 				"    public Reply browse (Request request) {}");
 	}
 
-	@Ignore("Not implemented.") @Test
+	@Test
 	public void handlesGenericsInParameterType() throws Exception {
 		testFindsMethod("class Tarjan<T> {\n"
 						+ "    private void run(T v) {}\n"

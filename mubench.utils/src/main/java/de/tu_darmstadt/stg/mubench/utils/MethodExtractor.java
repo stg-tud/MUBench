@@ -6,15 +6,14 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Stack;
+import java.util.*;
 import java.util.function.Function;
 
 import com.github.javaparser.JavaParser;
 import com.github.javaparser.ParseException;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Node;
+import com.github.javaparser.ast.TypeParameter;
 import com.github.javaparser.ast.body.*;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
@@ -81,10 +80,12 @@ public class MethodExtractor {
 
 		private String methodSignature;
 		private Stack<String> currentEnclosingType;
+		private List<TypeParameter> typeParameters;
 
 		MethodRetriever(String methodSignature) {
 			this.methodSignature = normalize(methodSignature);
 			this.currentEnclosingType = new Stack<>();
+			this.typeParameters = new ArrayList<>();
 		}
 
 		private static String normalize(String methodSignature) {
@@ -166,6 +167,12 @@ public class MethodExtractor {
 			}
 			super.visit(initializer, matchingMethodsCode);
 		}
+
+		@Override
+		public void visit(TypeParameter typeParameter, List<MethodCodeFragment> matchingMethodsCode) {
+			typeParameters.add(typeParameter);
+			super.visit(typeParameter, matchingMethodsCode);
+		}
 		
 		private <T extends Node> MethodCodeFragment getCode(T node, Function<T, String> getDeclarationAsString, Function<T, BlockStmt> getBody) {
 			MethodCodeFragment fragment = new MethodCodeFragment();
@@ -199,6 +206,12 @@ public class MethodExtractor {
 				int endOfTypeParameters = typeName.indexOf('>');
 				if (startOfTypeParameters > -1 && endOfTypeParameters > -1) {
 					typeName = typeName.substring(0, startOfTypeParameters) + typeName.substring(endOfTypeParameters + 1, typeName.length());
+				}
+				for (TypeParameter typeParameter : typeParameters) {
+					String typeParameterName = typeParameter.getName();
+					if (typeName.contains(typeParameterName)) {
+						typeName = typeName.replaceFirst(typeParameterName, "Object");
+					}
 				}
 				signature.append(typeName);
 				// if a parameter is declared like m(int foo[]), the parser drops the array brackets
