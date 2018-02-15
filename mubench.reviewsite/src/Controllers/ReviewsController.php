@@ -168,9 +168,11 @@ class ReviewsController extends Controller
                 if ($misuse && !$next_misuse) {
                     $next_misuse = $current_misuse;
                 }
-                if ((!$next_reviewable_misuse || $misuse)
-                    && $current_misuse->getReviewState() === ReviewState::NEEDS_REVIEW
-                    && !$current_misuse->hasReviewed($reviewer)) {
+                $is_current_misuse_reviewable = $current_misuse->getReviewState() === ReviewState::NEEDS_REVIEW
+                    && !$current_misuse->hasReviewed($reviewer);
+                $first_reviewable_misuse = !$next_reviewable_misuse && $is_current_misuse_reviewable;
+                $first_reviewable_misuse_after = $misuse && $is_current_misuse_reviewable;
+                if ($first_reviewable_misuse || $first_reviewable_misuse_after) {
                     $next_reviewable_misuse = $current_misuse;
                     if ($misuse) {
                         break;
@@ -188,4 +190,5 @@ class ReviewsController extends Controller
 
         return array($previous_misuse, $next_misuse, $next_reviewable_misuse, $misuse);
     }
+
 }
