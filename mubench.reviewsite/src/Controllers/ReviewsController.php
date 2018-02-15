@@ -120,8 +120,7 @@ class ReviewsController extends Controller
         $this->updateOrCreateReview($misuse_id, $reviewer->id, $comment, $hits);
 
         if ($review["origin"] != "") {
-            $base_url = substr($this->settings['site_base_url'], -1) === '/' ? substr($this->settings['site_base_url'], 0, -1) : $this->settings['site_base_url'];
-            return $response->withRedirect("{$base_url}{$review["origin"]}");
+            return $response->withRedirect("{$review["origin"]}");
         }else {
             return $response->withRedirect($this->router->pathFor("private.review", ["experiment_id" => $experiment_id,
                 "detector_muid" => $detector_muid, "project_muid" => $project_muid, "version_muid" => $version_muid,
