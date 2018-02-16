@@ -211,7 +211,7 @@ public class MethodExtractor {
 					typeName = typeName.substring(endOfQualifier + 1);
 				}
 				int startOfTypeParameters = typeName.indexOf('<');
-				int endOfTypeParameters = typeName.indexOf('>');
+				int endOfTypeParameters = typeName.lastIndexOf('>');
 				if (startOfTypeParameters > -1 && endOfTypeParameters > -1) {
 					typeName = typeName.substring(0, startOfTypeParameters) + typeName.substring(endOfTypeParameters + 1, typeName.length());
 				}
