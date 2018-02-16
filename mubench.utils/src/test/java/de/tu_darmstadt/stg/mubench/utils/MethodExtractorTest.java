@@ -4,6 +4,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
 import java.io.ByteArrayInputStream;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 import org.junit.Ignore;
 import org.junit.Test;
@@ -402,12 +405,17 @@ public class MethodExtractorTest {
 	}
 
 	@Test
-	public void HandlesStaticInitializationBlockOnSourceCodeDetection() throws Exception {
+	public void handlesStaticInitializationBlockOnSourceCodeDetection() throws Exception {
 		testFindsMethod("class C {\n"
 						+ "    static {}\n"
 						+ "}",
 				"static()",
 				"    static {}");
+	}
+
+	private void testFindsMethodFromFile(String filePath, String methodSignature, String expectedOutput) throws Exception {
+		String input = new String(Files.readAllBytes(Paths.get(filePath)), StandardCharsets.UTF_8);
+		testFindsMethod(input, methodSignature, expectedOutput);
 	}
 
 	private void testFindsMethod(String input, String methodSignature, String expectedOutput) throws Exception {
