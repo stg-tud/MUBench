@@ -370,7 +370,7 @@ EOT
         $run = Run::of($detector)->in(Experiment::find(3))->where(['project_muid' => '-p-', 'version_muid' => '-v-'])->first();
         $misuses = $run->misuses;
 
-        RunsController::deleteRunAndRelated($run);
+        $this->runsController->deleteRunAndRelated($run, $detector->id);
         $actual_run = Run::of(Detector::find('-d-'))->in(Experiment::find(3))->where('project', '-p-')->where('version', '-v-')->first();
 
         self::assertNull($actual_run);
