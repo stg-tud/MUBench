@@ -62,13 +62,21 @@ public class MethodExtractor {
 	}
 
 	static class MethodCodeFragment {
-		private int firstLineNumber;
-		private int lastLineNumber;
-		private String declaringTypeName;
+		protected int firstLineNumber;
+		protected int lastLineNumber;
+		protected String declaringTypeName;
 		
 		public String asString(List<String> codeLines) {
 			codeLines = codeLines.subList(firstLineNumber - 1, lastLineNumber);
 			return firstLineNumber + ":" + declaringTypeName + ":" + StringUtils.toString(codeLines);
+		}
+	}
+
+	static class DefaultConstructorFragment extends MethodCodeFragment {
+		@Override
+		public String asString(List<String> codeLines) {
+			return firstLineNumber + ":" + declaringTypeName + ":" + declaringTypeName +
+					"() { /* compiler-generated default constructor -- may contain field initialization code */ }";
 		}
 	}
 
@@ -113,7 +121,7 @@ public class MethodExtractor {
 			super.visit(type, matchingMethodsCode);
 
 			if (methodSignature.equals(MethodRetriever.ctorId + "()") && matchingMethodsCode.isEmpty()) {
-				MethodCodeFragment defaultConstructorFragment = new MethodCodeFragment();
+				MethodCodeFragment defaultConstructorFragment = new DefaultConstructorFragment();
 				defaultConstructorFragment.declaringTypeName = type.getName();
 				defaultConstructorFragment.firstLineNumber = type.getBegin().line;
 				defaultConstructorFragment.lastLineNumber = defaultConstructorFragment.firstLineNumber;

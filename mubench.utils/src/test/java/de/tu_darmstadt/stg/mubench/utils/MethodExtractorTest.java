@@ -400,7 +400,7 @@ public class MethodExtractorTest {
 	public void handlesDefaultConstructor() throws Exception {
 		testFindsMethod("class C {}",
 				"<init>()",
-				"class C {}");
+				"C() { /* compiler-generated default constructor -- may contain field initialization code */ }");
 	}
 
 	@Test
