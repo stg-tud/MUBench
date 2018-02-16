@@ -388,6 +388,15 @@ public class MethodExtractorTest {
 	}
 
 	@Test
+	public void handlesNestedTypeParameters() throws Exception {
+		testFindsMethod("class C {\n"
+						+ "    void foo(Object<T1<?>, T2>[] c) {}\n"
+						+ "}",
+				"foo(Object[])",
+				"    void foo(Object<T1<?>, T2>[] c) {}");
+	}
+
+	@Test
 	public void handlesStaticInitializationBlock() throws Exception {
 		testFindsMethod("class C {\n"
 						+ "    static {}\n"
