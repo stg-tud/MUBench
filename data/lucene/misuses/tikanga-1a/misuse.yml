@@ -4,12 +4,13 @@ characteristics:
 - missing/condition/value_or_state
 crash: true
 description: >
-  In line 35, `SegmentInfos.info()` is called without prior check that there is
-  at least one element in the `merge.segments` collection.
+  In line 38, `SegmentInfos.info()` is called without prior check that there
+  are sufficiently many elements in the `infos` collection.
+  This is the same problem as identified by `tikanga-1`.
 location:
   file: org/apache/lucene/index/MergeDocIDRemapper.java
   method: "MergeDocIDRemapper(SegmentInfos, int[][], int[], OneMerge, int)"
-  line: 35
+  line: 38
 internal: true
 source:
   name: Tikanga & Jadet
