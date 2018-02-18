@@ -406,6 +406,9 @@ TSE17-ExPrecision-TruePositives:
   - itext.5091.jadet-9
   - lucene.1918.tikanga-0
   - lucene.1918.tikanga-1
+  - lucene.1918.tikanga-1a
+  - lucene.1918.tikanga-1b
+  - lucene.1918.tikanga-1c
 
 TSE17-ExRecall:
   - aclang.587.1
@@ -460,6 +463,9 @@ TSE17-ExRecall:
   - lucene.1918.2
   - lucene.1918.tikanga-0
   - lucene.1918.tikanga-1
+  - lucene.1918.tikanga-1a
+  - lucene.1918.tikanga-1b
+  - lucene.1918.tikanga-1c
   - rhino.286251.1
 
 ###
