@@ -38,21 +38,20 @@ class ReviewControllerTest extends SlimTestCase
 
     function test_store_review()
     {
-        Misuse::create(['misuse_muid' => '0', 'run_id' => 2, 'detector_id' => 1]);
+        $misuse = Misuse::create(['misuse_muid' => '0', 'run_id' => 2, 'detector_id' => 1]);
 
-        $this->reviewController->updateOrCreateReview(1, $this->reviewer1->id, '-comment-', [['hit' => 'Yes', 'types' => []]]);
+        $this->createReview($misuse, $this->reviewer1);
 
         $review = Misuse::find(1)->getReview($this->reviewer1);
         self::assertEquals('-comment-', $review->comment);
         self::assertEquals(Decision::YES, $review->getDecision());
     }
-
     function test_update_review()
     {
-        Misuse::create(['misuse_muid' => '0', 'run_id' => 2, 'detector_id' => 1]);
+        $misuse = Misuse::create(['misuse_muid' => '0', 'run_id' => 2, 'detector_id' => 1]);
 
-        $this->reviewController->updateOrCreateReview(1, $this->reviewer1->id, '-comment-', [['hit' => 'Yes', 'types' => []]]);
-        $this->reviewController->updateOrCreateReview(1, $this->reviewer1->id, '-comment-', [['hit' => 'No', 'types' => []]]);
+        $this->createReview($misuse, $this->reviewer1); // positive review
+        $this->createReview($misuse, $this->reviewer1, [['hit' => 'No', 'types' => []]]);
 
         $review = Misuse::find(1)->getReview($this->reviewer1);
         self::assertEquals('-comment-', $review->comment);
@@ -61,10 +60,10 @@ class ReviewControllerTest extends SlimTestCase
 
     function test_stores_violation_types()
     {
-        Misuse::create(['misuse_muid' => '0', 'run_id' => 2, 'detector_id' => 1]);
+        $misuse = Misuse::create(['misuse_muid' => '0', 'run_id' => 2, 'detector_id' => 1]);
         Type::create(['name' => 'missing/call']);
 
-        $this->reviewController->updateOrCreateReview(1, $this->reviewer1->id, '-comment-', [['hit' => 'No', 'types' => [1]]]);
+        $this->createReview($misuse, $this->reviewer1);
 
         $review = Misuse::find(1)->getReview($this->reviewer1);
         $violation_types = $review->getHitViolationTypes('0');
@@ -156,9 +155,9 @@ class ReviewControllerTest extends SlimTestCase
         $this->createReview($misuse, $this->reviewer2);
     }
 
-    private function createReview($misuse, $reviewer)
+    private function createReview($misuse, $reviewer, $types = [['hit' => 'Yes', 'types' => [1]]])
     {
-        $this->reviewController->updateOrCreateReview($misuse->id, $reviewer->id, '-comment-', [['hit' => 'No', 'types' => [1]]]);
+        $this->reviewController->updateOrCreateReview($misuse->id, $reviewer->id, '-comment-', $types);
     }
 
 }
