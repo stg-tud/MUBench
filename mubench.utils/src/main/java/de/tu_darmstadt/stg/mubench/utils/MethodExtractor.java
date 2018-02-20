@@ -1,34 +1,28 @@
 package de.tu_darmstadt.stg.mubench.utils;
 
-import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.util.*;
-import java.util.function.Function;
-
 import com.github.javaparser.JavaParser;
-import com.github.javaparser.ParseException;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Node;
-import com.github.javaparser.ast.TypeParameter;
 import com.github.javaparser.ast.body.*;
-import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
+import com.github.javaparser.ast.type.TypeParameter;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 import com.google.common.base.Joiner;
 
+import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Stack;
+
 public class MethodExtractor {
-	public static void main(String[] args) throws ParseException, IOException {
+	public static void main(String[] args) throws IOException {
 		String fileName = args[0];
 		String methodSignature = args[1];
 
 		System.out.println(new MethodExtractor().extract(new FileInputStream(fileName), methodSignature));
 	}
 
-	public String extract(InputStream codeStream, String methodSignature) throws ParseException, IOException {
+	public String extract(InputStream codeStream, String methodSignature) throws IOException {
 		List<String> codeLines = readLines(codeStream);
 		List<MethodCodeFragment> methods = findMethods(methodSignature, codeLines);
 		
@@ -50,7 +44,7 @@ public class MethodExtractor {
 		return lines;
 	}
 
-	private List<MethodCodeFragment> findMethods(String methodSignature, List<String> codeLines) throws ParseException {
+	private List<MethodCodeFragment> findMethods(String methodSignature, List<String> codeLines) {
 		List<MethodCodeFragment> methods = new ArrayList<>();
 		CompilationUnit cu = JavaParser.parse(toStream(codeLines));
 		new MethodRetriever(methodSignature).visit(cu, methods);
@@ -117,13 +111,13 @@ public class MethodExtractor {
 
 		@Override
 		public void visit(ClassOrInterfaceDeclaration type, List<MethodCodeFragment> matchingMethodsCode) {
-			currentEnclosingType.push(type.getName());
+			currentEnclosingType.push(type.getName().asString());
 			super.visit(type, matchingMethodsCode);
 
 			if (methodSignature.equals(MethodRetriever.ctorId + "()") && matchingMethodsCode.isEmpty()) {
 				MethodCodeFragment defaultConstructorFragment = new DefaultConstructorFragment();
-				defaultConstructorFragment.declaringTypeName = type.getName();
-				defaultConstructorFragment.firstLineNumber = type.getBegin().line;
+				defaultConstructorFragment.declaringTypeName = type.getName().asString();
+				defaultConstructorFragment.firstLineNumber = type.getBegin().get().line;
 				defaultConstructorFragment.lastLineNumber = defaultConstructorFragment.firstLineNumber;
 				matchingMethodsCode.add(defaultConstructorFragment);
 			}
@@ -133,7 +127,7 @@ public class MethodExtractor {
 		
 		@Override
 		public void visit(ConstructorDeclaration constructor, List<MethodCodeFragment> matchingMethodsCode) {
-			String name = constructor.getName();
+			String name = constructor.getName().asString();
 			List<Parameter> parameters = constructor.getParameters();
 
 			int typeNestingDepth = currentEnclosingType.size();
@@ -142,15 +136,15 @@ public class MethodExtractor {
 				String altSignature = getSignature(name, parameters);
 
 				if (methodSignature.equals(signature) || methodSignature.equals(altSignature)) {
-					matchingMethodsCode.add(getCode(constructor, ConstructorDeclaration::getDeclarationAsString, ConstructorDeclaration::getBlock));
+					matchingMethodsCode.add(getCode(constructor));
 					return; // stop when we have a match
 				}
 
-				// if the query method signature was extracted from bytecode and the target contstructor belongs to a
+				// if the query method signature was extracted from bytecode and the target constructor belongs to a
 				// non-static inner class, then the constructor has additional parameters of the surrounding types'
 				// types.
 				if (typeNestingDepth - 2 >= 0)
-					parameters.add(0, new Parameter(new ClassOrInterfaceType(currentEnclosingType.get(typeNestingDepth - 2)), new VariableDeclaratorId("")));
+					parameters.add(0, new Parameter(new ClassOrInterfaceType(currentEnclosingType.get(typeNestingDepth - 2)), " "));
 
 				typeNestingDepth--;
 			} while (typeNestingDepth >= 0);
@@ -160,9 +154,9 @@ public class MethodExtractor {
 
 		@Override
 		public void visit(MethodDeclaration method, List<MethodCodeFragment> matchingMethodsCode) {
-			String signature = getSignature(method.getName(), method.getParameters());
+			String signature = getSignature(method.getName().asString(), method.getParameters());
 			if (methodSignature.equals(signature)) {
-				matchingMethodsCode.add(getCode(method, MethodDeclaration::getDeclarationAsString, MethodDeclaration::getBody));
+				matchingMethodsCode.add(getCode(method));
 			}
 			super.visit(method, matchingMethodsCode);
 		}
@@ -171,7 +165,7 @@ public class MethodExtractor {
 		public void visit(InitializerDeclaration initializer, List<MethodCodeFragment> matchingMethodsCode) {
 			if (methodSignature.equals(MethodRetriever.bytecodeStaticInitializerId) || methodSignature.equals(MethodRetriever.sourcecodeStaticInitializerId)
 					&& initializer.isStatic()) {
-				matchingMethodsCode.add(getCode(initializer, (decl -> MethodRetriever.bytecodeStaticInitializerId), InitializerDeclaration::getBlock));
+				matchingMethodsCode.add(getCode(initializer));
 			}
 			super.visit(initializer, matchingMethodsCode);
 		}
@@ -182,15 +176,15 @@ public class MethodExtractor {
 			super.visit(typeParameter, matchingMethodsCode);
 		}
 		
-		private <T extends Node> MethodCodeFragment getCode(T node, Function<T, String> getDeclarationAsString, Function<T, BlockStmt> getBody) {
+		private <T extends Node> MethodCodeFragment getCode(T node) {
 			MethodCodeFragment fragment = new MethodCodeFragment();
 			fragment.declaringTypeName = getEnclosingTypeName();
-			if (node.hasComment()) {
-				fragment.firstLineNumber = node.getComment().getRange().begin.line;
+			if (node.getComment().isPresent()) {
+				fragment.firstLineNumber = node.getComment().get().getRange().get().begin.line;
 			} else {
-				fragment.firstLineNumber = node.getRange().begin.line;
+				fragment.firstLineNumber = node.getRange().get().begin.line;
 			}
-			fragment.lastLineNumber = node.getRange().end.line;
+			fragment.lastLineNumber = node.getRange().get().end.line;
 			return fragment;
 		}
 		
@@ -216,7 +210,7 @@ public class MethodExtractor {
 					typeName = typeName.substring(0, startOfTypeParameters) + typeName.substring(endOfTypeParameters + 1, typeName.length());
 				}
 				for (TypeParameter typeParameter : typeParameters) {
-					String typeParameterName = typeParameter.getName();
+					String typeParameterName = typeParameter.getName().asString();
 					if (typeName.contains(typeParameterName)) {
 						typeName = typeName.replaceFirst(typeParameterName, "Object");
 					}
