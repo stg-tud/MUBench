@@ -6,21 +6,23 @@ from urllib.error import URLError
 from utils.shell import Shell
 from utils.web_util import is_valid_file, download_file
 
-UTILS_JAR_NAME = "mubench.utils-0.0.1-SNAPSHOT-jar-with-dependencies.jar"
-UTILS_JAR_URL = "http://www.st.informatik.tu-darmstadt.de/artifacts/mubench/{}".format(UTILS_JAR_NAME)
-UTILS_MD5 = "424fe42efa2cc764ace2c4120a087fc1"
+__UTILS_VERSION = "0.0.2"
+__UTILS_JAR_NAME = "mubench.utils-{}-jar-with-dependencies.jar".format(__UTILS_VERSION)
+__UTILS_JAR_URL = "http://www.st.informatik.tu-darmstadt.de/artifacts/mubench/mvn/" \
+                  "de/tu-darmstadt/stg/mubench/mubench.utils/{}/{}".format(__UTILS_VERSION, __UTILS_JAR_NAME)
+__UTILS_JAR_MD5 = "8b16eae8371bb563bc6da9805f8afd96"
 
 
 def exec_util(main: str, args: str = "", timeout: Optional[int] = None):
     base_path = dirname(__file__)
-    utils_jar_path = join(base_path, UTILS_JAR_NAME)
+    utils_jar_path = join(base_path, __UTILS_JAR_NAME)
 
-    if exists(utils_jar_path) and not is_valid_file(utils_jar_path, UTILS_MD5):
+    if exists(utils_jar_path) and not is_valid_file(utils_jar_path, __UTILS_JAR_MD5):
         remove(utils_jar_path)
 
     if not exists(utils_jar_path):
         try:
-            download_file(UTILS_JAR_URL, utils_jar_path, UTILS_MD5)
+            download_file(__UTILS_JAR_URL, utils_jar_path, __UTILS_JAR_MD5)
         except (URLError, ValueError, FileNotFoundError) as e:
             raise ValueError("utils unavailable: {}".format(e))
 
