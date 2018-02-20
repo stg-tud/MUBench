@@ -56,7 +56,7 @@ class FixedPathComparator {
                 }
             }
         }
-        if (i2.hasNext()) {
+        if (i1.hasNext()) {
             return 1;
         }
         // If the strings differed only in non-primary characteristics at
