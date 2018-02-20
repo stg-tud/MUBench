@@ -5,6 +5,7 @@ import os
 import sys
 from datetime import datetime
 from os.path import exists, join
+from typing import List
 
 from boa.BOA import BOA
 from buildtools.maven import Project
@@ -39,10 +40,23 @@ def _get_subtypes(target_type):
     return subtypes_sample
 
 
-def _prepare_example_projects(target_type: str, boa: BOA, metadata_path: str):
+def _get_type_and_subtypes_list(target_type):
+    return [target_type] + _get_subtypes(target_type)
+
+
+def _create_type_combinations(target_types: List):
+    if len(target_types) == 1:
+        return _get_type_and_subtypes_list(target_types[0])
+    else:
+        return ((target_type, tail)
+                for target_type in _get_type_and_subtypes_list(target_types[0])
+                for tail in _create_type_combinations(target_types[1:]))
+
+
+def _prepare_example_projects(target_types: List, boa: BOA, metadata_path: str):
     data = []
-    for type in [target_type] + _get_subtypes(target_type):
-        projects = boa.query_projects_with_type_usages(target_type, type)
+    for type_combination in _create_type_combinations(target_types):
+        projects = boa.query_projects_with_type_usages(target_types, type_combination)
         for project in projects:
             checkout = project.get_checkout(CHECKOUTS_PATH)
             if not checkout.exists():
@@ -88,6 +102,7 @@ handler.setFormatter(logging.Formatter('%(asctime)s - %(name)s - %(levelname)s -
 handler.setLevel(logging.DEBUG)
 logger.addHandler(handler)
 
+
 with open(INDEX_PATH) as index:
     boa = BOA(username, password)
     for row in csv.reader(index, delimiter="\t"):
@@ -97,15 +112,15 @@ with open(INDEX_PATH) as index:
 
         project_id = row[0]
         version_id = row[1]
-        target_type = row[6]
+        target_types = sorted(row[6:])
         try:
-            target_example_file = os.path.join(CHECKOUTS_PATH, target_type + ".yml")
+            target_example_file = os.path.join(CHECKOUTS_PATH, "-".join(sorted(target_types)) + ".yml")
             if not exists(target_example_file):
-                logger.info("Preparing examples for %s.%s (type: %s)...", project_id, version_id, target_type)
-                _prepare_example_projects(target_type, boa, target_example_file)
+                logger.info("Preparing examples for %s.%s (type(s): %s)...", project_id, version_id, target_types)
+                _prepare_example_projects(target_types, boa, target_example_file)
             elif is_empty(target_example_file):
-                logger.info("No example projects for %s.%s (type: %s)", project_id, version_id, target_type)
+                logger.info("No example projects for %s.%s (type(s): %s)", project_id, version_id, target_types)
             else:
-                logger.info("Already prepared examples for %s.%s (type: %s)", project_id, version_id, target_type)
+                logger.info("Already prepared examples for %s.%s (type(s): %s)", project_id, version_id, target_types)
         except Exception as error:
             logger.exception("failed", exc_info=error)

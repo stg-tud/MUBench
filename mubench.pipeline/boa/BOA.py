@@ -44,12 +44,12 @@ class BOA:
         self.username = username
         self.password = password
 
-    def query_projects_with_type_usages(self, type_name: str, subtype_name: str) -> List[GitHubProject]:
+    def query_projects_with_type_usages(self, types_names: List[str], subtypes_names: List[str]) -> List[GitHubProject]:
         projects = []
-        query_id = "{}_{}".format(type_name, subtype_name)
+        query_id = "{}_{}".format("-".join(types_names), "-".join(subtypes_names))
         result_file_name = os.path.join(os.path.dirname(__file__), "results", query_id + ".boaresult")
         if not os.path.exists(result_file_name):
-            output = self.__try_query_projects_with_type_usages(subtype_name)
+            output = self.__try_query_projects_with_type_usages(subtypes_names)
             output_lines = output.splitlines()
             try:
                 results_start_line = output_lines.index("Start output:") + 1
@@ -68,15 +68,17 @@ class BOA:
 
         return projects
 
-    def __try_query_projects_with_type_usages(self, type_name, retry_count: int = 0):
+    def __try_query_projects_with_type_usages(self, types_names: List, retry_count: int = 0):
         try:
             # SMELL manually escaping parameters
             return java_utils.exec_util("BOAExampleProjectFinder",
-                                        "\"{}\" \"{}\" \"{}\"".format(self.username, self.password, type_name),
+                                        "\"{}\" \"{}\" \"{}\"".format(self.username,
+                                                                      self.password,
+                                                                      ":".join(types_names)),
                                         timeout=20 * 60)
         except TimeoutError:
             # probably BOA stalled, retrying...
             if retry_count < 3:
-                return self.__try_query_projects_with_type_usages(type_name, retry_count=retry_count + 1)
+                return self.__try_query_projects_with_type_usages(types_names, retry_count=retry_count + 1)
             else:
                 return ""
