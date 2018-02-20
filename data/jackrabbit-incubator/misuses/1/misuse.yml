@@ -1,5 +1,4 @@
 api:
-- org.apache.jackrabbit.core.fs.FileSystem
 - org.apache.jackrabbit.core.fs.FileSystemResource
 characteristics:
 - missing/condition/value_or_state

@@ -1,6 +1,5 @@
 api:
 - org.jfree.chart.plot.CategoryPlot
-- org.jfree.data.category.CategoryDataset
 characteristics:
 - missing/condition/null_check
 - superfluous/condition/null_check

@@ -1,5 +1,6 @@
 api:
 - java.io.ObjectOutputStream
+- java.io.ByteArrayOutputStream
 characteristics:
 - misplaced/call
 crash: false

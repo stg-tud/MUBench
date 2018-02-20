@@ -1,6 +1,5 @@
 api:
 - com.google.javascript.rhino.jstype.UnionTypeBuilder
-- com.google.javascript.rhino.jstype.JSType
 characteristics:
 - superfluous/condition/null_check
 crash: false

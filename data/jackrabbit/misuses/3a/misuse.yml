@@ -1,6 +1,5 @@
 api:
 - org.apache.jackrabbit.core.config.ConfigurationParser
-- org.apache.jackrabbit.core.config.ClusterConfig
 characteristics:
 - missing/call
 crash: false

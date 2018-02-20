@@ -1,5 +1,4 @@
 api:
-- java.util.Map
 - org.apache.jackrabbit.core.config.RepositoryConfig
 characteristics:
 - missing/condition/null_check

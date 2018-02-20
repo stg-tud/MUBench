@@ -1,6 +1,5 @@
 api:
 - org.jfree.data.statistics.StatisticalCategoryDataset
-- java.Number
 characteristics:
 - missing/condition/null_check
 crash: true
