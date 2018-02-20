@@ -421,6 +421,19 @@ public class MethodExtractorTest {
 				"    static {}");
 	}
 
+	@Test
+	public void acceptsEnumAsIdentifier() throws Exception {
+		testFindsMethod("class C {\n"
+						+ "    void foo() {\n"
+						+ "        Object enum;\n"
+						+ "    }\n"
+						+ "}",
+				"foo()",
+						"    void foo() {\n"
+						+ "        Object enum;\n"
+						+ "    }");
+	}
+
 	private void testFindsMethodFromFile(String filePath, String methodSignature, String expectedOutput) throws Exception {
 		String input = new String(Files.readAllBytes(Paths.get(filePath)), StandardCharsets.UTF_8);
 		testFindsMethod(input, methodSignature, expectedOutput);
