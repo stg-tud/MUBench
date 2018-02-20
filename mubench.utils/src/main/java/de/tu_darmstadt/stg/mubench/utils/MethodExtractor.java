@@ -1,6 +1,8 @@
 package de.tu_darmstadt.stg.mubench.utils;
 
 import com.github.javaparser.JavaParser;
+import com.github.javaparser.ParseResult;
+import com.github.javaparser.ParserConfiguration;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.body.*;
@@ -13,6 +15,9 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
+
+import static com.github.javaparser.ParseStart.COMPILATION_UNIT;
+import static com.github.javaparser.Providers.provider;
 
 public class MethodExtractor {
 	public static void main(String[] args) throws IOException {
@@ -46,7 +51,9 @@ public class MethodExtractor {
 
 	private List<MethodCodeFragment> findMethods(String methodSignature, List<String> codeLines) {
 		List<MethodCodeFragment> methods = new ArrayList<>();
-		CompilationUnit cu = JavaParser.parse(toStream(codeLines));
+		JavaParser javaParser = new JavaParser(new ParserConfiguration().setLanguageLevel(ParserConfiguration.LanguageLevel.RAW));
+		ParseResult<CompilationUnit> parseResult = javaParser.parse(COMPILATION_UNIT, provider(toStream(codeLines)));
+		CompilationUnit cu = parseResult.getResult().get();
 		new MethodRetriever(methodSignature).visit(cu, methods);
 		return methods;
 	}
