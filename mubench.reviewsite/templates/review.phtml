@@ -373,7 +373,7 @@ $columns_to_ignore = array(
                     <div class="dropdown" style="padding:0;position: relative; left: 45%">
                         <div id="save-dropdown" class="dropdown-content" style="margin-left:-5px;margin-bottom:-3px;padding:0;bottom:100%;">
                             <a onclick="saveReview('return')">Save and Return</a>
-                            <a onclick="saveReview('normal')">Save</a>
+                            <a onclick="saveReview('save')">Save</a>
                         </div>
                         <a class="button <?= $next_reviewable_misuse_path ? "" :  "disabled" ?>" style="margin:-5px" onclick="saveReview('next')">Save and next misuse</a>
                         <a id="dropdown-button" class="button" style="padding:5px;"><i class="fa fa-angle-up"></i></a>
@@ -437,8 +437,7 @@ $columns_to_ignore = array(
                     input.name = "origin";
                     switch(v){
                         case "save":
-                            form.submit();
-                            return;
+                            input.name = "origin_param";
                         case "return":
                             input.value = origin;
                             break;

@@ -106,6 +106,7 @@ class ReviewsController extends Controller
     public function postReview(Request $request, Response $response, array $args)
     {
         $review = $request->getParsedBody();
+
         $experiment_id = $args['experiment_id'];
         $detector_muid = $args['detector_muid'];
         $project_muid = $args['project_muid'];
@@ -122,9 +123,13 @@ class ReviewsController extends Controller
         if ($review["origin"] != "") {
             return $response->withRedirect("{$review["origin"]}");
         }else {
-            return $response->withRedirect($this->router->pathFor("private.review", ["experiment_id" => $experiment_id,
+            $path = $this->router->pathFor("private.review", ["experiment_id" => $experiment_id,
                 "detector_muid" => $detector_muid, "project_muid" => $project_muid, "version_muid" => $version_muid,
-                "misuse_muid" => $misuse_muid, "reviewer_name" => $reviewer_name]));
+                "misuse_muid" => $misuse_muid, "reviewer_name" => $reviewer_name]);
+            if(array_key_exists("origin_param", $review)){
+                $path = $path . "?origin={$review["origin_param"]}";
+            }
+            return $response->withRedirect($path);
         }
     }
 
