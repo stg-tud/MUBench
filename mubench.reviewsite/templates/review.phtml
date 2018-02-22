@@ -372,10 +372,16 @@ $columns_to_ignore = array(
                     <a href="<?= $previous_misuse_path ?>" class="button <?= $previous_misuse_path ? "" :  "disabled" ?>"><</a>
                     <div class="dropdown" style="padding:0;position: relative; left: 45%">
                         <div id="save-dropdown" class="dropdown-content" style="margin-left:-5px;margin-bottom:-3px;padding:0;bottom:100%;">
-                            <a onclick="saveReview('return')">Save and Return</a>
+                            <?php if($next_reviewable_misuse_path) : ?>
+                                <a onclick="saveReview('return')">Save and return</a>
+                            <?php endif; ?>
                             <a onclick="saveReview('save')">Save</a>
                         </div>
-                        <a class="button <?= $next_reviewable_misuse_path ? "" :  "disabled" ?>" style="margin:-5px" onclick="saveReview('next')">Save and next misuse</a>
+                        <?php if($next_reviewable_misuse_path) : ?>
+                            <a class="button" style="margin:-5px;min-width:120px;" onclick="saveReview('next')">Save and next misuse</a>
+                        <?php else : ?>
+                            <a class="button" style="margin:-5px;min-width:120px;" onclick="saveReview('return')">Save and return</a>
+                        <?php endif; ?>
                         <a id="dropdown-button" class="button" style="padding:5px;"><i class="fa fa-angle-up"></i></a>
                     </div>
                     <div style="display:inline-block;float:right;margin-right:10px;">
