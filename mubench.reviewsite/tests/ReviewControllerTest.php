@@ -40,7 +40,7 @@ class ReviewControllerTest extends SlimTestCase
     {
         $misuse = Misuse::create(['misuse_muid' => '0', 'run_id' => 2, 'detector_id' => 1]);
 
-        $this->createReview($misuse, $this->reviewer1);
+        $this->createReview($misuse, $this->reviewer1, "Yes");
 
         $review = Misuse::find(1)->getReview($this->reviewer1);
         self::assertEquals('-comment-', $review->comment);
@@ -50,8 +50,8 @@ class ReviewControllerTest extends SlimTestCase
     {
         $misuse = Misuse::create(['misuse_muid' => '0', 'run_id' => 2, 'detector_id' => 1]);
 
-        $this->createReview($misuse, $this->reviewer1); // positive review
-        $this->createReview($misuse, $this->reviewer1, [['hit' => 'No', 'types' => []]]);
+        $this->createReview($misuse, $this->reviewer1, "Yes");
+        $this->createReview($misuse, $this->reviewer1, "No");
 
         $review = Misuse::find(1)->getReview($this->reviewer1);
         self::assertEquals('-comment-', $review->comment);
@@ -63,7 +63,7 @@ class ReviewControllerTest extends SlimTestCase
         $misuse = Misuse::create(['misuse_muid' => '0', 'run_id' => 2, 'detector_id' => 1]);
         Type::create(['name' => 'missing/call']);
 
-        $this->createReview($misuse, $this->reviewer1);
+        $this->createReview($misuse, $this->reviewer1, "Yes", [1]);
 
         $review = Misuse::find(1)->getReview($this->reviewer1);
         $violation_types = $review->getHitViolationTypes('0');
@@ -72,8 +72,7 @@ class ReviewControllerTest extends SlimTestCase
 
     function test_determine_next_misuse_current_and_next_are_reviewed()
     {
-        $this->createRuWithThreeMisuses();
-        list($misuse1, $misuse2, $misuse3) = Misuse::all()->all();
+        list($misuse1, $misuse2, $misuse3) = $this->createRuWithThreeMisuses();
 
         $this->createConclusiveReviewState($misuse1);
         $this->createConclusiveReviewState($misuse2);
@@ -89,8 +88,7 @@ class ReviewControllerTest extends SlimTestCase
 
     function test_determine_next_misuse_current_is_only_reviewable()
     {
-        $this->createRuWithThreeMisuses();
-        list($misuse1, $misuse2, $misuse3) = Misuse::all()->all();
+        list($misuse1, $misuse2, $misuse3) = $this->createRuWithThreeMisuses();
 
         $this->createConclusiveReviewState($misuse1);
         $this->createConclusiveReviewState($misuse2);
@@ -106,12 +104,11 @@ class ReviewControllerTest extends SlimTestCase
 
     function test_determine_next_misuse_not_fully_reviewed()
     {
-        $this->createRuWithThreeMisuses();
-        list($misuse1, $misuse2, $misuse3) = Misuse::all()->all();
+        list($misuse1, $misuse2, $misuse3) = $this->createRuWithThreeMisuses();
 
-        $this->createReview($misuse1, $this->reviewer2);
-        $this->createReview($misuse2, $this->reviewer1);
-        $this->createReview($misuse3, $this->reviewer2);
+        $this->createReview($misuse1, $this->reviewer2, "Yes");
+        $this->createReview($misuse2, $this->reviewer1, "Yes");
+        $this->createReview($misuse3, $this->reviewer2, "Yes");
 
         // current misuse = 1, reviewer = 1
         list($previous_misuse, $next_misuse, $next_reviewable_misuse, $misuse)  = $this->reviewController->determineNavigationTargets(Misuse::all(), '-p-', '-v-', $misuse1->misuse_muid, $this->reviewer1);
@@ -147,17 +144,18 @@ class ReviewControllerTest extends SlimTestCase
                 ]
             ]
         )));
+        return Misuse::all()->all();
     }
 
     private function createConclusiveReviewState($misuse)
     {
-        $this->createReview($misuse, $this->reviewer1);
-        $this->createReview($misuse, $this->reviewer2);
+        $this->createReview($misuse, $this->reviewer1, "Yes");
+        $this->createReview($misuse, $this->reviewer2, "Yes");
     }
 
-    private function createReview($misuse, $reviewer, $types = [['hit' => 'Yes', 'types' => [1]]])
+    private function createReview($misuse, $reviewer, $hit, $types = [])
     {
-        $this->reviewController->updateOrCreateReview($misuse->id, $reviewer->id, '-comment-', $types);
+        $this->reviewController->updateOrCreateReview($misuse->id, $reviewer->id, '-comment-', [['hit' => $hit, 'types' => $types]]);
     }
 
 }
