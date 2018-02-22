@@ -333,3 +333,34 @@ a.disabled {
     z-index:1;
     padding:5px;
 }
+
+.floating-comment {
+    position:fixed;
+    background-color:#f9f9f9;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index:1;
+    width:300px;
+    display:none;
+}
+
+.comment-overlay {
+    display:flex;
+    position:absolute;
+    background-color:black;
+    height:100%;
+    width:100%;
+    opacity:0.5;
+    align-items: center;
+    justify-content: center;
+}
+
+.comment-overlay-button {
+    position:absolute;
+    display:flex;
+    height:100%;
+    width:100%;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    text-align:center;
+}
