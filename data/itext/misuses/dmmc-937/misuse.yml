@@ -4,12 +4,14 @@ characteristics:
 - missing/condition/value_or_state
 crash: true
 description: >
-  Iterator.next() is invoked without prior check of hasNext().
+  On line 324, `Iterator.next()` is invoked without prior check whether there
+  are sufficiently many elements.
   
-  Is also tikanga-12.
+  (Same as Tikanga finding 12).
 location:
   file: com/itextpdf/text/pdf/PdfPKCS7.java
   method: "PdfPKCS7(byte[], byte[], String)"
+  line: 324
 internal: false
 source:
   name: DMMC

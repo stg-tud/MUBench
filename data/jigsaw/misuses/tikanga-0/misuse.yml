@@ -4,14 +4,14 @@ characteristics:
 - missing/call
 crash: false
 description: |
-  In line 283 the `ResourceReference` `root` is locked, but there is no
+  In line 284 the `ResourceReference` `root` is locked, but there is no
   matching `unlock()` assuming normal execution (there is one for an
   exceptional case in line 297).
+  (Same as MuDetect finding 3)
 internal: true
 location:
   file: org/w3c/jigsaw/proxy/ProxyFrame.java
   method: lookupOther(LookupState, LookupResult)
-  line: 283
+  line: 284
 source:
-  name: Tikanga
-  url: https://www.st.cs.uni-saarland.de/models/tikanga/
+  name: Tikanga & MuDetect

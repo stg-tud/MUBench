@@ -1,0 +1,14 @@
+api:
+- java.sql.PreparedStatement
+characteristics:
+- missing/call
+crash: false
+description: |
+  The `PreparedStatement pstmt` opened in line 1159 is never closed.
+internal: false
+location:
+  file: database/DatabaseAdmin.java
+  method: replaceBoardManager(Connection, String)
+  line: 1159
+source:
+  name: MuDetect

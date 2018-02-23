@@ -5,10 +5,11 @@ characteristics:
 crash: false
 description: |
   The `PreparedStatement` opened in line 702 is never closed.
+  (Same as MuDetect finding 17)
 internal: false
 location:
   file: database/SocialNetworkDatabasePosts.java
   method: addFFAParticipipant(Connection, int, String, String)
   line: 702
 source:
-  name: GrouMiner
+  name: GrouMiner & MuDetect

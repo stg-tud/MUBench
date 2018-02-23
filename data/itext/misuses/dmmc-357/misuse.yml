@@ -4,10 +4,12 @@ characteristics:
 - missing/condition/value_or_state
 crash: true
 description: >
-  Iterator.next() is invoked without prior check of hasNext().
+  On line 508, `Iterator.next()` is invoked without prior check that there are
+  sufficiently many elements.
 location:
   file: com/itextpdf/text/pdf/PdfWriter.java
   method: "writeCrossReferenceTable(OutputStream, PdfIndirectReference, PdfIndirectReference, PdfIndirectReference, PdfObject, long)"
+  line: 508
 internal: false
 source:
   name: DMMC

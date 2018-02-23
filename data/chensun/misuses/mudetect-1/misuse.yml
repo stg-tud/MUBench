@@ -1,0 +1,14 @@
+api:
+- java.sql.PreparedStatement
+characteristics:
+- missing/call
+crash: false
+description: |
+  The `PreparedStatement answerStmt` opened in line 194 is never closed.
+internal: false
+location:
+  file: database/DatabaseAdmin.java
+  method: changePassword(Connection, String, String)
+  line: 194
+source:
+  name: MuDetect

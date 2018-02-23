@@ -4,13 +4,14 @@ characteristics:
 - missing/condition/value_or_state
 crash: true
 description: >
-  Iterator.next() is invoked without prior check that the iterator has more
-  elements. There is a second iterator who is checked and is apparently
-  assumed to have as many elements. However, this is not ensured within the
-  method.
+  On line 296, `Iterator.next()` is invoked without prior check that the
+  iterator has more elements. There is a second iterator who is checked and is
+  apparently assumed to have as many elements. However, this is not ensured
+  within the method.
 location:
   file: org/apache/lucene/search/BooleanQuery.java
   method: "scorer(IndexReader, boolean, boolean)"
+  line: 296
 internal: false
 source:
   name: MUDetect

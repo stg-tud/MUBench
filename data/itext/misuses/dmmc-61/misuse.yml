@@ -4,7 +4,8 @@ characteristics:
 - missing/condition/value_or_state
 crash: true
 description: >
-  Iterator.next() is invoked without prior check of hasNext().
+  On line 1599, `Iterator.next()` is invoked without prior check that there are
+  sufficiently many elements.
 location:
   file: com/itextpdf/awt/PdfGraphics2D.java
   method: "drawImage(Image, Image, AffineTransform, Color, ImageObserver)"
