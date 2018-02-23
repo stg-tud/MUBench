@@ -378,7 +378,7 @@ $columns_to_ignore = array(
                             <a onclick="saveReview('save')">Save</a>
                         </div>
                         <?php if($next_reviewable_misuse_path) : ?>
-                            <a class="button" style="margin:-5px;min-width:120px;" onclick="saveReview('next')">Save and next misuse</a>
+                            <a class="button" style="margin:-5px;min-width:120px;" onclick="saveReview('review')">Save and next misuse</a>
                         <?php else : ?>
                             <a class="button" style="margin:-5px;min-width:120px;" onclick="saveReview('return')">Save and return</a>
                         <?php endif; ?>
@@ -405,7 +405,6 @@ $columns_to_ignore = array(
 
             <script>
                 var origin = "<?= $origin_path ?>";
-                var next = "<?= $next_misuse_path ?>";
                 var next_review = "<?= $next_reviewable_misuse_path ?>";
 
                 window.onclick = function (event) {
@@ -446,9 +445,6 @@ $columns_to_ignore = array(
                             input.name = "origin_param";
                         case "return":
                             input.value = origin;
-                            break;
-                        case "next":
-                            input.value = next;
                             break;
                         case "review":
                             input.value = next_review;
