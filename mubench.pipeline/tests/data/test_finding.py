@@ -118,3 +118,12 @@ class TestTargetCode:
         snippets = finding.get_snippets(["/base"])
 
         assert_equals([], snippets)
+
+    def test_filters_by_startline(self, utils_mock):
+        utils_mock.return_value = "42:T:t-code\n===\n32:A:a\nb\nc\n===\n22:N:n-code"
+
+        finding = Finding({"file": "-file-", "method": "-method-", "startline": 33})
+
+        snippets = finding.get_snippets(["/base"])
+
+        assert_equals([Snippet("class A {\na\nb\nc\n}", 31)], snippets)

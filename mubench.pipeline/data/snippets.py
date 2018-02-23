@@ -7,21 +7,22 @@ from utils import io
 from utils.java_utils import exec_util
 
 
-def get_snippets(source_base_paths: List[str], file: str, method: str) -> List['Snippet']:
+def get_snippets(source_base_paths: List[str], file: str, method: str, target_line_number: int = -1) -> List['Snippet']:
     snippets = []
 
     for source_base_path in source_base_paths:
         try:
-            snippets.extend(__get_snippets(source_base_path, file, method))
+            snippets.extend(__get_snippets(source_base_path, file, method, target_line_number))
         except SnippetUnavailableException:
             continue
 
     return snippets
 
 
-def __get_snippets(source_base_path: str, file: str, method: str) -> List['Snippet']:
+def __get_snippets(source_base_path: str, file: str, method: str, target_line_number: int) -> List['Snippet']:
     target_file = join(source_base_path, file)
     snippets = []
+    snippets_with_matching_line_number = []
     try:
         if file and method:
             # output comes as:
@@ -43,14 +44,20 @@ def __get_snippets(source_base_path: str, file: str, method: str) -> List['Snipp
             if output:
                 methods = output.split("\n===\n")
                 for method in methods:
-                    info = method.split(":", 2)
-                    snippets.append(Snippet("""class {} {{\n{}\n}}""".format(info[1], info[2]), int(info[0]) - 1))
+                    first_line, class_name, code = method.split(":", 2)
+                    first_line = int(first_line)
+                    snippet = Snippet("""class {} {{\n{}\n}}""".format(class_name, code), first_line - 1)
+                    snippets.append(snippet)
+
+                    last_line = first_line + code.count("\n")
+                    if first_line <= target_line_number <= last_line:
+                        snippets_with_matching_line_number.append(snippet)
         elif file and os.path.exists(target_file):
             snippets.append(Snippet(io.safe_read(target_file), 1))
 
     except Exception as e:
         raise SnippetUnavailableException(target_file, e)
-    return snippets
+    return snippets_with_matching_line_number if snippets_with_matching_line_number else snippets
 
 
 class Snippet:

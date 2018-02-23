@@ -44,8 +44,11 @@ class Finding(Dict[str, str]):
     def __method(self):
         return self.get("method", "")
 
+    def __startline(self):
+        return self.get("startline", -1)
+
     def get_snippets(self, source_base_paths: List[str]) -> List[Snippet]:
-        return get_snippets(source_base_paths, self.__file(), self.__method())
+        return get_snippets(source_base_paths, self.__file(), self.__method(), self.__startline())
 
 
 class SpecializedFinding(Finding):
