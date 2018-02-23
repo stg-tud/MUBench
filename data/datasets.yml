@@ -607,18 +607,26 @@ FSE18-ExPrecision-TruePositives:
   - chensun.cf23b99.jadet-2
   - chensun.cf23b99.jadet-5
   - chensun.cf23b99.jadet-5a
-  - jigsaw.205.tikanga-0
-  - testng.677302c.dmmc-0
-  - testng.677302c.dmmc-4
-  - testng.677302c.grouminer-4
-  - testng.677302c.grouminer-17
+  - chensun.cf23b99.mudetect-1
+  - chensun.cf23b99.mudetect-4
+  - chensun.cf23b99.mudetect-12
+  - chensun.cf23b99.mudetect-13
   - closure.319.mudetect-12
   - closure.319.mudetect-13
   - closure.319.mudetect-17
   - closure.319.mudetect-18
-  - itext.5091.mudetect-15
+  - itext.5091.mudetect-0
+  - itext.5091.mudetect-12
+  - itext.5091.mudetect-13
+  - itext.5091.mudetect-38
+  - jigsaw.205.tikanga-0
   - lucene.1918.mudetect-5
   - lucene.1918.mudetect-9
+  - testng.677302c.dmmc-0
+  - testng.677302c.dmmc-4
+  - testng.677302c.grouminer-4
+  - testng.677302c.grouminer-17
+  - testng.677302c.mudetect-15
 
 ###
 ### Other experiment datasets.

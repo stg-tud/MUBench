@@ -9,4 +9,5 @@ misuses:
 - 'dmmc-4'
 - 'grouminer-4'
 - 'grouminer-17'
+- 'mudetect-15'
 revision: 677302cb8b5a2507df97c5822eef3a03ebc4e23a^1
