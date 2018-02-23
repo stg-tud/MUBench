@@ -211,11 +211,6 @@ public class MethodExtractor {
 				typeName = stripTypeParameters(typeName);
 				typeName = applyTypeErasure(typeName);
 				signature.append(typeName);
-				// if a parameter is declared like m(int foo[]), the parser drops the array brackets
-				if (parameter.toString().endsWith("]")) {
-					String arrayBrackets = parameter.toString().substring(parameter.toString().indexOf('['));
-					signature.append(arrayBrackets);
-				}
 				if (parameter.isVarArgs()) {
 					signature.append("[]");
 				}
