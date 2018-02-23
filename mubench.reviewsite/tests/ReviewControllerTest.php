@@ -72,7 +72,7 @@ class ReviewControllerTest extends SlimTestCase
 
     function test_determine_next_misuse_current_and_next_are_reviewed()
     {
-        list($misuse1, $misuse2, $misuse3) = $this->createRuWithThreeMisuses();
+        list($misuse1, $misuse2, $misuse3) = $this->createRunWithThreeMisuses();
 
         $this->createConclusiveReviewState($misuse1);
         $this->createConclusiveReviewState($misuse2);
@@ -88,7 +88,7 @@ class ReviewControllerTest extends SlimTestCase
 
     function test_determine_next_misuse_current_is_only_reviewable()
     {
-        list($misuse1, $misuse2, $misuse3) = $this->createRuWithThreeMisuses();
+        list($misuse1, $misuse2, $misuse3) = $this->createRunWithThreeMisuses();
 
         $this->createConclusiveReviewState($misuse1);
         $this->createConclusiveReviewState($misuse2);
@@ -104,7 +104,7 @@ class ReviewControllerTest extends SlimTestCase
 
     function test_determine_next_misuse_not_fully_reviewed()
     {
-        list($misuse1, $misuse2, $misuse3) = $this->createRuWithThreeMisuses();
+        list($misuse1, $misuse2, $misuse3) = $this->createRunWithThreeMisuses();
 
         $this->createReview($misuse1, $this->reviewer2, "Yes");
         $this->createReview($misuse2, $this->reviewer1, "Yes");
@@ -119,7 +119,7 @@ class ReviewControllerTest extends SlimTestCase
         self::assertEquals($misuse1->misuse_muid, $misuse->misuse_muid);
     }
 
-    private function createRuWithThreeMisuses()
+    private function createRunWithThreeMisuses()
     {
         $runsController = new RunsController($this->container);
         $runsController->addRun(1, 'test-detector', '-p-', '-v-',json_decode(json_encode(
