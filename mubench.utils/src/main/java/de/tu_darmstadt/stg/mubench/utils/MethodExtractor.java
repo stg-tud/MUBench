@@ -207,21 +207,9 @@ public class MethodExtractor {
 					signature.append(", ");
 				}
 				String typeName = parameter.getType().toString();
-				int endOfQualifier = typeName.lastIndexOf('.');
-				if (endOfQualifier > -1) {
-					typeName = typeName.substring(endOfQualifier + 1);
-				}
-				int startOfTypeParameters = typeName.indexOf('<');
-				int endOfTypeParameters = typeName.lastIndexOf('>');
-				if (startOfTypeParameters > -1 && endOfTypeParameters > -1) {
-					typeName = typeName.substring(0, startOfTypeParameters) + typeName.substring(endOfTypeParameters + 1, typeName.length());
-				}
-				for (TypeParameter typeParameter : typeParameters) {
-					String typeParameterName = typeParameter.getName().asString();
-					if (typeName.contains(typeParameterName)) {
-						typeName = typeName.replaceFirst(typeParameterName, "Object");
-					}
-				}
+				typeName = stripPackageQualifier(typeName);
+				typeName = stripTypeParameters(typeName);
+				typeName = applyTypeErasure(typeName);
 				signature.append(typeName);
 				// if a parameter is declared like m(int foo[]), the parser drops the array brackets
 				if (parameter.toString().endsWith("]")) {
@@ -234,6 +222,33 @@ public class MethodExtractor {
 				first = false;
 			}
 			return signature.append(")").toString();
+		}
+
+		private String stripPackageQualifier(String typeName) {
+			int endOfQualifier = typeName.lastIndexOf('.');
+			if (endOfQualifier > -1) {
+				typeName = typeName.substring(endOfQualifier + 1);
+			}
+			return typeName;
+		}
+
+		private String stripTypeParameters(String typeName) {
+			int startOfTypeParameters = typeName.indexOf('<');
+			int endOfTypeParameters = typeName.lastIndexOf('>');
+			if (startOfTypeParameters > -1 && endOfTypeParameters > -1) {
+                typeName = typeName.substring(0, startOfTypeParameters) + typeName.substring(endOfTypeParameters + 1, typeName.length());
+            }
+			return typeName;
+		}
+
+		private String applyTypeErasure(String typeName) {
+			for (TypeParameter typeParameter : typeParameters) {
+				String typeParameterName = typeParameter.getName().asString();
+				if (typeName.startsWith(typeParameterName)) {
+					typeName = typeName.replaceFirst(typeParameterName, "Object");
+				}
+			}
+			return typeName;
 		}
 	}
 }
