@@ -54,6 +54,7 @@ $columns_to_ignore = array(
         "version_muid",
         "experiment_id"
     );
+$origin_path = $origin_path ? $origin_path : $pathFor('experiment.detector', array("experiment_id"=> $experiment->id, "detector_muid" => $detector->muid));
 
 ?>
         <html>
@@ -104,7 +105,7 @@ $columns_to_ignore = array(
                                 <?php if($user) : ?>
                                 <div style="display:inline-block;padding-right:2px;margin:0;color:black">
                                     <form action="<?= $pathFor('tag.remove', array('experiment_id' => $experiment->id, 'detector_muid' => $detector->muid, 'project_muid' => $misuse->getProject(), 'version_muid' => $misuse->getVersion(), 'misuse_muid' => $misuse->misuse_muid, 'tag_id' => $tag->id)) ?>" method="post" target="">
-                                        <input type="hidden" name="path" value="<?= htmlspecialchars($path); ?>">
+                                        <input type="hidden" name="path" value="<?= htmlspecialchars($path . "?origin=" . $origin_path); ?>">
                                         <input type="hidden" name="misuse_id" value="<?= htmlspecialchars($misuse->id); ?>">
                                         <button style="border:none;outline:none;background-color:<?= htmlspecialchars($tag->color) ?>;margin:0;padding:0" type="submit"><i class="fa fa-trash"></i></button>
                                     </form>
@@ -117,7 +118,7 @@ $columns_to_ignore = array(
                             <div style="display:inline-block;height:100%;padding:4px;">
                                 <form id="tag-form" action="<?= $pathFor('tag.add', array('experiment_id' => $experiment->id, 'detector_muid' => $detector->muid, 'project_muid' => $misuse->getProject(), 'version_muid' => $misuse->getVersion(), 'misuse_muid' => $misuse->misuse_muid)) ?>" method="post" target="">
                                     <input type="hidden" name="misuse_id" value="<?= htmlspecialchars($misuse->id); ?>">
-                                    <input type="hidden" name="path" value="<?= htmlspecialchars($path); ?>">
+                                    <input type="hidden" name="path" value="<?= htmlspecialchars($path . "?origin=" . $origin_path); ?>">
                                     <input id="tag-input" class="tag-input" maxlength="100" list="tags" name="tag_name" placeholder="add new tag" autocomplete="off">
                                     <datalist id="tags">
                                         <?php foreach($tags as $tag) : ?>
@@ -171,7 +172,7 @@ $columns_to_ignore = array(
                     <?php foreach($misuse->snippets() as $snippet): ?>
                         <?php if($delete_snippets_enabled): ?>
                             <form id="delete_snippet_form" action="<?= $pathFor('snippet.remove', array('experiment_id' => $experiment->id, 'detector_muid' => $detector->muid, 'project_muid' => $misuse->getProject(), 'version_muid' => $misuse->getVersion(), 'misuse_muid' => $misuse->misuse_muid, 'snippet_id' => $snippet->id)) ?><?= $origin_param ?>" method="POST" target="">
-                                <input type="hidden" name="path" value="<?= htmlspecialchars($path); ?>">
+                                <input type="hidden" name="path" value="<?= htmlspecialchars($path . "?origin=" . $origin_path); ?>">
                                 <button style="border:none;background-color:white;position:absolute;right:5px" type="submit"><i class="fa fa-trash"></i></button>
                             </form>
                         <?php endif; ?>
@@ -193,7 +194,7 @@ $columns_to_ignore = array(
                             <tr>
                                 <td>
                                     <input type="hidden" name="misuse_id" value="<?= htmlspecialchars($misuse->id); ?>">
-                                    <input type="hidden" name="path" value="<?= htmlspecialchars($path); ?>">
+                                    <input type="hidden" name="path" value="<?= htmlspecialchars($path . "?origin=" . $origin_path); ?>">
                                     <textarea name="snippet" title="Code Snippet" cols="80" rows="5"></textarea>
                                 </td>
                             </tr>
@@ -363,7 +364,6 @@ $columns_to_ignore = array(
                 <input type="hidden" name="misuse_id" value="<?= htmlspecialchars($misuse->id); ?>">
                 <div class="review-nav-bar">
                     <?php
-                        $origin_path = $origin_path ? $origin_path : $pathFor('experiment.detector', array("experiment_id"=> $experiment->id, "detector_muid" => $detector->muid));
                         $next_misuse_path = $next_misuse ? $pathFor('view', array('experiment_id' => $experiment->id, 'detector_muid' => $detector->muid, 'project_muid' => $next_misuse->getProject(), 'version_muid' => $next_misuse->getVersion(), 'misuse_muid' => $next_misuse->misuse_muid)) . "?origin=$origin_path" . ($experiment->id === 2 ? "&ex2_review_size=$ex2_review_size" : "") : "";
                         $next_reviewable_misuse_path = $next_reviewable_misuse ? $pathFor('view', array('experiment_id' => $experiment->id, 'detector_muid' => $detector->muid, 'project_muid' => $next_reviewable_misuse->getProject(), 'version_muid' => $next_reviewable_misuse->getVersion(), 'misuse_muid' => $next_reviewable_misuse->misuse_muid)) . "?origin=$origin_path" . ($experiment->id === 2 ? "&ex2_review_size=$ex2_review_size" : "") : "";
                         $previous_misuse_path = $previous_misuse ? $pathFor('view', array('experiment_id' => $experiment->id, 'detector_muid' => $detector->muid, 'project_muid' => $previous_misuse->getProject(), 'version_muid' => $previous_misuse->getVersion(), 'misuse_muid' => $previous_misuse->misuse_muid)) . "?origin=$origin_path" . ($experiment->id === 2 ? "&ex2_review_size=$ex2_review_size" : "") : "";
