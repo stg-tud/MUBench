@@ -27,20 +27,6 @@ public class SourceCodeMethodIdentifierTest {
     }
 
     @Test
-    public void declaringTypeNameIsEmptyIfNotSpecified() {
-        String name = "declaringTypeNameIsEmptyIfNotSpecified()";
-        SourceCodeMethodIdentifier uut = new SourceCodeMethodIdentifier(name);
-        assertEquals("", uut.getDeclaringTypeName());
-    }
-
-    @Test
-    public void extractsDeclaringTypeName() {
-        String name = "org.apache.jackrabbit.spi.commons.value.QValueFactoryImpl$BinaryQValue.getStream () : java.io.InputStream";
-        SourceCodeMethodIdentifier uut = new SourceCodeMethodIdentifier(name);
-        assertEquals("org.apache.jackrabbit.spi.commons.value.QValueFactoryImpl$BinaryQValue", uut.getDeclaringTypeName());
-    }
-
-    @Test
     public void extractsSimpleDeclaringTypeNameForInternalClass() {
         String name = "org.apache.jackrabbit.spi.commons.value.QValueFactoryImpl$BinaryQValue.getStream () : java.io.InputStream";
         SourceCodeMethodIdentifier uut = new SourceCodeMethodIdentifier(name);
