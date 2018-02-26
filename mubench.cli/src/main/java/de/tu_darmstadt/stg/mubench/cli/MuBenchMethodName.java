@@ -6,45 +6,60 @@ import java.util.regex.Pattern;
 
 public class MuBenchMethodName {
     private final String parameterPattern = "\\(.*?\\)";
-    private final String parameterSeparatorPattern = "(/|,)";
+    private final String parameterSeparatorPattern = "([/,])";
 
-    private final String name;
-    private final String declaringTypeName;
+    private final String originalName;
 
     public MuBenchMethodName(String name) {
-        this.name = convertToMuBenchName(name);
-        this.declaringTypeName = getDeclaringTypeName(name);
+        this.originalName = name;
     }
 
     public String getName() {
-        return this.name;
+        return convertToMuBenchName(this.originalName);
     }
 
     public String getDeclaringTypeName() {
-        return this.declaringTypeName;
+        return extractDeclaringTypeName(this.originalName);
+    }
+
+    public String getSimpleDeclaringTypeName() {
+        return extractSimpleDeclaringTypeName(this.originalName);
+    }
+
+    public String getSourceFilePath() {
+        String declaringTypeName = extractDeclaringTypeName(this.originalName);
+        String qualifiedTopLevelClassName = declaringTypeName.contains("$") ?
+                declaringTypeName.substring(0, declaringTypeName.indexOf("$")) :
+                declaringTypeName;
+        return qualifiedTopLevelClassName.replaceAll("\\.", "/") + ".java";
     }
 
     private String convertToMuBenchName(String name) {
-        String[] parameters = getParameters(name);
+        String[] parameters = extractParameters(name);
         String methodName = removeParameters(name);
         methodName = removeReturnType(methodName);
         methodName = removePackageName(methodName);
         methodName = methodName.trim();
-
-
         return methodName + createParameterString(parameters);
     }
 
-    private String getDeclaringTypeName(String name) {
+    private String extractDeclaringTypeName(String name) {
         name = removeReturnType(removeParameters(name));
         return name.contains(".") ? name.substring(0, name.lastIndexOf(".")) : "";
+    }
+
+    private String extractSimpleDeclaringTypeName(String name) {
+        String declaringTypeName = extractDeclaringTypeName(name);
+        return declaringTypeName.contains("$") ?
+                declaringTypeName.substring(declaringTypeName.lastIndexOf("$") + 1) :
+                removePackageName(declaringTypeName);
     }
 
     private String removeParameters(String name) {
         return name.replaceAll(parameterPattern, "");
     }
 
-    private String[] getParameters(String name) {
+    private String[] extractParameters(String name) {
         Matcher matcher = Pattern.compile(parameterPattern).matcher(name);
         String parameters = matcher.find() ? removeSurroundingCharacters(matcher.group(0)) : "";
         String[] splitParameters = parameters.split(parameterSeparatorPattern);
@@ -66,4 +81,5 @@ public class MuBenchMethodName {
     private String removeSurroundingCharacters(String s) {
         return s.substring(1, s.length() - 1);
     }
+
 }

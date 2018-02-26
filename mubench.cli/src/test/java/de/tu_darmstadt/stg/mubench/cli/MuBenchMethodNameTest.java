@@ -39,4 +39,32 @@ public class MuBenchMethodNameTest {
         MuBenchMethodName uut = new MuBenchMethodName(name);
         assertEquals("org.apache.jackrabbit.spi.commons.value.QValueFactoryImpl$BinaryQValue", uut.getDeclaringTypeName());
     }
+
+    @Test
+    public void extractsSimpleDeclaringTypeNameForInternalClass() {
+        String name = "org.apache.jackrabbit.spi.commons.value.QValueFactoryImpl$BinaryQValue.getStream () : java.io.InputStream";
+        MuBenchMethodName uut = new MuBenchMethodName(name);
+        assertEquals("BinaryQValue", uut.getSimpleDeclaringTypeName());
+    }
+
+    @Test
+    public void extractsSimpleDeclaringTypeName() {
+        String name = "org.apache.jackrabbit.spi.commons.value.QValueFactoryImpl.getStream () : java.io.InputStream";
+        MuBenchMethodName uut = new MuBenchMethodName(name);
+        assertEquals("QValueFactoryImpl", uut.getSimpleDeclaringTypeName());
+    }
+
+    @Test
+    public void extractsSourceFilePath() {
+        String name = "org.apache.jackrabbit.spi.commons.value.QValueFactoryImpl.getStream () : java.io.InputStream";
+        MuBenchMethodName uut = new MuBenchMethodName(name);
+        assertEquals("org/apache/jackrabbit/spi/commons/value/QValueFactoryImpl.java", uut.getSourceFilePath());
+    }
+
+    @Test
+    public void extractsSourceFilePathForInternalClass() {
+        String name = "org.apache.jackrabbit.spi.commons.value.QValueFactoryImpl$BinaryQValue.getStream () : java.io.InputStream";
+        MuBenchMethodName uut = new MuBenchMethodName(name);
+        assertEquals("org/apache/jackrabbit/spi/commons/value/QValueFactoryImpl.java", uut.getSourceFilePath());
+    }
 }
