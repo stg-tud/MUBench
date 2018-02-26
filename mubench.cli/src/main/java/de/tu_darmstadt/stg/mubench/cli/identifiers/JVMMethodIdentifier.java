@@ -15,7 +15,15 @@ public class JVMMethodIdentifier implements MethodIdentifier {
 
     @Override
     public String getSignature() {
+        String methodName = this.methodName.equals("<init>") || this.methodName.equals("<cinit>") ? extractSimpleTypeName(this.className) : this.methodName;
         return methodName + String.format("(%s)", new JVMMethodFormatConverter().convert(originalDescriptor));
+    }
+
+    private String extractSimpleTypeName(String typeName) {
+        typeName = typeName.substring(typeName.lastIndexOf(".") + 1);
+        typeName = typeName.substring(typeName.lastIndexOf("/") + 1);
+        typeName = typeName.substring(typeName.lastIndexOf("$") + 1);
+        return typeName;
     }
 
     @Override

@@ -23,4 +23,16 @@ public class JVMMethodIdentifierTest {
         JVMMethodIdentifier uut = new JVMMethodIdentifier("", "", "C", "");
         assertEquals(uut.getDeclaringTypeName(), "C");
     }
+
+    @Test
+    public void replacesConstructorIdentifierByClassesSimpleName() {
+        JVMMethodIdentifier uut = new JVMMethodIdentifier("()V;", "<init>", "java.lang.Object", "");
+        assertEquals("Object()", uut.getSignature());
+    }
+
+    @Test
+    public void replacesStaticConstructorIdentifierByClassesSimpleName() {
+        JVMMethodIdentifier uut = new JVMMethodIdentifier("()V;", "<cinit>", "java.lang.Object", "");
+        assertEquals("Object()", uut.getSignature());
+    }
 }
