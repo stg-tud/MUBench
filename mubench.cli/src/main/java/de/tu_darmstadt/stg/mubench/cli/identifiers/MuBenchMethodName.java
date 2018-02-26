@@ -1,4 +1,4 @@
-package de.tu_darmstadt.stg.mubench.cli;
+package de.tu_darmstadt.stg.mubench.cli.identifiers;
 
 import java.util.Arrays;
 import java.util.regex.Matcher;

@@ -1,5 +1,6 @@
-package de.tu_darmstadt.stg.mubench.cli;
+package de.tu_darmstadt.stg.mubench.cli.identifiers;
 
+import de.tu_darmstadt.stg.mubench.cli.identifiers.MuBenchMethodName;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
