@@ -4,18 +4,18 @@ import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class MuBenchMethodName {
+public class SourceCodeMethodIdentifier {
     private final String parameterPattern = "\\(.*?\\)";
     private final String parameterSeparatorPattern = "([/,])";
 
     private final String originalName;
 
-    public MuBenchMethodName(String name) {
+    public SourceCodeMethodIdentifier(String name) {
         this.originalName = name;
     }
 
-    public String getName() {
-        return convertToMuBenchName(this.originalName);
+    public String getSignature() {
+        return convertToMuBenchSignature(this.originalName);
     }
 
     public String getDeclaringTypeName() {
@@ -34,7 +34,7 @@ public class MuBenchMethodName {
         return qualifiedTopLevelClassName.replaceAll("\\.", "/") + ".java";
     }
 
-    private String convertToMuBenchName(String name) {
+    private String convertToMuBenchSignature(String name) {
         String[] parameters = extractParameters(name);
         String methodName = removeParameters(name);
         methodName = removeReturnType(methodName);

@@ -1,71 +1,70 @@
 package de.tu_darmstadt.stg.mubench.cli.identifiers;
 
-import de.tu_darmstadt.stg.mubench.cli.identifiers.MuBenchMethodName;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 
-public class MuBenchMethodNameTest {
+public class SourceCodeMethodIdentifierTest {
     @Test
     public void keepsMuBenchNameIntact() {
         String name = "DetectorOutput(YamlObject, List)";
-        MuBenchMethodName uut = new MuBenchMethodName(name);
-        assertEquals(name, uut.getName());
+        SourceCodeMethodIdentifier uut = new SourceCodeMethodIdentifier(name);
+        assertEquals(name, uut.getSignature());
     }
 
     @Test
     public void convertsQualifiedDetectorOutput() {
         String name = "org.apache.jackrabbit.spi.commons.value.QValueFactoryImpl$BinaryQValue.getStream () : java.io.InputStream";
-        MuBenchMethodName uut = new MuBenchMethodName(name);
-        assertEquals("getStream()", uut.getName());
+        SourceCodeMethodIdentifier uut = new SourceCodeMethodIdentifier(name);
+        assertEquals("getStream()", uut.getSignature());
     }
 
     @Test
     public void separateParametersByCommaSpace() {
         String name = "DetectorOutput(YamlObject/List)";
-        MuBenchMethodName uut = new MuBenchMethodName(name);
-        assertEquals("DetectorOutput(YamlObject, List)", uut.getName());
+        SourceCodeMethodIdentifier uut = new SourceCodeMethodIdentifier(name);
+        assertEquals("DetectorOutput(YamlObject, List)", uut.getSignature());
     }
 
     @Test
     public void declaringTypeNameIsEmptyIfNotSpecified() {
         String name = "declaringTypeNameIsEmptyIfNotSpecified()";
-        MuBenchMethodName uut = new MuBenchMethodName(name);
+        SourceCodeMethodIdentifier uut = new SourceCodeMethodIdentifier(name);
         assertEquals("", uut.getDeclaringTypeName());
     }
 
     @Test
     public void extractsDeclaringTypeName() {
         String name = "org.apache.jackrabbit.spi.commons.value.QValueFactoryImpl$BinaryQValue.getStream () : java.io.InputStream";
-        MuBenchMethodName uut = new MuBenchMethodName(name);
+        SourceCodeMethodIdentifier uut = new SourceCodeMethodIdentifier(name);
         assertEquals("org.apache.jackrabbit.spi.commons.value.QValueFactoryImpl$BinaryQValue", uut.getDeclaringTypeName());
     }
 
     @Test
     public void extractsSimpleDeclaringTypeNameForInternalClass() {
         String name = "org.apache.jackrabbit.spi.commons.value.QValueFactoryImpl$BinaryQValue.getStream () : java.io.InputStream";
-        MuBenchMethodName uut = new MuBenchMethodName(name);
+        SourceCodeMethodIdentifier uut = new SourceCodeMethodIdentifier(name);
         assertEquals("BinaryQValue", uut.getSimpleDeclaringTypeName());
     }
 
     @Test
     public void extractsSimpleDeclaringTypeName() {
         String name = "org.apache.jackrabbit.spi.commons.value.QValueFactoryImpl.getStream () : java.io.InputStream";
-        MuBenchMethodName uut = new MuBenchMethodName(name);
+        SourceCodeMethodIdentifier uut = new SourceCodeMethodIdentifier(name);
         assertEquals("QValueFactoryImpl", uut.getSimpleDeclaringTypeName());
     }
 
     @Test
     public void extractsSourceFilePath() {
         String name = "org.apache.jackrabbit.spi.commons.value.QValueFactoryImpl.getStream () : java.io.InputStream";
-        MuBenchMethodName uut = new MuBenchMethodName(name);
+        SourceCodeMethodIdentifier uut = new SourceCodeMethodIdentifier(name);
         assertEquals("org/apache/jackrabbit/spi/commons/value/QValueFactoryImpl.java", uut.getSourceFilePath());
     }
 
     @Test
     public void extractsSourceFilePathForInternalClass() {
         String name = "org.apache.jackrabbit.spi.commons.value.QValueFactoryImpl$BinaryQValue.getStream () : java.io.InputStream";
-        MuBenchMethodName uut = new MuBenchMethodName(name);
+        SourceCodeMethodIdentifier uut = new SourceCodeMethodIdentifier(name);
         assertEquals("org/apache/jackrabbit/spi/commons/value/QValueFactoryImpl.java", uut.getSourceFilePath());
     }
 }
