@@ -4,7 +4,7 @@ import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class SourceCodeMethodIdentifier {
+public class SourceCodeMethodIdentifier implements MethodIdentifier {
     private final String parameterPattern = "\\(.*?\\)";
     private final String parameterSeparatorPattern = "([/,])";
 
