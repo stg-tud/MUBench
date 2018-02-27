@@ -1,5 +1,5 @@
 api:
-- org.argouml.persistence.ZargoFilePersister
+- java.util.Iterator
 characteristics:
 - missing/condition/value_or_state
 crash: true
