@@ -74,7 +74,8 @@ def _prepare_example_projects(target_types: List, boa: BOA, metadata_path: str):
             try:
                 project_entry = {"id": project.id, "url": project.repository_url,
                                  "path": os.path.relpath(checkout.path, MUBENCH_ROOT_PATH),
-                                 "source_paths": Project(checkout.path).get_sources_paths()}
+                                 "source_paths": Project(checkout.path).get_sources_paths(),
+                                 "checkout_timestamp": run_timestamp}
                 write_yaml(project_entry)
                 data.append(project_entry)
             except UnicodeEncodeError:
