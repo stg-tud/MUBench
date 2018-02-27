@@ -2,6 +2,7 @@ import sys
 
 from nose.tools import assert_raises, assert_equals, nottest
 
+from data.detector import Detector
 from utils.config_util import _get_command_line_parser
 
 
@@ -143,7 +144,7 @@ def test_release():
 def test_release_default():
     parser = _get_command_line_parser(['valid-detector'], [], [])
     result = parser.parse_args(['run', 'ex1', 'valid-detector'])
-    assert_equals(None, result.requested_release)
+    assert_equals(Detector.DEFAULT_RELEASE, result.requested_release)
 
 
 def test_dataset_check():

@@ -1,14 +1,15 @@
 import getpass
 import logging
-
 from typing import List, Dict
 from urllib.parse import urljoin
 
+import re
 from requests import RequestException
 
 from data.detector import Detector
 from data.detector_run import DetectorRun
-from data.finding import SpecializedFinding
+from data.detector_specialising.specialising_util import replace_dot_graph_with_image
+from data.finding import Finding
 from data.project import Project
 from data.project_version import ProjectVersion
 from data.snippets import SnippetUnavailableException
@@ -21,7 +22,7 @@ _SNIPPETS_KEY = "target_snippets"
 
 class PublishFindingsTask:
     def __init__(self, experiment_id: str, compiles_base_path: str, run_timestamp: int,
-                 review_site_url: str, review_site_user: str= "", review_site_password: str= ""):
+                 review_site_url: str, review_site_user: str = "", review_site_password: str = ""):
         super().__init__()
         self.max_files_per_post = 20  # 20 is PHP's default limit to the number of files per request
 
@@ -56,12 +57,14 @@ class PublishFindingsTask:
             result = "not run"
 
         run_info = detector_run.get_run_info()
-        specialized_potential_hits = self.__specialize(potential_hits, detector, detector_run, version_compile, logger)
+        postable_potential_hits = [
+            self.__to_postable_potential_hit(potential_hit, version_compile, detector_run.findings_path, logger)
+            for potential_hit in potential_hits.findings]
 
         try:
-            for potential_hits_slice in self.__slice_by_max_files_per_post(specialized_potential_hits):
-                postable_data = self.__to_postable_data(run_info, result, potential_hits_slice)
-                file_paths = self.__get_file_paths(potential_hits_slice)
+            for postable_potential_hits_slice in self.__slice_by_max_files_per_post(postable_potential_hits):
+                file_paths = self.__get_file_paths(postable_potential_hits_slice)
+                postable_data = self.__to_postable_data(run_info, result, postable_potential_hits_slice)
                 self.__post(project, version, detector, postable_data, file_paths)
         except RequestException as e:
             response = e.response
@@ -70,25 +73,7 @@ class PublishFindingsTask:
             else:
                 logger.error("%s", e)
 
-    @staticmethod
-    def __specialize(potential_hits, detector, detector_run, version_compile, logger):
-        specialized_findings = []
-
-        for finding in potential_hits.findings:
-            specialize_finding = detector.specialize_finding(detector_run.findings_path, finding)
-
-            try:
-                snippets = finding.get_snippets(version_compile.original_sources_paths)
-            except SnippetUnavailableException as e:
-                logger.warning(e)
-                snippets = []
-
-            specialize_finding[_SNIPPETS_KEY] = snippets
-            specialized_findings.append(specialize_finding)
-
-        return specialized_findings
-
-    def __slice_by_max_files_per_post(self, potential_hits: List[SpecializedFinding]) -> List[List[SpecializedFinding]]:
+    def __slice_by_max_files_per_post(self, potential_hits: List['SpecializedFinding']) -> List[List[Finding]]:
         potential_hits_slice = []
         number_of_files_in_slice = 0
         for potential_hit in potential_hits:
@@ -103,14 +88,7 @@ class PublishFindingsTask:
 
         yield potential_hits_slice
 
-    def __to_postable_data(self, run_info, result, potential_hits_slice: List[SpecializedFinding]):
-        postable_potential_hits = []
-
-        for potential_hit in potential_hits_slice:
-            postable_data = self._to_markdown_dict(potential_hit)
-            postable_data[_SNIPPETS_KEY] = [snippet.__dict__ for snippet in (potential_hit[_SNIPPETS_KEY])]
-            postable_potential_hits.append(postable_data)
-
+    def __to_postable_data(self, run_info, result, postable_potential_hits: List[Dict]):
         data = self._to_markdown_dict(run_info)
         data["result"] = result
         data["potential_hits"] = postable_potential_hits
@@ -118,8 +96,27 @@ class PublishFindingsTask:
 
         return data
 
+    def __to_postable_potential_hit(self, potential_hit: Finding, version_compile: VersionCompile,
+                                    findings_path, logger) -> 'SpecializedFinding':
+        postable_potential_hit = self._to_markdown_dict(potential_hit)
+        files = self._convert_graphs_to_files(potential_hit, findings_path)
+        postable_potential_hit[_SNIPPETS_KEY] = self.__get_postable_snippets(potential_hit, version_compile, logger)
+        return SpecializedFinding(postable_potential_hit, files)
+
     @staticmethod
-    def _to_markdown_dict(finding: SpecializedFinding) -> Dict[str, str]:
+    def __get_postable_snippets(finding: Finding, version_compile: VersionCompile, logger) -> List[Dict]:
+        return [snippet.__dict__ for snippet in PublishFindingsTask.__get_snippets(finding, version_compile, logger)]
+
+    @staticmethod
+    def __get_snippets(finding, version_compile, logger):
+        try:
+            return finding.get_snippets(version_compile.original_sources_paths)
+        except SnippetUnavailableException as e:
+            logger.warning(e)
+            return []
+
+    @staticmethod
+    def _to_markdown_dict(finding: Finding) -> Dict[str, str]:
         markdown_dict = dict()
         for key, value in finding.items():
             if key != _SNIPPETS_KEY:
@@ -127,7 +124,7 @@ class PublishFindingsTask:
         return markdown_dict
 
     @staticmethod
-    def __get_file_paths(findings: List[SpecializedFinding]) -> List[str]:
+    def __get_file_paths(findings: List['SpecializedFinding']) -> List[str]:
         files = []
         for finding in findings:
             files.extend(finding.files)
@@ -142,3 +139,20 @@ class PublishFindingsTask:
         experiment_id = self.experiment_id[2:]  # the review site uses only the experiment number as Id
         return urljoin(self.review_site_url, "experiments/{}/detectors/{}/projects/{}/versions/{}/runs".format(
             experiment_id, detector.id, project.id, version.version_id))
+
+    @staticmethod
+    def _convert_graphs_to_files(potential_hit: Dict, findings_path: str) -> List[str]:
+        files = []
+
+        graph_pattern = re.compile("(graph|digraph) .* {.*?}", re.DOTALL)
+        for key, value in potential_hit.items():
+            if type(value) is str and graph_pattern.match(value):
+                files.append(replace_dot_graph_with_image(potential_hit, key, findings_path))
+
+        return files
+
+
+class SpecializedFinding(Finding):
+    def __init__(self, data: Dict[str, str], files: List[str] = None):
+        super().__init__(data)
+        self.files = files or []
