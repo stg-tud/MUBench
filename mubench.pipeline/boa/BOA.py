@@ -66,7 +66,7 @@ class BOA:
                 # BOA returned no output
                 results = ""
 
-            os.makedirs(os.path.dirname(result_file_name))
+            os.makedirs(os.path.dirname(result_file_name), exist_ok=True)
             io.safe_write(results, result_file_name, append=False)
 
         with open(result_file_name, 'r') as result_file:
