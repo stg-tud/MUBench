@@ -63,7 +63,7 @@ def _prepare_example_projects(target_types: List, boa: BOA, metadata_path: str):
             if not checkout.exists():
                 try:
                     logger.info("  Checking out %r...", str(project))
-                    checkout.create(run_timestamp)
+                    checkout.clone()
                 except CommandFailedError as error:
                     logger.warning("    Checkout failed: %r", error)
                     checkout.delete()
@@ -73,8 +73,8 @@ def _prepare_example_projects(target_types: List, boa: BOA, metadata_path: str):
 
             try:
                 project_entry = {"id": project.id, "url": project.repository_url,
-                                 "path": os.path.relpath(checkout.checkout_dir, MUBENCH_ROOT_PATH),
-                                 "source_paths": Project(checkout.checkout_dir).get_sources_paths()}
+                                 "path": os.path.relpath(checkout.path, MUBENCH_ROOT_PATH),
+                                 "source_paths": Project(checkout.path).get_sources_paths()}
                 write_yaml(project_entry)
                 data.append(project_entry)
             except UnicodeEncodeError:

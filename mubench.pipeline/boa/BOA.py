@@ -1,3 +1,4 @@
+import logging
 import os
 from os.path import exists
 from typing import List
@@ -7,21 +8,27 @@ from utils import java_utils, io
 from utils.shell import Shell
 
 
-class GitProjectShallowCheckout(RepoProjectCheckout):
+class GitProjectShallowCheckout:
     def __init__(self, name: str, url: str, base_path: str):
-        super().__init__(name, "latest", url, "HEAD", base_path)
+        self._logger = logging.getLogger("checkout.project")
+        self.name = name
+        self.url = url
+        self.base_path = base_path
+        self.path = os.path.join(base_path, name)
 
-    def _clone(self, url: str, revision: str, path: str):
-        pass
+    def exists(self):
+        exists(self.path) and Shell.try_exec("git status", cwd=self.path, logger=self._logger)
 
-    def _update(self, url: str, revision: str, path: str):
-        Shell.exec("git clone --depth 1 {} . --quiet -c core.askpass=true".format(url), cwd=path, logger=self._logger)
+    def clone(self):
+        io.makedirs(self.path)
+        clone_command = "git clone --depth 1 {} . --quiet -c core.askpass=true".format(self.url)
+        Shell.exec(clone_command, cwd=self.path, logger=self._logger)
 
-    def _is_repo(self, path: str):
-        return exists(path) and Shell.try_exec("git status", cwd=path, logger=self._logger)
+    def delete(self):
+        io.remove_tree(self.path)
 
     def __str__(self):
-        return "shallow-git:{}#{}".format(self.url, self.revision[:8])
+        return "shallow-git:{}".format(self.url)
 
 
 class GitHubProject:
@@ -32,7 +39,7 @@ class GitHubProject:
     def repository_url(self):
         return "http://github.com/{}".format(self.id)
 
-    def get_checkout(self, checkout_base_path: str):
+    def get_checkout(self, checkout_base_path: str) -> GitProjectShallowCheckout:
         return GitProjectShallowCheckout(self.id, self.repository_url, checkout_base_path)
 
     def __str__(self):
