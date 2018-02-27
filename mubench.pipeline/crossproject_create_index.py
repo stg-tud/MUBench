@@ -27,9 +27,11 @@ class PrintIndexTask:
                                                   "\t".join(misuse.apis)), file=open(_INDEX_PATH, "a"))
 
 
-dataset = sys.argv[1].lower()
+datasets = sys.argv[1:]
 
-white_list = get_white_list(__MUBENCH_DATASETS_FILE, dataset)
+white_list = []
+for dataset in datasets:
+    white_list.extend(get_white_list(__MUBENCH_DATASETS_FILE, dataset.lower()))
 initial_parameters = [DataEntityLists(white_list, [])]
 
 runner = TaskRunner(
