@@ -14,10 +14,11 @@ from utils.logging import IndentFormatter
 from utils.shell import CommandFailedError
 
 MUBENCH_ROOT_PATH = os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir))
-CHECKOUTS_PATH = os.path.join(MUBENCH_ROOT_PATH, "checkouts", "_examples")
-BOA_RESULTS_PATH = join(CHECKOUTS_PATH, "_boa-results")
-INDEX_PATH = os.path.join(CHECKOUTS_PATH, "index.csv")
-SUBTYPES_PATH = os.path.join(CHECKOUTS_PATH, "subtypes.csv")
+XP_CHECKOUTS_PATH = os.path.join(MUBENCH_ROOT_PATH, "checkouts-xp")
+CHECKOUTS_PATH = os.path.join(XP_CHECKOUTS_PATH, "checkouts")
+BOA_RESULTS_PATH = join(XP_CHECKOUTS_PATH, "boa-results")
+INDEX_PATH = os.path.join(XP_CHECKOUTS_PATH, "index.csv")
+SUBTYPES_PATH = os.path.join(XP_CHECKOUTS_PATH, "subtypes.csv")
 MAX_SUBTYPES_SAMPLE_SIZE = 25
 MAX_PROJECT_SAMPLE_SIZE = 50
 
@@ -59,7 +60,7 @@ def _prepare_example_projects(target_types: List, boa: BOA, metadata_path: str):
     for type_combination in _create_type_combinations(target_types):
         projects = boa.query_projects_with_type_usages(target_types, type_combination)
         for project in projects:
-            checkout = project.get_checkout(join(CHECKOUTS_PATH, "checkouts"))
+            checkout = project.get_checkout(CHECKOUTS_PATH)
             if not checkout.exists():
                 try:
                     logger.info("  Checking out %r...", str(project))
@@ -116,7 +117,7 @@ with open(INDEX_PATH) as index:
         version_id = row[1]
         target_types = sorted(row[6:])
         try:
-            target_example_file = os.path.join(CHECKOUTS_PATH, "-".join(sorted(target_types)) + ".yml")
+            target_example_file = os.path.join(XP_CHECKOUTS_PATH, "-".join(sorted(target_types)) + ".yml")
             if not exists(target_example_file):
                 logger.info("Preparing examples for %s.%s (type(s): %s)...", project_id, version_id, target_types)
                 _prepare_example_projects(target_types, boa, target_example_file)
