@@ -76,7 +76,7 @@ def _prepare_example_projects(target_types: List, boa: BOA, metadata_path: str):
                                  "path": os.path.relpath(checkout.path, MUBENCH_ROOT_PATH),
                                  "source_paths": Project(checkout.path).get_sources_paths(),
                                  "checkout_timestamp": run_timestamp}
-                write_yaml(project_entry)
+                write_yaml(project_entry)  # check for encoding problems
                 data.append(project_entry)
             except UnicodeEncodeError:
                 logger.warning("    Illegal characters in project data.")
