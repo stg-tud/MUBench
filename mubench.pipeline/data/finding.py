@@ -6,8 +6,7 @@ from data.snippets import get_snippets, Snippet
 
 class Finding(Dict[str, str]):
     def __init__(self, data: Dict[str, str]):
-        super().__init__()
-        self.update(data)
+        super().__init__(data)
 
     def is_potential_hit(self, misuse: Misuse, method_name_only: bool = False):
         return self.__is_match_by_file(misuse.location.file) and \
@@ -49,9 +48,3 @@ class Finding(Dict[str, str]):
 
     def get_snippets(self, source_base_paths: List[str]) -> List[Snippet]:
         return get_snippets(source_base_paths, self.__file(), self.__method(), self.__startline())
-
-
-class SpecializedFinding(Finding):
-    def __init__(self, data: Dict[str, str], files: List[str] = None):
-        super().__init__(data)
-        self.files = files or []

@@ -3,8 +3,7 @@ from os.path import exists
 from typing import List
 from urllib.error import URLError
 
-from data.detector import Detector
-from data.detectors import find_detector
+from data.detector import Detector, find_detector
 from utils.web_util import download_file
 
 

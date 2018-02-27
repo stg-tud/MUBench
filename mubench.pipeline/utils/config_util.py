@@ -5,7 +5,7 @@ from operator import attrgetter
 from os.path import join, abspath, dirname
 from typing import List, Any
 
-from data.detectors import get_available_detector_ids
+from data.detector import get_available_detector_ids, Detector
 from tasks.implementations import stats
 from utils.dataset_util import get_available_dataset_ids
 from utils.io import read_yaml
@@ -363,7 +363,7 @@ def __setup_run_arguments(parser: ArgumentParser, available_detectors: List[str]
                         default=__get_default('java-options', []),
                         help="pass options to the java subprocess running the detector "
                              "(example: `--java-options Xmx4G` runs `java -Xmx4G`)")
-    parser.add_argument('--tag', dest='requested_release', default=__get_default('requested_release', None),
+    parser.add_argument('--tag', dest='requested_release', default=__get_default('requested_release', Detector.DEFAULT_RELEASE),
                         metavar='rel', help="use a specific detector release by tag (case insensitive)", type=str.lower)
 
 
