@@ -15,6 +15,7 @@ from utils.shell import CommandFailedError
 
 MUBENCH_ROOT_PATH = os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir))
 CHECKOUTS_PATH = os.path.join(MUBENCH_ROOT_PATH, "checkouts", "_examples")
+BOA_RESULTS_PATH = join(CHECKOUTS_PATH, "_boa-results")
 INDEX_PATH = os.path.join(CHECKOUTS_PATH, "index.csv")
 SUBTYPES_PATH = os.path.join(CHECKOUTS_PATH, "subtypes.csv")
 MAX_SUBTYPES_SAMPLE_SIZE = 25
@@ -104,7 +105,7 @@ logger.addHandler(handler)
 
 
 with open(INDEX_PATH) as index:
-    boa = BOA(username, password)
+    boa = BOA(username, password, BOA_RESULTS_PATH)
     for row in csv.reader(index, delimiter="\t"):
         # skip blank lines, e.g., on trailing newline
         if not row:

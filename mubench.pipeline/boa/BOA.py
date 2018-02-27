@@ -40,14 +40,15 @@ class GitHubProject:
 
 
 class BOA:
-    def __init__(self, username: str, password: str):
+    def __init__(self, username: str, password: str, results_path: str):
         self.username = username
         self.password = password
+        self.results_path = results_path
 
     def query_projects_with_type_usages(self, types_names: List[str], subtypes_names: List[str]) -> List[GitHubProject]:
         projects = []
         query_id = "{}_{}".format("-".join(types_names), "-".join(subtypes_names))
-        result_file_name = os.path.join(os.path.dirname(__file__), "results", query_id + ".boaresult")
+        result_file_name = os.path.join(self.results_path, query_id + ".boaresult")
         if not os.path.exists(result_file_name):
             output = self.__try_query_projects_with_type_usages(subtypes_names)
             output_lines = output.splitlines()
@@ -59,6 +60,7 @@ class BOA:
                 # BOA returned no output
                 results = ""
 
+            os.makedirs(os.path.dirname(result_file_name))
             io.safe_write(results, result_file_name, append=False)
 
         with open(result_file_name, 'r') as result_file:
