@@ -48,7 +48,7 @@ def _get_type_and_subtypes_list(target_type):
 
 def _create_type_combinations(target_types: List):
     if len(target_types) == 1:
-        return [_get_type_and_subtypes_list(target_types[0])]
+        return ([type] for type in _get_type_and_subtypes_list(target_types[0]))
     else:
         return ([target_type] + tail
                 for target_type in _get_type_and_subtypes_list(target_types[0])
