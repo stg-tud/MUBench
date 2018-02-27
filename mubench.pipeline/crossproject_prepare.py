@@ -59,7 +59,7 @@ def _prepare_example_projects(target_types: List, boa: BOA, metadata_path: str):
     for type_combination in _create_type_combinations(target_types):
         projects = boa.query_projects_with_type_usages(target_types, type_combination)
         for project in projects:
-            checkout = project.get_checkout(CHECKOUTS_PATH)
+            checkout = project.get_checkout(join(CHECKOUTS_PATH, "checkouts"))
             if not checkout.exists():
                 try:
                     logger.info("  Checking out %r...", str(project))
