@@ -17,7 +17,7 @@ class GitProjectShallowCheckout:
         self.path = os.path.join(base_path, name)
 
     def exists(self):
-        exists(self.path) and Shell.try_exec("git status", cwd=self.path, logger=self._logger)
+        return exists(self.path) and Shell.try_exec("git status", cwd=self.path, logger=self._logger)
 
     def clone(self):
         io.makedirs(self.path)
