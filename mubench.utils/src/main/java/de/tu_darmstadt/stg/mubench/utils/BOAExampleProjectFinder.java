@@ -56,7 +56,6 @@ public class BOAExampleProjectFinder {
                 .append("out: output set of string;\n")
                 .append("\n")
                 .append("files: set of string;\n")
-                .append("revision: Revision;\n")
                 .append("file: ChangedFile;\n");
 
         for (String targetType : targetTypes) {
@@ -66,7 +65,14 @@ public class BOAExampleProjectFinder {
 
         query.append("\n")
                 .append("visit(p, visitor {\n")
-                .append("    before r: Revision -> revision = r;\n")
+                .append("    before repo: CodeRepository -> {\n")
+                .append("        # Visit only newest snapshot.\n")
+                .append("        snapshot := getsnapshot(repo, \"SOURCE_JAVA_JLS\");\n")
+                .append("        foreach (i: int; def(snapshot[i])) {\n")
+                .append("            visit(snapshot[i]);\n")
+                .append("        }\n")
+                .append("        stop;\n")
+                .append("    }\n")
                 .append("    before f: ChangedFile -> {\n")
                 .append("        if (contains(files, f.name) || match(\"test\", lowercase(f.name))) stop;\n")
                 .append("        file = f;\n")
