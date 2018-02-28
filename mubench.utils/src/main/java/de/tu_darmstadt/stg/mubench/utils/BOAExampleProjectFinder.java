@@ -103,6 +103,7 @@ public class BOAExampleProjectFinder {
                 .append("    }\n")
                 .append("    before method: Method -> {\n")
                 .append("        if (contains(projects, p.name)) stop;\n")
+                .append("        # Searching for methods that use _all_ requested type, hence, resetting uses.\n");
 
         for (String targetType : targetTypes) {
             query.append("        uses_").append(getSimpleName(targetType)).append(" = false;\n");
@@ -119,12 +120,12 @@ public class BOAExampleProjectFinder {
         }
 
         query.append("    }\n")
-                .append("    before variable: Variable -> {\n");
+                .append("    before variable: Variable -> {\n")
+                .append("        # Check variable/parameter types.\n");
 
         for (String targetType : targetTypes) {
             query.append("        if ((imports_").append(getSimpleName(targetType)).append(" && ")
-                    .append("(variable.variable_type.name == \"").append(getSimpleName(targetType)).append("\")) || \n")
-                    .append("            (variable.variable_type.name == \"").append(targetType).append("\")) {\n")
+                    .append("variable.variable_type.name == \"").append(getSimpleName(targetType)).append("\") || (variable.variable_type.name == \"").append(targetType).append("\")) {\n")
                     .append("            uses_").append(getSimpleName(targetType)).append(" = true;\n")
                     .append("        }\n");
         }
