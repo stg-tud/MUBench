@@ -72,7 +72,9 @@ class BOA:
         with open(result_file_name, 'r') as result_file:
             for line in result_file.readlines():
                 if line:
-                    projects.append(GitHubProject(line[8:].strip()))
+                    project_id = line[8:].strip()
+                    if project_id:
+                        projects.append(GitHubProject(project_id))
 
         return projects
 
