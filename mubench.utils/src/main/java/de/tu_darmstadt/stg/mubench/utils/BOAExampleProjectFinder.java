@@ -109,6 +109,16 @@ public class BOAExampleProjectFinder {
         }
 
         query.append("    }\n")
+                .append("    before t: Type -> {\n")
+                .append("        # Check type literals.\n");
+
+        for (String targetType : targetTypes) {
+            query.append("        if ((imports_").append(getSimpleName(targetType)).append(" && t.name == \"").append(getSimpleName(targetType)).append("\") || (t.name == \"").append(targetType).append("\")) {\n")
+                    .append("            uses_").append(getSimpleName(targetType)).append(" = true;\n")
+                    .append("        }\n");
+        }
+
+        query.append("    }\n")
                 .append("    before variable: Variable -> {\n");
 
         for (String targetType : targetTypes) {
