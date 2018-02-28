@@ -55,8 +55,8 @@ public class BOAExampleProjectFinder {
         StringBuilder query = new StringBuilder("p: Project = input;\n")
                 .append("out: output set of string;\n")
                 .append("\n")
-                .append("files: set of string;\n")
-                .append("file: ChangedFile;\n");
+                .append("projects: set of string;\n")
+                .append("files: set of string;\n");
 
         for (String targetType : targetTypes) {
             query.append("imports_").append(getSimpleName(targetType)).append(": bool;\n");
@@ -74,8 +74,8 @@ public class BOAExampleProjectFinder {
                 .append("        stop;\n")
                 .append("    }\n")
                 .append("    before f: ChangedFile -> {\n")
-                .append("        if (contains(files, f.name) || match(\"test\", lowercase(f.name))) stop;\n")
-                .append("        file = f;\n")
+                .append("        if (contains(projects, p.name) || contains(files, f.name) || match(\"test\", lowercase(f.name))) stop;\n")
+                .append("        add(files, f.name);\n")
                 .append("    }\n")
                 .append("    before astRoot: ASTRoot -> {\n")
                 .append("        imports: = astRoot.imports;\n");
@@ -95,7 +95,8 @@ public class BOAExampleProjectFinder {
 
         query.append("        }\n")
                 .append("    }\n")
-                .append("    before method: Method -> {\n");
+                .append("    before method: Method -> {\n")
+                .append("        if (contains(projects, p.name)) stop;\n")
 
         for (String targetType : targetTypes) {
             query.append("        uses_").append(getSimpleName(targetType)).append(" = false;\n");
@@ -125,10 +126,8 @@ public class BOAExampleProjectFinder {
 
         query.append(") {\n")
                 .append("            out << p.name;\n")
+                .append("            add(projects, p.name);\n")
                 .append("        }\n")
-                .append("    }\n")
-                .append("    after f: ChangedFile -> {\n")
-                .append("        add(files, f.name);\n")
                 .append("    }\n")
                 .append("});");
 
