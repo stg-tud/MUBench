@@ -586,6 +586,8 @@ FSE18-Extension:
   - argouml.026.tikanga11-4
   # Dataset: GrouMiner
   - jigsaw.205.1
+  # MuDetect
+  - httpclient.302.mudetect-14
 
 FSE18-ExPrecision:
   # min

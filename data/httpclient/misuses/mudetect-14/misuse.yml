@@ -1,0 +1,15 @@
+api:
+- org.apache.commons.logging.Log
+characteristics:
+- missing/condition/value_or_state
+crash: false
+description: >
+  On line 424, a warning message is issued (`LOG.warn()`) without a prior
+  checking whether warning messages are enabled (`LOG.isWarnEnable()`).
+location:
+  file: org/apache/commons/httpclient/HttpMethodDirector.java
+  method: executeWithRetry(HttpMethod)
+  line: 424
+internal: false
+source:
+  name: MuDetect

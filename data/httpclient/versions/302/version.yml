@@ -6,4 +6,5 @@ build:
   src: src/java/
 misuses:
 - '1'
+- mudetect-14
 revision: 134493
