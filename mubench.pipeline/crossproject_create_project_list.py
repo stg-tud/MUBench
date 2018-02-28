@@ -9,7 +9,7 @@ from utils.logging import IndentFormatter
 from utils.shell import Shell
 
 MUBENCH_ROOT_PATH = os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir))
-CHECKOUTS_PATH = os.path.join(MUBENCH_ROOT_PATH, "checkouts", "_examples")
+CHECKOUTS_PATH = os.path.join(MUBENCH_ROOT_PATH, "checkouts-xp")
 INDEX_PATH = os.path.join(CHECKOUTS_PATH, "index.csv")
 
 logger = logging.getLogger()

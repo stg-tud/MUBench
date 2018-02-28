@@ -16,7 +16,7 @@ from utils.dataset_util import get_white_list
 __MUBENCH_ROOT_PATH = os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir))
 __MUBENCH_DATA_PATH = os.path.join(__MUBENCH_ROOT_PATH, "data")
 __MUBENCH_DATASETS_FILE = os.path.join(__MUBENCH_DATA_PATH, "datasets.yml")
-_INDEX_PATH = os.path.join(__MUBENCH_ROOT_PATH, "checkouts", "_examples", "index.csv")
+_INDEX_PATH = os.path.join(__MUBENCH_ROOT_PATH, "checkouts-xp", "index.csv")
 
 
 class PrintIndexTask:
