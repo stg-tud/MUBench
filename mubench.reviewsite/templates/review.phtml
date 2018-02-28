@@ -22,6 +22,9 @@
  * @var Parsedown $markdown_parser markdown parser
  *
  * @var \MuBench\ReviewSite\Models\Misuse $misuse
+ * @var \MuBench\ReviewSite\Models\Misuse $next_misuse
+ * @var \MuBench\ReviewSite\Models\Misuse $next_reviewable_misuse
+ * @var \MuBench\ReviewSite\Models\Misuse $previous_misuse
  * @var \MuBench\ReviewSite\Models\Review $review
  * @var bool $is_reviewer whether the user is the author of this review
  * @var array $violation_types all violation types of this misuse in exp1/3, all possible violation types in exp2
@@ -51,6 +54,7 @@ $columns_to_ignore = array(
         "version_muid",
         "experiment_id"
     );
+$origin_path = $origin_path ? $origin_path : $pathFor('experiment.detector', array("experiment_id"=> $experiment->id, "detector_muid" => $detector->muid));
 
 ?>
         <html>
@@ -81,8 +85,7 @@ $columns_to_ignore = array(
                     <?php endforeach; ?>
                 </style>
             </head>
-            <body>
-
+            <body style="margin-bottom:30px;">
             <?php include "includes/menu.phtml" ?>
         <h1>Review</h1>
         <table class="invisible">
@@ -102,7 +105,7 @@ $columns_to_ignore = array(
                                 <?php if($user) : ?>
                                 <div style="display:inline-block;padding-right:2px;margin:0;color:black">
                                     <form action="<?= $pathFor('tag.remove', array('experiment_id' => $experiment->id, 'detector_muid' => $detector->muid, 'project_muid' => $misuse->getProject(), 'version_muid' => $misuse->getVersion(), 'misuse_muid' => $misuse->misuse_muid, 'tag_id' => $tag->id)) ?>" method="post" target="">
-                                        <input type="hidden" name="path" value="<?= htmlspecialchars($path); ?>">
+                                        <input type="hidden" name="path" value="<?= htmlspecialchars($path . "?origin=" . $origin_path); ?>">
                                         <input type="hidden" name="misuse_id" value="<?= htmlspecialchars($misuse->id); ?>">
                                         <button style="border:none;outline:none;background-color:<?= htmlspecialchars($tag->color) ?>;margin:0;padding:0" type="submit"><i class="fa fa-trash"></i></button>
                                     </form>
@@ -115,7 +118,7 @@ $columns_to_ignore = array(
                             <div style="display:inline-block;height:100%;padding:4px;">
                                 <form id="tag-form" action="<?= $pathFor('tag.add', array('experiment_id' => $experiment->id, 'detector_muid' => $detector->muid, 'project_muid' => $misuse->getProject(), 'version_muid' => $misuse->getVersion(), 'misuse_muid' => $misuse->misuse_muid)) ?>" method="post" target="">
                                     <input type="hidden" name="misuse_id" value="<?= htmlspecialchars($misuse->id); ?>">
-                                    <input type="hidden" name="path" value="<?= htmlspecialchars($path); ?>">
+                                    <input type="hidden" name="path" value="<?= htmlspecialchars($path . "?origin=" . $origin_path); ?>">
                                     <input id="tag-input" class="tag-input" maxlength="100" list="tags" name="tag_name" placeholder="add new tag" autocomplete="off">
                                     <datalist id="tags">
                                         <?php foreach($tags as $tag) : ?>
@@ -169,7 +172,7 @@ $columns_to_ignore = array(
                     <?php foreach($misuse->snippets() as $snippet): ?>
                         <?php if($delete_snippets_enabled): ?>
                             <form id="delete_snippet_form" action="<?= $pathFor('snippet.remove', array('experiment_id' => $experiment->id, 'detector_muid' => $detector->muid, 'project_muid' => $misuse->getProject(), 'version_muid' => $misuse->getVersion(), 'misuse_muid' => $misuse->misuse_muid, 'snippet_id' => $snippet->id)) ?><?= $origin_param ?>" method="POST" target="">
-                                <input type="hidden" name="path" value="<?= htmlspecialchars($path); ?>">
+                                <input type="hidden" name="path" value="<?= htmlspecialchars($path . "?origin=" . $origin_path); ?>">
                                 <button style="border:none;background-color:white;position:absolute;right:5px" type="submit"><i class="fa fa-trash"></i></button>
                             </form>
                         <?php endif; ?>
@@ -178,7 +181,7 @@ $columns_to_ignore = array(
                 <?php else : ?>
                     <pre class="prettyprint"><code class="language-java">code not found</code></pre>
                     <?php if($user) : ?>
-                        <input type="button" onclick="show(this);" value="Add code snippet">
+                        <input class="button" type="button" onclick="show(this);" value="Add code snippet">
                         <form  id="snippet_form" style="display:none;" action="<?= $pathFor('snippet.add', array('experiment_id' => $experiment->id, 'detector_muid' => $detector->muid, 'project_muid' => $misuse->getProject(), 'version_muid' => $misuse->getVersion(), 'misuse_muid' => $misuse->misuse_muid)) ?>" method="post" target="">
                             <table>
                             <tr>
@@ -191,12 +194,12 @@ $columns_to_ignore = array(
                             <tr>
                                 <td>
                                     <input type="hidden" name="misuse_id" value="<?= htmlspecialchars($misuse->id); ?>">
-                                    <input type="hidden" name="path" value="<?= htmlspecialchars($path); ?>">
+                                    <input type="hidden" name="path" value="<?= htmlspecialchars($path . "?origin=" . $origin_path); ?>">
                                     <textarea name="snippet" title="Code Snippet" cols="80" rows="5"></textarea>
                                 </td>
                             </tr>
                             <tr>
-                                <td><input type="submit" value="Save snippet" /></td>
+                                <td><input class="button" type="submit" value="Save snippet" /></td>
                             </tr>
                             </table>
                         </form>
@@ -212,7 +215,7 @@ $columns_to_ignore = array(
                         </td></tr>
             <?php endif; ?>
         </table>
-            <form action="<?= $pathFor('update.review', array('experiment_id' => $experiment->id, 'detector_muid' => $detector->muid, 'project_muid' => $misuse->getProject(), 'version_muid' => $misuse->getVersion(), 'misuse_muid' => $misuse->misuse_muid, 'reviewer_name' => $reviewer->name), true) ?>" method="post" target="">
+            <form id="review_form" action="<?= $pathFor('update.review', array('experiment_id' => $experiment->id, 'detector_muid' => $detector->muid, 'project_muid' => $misuse->getProject(), 'version_muid' => $misuse->getVersion(), 'misuse_muid' => $misuse->misuse_muid, 'reviewer_name' => $reviewer->name), true) ?>" method="post" target="">
             <?php if($misuse->hasPotentialHits()) : ?>
 
             <?php if($experiment->id !== 2) : ?>
@@ -345,7 +348,7 @@ $columns_to_ignore = array(
        <?php endforeach; ?>
        </table>
         <?php endif; ?>
-            <?php if($is_reviewer && $reviewer) :?>
+        <?php if($is_reviewer && $reviewer) :?>
                 <table class="invisible">
                 <tr><td>Reviewer Name:</td>
                     <td><?= htmlspecialchars($reviewer->name); ?></td></tr>
@@ -358,10 +361,36 @@ $columns_to_ignore = array(
                     <?php endif; ?>
                     </td></tr>
                 </table>
-                <input type="hidden" name="origin" value="<?= htmlspecialchars($origin_path); ?>">
                 <input type="hidden" name="misuse_id" value="<?= htmlspecialchars($misuse->id); ?>">
-                <input type="submit" value="Save Review" />
-                </form>
+                <div class="review-nav-bar">
+                    <?php
+                        $next_misuse_path = $next_misuse ? $pathFor('view', array('experiment_id' => $experiment->id, 'detector_muid' => $detector->muid, 'project_muid' => $next_misuse->getProject(), 'version_muid' => $next_misuse->getVersion(), 'misuse_muid' => $next_misuse->misuse_muid)) . "?origin=$origin_path" . ($experiment->id === 2 ? "&ex2_review_size=$ex2_review_size" : "") : "";
+                        $next_reviewable_misuse_path = $next_reviewable_misuse ? $pathFor('view', array('experiment_id' => $experiment->id, 'detector_muid' => $detector->muid, 'project_muid' => $next_reviewable_misuse->getProject(), 'version_muid' => $next_reviewable_misuse->getVersion(), 'misuse_muid' => $next_reviewable_misuse->misuse_muid)) . "?origin=$origin_path" . ($experiment->id === 2 ? "&ex2_review_size=$ex2_review_size" : "") : "";
+                        $previous_misuse_path = $previous_misuse ? $pathFor('view', array('experiment_id' => $experiment->id, 'detector_muid' => $detector->muid, 'project_muid' => $previous_misuse->getProject(), 'version_muid' => $previous_misuse->getVersion(), 'misuse_muid' => $previous_misuse->misuse_muid)) . "?origin=$origin_path" . ($experiment->id === 2 ? "&ex2_review_size=$ex2_review_size" : "") : "";
+                        ?>
+                    <a href="<?= $origin_path ?>" class="button">return</a>
+                    <a href="<?= $previous_misuse_path ?>" class="button <?= $previous_misuse_path ? "" :  "disabled" ?>"><</a>
+                    <div class="dropdown" style="padding:0;position: relative; left: 45%">
+                        <div id="save-dropdown" class="dropdown-content" style="margin-left:-5px;margin-bottom:-3px;padding:0;bottom:100%;">
+                            <?php if($next_reviewable_misuse_path) : ?>
+                                <a onclick="saveReview('return')">Save and return</a>
+                            <?php endif; ?>
+                            <a onclick="saveReview('save')">Save</a>
+                        </div>
+                        <?php if($next_reviewable_misuse_path) : ?>
+                            <a class="button" style="margin:-5px;min-width:120px;" onclick="saveReview('review')">Save and next misuse</a>
+                        <?php else : ?>
+                            <a class="button" style="margin:-5px;min-width:120px;" onclick="saveReview('return')">Save and return</a>
+                        <?php endif; ?>
+                        <a id="dropdown-button" class="button" style="padding:5px;"><i class="fa fa-angle-up"></i></a>
+                    </div>
+                    <div style="display:inline-block;float:right;margin-right:10px;">
+                        <a href="<?= $next_misuse_path ?>" class="button <?= $next_misuse_path ? "" :  "disabled" ?>">></a>
+                        <a href="<?= $next_reviewable_misuse_path ?>" class="button <?= $next_reviewable_misuse_path ? "" :  "disabled" ?>">>></a>
+                    </div>
+                </div>
+
+            </form>
         <?php elseif($review && (!$user || !$is_reviewer)) :?>
                 <table class="invisible">
                     <tr><td>Reviewer Name:</td>
@@ -375,6 +404,23 @@ $columns_to_ignore = array(
 
 
             <script>
+                var origin = "<?= $origin_path ?>";
+                var next_review = "<?= $next_reviewable_misuse_path ?>";
+
+                window.onclick = function (event) {
+                    var dropdown = document.getElementById("save-dropdown");
+                    if(event.target.id == "dropdown-button" || event.target.parentElement.id == "dropdown-button"){
+                        if(dropdown.style.display == "none" || dropdown.style.display == ""){
+                            dropdown.style.display = "block";
+                        }else{
+                            dropdown.style.display = "none";
+                        }
+                    }else{
+                        dropdown.style.display = "none";
+                    }
+                };
+
+
                 function show(b){
                     var elem = document.getElementById("snippet_form");
                     if(elem.style.display === "none"){
@@ -382,11 +428,31 @@ $columns_to_ignore = array(
                     }
                     b.type = "hidden";
                 }
+
                 var simplemde = new SimpleMDE({
                     element: document.getElementById("review_comment"),
                     spellChecker: false,
                     status: false
                 });
+
+                function saveReview(v){
+                    var form = document.getElementById("review_form");
+                    var input = document.createElement("input");
+                    input.type = "hidden";
+                    input.name = "origin";
+                    switch(v){
+                        case "save":
+                            input.name = "origin_param";
+                        case "return":
+                            input.value = origin;
+                            break;
+                        case "review":
+                            input.value = next_review;
+                            break;
+                    }
+                    form.appendChild(input);
+                    form.submit();
+                }
             </script>
             </body>
         </html>

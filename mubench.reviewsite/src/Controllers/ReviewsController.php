@@ -3,12 +3,14 @@
 namespace MuBench\ReviewSite\Controllers;
 
 
+use Illuminate\Database\Eloquent\Collection;
 use MuBench\ReviewSite\Models\Detector;
 use MuBench\ReviewSite\Models\Experiment;
 use MuBench\ReviewSite\Models\FindingReview;
 use MuBench\ReviewSite\Models\Misuse;
 use MuBench\ReviewSite\Models\Review;
 use MuBench\ReviewSite\Models\Reviewer;
+use MuBench\ReviewSite\Models\ReviewState;
 use MuBench\ReviewSite\Models\Run;
 use MuBench\ReviewSite\Models\Tag;
 use MuBench\ReviewSite\Models\Type;
@@ -27,21 +29,26 @@ class ReviewsController extends Controller
 
         $experiment = Experiment::find($experiment_id);
         $detector = Detector::find($detector_muid);
+        $ex2_review_size = $request->getQueryParam("ex2_review_size", $this->settings['default_ex2_review_size']);
 
         $reviewer = array_key_exists('reviewer_name', $args) ? Reviewer::where(['name' => $args['reviewer_name']])->first() : $this->user;
         $resolution_reviewer = Reviewer::where(['name' => 'resolution'])->first();
         $is_reviewer = ($this->user && $reviewer && $this->user->id == $reviewer->id) || ($reviewer && $reviewer->id == $resolution_reviewer->id);
 
-        $misuse = Run::of($detector)->in($experiment)->where(['project_muid' => $project_muid, 'version_muid' => $version_muid])->first()->misuses()->where('misuse_muid', $misuse_muid)->first();
+        $runs = RunsController::getRuns($detector, $experiment, $ex2_review_size);
+
+        $all_misuses = $this->collectAllMisuses($runs);
+
+        list($previous_misuse, $next_misuse, $next_reviewable_misuse, $misuse) =
+            $this->determineNavigationTargets($all_misuses, $project_muid, $version_muid, $misuse_muid, $reviewer);
+
         $all_violation_types = Type::all();
         $all_tags = Tag::all();
-
         $review = $misuse->getReview($reviewer);
-
         return $this->renderer->render($response, 'review.phtml', ['reviewer' => $reviewer, 'is_reviewer' => $is_reviewer,
             'misuse' => $misuse, 'experiment' => $experiment,
             'detector' => $detector, 'review' => $review,
-            'violation_types' => $all_violation_types, 'tags' => $all_tags]);
+            'violation_types' => $all_violation_types, 'tags' => $all_tags, 'next_misuse' => $next_misuse, 'previous_misuse' => $previous_misuse, 'next_reviewable_misuse' => $next_reviewable_misuse]);
     }
 
     public function getTodo(Request $request, Response $response, array $args)
@@ -99,6 +106,7 @@ class ReviewsController extends Controller
     public function postReview(Request $request, Response $response, array $args)
     {
         $review = $request->getParsedBody();
+
         $experiment_id = $args['experiment_id'];
         $detector_muid = $args['detector_muid'];
         $project_muid = $args['project_muid'];
@@ -113,11 +121,15 @@ class ReviewsController extends Controller
         $this->updateOrCreateReview($misuse_id, $reviewer->id, $comment, $hits);
 
         if ($review["origin"] != "") {
-            return $response->withRedirect("{$this->settings['site_base_url']}{$review["origin"]}");
+            return $response->withRedirect("{$review["origin"]}");
         }else {
-            return $response->withRedirect($this->router->pathFor("private.review", ["experiment_id" => $experiment_id,
+            $path = $this->router->pathFor("private.review", ["experiment_id" => $experiment_id,
                 "detector_muid" => $detector_muid, "project_muid" => $project_muid, "version_muid" => $version_muid,
-                "misuse_muid" => $misuse_muid, "reviewer_name" => $reviewer_name]));
+                "misuse_muid" => $misuse_muid, "reviewer_name" => $reviewer_name]);
+            if(array_key_exists("origin_param", $review)){
+                $path = $path . "?origin={$review["origin_param"]}";
+            }
+            return $response->withRedirect($path);
         }
     }
 
@@ -134,4 +146,53 @@ class ReviewsController extends Controller
             $findingReview->violation_types()->sync($findings_review['types']);
         }
     }
+
+    private function collectAllMisuses($runs)
+    {
+        $all_misuses = new Collection;
+        foreach ($runs as $run) {
+            $all_misuses = $all_misuses->merge($run->misuses);
+        }
+        return $all_misuses;
+    }
+
+    function determineNavigationTargets(Collection $all_misuses, $project_muid, $version_muid, $misuse_muid, $reviewer)
+    {
+        $previous_misuse = $all_misuses->last();
+        $misuse = NULL;
+        $next_misuse = NULL;
+        $next_reviewable_misuse = NULL;
+
+        foreach ($all_misuses as $current_misuse) { /** @var Misuse $current_misuse */
+            if (!$misuse && $current_misuse->getProject() === $project_muid
+                && $current_misuse->getVersion() === $version_muid
+                && $current_misuse->misuse_muid === $misuse_muid) {
+                $misuse = $current_misuse;
+            } else {
+                if ($misuse && !$next_misuse) {
+                    $next_misuse = $current_misuse;
+                }
+                $is_current_misuse_reviewable = $current_misuse->getReviewState() === ReviewState::NEEDS_REVIEW
+                    && !$current_misuse->hasReviewed($reviewer);
+                $first_reviewable_misuse = !$next_reviewable_misuse && $is_current_misuse_reviewable;
+                $first_reviewable_misuse_after = $misuse && $is_current_misuse_reviewable;
+                if ($first_reviewable_misuse || $first_reviewable_misuse_after) {
+                    $next_reviewable_misuse = $current_misuse;
+                    if ($misuse) {
+                        break;
+                    }
+                }
+            }
+            if (!$misuse) {
+                $previous_misuse = $current_misuse;
+            }
+        }
+
+        if (!$next_misuse) {
+            $next_misuse = $all_misuses->first();
+        }
+
+        return array($previous_misuse, $next_misuse, $next_reviewable_misuse, $misuse);
+    }
+
 }

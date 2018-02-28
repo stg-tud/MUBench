@@ -11,11 +11,11 @@ $container['renderer'] = function ($container) {
     $siteBaseURL = rtrim(str_replace('index.php', '', $request->getUri()->getBasePath()), '/') . '/';
     $publicURLPrefix = $siteBaseURL;
     $privateURLPrefix = $siteBaseURL . 'private/';
+    $urlPrefix = $user ? $privateURLPrefix : $publicURLPrefix;
 
     $path = $request->getUri()->getPath();
-    $path = htmlspecialchars($path === '/' ? '' : $path);
-    if($path !== '' && $path[0] !== '/'){
-        $path = "/$path";
+    if ($path && $path[0] === '/') {
+        $path = substr($path, 1);
     }
 
     $experiments = \MuBench\ReviewSite\Models\Experiment::all();
@@ -44,17 +44,17 @@ $container['renderer'] = function ($container) {
         'srcUrlFor' => function ($resourceName) use ($container, $siteBaseURL) {
             return  "$siteBaseURL$resourceName";
         },
-        'loginPath' => $privateURLPrefix . substr($path, 1),
+        'loginPath' => $privateURLPrefix . $path,
 
         'site_base_url' => $siteBaseURL,
         'public_url_prefix' => $publicURLPrefix,
         'private_url_prefix' => $privateURLPrefix,
-        'url_prefix' => $user ? $privateURLPrefix : $publicURLPrefix,
+        'url_prefix' => $urlPrefix,
         'uploads_url_prefix' => $publicURLPrefix . $container->settings['upload'],
         'uploads_path' => $container->settings['upload'],
 
-        'path' => $path,
-        'origin_param' => htmlspecialchars("?origin=$path"),
+        'path' => $publicURLPrefix . $path,
+        'origin_param' => htmlspecialchars("?origin=$publicURLPrefix$path"),
         'origin_path' => htmlspecialchars($request->getQueryParam('origin', '')),
 
         'experiments' => $experiments,
