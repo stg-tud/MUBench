@@ -42,6 +42,9 @@ if [ "$1" = 'reviewsite' ]; then
     echo "Unknown task:" $2
     echo "Chose one of {init,start,stop,standalone}"
   fi;
+elif [ "$1" = 'browse' ]; then
+  DOCKER_IMAGE=${DOCKER_IMAGE_USERNAME}/mubench-pipeline:${DOCKER_IMAGE_TAG}
+  docker run --rm -it -v "$MUBENCH_ROOT":/mubench -v ${PIPELINE_CHECKOUTS_VOLUME}:/mubench/checkouts -v ${PIPELINE_FINDINGS_VOLUME}:/mubench/findings ${DOCKER_IMAGE} /bin/bash
 else
   DOCKER_IMAGE=${DOCKER_IMAGE_USERNAME}/mubench-pipeline:${DOCKER_IMAGE_TAG}
   docker run --rm -v "$MUBENCH_ROOT":/mubench -v ${PIPELINE_CHECKOUTS_VOLUME}:/mubench/checkouts -v ${PIPELINE_FINDINGS_VOLUME}:/mubench/findings ${DOCKER_IMAGE} python ./mubench.pipeline/benchmark.py "$@"
