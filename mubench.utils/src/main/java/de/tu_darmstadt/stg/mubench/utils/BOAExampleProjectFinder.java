@@ -130,6 +130,24 @@ public class BOAExampleProjectFinder {
         }
 
         query.append("    }\n")
+                .append("    before e: Expression -> {\n")
+                .append("        # Check static method call receivers.\n")
+                .append("        if (e.kind == ExpressionKind.METHODCALL) {\n")
+                .append("            # BOA does not distinguish static calls from calls on variables. We assume a match, if the variable\n")
+                .append("            # name matches the simple type name and the type is imported. This causes false positives, if a\n")
+                .append("            # variable shadows the type.\n")
+                .append("            exists(i: int; e.expressions[i].kind == ExpressionKind.VARACCESS) {\n");
+
+        for (String targetType : targetTypes) {
+            query.append("                if ((imports_").append(getSimpleName(targetType)).append(" && ")
+                    .append("e.expressions[i].variable == \"").append(getSimpleName(targetType)).append("\") || (e.expressions[i].variable == \"").append(targetType).append("\")) {\n")
+                    .append("                    uses_").append(getSimpleName(targetType)).append(" = true;\n")
+                    .append("                }\n");
+        }
+
+        query.append("            }\n")
+                .append("        }\n")
+                .append("    }\n")
                 .append("    after method: Method -> {\n")
                 .append("        if (");
 
