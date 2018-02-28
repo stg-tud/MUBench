@@ -84,13 +84,19 @@ public class BOAExampleProjectFinder {
             query.append("        imports_").append(getSimpleName(targetType)).append(" = false;\n");
         }
 
-        query.append("        foreach (i: int; def(imports[i])) {\n");
+        query.append("        # Check imports to know whether simple type references match the type.\n")
+                .append("        # `java.lang.*` types are always implicitly imported.\n")
+                .append("        foreach (i: int; def(imports[i])) {\n");
 
         for (String targetType : targetTypes) {
-            query.append("            if ((imports[i] == \"").append(targetType).append("\") || \n")
-                    .append("                (imports[i] == \"").append(getPackageStarName(targetType)).append("\")) {\n")
-                    .append("                imports_").append(getSimpleName(targetType)).append(" = true;\n")
-                    .append("            }\n");
+            if (getPackageStarName(targetType).equals("java.lang.*")) {
+                // java.lang.* is always imported
+                query.append("            imports_").append(getSimpleName(targetType)).append(" = true;\n");
+            } else {
+                query.append("            if ((imports[i] == \"").append(targetType).append("\") || (imports[i] == \"").append(getPackageStarName(targetType)).append("\")) {\n")
+                        .append("                imports_").append(getSimpleName(targetType)).append(" = true;\n")
+                        .append("            }\n");
+            }
         }
 
         query.append("        }\n")
