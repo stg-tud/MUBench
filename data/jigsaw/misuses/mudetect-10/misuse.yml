@@ -8,8 +8,8 @@ description: |
   without checking that there is such an element.
 internal: false
 location:
-  file: org/w3c/jigsaw/proxy/ProxyFrame.java
-  method: lookupOther(LookupState, LookupResult)
+  file: org/w3c/jigsaw/servlet/JigsawHttpServletRequest.java
+  method: getLocale()
   line: 434
 source:
   name: MuDetect
