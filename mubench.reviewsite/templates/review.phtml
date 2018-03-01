@@ -349,14 +349,6 @@ $origin_path = $origin_path ? $origin_path : $pathFor('experiment.detector', arr
        </table>
         <?php endif; ?>
         <?php if($is_reviewer && $reviewer) :?>
-                <table class="invisible">
-                <tr><td>Reviewer Name:</td>
-                    <td><?= htmlspecialchars($reviewer->name); ?></td></tr>
-                <tr><td class="vtop"><label for="review_comment">Comment</label>:</td>
-                    <td>
-
-                    </td></tr>
-                </table>
                 <input type="hidden" name="misuse_id" value="<?= htmlspecialchars($misuse->id); ?>">
                 <div class="review-nav-bar">
                     <?php
