@@ -47,6 +47,11 @@ use MuBench\ReviewSite\Models\Experiment;
                     <li class="<?= $isCurrentPath('stats.results') ? "active" : "" ?>">
                         <a href="<?= $pathFor('stats.results') ?>">Results</a>
                     </li>
+                    <?php foreach($experiments as $experiment): ?>
+                        <li class="<?= $isCurrentPath('stats.exp.results', array('experiment_id' => $experiment->id)) ? "active" : "" ?>">
+                            <a href="<?= $pathFor('stats.exp.results', array('experiment_id' => $experiment->id)) ?>">Experiment <?= $experiment->id ?></a>
+                        </li>
+                    <?php endforeach; ?>
                 </ul>
             </li>
             <?php if($user) : ?>

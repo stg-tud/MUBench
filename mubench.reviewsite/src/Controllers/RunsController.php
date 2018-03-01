@@ -69,6 +69,39 @@ class RunsController extends Controller
         return $this->renderer->render($response, 'result_stats.phtml', ['results' => $results, 'ex2_review_size' => $ex2_review_size]);
     }
 
+    public function getExperimentResults(Request $request, Response $response, array $args)
+    {
+        $ex2_review_size = $request->getQueryParam("ex2_review_size", $this->settings['default_ex2_review_size']);
+        $experiment_id = $args['experiment_id'];
+
+        $experiment = Experiment::find($experiment_id);
+
+        $detectors = Detector::withRuns($experiment);
+        $results = $this->getResultsForExperiment($experiment, $detectors, $ex2_review_size);
+
+        $misuse_results = [];
+
+        foreach($detectors as $detector){
+            $runs = Run::of($detector)->in($experiment)->get();
+            foreach($runs as $run){
+                foreach($run->misuses as $misuse){
+                    if(!array_key_exists($misuse->getProject(), $misuse_results)){
+                        $misuse_results[$misuse->getProject()] = array();
+                    }
+                    if(!array_key_exists($misuse->getVersion(), $misuse_results)){
+                        $misuse_results[$misuse->getProject()][$misuse->getVersion()] = array();
+                    }
+                    if(!array_key_exists($misuse->misuse_muid, $misuse_results)){
+                        $misuse_results[$misuse->getProject()][$misuse->getVersion()][$misuse->misuse_muid] = array();
+                    }
+                    $misuse_results[$misuse->getProject()][$misuse->getVersion()][$misuse->misuse_muid][$misuse->detector->muid] = $misuse;
+                }
+            }
+        }
+
+        return $this->renderer->render($response, 'experiment_stats.phtml', ['exp' => $experiment, 'results' => $results, 'ex2_review_size' => $ex2_review_size, 'misuses' => $misuse_results, 'det' => $detectors]);
+    }
+
     public function downloadResults(Request $request, Response $response, array $args)
     {
         $ex2_review_size = $request->getQueryParam("ex2_review_size", $this->settings['default_ex2_review_size']);
