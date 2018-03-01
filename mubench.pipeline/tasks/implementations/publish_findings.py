@@ -78,7 +78,7 @@ class PublishFindingsTask:
 
             snippets = finding.get_snippets(version_compile.original_sources_paths)
             if not snippets:
-                logger.warning("No snippets added.")
+                logger.warning("No snippet found for %s:%s!", finding["file"], finding["method"])
             specialize_finding[_SNIPPETS_KEY] = snippets
 
             specialized_findings.append(specialize_finding)
