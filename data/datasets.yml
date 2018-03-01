@@ -624,6 +624,7 @@ FSE18-ExPrecision-TruePositives:
   - itext.5091.mudetect-13
   - itext.5091.mudetect-38
   - jigsaw.205.tikanga-0
+  - jigsaw.205.mudetect-10
   - lucene.1918.mudetect-5
   - lucene.1918.mudetect-9
   - testng.677302c.dmmc-0

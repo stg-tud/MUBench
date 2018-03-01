@@ -1,0 +1,15 @@
+api:
+- java.util.Enumeration
+characteristics:
+- missing/condition/value_or_state
+crash: true
+description: |
+  On line 434, an element is fetched through `Enumeration.nextElement()`
+  without checking that there is such an element.
+internal: false
+location:
+  file: org/w3c/jigsaw/proxy/ProxyFrame.java
+  method: lookupOther(LookupState, LookupResult)
+  line: 434
+source:
+  name: MuDetect
