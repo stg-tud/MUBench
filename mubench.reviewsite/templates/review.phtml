@@ -409,7 +409,10 @@ $origin_path = $origin_path ? $origin_path : $pathFor('experiment.detector', arr
 
             <script>
                 var origin = "<?= $origin_path ?>";
-                var next_review = "<?= $next_reviewable_misuse_path ?>";
+                var next_review = "";
+                <?php if($review && $is_reviewer && $next_reviewable_misuse_path): ?>
+                    next_review = "<?= $next_reviewable_misuse_path ?>";
+                <?php endif; ?>
 
                 window.onclick = function (event) {
                     var dropdown = document.getElementById("save-dropdown");
@@ -451,18 +454,18 @@ $origin_path = $origin_path ? $origin_path : $pathFor('experiment.detector', arr
                     b.type = "hidden";
                 }
 
+                <?php if($review && $is_reviewer): ?>
                 var simplemde = new SimpleMDE({
                     element: document.getElementById("review_comment"),
                     spellChecker: false,
                     status: false
                 });
 
-                <?php if($review): ?>
-                    // fix for https://github.com/sparksuite/simplemde-markdown-editor/issues/344
-                    document.getElementById("comment-area").style.display="block";
-                    simplemde.value("<?= $review->comment ?>");
-                    simplemde.codemirror.refresh();
-                    document.getElementById("comment-area").style.display="none";
+                // fix for https://github.com/sparksuite/simplemde-markdown-editor/issues/344
+                document.getElementById("comment-area").style.display="block";
+                simplemde.value("<?= $review->comment ?>");
+                simplemde.codemirror.refresh();
+                document.getElementById("comment-area").style.display="none";
                 <?php endif; ?>
 
 
