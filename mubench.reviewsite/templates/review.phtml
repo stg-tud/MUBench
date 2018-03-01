@@ -457,6 +457,15 @@ $origin_path = $origin_path ? $origin_path : $pathFor('experiment.detector', arr
                     status: false
                 });
 
+                <?php if($review): ?>
+                    // fix for https://github.com/sparksuite/simplemde-markdown-editor/issues/344
+                    document.getElementById("comment-area").style.display="block";
+                    simplemde.value("<?= $review->comment ?>");
+                    simplemde.codemirror.refresh();
+                    document.getElementById("comment-area").style.display="none";
+                <?php endif; ?>
+
+
                 function review(e){
                     e.parentElement.style.display = "none";
                     document.getElementById("review_area").style.visibility = "visible";
