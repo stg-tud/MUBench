@@ -9,6 +9,7 @@ from requests import RequestException
 
 from data.misuse import Misuse
 from data.project import Project
+from data.snippets import SnippetUnavailableException
 from utils.io import safe_read
 from utils.web_util import post
 
@@ -31,6 +32,7 @@ class PublishMetadataTask:
         self.__metadata.clear()
 
     def run(self, project: Project, misuse: Misuse):
+        logger = logging.getLogger("tasks.publish_metadata")
         versions = [version for version in project.versions if misuse in version.misuses]
         if len(versions) == 1:
             version = versions[0]
@@ -49,15 +51,19 @@ class PublishMetadataTask:
                 "description": misuse.fix.description,
                 "diff-url": misuse.fix.commit
             },
-            "target_snippets": [snippet.__dict__ for snippet in self.__get_snippets(misuse, version)],
+            "target_snippets": [snippet.__dict__ for snippet in self.__get_snippets(misuse, version, logger)],
             "patterns": self.__get_patterns(misuse)
         })
 
-    def __get_snippets(self, misuse, version):
+    def __get_snippets(self, misuse, version, logger):
         checkout_base_path = version.get_checkout(self.checkouts_base_path).checkout_dir
         checkout_source_paths = [os.path.join(checkout_base_path, rel_path.lstrip(os.path.sep))
                                  for rel_path in version.source_dirs]
-        return misuse.get_snippets(checkout_source_paths)
+        try:
+            return misuse.get_snippets(checkout_source_paths)
+        except SnippetUnavailableException as e:
+            logger.warn(e)
+            return []
 
     def __get_patterns(self, misuse: Misuse):
         patterns = []

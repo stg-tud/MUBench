@@ -11,6 +11,7 @@ from data.detector_run import DetectorRun
 from data.finding import SpecializedFinding
 from data.project import Project
 from data.project_version import ProjectVersion
+from data.snippets import SnippetUnavailableException
 from data.version_compile import VersionCompile
 from tasks.implementations.findings_filters import PotentialHits
 from utils.web_util import post, as_markdown
@@ -76,11 +77,13 @@ class PublishFindingsTask:
         for finding in potential_hits.findings:
             specialize_finding = detector.specialize_finding(detector_run.findings_path, finding)
 
-            snippets = finding.get_snippets(version_compile.original_sources_paths)
-            if not snippets:
-                logger.warning("No snippet found for %s:%s!", finding["file"], finding["method"])
-            specialize_finding[_SNIPPETS_KEY] = snippets
+            try:
+                snippets = finding.get_snippets(version_compile.original_sources_paths)
+            except SnippetUnavailableException as e:
+                logger.warning(e)
+                snippets = []
 
+            specialize_finding[_SNIPPETS_KEY] = snippets
             specialized_findings.append(specialize_finding)
 
         return specialized_findings

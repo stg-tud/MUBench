@@ -1,10 +1,10 @@
 from typing import Dict
 from unittest.mock import patch
 
-from nose.tools import assert_equals
+from nose.tools import assert_equals, assert_raises
 
 from data.finding import Finding
-from data.snippets import Snippet
+from data.snippets import Snippet, SnippetUnavailableException
 from tests.test_utils.data_util import create_misuse
 from utils.shell import CommandFailedError
 
@@ -78,7 +78,8 @@ class TestTargetCode:
 
         finding = Finding({"file": "-file-"})
 
-        assert_equals(finding.get_snippets(["/base"]), [])
+        with assert_raises(SnippetUnavailableException):
+            finding.get_snippets(["/base"])
 
     def test_loads_snippet(self, utils_mock):
         utils_mock.side_effect = lambda tool, args:\
@@ -115,9 +116,8 @@ class TestTargetCode:
 
         finding = Finding({"file": "-file-", "method": "-method-"})
 
-        snippets = finding.get_snippets(["/base"])
-
-        assert_equals([], snippets)
+        with assert_raises(SnippetUnavailableException):
+            finding.get_snippets(["/base"])
 
     def test_filters_by_startline(self, utils_mock):
         utils_mock.return_value = "42:T:t-code\n===\n32:A:a\nb\nc\n===\n22:N:n-code"

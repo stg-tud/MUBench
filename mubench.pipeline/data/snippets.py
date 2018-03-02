@@ -16,6 +16,9 @@ def get_snippets(source_base_paths: List[str], file: str, method: str, target_li
         except SnippetUnavailableException:
             continue
 
+    if not snippets:
+        raise SnippetUnavailableException(file, method)
+
     return snippets
 
 
@@ -56,7 +59,7 @@ def __get_snippets(source_base_path: str, file: str, method: str, target_line_nu
             snippets.append(Snippet(io.safe_read(target_file), 1))
 
     except Exception as e:
-        raise SnippetUnavailableException(target_file, e)
+        raise SnippetUnavailableException(target_file, method, e)
     return snippets_with_matching_line_number if snippets_with_matching_line_number else snippets
 
 
@@ -76,9 +79,10 @@ class Snippet:
 
 
 class SnippetUnavailableException(UserWarning):
-    def __init__(self, file: str, exception: Exception):
-        self.exception = exception
+    def __init__(self, file: str, method: str, exception: Exception = None):
         self.file = file
+        self.method = method
+        self.exception = exception if exception else "no matches"
 
     def __str__(self):
-        return "Could not extract snippet from '{}': {}".format(self.file, self.exception)
+        return "Could not extract snippet for '{}' from '{}': {}".format(self.method, self.file, self.exception)

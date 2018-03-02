@@ -6,7 +6,7 @@ from typing import Dict, List
 from data.misuse import Misuse
 from data.project import Project
 from data.project_version import ProjectVersion
-from data.snippets import get_snippets
+from data.snippets import get_snippets, SnippetUnavailableException
 
 VALID_VIOLATION_TYPES = [
     'missing/call',
@@ -136,7 +136,10 @@ class MisuseCheckTask:
 
     @staticmethod
     def _location_exists(source_base_paths, file_, method) -> bool:
-        return len(get_snippets(source_base_paths, file_, method)) > 0
+        try:
+            return len(get_snippets(source_base_paths, file_, method)) > 0
+        except SnippetUnavailableException:
+            return False
 
     def _check_violation_types(self, misuse: Misuse):
         violation_types = misuse._yaml.get("characteristics", [])
