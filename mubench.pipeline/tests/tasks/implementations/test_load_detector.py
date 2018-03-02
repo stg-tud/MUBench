@@ -8,6 +8,7 @@ from tasks.implementations.load_detector import LoadDetectorTask
 from tests.data.stub_detector import StubDetector
 
 
+@patch("tasks.implementations.load_detector.create_file_path")
 @patch("tasks.implementations.load_detector.LoadDetectorTask._get_detector")
 @patch("tasks.implementations.load_detector.LoadDetectorTask._detector_available")
 @patch("tasks.implementations.load_detector.download_file")
@@ -21,7 +22,7 @@ class TestLoadDetectorTask:
 
         self.uut = LoadDetectorTask("", "", "", [])
 
-    def test_downloads_detector_if_not_available(self, download_mock, detector_available_mock, get_detector_mock):
+    def test_downloads_detector_if_not_available(self, download_mock, detector_available_mock, get_detector_mock, _):
         detector_available_mock.return_value = False
         get_detector_mock.return_value = self.detector
         self.detector.md5 = ":some-md5:"
@@ -31,9 +32,19 @@ class TestLoadDetectorTask:
         download_mock.assert_called_with(self.detector.jar_url, self.detector.jar_path, self.detector.md5)
 
     def test_aborts_download_if_detector_md5_is_missing(self, download_mock, detector_available_mock,
-                                                        get_detector_mock):
+                                                        get_detector_mock, create_file_path_mock):
         detector_available_mock.return_value = False
         get_detector_mock.return_value = self.detector
 
         assert_raises(ValueError, self.uut.run)
         download_mock.assert_not_called()
+        create_file_path_mock.assert_not_called()
+
+    def test_creates_file_path(self, _, detector_available_mock, get_detector_mock, create_file_path_mock):
+        detector_available_mock.return_value = False
+        get_detector_mock.return_value = self.detector
+        self.detector.md5 = ":some-md5:"
+
+        self.uut.run()
+
+        create_file_path_mock.assert_called_with(self.detector.jar_path)

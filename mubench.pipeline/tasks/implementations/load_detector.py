@@ -4,6 +4,7 @@ from typing import List
 from urllib.error import URLError
 
 from data.detector import Detector, find_detector
+from utils.io import create_file_path
 from utils.web_util import download_file
 
 
@@ -41,6 +42,7 @@ class LoadDetectorTask:
             md5 = detector.md5
             if md5 == Detector.NO_MD5:
                 raise ValueError("Missing MD5 for {}".format(detector.id))
+            create_file_path(file)
             download_file(url, file, md5)
         except (FileNotFoundError, ValueError, URLError):
             logger.error("Download failed: ")
