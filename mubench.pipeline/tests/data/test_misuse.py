@@ -44,7 +44,7 @@ class TestMisuse:
 
     def test_reads_location(self):
         uut = create_misuse('', meta={"location": {"file": "file.name", "method": "foo()"}})
-        assert_equals(Location("file.name", "foo()"), uut.location)
+        assert_equals(Location("file.name", "foo()", -1), uut.location)
 
     def test_reads_description(self):
         misuse = create_misuse("", meta={"description": "bla bla bla"})
