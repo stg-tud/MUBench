@@ -31,7 +31,7 @@ class Detector:
 
         self.md5 = release.get("md5", Detector.NO_MD5)
 
-        self.jar_path = join(self.path, self.base_name + ".jar")
+        self.jar_path = join(self.path, release_tag, self.base_name + ".jar")
         self.jar_url = "{}/{}/{}/{}.jar".format(Detector.BASE_URL, release_tag, cli_version, self.base_name)
 
         self.runner_interface = RunnerInterface.get(cli_version, self.jar_path, java_options)
