@@ -11,16 +11,16 @@ from data.snippets import get_snippets, Snippet
 
 
 class Location:
-    def __init__(self, file: str, method: str, startline: int):
+    def __init__(self, file: str, method: str, line: int):
         self.file = file
         self.method = method
-        self.startline = startline
+        self.line = line
 
     def __str__(self):
         return "Location({}, {})".format(self.file, self.method)
 
     def __eq__(self, other):
-        return self.file == other.file and self.method == other.method and self.startline == other.startline
+        return self.file == other.file and self.method == other.method and self.line == other.line
 
 
 class Fix:
@@ -84,7 +84,7 @@ class Misuse:
     def location(self) -> Location:
         if not self.__location:
             location = self._yaml["location"]
-            self.__location = Location(location.get("file", ""), location.get("method", ""), location.get("startline", -1))
+            self.__location = Location(location.get("file", ""), location.get("method", ""), location.get("line", -1))
         return self.__location
 
     @property
@@ -128,7 +128,7 @@ class Misuse:
         return self._characteristics
 
     def get_snippets(self, source_base_paths: List[str]) -> List[Snippet]:
-        return get_snippets(source_base_paths, self.location.file, self.location.method, self.location.startline)
+        return get_snippets(source_base_paths, self.location.file, self.location.method, self.location.line)
 
     def get_misuse_compile(self, base_path: str) -> MisuseCompile:
         return MisuseCompile(join(base_path, self.project_id, "misuses", self.misuse_id), self.patterns)

@@ -43,8 +43,8 @@ class TestMisuse:
         assert_equals(self.uut.patterns, {pattern})
 
     def test_reads_location(self):
-        uut = create_misuse('', meta={"location": {"file": "file.name", "method": "foo()"}})
-        assert_equals(Location("file.name", "foo()", -1), uut.location)
+        uut = create_misuse('', meta={"location": {"file": "file.name", "method": "foo()", "line": 42}})
+        assert_equals(Location("file.name", "foo()", 42), uut.location)
 
     def test_reads_description(self):
         misuse = create_misuse("", meta={"description": "bla bla bla"})
