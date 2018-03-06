@@ -6,11 +6,11 @@ crash: true
 description: >
   In line 58, `SegmentInfos.info()` is called without prior check that there
   are sufficiently many elements in the `merge.segments` collection.
-  (Same finding as `tikanga-1` and `mudetect-4`)
+  (Same finding as `tikanga-1` and `mudetect-4` and `mudetectxp-6`)
 location:
   file: org/apache/lucene/index/MergeDocIDRemapper.java
   method: "MergeDocIDRemapper(SegmentInfos, int[][], int[], OneMerge, int)"
   line: 58
 internal: true
 source:
-  name: Tikanga & Jadet & MUDetect
+  name: Tikanga & Jadet & MUDetect & MUDetectXP

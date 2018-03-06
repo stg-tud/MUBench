@@ -18,4 +18,6 @@ misuses:
 - 'mudetect-5'
 - 'mudetect-14'
 - 'mudetect-15'
+- 'mudetectxp-4'
+- 'mudetectxp-9'
 revision: cf23b99a0c78596b5dc5bb25691736c9abd0a84d

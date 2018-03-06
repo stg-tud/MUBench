@@ -5,6 +5,7 @@ characteristics:
 crash: false
 description: >
   DataOutputStream is left open.
+  (Same as `mudetectxp-1`)
 location:
   file: sos/mrtd/SecureMessagingWrapper.java
   method: "readDO8E(DataInputStream, byte[])"
@@ -17,4 +18,4 @@ internal: false
 pattern:
 - multiple objects
 source:
-  name: SourceForge
+  name: SourceForge & MUDetectXP

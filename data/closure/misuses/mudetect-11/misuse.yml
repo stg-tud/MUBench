@@ -5,9 +5,10 @@ characteristics:
 crash: true
 description: >
   Iterator.next() is invoked without prior check that the iterator has more elements.
+  (Same finding as `mudetectxp-5`)
 location:
   file: com/google/javascript/jscomp/TightenTypes.java
   method: "getImplicitActionsFromCall(Node, JSType)"
 internal: false
 source:
-  name: MUDetect
+  name: MUDetect & MUDetectXP

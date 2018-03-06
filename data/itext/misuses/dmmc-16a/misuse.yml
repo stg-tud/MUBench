@@ -8,11 +8,11 @@ description: >
    of whether there is a next token, e.g., via `hasNextToken()`. The enclosing
    method implements a lookup, which may be expected to throw if there is no
    matching element. However, this is not explicit.
+   (Same finding as `mudetectxp-12`)
 location:
   file: com/itextpdf/text/pdf/CJKFont.java
   method: "getBBox(int)"
   line: 393
 internal: false
 source:
-  name: DMMC
-  url: http://www.monperrus.net/martin/dmmc
+  name: DMMC & MUDetectXP

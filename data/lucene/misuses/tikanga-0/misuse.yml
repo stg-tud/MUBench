@@ -5,10 +5,10 @@ characteristics:
 crash: true
 description: >
   Iterator.next() is invoked without prior check of hasNext().
-  (Same finding as `mudetect-1`)
+  (Same finding as `mudetect-1` and `mudetectxp-0`)
 location:
   file: org/apache/lucene/util/AttributeSource.java
   method: "computeCurrentState()"
 internal: false
 source:
-  name: Tikanga & MUDetect
+  name: Tikanga & MUDetect & MUDetectXP

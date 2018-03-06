@@ -615,10 +615,15 @@ FSE18-ExPrecision-TruePositives:
   - chensun.cf23b99.mudetect-5
   - chensun.cf23b99.mudetect-14
   - chensun.cf23b99.mudetect-15
+  - chensun.cf23b99.mudetectxp-4
+  - chensun.cf23b99.mudetectxp-9
   - closure.319.mudetect-6
   - closure.319.mudetect-7
   - closure.319.mudetect-11
   - closure.319.mudetect-12
+  - closure.319.mudetectxp-13
+  - closure.319.mudetectxp-16
+  - closure.319.mudetectxp-17
   - itext.5091.mudetect-7
   - itext.5091.mudetect-10
   - jigsaw.205.tikanga-0

@@ -5,10 +5,10 @@ characteristics:
 crash: true
 description: >
   Iterator.next() is invoked without prior check of hasNext().
-  (Same finding as `mudetect-10`)
+  (Same finding as `mudetect-10` and `mudetectxp-4`)
 location:
   file: com/google/javascript/jscomp/JSModuleGraph.java
   method: "getDeepestCommonDependencyInclusive(Collection)"
 internal: false
 source:
-  name: Tikanga & MUDetect
+  name: Tikanga & MUDetect & MUDetectXP
