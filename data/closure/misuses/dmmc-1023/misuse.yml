@@ -5,10 +5,10 @@ characteristics:
 crash: true
 description: >
   Iterator.next() is invoked without prior check of hasNext().
+  (Same finding as `mudetect-16`)
 location:
   file: com/google/javascript/jscomp/deps/SortedDependencies.java
   method: "cycleToString(List)"
 internal: false
 source:
-  name: DMMC
-  url: http://www.monperrus.net/martin/dmmc
+  name: DMMC & MUDetect

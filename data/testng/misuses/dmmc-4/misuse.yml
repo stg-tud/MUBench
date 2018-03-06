@@ -7,7 +7,7 @@ description: |
   In line 69, `Iterator.next()` is invoked without a prior check whether there
   is a next element. From the conditions line 64 we take that `classNames` might
   be `null`, empty, or contain exactly one element.
-  (Same as Tikanga finding 0 and MuDetect finding 0)
+  (Same as finding as `tikanga-0` and `mudetect-0`)
 internal: false
 location:
   file: org/testng/xml/SuiteGenerator.java

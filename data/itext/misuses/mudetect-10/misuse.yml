@@ -1,0 +1,14 @@
+api:
+- com.itextpdf.text.pdf.PdfArray
+characteristics:
+- missing/condition/null_check
+crash: true
+description: |
+  On line 244, a `PdfObject` is fetched from a `PdfArray`. Since the array may
+  contain a `null` value, the object should be checked before it is used.
+location:
+  file: com/itextpdf/text/pdf/SimpleBookmark.java
+  method: "makeBookmarkParam(PdfArray, IntHashtable)"
+internal: true
+source:
+  name: MUDetect

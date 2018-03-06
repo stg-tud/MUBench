@@ -4,13 +4,13 @@ characteristics:
 - missing/condition/value_or_state
 crash: true
 description: >
-  In line 47, `SegmentInfos.info()` is called without prior check that there
-  are sufficiently many elements in the `infos` collection.
-  (Same finding as `tikanga-1` and `mudetect-8`)
+  In line 58, `SegmentInfos.info()` is called without prior check that there
+  are sufficiently many elements in the `merge.segments` collection.
+  (Same finding as `tikanga-1` and `mudetect-4`)
 location:
   file: org/apache/lucene/index/MergeDocIDRemapper.java
   method: "MergeDocIDRemapper(SegmentInfos, int[][], int[], OneMerge, int)"
-  line: 47
+  line: 58
 internal: true
 source:
   name: Tikanga & Jadet & MUDetect

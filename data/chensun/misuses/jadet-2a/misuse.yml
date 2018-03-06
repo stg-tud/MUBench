@@ -5,11 +5,11 @@ characteristics:
 crash: false
 description: |
   The `ResultSet` fetched in line 350 is not closed in case of an exception.
+  (This is the same findings as `mudetect-11`)
 internal: false
 location:
   file: database/SocialNetworkDatabaseBoards.java
   method: getBoardList(Connection, String)
   line: 350
 source:
-  name: Jadet
-  url: https://www.st.cs.uni-saarland.de/models/jadet/
+  name: Jadet & MUDetect

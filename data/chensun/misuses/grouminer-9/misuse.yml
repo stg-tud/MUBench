@@ -5,7 +5,7 @@ characteristics:
 crash: false
 description: |
   The `PreparedStatement` opened in line 702 is never closed.
-  (Same as MuDetect finding 17)
+  (Same findings as `mudetect-17`)
 internal: false
 location:
   file: database/SocialNetworkDatabasePosts.java

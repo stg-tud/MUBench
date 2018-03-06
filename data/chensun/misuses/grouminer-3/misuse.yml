@@ -5,11 +5,11 @@ characteristics:
 crash: false
 description: |
   The `ResultSet` fetched in line 644 is never closed.
-  (This is the same findings as `jadet-4`)
+  (This is the same findings as `jadet-4` and `mudetect-19`)
 internal: false
 location:
   file: database/SocialNetworkDatabasePosts.java
   method: getPost(Connection, String, String, String, int)
   line: 644
 source:
-  name: GrouMiner & Jadet
+  name: GrouMiner & Jadet & MUDetect

@@ -7,7 +7,7 @@ description: |
   In line 284 the `ResourceReference` `root` is locked, but there is no
   matching `unlock()` assuming normal execution (there is one for an
   exceptional case in line 297).
-  (Same as MuDetect finding 3)
+  (Same finding as `mudetect-2`)
 internal: true
 location:
   file: org/w3c/jigsaw/proxy/ProxyFrame.java

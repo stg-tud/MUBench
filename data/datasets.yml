@@ -410,6 +410,7 @@ TSE17-ExPrecision-TruePositives:
   - lucene.1918.tikanga-1a
   - lucene.1918.tikanga-1b
   - lucene.1918.tikanga-1c
+  - lucene.1918.tikanga-1d
 
 TSE17-ExRecall:
   - aclang.587.1
@@ -611,27 +612,25 @@ FSE18-ExPrecision-TruePositives:
   - chensun.cf23b99.jadet-2a
   - chensun.cf23b99.jadet-5
   - chensun.cf23b99.jadet-5a
-  - chensun.cf23b99.mudetect-1
-  - chensun.cf23b99.mudetect-4
-  - chensun.cf23b99.mudetect-12
-  - chensun.cf23b99.mudetect-13
+  - chensun.cf23b99.mudetect-5
+  - chensun.cf23b99.mudetect-14
+  - chensun.cf23b99.mudetect-15
+  - closure.319.mudetect-6
+  - closure.319.mudetect-7
+  - closure.319.mudetect-11
   - closure.319.mudetect-12
-  - closure.319.mudetect-13
-  - closure.319.mudetect-17
-  - closure.319.mudetect-18
-  - itext.5091.mudetect-0
-  - itext.5091.mudetect-12
-  - itext.5091.mudetect-13
-  - itext.5091.mudetect-38
+  - itext.5091.mudetect-7
+  - itext.5091.mudetect-10
   - jigsaw.205.tikanga-0
-  - jigsaw.205.mudetect-10
-  - lucene.1918.mudetect-5
-  - lucene.1918.mudetect-9
+  - jigsaw.205.mudetect-12
+  - jigsaw.205.mudetect-15
+  - lucene.1918.mudetect-10
+  - lucene.1918.mudetect-13
+  - lucene.1918.mudetect-14
   - testng.677302c.dmmc-0
   - testng.677302c.dmmc-4
   - testng.677302c.grouminer-4
   - testng.677302c.grouminer-17
-  - testng.677302c.mudetect-15
 
 ###
 ### Other experiment datasets.
