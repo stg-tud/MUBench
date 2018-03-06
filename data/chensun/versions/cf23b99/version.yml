@@ -15,9 +15,9 @@ misuses:
 - 'jadet-2a'
 - 'jadet-5'
 - 'jadet-5a'
-- 'mudetect-5'
-- 'mudetect-14'
-- 'mudetect-15'
+- 'mudetect-4'
+- 'mudetect-12'
+- 'mudetect-13'
 - 'mudetectxp-4'
 - 'mudetectxp-9'
 revision: cf23b99a0c78596b5dc5bb25691736c9abd0a84d

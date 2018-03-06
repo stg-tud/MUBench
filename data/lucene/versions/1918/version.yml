@@ -6,8 +6,8 @@ build:
 misuses:
 - '2'
 - 'mudetect-10'
-- 'mudetect-13'
-- 'mudetect-14'
+- 'mudetect-5'
+- 'mudetect-9'
 - 'tikanga-0'
 - 'tikanga-1'
 - 'tikanga-1a'
