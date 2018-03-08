@@ -9,7 +9,7 @@ description: >
   the lookup returns `null` and the iteration attempt crashes.
 location:
   file: com/google/javascript/jscomp/SimpleDefinitionFinder.java
-  method: "	visit(NodeTraversal, Node, Node)"
+  method: "visit(NodeTraversal, Node, Node)"
   line: 196
 internal: false
 source:
