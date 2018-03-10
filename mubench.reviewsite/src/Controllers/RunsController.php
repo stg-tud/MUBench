@@ -117,7 +117,10 @@ class RunsController extends Controller
         foreach($experiments as $experiment){
             $experiment_runs[$experiment->id] = [];
             foreach($detectors as $detector){
-                $experiment_runs[$experiment->id][$detector->muid] = Run::of($detector)->in($experiment)->orderBy('project_muid')->orderBy('version_muid')->get();
+                $runs = Run::of($detector)->in($experiment)->orderBy('project_muid')->orderBy('version_muid')->get();
+                if($runs->count() > 0){
+                    $experiment_runs[$experiment->id][$detector->muid] = $runs;
+                }
             }
         }
 
