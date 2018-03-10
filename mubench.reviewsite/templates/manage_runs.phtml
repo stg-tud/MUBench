@@ -51,12 +51,13 @@ $columns_to_ignore = array(
 </head>
 <body>
 <?php include "includes/menu.phtml"; ?>
-
+<div>
 <?php foreach($experiments as $experiment): ?>
 <h1>Experiment <?= /* @var Experiment */ $experiment->id ?>: <?= htmlspecialchars($experiment->name) ?></h1>
-<table>
+<table id="<?= $experiment->id?>">
     <thead>
     <tr>
+        <th></th>
         <th>Detector</th>
         <th>Project</th>
         <th>Version</th>
@@ -83,7 +84,10 @@ $columns_to_ignore = array(
         });
         sort($additional_stats);
         ?>
-            <tr>
+            <tr onclick="rowcheck(this)" class="row-hover">
+                <td class="top">
+                    <input type="checkbox" value='{"run_id": <?= $run->id ?>, "muid": "<?= $detector ?>"}'>
+                </td>
                 <td class="top">
                     <?= $first_detector ? $markdown_parser->text($detector) : ""; ?></td>
                 <td class="top">
@@ -97,9 +101,6 @@ $columns_to_ignore = array(
                 <td class="top right">
                     <?= $markdown_parser->text(substr($run['runtime'], 0, 4)) . "s"; ?></td>
                 <td class="top right">
-                    <?php include "includes/stats_modal.phtml"; ?>
-                </td>
-                <td>
                     <form action="<?= $pathFor('runs.delete', array('experiment_id' => $experiment->id, 'detector_muid' => $detector, 'project_muid' => $project, 'version_muid' => $version)) ?>" method="post" target="">
                         <button style="border:none;outline:none;margin:0;padding:0;background-color:white;" type="submit"><i class="fa fa-trash"></i></button>
                     </form>
@@ -111,6 +112,38 @@ $columns_to_ignore = array(
     </tbody>
 </table>
 <?php endforeach; ?>
+</div>
+<a class="button" onclick="deleteRuns()">Delete Runs</a>
 
+<script>
+
+    function rowcheck(obj){
+        var c = obj.getElementsByTagName('input')[0];
+        c.checked =! c.checked;
+    }
+
+    function deleteRuns(){
+        var tableRef = document.getElementById('1');
+        var tbody = tableRef.querySelector("tbody");
+
+        var checkedInputs = document.querySelectorAll("input[type='checkbox']:checked");
+        var run_ids = [];
+        for(var i = 0; i < checkedInputs.length; ++i){
+            run_ids.push(checkedInputs[i].value);
+        }
+
+        var form = document.createElement('form');
+        form.action = '<?= $pathFor('runs.massDelete') ?>';
+        form.method = 'post';
+
+        var input = document.createElement('input');
+        input.type = "hidden";
+        input.name = "run_ids";
+        input.value = JSON.stringify(run_ids);
+        form.appendChild(input);
+        document.body.appendChild(form);
+        form.submit();
+    }
+</script>
 </body>
 </html>
