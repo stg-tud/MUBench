@@ -99,7 +99,7 @@ class RunsController extends Controller
             }
         }
 
-        return $this->renderer->render($response, 'experiment_stats.phtml', ['exp' => $experiment, 'results' => $results, 'ex2_review_size' => $ex2_review_size, 'misuses' => $misuse_results, 'det' => $detectors]);
+        return $this->renderer->render($response, 'experiment_stats.phtml', ['exp' => $experiment, 'experiment_results' => $results, 'ex2_review_size' => $ex2_review_size, 'misuses' => $misuse_results, 'det' => $detectors]);
     }
 
     public function downloadResults(Request $request, Response $response, array $args)
