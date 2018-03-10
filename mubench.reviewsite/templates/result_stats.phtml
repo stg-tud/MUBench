@@ -96,12 +96,7 @@ use MuBench\ReviewSite\Models\RunsResult;
             <td class="right"><?= $result->number_of_hits ?></td>
             <td class="right"><?= round($result->getRecall() * 100, 1) ?>%</td>
             <td class="right">
-                <?php if($result->open_reviews > 0 || $result->number_of_needs_clarification > 0): ?>
-                    <i class="fa fa-question-circle" aria-hidden="true" style="color:blue;" title="Missing reviews"></i>
-                <?php endif;?>
-                <?php if($result->number_of_projects < $results[1]["total"]->number_of_projects): ?>
-                    <i class="fa fa-exclamation-triangle" aria-hidden="true" style="color:red;" title="Missing runs"></i>
-                <?php endif;?>
+                <?php include "includes/result_status.phtml" ?>
             </td>
         </tr>
         </tbody>
@@ -174,12 +169,7 @@ use MuBench\ReviewSite\Models\RunsResult;
             <td class="right"><?= $result->number_of_hits ?></td>
             <td class="right"><?= round($result->getPrecision() * 100, 1) ?>%</td>
             <td class="right">
-                <?php if($result->open_reviews > 0 || $result->number_of_needs_clarification > 0): ?>
-                    <i class="fa fa-question-circle" aria-hidden="true" style="color:blue;" title="Missing reviews"></i>
-                <?php endif;?>
-                <?php if($result->number_of_projects != $results[1]["total"]->number_of_projects): ?>
-                    <i class="fa fa-exclamation-triangle" aria-hidden="true" style="color:red;" title="Missing runs"></i>
-                <?php endif;?>
+                <?php include "includes/result_status.phtml" ?>
             </td>
         </tr>
         </tbody>
@@ -249,12 +239,7 @@ use MuBench\ReviewSite\Models\RunsResult;
             <td class="right"><?= $result->number_of_hits ?></td>
             <td class="right"><?= round($result->getRecall() * 100, 1) ?>%</td>
             <td class="right">
-                <?php if($result->open_reviews > 0 || $result->number_of_needs_clarification > 0): ?>
-                    <i class="fa fa-question-circle" aria-hidden="true" style="color:blue;" title="Missing reviews"></i>
-                <?php endif;?>
-                <?php if($result->number_of_projects != $results[1]["total"]->number_of_projects): ?>
-                    <i class="fa fa-exclamation-triangle" aria-hidden="true" style="color:red;" title="Missing runs"></i>
-                <?php endif;?>
+                <?php include "includes/result_status.phtml" ?>
             </td>
         </tr>
         </tbody>
