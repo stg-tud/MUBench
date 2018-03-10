@@ -498,7 +498,7 @@ class RunsController extends Controller
         foreach($detectors as $detector){
             $runs = Run::of($detector)->in($experiment)->get();
             foreach ($runs as &$run) {
-                $misuses = $run->misuses->sortBy('misuse_muid');
+                $misuses = $run->misuses->sortBy('misuse_muid', SORT_NATURAL);
                 $filtered_misuses = new Collection;
                 if($experiment->id === 1){
                     foreach ($misuses as $misuse) {
