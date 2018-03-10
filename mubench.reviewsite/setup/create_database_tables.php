@@ -82,14 +82,14 @@ $misuse = new \MuBench\ReviewSite\Models\Misuse;
 Schema::dropIfExists($misuse->getTable());
 Schema::create($misuse->getTable(), function (Blueprint $table) {
     $table->increments('id');
-    $table->integer('detector_id');
     $table->integer('run_id');
+    $table->integer('detector_id');
     $table->string('misuse_muid', 30);
     $table->integer('metadata_id')->nullable();
     $table->dateTime('created_at');
     $table->dateTime('updated_at');
 
-    $table->unique(['detector_id', 'run_id', 'misuse_muid']);
+    $table->unique(['run_id', 'detector_id', 'misuse_muid']);
 });
 
 echo 'Creating review<br/>';
@@ -102,6 +102,7 @@ Schema::create($review->getTable(), function (Blueprint $table) {
     $table->text('comment');
     $table->dateTime('created_at');
     $table->dateTime('updated_at');
+    $table->unique(['misuse_id', 'reviewer_id']);
 });
 
 echo 'Creating reviewer<br/>';
@@ -122,6 +123,7 @@ Schema::create($findingReview->getTable(), function (Blueprint $table) {
     $table->integer('review_id');
     $table->text('decision');
     $table->integer('rank');
+    $table->unique(['review_id', 'rank']);
 });
 
 echo 'Creating Violation Types<br/>';

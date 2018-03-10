@@ -237,9 +237,11 @@ class RunsControllerTest extends SlimTestCase
         $first_request = $this->someValidRunRequestBody();
         $first_request->timestamp = 12;
         $first_request->custom1 = '-stat-val1-';
+        $first_request->potential_hits[0]->rank = 0;
         $second_request = $this->someValidRunRequestBody();
         $second_request->timestamp = 12;
         $second_request->custom2 = '-stat-val2-';
+        $second_request->potential_hits[0]->rank = 1;
 
         $firstRequestResult = $this->runsController->addRun(1, $this->detector1->muid, '-p-', '-v-',  $first_request);
         $secondRequestResult = $this->runsController->addRun(1, $this->detector1->muid, '-p-', '-v-',  $second_request);

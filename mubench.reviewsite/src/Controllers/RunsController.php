@@ -339,17 +339,19 @@ class RunsController extends Controller
     {
         Schema::create($table_name, function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('experiment_id');
             $table->integer('misuse_id');
+            $table->integer('experiment_id');
             $table->string('project_muid', 50);
             $table->string('version_muid', 30);
             $table->string('misuse_muid', 30);
-            $table->integer('startline')->nullable();
             $table->integer('rank');
             $table->text('file')->nullable();
             $table->text('method')->nullable();
+            $table->integer('startline')->nullable();
             $table->dateTime('created_at');
             $table->dateTime('updated_at');
+            $table->index(['misuse_id'], 'potential hits');
+            $table->unique(['experiment_id', 'project_muid', 'version_muid', 'misuse_muid', 'rank'], 'potential hit');
         });
     }
 
@@ -362,11 +364,12 @@ class RunsController extends Controller
             $table->string('project_muid', 50);
             $table->string('version_muid', 30);
             $table->float('runtime');
-            $table->integer('number_of_findings');
             $table->string('result', 30);
+            $table->integer('number_of_findings');
             $table->integer('timestamp');
             $table->dateTime('created_at');
             $table->dateTime('updated_at');
+            $table->unique(['experiment_id', 'project_muid', 'version_muid'], 'run');
         });
     }
 
