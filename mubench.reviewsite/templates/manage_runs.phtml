@@ -54,10 +54,10 @@ $columns_to_ignore = array(
 
 <?php foreach($experiments as $experiment): ?>
     <?php if(!empty($experiment_runs[$experiment->id])): ?>
-        <h1 class="row-hover" onclick="show(<?= $experiment->id ?>, this)">Experiment <?= /* @var Experiment */ $experiment->id ?>: <?= htmlspecialchars($experiment->name) ?> <i class="fa fa-angle-right"></i></h1>
+        <h1 class="row-hover clickable-icon" onclick="show(<?= $experiment->id ?>, this)">Experiment <?= /* @var Experiment */ $experiment->id ?>: <?= htmlspecialchars($experiment->name) ?> <i class="fa fa-angle-right"></i></h1>
         <?php foreach ($experiment_runs[$experiment->id] as $detector => $runs) : ?>
             <div id="<?= $experiment->id?>" style="padding-left: 30px;display:none;margin:0;">
-                <div class="row-hover" style="padding:0;margin:0;" onclick="show('<?= $experiment->id?>_<?= $detector ?>', this)" >
+                <div class="row-hover clickable-icon" style="padding:0;margin:0;" onclick="show('<?= $experiment->id?>_<?= $detector ?>', this)" >
                     <h2 style="margin:0;padding:0;"><?= htmlspecialchars($detector) ?>
                         <a href="<?= $pathFor('runs.detector.delete', array('experiment_id' => $experiment->id, 'detector_muid' => $detector)) ?>">
                         <i class="fa fa-trash"></i></a> <i class="fa fa-angle-right"></i>
