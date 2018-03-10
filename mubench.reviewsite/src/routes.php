@@ -52,6 +52,7 @@ $app->group('', function () use ($app, $settings) {
     $app->post('/metadata', \MuBench\ReviewSite\Controllers\MetadataController::class.":putMetadata");
     $app->post('/tags/rename', \MuBench\ReviewSite\Controllers\TagsController::class.":updateTags")->setName('private.tags.update');
     $app->get('/tags/{tag_id}/delete', \MuBench\ReviewSite\Controllers\TagsController::class.":deleteTag")->setName('private.tags.delete');
+    $app->post('/runs/delete', \MuBench\ReviewSite\Controllers\RunsController::class.":deleteRuns")->setName('private.runs.massDelete');
     $app->group('/experiments/{experiment_id}/detectors/{detector_muid}/projects/{project_muid}/versions/{version_muid}', function() use ($app) {
         $app->post('/runs', \MuBench\ReviewSite\Controllers\RunsController::class.":postRun");
         $app->post('/runs/delete', MuBench\ReviewSite\Controllers\RunsController::class.":deleteRun")->setName('private.runs.delete');
