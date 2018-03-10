@@ -424,7 +424,7 @@ class RunsController extends Controller
     private function storeFindings(Detector $detector, Experiment $experiment, $projectId, $versionId, Run $run, $findings)
     {
         foreach ($findings as $finding) {
-            $finding = (array) $finding;
+            $finding = $finding;
             $misuseId = $finding['misuse'];
             $misuse = $run->misuses()->where('misuse_muid', $misuseId)->first();
             if(!$misuse){

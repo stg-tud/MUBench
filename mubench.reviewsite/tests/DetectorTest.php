@@ -67,7 +67,7 @@ class DetectorTest extends SlimTestCase
             'result' => 'success',
             'runtime' => 42,
             'number_of_findings' => 1,
-            'potential_hits' => [(object) ['misuse' => '-m-', 'rank' => 1337]],
+            'potential_hits' => [['misuse' => '-m-', 'rank' => 1337]],
             'timestamp' => 1337
         ];
         $this->runs_controller->addRun(1, 'test_detector', '-p-', '-v-', $run_with_findings);
