@@ -86,7 +86,7 @@ class RunsController extends Controller
         $detector_muid = $args['detector_muid'];
         $project_muid = $args['project_muid'];
         $version_muid = $args['version_muid'];
-        $run = decodeJsonBody($request, true);
+        $run = decodeJsonBody($request);
         if (!$run) {
             return error_response($response,400, "empty: " . print_r($_POST, true));
         }
