@@ -378,7 +378,7 @@ $origin_path = $origin_path ? $origin_path : $pathFor('experiment.detector', arr
                         <a href="<?= $next_reviewable_misuse_path ?>" class="button <?= $next_reviewable_misuse_path ? "" :  "disabled" ?>">>></a>
                     </div>
                 </div>
-                <div id="comment-area" class="floating-comment" style="bottom:50px;">
+                <div id="comment-area" class="floating-comment" style="bottom:50px;right:10px">
                     <?php if($misuse->hasSufficientReviews() && $reviewer->name !== "resolution" && !$misuse->hasReviewed($reviewer)) : ?>
                         <div class="comment-overlay" id="overlay" style="z-index:2;"></div>
                         <div class="comment-overlay-button" id="overlay-button" style="z-index:3"><span>This misuse was already reviewed.</span><a class="button" onclick="review(this)">I want to review</a></div>
