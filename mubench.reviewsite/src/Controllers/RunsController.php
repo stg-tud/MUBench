@@ -169,7 +169,13 @@ class RunsController extends Controller
             $conclusive_reviews = 0;
             $filtered_misuses = new Collection;
             $misuses = $run->misuses->sortBy('misuse_muid', SORT_NATURAL);
-            if($experiment->id === 2) {
+            if($experiment->id === 1) {
+                foreach($misuses as $misuse){
+                    if($misuse->metadata && !$misuse->metadata->patterns->isEmpty()){
+                        $filtered_misuses->add($misuse);
+                    }
+                }
+            } else if($experiment->id === 2) {
                 foreach ($misuses as $misuse) {
                     if ($conclusive_reviews >= $max_reviews) {
                         break;
