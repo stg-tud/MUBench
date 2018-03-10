@@ -7,12 +7,11 @@ use MuBench\ReviewSite\Models\RunsResult;
 
 ?>
 
-<a class="button" href="<?= $pathFor('stats.results.csv', ['experiment_id' => 1])?>"><i class="fa fa-download" aria-hidden="true"> download csv</i></a>
+<a class="button" href="<?= $pathFor('stats.results.csv', ['experiment_id' => 3])?>"><i class="fa fa-download" aria-hidden="true"> download csv</i></a>
 
 <table>
     <thead>
     <tr>
-        <th></th>
         <th></th>
         <th></th>
         <th></th>
@@ -28,7 +27,6 @@ use MuBench\ReviewSite\Models\RunsResult;
     <tr>
         <th>Detector</th>
         <th>Projects</th>
-        <th>Synthetics</th>
         <th>Misuses</th>
         <th>Potential Hits</th>
         <th>Open Reviews</th>
@@ -48,12 +46,11 @@ use MuBench\ReviewSite\Models\RunsResult;
     </tr>
     </thead>
 
-    <?php foreach ($experiment_results as $result) : /** @var $result RunsResult */ ?>
+    <?php foreach ($experiment_results as $key => $result) : /** @var RunsResult $results */ ?>
         <tbody>
         <tr>
             <td><?= $result->getDisplayName() ?></td>
             <td class="right"><?= $result->number_of_projects ?></td>
-            <td class="right"><?= $result->number_of_synthetics ?></td>
             <td class="right"><?= $result->number_of_misuses ?></td>
             <td class="right"><?= $result->misuses_to_review ?></td>
             <td class="right"><?= $result->open_reviews ?></td>

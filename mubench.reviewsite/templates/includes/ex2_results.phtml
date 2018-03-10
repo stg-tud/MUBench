@@ -1,19 +1,23 @@
 <?php
 /**
  * @var array $experiment_results array of RunsResult
+ * @var integer $ex2_review_size
  */
 
 use MuBench\ReviewSite\Models\RunsResult;
 
 ?>
 
-<a class="button" href="<?= $pathFor('stats.results.csv', ['experiment_id' => 1])?>"><i class="fa fa-download" aria-hidden="true"> download csv</i></a>
+<a class="button" href="<?= $pathFor('stats.results.csv', ['experiment_id' => 2])?>?ex2_review_size=<?= $ex2_review_size ?>"><i class="fa fa-download" aria-hidden="true"> download csv</i></a>
 
+<form action="" method="get">
+    <label for="ex2_review_size">Max. Reviews per Project</label>:
+    <input type="text" id="ex2_review_size" name="ex2_review_size" value="<?= $ex2_review_size ?>" />
+    <input type="submit" value="update" />
+</form>
 <table>
     <thead>
     <tr>
-        <th></th>
-        <th></th>
         <th></th>
         <th></th>
         <th></th>
@@ -28,8 +32,6 @@ use MuBench\ReviewSite\Models\RunsResult;
     <tr>
         <th>Detector</th>
         <th>Projects</th>
-        <th>Synthetics</th>
-        <th>Misuses</th>
         <th>Potential Hits</th>
         <th>Open Reviews</th>
         <th>Open '?'</th>
@@ -43,7 +45,7 @@ use MuBench\ReviewSite\Models\RunsResult;
         <th>p<sub>e</sub></th>
         <th>Score</th>
         <th>Hits</th>
-        <th>Recall</th>
+        <th>Precision</th>
         <th> </th>
     </tr>
     </thead>
@@ -53,8 +55,6 @@ use MuBench\ReviewSite\Models\RunsResult;
         <tr>
             <td><?= $result->getDisplayName() ?></td>
             <td class="right"><?= $result->number_of_projects ?></td>
-            <td class="right"><?= $result->number_of_synthetics ?></td>
-            <td class="right"><?= $result->number_of_misuses ?></td>
             <td class="right"><?= $result->misuses_to_review ?></td>
             <td class="right"><?= $result->open_reviews ?></td>
             <td class="right"><?= $result->number_of_needs_clarification ?></td>
@@ -70,7 +70,7 @@ use MuBench\ReviewSite\Models\RunsResult;
             <td class="right"><?= round($result->getKappaPe(), 3) ?></td>
             <td class="right"><?= round($result->getKappaScore(), 3) ?></td>
             <td class="right"><?= $result->number_of_hits ?></td>
-            <td class="right"><?= round($result->getRecall() * 100, 1) ?>%</td>
+            <td class="right"><?= round($result->getPrecision() * 100, 1) ?>%</td>
             <td class="right">
                 <?php include "result_status.phtml" ?>
             </td>
