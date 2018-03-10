@@ -358,20 +358,22 @@ $origin_path = $origin_path ? $origin_path : $pathFor('experiment.detector', arr
                         ?>
                     <a href="<?= $origin_path ?>" class="button">return</a>
                     <a href="<?= $previous_misuse_path ?>" class="button <?= $previous_misuse_path ? "" :  "disabled" ?>"><</a>
-                    <a class="button" onclick="comment()">Comment</a>
-                    <div class="dropdown" style="padding:0;position: relative; left: 45%">
-                        <div id="save-dropdown" class="dropdown-content" style="margin-left:-5px;margin-bottom:-3px;padding:0;bottom:100%;">
+                    <div style="padding:0;margin:0;display:inline-block;left:38%;position:relative">
+                        <a class="button" onclick="comment()">Comment</a>
+                        <div class="dropdown" style="">
+                            <div id="save-dropdown" class="dropdown-content" style="margin-left:-5px;margin-bottom:-3px;padding:0;bottom:100%;">
+                                <?php if($next_reviewable_misuse_path) : ?>
+                                    <a onclick="saveReview('return')">Save and return</a>
+                                <?php endif; ?>
+                                <a onclick="saveReview('save')">Save</a>
+                            </div>
                             <?php if($next_reviewable_misuse_path) : ?>
-                                <a onclick="saveReview('return')">Save and return</a>
+                                <a class="button" style="margin:-5px;min-width:120px;" onclick="saveReview('review')">Save and next misuse</a>
+                            <?php else : ?>
+                                <a class="button" style="margin:-5px;min-width:120px;" onclick="saveReview('return')">Save and return</a>
                             <?php endif; ?>
-                            <a onclick="saveReview('save')">Save</a>
+                            <a id="dropdown-button" class="button" style="padding:5px;"><i class="fa fa-angle-up"></i></a>
                         </div>
-                        <?php if($next_reviewable_misuse_path) : ?>
-                            <a class="button" style="margin:-5px;min-width:120px;" onclick="saveReview('review')">Save and next misuse</a>
-                        <?php else : ?>
-                            <a class="button" style="margin:-5px;min-width:120px;" onclick="saveReview('return')">Save and return</a>
-                        <?php endif; ?>
-                        <a id="dropdown-button" class="button" style="padding:5px;"><i class="fa fa-angle-up"></i></a>
                     </div>
                     <div style="display:inline-block;float:right;margin-right:10px;">
                         <a href="<?= $next_misuse_path ?>" class="button <?= $next_misuse_path ? "" :  "disabled" ?>">></a>
