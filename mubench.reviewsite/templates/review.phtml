@@ -423,7 +423,7 @@ $origin_path = $origin_path ? $origin_path : $pathFor('experiment.detector', arr
                 document.addEventListener("keypress", function(event){
                     if(event.target.tagName == 'SELECT' || event.target.tagName == 'BODY'){
                         <?php if($next_reviewable_misuse_path) : ?>
-                            saveReview('next');
+                            saveReview('review');
                         <?php else : ?>
                             saveReview('return');
                         <?php endif; ?>
