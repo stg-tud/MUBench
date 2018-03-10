@@ -51,71 +51,77 @@ $columns_to_ignore = array(
 </head>
 <body>
 <?php include "includes/menu.phtml"; ?>
-<div>
+
 <?php foreach($experiments as $experiment): ?>
-<h1 class="row-hover" onclick="show(<?= $experiment->id ?>, this)">Experiment <?= /* @var Experiment */ $experiment->id ?>: <?= htmlspecialchars($experiment->name) ?> <i class="fa fa-angle-right"></i></h1>
-<?php foreach ($experiment_runs[$experiment->id] as $detector => $runs) : ?>
-<div id="<?= $experiment->id?>" style="padding-left: 30px;display:none">
-<h2 class="row-hover" onclick="show('<?= $experiment->id?>_<?= $detector ?>', this)" ><?= htmlspecialchars($detector) ?> <i class="fa fa-angle-right"></i></h2>
-    <table class="invisible" id="<?= $experiment->id?>_<?= $detector ?>" style="display:none">
-    <thead>
-    <tr>
-        <th></th>
-        <th>Detector</th>
-        <th>Project</th>
-        <th>Version</th>
-        <th>Result</th>
-        <th># of Findings</th>
-        <th>Runtime</th>
-        <th></th>
-        <th></th>
-    </tr>
-    </thead>
-    <tbody>
-    <?php
-    $last_project = ""
-    ?>
-        <?php $first_detector = True; ?>
-        <?php foreach($runs as $run) : ?>
-        <?php
-        $project = $run->project_muid;
-        $version = $run->version_muid;
-        $attr = $run->getAttributes();
-        $additional_stats = array_filter(array_keys($attr), function ($key) use ($columns_to_ignore, $attr) {
-            return !in_array($key, $columns_to_ignore) && array_key_exists($key, $attr) && !empty($attr[$key]);
-        });
-        sort($additional_stats);
-        ?>
-            <tr onclick="rowcheck(this)" class="row-hover">
-                <td class="top">
-                    <input type="checkbox" value='{"run_id": <?= $run->id ?>, "muid": "<?= $detector ?>"}'>
-                </td>
-                <td class="top">
-                    <?= $first_detector ? $markdown_parser->text($detector) : ""; ?></td>
-                <td class="top">
-                    <?= $markdown_parser->text($project); ?></td>
-                <td class="top">
-                    <?= $markdown_parser->text($version); ?></td>
-                <td class="top">
-                    <?= $markdown_parser->text($run['result']); ?></td>
-                <td class="top right">
-                    <?= $markdown_parser->text($run['number_of_findings']); ?></td>
-                <td class="top right">
-                    <?= $markdown_parser->text(substr($run['runtime'], 0, 4)) . "s"; ?></td>
-                <td class="top right">
-                    <form action="<?= $pathFor('runs.delete', array('experiment_id' => $experiment->id, 'detector_muid' => $detector, 'project_muid' => $project, 'version_muid' => $version)) ?>" method="post" target="">
-                        <button class="clickable-icon" style="border:none;outline:none;margin:0;padding:0;background-color:white;" type="submit"><i class="fa fa-trash"></i></button>
-                    </form>
-                </td>
-            </tr>
-            <?php $first_detector = False; ?>
-            <?php endforeach; ?>
+    <?php if(!empty($experiment_runs[$experiment->id])): ?>
+        <h1 class="row-hover" onclick="show(<?= $experiment->id ?>, this)">Experiment <?= /* @var Experiment */ $experiment->id ?>: <?= htmlspecialchars($experiment->name) ?> <i class="fa fa-angle-right"></i></h1>
+        <?php foreach ($experiment_runs[$experiment->id] as $detector => $runs) : ?>
+            <div id="<?= $experiment->id?>" style="padding-left: 30px;display:none;margin:0;">
+                <div class="row-hover" style="padding:0;margin:0;" onclick="show('<?= $experiment->id?>_<?= $detector ?>', this)" >
+                    <h2 style="margin:0;padding:0;"><?= htmlspecialchars($detector) ?>
+                        <a href="<?= $pathFor('runs.detector.delete', array('experiment_id' => $experiment->id, 'detector_muid' => $detector)) ?>">
+                        <i class="fa fa-trash"></i></a> <i class="fa fa-angle-right"></i>
+                    </h2>
+                </div>
+                <table class="invisible" id="<?= $experiment->id?>_<?= $detector ?>" style="display:none">
+                    <thead>
+                    <tr>
+                        <th></th>
+                        <th>Detector</th>
+                        <th>Project</th>
+                        <th>Version</th>
+                        <th>Result</th>
+                        <th># of Findings</th>
+                        <th>Runtime</th>
+                        <th></th>
+                        <th></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                        <?php
+                        $last_project = ""
+                        ?>
+                        <?php $first_detector = True; ?>
+                        <?php foreach($runs as $run) : ?>
+                        <?php
+                        $project = $run->project_muid;
+                        $version = $run->version_muid;
+                        $attr = $run->getAttributes();
+                        $additional_stats = array_filter(array_keys($attr), function ($key) use ($columns_to_ignore, $attr) {
+                            return !in_array($key, $columns_to_ignore) && array_key_exists($key, $attr) && !empty($attr[$key]);
+                        });
+                        sort($additional_stats);
+                        ?>
+                        <tr onclick="rowcheck(this)" class="row-hover">
+                            <td class="top">
+                                <input type="checkbox" value='{"run_id": <?= $run->id ?>, "muid": "<?= $detector ?>"}'>
+                            </td>
+                            <td class="top">
+                                <?= $first_detector ? $markdown_parser->text($detector) : ""; ?></td>
+                            <td class="top">
+                                <?= $markdown_parser->text($project); ?></td>
+                            <td class="top">
+                                <?= $markdown_parser->text($version); ?></td>
+                            <td class="top">
+                                <?= $markdown_parser->text($run['result']); ?></td>
+                            <td class="top right">
+                                <?= $markdown_parser->text($run['number_of_findings']); ?></td>
+                            <td class="top right">
+                                <?= $markdown_parser->text(substr($run['runtime'], 0, 4)) . "s"; ?></td>
+                            <td class="top right">
+                                <form action="<?= $pathFor('runs.delete', array('experiment_id' => $experiment->id, 'detector_muid' => $detector, 'project_muid' => $project, 'version_muid' => $version)) ?>" method="post" target="">
+                                    <button class="clickable-icon" style="border:none;outline:none;margin:0;padding:0;background-color:white;" type="submit"><i class="fa fa-trash"></i></button>
+                                </form>
+                            </td>
+                        </tr>
+                        <?php $first_detector = False; ?>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+            </div>
+        <?php endforeach; ?>
+    <?php endif; ?>
 <?php endforeach; ?>
-    </tbody>
-</table>
-    </div>
-<?php endforeach; ?>
-</div>
 <a class="button" onclick="deleteRuns()">Delete Runs</a>
 
 <script>
@@ -129,10 +135,10 @@ $columns_to_ignore = array(
         var obj = document.getElementById(id);
         if(obj.style.display == "" || obj.style.display == "none"){
             obj.style.display = "block";
-            o.getElementsByTagName('i')[0].className = "fa fa-angle-down";
+            o.getElementsByTagName('i')[1].className = "fa fa-angle-down";
         }else{
             obj.style.display = "none";
-            o.getElementsByTagName('i')[0].className = "fa fa-angle-right";
+            o.getElementsByTagName('i')[1].className = "fa fa-angle-right";
         }
     }
 
