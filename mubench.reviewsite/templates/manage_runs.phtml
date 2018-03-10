@@ -53,8 +53,11 @@ $columns_to_ignore = array(
 <?php include "includes/menu.phtml"; ?>
 <div>
 <?php foreach($experiments as $experiment): ?>
-<h1>Experiment <?= /* @var Experiment */ $experiment->id ?>: <?= htmlspecialchars($experiment->name) ?></h1>
-<table id="<?= $experiment->id?>">
+<h1 onclick="show(<?= $experiment->id ?>)">Experiment <?= /* @var Experiment */ $experiment->id ?>: <?= htmlspecialchars($experiment->name) ?></h1>
+<?php foreach ($experiment_runs[$experiment->id] as $detector => $runs) : ?>
+<div id="<?= $experiment->id?>" style="padding-left: 30px;display:none">
+<h2 onclick="show('<?= $experiment->id?>_<?= $detector ?>')" ><?= htmlspecialchars($detector) ?></h2>
+    <table id="<?= $experiment->id?>_<?= $detector ?>" style="display:none">
     <thead>
     <tr>
         <th></th>
@@ -72,7 +75,6 @@ $columns_to_ignore = array(
     <?php
     $last_project = ""
     ?>
-    <?php foreach ($experiment_runs[$experiment->id] as $detector => $runs) : ?>
         <?php $first_detector = True; ?>
         <?php foreach($runs as $run) : ?>
         <?php
@@ -111,6 +113,7 @@ $columns_to_ignore = array(
 <?php endforeach; ?>
     </tbody>
 </table>
+    </div>
 <?php endforeach; ?>
 </div>
 <a class="button" onclick="deleteRuns()">Delete Runs</a>
@@ -120,6 +123,11 @@ $columns_to_ignore = array(
     function rowcheck(obj){
         var c = obj.getElementsByTagName('input')[0];
         c.checked =! c.checked;
+    }
+
+    function show(id){
+        var obj = document.getElementById(id);
+        obj.style.display = (obj.style.display == "" || obj.style.display == "none") ? "block" : "none";
     }
 
     function deleteRuns(){
