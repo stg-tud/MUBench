@@ -437,6 +437,15 @@ $origin_path = $origin_path ? $origin_path : $pathFor('experiment.detector', arr
                     }
                 });
 
+                function show(b){
+                    var elem = document.getElementById("snippet_form");
+                    if(elem.style.display === "none"){
+                        elem.style.display = "block";
+                    }
+                    b.type = "hidden";
+                }
+
+                <?php if($is_reviewer) : ?>
                 function comment(){
                     var comment = document.getElementById("comment-area");
                     if(comment.style.display == "none" || comment.style.display == ""){
@@ -446,26 +455,19 @@ $origin_path = $origin_path ? $origin_path : $pathFor('experiment.detector', arr
                     }
                 }
 
-                function show(b){
-                    var elem = document.getElementById("snippet_form");
-                    if(elem.style.display === "none"){
-                        elem.style.display = "block";
-                    }
-                    b.type = "hidden";
-                }
-
-                <?php if($review && $is_reviewer): ?>
                 var simplemde = new SimpleMDE({
                     element: document.getElementById("review_comment"),
                     spellChecker: false,
                     status: false
                 });
 
+                <?php if($review): ?>
                 // fix for https://github.com/sparksuite/simplemde-markdown-editor/issues/344
                 document.getElementById("comment-area").style.display="block";
                 simplemde.value("<?= $review->comment ?>");
                 simplemde.codemirror.refresh();
                 document.getElementById("comment-area").style.display="none";
+                <?php endif; ?>
                 <?php endif; ?>
 
 
