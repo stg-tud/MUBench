@@ -53,16 +53,18 @@ $app->group('', function () use ($app, $settings) {
     $app->post('/tags/rename', \MuBench\ReviewSite\Controllers\TagsController::class.":updateTags")->setName('private.tags.update');
     $app->get('/tags/{tag_id}/delete', \MuBench\ReviewSite\Controllers\TagsController::class.":deleteTag")->setName('private.tags.delete');
     $app->post('/runs/delete', \MuBench\ReviewSite\Controllers\RunsController::class.":deleteRuns")->setName('private.runs.massDelete');
-    $app->group('/experiments/{experiment_id}/detectors/{detector_muid}/projects/{project_muid}/versions/{version_muid}', function() use ($app) {
-        $app->post('/runs', \MuBench\ReviewSite\Controllers\RunsController::class.":postRun");
-        $app->post('/runs/delete', MuBench\ReviewSite\Controllers\RunsController::class.":deleteRun")->setName('private.runs.delete');
-        $app->group('/misuses/{misuse_muid}', function() use ($app) {
-            $app->post('/tags', \MuBench\ReviewSite\Controllers\TagsController::class . ":postTag")->setName('private.tag.add');
-            $app->post('/tags/{tag_id}/delete', \MuBench\ReviewSite\Controllers\TagsController::class . ":removeTag")->setName('private.tag.remove');
-            $app->post('/reviews/{reviewer_name}', \MuBench\ReviewSite\Controllers\ReviewsController::class . ":postReview")->setName('private.update.review');
-            $app->post('/snippets', \MuBench\ReviewSite\Controllers\SnippetsController::class . ":postSnippet")->setName('private.snippet.add');
-            $app->post('/snippets/{snippet_id}/delete', \MuBench\ReviewSite\Controllers\SnippetsController::class . ":deleteSnippet")->setName('private.snippet.remove');
+    $app->group('/experiments/{experiment_id}/detectors/{detector_muid}', function() use ($app){
+        $app->get('/runs/delete', MuBench\ReviewSite\Controllers\RunsController::class.":deleteDetector")->setName('private.runs.detector.delete');
+        $app->group('/projects/{project_muid}/versions/{version_muid}', function() use ($app) {
+            $app->post('/runs', \MuBench\ReviewSite\Controllers\RunsController::class.":postRun");
+            $app->post('/runs/delete', MuBench\ReviewSite\Controllers\RunsController::class.":deleteRun")->setName('private.runs.delete');
+            $app->group('/misuses/{misuse_muid}', function() use ($app) {
+                $app->post('/tags', \MuBench\ReviewSite\Controllers\TagsController::class . ":postTag")->setName('private.tag.add');
+                $app->post('/tags/{tag_id}/delete', \MuBench\ReviewSite\Controllers\TagsController::class . ":removeTag")->setName('private.tag.remove');
+                $app->post('/reviews/{reviewer_name}', \MuBench\ReviewSite\Controllers\ReviewsController::class . ":postReview")->setName('private.update.review');
+                $app->post('/snippets', \MuBench\ReviewSite\Controllers\SnippetsController::class . ":postSnippet")->setName('private.snippet.add');
+                $app->post('/snippets/{snippet_id}/delete', \MuBench\ReviewSite\Controllers\SnippetsController::class . ":deleteSnippet")->setName('private.snippet.remove');
+            });
         });
     });
-
 })->add(new \MuBench\ReviewSite\Middleware\AuthMiddleware($container));
