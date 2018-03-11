@@ -499,7 +499,7 @@ class RunsController extends Controller
     {
         $results = array();
         foreach($detectors as $detector){
-            $runs = Run::of($detector)->in($experiment)->get();
+            $runs = Run::of($detector)->in($experiment)->with(['misuses.reviews.reviewer', 'misuses.metadata.patterns'])->get();
             foreach ($runs as &$run) {
                 $misuses = $run->misuses->sortBy('misuse_muid', SORT_NATURAL);
                 $filtered_misuses = new Collection;
