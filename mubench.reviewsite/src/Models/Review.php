@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Review extends Model
 {
 
-    protected $fillable = ['misuse_id', 'reviewer_id'];
+    protected $fillable = ['misuse_id', 'reviewer_id', 'comment'];
 
     public function reviewer()
     {

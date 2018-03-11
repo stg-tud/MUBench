@@ -168,7 +168,7 @@ class Misuse extends Model
 
     public function hasResolutionReview()
     {
-        return $this->hasReviewed(Reviewer::where('name', 'resolution')->first());
+        return $this->getResolutionReview() !== null;
     }
 
     public function getReview($reviewer)
@@ -184,7 +184,7 @@ class Misuse extends Model
 
     public function getResolutionReview()
     {
-        return $this->getReview(Reviewer::where('name', 'resolution')->first());
+        return $this->reviews->first(function ($value, $key) { return $value->reviewer->isResolutionReviewer(); });
     }
 
     public function hasPotentialHits()
