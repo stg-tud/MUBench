@@ -44,7 +44,7 @@ abstract class RunsResult
                 $reviewState = $misuse->getReviewState();
                 switch ($reviewState) {
                     case ReviewState::NEEDS_REVIEW:
-                        $this->open_reviews += 2 - sizeof($misuse->getReviews());
+                        $this->open_reviews += $misuse->getNumberOfRequiredReviews();
                         break;
                     case ReviewState::AGREEMENT_YES:
                         $this->yes_agreements++;

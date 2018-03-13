@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Misuse extends Model
 {
+    const NUMBER_OF_REQUIRED_REVIEWS = 2;
 
     protected $fillable = ['misuse_muid', 'run_id', 'detector_id', 'metadata_id'];
 
@@ -101,6 +102,11 @@ class Misuse extends Model
         return $this->getReviewState() > ReviewState::NEEDS_REVIEW;
     }
 
+    public function getNumberOfRequiredReviews()
+    {
+        return self::NUMBER_OF_REQUIRED_REVIEWS - sizeof($this->getReviews());
+    }
+
     public function hasConclusiveReviewState()
     {
         $review_state = $this->getReviewState();
@@ -129,7 +135,7 @@ class Misuse extends Model
     {
         if (!$this->hasPotentialHits()) {
             return ReviewState::NOTHING_TO_REVIEW;
-        } elseif (sizeof($this->reviews) < 2) {
+        } elseif (sizeof($this->reviews) < self::NUMBER_OF_REQUIRED_REVIEWS) {
             return ReviewState::NEEDS_REVIEW;
         } else {
             $byResolution = $this->hasResolutionReview();
