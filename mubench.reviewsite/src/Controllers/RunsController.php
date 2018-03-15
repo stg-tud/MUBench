@@ -351,7 +351,7 @@ class RunsController extends Controller
             $table->dateTime('created_at');
             $table->dateTime('updated_at');
             $table->index(['misuse_id'], 'potential hits');
-            $table->unique(['experiment_id', 'project_muid', 'version_muid', 'misuse_muid', 'rank'], 'potential hit');
+            $table->unique(['experiment_id', 'project_muid', 'version_muid', 'misuse_muid', 'rank']);
         });
     }
 
@@ -369,7 +369,7 @@ class RunsController extends Controller
             $table->integer('timestamp');
             $table->dateTime('created_at');
             $table->dateTime('updated_at');
-            $table->unique(['experiment_id', 'project_muid', 'version_muid'], 'run');
+            $table->unique(['experiment_id', 'project_muid', 'version_muid']);
         });
     }
 
