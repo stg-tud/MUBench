@@ -86,7 +86,8 @@ class TestPublishMetadataTask:
             ],
             "location": {
                 "file": "/some/file.java",
-                "method": "-some.method()-"
+                "method": "-some.method()-",
+                "line": -1
             },
             "target_snippets": [{"first_line_number": 42, "code": "-code-"}],
             "patterns": []
