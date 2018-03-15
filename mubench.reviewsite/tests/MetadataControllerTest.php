@@ -85,13 +85,13 @@ class MetadataControllerTest extends SlimTestCase
 
     function test_create_missing_misuses()
     {
-        $run_without_hits = json_decode(json_encode([
+        $run_without_hits = [
             "result" => "success",
             "runtime" => 42.1,
             "number_of_findings" => 23,
             "-custom-stat-" => "-stat-val-",
             "timestamp" => 12,
-            "potential_hits" => []]));
+            "potential_hits" => []];
         $detector = Detector::create(['muid' => '-d-']);
         $experiment = Experiment::find(1);
         $runsController = new RunsController($this->container);
@@ -108,7 +108,7 @@ class MetadataControllerTest extends SlimTestCase
 
     function test_update_unlinked_misuses()
     {
-        $run_with_potential_hit = json_decode(json_encode([
+        $run_with_potential_hit = [
             "result" => "success",
             "runtime" => 42.1,
             "number_of_findings" => 23,
@@ -119,7 +119,7 @@ class MetadataControllerTest extends SlimTestCase
                 "rank" => 0,
                 "target_snippets" => [],
                 "file" => "//src/file"
-            ]]]));
+            ]]];
         $detector = Detector::create(['muid' => '-d-']);
         $experiment = Experiment::find(1);
         $runsController = new RunsController($this->container);

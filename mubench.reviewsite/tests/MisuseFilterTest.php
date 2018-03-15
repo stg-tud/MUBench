@@ -53,14 +53,14 @@ class MisuseFilterTest extends SlimTestCase
             $this->detector->muid,
             '-project-muid-',
             '-version-muid-',
-            (object) [
+            [
                 'timestamp' => 1337,
                 'result' => 'success',
                 'runtime' => 42.0,
                 'number_of_findings' => 3,
                 'potential_hits' => [
-                    (object) ['misuse' => '1', 'rank' => 1, 'file' => '-foo.java-', 'target_snippets' => []],
-                    (object) ['misuse' => '2', 'rank' => 2, 'file' => '-foo.java-', 'target_snippets' => []]
+                    ['misuse' => '1', 'rank' => 1, 'file' => '-foo.java-', 'target_snippets' => []],
+                    ['misuse' => '2', 'rank' => 2, 'file' => '-foo.java-', 'target_snippets' => []]
                 ]
             ]);
     }

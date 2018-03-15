@@ -5,13 +5,13 @@ use Slim\Http\Response;
 
 # REFACTOR delete this after migration to controllers
 
-function decodeJsonBody(Request $request, $assoc = false) {
+function decodeJsonBody(Request $request) {
     $requestBody = $request->getParsedBody();
-    $body = json_decode($requestBody, $assoc);
+    $body = json_decode($requestBody, true);
     if ($body) return $body;
-    $body = json_decode($request->getBody(), $assoc);
+    $body = json_decode($request->getBody(), true);
     if ($body) return $body;
-    $body = json_decode($_POST["data"], $assoc);
+    $body = json_decode($_POST["data"], true);
     return $body;
 }
 

@@ -91,7 +91,7 @@ class RunsController extends Controller
             return error_response($response,400, "empty: " . print_r($_POST, true));
         }
 
-        $hits = $run->{'potential_hits'};
+        $hits = $run['potential_hits'];
         $this->logger->info("received data for '" . $experimentId . "', '" . $detector_muid . "." . $project_muid . "." . $version_muid . "' with " . count($hits) . " potential hits.");
         if(!$this->addRun($experimentId, $detector_muid, $project_muid, $version_muid, $run)){
             return error_response($response, 400, "runs for $project_muid with $version_muid already exists for $detector_muid in experiment $experimentId");
@@ -248,13 +248,13 @@ class RunsController extends Controller
 
         if($this->hasRunTable($detector)){
             $saved_run = Run::of($detector)->in($experiment)->where(['project_muid' => $projectId, 'version_muid' => $versionId])->first();
-            if($saved_run && intval($saved_run->timestamp) !== $run->{'timestamp'}){
-                $this->logger->warning("Run already exists ({$saved_run->timestamp}), rejecting update ({$run->timestamp}).");
+            if($saved_run && intval($saved_run->timestamp) !== $run['timestamp']){
+                $this->logger->warning("Run already exists ({$saved_run->timestamp}), rejecting update ({$run['timestamp']}).");
                 return False;
             }
         }
 
-        $potential_hits = $run->{'potential_hits'};
+        $potential_hits = $run['potential_hits'];
 
         $this->createOrUpdateRunsTable($detector, $run);
         $new_run = $this->createOrUpdateRun($detector, $experiment, $projectId, $versionId, $run);
@@ -388,7 +388,7 @@ class RunsController extends Controller
     private function getColumnNamesFromProperties($entry)
     {
         $propertyToColumnNameMapping = [];
-        $properties = array_keys(get_object_vars($entry));
+        $properties = array_keys(is_object($entry) ? get_object_vars($entry) : $entry);
         foreach ($properties as $property) {
             // MySQL does not permit column names with more than 64 characters:
             // https://dev.mysql.com/doc/refman/5.7/en/identifiers.html
@@ -424,14 +424,15 @@ class RunsController extends Controller
     private function storeFindings(Detector $detector, Experiment $experiment, $projectId, $versionId, Run $run, $findings)
     {
         foreach ($findings as $finding) {
-            $misuseId = $finding->{'misuse'};
+            $finding = $finding;
+            $misuseId = $finding['misuse'];
             $misuse = $run->misuses()->where('misuse_muid', $misuseId)->first();
             if(!$misuse){
                 $misuse = $this->createMisuse($detector, $experiment, $projectId, $versionId, $misuseId, $run->id);
             }
             $this->storeFinding($detector, $experiment, $projectId, $versionId, $misuseId, $misuse, $finding);
             if ($experiment->id === 2) {
-                $this->storeFindingTargetSnippets($projectId, $versionId, $misuseId, $finding->{'file'}, $finding->{'target_snippets'});
+                $this->storeFindingTargetSnippets($projectId, $versionId, $misuseId, $finding['file'], $finding['target_snippets']);
             }
         }
     }
@@ -457,7 +458,7 @@ class RunsController extends Controller
         $propertyToColumnNameMapping = $this->getPropertyToColumnNameMapping([$finding]);
         $propertyToColumnNameMapping = $this->removeDisruptiveFindingsColumns($propertyToColumnNameMapping);
         foreach ($propertyToColumnNameMapping as $property => $column) {
-            $value = $finding->{$property};
+            $value = $finding[$property];
             $values[$column] = $value;
         }
         $finding = new Finding;
@@ -481,7 +482,7 @@ class RunsController extends Controller
         $propertyToColumnNameMapping = $this->getColumnNamesFromProperties($run);
         $propertyToColumnNameMapping = $this->removeDisruptiveStatsColumns($propertyToColumnNameMapping);
         foreach ($propertyToColumnNameMapping as $property => $column) {
-            $value = $run->{$property};
+            $value = $run[$property];
             $savedRun[$column] = $value;
         }
         $savedRun->save();
@@ -491,7 +492,7 @@ class RunsController extends Controller
     private function storeFindingTargetSnippets($projectId, $versionId, $misuseId, $file, $snippets)
     {
         foreach ($snippets as $snippet) {
-            SnippetsController::createSnippetIfNotExists($projectId, $versionId, $misuseId, $file, $snippet->{'first_line_number'}, $snippet->{'code'});
+            SnippetsController::createSnippetIfNotExists($projectId, $versionId, $misuseId, $file, $snippet['first_line_number'], $snippet['code']);
         }
     }
 

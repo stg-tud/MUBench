@@ -21,7 +21,7 @@ class DetectorTest extends SlimTestCase
         parent::setUp();
 
         $this->runs_controller = new RunsController($this->container);
-        $this->run_without_findings = (object) [
+        $this->run_without_findings = [
             'result' => 'error',
             'runtime' => 42,
             'number_of_findings' => 0,
@@ -63,11 +63,11 @@ class DetectorTest extends SlimTestCase
 
     function test_detectors_with_findings__exists()
     {
-        $run_with_findings = (object) [
+        $run_with_findings = [
             'result' => 'success',
             'runtime' => 42,
             'number_of_findings' => 1,
-            'potential_hits' => [(object) ['misuse' => '-m-', 'rank' => 1337]],
+            'potential_hits' => [['misuse' => '-m-', 'rank' => 1337]],
             'timestamp' => 1337
         ];
         $this->runs_controller->addRun(1, 'test_detector', '-p-', '-v-', $run_with_findings);

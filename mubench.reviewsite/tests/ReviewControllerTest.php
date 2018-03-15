@@ -122,7 +122,7 @@ class ReviewControllerTest extends SlimTestCase
     private function createRunWithThreeMisuses()
     {
         $runsController = new RunsController($this->container);
-        $runsController->addRun(1, 'test-detector', '-p-', '-v-',json_decode(json_encode(
+        $runsController->addRun(1, 'test-detector', '-p-', '-v-',
             [
                 "result" => "success",
                 "runtime" => 42.1,
@@ -143,7 +143,7 @@ class ReviewControllerTest extends SlimTestCase
                     ]
                 ]
             ]
-        )));
+        );
         return Misuse::all()->all();
     }
 
