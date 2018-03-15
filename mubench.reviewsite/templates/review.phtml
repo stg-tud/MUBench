@@ -420,6 +420,15 @@ $origin_path = $origin_path ? $origin_path : $pathFor('experiment.detector', arr
                     }
                 };
 
+                document.addEventListener("keypress", function(event){
+                    if(event.target.tagName == 'SELECT' || event.target.tagName == 'BODY'){
+                        <?php if($next_reviewable_misuse_path) : ?>
+                            saveReview('review');
+                        <?php else : ?>
+                            saveReview('return');
+                        <?php endif; ?>
+                    }
+                });
 
                 function show(b){
                     var elem = document.getElementById("snippet_form");
