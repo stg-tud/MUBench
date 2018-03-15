@@ -20,6 +20,22 @@ function show(b){
     b.type = "hidden";
 }
 
+function comment(){
+    var comment = document.getElementById("comment-area");
+    if(comment.style.display == "none" || comment.style.display == ""){
+        comment.style.display = "block";
+    }else{
+        comment.style.display = "none";
+    }
+}
+
+function review(e){
+    e.parentElement.style.display = "none";
+    document.getElementById("review_area").style.visibility = "visible";
+    document.getElementById("overlay").style.display = "none";
+    document.getElementById("overlay-button").style.display = "none";
+}
+
 var simplemde = new SimpleMDE({
     element: document.getElementById("review_comment"),
     spellChecker: false,
