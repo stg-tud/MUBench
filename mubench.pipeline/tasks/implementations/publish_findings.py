@@ -44,7 +44,7 @@ class PublishFindingsTask:
                     detector, self.experiment_id, version, self.review_site_url)
 
         if detector_run.is_success():
-            logger.info("Detector reported %s potential hits.", len(potential_hits.findings))
+            logger.info("Uploading %s potential hits.", len(potential_hits.findings))
             result = "success"
         elif detector_run.is_error():
             logger.info("Detector produced an error.")
