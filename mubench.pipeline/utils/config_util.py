@@ -386,7 +386,7 @@ def __setup_publish_arguments(parser: ArgumentParser) -> None:
 def __setup_publish_precision_arguments(parser: ArgumentParser) -> None:
     def upload_limit(x):
         limit = int(x)
-        if limit < 1:
+        if limit < 0:
             raise ArgumentTypeError("invalid value: {}, must be positive".format(limit))
         return limit
 
