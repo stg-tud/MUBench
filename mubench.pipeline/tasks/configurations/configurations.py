@@ -115,8 +115,8 @@ class PublishProvidedPatternsExperiment(TaskConfiguration):
 
     def tasks(self, config) -> List:
         filter_ = PotentialHitsFilterTask()
-        publish = PublishFindingsTask(RunProvidedPatternsExperiment.ID, config.compiles_path, config.run_timestamp,
-                                      config.review_site_url, config.review_site_user, config.review_site_password)
+        publish = PublishFindingsTask(RunProvidedPatternsExperiment.ID, config.compiles_path, config.review_site_url,
+                                      config.review_site_user, config.review_site_password)
         return RunProvidedPatternsExperiment().tasks(config) + [filter_, publish]
 
 
@@ -143,8 +143,8 @@ class PublishAllFindingsExperiment(TaskConfiguration):
 
     def tasks(self, config) -> List:
         filter_ = AllFindingsFilterTask(config.limit)
-        publish = PublishFindingsTask(RunAllFindingsExperiment.ID, config.compiles_path, config.run_timestamp,
-                                      config.review_site_url, config.review_site_user, config.review_site_password)
+        publish = PublishFindingsTask(RunAllFindingsExperiment.ID, config.compiles_path, config.review_site_url,
+                                      config.review_site_user, config.review_site_password)
         return RunAllFindingsExperiment().tasks(config) + [filter_, publish]
 
 
@@ -172,8 +172,8 @@ class PublishBenchmarkExperiment(TaskConfiguration):
     def tasks(self, config) -> List:
         collect_misuses = CollectMisusesTask()
         filter_ = PotentialHitsFilterTask()
-        publish = PublishFindingsTask(RunBenchmarkExperiment.ID, config.compiles_path, config.run_timestamp,
-                                      config.review_site_url, config.review_site_user, config.review_site_password)
+        publish = PublishFindingsTask(RunBenchmarkExperiment.ID, config.compiles_path, config.review_site_url,
+                                      config.review_site_user, config.review_site_password)
         return RunBenchmarkExperiment().tasks(config) + [collect_misuses, filter_, publish]
 
 

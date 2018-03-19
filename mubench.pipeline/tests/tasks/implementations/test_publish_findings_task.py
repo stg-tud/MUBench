@@ -30,9 +30,11 @@ class TestPublishFindingsTask:
         self.test_detector_execution.is_timeout = lambda: False
         self.test_detector_execution.runtime = 0
         self.test_detector_execution.number_of_findings = 0
+        self.test_run_timestamp = 1337
         self.test_detector_execution.get_run_info = lambda: {
             'number_of_findings': self.test_detector_execution.number_of_findings,
-            'runtime': self.test_detector_execution.runtime
+            'runtime': self.test_detector_execution.runtime,
+            'timestamp': self.test_run_timestamp
         }
         self.test_detector_execution.findings_path = "-findings-"
 
@@ -45,10 +47,7 @@ class TestPublishFindingsTask:
 
         self.test_potential_hits = PotentialHits([])
 
-        self.test_run_timestamp = 1337
-
-        self.uut = PublishFindingsTask(self.experiment_id, "/sources", self.test_run_timestamp,
-                                       "http://dummy.url", "-username-", "-password-")
+        self.uut = PublishFindingsTask(self.experiment_id, "/sources", "http://dummy.url", "-username-", "-password-")
 
     def test_post_url(self, post_mock):
         self.uut.run(self.project, self.version, self.test_detector_execution, self.test_potential_hits,
@@ -223,7 +222,7 @@ class TestPublishFindingsTask:
         self.test_detector_execution.is_success = lambda: True
         potential_hits = [self._create_finding({"list": ["hello", "world"], "dict": {"key": "value"}}, convert_mock)]
         self.test_potential_hits = PotentialHits(potential_hits)
-        self.test_detector_execution.get_run_info = lambda: {"info": {"k1": "v1"}}
+        self.test_detector_execution.get_run_info = lambda: {"info": {"k1": "v1"}, "timestamp": 0}
 
         self.uut.run(self.project, self.version, self.test_detector_execution, self.test_potential_hits,
                      self.version_compile, self.detector)
