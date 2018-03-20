@@ -35,7 +35,7 @@ class PotentialHitsFilterTask:
 
 
 class AllFindingsFilterTask:
-    def __init__(self, limit: int = 0):
+    def __init__(self, limit: int):
         self.limit = limit
 
     def run(self, detector_run: DetectorRun) -> PotentialHits:
@@ -47,7 +47,4 @@ class AllFindingsFilterTask:
         return PotentialHits(potential_hits)
 
     def __get_top_findings(self, findings):
-        if self.limit:
-            return findings[0:self.limit]
-        else:
-            return findings
+        return findings[0:self.limit]

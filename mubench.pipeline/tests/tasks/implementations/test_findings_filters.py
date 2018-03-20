@@ -47,7 +47,7 @@ class TestAllFindings:
         self.detector_run = MagicMock()
         self.detector_run.detector = self.detector
 
-        self.uut = AllFindingsFilterTask()
+        self.uut = AllFindingsFilterTask(50)
 
     def test_returns_all_findings(self):
         expected = [

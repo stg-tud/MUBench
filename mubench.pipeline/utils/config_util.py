@@ -386,9 +386,11 @@ def __setup_publish_arguments(parser: ArgumentParser) -> None:
 def __setup_publish_precision_arguments(parser: ArgumentParser) -> None:
     def upload_limit(x):
         limit = int(x)
-        if limit < 1:
+        if limit < 0:
             raise ArgumentTypeError("invalid value: {}, must be positive".format(limit))
         return limit
 
-    parser.add_argument('--limit', type=upload_limit, default=__get_default('limit', 50), metavar='n', dest="limit",
-                        help="publish only the top-n findings. Defaults to 50")
+    default_limit = 50
+    parser.add_argument('--limit', type=upload_limit, default=__get_default('limit', default_limit), metavar='n',
+                        dest="limit", help="publish only the top-n findings. Defaults to {}. "
+                                           "Use `--limit 0` to publish only run stats.".format(default_limit))

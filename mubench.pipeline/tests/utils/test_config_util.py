@@ -169,3 +169,13 @@ def test_fails_without_run_subtask():
 def test_fails_without_publish_subtask():
     parser = _get_command_line_parser([], [], [])
     assert_raises(SystemExit, parser.parse_args, ['publish'])
+
+
+def test_allow_zero_limit():
+    parser = _get_command_line_parser(['DemoDetector'], [], [])
+    assert_equals(0, parser.parse_args(['publish', 'ex2', 'DemoDetector', '-s', 'site', '--limit', '0']).limit)
+
+
+def test_fails_on_negative_limit():
+    parser = _get_command_line_parser(['DemoDetector'], [], [])
+    assert_raises(SystemExit, parser.parse_args, ['publish', 'ex2', 'DemoDetector', '-s', 'site', '--limit', '-1'])

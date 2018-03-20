@@ -80,6 +80,7 @@ class DetectorRun:
             return
         elif self.is_success():
             logger.info("Successful previous %s. Skipping.", self)
+            logger.info("Detector reported %s findings.", len(self.findings))
             return
 
         self.reset()
@@ -96,6 +97,8 @@ class DetectorRun:
         if not self.is_success():
             logger.info("Run {} failed.".format(str(self)))
             logger.debug("Full exception:", exc_info=True)
+        else:
+            logger.info("Detector reported %s findings.", len(self.findings))
 
     def _execute(self, detector_args: Dict[str, str], timeout: Optional[int], current_timestamp: int, logger: Logger):
         start = time.time()
