@@ -85,7 +85,7 @@ class DetectorRun:
 
         self.reset()
 
-        logger.info("Executing %s...", self)
+        logger.info("Running '%s' on %s ... (%s)", self.detector, self.version, time.strftime("%H:%M"))
 
         detector_args.update({
             key_findings_file: self._findings_file_path,
