@@ -352,15 +352,22 @@ a.disabled {
     opacity:0.5;
     align-items: center;
     justify-content: center;
+    flex-direction: column;
 }
 
 .comment-overlay-button {
     position:absolute;
+    width: 50%;
     display:flex;
-    height:100%;
-    width:100%;
+    background-color: #f1f1f1;
     align-items: center;
     justify-content: center;
     flex-direction: column;
     text-align:center;
+    border: 1px solid;
+    box-shadow: 5px 5px #888888;
+    bottom: 30%;
+    right: 20%;
+    margin: 10px;
+    padding: 5px;
 }
