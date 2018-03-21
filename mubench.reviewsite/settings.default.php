@@ -39,5 +39,9 @@ return [
     // Reviewer login credentials
     'users' => [
         "admin" => "pass"
+    ],
+    'blind_mode' => [
+        'enabled' => false,
+        'detector_blind_names' => []
     ]
 ];
