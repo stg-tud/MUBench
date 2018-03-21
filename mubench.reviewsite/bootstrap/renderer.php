@@ -65,8 +65,9 @@ $container['renderer'] = function ($container) {
 
         'ex2_review_size' => $request->getQueryParam("ex2_review_size", $container->settings["default_ex2_review_size"]),
 
-        'markdown_parser' => $markdown_parser
+        'markdown_parser' => $markdown_parser,
         'blind_mode' => $container->settings['blind_mode']['enabled']
+
     ];
 
     return new PhpRenderer(__DIR__ . '/../templates/', $defaultTemplateVariables);
