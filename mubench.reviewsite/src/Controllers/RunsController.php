@@ -95,13 +95,13 @@ class RunsController extends Controller
                     if(!array_key_exists($misuse->getProject(), $misuse_results)){
                         $misuse_results[$misuse->getProject()] = array();
                     }
-                    if(!array_key_exists($misuse->getVersion(), $misuse_results)){
+                    if(!array_key_exists($misuse->getVersion(), $misuse_results[$misuse->getProject()])){
                         $misuse_results[$misuse->getProject()][$misuse->getVersion()] = array();
                     }
-                    if(!array_key_exists($misuse->misuse_muid, $misuse_results)){
+                    if(!array_key_exists($misuse->misuse_muid, $misuse_results[$misuse->getProject()][$misuse->getVersion()])){
                         $misuse_results[$misuse->getProject()][$misuse->getVersion()][$misuse->misuse_muid] = array();
                     }
-                    $misuse_results[$misuse->getProject()][$misuse->getVersion()][$misuse->misuse_muid][$misuse->detector->muid] = $misuse;
+                    $misuse_results[$misuse->getProject()][$misuse->getVersion()][$misuse->misuse_muid][$detector->muid] = $misuse;
                 }
             }
         }
