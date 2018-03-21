@@ -54,6 +54,7 @@ use MuBench\ReviewSite\Models\Experiment;
                     <?php endforeach; ?>
                 </ul>
             </li>
+            <?php $experiment = $this_exp ?>
             <?php if($user) : ?>
                     <li class="right <?= strpos($path, '/stats') !== false ? "active" : "" ?>">
                     <span>Reviewer: <?= htmlspecialchars($user->name) ?></span>
