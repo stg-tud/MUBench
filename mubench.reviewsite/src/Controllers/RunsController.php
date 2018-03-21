@@ -79,6 +79,13 @@ class RunsController extends Controller
         $detectors = Detector::withRuns($experiment);
         $results = $this->getResultsForExperiment($experiment, $detectors, $ex2_review_size);
 
+        $misuse_results = $this->getMisuseResults($experiment, $detectors);
+
+        return $this->renderer->render($response, 'experiment_stats.phtml', ['exp' => $experiment, 'experiment_results' => $results, 'ex2_review_size' => $ex2_review_size, 'misuses' => $misuse_results, 'det' => $detectors]);
+    }
+
+    public function getMisuseResults($experiment, $detectors)
+    {
         $misuse_results = [];
 
         foreach($detectors as $detector){
@@ -98,8 +105,7 @@ class RunsController extends Controller
                 }
             }
         }
-
-        return $this->renderer->render($response, 'experiment_stats.phtml', ['exp' => $experiment, 'experiment_results' => $results, 'ex2_review_size' => $ex2_review_size, 'misuses' => $misuse_results, 'det' => $detectors]);
+        return $misuse_results;
     }
 
     public function downloadResults(Request $request, Response $response, array $args)
