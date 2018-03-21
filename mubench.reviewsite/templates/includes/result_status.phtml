@@ -1,13 +1,13 @@
 <?php /**
 * @var \MuBench\ReviewSite\Models\RunsResult $result current result
-* @var array $results array with all run results
+* @var array $experiment_results array with all run results
 */
 ?>
 
 <?php if($result->open_reviews > 0 || $result->number_of_needs_clarification > 0): ?>
     <i class="fa fa-search" aria-hidden="true" style="color:red;" title="Missing reviews"></i>
 <?php endif;?>
-<?php if($result->number_of_projects < $results[1]["total"]->number_of_projects): ?>
+<?php if($result->number_of_projects < $experiment_results["total"]->number_of_projects): ?>
     <i class="fa fa-exclamation-triangle" aria-hidden="true" style="color:orange;" title="Missing runs"></i>
 <?php endif;?>
 
