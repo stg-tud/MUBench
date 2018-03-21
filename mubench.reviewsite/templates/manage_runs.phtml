@@ -185,11 +185,14 @@ $columns_to_ignore = array(
     function deleteRuns(id){
         var parent = document.getElementById(id);
 
-        var checkedInputs = parent.querySelectorAll("input[type='checkbox']:checked");
+        var checkedInputs = parent.querySelectorAll("input[type='checkbox']");
         var run_ids = [];
         for(var i = 0; i < checkedInputs.length-1; ++i){
-            run_ids.push(checkedInputs[i].value);
+            if(checkedInputs[i].checked){
+                run_ids.push(checkedInputs[i].value);
+            }
         }
+
         var form = document.createElement('form');
         form.action = '<?= $pathFor('runs.massDelete') ?>';
         form.method = 'post';
