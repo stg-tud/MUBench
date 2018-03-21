@@ -383,7 +383,7 @@ $origin_path = $origin_path ? $origin_path : $pathFor('experiment.detector', arr
                 <div id="comment-area" class="floating-comment" style="bottom:50px;right:10px">
                     <?php if($misuse->hasSufficientReviews() && $reviewer->name !== "resolution" && !$misuse->hasReviewed($reviewer)) : ?>
                         <div class="comment-overlay" id="overlay" style="z-index:2;"></div>
-                        <div class="comment-overlay-button" id="overlay-button" style="z-index:3"><span>This misuse was already reviewed.</span><a class="button" onclick="review(this)">I want to review</a></div>
+                        <div class="comment-overlay-button" id="overlay-button" style="z-index:3"><span>This misuse was already reviewed.</span><a class="button" onclick="review(this)">review it anyways</a></div>
                     <?php endif; ?>
                     <table class="invisible">
                         <tr><td id="review_area" colspan="2" style="visibility: visible">
