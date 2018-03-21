@@ -412,11 +412,8 @@ $origin_path = $origin_path ? $origin_path : $pathFor('experiment.detector', arr
             <?php if($reviewer && $is_reviewer): ?>
                 <script>
                     var origin = "<?= $origin_path ?>";
-                    var next_review = "";
-                    <?php if($review && $is_reviewer && $next_reviewable_misuse_path): ?>
-                        next_review = "<?= $next_reviewable_misuse_path ?>";
-                    <?php endif; ?>
-
+                    var next_review = "<?= $next_reviewable_misuse_path ?>";
+                    var next_reviewable = <?= $next_reviewable_misuse_path ? 1 : 0 ?>;
                 </script>
                 <script src="<?= $site_base_url ?>js/nav-bar.js"></script>
                 <script>
@@ -427,21 +424,8 @@ $origin_path = $origin_path ? $origin_path : $pathFor('experiment.detector', arr
                     simplemde.codemirror.refresh();
                     document.getElementById("comment-area").style.display="none";
                     <?php endif; ?>
-
-                    document.addEventListener("keypress", function(event){
-                        if(event.target.tagName == 'SELECT' || event.target.tagName == 'BODY'){
-                            <?php if($next_reviewable_misuse_path) : ?>
-                            saveReview('review');
-                            <?php else : ?>
-                            saveReview('return');
-                            <?php endif; ?>
-                        }
-                    });
                 </script>
             <?php endif; ?>
-            <script>
-
-            </script>
             </body>
         </html>
     

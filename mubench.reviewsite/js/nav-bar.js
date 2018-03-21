@@ -60,3 +60,13 @@ function saveReview(v){
     form.appendChild(input);
     form.submit();
 }
+
+document.addEventListener("keypress", function(event){
+    if(event.target.tagName == 'SELECT' || event.target.tagName == 'BODY'){
+        if(next_reviewable == 1){
+            saveReview('review');
+        }else{
+            saveReview('return');
+        }
+    }
+});
