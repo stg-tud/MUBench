@@ -281,6 +281,11 @@ $misuse->detector_id = $detector->id;
 $misuse->run_id = 5;
 $misuse->metadata_id = 4;
 $misuse->save();
+$misuse = new \MuBench\ReviewSite\Models\Misuse;
+$misuse->misuse_muid = '0';
+$misuse->detector_id = $detector->id;
+$misuse->run_id = 4;
+$misuse->save();
 
 echo 'Creating reviews<br/>';
 $review = new \MuBench\ReviewSite\Models\Review;
