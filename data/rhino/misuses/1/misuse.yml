@@ -1,7 +1,7 @@
 api:
 - org.mozilla.javascript.IRFactory
 characteristics:
-- superfluous/call/duplicate
+- redundant/call/duplicate
 crash: true
 description: >
   IRFactory.initFunction() is called twice along one possible execution

@@ -1,7 +1,7 @@
 api:
 - org.w3c.tools.resources.ResourceReference
 characteristics:
-- superfluous/exception_handling
+- redundant/exception_handling
 crash: false
 description: |
   On line 266 the `ResourceReference` `root` is locked. The surrounding `try`

@@ -2,7 +2,7 @@ api:
 - java.lang.String
 characteristics:
 - missing/call
-- superfluous/call
+- redundant/call
 crash: false
 description: >
   Encoded data is converted into a String for storing, without explicitely

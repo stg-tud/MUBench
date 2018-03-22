@@ -1,7 +1,7 @@
 api:
 - java.lang.Throwable
 characteristics:
-- superfluous/exception handling
+- redundant/exception handling
 crash: false
 description: >
   Catches Throwable, which might supress Errors, like OutOfMemory, TheadDeath, ...

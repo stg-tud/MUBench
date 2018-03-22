@@ -3,7 +3,7 @@ api:
 - java.String
 characteristics:
 - missing/call
-- superfluous/call
+- redundant/call
 crash: false
 description: >
   Exports bytes for Mac.doFinal() without specifying the encoding.

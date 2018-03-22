@@ -1,7 +1,7 @@
 api:
 - javax.swing.JFrame
 characteristics:
-- superfluous/condition/context
+- redundant/condition/context
 crash: false
 description: >
   Dispatches work on a UI element to the DTE, while the current execution

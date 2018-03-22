@@ -1,7 +1,7 @@
 api:
 - java.util.Collection
 characteristics:
-- superfluous/iteration
+- redundant/iteration
 crash: true
 description: >
   Loops over a collection, only to ensure it is not empty (every subsequent

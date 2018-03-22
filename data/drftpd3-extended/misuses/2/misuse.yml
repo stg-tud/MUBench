@@ -1,7 +1,7 @@
 api:
 - javax.crypto.Cipher
 characteristics:
-- superfluous/call
+- redundant/call
 description: >
   May call `init()` multiple times on the same Cipher instance.
 location:

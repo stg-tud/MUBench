@@ -2,7 +2,7 @@ api:
 - java.util.Optional
 characteristics:
 - missing/call
-- superfluous/call
+- redundant/call
 crash: true
 description: >
   Uses `Optional.get()` without prior check of `isPresent()` within

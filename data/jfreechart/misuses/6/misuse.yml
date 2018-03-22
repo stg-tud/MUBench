@@ -2,7 +2,7 @@ api:
 - org.jfree.chart.plot.CategoryPlot
 characteristics:
 - missing/condition/null_check
-- superfluous/condition/null_check
+- redundant/condition/null_check
 crash: true
 description: >
   CategoryPlot.getDataset() may return null. The check for null was flipped.

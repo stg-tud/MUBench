@@ -2,7 +2,7 @@ api:
 - java.lang.String
 characteristics:
 - missing/call
-- superfluous/call
+- redundant/call
 crash: false
 description: >
   A string is converted to bytes without specifying an explicit encoding.
