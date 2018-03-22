@@ -17,5 +17,6 @@ fix:
 internal: false
 pattern:
 - single object
+crash: false
 source:
   name: Came up in a discussion.

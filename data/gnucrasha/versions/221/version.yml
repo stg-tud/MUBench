@@ -2,5 +2,6 @@ build:
   classes: UNKNOWN
   src: app/src/
 misuses:
-- '1'
+- 1a
+- 1b
 revision: ce50ee116f18a373f30cb135ee48b5ad6c187db0~1

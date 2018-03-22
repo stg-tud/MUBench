@@ -11,3 +11,6 @@ location:
 internal: true
 pattern:
 - single object
+crash: false
+source:
+  name: "MUBench-JCE -- A Misuse-Detection Benchmark for the Java Cryptography Extension API, Mattis Manfred Kämmerer, Bachelor Thesis, 2017"

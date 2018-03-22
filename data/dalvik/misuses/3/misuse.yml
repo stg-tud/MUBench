@@ -13,3 +13,6 @@ fix:
     Use RSA with one of these paddings: OAEPWithMD5AndMGF1Padding, OAEPWithSHA-224AndMGF1Padding, OAEPWithSHA-256AndMGF1Padding, OAEPWithSHA-384AndMGF1Padding, OAEPWithSHA-512AndMGF1Padding
 pattern:
 - single object
+crash: false
+source:
+  name: "MUBench-JCE -- A Misuse-Detection Benchmark for the Java Cryptography Extension API, Mattis Manfred Kämmerer, Bachelor Thesis, 2017"
