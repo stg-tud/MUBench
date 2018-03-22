@@ -29,6 +29,15 @@ $container['renderer'] = function ($container) {
         return $container->router->pathFor($routeName, $args);
     };
 
+    $blind_mode = $container->settings['blind_mode']['enabled'];
+
+    $detectorName = function($detector_name) use ($container, $blind_mode) {
+        if($blind_mode && array_key_exists($detector_name, $container->settings['blind_mode']['detector_blind_names'])){
+            return $container->settings['blind_mode']['detector_blind_names'][$detector_name];
+        }
+        return $detector_name;
+    };
+
     $markdown_parser = new Parsedown();
     $markdown_parser->setBreaksEnabled(True);
 
@@ -66,8 +75,8 @@ $container['renderer'] = function ($container) {
         'ex2_review_size' => $request->getQueryParam("ex2_review_size", $container->settings["default_ex2_review_size"]),
 
         'markdown_parser' => $markdown_parser,
-        'blind_mode' => $container->settings['blind_mode']['enabled']
-
+        'blind_mode' => $container->settings['blind_mode']['enabled'],
+        'detectorName' => $detectorName
     ];
 
     return new PhpRenderer(__DIR__ . '/../templates/', $defaultTemplateVariables);
