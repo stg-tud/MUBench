@@ -15,6 +15,7 @@
  * @var array $detectors detectors (Detector) with results per experiment
  * @var array $results
  * @var int $ex2_review_size max number of reviews (per project) to include in statistics
+ * @var callable $detectorName function to resolve router paths
  */
 
 use MuBench\ReviewSite\Models\RunsResult;
@@ -75,7 +76,7 @@ use MuBench\ReviewSite\Models\RunsResult;
     <?php foreach ($results[1] as $result) : /** @var $result RunsResult */ ?>
         <tbody>
         <tr>
-            <td><?= $result->getDisplayName() ?></td>
+            <td><?= $detectorName($result->getDisplayName()) ?></td>
             <td class="right"><?= $result->number_of_projects ?></td>
             <td class="right"><?= $result->number_of_synthetics ?></td>
             <td class="right"><?= $result->number_of_misuses ?></td>
@@ -150,7 +151,7 @@ use MuBench\ReviewSite\Models\RunsResult;
     <?php foreach ($results[2] as $result) : /** @var $result RunsResult */ ?>
         <tbody>
         <tr>
-            <td><?= $result->getDisplayName() ?></td>
+            <td><?= $detectorName($result->getDisplayName()) ?></td>
             <td class="right"><?= $result->number_of_projects ?></td>
             <td class="right"><?= $result->misuses_to_review ?></td>
             <td class="right"><?= $result->open_reviews ?></td>
@@ -219,7 +220,7 @@ use MuBench\ReviewSite\Models\RunsResult;
     <?php foreach ($results[3] as $key => $result) : /** @var RunsResult $results */ ?>
         <tbody>
         <tr>
-            <td><?= $result->getDisplayName() ?></td>
+            <td><?= $detectorName($result->getDisplayName()) ?></td>
             <td class="right"><?= $result->number_of_projects ?></td>
             <td class="right"><?= $result->number_of_misuses ?></td>
             <td class="right"><?= $result->misuses_to_review ?></td>

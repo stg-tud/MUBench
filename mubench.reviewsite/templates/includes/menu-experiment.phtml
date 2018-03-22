@@ -30,7 +30,7 @@ $is_current_experiment = strpos($path,  "experiments/{$experiment->id}/") !== fa
         <?php foreach ($detectors[$experiment->id] as $detector) : ?>
             <?php $is_current_detector = $this_det && $this_det->muid == $detector->muid ?>
             <li class="<?= $is_current_detector && $is_current_experiment ? "active" : "" ?>">
-                <a href="<?= $pathFor('experiment.detector', array("experiment_id"=>$experiment->id, "detector_muid" => $detector->muid)) ?>"><?= $detector->muid ?></a>
+                <a href="<?= $pathFor('experiment.detector', array("experiment_id"=>$experiment->id, "detector_muid" => $detectorName($detector->muid))) ?>"><?= $detectorName($detector->muid) ?></a>
             </li>
         <?php endforeach; ?>
         <?php $detector = $this_det ?>

@@ -17,6 +17,7 @@
  * @var Parsedown $markdown_parser markdown parser
  *
  * @var array $misuses
+ * @var callable $detectorName function to resolve router paths
  */
 
 use MuBench\ReviewSite\Models\ReviewState;
@@ -62,7 +63,7 @@ use MuBench\ReviewSite\Models\ReviewState;
         ?>
         <tr>
             <td class="<?= $style_classes ?>">
-                <?= $new_project ? $markdown_parser->text($detector) : ""; ?></td>
+                <?= $new_project ? $markdown_parser->text($detectorName($detector)) : ""; ?></td>
             <td class="<?= $style_classes ?>">
                 <?= $new_project ? $markdown_parser->text($project) : ""; ?></td>
             <td class="<?= $style_classes ?>">
@@ -70,7 +71,7 @@ use MuBench\ReviewSite\Models\ReviewState;
             <td class="<?= $style_classes ?>">
                 <?= $markdown_parser->text($misuse->misuse_muid); ?></td>
             <?php
-            $resolution_review = $pathFor('review', array('experiment_id' => $experiment->id, 'detector_muid' => $misuse->detector->muid, 'project_muid' => $misuse->getProject(), 'version_muid' => $misuse->getVersion(), 'misuse_muid' => $misuse->misuse_muid, 'reviewer_name' => ($blind_mode ? $resolution_reviewer->id : $resolution_reviewer->name)));
+            $resolution_review = $pathFor('review', array('experiment_id' => $experiment->id, 'detector_muid' => $detectorName($misuse->detector->muid), 'project_muid' => $misuse->getProject(), 'version_muid' => $misuse->getVersion(), 'misuse_muid' => $misuse->misuse_muid, 'reviewer_name' => ($blind_mode ? $resolution_reviewer->id : $resolution_reviewer->name)));
             ?>
             <td class="<?= $style_classes ?>">
                 <?php $review_state = $misuse->getReviewState() ?>
@@ -97,11 +98,11 @@ use MuBench\ReviewSite\Models\ReviewState;
                 <ul class="inline">
                     <?php foreach($misuse->getReviews() as $review) : /** @var \MuBench\ReviewSite\Models\Review $review */ ?>
                     <?php $reviewer_name = htmlspecialchars(($blind_mode ? $review->reviewer->id : $review->reviewer->name)) ?>
-                        <li style="display:inline"><a href="<?= $pathFor('review', array('experiment_id' => $experiment->id, 'detector_muid' => $misuse->detector->muid, 'project_muid' => $misuse->getProject(), 'version_muid' => $misuse->getVersion(), 'misuse_muid' => $misuse->misuse_muid, 'reviewer_name' => ($blind_mode ? $review->reviewer->id : $review->reviewer->name))) ?><?= ($blind_mode ? $review->reviewer->id : $review->reviewer->name) ?>"></a></li>
+                        <li style="display:inline"><a href="<?= $pathFor('review', array('experiment_id' => $experiment->id, 'detector_muid' => $detectorName($misuse->detector->muid), 'project_muid' => $misuse->getProject(), 'version_muid' => $misuse->getVersion(), 'misuse_muid' => $misuse->misuse_muid, 'reviewer_name' => ($blind_mode ? $review->reviewer->id : $review->reviewer->name))) ?><?= ($blind_mode ? $review->reviewer->id : $review->reviewer->name) ?>"></a></li>
                     <?php endforeach; ?>
                 </ul>
             </td>
-            <td><a href="<?= $pathFor('review', array('experiment_id' => $experiment->id, 'detector_muid' => $misuse->detector->muid, 'project_muid' => $misuse->getProject(), 'version_muid' => $misuse->getVersion(), 'misuse_muid' => $misuse->misuse_muid, 'reviewer_name' => ($blind_mode ? $user->id : $user->name)));
+            <td><a href="<?= $pathFor('review', array('experiment_id' => $experiment->id, 'detector_muid' => $detectorName($misuse->detector->muid), 'project_muid' => $misuse->getProject(), 'version_muid' => $misuse->getVersion(), 'misuse_muid' => $misuse->misuse_muid, 'reviewer_name' => ($blind_mode ? $user->id : $user->name)));
                             ?><?= $origin_param ?>" class="button">review</a></td>
         </tr>
         <?php

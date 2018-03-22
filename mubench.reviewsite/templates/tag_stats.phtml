@@ -16,6 +16,7 @@
  * @var array $results
  * @var array $tags
  * @var int $ex2_review_size max number of reviews (per project) to include in statistics
+ * @var callable $detectorName function to resolve router paths
  */
 ?>
 <html>
@@ -41,7 +42,7 @@
     <?php foreach ($results[$experiment->id] as $key => $result) : ?>
         <tbody>
         <tr>
-            <td> <?= htmlspecialchars($key) ?>
+            <td> <?= htmlspecialchars($detectorName($key)) ?>
             <?php foreach($tags as $tag): ?>
                 <?php if(array_key_exists($tag->name, $result)) : ?>
                     <td><?= htmlspecialchars(count($result[$tag->name])) ?></td>

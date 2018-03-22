@@ -17,7 +17,7 @@ use MuBench\ReviewSite\Models\Misuse;
                             <span class="close"
                                   id="<?= htmlspecialchars($project) ?>_<?= htmlspecialchars($version) ?>_<?= htmlspecialchars($misuse->id) ?>">&times;</span>
         <table class="invisible">
-            <tr><td><b>Detector:</b></td><td><?= htmlspecialchars($detector->muid); ?></td></tr>
+            <tr><td><b>Detector:</b></td><td><?= htmlspecialchars($detectorName($detector->muid)); ?></td></tr>
             <tr><td><b>Target:</b></td><td>project '<?= $markdown_parser->text($misuse->getProject()); ?>' version <?= $markdown_parser->text($misuse->getVersion()); ?></td></tr>
             <tr><td><b>Misuse:</b></td><td>misuse '<?= $markdown_parser->text($misuse->misuse_muid); ?>'</td></tr>
             <tr><td><b>Tags:</b></td>
