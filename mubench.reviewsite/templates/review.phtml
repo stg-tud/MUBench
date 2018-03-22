@@ -349,18 +349,6 @@ $origin_path = $origin_path ? $origin_path : $pathFor('experiment.detector', arr
        </table>
         <?php endif; ?>
         <?php if($is_reviewer && $reviewer) :?>
-                <table class="invisible">
-                <tr><td>Reviewer Name:</td>
-                    <td><?= htmlspecialchars($reviewer->name); ?></td></tr>
-                <tr><td class="vtop"><label for="review_comment">Comment</label>:</td>
-                    <td>
-                    <?php if($review) : ?>
-                        <textarea id="review_comment" name="review_comment" cols="80" rows="5"><?= htmlspecialchars($review->comment); ?></textarea>
-                    <?php else : ?>
-                        <textarea id="review_comment" name="review_comment" cols="80" rows="5"></textarea>
-                    <?php endif; ?>
-                    </td></tr>
-                </table>
                 <input type="hidden" name="misuse_id" value="<?= htmlspecialchars($misuse->id); ?>">
                 <div class="review-nav-bar">
                     <?php
@@ -370,24 +358,42 @@ $origin_path = $origin_path ? $origin_path : $pathFor('experiment.detector', arr
                         ?>
                     <a href="<?= $origin_path ?>" class="button">return</a>
                     <a href="<?= $previous_misuse_path ?>" class="button <?= $previous_misuse_path ? "" :  "disabled" ?>"><</a>
-                    <div class="dropdown" style="padding:0;position: relative; left: 45%">
-                        <div id="save-dropdown" class="dropdown-content" style="margin-left:-5px;margin-bottom:-3px;padding:0;bottom:100%;">
+                    <div style="padding:0;margin:0;display:inline-block;left:38%;position:relative">
+                        <a class="button" onclick="comment()">Comment</a>
+                        <div class="dropdown" style="">
+                            <div id="save-dropdown" class="dropdown-content" style="margin-left:-5px;margin-bottom:-3px;padding:0;bottom:100%;">
+                                <?php if($next_reviewable_misuse_path) : ?>
+                                    <a onclick="saveReview('return')">Save and return</a>
+                                <?php endif; ?>
+                                <a onclick="saveReview('save')">Save</a>
+                            </div>
                             <?php if($next_reviewable_misuse_path) : ?>
-                                <a onclick="saveReview('return')">Save and return</a>
+                                <a class="button" style="margin:-5px;min-width:120px;" onclick="saveReview('review')">Save and next misuse</a>
+                            <?php else : ?>
+                                <a class="button" style="margin:-5px;min-width:120px;" onclick="saveReview('return')">Save and return</a>
                             <?php endif; ?>
-                            <a onclick="saveReview('save')">Save</a>
+                            <a id="dropdown-button" class="button" style="padding:5px;"><i class="fa fa-angle-up"></i></a>
                         </div>
-                        <?php if($next_reviewable_misuse_path) : ?>
-                            <a class="button" style="margin:-5px;min-width:120px;" onclick="saveReview('review')">Save and next misuse</a>
-                        <?php else : ?>
-                            <a class="button" style="margin:-5px;min-width:120px;" onclick="saveReview('return')">Save and return</a>
-                        <?php endif; ?>
-                        <a id="dropdown-button" class="button" style="padding:5px;"><i class="fa fa-angle-up"></i></a>
                     </div>
                     <div style="display:inline-block;float:right;margin-right:10px;">
                         <a href="<?= $next_misuse_path ?>" class="button <?= $next_misuse_path ? "" :  "disabled" ?>">></a>
                         <a href="<?= $next_reviewable_misuse_path ?>" class="button <?= $next_reviewable_misuse_path ? "" :  "disabled" ?>">>></a>
                     </div>
+                </div>
+                <div id="comment-area" class="floating-comment" style="bottom:50px;right:10px">
+                    <?php if($misuse->hasSufficientReviews() && $reviewer->name !== "resolution" && !$misuse->hasReviewed($reviewer)) : ?>
+                        <div class="comment-overlay" id="overlay" style="z-index:2;"></div>
+                        <div class="comment-overlay-button" id="overlay-button" style="z-index:3"><span>This misuse was already reviewed.</span><a class="button" onclick="review(this)">review it anyways</a></div>
+                    <?php endif; ?>
+                    <table class="invisible">
+                        <tr><td id="review_area" colspan="2" style="visibility: visible">
+                                <?php if($review) : ?>
+                                    <textarea id="review_comment" name="review_comment" cols="80" rows="5"><?= htmlspecialchars($review->comment); ?></textarea>
+                                <?php else : ?>
+                                    <textarea id="review_comment" name="review_comment" cols="80" rows="5"></textarea>
+                                <?php endif; ?>
+                            </td></tr>
+                    </table>
                 </div>
 
             </form>
@@ -405,7 +411,10 @@ $origin_path = $origin_path ? $origin_path : $pathFor('experiment.detector', arr
 
             <script>
                 var origin = "<?= $origin_path ?>";
-                var next_review = "<?= $next_reviewable_misuse_path ?>";
+                var next_review = "";
+                <?php if($review && $is_reviewer && $next_reviewable_misuse_path): ?>
+                    next_review = "<?= $next_reviewable_misuse_path ?>";
+                <?php endif; ?>
 
                 window.onclick = function (event) {
                     var dropdown = document.getElementById("save-dropdown");
@@ -438,11 +447,38 @@ $origin_path = $origin_path ? $origin_path : $pathFor('experiment.detector', arr
                     b.type = "hidden";
                 }
 
+                <?php if($is_reviewer) : ?>
+                function comment(){
+                    var comment = document.getElementById("comment-area");
+                    if(comment.style.display == "none" || comment.style.display == ""){
+                        comment.style.display = "block";
+                    }else{
+                        comment.style.display = "none";
+                    }
+                }
+
                 var simplemde = new SimpleMDE({
                     element: document.getElementById("review_comment"),
                     spellChecker: false,
                     status: false
                 });
+
+                <?php if($review): ?>
+                // fix for https://github.com/sparksuite/simplemde-markdown-editor/issues/344
+                document.getElementById("comment-area").style.display="block";
+                simplemde.value("<?= $review->comment ?>");
+                simplemde.codemirror.refresh();
+                document.getElementById("comment-area").style.display="none";
+                <?php endif; ?>
+                <?php endif; ?>
+
+
+                function review(e){
+                    e.parentElement.style.display = "none";
+                    document.getElementById("review_area").style.visibility = "visible";
+                    document.getElementById("overlay").style.display = "none";
+                    document.getElementById("overlay-button").style.display = "none";
+                }
 
                 function saveReview(v){
                     var form = document.getElementById("review_form");
