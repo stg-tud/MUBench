@@ -28,7 +28,7 @@ class ReviewsController extends Controller
         $misuse_muid = $args['misuse_muid'];
 
         $experiment = Experiment::find($experiment_id);
-        $detector = Detector::find($detector_muid);
+        $detector = Detector::find($this->detectorBlindToReal($detector_muid));
         $ex2_review_size = $request->getQueryParam("ex2_review_size", $this->settings['default_ex2_review_size']);
 
         $reviewer = array_key_exists('reviewer_name', $args) ? ($this->settings['blind_mode']['enabled'] ? Review::find($args['reviewer_name']) : Reviewer::where(['name' => $args['reviewer_name']])->first()) : $this->user;
