@@ -35,6 +35,9 @@ class general(StatCalculatorTask):
     def __init__(self):
         super().__init__()
         self.number_of_misuses = 0
+        self.number_of_misuses_with_corresponding_correct_usages = 0
+        self.number_of_multitype_misuses = 0
+        self.number_of_internal_API_misuses = 0
         self.number_of_crashes = 0
         self.projects = set()
         self.versions = set()
@@ -44,28 +47,43 @@ class general(StatCalculatorTask):
         self.logger = logging.getLogger('stats.general')
 
     def run(self, project: Project, version: ProjectVersion, misuse: Misuse):
-        self.number_of_misuses += 1
-        if misuse.is_crash:
-            self.number_of_crashes += 1
-
         self.sources.add(misuse.source)
         if not project.id.startswith("synthetic_"):
             self.projects.add(project.id)
             self.versions.add(version.id)
 
+        self.number_of_misuses += 1
+
+        if len(misuse.apis) > 1:
+            self.number_of_multitype_misuses += 1
+
+        if misuse.is_apis_are_internal:
+            self.number_of_internal_API_misuses += 1
+
+        if misuse.is_crash:
+            self.number_of_crashes += 1
+
+        if misuse.patterns:
+            self.number_of_misuses_with_corresponding_correct_usages += 1
+
         self.apis.add(tuple(sorted(misuse.apis)))
 
     def end(self):
+        self.log("Property", "Value")
+        self.log("-" * 33, "")
         self.log("Sources", len(self.sources))
         self.log("Projects", len(self.projects))
         self.log("Versions", len(self.versions))
         self.log("Misuses", self.number_of_misuses)
-        self.log("Crashes", "{} ({:.1f}%)".format(self.number_of_crashes,
-                                                  self.number_of_crashes / self.number_of_misuses * 100))
-        self.log("APIs", len(self.apis))
+        self.log("    Multi-Type", self.number_of_multitype_misuses, self.number_of_misuses)
+        self.log("    Internal-API", self.number_of_internal_API_misuses, self.number_of_misuses)
+        self.log("    Crash", self.number_of_crashes, self.number_of_misuses)
+        self.log("    Correct Usage", self.number_of_misuses_with_corresponding_correct_usages, self.number_of_misuses)
+        self.log("Misused APIs", len(self.apis))
 
-    def log(self, key, value):
-        self.logger.info("{: <12} {: >15}".format(key, value))
+    def log(self, key, value, total=None):
+        percentage = "({: >5.1f}%)".format(value / total * 100) if total else ""
+        self.logger.info("{: <18} {: >5} {}".format(key, value, percentage))
 
 
 class violation(StatCalculatorTask):

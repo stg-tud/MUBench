@@ -122,6 +122,10 @@ class Misuse:
         return self._apis
 
     @property
+    def is_apis_are_internal(self):
+        return self._yaml.get('internal', False)
+
+    @property
     def characteristics(self):
         if getattr(self, '_characteristics', None) is None:
             self._characteristics = self._yaml.get('characteristics', [])
