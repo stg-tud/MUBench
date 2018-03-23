@@ -2,7 +2,8 @@ api:
 - java.io.ObjectOutputStream
 - java.io.ByteArrayOutputStream
 characteristics:
-- misplaced/call
+- missing/call
+- redundant/call
 crash: false
 description: |
   When an ObjectOutputStream instance wraps an underlying ByteArrayOutputStream instance,

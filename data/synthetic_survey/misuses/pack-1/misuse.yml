@@ -1,7 +1,8 @@
 api:
 - javax.swing.JFrame
 characteristics:
-- misplaced/call
+- missing/call
+- redundant/call
 crash: false
 description: >
   Calls JFrame.setVisible(true) before JFrame.pack(). This may lead to
