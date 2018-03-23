@@ -10,7 +10,7 @@ MuBench CI Status: [![MuBench CI Status](https://api.shippable.com/projects/570d
 
 * [Sven Amann](http://www.stg.tu-darmstadt.de/staff/sven_amann) (Project Lead)
 * [Sarah Nadi](http://www.sarahnadi.org/)
-* Hoan A. Nguyen
+* [Hoan Anh Nguyen](https://sites.google.com/site/nguyenanhhoan/)
 * [Tien N. Nguyen](http://home.eng.iastate.edu/~tien/)
 * [Mattis Kämmerer](https://github.com/M8is)
 * [Jonas Schlitzer](https://github.com/joschli)
