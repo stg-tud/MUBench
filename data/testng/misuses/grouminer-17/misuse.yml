@@ -2,6 +2,7 @@ api:
 - org.testng.reporters.XMLStringBuffer
 characteristics:
 - missing/condition/value_or_state
+- missing/call
 crash: true
 description: |
   In line 71, the `XMLStringBuffer` instance created in line 31 gets a tag

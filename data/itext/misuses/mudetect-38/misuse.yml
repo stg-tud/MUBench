@@ -1,7 +1,7 @@
 api:
 - com.itextpdf.text.pdf.PdfLayer
 characteristics:
-- missing/condition/value_or_state
+- missing/condition/null_check
 crash: true
 description: |
   The method `PdfLayer.getAsString()` is invoked and the result is immediately converted `toUnicodeString()`, without checking whether it is `null`. From [the documentation og `getAsString()`](http://itextsupport.com/apidocs/itext5/latest/com/itextpdf/text/pdf/PdfDictionary.html#getAsString-com.itextpdf.text.pdf.PdfName-) we take that this is unsafe:

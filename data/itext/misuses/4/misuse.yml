@@ -2,6 +2,7 @@ api:
 - java.lang.String
 characteristics:
 - missing/condition/value_or_state
+- missing/call
 crash: true
 description: |
   On line 403 `_code.charAt()` is invoked without ensuring that the respective

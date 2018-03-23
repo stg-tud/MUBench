@@ -2,6 +2,7 @@ api:
 - java.util.List
 characteristics:
 - missing/condition/value_or_state
+- missing/call
 crash: true
 description: |
   In line 410 the first element of `peersEvent.getChildEvents()` is accessed

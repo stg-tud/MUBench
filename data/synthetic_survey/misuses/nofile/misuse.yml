@@ -2,6 +2,7 @@ api:
 - java.nio.file.Files
 characteristics:
 - missing/condition/value_or_state
+- missing/call
 crash: true
 description: >
   Tries to write to a file that may not exist.

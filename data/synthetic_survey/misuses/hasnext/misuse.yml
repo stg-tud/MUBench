@@ -2,6 +2,7 @@ api:
 - java.util.Iterator
 characteristics:
 - missing/condition/value_or_state
+- missing/call
 crash: true
 description: >
   Misses to check that there is another element before calling Iterator.next().

@@ -2,6 +2,7 @@ api:
 - java.util.Iterator
 characteristics:
 - missing/condition/value_or_state
+- missing/call
 crash: true
 description: >
   On line 324, `Iterator.next()` is invoked without prior check whether there

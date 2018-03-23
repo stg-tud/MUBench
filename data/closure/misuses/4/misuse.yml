@@ -2,6 +2,7 @@ api:
 - java.util.List
 characteristics:
 - missing/condition/value_or_state
+- missing/call
 crash: true
 description: >
   List.get() in line 176 is invoked without a prior check whether the list

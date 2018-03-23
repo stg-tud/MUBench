@@ -3,6 +3,7 @@ api:
 - java.io.File
 characteristics:
 - missing/condition/value_or_state
+- missing/call
 crash: true
 description: >
   Open a FileInputStream on a non-existing file throws.

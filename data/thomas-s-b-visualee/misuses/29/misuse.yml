@@ -2,6 +2,7 @@ api:
 - java.util.Scanner
 characteristics:
 - missing/condition/value_or_state
+- missing/call
 crash: true
 description: |
   In line 256, `scanner.next()` is called without checking if there are more

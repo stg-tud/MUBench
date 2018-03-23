@@ -2,6 +2,7 @@ api:
 - java.util.StringTokenizer
 characteristics:
 - missing/condition/value_or_state
+- missing/call
 crash: true
 description: >
    In line 396, `StringTokenizer.nextToken()` is invoked repeatedly in a loop

@@ -2,6 +2,7 @@ api:
 - org.apache.commons.logging.Log
 characteristics:
 - missing/condition/value_or_state
+- missing/call
 crash: false
 description: >
   On line 424, a warning message is issued (`LOG.warn()`) without a prior

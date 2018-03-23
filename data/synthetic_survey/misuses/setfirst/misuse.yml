@@ -3,6 +3,7 @@ api:
 - java.util.Set
 characteristics:
 - missing/condition/value_or_state
+- missing/call
 crash: true
 description: >
   To get one (arbitrary) value from a set you can call Set.iterator().next(),

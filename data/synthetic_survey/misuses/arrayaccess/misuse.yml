@@ -2,6 +2,7 @@ api:
 - array
 characteristics:
 - missing/condition/value_or_state
+- missing/call
 crash: true
 description: >
   Misses to check the array's size before accessing the array.

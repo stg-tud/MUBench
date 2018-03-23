@@ -2,6 +2,7 @@ api:
 - java.util.StringTokenizer
 characteristics:
 - missing/condition/value_or_state
+- missing/call
 crash: false
 description: |
   The Rule constructor in org.joda.time.tz.ZoneInfoCompiler.java does not

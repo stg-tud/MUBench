@@ -2,6 +2,7 @@ api:
 - java.util.Scanner
 characteristics:
 - missing/condition/value_or_state
+- missing/call
 crash: true
 description: |
   Examiner.java calls 'scanner.next()' on 'java.util.Scanner scanner' without checking

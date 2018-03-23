@@ -2,6 +2,7 @@ api:
 - java.util.List
 characteristics:
 - missing/condition/value_or_state
+- missing/call
 crash: true
 description: >
   On line 176, `List.get(0)` is invoked without prior check of that there is at

@@ -2,6 +2,7 @@ api:
 - java.util.Enumeration
 characteristics:
 - missing/condition/value_or_state
+- missing/call
 crash: true
 description: |
   On line 434, an element is fetched through `Enumeration.nextElement()`
