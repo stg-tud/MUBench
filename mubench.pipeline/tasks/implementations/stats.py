@@ -62,7 +62,7 @@ class violation(StatCalculatorTask):
     def __init__(self):
         super().__init__()
         self.statistics = {}
-
+        self.total = " total"
         self.logger = logging.getLogger('stats.characteristic')
 
     def run(self, project: Project, version: ProjectVersion, misuse: Misuse):
@@ -70,10 +70,10 @@ class violation(StatCalculatorTask):
         for char in chars:
             seg = char.split('/')
             statname = seg[0] + " " + seg[1]
-            stat = self.statistics.get(statname, {" total": {"misuses": 0, "crashes": 0}})
-            stat[" total"]["misuses"] += 1
+            stat = self.statistics.get(statname, {self.total: {"misuses": 0, "crashes": 0}})
+            stat[self.total]["misuses"] += 1
             if misuse.is_crash:
-                stat[" total"]["crashes"] += 1
+                stat[self.total]["crashes"] += 1
 
             if len(seg) > 2:
                 segstat = stat.get(seg[2], {"misuses": 0, "crashes": 0})
@@ -85,15 +85,22 @@ class violation(StatCalculatorTask):
             self.statistics[statname] = stat
 
     def end(self):
-        self.logger.info("%30s %25s %7s %14s" % ("Characteristic", "SubCharacteristic", "Misuses", "Crashes"))
+        self.logger.info("{: <30} {: <7} {}".format("Violation", "Misuses", "Crashes"))
+        self.logger.info("{}".format("-" * 52))
 
-        for statistic in sorted(self.statistics.items(), key=lambda s: s[1][" total"]["misuses"], reverse=True):
+        for statistic in sorted(self.statistics.items(), key=lambda s: s[0]):
             statistic_name = statistic[0]
             statistic_values = statistic[1]
             for segstat in sorted(statistic_values):
-                self.logger.info("%30s %25s %7d %7d% 6.1f%%" % (
-                    statistic_name, segstat, statistic_values[segstat]["misuses"], statistic_values[segstat]["crashes"],
-                    (statistic_values[segstat]["crashes"] / statistic_values[segstat]["misuses"] * 100)))
+                if segstat == self.total:
+                    violation = statistic_name
+                else:
+                    violation = "    {}".format(segstat)
+
+                self.logger.info("{: <30} {: >7} {: >4} ({: >5.1f}%)".format(
+                    violation,
+                    statistic_values[segstat]["misuses"], statistic_values[segstat]["crashes"],
+                    statistic_values[segstat]["crashes"] / statistic_values[segstat]["misuses"] * 100))
 
 
 class project(StatCalculatorTask):
