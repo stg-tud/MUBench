@@ -23,7 +23,6 @@ VALID_VIOLATION_TYPES = [
     'redundant/condition/context',
     'redundant/iteration',
     'redundant/exception_handling',
-    'misplaced/call',
 ]
 
 
