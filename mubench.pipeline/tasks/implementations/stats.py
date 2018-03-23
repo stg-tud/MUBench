@@ -37,7 +37,9 @@ class general(StatCalculatorTask):
         self.number_of_misuses = 0
         self.number_of_crashes = 0
         self.projects = set()
+        self.versions = set()
         self.sources = set()
+        self.apis = set()
 
         self.logger = logging.getLogger('stats.general')
 
@@ -47,15 +49,23 @@ class general(StatCalculatorTask):
             self.number_of_crashes += 1
 
         self.sources.add(misuse.source)
-        self.projects.add(project.name)
+        if not project.id.startswith("synthetic_"):
+            self.projects.add(project.id)
+            self.versions.add(version.id)
+
+        self.apis.add(tuple(sorted(misuse.apis)))
 
     def end(self):
-        self.logger.info("MUBench contains:")
-        self.logger.info("- %d misuses" % self.number_of_misuses)
-        self.logger.info(
-            "- %d crashes (%.1f%%)" % (self.number_of_crashes, (self.number_of_crashes / self.number_of_misuses * 100)))
-        self.logger.info("- %d sources" % len(self.sources))
-        self.logger.info("- %d projects" % len(self.projects))
+        self.log("Sources", len(self.sources))
+        self.log("Projects", len(self.projects))
+        self.log("Versions", len(self.versions))
+        self.log("Misuses", self.number_of_misuses)
+        self.log("Crashes", "{} ({:.1f}%)".format(self.number_of_crashes,
+                                                  self.number_of_crashes / self.number_of_misuses * 100))
+        self.log("APIs", len(self.apis))
+
+    def log(self, key, value):
+        self.logger.info("{: <12} {: >15}".format(key, value))
 
 
 class violation(StatCalculatorTask):
