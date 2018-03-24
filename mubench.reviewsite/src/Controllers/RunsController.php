@@ -155,21 +155,6 @@ class RunsController extends Controller
         return $response->withRedirect($this->router->pathFor('private.manage.runs'));
     }
 
-    public function deleteDetector(Request $request, Response $response, array $args)
-    {
-        $experimentId = $args['experiment_id'];
-        $detector_muid = $args['detector_muid'];
-
-        $detector = Detector::find($detector_muid);
-
-        $runs = Run::of($detector)->in(Experiment::find($experimentId))->get();
-        foreach($runs as $run){
-            $this->deleteRunAndRelated($run, $detector);
-        }
-
-        return $response->withRedirect($this->router->pathFor('private.manage.runs'));
-    }
-
     function deleteRunAndRelated(Run $run, $detectorId)
     {
         $this->deleteOldImages($run->experiment_id, $detectorId, $run->project_muid, $run->version_muid);
