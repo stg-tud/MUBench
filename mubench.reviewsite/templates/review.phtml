@@ -352,6 +352,21 @@ $origin_path = $origin_path ? $origin_path : $pathFor('experiment.detector', arr
         <?php endif; ?>
         <?php if($is_reviewer && $reviewer) :?>
                 <input type="hidden" name="misuse_id" value="<?= htmlspecialchars($misuse->id); ?>">
+                    <div id="comment-area" class="floating-comment" style="bottom:50px;right:10px">
+                        <?php if($misuse->hasSufficientReviews() && $reviewer->name !== "resolution" && !$misuse->hasReviewed($reviewer)) : ?>
+                            <div class="comment-overlay" id="overlay" style="z-index:2;"></div>
+                            <div class="comment-overlay-button" id="overlay-button" style="z-index:3"><span>This misuse was already reviewed.</span><a class="button" onclick="review(this)">review it anyways</a></div>
+                        <?php endif; ?>
+                        <table class="invisible">
+                            <tr><td id="review_area" colspan="2" style="visibility: visible">
+                                    <?php if($review) : ?>
+                                        <textarea id="review_comment" name="review_comment" cols="80" rows="5"><?= htmlspecialchars($review->comment); ?></textarea>
+                                    <?php else : ?>
+                                        <textarea id="review_comment" name="review_comment" cols="80" rows="5"></textarea>
+                                    <?php endif; ?>
+                                </td></tr>
+                        </table>
+                    </div>
             </form>
         <?php elseif($review && (!$user || !$is_reviewer)) :?>
                 <table class="invisible">
@@ -374,15 +389,19 @@ $origin_path = $origin_path ? $origin_path : $pathFor('experiment.detector', arr
                 <?php if($reviewer && $is_reviewer): ?>
                     <div style="padding:0;margin:0;display:inline-block;left:38%;position:relative">
                         <a class="button" onclick="comment()">Comment</a>
-                        <div class="dropdown" style="padding:0;position: relative; left: 45%">
+                        <div class="dropdown">
                             <div id="save-dropdown" class="dropdown-content" style="margin-left:-5px;margin-bottom:-3px;padding:0;bottom:100%;">
                                 <?php if($next_reviewable_misuse_path) : ?>
-                                    <a class="button" style="margin:-5px;min-width:120px;" onclick="saveReview('review')">Save and next misuse</a>
-                                <?php else : ?>
-                                    <a class="button" style="margin:-5px;min-width:120px;" onclick="saveReview('return')">Save and return</a>
+                                    <a onclick="saveReview('return')">Save and return</a>
                                 <?php endif; ?>
-                                <a id="dropdown-button" class="button" style="padding:5px;"><i class="fa fa-angle-up"></i></a>
+                                <a onclick="saveReview('save')">Save</a>
                             </div>
+                            <?php if($next_reviewable_misuse_path) : ?>
+                                <a class="button" style="margin:-5px;min-width:120px;" onclick="saveReview('review')">Save and next misuse</a>
+                            <?php else : ?>
+                                <a class="button" style="margin:-5px;min-width:120px;" onclick="saveReview('return')">Save and return</a>
+                            <?php endif; ?>
+                            <a id="dropdown-button" class="button" style="padding:5px;"><i class="fa fa-angle-up"></i></a>
                         </div>
                     </div>
                 <?php endif; ?>
@@ -391,21 +410,6 @@ $origin_path = $origin_path ? $origin_path : $pathFor('experiment.detector', arr
                     <?php if($reviewer && $is_reviewer): ?>
                         <a href="<?= $next_reviewable_misuse_path ?>" class="button <?= $next_reviewable_misuse_path ? "" :  "disabled" ?>">>></a>
                     <?php endif; ?>
-                </div>
-                <div id="comment-area" class="floating-comment" style="bottom:50px;right:10px">
-                    <?php if($misuse->hasSufficientReviews() && $reviewer->name !== "resolution" && !$misuse->hasReviewed($reviewer)) : ?>
-                        <div class="comment-overlay" id="overlay" style="z-index:2;"></div>
-                        <div class="comment-overlay-button" id="overlay-button" style="z-index:3"><span>This misuse was already reviewed.</span><a class="button" onclick="review(this)">review it anyways</a></div>
-                    <?php endif; ?>
-                    <table class="invisible">
-                        <tr><td id="review_area" colspan="2" style="visibility: visible">
-                                <?php if($review) : ?>
-                                    <textarea id="review_comment" name="review_comment" cols="80" rows="5"><?= htmlspecialchars($review->comment); ?></textarea>
-                                <?php else : ?>
-                                    <textarea id="review_comment" name="review_comment" cols="80" rows="5"></textarea>
-                                <?php endif; ?>
-                            </td></tr>
-                    </table>
                 </div>
             </div>
 
