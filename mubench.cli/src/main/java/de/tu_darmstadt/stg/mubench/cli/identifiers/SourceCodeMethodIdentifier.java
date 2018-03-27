@@ -18,6 +18,8 @@ public class SourceCodeMethodIdentifier implements MethodIdentifier {
         return convertToMuBenchSignature(this.originalName);
     }
 
+    public String getDeclaringTypeName() { return extractDeclaringTypeName(this.originalName); }
+
     public String getSimpleDeclaringTypeName() {
         return extractSimpleDeclaringTypeName(this.originalName);
     }
