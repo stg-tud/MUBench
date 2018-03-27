@@ -1,6 +1,6 @@
 api:
 - com.actionbarsherlock.app.SherlockActivity
-characteristics:
+violations:
 - missing/call
 crash: true
 description: >

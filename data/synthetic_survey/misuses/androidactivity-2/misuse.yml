@@ -1,6 +1,6 @@
 api:
 - android.app.Activity
-characteristics:
+violations:
 - missing/call
 - redundant/call
 crash: true

@@ -1,6 +1,6 @@
 api:
 - java.util.Map
-characteristics:
+violations:
 - missing/condition/null_check
 crash: true
 description: >

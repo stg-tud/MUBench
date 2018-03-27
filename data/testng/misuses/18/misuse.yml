@@ -1,6 +1,6 @@
 api:
 - java.util.Collections$SynchronizedCollection
-characteristics:
+violations:
 - missing/condition/synchronization
 crash: false
 description: |

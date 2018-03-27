@@ -1,6 +1,6 @@
 api:
 - org.w3c.tools.resources.ResourceReference
-characteristics:
+violations:
 - missing/call
 crash: false
 description: |

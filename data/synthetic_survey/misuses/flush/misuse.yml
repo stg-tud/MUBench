@@ -1,6 +1,6 @@
 api:
 - java.nio.channels.FileChannel
-characteristics:
+violations:
 - missing/call
 crash: false
 description: >

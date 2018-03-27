@@ -1,6 +1,6 @@
 api:
 - org.apache.jackrabbit.core.fs.FileSystemResource
-characteristics:
+violations:
 - missing/condition/value_or_state
 - missing/call
 crash: true

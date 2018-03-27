@@ -1,6 +1,6 @@
 api:
 - org.apache.jackrabbit.jcr2spi.hierarchy.HierarchyEntry
-characteristics:
+violations:
 - missing/condition/null_check
 crash: true
 description: >

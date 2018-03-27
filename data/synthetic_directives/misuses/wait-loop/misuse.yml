@@ -1,6 +1,6 @@
 api:
 - java.lang.Object
-characteristics:
+violations:
 - missing/iteration
 crash: false
 description: >

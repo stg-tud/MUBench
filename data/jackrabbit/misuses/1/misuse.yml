@@ -1,6 +1,6 @@
 api:
 - org.apache.jackrabbit.core.ItemData
-characteristics:
+violations:
 - missing/condition/null_check
 crash: true
 description: >

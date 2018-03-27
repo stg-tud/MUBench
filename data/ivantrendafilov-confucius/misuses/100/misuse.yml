@@ -1,6 +1,6 @@
 api:
 - java.lang.Short
-characteristics:
+violations:
 - missing/exception_handling
 crash: true
 description: |

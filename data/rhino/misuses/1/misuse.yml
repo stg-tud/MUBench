@@ -1,6 +1,6 @@
 api:
 - org.mozilla.javascript.IRFactory
-characteristics:
+violations:
 - redundant/call/duplicate
 crash: true
 description: >

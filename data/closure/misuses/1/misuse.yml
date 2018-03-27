@@ -1,6 +1,6 @@
 api:
 - com.google.javascript.rhino.jstype.UnionTypeBuilder
-characteristics:
+violations:
 - redundant/condition/null_check
 crash: false
 description: >

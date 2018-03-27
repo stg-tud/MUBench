@@ -1,6 +1,6 @@
 api:
 - org.apache.jackrabbit.server.io.IOManager
-characteristics:
+violations:
 - missing/condition/null_check
 crash: true
 description: >

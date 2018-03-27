@@ -1,6 +1,6 @@
 api:
 - com.itextpdf.text.pdf.PdfLayer
-characteristics:
+violations:
 - missing/condition/null_check
 crash: true
 description: |

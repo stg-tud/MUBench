@@ -1,6 +1,6 @@
 api:
 - java.util.SortedMap
-characteristics:
+violations:
 - missing/exception_handling
 crash: true
 description: >

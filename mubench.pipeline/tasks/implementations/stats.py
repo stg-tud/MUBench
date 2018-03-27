@@ -91,10 +91,10 @@ class violation(StatCalculatorTask):
         super().__init__()
         self.statistics = {}
         self.total = " total"
-        self.logger = logging.getLogger('stats.characteristic')
+        self.logger = logging.getLogger('stats.violation')
 
     def run(self, project: Project, version: ProjectVersion, misuse: Misuse):
-        chars = misuse.characteristics
+        chars = misuse.violations
         for char in chars:
             seg = char.split('/')
             statname = seg[0] + " " + seg[1]
@@ -197,16 +197,16 @@ class misusesbytype(StatCalculatorTask):
         self.index.clear()
 
     def run(self, project: Project, version: ProjectVersion, misuse: Misuse):
-        for characteristic in misuse.characteristics:
-            if characteristic not in self.index:
-                self.index[characteristic] = []
+        for violation in misuse.violations:
+            if violation not in self.index:
+                self.index[violation] = []
 
-            self.index[characteristic].append(misuse)
+            self.index[violation].append(misuse)
 
     def end(self):
         logger = logging.getLogger('stats.misusesbytype')
         logger.info("%35s %s", "Violation Type", "Misuse")
-        for characteristic in sorted(self.index):
-            logger.info("%35s ----------------------------", characteristic)
-            for misuse in self.index[characteristic]:
+        for violation in sorted(self.index):
+            logger.info("%35s ----------------------------", violation)
+            for misuse in self.index[violation]:
                 logger.info("%35s %s", "", misuse.id)

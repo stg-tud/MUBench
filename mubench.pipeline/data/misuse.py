@@ -126,10 +126,10 @@ class Misuse:
         return self._yaml.get('internal', False)
 
     @property
-    def characteristics(self):
-        if getattr(self, '_characteristics', None) is None:
-            self._characteristics = self._yaml.get('characteristics', [])
-        return self._characteristics
+    def violations(self):
+        if getattr(self, '_violations', None) is None:
+            self._violations = self._yaml.get('violations', [])
+        return self._violations
 
     def get_snippets(self, source_base_paths: List[str]) -> List[Snippet]:
         return get_snippets(source_base_paths, self.location.file, self.location.method, self.location.line)

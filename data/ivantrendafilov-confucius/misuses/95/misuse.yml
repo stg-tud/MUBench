@@ -1,6 +1,6 @@
 api:
 - java.lang.Byte
-characteristics:
+violations:
 - missing/exception_handling
 crash: true
 description: |

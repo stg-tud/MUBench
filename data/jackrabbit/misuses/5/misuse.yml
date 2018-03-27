@@ -1,6 +1,6 @@
 api:
 - java.io.InputStream
-characteristics:
+violations:
 - missing/call
 crash: false
 description: >

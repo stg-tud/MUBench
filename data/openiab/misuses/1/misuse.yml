@@ -1,6 +1,6 @@
 api:
 - com.unity3d.player.UnityPlayerActivity
-characteristics:
+violations:
 - missing/call
 crash: true
 description: >

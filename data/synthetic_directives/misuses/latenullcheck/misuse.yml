@@ -1,6 +1,6 @@
 api:
 - java.lang.Object
-characteristics:
+violations:
 - missing/condition/null_check
 - redundant/condition/null_check
 crash: true

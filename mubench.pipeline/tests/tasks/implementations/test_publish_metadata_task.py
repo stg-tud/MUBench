@@ -56,7 +56,7 @@ class TestPublishMetadataTask:
                 "description": "-fix-description-",
                 "commit": "http://fake.diff/url"
             },
-            "characteristics": [
+            "violations": [
                 "-violation-type-1-",
                 "-violation-type-2-"
             ],

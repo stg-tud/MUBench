@@ -1,6 +1,6 @@
 api:
 - java.text.SimpleDateFormat
-characteristics:
+violations:
 - missing/call
 - redundant/call
 crash: false

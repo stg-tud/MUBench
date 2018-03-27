@@ -1,6 +1,6 @@
 api:
 - org.jfree.chart.plot.CategoryPlot
-characteristics:
+violations:
 - missing/condition/null_check
 - redundant/condition/null_check
 crash: true

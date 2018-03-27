@@ -1,6 +1,6 @@
 api:
 - java.nio.ByteBuffer
-characteristics:
+violations:
 - missing/call
 crash: true
 description: >

@@ -1,6 +1,6 @@
 api:
 - org.joda.time.Interval
-characteristics:
+violations:
 - missing/condition/null_check
 crash: false
 description: >

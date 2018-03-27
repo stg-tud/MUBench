@@ -85,8 +85,8 @@ class MisuseCheckTask:
         if "api" not in misuse_yaml:
             self._report_missing_key("api", yaml_path)
 
-        if not misuse_yaml.get("characteristics", None):
-            self._report_missing_key("characteristics", yaml_path)
+        if not misuse_yaml.get("violations", None):
+            self._report_missing_key("violations", yaml_path)
 
         if not misuse_yaml.get("description", None):
             self._report_missing_key("description", yaml_path)
@@ -141,7 +141,7 @@ class MisuseCheckTask:
             return False
 
     def _check_violation_types(self, misuse: Misuse):
-        violation_types = misuse._yaml.get("characteristics", [])
+        violation_types = misuse._yaml.get("violations", [])
         for violation_type in violation_types:
             if violation_type not in VALID_VIOLATION_TYPES:
                 file_path = self._get_rel_misuse_file_path(misuse)

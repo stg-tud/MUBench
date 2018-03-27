@@ -1,6 +1,6 @@
 api:
 - org.apache.commons.math3.geometry.euclidean.twod.Line
-characteristics:
+violations:
 - missing/condition/null_check
 crash: true
 description: >

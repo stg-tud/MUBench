@@ -1,6 +1,6 @@
 api:
 - com.google.javascript.rhino.jstype.ObjectType
-characteristics:
+violations:
 - missing/condition/null_check
 crash: true
 description: >
