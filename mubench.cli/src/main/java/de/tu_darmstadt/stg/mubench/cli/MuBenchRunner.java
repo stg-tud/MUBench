@@ -15,12 +15,12 @@ import java.nio.file.Path;
  *     new MuBenchRunner().
  *       .withDetectOnlyStrategy((DetectorArgs as, DetectorOutput.Builder output) -> {
  *          return output
- *            .withRunInfo("detection using provided patterns", "true")
+ *            .withRunInfo("detection using provided correct usages", "true")
  *            .withFindings(findMisuses(da));
  *       })
  *       .withMineAndDetectStrategy((DetectorArgs as, DetectorOutput.Builder output) -> {
  *          return output
- *            .withRunInfo("detection using mined patterns", "true")
+ *            .withRunInfo("detection using mined correct usages", "true")
  *            .withFindings(findMisuses(da));
  *       })
  *       .run(args);
@@ -35,7 +35,7 @@ public final class MuBenchRunner {
 
     /**
      * @param detectOnlyStrategy Run detection in detect-only mode. Should use {@link DetectorArgs#getPatternSrcPath()}
-     *                           or {@link DetectorArgs#getPatternClassPath()} to learn patterns and identify
+     *                           or {@link DetectorArgs#getPatternClassPath()} to learn correct usages and identify
      *                           respective violations in {@link DetectorArgs#getTargetSrcPaths()} or
      *                           {@link DetectorArgs#getTargetClassPaths()}, respectively.
      */
