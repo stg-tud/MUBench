@@ -28,7 +28,7 @@ The [MUBench Pipeline](../mubench.pipeline) publishes the detectors' results to 
 
 ## Publish Misuse Metadata
 
-In Experiments 1 and 3, the review site needs the misuse metadata, such as the description, the pattern code, and the misuse code, in order to display the detectors findings correctly. To upload the metadata to your review site, simply execute:
+In Experiments 1 and 3, the review site needs the misuse metadata, such as the description, the correct-usage code, and the misuse code, in order to display the detectors findings correctly. To upload the metadata to your review site, simply execute:
 
 `$> ./mubench publish metadata -s http://<your-site.url>/ -u <user> -p <password>`
 

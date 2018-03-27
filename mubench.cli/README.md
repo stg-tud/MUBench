@@ -38,7 +38,7 @@ public class MyRunner extends MuBenchRunner {
 
 It supports two run modes:
 
-1. "Detect Only" (Experiment 1), where the detector is provided with hand-crafted patterns (a one-method class implementing the correct usage) and some target code to find violations of these patterns in.
+1. "Detect Only" (Experiment 1), where the detector is provided with hand-crafted correct usages (a one-method class implementing the correct usage) and some target code to find violations of these correct_usages in.
 2. "Mine and Detect" (Experiment 2/3), where the detector should mine its own patterns in the provided codebase and find violations in that same codebase.
 
 In either mode, the `DetectorArgs` provide all input as both the Java source code and the corresponding Bytecode. Additionally, it provides the classpath of all the code's dependencies.

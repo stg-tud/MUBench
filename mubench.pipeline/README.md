@@ -32,7 +32,7 @@ Run `./mubench detect -h` for a list of available detector ids.
 
 Available experiments are:
 
-1. Provide detectors with example code of a correct usage, i.e., a usage pattern, to evaluate the recall of their detection strategy with respect to the misuses in the [MUBench Dataset](../data/) in isolation.
+1. Provide detectors with example code of a correct usage, to evaluate the recall of their detection strategy with respect to the misuses in the [MUBench Dataset](../data/) in isolation.
 2. Run detectors "in the wild", i.e., both their pattern mining and detection, to evaluate their precision in an end-user setting.
 3. Run detectors "in the wild", i.e., both their pattern mining and detection, to evaluate their recall with respect to the misuses in the [MUBench Dataset](../data/).
 
