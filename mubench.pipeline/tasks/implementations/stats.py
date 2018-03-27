@@ -63,7 +63,7 @@ class general(StatCalculatorTask):
         if misuse.is_crash:
             self.number_of_crashes += 1
 
-        if misuse.patterns:
+        if misuse.correct_usages:
             self.number_of_misuses_with_corresponding_correct_usages += 1
 
         self.apis.add(tuple(sorted(misuse.apis)))

@@ -2,7 +2,7 @@ from os.path import exists
 from os.path import join
 from typing import List, Optional, Any, Dict, Set
 
-from data.misuse import Misuse, Pattern
+from data.misuse import Misuse, CorrectUsage
 from data.project_checkout import ProjectCheckout, GitProjectCheckout, SVNProjectCheckout, \
     SyntheticProjectCheckout, ZipProjectCheckout
 from data.version_compile import VersionCompile
@@ -102,11 +102,11 @@ class ProjectVersion:
         return self._MISUSES
 
     @property
-    def patterns(self) -> Set[Pattern]:
+    def correct_usages(self) -> Set[CorrectUsage]:
         if not self._PATTERNS:
             self._PATTERNS = set()
             for misuse in self.misuses:
-                self._PATTERNS.update(misuse.patterns)
+                self._PATTERNS.update(misuse.correct_usages)
 
         return self._PATTERNS
 

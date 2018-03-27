@@ -38,15 +38,15 @@ class CompileMisuseTask:
             logger.info("Compiling correct usage for %s...", misuse)
             if misuse_compile.needs_copy_sources():
                 logger.debug("Copying correct-usage sources...")
-                copy_tree(misuse.pattern_path, misuse_compile.pattern_sources_path)
+                copy_tree(misuse.correct_usage_path, misuse_compile.correct_usage_sources_path)
 
             if misuse_compile.needs_compile():
                 logger.debug("Compiling correct usages...")
-                CompileMisuseTask._compile_patterns(misuse_compile.pattern_sources_path,
-                                                    misuse_compile.pattern_classes_path,
+                CompileMisuseTask._compile_correct_usages(misuse_compile.correct_usage_sources_path,
+                                                    misuse_compile.correct_usage_classes_path,
                                                     version_compile.get_full_classpath())
                 misuse_compile.save(self.run_timestamp)
-            elif misuse.patterns:
+            elif misuse.correct_usages:
                 logger.info("Correct usage already compiled.")
         except Exception:
             misuse_compile.delete()
@@ -55,13 +55,13 @@ class CompileMisuseTask:
         return misuse_compile
 
     @staticmethod
-    def _compile_patterns(source: str, destination: str, classpath: str):
+    def _compile_correct_usages(source: str, destination: str, classpath: str):
         makedirs(destination, exist_ok=True)
         for root, dirs, files in os.walk(source):
             for java_file in [f for f in files if f.endswith(".java")]:
                 destination = dirname(join(destination, java_file))
                 Shell.exec('javac "{}" -d "{}" -cp "{}"'.format(join(root, java_file), destination, classpath),
-                           logger=logging.getLogger("task.compile_patterns.compile"))
+                           logger=logging.getLogger("task.compile_correct_usages.compile"))
 
     @staticmethod
     def _copy_misuse_sources(sources_path, misuse, destination):

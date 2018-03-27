@@ -1,5 +1,6 @@
-from typing import Any, Dict, List, Pattern
+from typing import Any, Dict, List
 
+from data.correct_usage import CorrectUsage
 from data.misuse import Misuse
 from data.project import Project
 from data.project_version import ProjectVersion
@@ -23,7 +24,7 @@ def create_version(version_id: str, misuses: List[Misuse] = None, meta: Dict[str
 
 
 def create_misuse(misuse_id: str, meta: Dict[str, Any] = None, project: Project = None, version: ProjectVersion = None,
-                  patterns: List[Pattern] = None):
+                  correct_usages: List[CorrectUsage] = None):
     if not project:
         project = create_project("-project-")
     if not version:
@@ -31,7 +32,7 @@ def create_misuse(misuse_id: str, meta: Dict[str, Any] = None, project: Project 
     misuse = Misuse(project._base_path, project.id, version.version_id, misuse_id)
     misuse._Misuse__project = project
     misuse._YAML = {"location": {"file": "-dummy-/-file-", "method": "-method-()"}}
-    misuse._PATTERNS = patterns if patterns else []
+    misuse._CORRECT_USAGES = correct_usages if correct_usages else []
     if meta:
         misuse._YAML.update(meta)
 

@@ -52,7 +52,7 @@ class PublishMetadataTask:
                 "diff-url": misuse.fix.commit
             },
             "target_snippets": [snippet.__dict__ for snippet in self.__get_snippets(misuse, version, logger)],
-            "patterns": self.__get_patterns(misuse)
+            "correct_usages": self.__get_correct_usages(misuse)
         })
 
     def __get_snippets(self, misuse, version, logger):
@@ -65,14 +65,14 @@ class PublishMetadataTask:
             logger.warn(e)
             return []
 
-    def __get_patterns(self, misuse: Misuse):
-        patterns = []
-        for pattern in misuse.patterns:
-            pattern_code_lines = safe_read(pattern.path).splitlines()
-            pattern_code_lines = [line for line in pattern_code_lines if not self.__is_preamble_line(line)]
-            pattern_code = "\n".join(pattern_code_lines)
-            patterns.append({"id": pattern.name, "snippet": {"code": pattern_code, "first_line": 1}})
-        return patterns
+    def __get_correct_usages(self, misuse: Misuse):
+        correct_usages = []
+        for correct_usage in misuse.correct_usages:
+            correct_usage_code_lines = safe_read(correct_usage.path).splitlines()
+            correct_usage_code_lines = [line for line in correct_usage_code_lines if not self.__is_preamble_line(line)]
+            correct_usage_code = "\n".join(correct_usage_code_lines)
+            correct_usages.append({"id": correct_usage.name, "snippet": {"code": correct_usage_code, "first_line": 1}})
+        return correct_usages
 
     @staticmethod
     def __is_preamble_line(line: str):

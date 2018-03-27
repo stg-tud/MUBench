@@ -12,7 +12,7 @@ from tasks.configurations.detector_interface_configuration import key_detector_m
     key_training_src_path, key_training_classes_path, key_target_src_paths, key_target_classes_paths, key_dependency_classpath
 
 
-class DetectProvidedPatternsTask:
+class DetectProvidedCorrectUsagesTask:
     __RUN_MODE_NAME = "detect_only"
     __DETECTOR_MODE = 1
 
@@ -33,15 +33,15 @@ class DetectProvidedPatternsTask:
         return run
 
     def _get_findings_path(self, detector: Detector, version: ProjectVersion, misuse: Misuse):
-        return join(self.findings_base_path, DetectProvidedPatternsTask.__RUN_MODE_NAME, detector.id,
+        return join(self.findings_base_path, DetectProvidedCorrectUsagesTask.__RUN_MODE_NAME, detector.id,
                     version.project_id, version.version_id, misuse.misuse_id)
 
     @staticmethod
     def _get_detector_arguments(version_compile: VersionCompile, misuse_compile: MisuseCompile):
         return {
-            key_detector_mode: DetectProvidedPatternsTask.__DETECTOR_MODE,
-            key_training_src_path: misuse_compile.pattern_sources_path,
-            key_training_classes_path: misuse_compile.pattern_classes_path,
+            key_detector_mode: DetectProvidedCorrectUsagesTask.__DETECTOR_MODE,
+            key_training_src_path: misuse_compile.correct_usage_sources_path,
+            key_training_classes_path: misuse_compile.correct_usage_classes_path,
             key_target_src_paths: [misuse_compile.misuse_source_path],
             key_target_classes_paths: [misuse_compile.misuse_classes_path],
             key_dependency_classpath: version_compile.get_full_classpath()

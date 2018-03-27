@@ -120,8 +120,8 @@ class TestRunnerInterface_0_0_8:
         target = join(findings_path, "findings.yml")
         run_info = join(findings_path, "run.yml")
         compiles_path = join("-compiles-", "-project-", "-version-")
-        training_src_path = join(compiles_path, "patterns-src", "-misuse-")
-        training_classpath = join(compiles_path, "patterns-classes", "-misuse-")
+        training_src_path = join(compiles_path, "correct-usages-src", "-misuse-")
+        training_classpath = join(compiles_path, "correct-usages-classes", "-misuse-")
         target_src_path = join(compiles_path, "misuse-src")
         target_classpath = join(compiles_path, "misuse-classes")
         dependencies_classpath = "-dependencies-classpath-"
