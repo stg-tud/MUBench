@@ -59,7 +59,7 @@ class TestMisuse:
 
     @staticmethod
     def create_correct_usage_file(misuse: Misuse, filename: str) -> CorrectUsage:
-        correct_usages_path = join(misuse.path, "correct_usages")
+        correct_usages_path = join(misuse.path, "correct-usages")
         path = join(correct_usages_path, filename)
         directory = dirname(path)
         if not exists(directory):

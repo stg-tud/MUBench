@@ -77,8 +77,8 @@ class Misuse:
         return self._CORRECT_USAGES
 
     @property
-        return join(self.path, "patterns")
     def correct_usage_path(self) -> str:
+        return join(self.path, "correct-usages")
 
     @property
     def location(self) -> Location:

@@ -18,7 +18,7 @@ class TestCompilePatterns:
 
         self.project = create_project("-project-", base_path=self.data_base_path)
         self.version = create_version("-version-", project=self.project)
-        self.correct_usage = CorrectUsage(join(self.data_base_path, "-project-", "misuses", "-misuse-", "correct_usages"),
+        self.correct_usage = CorrectUsage(join(self.data_base_path, "-project-", "misuses", "-misuse-", "correct-usages"),
                                           join("-package-", "-correct_usage-.java"))
         create_file(self.correct_usage.path)
         self.misuse = create_misuse("-misuse-", project=self.project, version=self.version,
