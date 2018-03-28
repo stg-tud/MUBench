@@ -47,7 +47,7 @@ config.run_timestamp = calendar.timegm(now.timetuple())
 logger = logging.getLogger()
 logger.setLevel(logging.DEBUG)
 handler = logging.StreamHandler()
-handler.setFormatter(IndentFormatter("%(indent)s%(message)s"))
+handler.setFormatter(IndentFormatter("%(message)s"))
 handler.setLevel(logging.INFO)
 logger.addHandler(handler)
 LOG_DIR = "logs"
