@@ -23,7 +23,6 @@ class CompileVersionTask:
 
     def run(self, version: ProjectVersion, checkout: ProjectCheckout):
         logger = logging.getLogger("task.compile")
-        logger.info("Compiling %s...", version)
 
         version_compile = version.get_compile(self.compiles_base_path)
 
@@ -34,12 +33,11 @@ class CompileVersionTask:
             version_compile.delete()
 
         try:
-            if not version.compile_commands:
+            if not version.is_compilable:
                 raise UserWarning("Skipping compilation: not configured.")
 
-            if not version_compile.needs_compile():
-                logger.debug("Already compiled project.")
-            else:
+            if version_compile.needs_compile():
+                logger.info("Compiling %s...", version)
                 logger.debug("Copying checkout to build directory...")
                 checkout_path = checkout.checkout_dir
                 copy_tree(checkout_path, build_path)
