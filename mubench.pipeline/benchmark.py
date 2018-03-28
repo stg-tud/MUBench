@@ -12,7 +12,6 @@ from tasks.task_runner import TaskRunner
 from utils import config_util
 from utils.data_entity_lists import DataEntityLists
 from utils.dataset_util import get_white_list
-from utils.logging import IndentFormatter
 
 
 class Benchmark:
@@ -47,7 +46,6 @@ config.run_timestamp = calendar.timegm(now.timetuple())
 logger = logging.getLogger()
 logger.setLevel(logging.DEBUG)
 handler = logging.StreamHandler()
-handler.setFormatter(IndentFormatter("%(message)s"))
 handler.setLevel(logging.INFO)
 logger.addHandler(handler)
 LOG_DIR = "logs"
