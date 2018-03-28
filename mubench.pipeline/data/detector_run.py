@@ -80,8 +80,7 @@ class DetectorRun:
             logger.debug("Full exception:", exc_info=True)
             return
         elif self.is_success():
-            logger.info("Successful previous %s. Skipping.", self)
-            logger.info("Detector reported %s findings.", len(self.findings))
+            logger.info("Detector reported %s findings in previous %s. Skipping.", len(self.findings), self)
             return
 
         self.reset()
