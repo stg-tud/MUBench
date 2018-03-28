@@ -45,9 +45,12 @@ config.run_timestamp = calendar.timegm(now.timetuple())
 
 logger = logging.getLogger()
 logger.setLevel(logging.DEBUG)
+
 handler = logging.StreamHandler()
 handler.setLevel(logging.INFO)
+handler.setFormatter(logging.Formatter("[%(levelname)-7s] %(message)s"))
 logger.addHandler(handler)
+
 LOG_DIR = "logs"
 if not exists(LOG_DIR):
     makedirs(LOG_DIR)
