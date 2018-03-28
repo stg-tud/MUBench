@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import calendar
 import logging.handlers
+import platform
 import sys
 from datetime import datetime
 from os import makedirs
@@ -9,7 +10,7 @@ from os.path import join, exists
 from requirements import RequirementsCheck
 from tasks.configurations.configurations import get_task_configuration
 from tasks.task_runner import TaskRunner
-from utils import config_util
+from utils import config_util, logging_colorization
 from utils.data_entity_lists import DataEntityLists
 from utils.dataset_util import get_white_list
 
@@ -48,7 +49,13 @@ logger.setLevel(logging.DEBUG)
 
 handler = logging.StreamHandler()
 handler.setLevel(logging.INFO)
-handler.setFormatter(logging.Formatter("[%(levelname)-7s] %(message)s"))
+logging_colorization.colorize(handler)
+if platform.system() == 'Windows':
+    # we don't support colorization on windows
+    formatter = logging.Formatter("[%(levelname)-7s] %(message)s")
+else:
+    formatter = logging.Formatter("[%(levelcolor)s%(levelname)-7s%(resetcolor)s] %(message)s")
+handler.setFormatter(formatter)
 logger.addHandler(handler)
 
 LOG_DIR = "logs"
