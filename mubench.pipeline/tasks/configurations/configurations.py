@@ -103,9 +103,9 @@ class RunProvidedPatternsExperiment(TaskConfiguration):
                                          config.java_options)
         detect = DetectProvidedCorrectUsagesTask(config.findings_path, config.force_detect, config.timeout,
                                                  config.run_timestamp)
-        return CheckoutTaskConfiguration().tasks(config) + [compile_version, collect_misuses,
-                                                            filter_misuses_without_correct_usages, compile_misuse,
-                                                            load_detector, detect]
+        return [load_detector] + CheckoutTaskConfiguration().tasks(config) + [compile_version, collect_misuses,
+                                                                              filter_misuses_without_correct_usages,
+                                                                              compile_misuse, detect]
 
 
 class PublishProvidedPatternsExperiment(TaskConfiguration):
@@ -133,7 +133,7 @@ class RunAllFindingsExperiment(TaskConfiguration):
         load_detector = LoadDetectorTask(config.detectors_path, config.detector, config.requested_release,
                                          config.java_options)
         detect = DetectAllFindingsTask(config.findings_path, config.force_detect, config.timeout, config.run_timestamp)
-        return CheckoutTaskConfiguration().tasks(config) + [compile_version, load_detector, detect]
+        return [load_detector] + CheckoutTaskConfiguration().tasks(config) + [compile_version, detect]
 
 
 class PublishAllFindingsExperiment(TaskConfiguration):
@@ -161,7 +161,7 @@ class RunBenchmarkExperiment(TaskConfiguration):
         load_detector = LoadDetectorTask(config.detectors_path, config.detector, config.requested_release,
                                          config.java_options)
         detect = DetectAllFindingsTask(config.findings_path, config.force_detect, config.timeout, config.run_timestamp)
-        return CheckoutTaskConfiguration().tasks(config) + [compile_version, load_detector, detect]
+        return [load_detector] + CheckoutTaskConfiguration().tasks(config) + [compile_version, detect]
 
 
 class PublishBenchmarkExperiment(TaskConfiguration):
