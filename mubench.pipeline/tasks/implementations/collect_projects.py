@@ -1,3 +1,4 @@
+import logging
 from os import listdir
 from os.path import exists, join
 
@@ -14,9 +15,14 @@ class CollectProjectsTask:
         if exists(self.data_path):
             project_ids.extend(sorted(listdir(self.data_path)))
 
-        return [Project(self.data_path, project_id) for project_id in project_ids if
-                Project.is_project(join(self.data_path, project_id)) and
-                not self.__is_filtered(project_id, data_entity_lists)]
+        projects = [Project(self.data_path, project_id) for project_id in project_ids if
+                    Project.is_project(join(self.data_path, project_id)) and not self.__is_filtered(project_id,
+                                                                                                    data_entity_lists)]
+        if not projects:
+            logger = logging.getLogger("tasks.collect_projects")
+            logger.warning("Filtered all projects!")
+
+        return projects
 
     @staticmethod
     def __is_filtered(project_id: str, data_entity_lists: DataEntityLists) -> bool:
