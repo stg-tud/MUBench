@@ -2,6 +2,8 @@
 
 namespace MuBench\ReviewSite\Controllers;
 
+use MuBench\ReviewSite\Models\Detector;
+
 class Controller
 {
     private $container;
@@ -20,15 +22,12 @@ class Controller
         return null;
     }
 
-    function detectorBlindToReal($detector_name)
-    {
-        if($this->settings['blind_mode']['enabled']){
-            foreach($this->settings['blind_mode']['detector_blind_names'] as $detector => $blind_name){
-                if($blind_name === $detector_name){
-                    return $detector;
-                }
-            }
+    function getDetector($detector_id){
+        $detector = Detector::find($detector_id);
+        if(!$detector){
+            return Detector::where('id', $detector_id)->first();
         }
-        return $detector_name;
+        return $detector;
     }
+
 }

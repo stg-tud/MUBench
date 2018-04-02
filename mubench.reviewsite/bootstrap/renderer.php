@@ -38,6 +38,13 @@ $container['renderer'] = function ($container) {
         return $detector_name;
     };
 
+    $detectorPath = function($detector) use ($container, $blind_mode) {
+        if($blind_mode){
+            return $detector->id;
+        }
+        return $detector->muid;
+    };
+
     $markdown_parser = new Parsedown();
     $markdown_parser->setBreaksEnabled(True);
 
@@ -76,7 +83,8 @@ $container['renderer'] = function ($container) {
 
         'markdown_parser' => $markdown_parser,
         'blind_mode' => $container->settings['blind_mode']['enabled'],
-        'detectorName' => $detectorName
+        'detectorName' => $detectorName,
+        'detectorPath' => $detectorPath
     ];
 
     return new PhpRenderer(__DIR__ . '/../templates/', $defaultTemplateVariables);

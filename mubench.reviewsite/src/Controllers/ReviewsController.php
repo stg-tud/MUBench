@@ -28,10 +28,17 @@ class ReviewsController extends Controller
         $misuse_muid = $args['misuse_muid'];
 
         $experiment = Experiment::find($experiment_id);
-        $detector = Detector::find($this->detectorBlindToReal($detector_muid));
+        $detector = $this->getDetector($detector_muid);
         $ex2_review_size = $request->getQueryParam("ex2_review_size", $this->settings['default_ex2_review_size']);
 
-        $reviewer = array_key_exists('reviewer_name', $args) ? ($this->settings['blind_mode']['enabled'] ? Review::find($args['reviewer_name']) : Reviewer::where(['name' => $args['reviewer_name']])->first()) : $this->user;
+        $reviewer = $this->user;
+        if(array_key_exists('reviewer_name', $args)){
+            $reviewer = Reviewer::where(['id' => $args['reviewer_name']])->first();
+            if(!$reviewer){
+                $reviewer = Review::find($args['reviewer_name']);
+            }
+        }
+
         $resolution_reviewer = Reviewer::where(['name' => 'resolution'])->first();
         $is_reviewer = ($this->user && $reviewer && $this->user->id == $reviewer->id) || ($reviewer && $reviewer->id == $resolution_reviewer->id);
 
