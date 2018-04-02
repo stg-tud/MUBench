@@ -15,7 +15,8 @@
  * @var array $detectors detectors (Detector) with results per experiment
  * @var array $results
  * @var int $ex2_review_size max number of reviews (per project) to include in statistics
- * @var callable $detectorName function to resolve router paths
+ * @var callable $detectorName function to resolve detector names if blinded
+ * @var callable $detectorPath function to return detector id if blinded
  */
 
 use MuBench\ReviewSite\Models\RunsResult;

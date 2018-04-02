@@ -6,6 +6,8 @@
  * @var array $run all run information
  * @var array $additional_stats all stat columns from the run information besides project, version, runtime, result and number_of_findings
  * @var Parsedown $markdown_parser markdown parser
+ * @var callable $detectorName function to resolve detector names if blinded
+ * @var callable $detectorPath function to return detector id if blinded
  */
 
 use MuBench\ReviewSite\Models\Misuse;
