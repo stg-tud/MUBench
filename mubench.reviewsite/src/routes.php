@@ -28,9 +28,11 @@ $app->get('/violations', \MuBench\ReviewSite\Controllers\ViolationsController::c
 
 $app->group('/private', function () use ($app) {
     $app->get('/', \MuBench\ReviewSite\Controllers\ExperimentsController::class.":index")->setName('private./');
+    $app->get('/import', \MuBench\ReviewSite\Controllers\RunsController::class.":import")->setName('private.import');
     $app->get('/runs/manage', \MuBench\ReviewSite\Controllers\RunsController::class.":manageRuns")->setName('private.manage.runs');
     $app->group('/experiments/{experiment_id}', function() use ($app) {
         $app->group('/detectors/{detector_muid}', function() use ($app) {
+            $app->post('/import', \MuBench\ReviewSite\Controllers\RunsController::class.":import_runs")->setName('private.import.detector');
             $app->get('/runs', \MuBench\ReviewSite\Controllers\RunsController::class . ":getIndex")->setName('private.experiment.detector');
             $app->get('/runs.csv', \MuBench\ReviewSite\Controllers\RunsController::class . ":downloadRuns")->setName('private.download.runs');
             $app->group('/projects/{project_muid}/versions/{version_muid}/misuses/{misuse_muid}', function() use ($app) {
