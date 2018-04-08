@@ -1,0 +1,20 @@
+<?php
+/**
+ * @var array $exp_det_reviewstate contains information about reviewstate ordered by experiment->detector->NEEDS_REVIEW/NEEDS_CLARIFICATION/DISAGGREMENT
+ * @var Experiment $experiment the selected experiment
+ * @var Detector $detector the selected detector
+ */
+
+use MuBench\ReviewSite\Models\Detector;
+use MuBench\ReviewSite\Models\Experiment;
+use MuBench\ReviewSite\Models\ReviewState;
+
+if ($exp_det_reviewstate[$experiment->id][$detector->id][ReviewState::NEEDS_REVIEW]): ?>
+    <i class="fa fa-search" aria-hidden="true" style="color:red;" title="Needs Review"></i>
+<?php endif;?>
+<?php if ($exp_det_reviewstate[$experiment->id][$detector->id][ReviewState::NEEDS_CLARIFICATION]): ?>
+    <i class="fa fa-question-circle" aria-hidden="true" style="color:blue;" title="Needs Clarification"></i>
+<?php endif;?>
+<?php if ($exp_det_reviewstate[$experiment->id][$detector->id][ReviewState::DISAGREEMENT]): ?>
+    <i class="fa fa-exclamation-triangle" aria-hidden="true" style="color:red;" title="Disagreement"></i>
+<?php endif;?>
