@@ -63,6 +63,8 @@ use MuBench\ReviewSite\Models\Experiment;
                             <a href="<?= $pathFor('manage.runs') ?>">Manage runs</a></li>
                         <li class="right <?= $isCurrentPath('tags.manage') ? "active" : "" ?>">
                             <a href="<?= $pathFor('tags.manage') ?>">Manage tags</a></li>
+                        <li class="right <?= $isCurrentPath('import') ? "active" : "" ?>">
+                            <a href="<?= $pathFor('import') ?>">Import data</a></li>
                     </ul>
                     </li>
             <?php else: ?>

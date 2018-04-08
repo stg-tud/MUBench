@@ -1,0 +1,128 @@
+<?php
+/**
+ * @var \MuBench\ReviewSite\Models\Reviewer $user the logged in user, if any
+ *
+ * @var string $site_base_url
+ * @var string $public_url_prefix
+ * @var string $private_url_prefix
+ * @var callable $pathFor function to resolve router paths
+ * @var string $url_prefix the public or private url prefix, depending on whether the user is logged in
+ *
+ * @var string $path the current route path
+ * @var string $origin_param url parameter that carries the $path
+ * @var string $origin_path referrer path
+ *
+ * @var array $experiments all experiments (Experiment)
+ * @var array $detectors detectors (Detector) with results per experiment
+ * @var Experiment $experiment the selected experiment, if any
+ * @var Detector $detector the selected detector, if any
+ * @var array $experiment_runs runs for each experiment
+ *
+ * @var array $runs the detectors experiment runs
+ */
+use MuBench\ReviewSite\Models\Detector;
+use MuBench\ReviewSite\Models\Experiment;
+use MuBench\ReviewSite\Models\Decision;
+use MuBench\ReviewSite\Models\ReviewState;
+
+?>
+<html>
+<head>
+    <title>MuBench :: Import Data</title>
+    <link rel="stylesheet" type="text/css" href="<?= $site_base_url ?>css/style.css"/>
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script   src="https://code.jquery.com/jquery-3.2.1.slim.min.js"   integrity="sha256-k2WSCIexGzOj3Euiig+TlR8gA0EmPjuc79OEeY5L45g="   crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/spectrum/1.8.0/spectrum.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/spectrum/1.8.0/spectrum.min.css">
+</head>
+<body>
+<?php include "includes/menu.phtml"; ?>
+
+<form  id="import_form" style="" action="" method="post" target="">
+    <table>
+        <tr>
+            <td>Experiment</td>
+            <td>
+                <input type="text" name="experiment">
+            </td>
+        </tr>
+        <tr>
+            <td>Detector</td>
+            <td>
+                <input type="text" name="detector">
+            </td>
+        </tr>
+        <tr>
+            <td>Project</td>
+            <td>
+                <input type="text" name="project_muid">
+            </td>
+        </tr>
+        <tr>
+            <td>Version</td>
+            <td>
+                <input type="text" name="version_muid">
+            </td>
+        </tr>
+        <tr>
+            <td>Host</td>
+            <td>
+                <input type="text" name="host">
+            </td>
+        </tr>
+        <tr>
+            <td>Database</td>
+            <td>
+                <input type="text" name="database">
+            </td>
+        </tr>
+        <tr>
+            <td>Username</td>
+            <td>
+                <input type="text" name="username">
+            </td>
+        </tr>
+        <tr>
+            <td>Password</td>
+            <td>
+                <input type="text" name="password">
+            </td>
+        </tr>
+        <tr>
+            <td>Prefix</td>
+            <td>
+                <input type="text" name="prefix">
+            </td>
+        </tr>
+    </table>
+</form>
+<a class="button" onclick="import_db()">Import Run</a>
+<div id="result"></div>
+
+<script>
+    var url = "<?= $site_base_url ?>";
+    console.log("Loading");
+    function import_db(){
+        console.log("Hello");
+        var import_form = document.getElementById('import_form');
+        var new_url = url;
+        new_url += "private/experiments/";
+        new_url += document.getElementsByName('experiment')[0].value;
+        new_url += "/detectors/";
+        new_url += document.getElementsByName('detector')[0].value;
+        new_url += "/import";
+        import_form.action = new_url;
+        console.log(import_form);
+        var request = new XMLHttpRequest();
+        var formData = new FormData(import_form);
+        request.open('POST', new_url, true);
+        request.addEventListener('load', (r) => {
+            var result = document.getElementById('result');
+            result.innerText = r.srcElement.responseText;
+        });
+        request.send(formData);
+    }
+</script>
+
+</body>
+</html>
