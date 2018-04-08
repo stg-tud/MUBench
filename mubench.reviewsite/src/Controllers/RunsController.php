@@ -108,7 +108,7 @@ class RunsController extends Controller
 
         $connection = $this->createNewDBConnection($host, $database, $username, $password, $prefix);
         if($connection){
-            $this->importRunsFromConnection($detector_muid, $connection, $project_muid, $version_muid, $experiment_id);
+            $this->importRunsFromConnection($experiment_id, $detector_muid, $project_muid, $version_muid, $connection);
             return $response->withJson("success",200);
         }
         return $response->withJson("failure: could not connect to db",500);
