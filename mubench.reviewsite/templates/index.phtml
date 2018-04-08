@@ -19,6 +19,7 @@ use MuBench\ReviewSite\Models\Experiment;
     <head>
         <title>MUBench Review Site</title>
         <link rel="stylesheet" type="text/css" href="<?= $srcUrlFor('css/style.css') ?>" />
+        <link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
     </head>
     <body>
         <?php include "includes/menu.phtml" ?>
@@ -31,7 +32,7 @@ use MuBench\ReviewSite\Models\Experiment;
                 <ul>
                 <?php if ($detectors[$experiment->id]): ?>
                     <?php foreach ($detectors[$experiment->id] as $detector): ?>
-                        <li><a href="<?= $pathFor('experiment.detector', ['experiment_id' => $experiment->id, 'detector_muid' => $detectorPathId($detector)]) ?>"><?= $detectorName($detector->muid) ?></a></li>
+                        <li><a href="<?= $pathFor('experiment.detector', ['experiment_id' => $experiment->id, 'detector_muid' => $detectorPathId($detector)]) ?>"><?= $detectorName($detector->muid) ?></a><?php include "includes/detector_review_state.phtml" ?></li>
                     <?php endforeach ?>
                 <?php else: ?>
                     <li>No Results</li>
