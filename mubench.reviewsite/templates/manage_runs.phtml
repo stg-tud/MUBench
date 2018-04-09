@@ -67,7 +67,6 @@ $columns_to_ignore = array(
                     <thead>
                     <tr>
                         <th></th>
-                        <th>Detector</th>
                         <th>Project</th>
                         <th>Version</th>
                         <th>Result</th>
@@ -96,8 +95,6 @@ $columns_to_ignore = array(
                             <td class="top">
                                 <input type="checkbox" value='{"run_id": <?= $run->id ?>, "muid": "<?= $detector ?>"}'>
                             </td>
-                            <td class="top td-clickable">
-                                <?= $first_detector ? $markdown_parser->text($detector) : ""; ?></td>
                             <td class="top td-clickable">
                                 <?= $markdown_parser->text($project); ?></td>
                             <td class="top td-clickable">
