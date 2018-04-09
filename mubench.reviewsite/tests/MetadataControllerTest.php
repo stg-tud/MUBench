@@ -32,7 +32,7 @@ class MetadataControllerTest extends SlimTestCase
             'fix' => ['diff-url' => '-diff-', 'description' => '-fix-desc-'],
             'location' => ['file' => '-file-location-', 'method' => '-method-location-'],
             'violation_types' => ['missing/call'],
-            'patterns' => [['id' => '-p1-', 'snippet' => ['code' => '-pattern-code-', 'first_line' => 42]]],
+            'correct_usages' => [['id' => '-p1-', 'snippet' => ['code' => '-code-', 'first_line' => 42]]],
             'target_snippets' => [['code' => '-target-snippet-code-', 'first_line_number' => 273]]
         ];
     }
@@ -50,10 +50,10 @@ class MetadataControllerTest extends SlimTestCase
         self::assertEquals('-file-location-', $this->metadata->file);
         self::assertEquals('-method-location-', $this->metadata->method);
         self::assertEquals('-diff-', $this->metadata->diff_url);
-        self::assertEquals(1, count($this->metadata->patterns));
-        self::assertEquals('-pattern-code-', $this->metadata->patterns[0]->code);
-        self::assertEquals(42, $this->metadata->patterns[0]->line);
-        self::assertEquals(1 , count($this->metadata->violation_types()));
+        self::assertEquals(1, count($this->metadata->correct_usages));
+        self::assertEquals('-code-', $this->metadata->correct_usages[0]->code);
+        self::assertEquals(42, $this->metadata->correct_usages[0]->line);
+        self::assertEquals(1 , count($this->metadata->violation_types));
         self::assertEquals('missing/call', $this->metadata->violation_types[0]->name);
         // TODO: snippet test if added
     }
@@ -75,10 +75,10 @@ class MetadataControllerTest extends SlimTestCase
         self::assertEquals('-file-location-', $metadata->file);
         self::assertEquals('-method-location-', $metadata->method);
         self::assertEquals('-diff-', $metadata->diff_url);
-        self::assertEquals(1, count($metadata->patterns));
-        self::assertEquals('-pattern-code-', $metadata->patterns[0]->code);
-        self::assertEquals(42, $metadata->patterns[0]->line);
-        self::assertEquals(1 , count($metadata->violation_types()));
+        self::assertEquals(1, count($metadata->correct_usages));
+        self::assertEquals('-code-', $metadata->correct_usages[0]->code);
+        self::assertEquals(42, $metadata->correct_usages[0]->line);
+        self::assertEquals(1 , count($metadata->violation_types));
         self::assertEquals('missing/call', $metadata->violation_types[0]->name);
         // TODO: snippet test if added
     }

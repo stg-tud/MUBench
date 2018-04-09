@@ -235,17 +235,17 @@ $metadata->method = 'method(P)';
 $metadata->diff_url = 'http://diff/url';
 $metadata->save();
 
-echo 'Creating patterns<br/>';
-$pattern = new \MuBench\ReviewSite\Models\Pattern;
-$pattern->metadata_id = 1;
-$pattern->code = "m(A){\n\ta(A);\n}";
-$pattern->line = 10;
-$pattern->save();
-$pattern = new \MuBench\ReviewSite\Models\Pattern;
-$pattern->metadata_id = 2;
-$pattern->code = "m(A){\n\ta(A);\n}";
-$pattern->line = 10;
-$pattern->save();
+echo 'Creating correct usages<br/>';
+$correctUsage = new \MuBench\ReviewSite\Models\CorrectUsage;
+$correctUsage->metadata_id = 1;
+$correctUsage->code = "m(A){\n\ta(A);\n}";
+$correctUsage->line = 10;
+$correctUsage->save();
+$correctUsage = new \MuBench\ReviewSite\Models\CorrectUsage;
+$correctUsage->metadata_id = 2;
+$correctUsage->code = "m(A){\n\ta(A);\n}";
+$correctUsage->line = 10;
+$correctUsage->save();
 
 echo 'Creating misuses<br/>';
 $misuse = new \MuBench\ReviewSite\Models\Misuse;

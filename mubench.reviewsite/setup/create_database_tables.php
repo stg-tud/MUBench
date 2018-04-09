@@ -12,15 +12,15 @@ Schema::create($experiment1->getTable(), function (Blueprint $table) {
     $table->string('name', 100);
 });
 $experiment1->id = 1;
-$experiment1->name = "Provided Patterns";
+$experiment1->name = "Recall Upper Bound";
 $experiment1->save();
 $experiment2 = new \MuBench\ReviewSite\Models\Experiment;
 $experiment2->id = 2;
-$experiment2->name = "All Findings";
+$experiment2->name = "Precision";
 $experiment2->save();
 $experiment3 = new \MuBench\ReviewSite\Models\Experiment;
 $experiment3->id = 3;
-$experiment3->name = "Benchmark";
+$experiment3->name = "Recall";
 $experiment3->save();
 
 echo 'Creating detectors table<br/>';
@@ -67,10 +67,10 @@ Schema::create($metadata->getTable(), function (Blueprint $table) {
     $table->unique(['project_muid', 'version_muid', 'misuse_muid']);
 });
 
-echo 'Creating pattern<br/>';
-$pattern = new \MuBench\ReviewSite\Models\Pattern;
-Schema::dropIfExists($pattern->getTable());
-Schema::create($pattern->getTable(), function (Blueprint $table) {
+echo 'Creating correct usages<br/>';
+$correct_usage = new \MuBench\ReviewSite\Models\CorrectUsage;
+Schema::dropIfExists($correct_usage->getTable());
+Schema::create($correct_usage->getTable(), function (Blueprint $table) {
     $table->increments('id');
     $table->integer('metadata_id');
     $table->text('code');

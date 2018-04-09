@@ -207,10 +207,10 @@ $origin_path = $origin_path ? $origin_path : $pathFor('experiment.detector', arr
                 <?php endif; ?>
             </td></tr>
             <?php if($experiment->id === 1) : ?>
-                    <tr><td class="vtop"><b>Code with Pattern(s):</b></td>
+                    <tr><td class="vtop"><b>Correct Usage:</b></td>
                         <td>
-                <?php foreach($misuse->metadata->patterns as $pattern) : ?>
-                    <pre class="prettyprint"><code class="language-java"><?= htmlspecialchars($pattern->code); ?></code></pre>
+                <?php foreach($misuse->metadata->correct_usages as $correctUsage) : ?>
+                    <pre class="prettyprint"><code class="language-java"><?= htmlspecialchars($correctUsage->code); ?></code></pre>
                 <?php endforeach; ?>
                         </td></tr>
             <?php endif; ?>

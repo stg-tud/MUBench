@@ -10,9 +10,9 @@ class Metadata extends Model
 
     protected $fillable = ['misuse_muid', 'project_muid', 'version_muid', 'description', 'fix_description', 'file', 'method', 'diff_url'];
 
-    public function patterns()
+    public function correct_usages()
     {
-        return $this->hasMany(Pattern::class);
+        return $this->hasMany(CorrectUsage::class);
     }
 
     public function violation_types()
