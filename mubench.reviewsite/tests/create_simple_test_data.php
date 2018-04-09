@@ -340,15 +340,15 @@ $findingReview->rank = '1';
 $findingReview->save();
 
 
-echo 'Creating Violation Types<br/>';
-$type = new \MuBench\ReviewSite\Models\Type;
+echo 'Creating Violations<br/>';
+$type = new \MuBench\ReviewSite\Models\Violation;
 $type->name = 'missing/call';
 $type->save();
 
-echo 'Creating Violation Types for metadata misuses<br/>';
+echo 'Creating Violations for metadata misuses<br/>';
 $capsule->table('metadata_types')->insert(array('metadata_id' => 1, 'type_id' => 1));
 
-echo 'Creating Violation Types for finding review<br/>';
+echo 'Creating Violations for finding review<br/>';
 $capsule->table('finding_review_types')->insert(array('finding_review_id' => 1, 'type_id' => 1));
 
 

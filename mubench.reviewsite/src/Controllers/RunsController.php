@@ -147,7 +147,7 @@ class RunsController extends Controller
             foreach($misuse->reviews as $review){
                 $findings_reviews = $review->finding_reviews;
                 foreach($findings_reviews as $finding_review){
-                    $finding_review->violation_types()->detach();
+                    $finding_review->violations()->detach();
                 }
                 $review->finding_reviews()->delete();
                 $review->reviewer()->dissociate();

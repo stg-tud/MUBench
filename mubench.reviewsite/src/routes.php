@@ -23,7 +23,7 @@ $app->group('/experiments/{experiment_id}', function() use ($app) {
 });
 $app->get('/results', \MuBench\ReviewSite\Controllers\RunsController::class.":getResults")->setName('stats.results');
 $app->get('/tags', \MuBench\ReviewSite\Controllers\TagsController::class.":getTags")->setName('stats.tags');
-$app->get('/types', \MuBench\ReviewSite\Controllers\TypesController::class.":getTypes")->setName('stats.types');
+$app->get('/violations', \MuBench\ReviewSite\Controllers\ViolationsController::class.":getViolations")->setName('stats.violations');
 
 
 $app->group('/private', function () use ($app) {
@@ -45,7 +45,7 @@ $app->group('/private', function () use ($app) {
     $app->get('/results', \MuBench\ReviewSite\Controllers\RunsController::class.":getResults")->setName('private.stats.results');
     $app->get('/tags', \MuBench\ReviewSite\Controllers\TagsController::class.":getTags")->setName('private.stats.tags');
     $app->get('/tags/manage', \MuBench\ReviewSite\Controllers\TagsController::class.":manageTags")->setName('private.tags.manage');
-    $app->get('/types', \MuBench\ReviewSite\Controllers\TypesController::class.":getTypes")->setName('private.stats.types');
+    $app->get('/violations', \MuBench\ReviewSite\Controllers\ViolationsController::class.":getViolations")->setName('private.stats.violations');
 })->add(new \MuBench\ReviewSite\Middleware\AuthMiddleware($container));
 
 $app->group('', function () use ($app, $settings) {

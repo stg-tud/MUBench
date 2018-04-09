@@ -126,15 +126,15 @@ Schema::create($findingReview->getTable(), function (Blueprint $table) {
     $table->unique(['review_id', 'rank']);
 });
 
-echo 'Creating Violation Types<br/>';
-$type = new \MuBench\ReviewSite\Models\Type;
+echo 'Creating Violations<br/>';
+$type = new \MuBench\ReviewSite\Models\Violation;
 Schema::dropIfExists($type->getTable());
 Schema::create($type->getTable(), function (Blueprint $table) {
     $table->increments('id');
     $table->text('name');
 });
 
-echo 'Creating Violation Types for metadata misuses<br/>';
+echo 'Creating Violations for metadata misuses<br/>';
 Schema::dropIfExists('metadata_types');
 Schema::create('metadata_types', function (Blueprint $table) {
     $table->increments('id');
@@ -142,7 +142,7 @@ Schema::create('metadata_types', function (Blueprint $table) {
     $table->integer('type_id');
 });
 
-echo 'Creating Violation Types for finding review<br/>';
+echo 'Creating Violations for finding review<br/>';
 Schema::dropIfExists('finding_review_types');
 Schema::create('finding_review_types', function (Blueprint $table) {
     $table->increments('id');

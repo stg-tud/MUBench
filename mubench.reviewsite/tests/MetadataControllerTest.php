@@ -31,7 +31,7 @@ class MetadataControllerTest extends SlimTestCase
             'description' => '-desc-',
             'fix' => ['diff-url' => '-diff-', 'description' => '-fix-desc-'],
             'location' => ['file' => '-file-location-', 'method' => '-method-location-'],
-            'violation_types' => ['missing/call'],
+            'violations' => ['missing/call'],
             'correct_usages' => [['id' => '-p1-', 'snippet' => ['code' => '-code-', 'first_line' => 42]]],
             'target_snippets' => [['code' => '-target-snippet-code-', 'first_line_number' => 273]]
         ];
@@ -53,8 +53,8 @@ class MetadataControllerTest extends SlimTestCase
         self::assertEquals(1, count($this->metadata->correct_usages));
         self::assertEquals('-code-', $this->metadata->correct_usages[0]->code);
         self::assertEquals(42, $this->metadata->correct_usages[0]->line);
-        self::assertEquals(1 , count($this->metadata->violation_types));
-        self::assertEquals('missing/call', $this->metadata->violation_types[0]->name);
+        self::assertEquals(1 , count($this->metadata->violations));
+        self::assertEquals('missing/call', $this->metadata->violations[0]->name);
         // TODO: snippet test if added
     }
 
@@ -78,8 +78,8 @@ class MetadataControllerTest extends SlimTestCase
         self::assertEquals(1, count($metadata->correct_usages));
         self::assertEquals('-code-', $metadata->correct_usages[0]->code);
         self::assertEquals(42, $metadata->correct_usages[0]->line);
-        self::assertEquals(1 , count($metadata->violation_types));
-        self::assertEquals('missing/call', $metadata->violation_types[0]->name);
+        self::assertEquals(1 , count($metadata->violations));
+        self::assertEquals('missing/call', $metadata->violations[0]->name);
         // TODO: snippet test if added
     }
 

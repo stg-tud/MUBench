@@ -82,10 +82,10 @@ class Misuse extends Model
         return $instance;
     }
 
-    public function getViolationTypes()
+    public function getViolations()
     {
         if($this->metadata){
-           return $this->metadata->violation_types;
+           return $this->metadata->violations;
         }
         return new Collection;
     }
@@ -122,9 +122,9 @@ class Misuse extends Model
         return false;
     }
 
-    public function hasViolationTypes()
+    public function hasViolations()
     {
-        return !empty($this->getViolationTypes());
+        return !empty($this->getViolations());
     }
 
     public function hasSnippets(){

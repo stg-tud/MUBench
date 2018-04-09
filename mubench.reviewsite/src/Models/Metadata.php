@@ -15,9 +15,9 @@ class Metadata extends Model
         return $this->hasMany(CorrectUsage::class);
     }
 
-    public function violation_types()
+    public function violations()
     {
-        return $this->belongsToMany(Type::class, 'metadata_types', 'metadata_id', 'type_id');
+        return $this->belongsToMany(Violation::class, 'metadata_types', 'metadata_id', 'type_id');
     }
 
 }

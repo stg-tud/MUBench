@@ -34,16 +34,16 @@ class Review extends Model
         return $decision;
     }
 
-    public function hasHitViolationTypes($rank){
-        return !empty($this->getHitViolationTypes($rank));
+    public function hasHitViolations($rank){
+        return !empty($this->getHitViolations($rank));
     }
 
     public function getHitDecision($rank){
         return $this->getFindingReviews($rank)->decision;
     }
 
-    public function getHitViolationTypes($rank){
-        return $this->getFindingReviews($rank)->violation_types->toArray();
+    public function getHitViolations($rank){
+        return $this->getFindingReviews($rank)->violations->toArray();
     }
 
     public function identifiesHit()

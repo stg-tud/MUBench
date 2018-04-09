@@ -28,12 +28,12 @@ class MisuseFilterTest extends SlimTestCase
 
     private $undecided_review = [
         'hit' => '?',
-        'types' => []
+        'violations' => []
     ];
 
     private $decided_review = [
         'hit' => 'Yes',
-        'types' => []
+        'violations' => []
     ];
 
     function setUp()
