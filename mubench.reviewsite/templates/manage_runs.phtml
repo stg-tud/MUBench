@@ -53,64 +53,150 @@ $columns_to_ignore = array(
 <?php include "includes/menu.phtml"; ?>
 
 <?php foreach($experiments as $experiment): ?>
-<h1>Experiment <?= /* @var Experiment */ $experiment->id ?>: <?= htmlspecialchars($experiment->name) ?></h1>
-<table>
-    <thead>
-    <tr>
-        <th>Detector</th>
-        <th>Project</th>
-        <th>Version</th>
-        <th>Result</th>
-        <th># of Findings</th>
-        <th>Runtime</th>
-        <th></th>
-        <th></th>
-    </tr>
-    </thead>
-    <tbody>
-    <?php
-    $last_project = ""
-    ?>
-    <?php foreach ($experiment_runs[$experiment->id] as $detector => $runs) : ?>
-        <?php $first_detector = True; ?>
-        <?php foreach($runs as $run) : ?>
-        <?php
-        $project = $run->project_muid;
-        $version = $run->version_muid;
-        $attr = $run->getAttributes();
-        $additional_stats = array_filter(array_keys($attr), function ($key) use ($columns_to_ignore, $attr) {
-            return !in_array($key, $columns_to_ignore) && array_key_exists($key, $attr) && !empty($attr[$key]);
-        });
-        sort($additional_stats);
-        ?>
-            <tr>
-                <td class="top">
-                    <?= $first_detector ? $markdown_parser->text($detector) : ""; ?></td>
-                <td class="top">
-                    <?= $markdown_parser->text($project); ?></td>
-                <td class="top">
-                    <?= $markdown_parser->text($version); ?></td>
-                <td class="top">
-                    <?= $markdown_parser->text($run['result']); ?></td>
-                <td class="top right">
-                    <?= $markdown_parser->text($run['number_of_findings']); ?></td>
-                <td class="top right">
-                    <?= $markdown_parser->text(substr($run['runtime'], 0, 4)) . "s"; ?></td>
-                <td class="top right">
-                    <?php include "includes/stats_modal.phtml"; ?>
-                </td>
-                <td>
-                    <form action="<?= $pathFor('runs.delete', array('experiment_id' => $experiment->id, 'detector_muid' => $detector, 'project_muid' => $project, 'version_muid' => $version)) ?>" method="post" target="">
-                        <button style="border:none;background-color:gray;outline:none;margin:0;padding:0" type="submit"><i class="fa fa-window-close"></i></button>
-                    </form>
-                </td>
-            </tr>
-            <?php $first_detector = False; ?>
-            <?php endforeach; ?>
-<?php endforeach; ?>
-    </tbody>
-</table>
+    <?php if(!empty($experiment_runs[$experiment->id])): ?>
+        <h1 class="row-hover clickable-icon" onclick="show(<?= $experiment->id ?>, this)">Experiment <?= /* @var Experiment */ $experiment->id ?>: <?= htmlspecialchars($experiment->name) ?> <i class="fa fa-angle-right"></i></h1>
+        <?php foreach ($experiment_runs[$experiment->id] as $detector => $runs) : ?>
+            <div class="<?= $experiment->id?>" style="padding-left: 30px;display:none;margin:0;">
+                <div class="row-hover clickable-icon" style="padding:0;margin:0;" onclick="showDetector('div_<?= $experiment->id?>_<?= $detector ?>', this)" >
+                    <h2 style="margin:0;padding:0;"><?= htmlspecialchars($detector) ?>
+                         <i class="fa fa-angle-right"></i>
+                    </h2>
+                </div>
+                <div id="div_<?= $experiment->id?>_<?= $detector ?>" style="display:none">
+                <table class="invisible" id="<?= $experiment->id?>_<?= $detector ?>">
+                    <thead>
+                    <tr>
+                        <th></th>
+                        <th>Project</th>
+                        <th>Version</th>
+                        <th>Result</th>
+                        <th># of Findings</th>
+                        <th>Runtime</th>
+                        <th></th>
+                        <th></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                        <?php
+                        $last_project = ""
+                        ?>
+                        <?php $first_detector = True; ?>
+                        <?php foreach($runs as $run) : ?>
+                        <?php
+                        $project = $run->project_muid;
+                        $version = $run->version_muid;
+                        $attr = $run->getAttributes();
+                        $additional_stats = array_filter(array_keys($attr), function ($key) use ($columns_to_ignore, $attr) {
+                            return !in_array($key, $columns_to_ignore) && array_key_exists($key, $attr) && !empty($attr[$key]);
+                        });
+                        sort($additional_stats);
+                        ?>
+                        <tr class="row-hover">
+                            <td class="top">
+                                <input type="checkbox" value='{"run_id": <?= $run->id ?>, "muid": "<?= $detector ?>"}'>
+                            </td>
+                            <td class="top td-clickable">
+                                <?= $markdown_parser->text($project); ?></td>
+                            <td class="top td-clickable">
+                                <?= $markdown_parser->text($version); ?></td>
+                            <td class="top td-clickable">
+                                <?= $markdown_parser->text($run['result']); ?></td>
+                            <td class="top right td-clickable">
+                                <?= $markdown_parser->text($run['number_of_findings']); ?></td>
+                            <td class="top right td-clickable">
+                                <?= $markdown_parser->text(substr($run['runtime'], 0, 4)) . "s"; ?></td>
+                            <td class="top right td-clickable">
+                                <form action="<?= $pathFor('runs.delete', array('experiment_id' => $experiment->id, 'detector_muid' => $detector, 'project_muid' => $project, 'version_muid' => $version)) ?>" method="post" target="">
+                                    <button class="clickable-icon" style="border:none;outline:none;margin:0;padding:0;background-color:white;" type="submit"><i class="fa fa-trash"></i></button>
+                                </form>
+                            </td>
+                        </tr>
+                        <?php $first_detector = False; ?>
+                        <?php endforeach; ?>
+                        <tr >
+                            <td class="top">
+                                <input type="checkbox" onclick="checkAll(this,'<?= $experiment->id?>_<?= $detector ?>')">
+                            </td>
+                            <td class="top"> check all</td>
+                            <td class="top" colspan="5"><a class="button" onclick="deleteRuns('<?= $experiment->id?>_<?= $detector ?>')">delete selected</a</td>
+                        </tr>
+                    </tbody>
+                </table>
+                </div>
+            </div>
+        <?php endforeach; ?>
+    <?php endif; ?>
 <?php endforeach; ?>
 
+<script>
+    var tds = document.getElementsByClassName('td-clickable');
+    for(var i = 0; i < tds.length; ++i){
+        tds[i].onclick = function(event) {rowcheck(this)};
+    }
+
+    function rowcheck(obj){
+        console.log(obj);
+        var c = obj.parentNode.getElementsByTagName('input')[0];
+        c.checked =! c.checked;
+    }
+
+    function checkAll(obj, tableId){
+        var table = document.getElementById(tableId);
+        var checkboxes = table.querySelectorAll("input[type='checkbox']");
+        for(var i = 0; i < checkboxes.length; ++i){
+            checkboxes[i].checked = obj.checked;
+        }
+    }
+
+    function show(id, o){
+        var divs = document.getElementsByClassName(id);
+        for(var i = 0; i < divs.length; ++i){
+            var obj = divs[i];
+            if(obj.style.display == "" || obj.style.display == "none"){
+                obj.style.display = "block";
+                o.getElementsByTagName('i')[0].className = "fa fa-angle-down";
+            }else{
+                obj.style.display = "none";
+                o.getElementsByTagName('i')[0].className = "fa fa-angle-right";
+            }
+        }
+    }
+
+    function showDetector(id, o){
+        var obj = document.getElementById(id);
+        if(obj.style.display == "" || obj.style.display == "none"){
+            obj.style.display = "block";
+            o.getElementsByTagName('i')[0].className = "fa fa-angle-down";
+        }else{
+            obj.style.display = "none";
+            o.getElementsByTagName('i')[0].className = "fa fa-angle-right";
+        }
+
+    }
+
+    function deleteRuns(id){
+        var parent = document.getElementById(id);
+
+        var checkedInputs = parent.querySelectorAll("input[type='checkbox']");
+        var run_ids = [];
+        for(var i = 0; i < checkedInputs.length-1; ++i){
+            if(checkedInputs[i].checked){
+                run_ids.push(checkedInputs[i].value);
+            }
+        }
+
+        var form = document.createElement('form');
+        form.action = '<?= $pathFor('runs.massDelete') ?>';
+        form.method = 'post';
+
+        var input = document.createElement('input');
+        input.type = "hidden";
+        input.name = "run_ids";
+        input.value = JSON.stringify(run_ids);
+        form.appendChild(input);
+        document.body.appendChild(form);
+        form.submit();
+    }
+</script>
 </body>
 </html>

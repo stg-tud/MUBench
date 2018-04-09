@@ -117,7 +117,10 @@ class RunsController extends Controller
         foreach($experiments as $experiment){
             $experiment_runs[$experiment->id] = [];
             foreach($detectors as $detector){
-                $experiment_runs[$experiment->id][$detector->muid] = Run::of($detector)->in($experiment)->orderBy('project_muid')->orderBy('version_muid')->get();
+                $runs = Run::of($detector)->in($experiment)->orderBy('project_muid')->orderBy('version_muid')->get();
+                if($runs->count() > 0){
+                    $experiment_runs[$experiment->id][$detector->muid] = $runs;
+                }
             }
         }
 
@@ -136,6 +139,18 @@ class RunsController extends Controller
         $run = Run::of($detector)->in(Experiment::find($experimentId))->get()->where('project_muid', $project_muid)->where('version_muid', $version_muid)->first();
         if($run){
             $this->deleteRunAndRelated($run, $detector->id);
+        }
+        return $response->withRedirect($this->router->pathFor('private.manage.runs'));
+    }
+
+    public function deleteRuns(Request $request, Response $response, array $args)
+    {
+        $formData = $request->getParsedBody();
+        $deleted_input = json_decode($formData['run_ids'], true);
+        foreach($deleted_input as $delete_input) {
+            $delete_run = json_decode($delete_input, true);
+            $detector = Detector::find($delete_run['muid']);
+            $this->deleteRunAndRelated(Run::of($detector)->where('id', intval($delete_run['run_id']))->first(), $detector->id);
         }
         return $response->withRedirect($this->router->pathFor('private.manage.runs'));
     }
