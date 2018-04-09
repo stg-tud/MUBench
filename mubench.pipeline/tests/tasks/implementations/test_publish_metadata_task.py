@@ -57,8 +57,8 @@ class TestPublishMetadataTask:
                 "commit": "http://fake.diff/url"
             },
             "violations": [
-                "-violation-type-1-",
-                "-violation-type-2-"
+                "-violation-1-",
+                "-violation-2-"
             ],
             "location": {
                 "file": "/some/file.java",
@@ -80,9 +80,9 @@ class TestPublishMetadataTask:
                 "description": "-fix-description-",
                 "diff-url": "http://fake.diff/url"
             },
-            "violation_types": [
-                "-violation-type-1-",
-                "-violation-type-2-"
+            "violations": [
+                "-violation-1-",
+                "-violation-2-"
             ],
             "location": {
                 "file": "/some/file.java",
