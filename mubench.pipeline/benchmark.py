@@ -50,11 +50,7 @@ logger.setLevel(logging.DEBUG)
 handler = logging.StreamHandler()
 handler.setLevel(logging.INFO)
 logging_colorization.colorize(handler)
-if platform.system() == 'Windows':
-    # we don't support colorization on windows
-    formatter = logging.Formatter("[%(levelname)-7s] %(message)s")
-else:
-    formatter = logging.Formatter("[%(levelcolor)s%(levelname)-7s%(resetcolor)s] %(message)s")
+formatter = logging.Formatter("[%(levelcolor)s%(levelname)-7s%(resetcolor)s] %(message)s")
 handler.setFormatter(formatter)
 logger.addHandler(handler)
 

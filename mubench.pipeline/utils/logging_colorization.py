@@ -1,35 +1,46 @@
-#!/usr/bin/env python
-# encoding: utf-8
 import logging
+import platform
 
 
-# inspired by: https://stackoverflow.com/a/1336640
-def __add_coloring_to_emit_ansi(fn):
-    RED = '\x1b[31m'
-    YELLOW = '\x1b[33m'
-    GREEN = '\x1b[32m'
-    NO_COLOR = '\x1b[0m'
+def __add_emit_without_colors(fn):
+    def __emit_without_color(*args):
+        args[0].levelcolor = ''
+        args[0].resetcolor = ''
 
-    # add methods we need to the class
-    def new(*args):
-        level = args[0].levelno
-        if level == logging.CRITICAL:
-            color = RED  # red
-        elif level == logging.ERROR:
-            color = RED  # red
-        elif level == logging.WARNING:
-            color = YELLOW  # yellow
-        elif level == logging.INFO:
-            color = GREEN  # green
-        else:  # logging.DEBUG
-            color = NO_COLOR  # normal
-
-        args[0].levelcolor = color
-        args[0].resetcolor = NO_COLOR
         return fn(*args)
 
-    return new
+    return __emit_without_color
+
+
+def __add_emit_with_ansi_colors(fn):
+    def __emit_with_ansi_color(*args):
+        __RED = '\x1b[31m'
+        __YELLOW = '\x1b[33m'
+        __GREEN = '\x1b[32m'
+        __NO_COLOR = '\x1b[0m'
+
+        level = args[0].levelno
+        if level == logging.CRITICAL:
+            color = __RED
+        elif level == logging.ERROR:
+            color = __RED
+        elif level == logging.WARNING:
+            color = __YELLOW
+        elif level == logging.INFO:
+            color = __GREEN
+        else:  # logging.DEBUG
+            color = __NO_COLOR
+
+        args[0].levelcolor = color
+        args[0].resetcolor = __NO_COLOR
+
+        return fn(*args)
+
+    return __emit_with_ansi_color
 
 
 def colorize(handler: logging.StreamHandler):
-    handler.emit = __add_coloring_to_emit_ansi(handler.emit)
+    if platform.system() == "Windows":
+        handler.emit = __add_emit_without_colors(handler.emit)
+    else:
+        handler.emit = __add_emit_with_ansi_colors(handler.emit)
