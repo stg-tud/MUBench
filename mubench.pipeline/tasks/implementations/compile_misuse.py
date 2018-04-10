@@ -25,8 +25,6 @@ class CompileMisuseTask:
         if self.force_compile or version_compile.timestamp > misuse_compile.timestamp:
             misuse_compile.delete()
 
-        logger.info("Compiling %s...", misuse)
-
         if not exists(misuse_compile.misuse_source_path):
             logger.debug("Copying misuse sources...")
             for source_path in version_compile.original_sources_paths:
