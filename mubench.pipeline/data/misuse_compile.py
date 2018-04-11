@@ -6,8 +6,8 @@ from utils.io import remove_tree, write_yaml, read_yaml
 
 
 class MisuseCompile:
-    PATTERN_SOURCE_DIR = "correct-usages-src"
-    PATTERN_CLASSES_DIR = "correct-usages-classes"
+    CORRECT_USAGES_SOURCE_DIR = "correct-usages-src"
+    CORRECT_USAGES_CLASSES_DIR = "correct-usages-classes"
     MISUSE_SOURCE_DIR = "misuse-src"
     MISUSE_CLASSES_DIR = "misuse-classes"
     __MISUSE_COMPILE_FILE = "misuse_compile.yml"
@@ -18,8 +18,8 @@ class MisuseCompile:
         self.base_path = base_path
         self.correct_usages = correct_usages
 
-        self.correct_usage_sources_path = join(self.base_path, MisuseCompile.PATTERN_SOURCE_DIR)
-        self.correct_usage_classes_path = join(self.base_path, MisuseCompile.PATTERN_CLASSES_DIR)
+        self.correct_usage_sources_path = join(self.base_path, MisuseCompile.CORRECT_USAGES_SOURCE_DIR)
+        self.correct_usage_classes_path = join(self.base_path, MisuseCompile.CORRECT_USAGES_CLASSES_DIR)
         self.misuse_source_path = join(self.base_path, MisuseCompile.MISUSE_SOURCE_DIR)
         self.misuse_classes_path = join(self.base_path, MisuseCompile.MISUSE_CLASSES_DIR)
 
