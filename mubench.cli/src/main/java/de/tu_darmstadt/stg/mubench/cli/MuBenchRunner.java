@@ -20,7 +20,7 @@ import java.nio.file.Path;
  *       })
  *       .withMineAndDetectStrategy((DetectorArgs as, DetectorOutput.Builder output) -> {
  *          return output
- *            .withRunInfo("detection using mined correct usages", "true")
+ *            .withRunInfo("detection using mined patterns", "true")
  *            .withFindings(findMisuses(da));
  *       })
  *       .run(args);
