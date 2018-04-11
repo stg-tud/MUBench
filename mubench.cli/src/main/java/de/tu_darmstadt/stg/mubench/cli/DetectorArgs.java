@@ -112,8 +112,8 @@ public class DetectorArgs {
 	}
 
 	/**
-	 * @return path to the source files of the correctUsage for a particular misuse. Should be used to extract the
-	 * correctUsages in detect-only mode.
+	 * @return path to the source files of the correct usage for a particular misuse. Should be used to extract the
+	 * correct usages in detect-only mode.
 	 * @throws FileNotFoundException if the path was not provided in the runner invocation, e.g., if the runner is
 	 * invoked in mine-and-detect mode.
 	 */
@@ -124,8 +124,8 @@ public class DetectorArgs {
 	}
 
 	/**
-	 * @return path to the class files of the correctUsages for a particular misuse. Should be used to extract the
-	 * correctUsages in detect-only mode.
+	 * @return path to the class files of the correct usages for a particular misuse. Should be used to extract the
+	 * correct usages in detect-only mode.
 	 * @throws FileNotFoundException if the path was not provided in the runner invocation, e.g., if the runner is
 	 * invoked in mine-and-detect mode.
 	 */
