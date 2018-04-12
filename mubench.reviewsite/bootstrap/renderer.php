@@ -2,6 +2,7 @@
 
 use MuBench\ReviewSite\ViewExtensions\AnonymousViewExtension;
 use MuBench\ReviewSite\Controllers\RunsController;
+use MuBench\ReviewSite\Controllers\TemplateController;
 use MuBench\ReviewSite\Models\Misuse;
 use MuBench\ReviewSite\Models\Reviewer;
 use MuBench\ReviewSite\Models\ReviewState;
@@ -37,31 +38,6 @@ $container['renderer'] = function ($container) {
 
     $markdown_parser = new Parsedown();
     $markdown_parser->setBreaksEnabled(True);
-    $exp_det_reviewstate = [];
-    foreach($experiments as $experiment){
-        $exp_det_reviewstate[$experiment->id] = [];
-        foreach($detectors[$experiment->id] as $detector){
-            $review_states = [ReviewState::NEEDS_REVIEW => false, ReviewState::NEEDS_CLARIFICATION => false, ReviewState::DISAGREEMENT => false];
-            $runs = RunsController::getRuns($detector, $experiment, $request->getQueryParam("ex2_review_size", $container->settings["default_ex2_review_size"]));
-            $found_all_reviewstates = false;
-            foreach ($runs as $run) {
-                foreach ($run->misuses as $misuse) {
-                    /** @var Misuse $misuse */
-                    if($misuse->getReviewState() == ReviewState::NEEDS_REVIEW || $misuse->getReviewState() == ReviewState::NEEDS_CLARIFICATION || $misuse->getReviewState() == ReviewState::DISAGREEMENT) {
-                        $review_states[$misuse->getReviewState()] = True;
-                        if($review_states[ReviewState::NEEDS_REVIEW] && $review_states[ReviewState::NEEDS_CLARIFICATION] && $review_states[ReviewState::DISAGREEMENT]){
-                            $found_all_reviewstates = true;
-                            break;
-                        }
-                    }
-                }
-                if($found_all_reviewstates){
-                    break;
-                }
-            }
-            $exp_det_reviewstate[$experiment->id][$detector->id] = $review_states;
-        }
-    }
 
     $defaultTemplateVariables = [
         'user' => $user,
@@ -97,7 +73,7 @@ $container['renderer'] = function ($container) {
         'ex2_review_size' => $request->getQueryParam("ex2_review_size", $container->settings["default_ex2_review_size"]),
 
         'markdown_parser' => $markdown_parser,
-        'exp_det_reviewstate' => $exp_det_reviewstate,
+        'templateController' => new TemplateController($container),
         'detectorName' => array($anonymousViewExtension, "getDetectorName"),
         'reviewerName' => array($anonymousViewExtension, "getReviewerName"),
         'detectorPathId' => array($anonymousViewExtension,"getDetectorPathId"),
