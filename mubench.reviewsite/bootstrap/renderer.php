@@ -38,7 +38,7 @@ $container['renderer'] = function ($container) {
         return $detector_name;
     };
 
-    $detectorPath = function($detector) use ($container, $blind_mode) {
+    $detectorPathId = function($detector) use ($blind_mode) {
         if($blind_mode){
             return $detector->id;
         }
@@ -84,7 +84,7 @@ $container['renderer'] = function ($container) {
         'markdown_parser' => $markdown_parser,
         'blind_mode' => $container->settings['blind_mode']['enabled'],
         'detectorName' => $detectorName,
-        'detectorPath' => $detectorPath
+        'detectorPathId' => $detectorPathId
     ];
 
     return new PhpRenderer(__DIR__ . '/../templates/', $defaultTemplateVariables);
