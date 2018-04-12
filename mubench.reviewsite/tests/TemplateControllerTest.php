@@ -71,16 +71,15 @@ class TemplateControllerTest extends SlimTestCase
         $this->reviewMisuse("?", "?");
         $templateController = new TemplateController($this->container);
         $review_states = $templateController->getReviewStates($this->experiment, $this->detector, 20);
-        self::assertEquals([ReviewState::NEEDS_REVIEW=>true, ReviewState::NEEDS_CLARIFICATION=>false, ReviewState::DISAGREEMENT=>false], $review_states);
+        self::assertEquals([ReviewState::NEEDS_REVIEW=>false, ReviewState::NEEDS_CLARIFICATION=>true, ReviewState::DISAGREEMENT=>false], $review_states);
     }
 
     function testDetectorDisagreement()
     {
-        $this->reviewMisuse("?", "?");
+        $this->reviewMisuse("No", "Yes");
         $templateController = new TemplateController($this->container);
         $review_states = $templateController->getReviewStates($this->experiment, $this->detector, 20);
-        self::assertFalse()
-        self::assertEquals([ReviewState::NEEDS_REVIEW=>true, ReviewState::NEEDS_CLARIFICATION=>false, ReviewState::DISAGREEMENT=>false], $review_states);
+        self::assertEquals([ReviewState::NEEDS_REVIEW=>false, ReviewState::NEEDS_CLARIFICATION=>false, ReviewState::DISAGREEMENT=>true], $review_states);
     }
 
     private function reviewMisuse($reviewer1_decision, $reviewer2_decision)
