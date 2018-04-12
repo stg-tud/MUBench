@@ -7,6 +7,7 @@
  * @var array $additional_stats all stat columns from the run information besides project, version, runtime, result and number_of_findings
  * @var Parsedown $markdown_parser markdown parser
  * @var callable $detectorName function to resolve detector names if blinded
+ * @var callable $reviewerName function to return anonymous reviewer name if blinded else the reviewer name
  */
 
 use MuBench\ReviewSite\Models\Misuse;
@@ -37,7 +38,7 @@ use MuBench\ReviewSite\Models\Misuse;
                 <table class="invisible">
                     <tr>
                         <td><b>Reviewer:</b></td>
-                        <td><a href="<?= $pathFor('review', array('experiment_id' => $experiment->id, 'detector_muid' => $detector->muid, 'project_muid' => $project, 'version_muid' => $version, 'misuse_muid' => $misuse->misuse_muid, 'reviewer_name' => $review->reviewer->name)) ?>"><?= htmlspecialchars($blind_mode ? "reviewer-{$review->reviewer->id}": $review->reviewer->name) ?></a></td>
+                        <td><a href="<?= $pathFor('review', array('experiment_id' => $experiment->id, 'detector_muid' => $detectorPathId($detector), 'project_muid' => $project, 'version_muid' => $version, 'misuse_muid' => $misuse->misuse_muid, 'reviewer_name' => $reviewerPathId($review->reviewer))) ?>"><?= htmlspecialchars($reviewerName($review->reviewer)) ?></a></td>
                     </tr>
                     <tr style="padding-top:0;margin-top:0;">
                         <td><b>Decision:</b></td>

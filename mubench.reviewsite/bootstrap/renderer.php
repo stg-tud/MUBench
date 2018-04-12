@@ -96,9 +96,10 @@ $container['renderer'] = function ($container) {
         'ex2_review_size' => $request->getQueryParam("ex2_review_size", $container->settings["default_ex2_review_size"]),
 
         'markdown_parser' => $markdown_parser,
-        'blind_mode' => $container->settings['blind_mode']['enabled'],
         'detectorName' => $detectorName,
-        'detectorPathId' => $detectorPathId
+        'reviewerName' => $reviewerName,
+        'detectorPathId' => $detectorPathId,
+        'reviewerPathId' => $reviewerPathId
     ];
 
     return new PhpRenderer(__DIR__ . '/../templates/', $defaultTemplateVariables);
