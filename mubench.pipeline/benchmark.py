@@ -49,7 +49,7 @@ logger.setLevel(logging.DEBUG)
 
 handler = logging.StreamHandler()
 handler.setLevel(logging.INFO)
-logging_colorization.colorize(handler)
+logging_colorization.register_levelcolor_replacement_field(handler)
 formatter = logging.Formatter("[%(levelcolor)s%(levelname)-7s%(resetcolor)s] %(message)s")
 handler.setFormatter(formatter)
 logger.addHandler(handler)

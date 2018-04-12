@@ -39,7 +39,7 @@ def __add_emit_with_ansi_colors(fn):
     return __emit_with_ansi_color
 
 
-def colorize(handler: logging.StreamHandler):
+def register_levelcolor_replacement_field(handler: logging.StreamHandler):
     if platform.system() == "Windows":
         handler.emit = __add_emit_without_colors(handler.emit)
     else:
