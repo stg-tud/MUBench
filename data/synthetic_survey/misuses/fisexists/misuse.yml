@@ -1,7 +1,7 @@
 api:
 - java.io.FileInputStream
 - java.io.File
-characteristics:
+violations:
 - missing/condition/value_or_state
 - missing/call
 crash: true

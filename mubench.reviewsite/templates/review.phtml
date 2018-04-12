@@ -27,7 +27,7 @@
  * @var \MuBench\ReviewSite\Models\Misuse $previous_misuse
  * @var \MuBench\ReviewSite\Models\Review $review
  * @var bool $is_reviewer whether the user is the author of this review
- * @var array $violation_types all violation types of this misuse in exp1/3, all possible violation types in exp2
+ * @var array $violations all violations of this misuse in exp1/3, all possible violations in exp2
  */
 
 use MuBench\ReviewSite\Models\Detector;
@@ -147,10 +147,10 @@ $origin_path = $origin_path ? $origin_path : $pathFor('experiment.detector', arr
                 <td><?= $markdown_parser->text($misuse->metadata->fix_description); ?>
                     <?php if ($misuse->metadata->diff_url): ?>(<a href="<?= $misuse->metadata->diff_url; ?>">see diff</a>)<?php endif ?>
                 </td></tr>
-            <tr><td class="vtop"><b>Violation Types:</b></td><td>
+            <tr><td class="vtop"><b>Violations:</b></td><td>
             <ul>
-            <?php if($misuse->hasViolationTypes()) : ?>
-            <?php foreach($misuse->getViolationTypes() as $v) : ?>
+            <?php if($misuse->hasViolations()) : ?>
+            <?php foreach($misuse->getViolations() as $v) : ?>
                 <li><?= htmlspecialchars($v->name); ?></li>
             <?php endforeach; ?>
             <?php endif; ?>
@@ -207,10 +207,10 @@ $origin_path = $origin_path ? $origin_path : $pathFor('experiment.detector', arr
                 <?php endif; ?>
             </td></tr>
             <?php if($experiment->id === 1) : ?>
-                    <tr><td class="vtop"><b>Code with Pattern(s):</b></td>
+                    <tr><td class="vtop"><b>Correct Usage:</b></td>
                         <td>
-                <?php foreach($misuse->metadata->patterns as $pattern) : ?>
-                    <pre class="prettyprint"><code class="language-java"><?= htmlspecialchars($pattern->code); ?></code></pre>
+                <?php foreach($misuse->metadata->correct_usages as $correctUsage) : ?>
+                    <pre class="prettyprint"><code class="language-java"><?= htmlspecialchars($correctUsage->code); ?></code></pre>
                 <?php endforeach; ?>
                         </td></tr>
             <?php endif; ?>
@@ -260,7 +260,7 @@ $origin_path = $origin_path ? $origin_path : $pathFor('experiment.detector', arr
                 <th><?= htmlspecialchars(ucwords(str_replace("_", " ", $column))); ?></th>
             <?php endforeach; ?>
             <?php if($experiment->id === 2) : ?>
-                <th>Violation Types</th>
+                <th>Violations</th>
             <?php endif; ?>
         </tr>
 
@@ -335,12 +335,12 @@ $origin_path = $origin_path ? $origin_path : $pathFor('experiment.detector', arr
             <?php endforeach; ?>
             <?php if($experiment->id === 2) : ?>
                 <td>
-                    <select name="review_hit[<?= htmlspecialchars($hit->rank); ?>][types][]" title="Violation Types" size="<?= count($violation_types) ?>" multiple <?= ($user && $is_reviewer) ? "" : "disabled" ?>>
-                        <?php foreach($violation_types as $type) : ?>
-                            <?php if($review && in_array($type->id, array_column($review->getHitViolationTypes($hit->rank), 'id'))) : ?>
-                                    <option selected="selected" value="<?= $type->id ?>"><?= htmlspecialchars($type->name) ?></option>
+                    <select name="review_hit[<?= htmlspecialchars($hit->rank); ?>][violations][]" title="Violations" size="<?= count($violations) ?>" multiple <?= ($user && $is_reviewer) ? "" : "disabled" ?>>
+                        <?php foreach($violations as $violation) : ?>
+                            <?php if($review && in_array($violation->id, array_column($review->getHitViolations($hit->rank), 'id'))) : ?>
+                                    <option selected="selected" value="<?= $violation->id ?>"><?= htmlspecialchars($violation->name) ?></option>
                             <?php else: ?>
-                                <option value="<?= $type->id ?>"><?= htmlspecialchars($type->name) ?></option>
+                                <option value="<?= $violation->id ?>"><?= htmlspecialchars($violation->name) ?></option>
                             <?php endif; ?>
                         <?php endforeach; ?>
                     </select>

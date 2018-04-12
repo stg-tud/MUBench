@@ -2,7 +2,7 @@ from unittest.mock import patch
 
 from nose.tools import assert_equals
 
-from data.pattern import Pattern
+from data.correct_usage import CorrectUsage
 from data.snippets import Snippet
 from tasks.implementations.publish_metadata import PublishMetadataTask
 from tests.test_utils.data_util import create_misuse, create_project, create_version
@@ -56,9 +56,9 @@ class TestPublishMetadataTask:
                 "description": "-fix-description-",
                 "commit": "http://fake.diff/url"
             },
-            "characteristics": [
-                "-violation-type-1-",
-                "-violation-type-2-"
+            "violations": [
+                "-violation-1-",
+                "-violation-2-"
             ],
             "location": {
                 "file": "/some/file.java",
@@ -80,9 +80,9 @@ class TestPublishMetadataTask:
                 "description": "-fix-description-",
                 "diff-url": "http://fake.diff/url"
             },
-            "violation_types": [
-                "-violation-type-1-",
-                "-violation-type-2-"
+            "violations": [
+                "-violation-1-",
+                "-violation-2-"
             ],
             "location": {
                 "file": "/some/file.java",
@@ -90,51 +90,51 @@ class TestPublishMetadataTask:
                 "line": -1
             },
             "target_snippets": [{"first_line_number": 42, "code": "-code-"}],
-            "patterns": []
+            "correct_usages": []
         }])
 
     @patch("tasks.implementations.publish_metadata.safe_read")
-    def test_publishes_pattern_code(self, read_mock, post_mock, snippets_mock):
-        pattern_code = "public class P1 {\n" \
+    def test_publishes_correct_usage_code(self, read_mock, post_mock, snippets_mock):
+        correct_usage_code = "public class P1 {\n" \
             "  void m() { return; }\n" \
             "}"
-        read_mock.return_value = pattern_code
-        misuse = create_misuse("-m-", project=self.project, patterns=[Pattern("/base/path", "P1.java")],
+        read_mock.return_value = correct_usage_code
+        misuse = create_misuse("-m-", project=self.project, correct_usages=[CorrectUsage("/base/path", "P1.java")],
                                version=self.version)
 
         task = PublishMetadataTask("-checkouts-path-", "http://test.url")
         task.run(self.project, misuse)
         task.end()
 
-        assert_equals(post_mock.call_args[0][1][0]["patterns"], [
-            {"id": "P1", "snippet": {"code": pattern_code, "first_line": 1}}
+        assert_equals(post_mock.call_args[0][1][0]["correct_usages"], [
+            {"id": "P1", "snippet": {"code": correct_usage_code, "first_line": 1}}
         ])
 
     @patch("tasks.implementations.publish_metadata.safe_read")
-    def test_publishes_pattern_code_without_preamble(self, read_mock, post_mock, snippets_mock):
-        pattern_preamble = "package foo;\n" \
+    def test_publishes_correct_usage_code_without_preamble(self, read_mock, post_mock, snippets_mock):
+        correct_usage_preamble = "package foo;\n" \
                        "import Bar;\n" \
                        "\n"
-        pattern_code = "public class P1 {\n" \
+        correct_usage_code = "public class P1 {\n" \
                        "  void m() { return; }\n" \
                        "}"
-        read_mock.return_value = pattern_preamble + pattern_code
-        misuse = create_misuse("-m-", project=self.project, patterns=[Pattern("/", "P1.java")], version=self.version)
+        read_mock.return_value = correct_usage_preamble + correct_usage_code
+        misuse = create_misuse("-m-", project=self.project, correct_usages=[CorrectUsage("/", "P1.java")], version=self.version)
 
         task = PublishMetadataTask("-checkouts-path-", "http://test.url")
         task.run(self.project, misuse)
         task.end()
 
-        assert_equals(post_mock.call_args[0][1][0]["patterns"][0]["snippet"]["code"], pattern_code)
+        assert_equals(post_mock.call_args[0][1][0]["correct_usages"][0]["snippet"]["code"], correct_usage_code)
 
     @patch("tasks.implementations.publish_metadata.safe_read")
-    def test_publishes_pattern_code_without_trailing_newlines(self, read_mock, post_mock, snippets_mock):
-        pattern_code = "public class P1 {}"
-        read_mock.return_value = pattern_code + "\n\n\n"
-        misuse = create_misuse("-m-", project=self.project, patterns=[Pattern("/", "P1.java")], version=self.version)
+    def test_publishes_correct_usage_code_without_trailing_newlines(self, read_mock, post_mock, snippets_mock):
+        correct_usage_code = "public class P1 {}"
+        read_mock.return_value = correct_usage_code + "\n\n\n"
+        misuse = create_misuse("-m-", project=self.project, correct_usages=[CorrectUsage("/", "P1.java")], version=self.version)
 
         task = PublishMetadataTask("-checkouts-path-", "http://test.url")
         task.run(self.project, misuse)
         task.end()
 
-        assert_equals(post_mock.call_args[0][1][0]["patterns"][0]["snippet"]["code"], pattern_code)
+        assert_equals(post_mock.call_args[0][1][0]["correct_usages"][0]["snippet"]["code"], correct_usage_code)

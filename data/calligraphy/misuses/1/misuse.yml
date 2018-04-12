@@ -1,7 +1,7 @@
 api:
 - android.content.Context
 - android.content.res.TypedArray
-characteristics:
+violations:
 - missing/exception_handling
 crash: true
 description: >

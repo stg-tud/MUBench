@@ -1,6 +1,6 @@
 api:
 - com.itextpdf.text.pdf.PdfArray
-characteristics:
+violations:
 - missing/condition/null_check
 crash: true
 description: |

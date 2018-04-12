@@ -1,6 +1,6 @@
 api:
 - java.sql.PreparedStatement
-characteristics:
+violations:
 - missing/condition/value_or_state
 crash: true
 description: >

@@ -1,6 +1,6 @@
 api:
 - java.lang.StringBuilder
-characteristics:
+violations:
 - missing/call
 crash: false
 description: |

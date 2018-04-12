@@ -1,6 +1,6 @@
 api:
 - org.apache.commons.httpclient.auth.AuthState
-characteristics:
+violations:
 - missing/call
 crash: false
 description: >

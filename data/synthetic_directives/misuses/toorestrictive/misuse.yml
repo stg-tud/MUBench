@@ -1,6 +1,6 @@
 api:
 - java.util.List
-characteristics:
+violations:
 - redundant/condition/value_or_state
 crash: true
 description: >

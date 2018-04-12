@@ -1,6 +1,6 @@
 api:
 - android.os.Environment
-characteristics:
+violations:
 - missing/exception_handling
 crash: true
 description: >

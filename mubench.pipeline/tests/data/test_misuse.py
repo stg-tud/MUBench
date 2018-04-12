@@ -6,7 +6,7 @@ from tempfile import mkdtemp
 from nose.tools import assert_equals
 
 from data.misuse import Misuse, Location
-from data.pattern import Pattern
+from data.correct_usage import CorrectUsage
 from tests.test_utils.data_util import create_misuse
 
 
@@ -26,21 +26,21 @@ class TestMisuse:
     def test_extracts_id(self):
         assert self.uut.id == "project.version.misuse1"
 
-    def test_finds_no_pattern(self):
-        assert self.uut.patterns == set()
+    def test_finds_no_correct_usage(self):
+        assert self.uut.correct_usages == set()
 
-    def test_finds_single_pattern(self):
-        expected = self.create_pattern_file(self.uut, "APattern.java")
-        assert_equals(self.uut.patterns, {expected})
+    def test_finds_single_correct_usage(self):
+        expected = self.create_correct_usage_file(self.uut, "APattern.java")
+        assert_equals(self.uut.correct_usages, {expected})
 
-    def test_finds_multiple_patterns(self):
-        pattern1 = self.create_pattern_file(self.uut, "OnePattern.java")
-        pattern2 = self.create_pattern_file(self.uut, "AnotherPattern.java")
-        assert_equals(self.uut.patterns, {pattern1, pattern2})
+    def test_finds_multiple_correct_usages(self):
+        correct_usage1 = self.create_correct_usage_file(self.uut, "OnePattern.java")
+        correct_usage2 = self.create_correct_usage_file(self.uut, "AnotherPattern.java")
+        assert_equals(self.uut.correct_usages, {correct_usage1, correct_usage2})
 
-    def test_finds_pattern_in_package(self):
-        pattern = self.create_pattern_file(self.uut, join("mypackage", "Pattern.java"))
-        assert_equals(self.uut.patterns, {pattern})
+    def test_finds_correct_usage_in_package(self):
+        correct_usage = self.create_correct_usage_file(self.uut, join("mypackage", "Pattern.java"))
+        assert_equals(self.uut.correct_usages, {correct_usage})
 
     def test_reads_location(self):
         uut = create_misuse('', meta={"location": {"file": "file.name", "method": "foo()", "line": 42}})
@@ -58,11 +58,11 @@ class TestMisuse:
         assert_equals("42", misuse.fix.revision)
 
     @staticmethod
-    def create_pattern_file(misuse: Misuse, filename: str) -> Pattern:
-        patterns_path = join(misuse.path, "patterns")
-        path = join(patterns_path, filename)
+    def create_correct_usage_file(misuse: Misuse, filename: str) -> CorrectUsage:
+        correct_usages_path = join(misuse.path, "correct-usages")
+        path = join(correct_usages_path, filename)
         directory = dirname(path)
         if not exists(directory):
             makedirs(directory)
         open(path, 'a').close()
-        return Pattern(patterns_path, filename)
+        return CorrectUsage(correct_usages_path, filename)

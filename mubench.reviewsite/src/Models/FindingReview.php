@@ -16,8 +16,8 @@ class FindingReview extends Model
     public $timestamps = false;
     public $fillable = ['review_id', 'rank'];
 
-    public function violation_types()
+    public function violations()
     {
-        return $this->belongsToMany(Type::class, 'finding_review_types', 'finding_review_id', 'type_id');
+        return $this->belongsToMany(Violation::class, 'finding_review_types', 'finding_review_id', 'type_id');
     }
 }

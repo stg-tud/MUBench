@@ -1,6 +1,6 @@
 api:
 - java.io.DataOutputStream
-characteristics:
+violations:
 - missing/call
 crash: false
 description: |

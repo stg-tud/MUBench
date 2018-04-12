@@ -1,6 +1,6 @@
 api:
 - org.jfree.chart.plot.PlotRenderingInfo
-characteristics:
+violations:
 - missing/condition/null_check
 crash: true
 description: >

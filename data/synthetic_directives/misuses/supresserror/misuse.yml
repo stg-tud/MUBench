@@ -1,6 +1,6 @@
 api:
 - java.lang.Throwable
-characteristics:
+violations:
 - redundant/exception handling
 crash: false
 description: >

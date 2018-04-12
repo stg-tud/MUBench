@@ -131,10 +131,10 @@ class ReviewStateTest extends SlimTestCase
         $reviewController = new ReviewsController($this->container);
         foreach ($decisions as $index => $decision) {
             $reviewer = Reviewer::firstOrCreate(['name' => 'reviewer' . $index]);
-            $reviewController->updateOrCreateReview($misuse->id, $reviewer->id, '', [['hit' => $decision, 'types' => []]]);
+            $reviewController->updateOrCreateReview($misuse->id, $reviewer->id, '', [['hit' => $decision, 'violations' => []]]);
         }
         if ($resolutionDecision) {
-            $reviewController->updateOrCreateReview($misuse->id, Reviewer::firstOrCreate(['name' => 'resolution'])->id, '', [['hit' => $resolutionDecision, 'types' => []]]);
+            $reviewController->updateOrCreateReview($misuse->id, Reviewer::firstOrCreate(['name' => 'resolution'])->id, '', [['hit' => $resolutionDecision, 'violations' => []]]);
         }
 
         return $misuse;

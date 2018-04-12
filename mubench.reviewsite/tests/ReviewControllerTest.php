@@ -7,7 +7,7 @@ require_once 'SlimTestCase.php';
 use MuBench\ReviewSite\Models\Decision;
 use MuBench\ReviewSite\Models\Misuse;
 use MuBench\ReviewSite\Models\Reviewer;
-use MuBench\ReviewSite\Models\Type;
+use MuBench\ReviewSite\Models\Violation;
 use SlimTestCase;
 
 class ReviewControllerTest extends SlimTestCase
@@ -58,16 +58,16 @@ class ReviewControllerTest extends SlimTestCase
         self::assertEquals(Decision::NO, $review->getDecision());
     }
 
-    function test_stores_violation_types()
+    function test_stores_violations()
     {
         $misuse = Misuse::create(['misuse_muid' => '0', 'run_id' => 2, 'detector_id' => 1]);
-        Type::create(['name' => 'missing/call']);
+        Violation::create(['name' => 'missing/call']);
 
         $this->createReview($misuse, $this->reviewer1, "Yes", [1]);
 
         $review = Misuse::find(1)->getReview($this->reviewer1);
-        $violation_types = $review->getHitViolationTypes('0');
-        self::assertEquals("missing/call", $violation_types[0]["name"]);
+        $violations = $review->getHitViolations('0');
+        self::assertEquals("missing/call", $violations[0]["name"]);
     }
 
     function test_determine_next_misuse_current_and_next_are_reviewed()
@@ -153,9 +153,9 @@ class ReviewControllerTest extends SlimTestCase
         $this->createReview($misuse, $this->reviewer2, "Yes");
     }
 
-    private function createReview($misuse, $reviewer, $hit, $types = [])
+    private function createReview($misuse, $reviewer, $hit, $violations = [])
     {
-        $this->reviewController->updateOrCreateReview($misuse->id, $reviewer->id, '-comment-', [['hit' => $hit, 'types' => $types]]);
+        $this->reviewController->updateOrCreateReview($misuse->id, $reviewer->id, '-comment-', [['hit' => $hit, 'violations' => $violations]]);
     }
 
 }

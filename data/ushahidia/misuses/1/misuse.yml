@@ -1,6 +1,6 @@
 api:
 - android.database.Cursor
-characteristics:
+violations:
 - missing/call
 crash: true
 description: >

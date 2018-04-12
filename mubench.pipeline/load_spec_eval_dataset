@@ -151,7 +151,7 @@ def create_misuse(project_path, misuse_id, pull_request, specification, location
     fix_revision = pull_request["head"]["sha"]
     content = {
             "api": __get_api(specification),
-            "characteristics": ["TODO"],
+            "violations": ["TODO"],
             "crash": "TODO",
             "description": pull_request["body"],
             "location": {"file": location_file or "TODO", "method": "TODO"},

@@ -1,7 +1,7 @@
 api:
 - org.gnucash.android.ui.UxArgument
 - android.content.Intent
-characteristics:
+violations:
 - missing/condition/value_or_state
 crash: true
 description: >

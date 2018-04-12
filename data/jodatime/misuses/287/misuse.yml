@@ -1,7 +1,7 @@
 api:
 - java.io.ObjectOutputStream
 - java.io.ByteArrayOutputStream
-characteristics:
+violations:
 - missing/call
 - redundant/call
 crash: false

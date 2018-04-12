@@ -1,6 +1,6 @@
 api:
 - com.itextpdf.awt.geom.GeneralPath
-characteristics:
+violations:
 - missing/call
 crash: false
 description: >

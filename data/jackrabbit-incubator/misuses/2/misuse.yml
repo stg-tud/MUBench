@@ -1,6 +1,6 @@
 api:
 - java.io.File
-characteristics:
+violations:
 - missing/call
 - redundant/call
 crash: true

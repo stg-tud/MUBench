@@ -1,6 +1,6 @@
 api:
 - java.util.stream.IntStream
-characteristics:
+violations:
 - redundant/call
 crash: false
 description: >

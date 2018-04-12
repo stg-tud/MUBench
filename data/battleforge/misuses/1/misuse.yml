@@ -1,6 +1,6 @@
 api:
 - java.lang.String
-characteristics:
+violations:
 - missing/call
 - redundant/call
 crash: false

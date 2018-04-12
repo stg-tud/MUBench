@@ -1,7 +1,7 @@
 api:
 - java.util.Iterator
 - java.util.Set
-characteristics:
+violations:
 - missing/condition/value_or_state
 - missing/call
 crash: true

@@ -1,7 +1,7 @@
 api:
 - android.content.Context
 - android.content.IntentFilter
-characteristics:
+violations:
 - missing/condition/value_or_state
 crash: true
 description: >

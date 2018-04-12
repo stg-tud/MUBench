@@ -1,6 +1,6 @@
 api:
 - javax.swing.JFrame
-characteristics:
+violations:
 - missing/call
 - redundant/call
 crash: false

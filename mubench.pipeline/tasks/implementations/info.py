@@ -55,8 +55,8 @@ class MisuseInfoTask:
         self.__logger.info("    - Misuse           : %s", misuse.misuse_id)
         self.__logger.info("      Description      : %s", misuse.description.strip())
         self.__logger.info("      Fix Description  : %s", misuse.fix.description.strip())
-        self.__logger.info("      Misuse Elements  : - %s", misuse.characteristics[0])
-        for characteristic in misuse.characteristics[1:]:
-            self.__logger.info("                         - %s", characteristic)
+        self.__logger.info("      Misuse Elements  : - %s", misuse.violations[0])
+        for violation in misuse.violations[1:]:
+            self.__logger.info("                         - %s", violation)
 
         self.__logger.info("      Fix Diff         : %s", misuse.fix.commit)

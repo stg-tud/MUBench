@@ -1,6 +1,6 @@
 api:
 - java.util.StringTokenizer
-characteristics:
+violations:
 - missing/call
 crash: false
 description: >

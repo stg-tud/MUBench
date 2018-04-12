@@ -6,7 +6,7 @@ from typing import Set, List
 import yaml
 
 from data.misuse_compile import MisuseCompile
-from data.pattern import Pattern
+from data.correct_usage import CorrectUsage
 from data.snippets import get_snippets, Snippet
 
 
@@ -54,7 +54,7 @@ class Misuse:
         self.__fix = None
 
         self._YAML = None
-        self._PATTERNS = []
+        self._CORRECT_USAGES = []
 
     @property
     def _yaml(self):
@@ -64,21 +64,21 @@ class Misuse:
         return self._YAML
 
     @property
-    def patterns(self) -> Set[Pattern]:
-        if not self._PATTERNS:
-            pattern_path = self.pattern_path
-            if isdir(pattern_path):
-                self._PATTERNS = set(
-                    [Pattern(pattern_path, y[len(pattern_path) + 1:]) for x in os.walk(pattern_path) for y in
+    def correct_usages(self) -> Set[CorrectUsage]:
+        if not self._CORRECT_USAGES:
+            correct_usage_path = self.correct_usage_path
+            if isdir(correct_usage_path):
+                self._CORRECT_USAGES = set(
+                    [CorrectUsage(correct_usage_path, y[len(correct_usage_path) + 1:]) for x in os.walk(correct_usage_path) for y in
                      glob(os.path.join(x[0], '*.java'))])
             else:
-                self._PATTERNS = set()
+                self._CORRECT_USAGES = set()
 
-        return self._PATTERNS
+        return self._CORRECT_USAGES
 
     @property
-    def pattern_path(self) -> str:
-        return join(self.path, "patterns")
+    def correct_usage_path(self) -> str:
+        return join(self.path, "correct-usages")
 
     @property
     def location(self) -> Location:
@@ -126,16 +126,16 @@ class Misuse:
         return self._yaml.get('internal', False)
 
     @property
-    def characteristics(self):
-        if getattr(self, '_characteristics', None) is None:
-            self._characteristics = self._yaml.get('characteristics', [])
-        return self._characteristics
+    def violations(self):
+        if getattr(self, '_violations', None) is None:
+            self._violations = self._yaml.get('violations', [])
+        return self._violations
 
     def get_snippets(self, source_base_paths: List[str]) -> List[Snippet]:
         return get_snippets(source_base_paths, self.location.file, self.location.method, self.location.line)
 
     def get_misuse_compile(self, base_path: str) -> MisuseCompile:
-        return MisuseCompile(join(base_path, self.project_id, "misuses", self.misuse_id), self.patterns)
+        return MisuseCompile(join(base_path, self.project_id, "misuses", self.misuse_id), self.correct_usages)
 
     def __str__(self):
         return "misuse '{}'".format(self.id)

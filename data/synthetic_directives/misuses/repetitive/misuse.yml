@@ -1,6 +1,6 @@
 api:
 - java.util.Collection
-characteristics:
+violations:
 - redundant/iteration
 crash: true
 description: >

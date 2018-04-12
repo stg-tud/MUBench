@@ -74,7 +74,7 @@ $columns_to_ignore = array(
         <th></th>
         <th>Misuse</th>
         <?php if ($experiment->id !== 2) : ?>
-            <th>Violation Types</th><?php endif ?>
+            <th>Violations</th><?php endif ?>
         <th>Decision</th>
         <th>Reviews</th>
         <th>Your Review</th>
@@ -127,7 +127,7 @@ $columns_to_ignore = array(
                 <?php if ($experiment->id !== 2) : ?>
                     <td class="<?= $style_classes ?>">
                         <ul>
-                            <?php foreach($misuse->getViolationTypes() as $type): ?>
+                            <?php foreach($misuse->getViolations() as $type): ?>
                                 <li><?= htmlspecialchars($type->name) ?></li>
                             <?php endforeach; ?>
                         </ul>

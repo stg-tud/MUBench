@@ -1,6 +1,6 @@
 api:
 - java.io.PrintWriter
-characteristics:
+violations:
 - missing/call
 crash: false
 description: >

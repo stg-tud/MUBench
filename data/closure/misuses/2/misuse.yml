@@ -1,6 +1,6 @@
 api:
 - org.kohsuke.args4j.spi.Parameters
-characteristics:
+violations:
 - missing/exception_handling
 crash: true
 description: >

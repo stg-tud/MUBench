@@ -1,6 +1,6 @@
 api:
 - javax.crypto.Cipher
-characteristics:
+violations:
 - missing/condition/value_or_state
 description: >
   Uses PBEWithMD5AndDES which is considered unsafe.

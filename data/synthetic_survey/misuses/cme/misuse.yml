@@ -1,7 +1,7 @@
 api:
 - java.util.Iterator
 - java.util.Collection
-characteristics:
+violations:
 - redundant/call
 crash: true
 description: >

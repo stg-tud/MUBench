@@ -12,15 +12,15 @@ Schema::create($experiment1->getTable(), function (Blueprint $table) {
     $table->string('name', 100);
 });
 $experiment1->id = 1;
-$experiment1->name = "Provided Patterns";
+$experiment1->name = "Recall Upper Bound";
 $experiment1->save();
 $experiment2 = new \MuBench\ReviewSite\Models\Experiment;
 $experiment2->id = 2;
-$experiment2->name = "All Findings";
+$experiment2->name = "Precision";
 $experiment2->save();
 $experiment3 = new \MuBench\ReviewSite\Models\Experiment;
 $experiment3->id = 3;
-$experiment3->name = "Benchmark";
+$experiment3->name = "Recall";
 $experiment3->save();
 
 echo 'Creating detectors table<br/>';
@@ -67,10 +67,10 @@ Schema::create($metadata->getTable(), function (Blueprint $table) {
     $table->unique(['project_muid', 'version_muid', 'misuse_muid']);
 });
 
-echo 'Creating pattern<br/>';
-$pattern = new \MuBench\ReviewSite\Models\Pattern;
-Schema::dropIfExists($pattern->getTable());
-Schema::create($pattern->getTable(), function (Blueprint $table) {
+echo 'Creating correct usages<br/>';
+$correct_usage = new \MuBench\ReviewSite\Models\CorrectUsage;
+Schema::dropIfExists($correct_usage->getTable());
+Schema::create($correct_usage->getTable(), function (Blueprint $table) {
     $table->increments('id');
     $table->integer('metadata_id');
     $table->text('code');
@@ -126,15 +126,15 @@ Schema::create($findingReview->getTable(), function (Blueprint $table) {
     $table->unique(['review_id', 'rank']);
 });
 
-echo 'Creating Violation Types<br/>';
-$type = new \MuBench\ReviewSite\Models\Type;
+echo 'Creating Violations<br/>';
+$type = new \MuBench\ReviewSite\Models\Violation;
 Schema::dropIfExists($type->getTable());
 Schema::create($type->getTable(), function (Blueprint $table) {
     $table->increments('id');
     $table->text('name');
 });
 
-echo 'Creating Violation Types for metadata misuses<br/>';
+echo 'Creating Violations for metadata misuses<br/>';
 Schema::dropIfExists('metadata_types');
 Schema::create('metadata_types', function (Blueprint $table) {
     $table->increments('id');
@@ -142,7 +142,7 @@ Schema::create('metadata_types', function (Blueprint $table) {
     $table->integer('type_id');
 });
 
-echo 'Creating Violation Types for finding review<br/>';
+echo 'Creating Violations for finding review<br/>';
 Schema::dropIfExists('finding_review_types');
 Schema::create('finding_review_types', function (Blueprint $table) {
     $table->increments('id');

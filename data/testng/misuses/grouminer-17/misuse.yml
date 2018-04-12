@@ -1,6 +1,6 @@
 api:
 - org.testng.reporters.XMLStringBuffer
-characteristics:
+violations:
 - missing/condition/value_or_state
 - missing/call
 crash: true

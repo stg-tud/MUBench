@@ -1,6 +1,6 @@
 api:
 - java.util.Iterator
-characteristics:
+violations:
 - missing/call
 crash: false
 description: >

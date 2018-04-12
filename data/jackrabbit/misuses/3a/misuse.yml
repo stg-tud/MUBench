@@ -1,6 +1,6 @@
 api:
 - org.apache.jackrabbit.core.config.ConfigurationParser
-characteristics:
+violations:
 - missing/call
 crash: false
 description: >

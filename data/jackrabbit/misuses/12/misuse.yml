@@ -1,6 +1,6 @@
 api:
 - org.apache.jackrabbit.core.config.RepositoryConfig
-characteristics:
+violations:
 - missing/condition/null_check
 crash: true
 description: >

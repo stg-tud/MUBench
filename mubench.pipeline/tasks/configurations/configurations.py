@@ -11,8 +11,8 @@ from tasks.implementations.dataset_check_misuse import MisuseCheckTask
 from tasks.implementations.dataset_check_project import ProjectCheckTask
 from tasks.implementations.dataset_check_version import VersionCheckTask
 from tasks.implementations.detect_all_findings import DetectAllFindingsTask
-from tasks.implementations.detect_provided_patterns import DetectProvidedPatternsTask
-from tasks.implementations.filter_misuses_without_patterns import FilterMisusesWithoutPatternsTask
+from tasks.implementations.detect_provided_correct_usages import DetectProvidedCorrectUsagesTask
+from tasks.implementations.filter_misuses_without_correct_usages import FilterMisusesWithoutCorrectUsagesTask
 from tasks.implementations.findings_filters import AllFindingsFilterTask, PotentialHitsFilterTask
 from tasks.implementations.info import ProjectInfoTask, VersionInfoTask, MisuseInfoTask
 from tasks.implementations.load_detector import LoadDetectorTask
@@ -97,14 +97,14 @@ class RunProvidedPatternsExperiment(TaskConfiguration):
         compile_version = CompileVersionTask(config.compiles_path, config.run_timestamp, config.force_compile,
                                              config.use_tmp_wrkdir)
         collect_misuses = CollectMisusesTask()
-        filter_misuses_without_patterns = FilterMisusesWithoutPatternsTask()
+        filter_misuses_without_correct_usages = FilterMisusesWithoutCorrectUsagesTask()
         compile_misuse = CompileMisuseTask(config.compiles_path, config.run_timestamp, config.force_compile)
         load_detector = LoadDetectorTask(config.detectors_path, config.detector, config.requested_release,
                                          config.java_options)
-        detect = DetectProvidedPatternsTask(config.findings_path, config.force_detect, config.timeout,
-                                            config.run_timestamp)
+        detect = DetectProvidedCorrectUsagesTask(config.findings_path, config.force_detect, config.timeout,
+                                                 config.run_timestamp)
         return CheckoutTaskConfiguration().tasks(config) + [compile_version, collect_misuses,
-                                                            filter_misuses_without_patterns, compile_misuse,
+                                                            filter_misuses_without_correct_usages, compile_misuse,
                                                             load_detector, detect]
 
 

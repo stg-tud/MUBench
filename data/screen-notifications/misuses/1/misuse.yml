@@ -1,6 +1,6 @@
 api:
 - android.content.pm.ApplicationInfo
-characteristics:
+violations:
 - missing/exception_handling
 crash: true
 description: >

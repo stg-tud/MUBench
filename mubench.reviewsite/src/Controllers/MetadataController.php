@@ -7,9 +7,9 @@ use MuBench\ReviewSite\Models\Detector;
 use MuBench\ReviewSite\Models\Experiment;
 use MuBench\ReviewSite\Models\Metadata;
 use MuBench\ReviewSite\Models\Misuse;
-use MuBench\ReviewSite\Models\Pattern;
+use MuBench\ReviewSite\Models\CorrectUsage;
 use MuBench\ReviewSite\Models\Run;
-use MuBench\ReviewSite\Models\Type;
+use MuBench\ReviewSite\Models\Violation;
 use Slim\Http\Request;
 use Slim\Http\Response;
 
@@ -41,22 +41,22 @@ class MetadataController extends Controller
             $description = $misuseMetadata['description'];
             $fix = $misuseMetadata['fix'];
             $location = $misuseMetadata['location'];
-            $violationTypes = $misuseMetadata['violation_types'];
-            $patterns = $misuseMetadata['patterns'];
+            $violations = $misuseMetadata['violations'];
+            $correct_usages = $misuseMetadata['correct_usages'];
             $targetSnippets = $misuseMetadata['target_snippets'];
 
-            $new_metadata->add($this->updateMetadata($projectId, $versionId, $misuseId, $description, $fix, $location, $violationTypes, $patterns, $targetSnippets));
+            $new_metadata->add($this->updateMetadata($projectId, $versionId, $misuseId, $description, $fix, $location, $violations, $correct_usages, $targetSnippets));
         }
 
         $this->updateMisusesByNewMetadata($new_metadata);
     }
 
-    function updateMetadata($projectId, $versionId, $misuseId, $description, $fix, $location, $violationTypes, $patterns, $targetSnippets)
+    function updateMetadata($projectId, $versionId, $misuseId, $description, $fix, $location, $violations, $correct_usages, $targetSnippets)
     {
         $this->logger->info("Update metadata for $projectId, $versionId, $misuseId");
         $metadata = $this->saveMetadata($projectId, $versionId, $misuseId, $description, $fix, $location);
-        $this->saveViolationTypes($metadata, $violationTypes);
-        $this->savePatterns($metadata->id, $patterns);
+        $this->saveViolations($metadata, $violations);
+        $this->saveCorrectUsages($metadata->id, $correct_usages);
         $this->saveTargetSnippets($projectId, $versionId, $misuseId, $targetSnippets, $location['file']);
         return $metadata;
     }
@@ -73,24 +73,24 @@ class MetadataController extends Controller
         return $metadata;
     }
 
-    private function saveViolationTypes($metadata, $violationTypeNames)
+    private function saveViolations(Metadata $metadata, $violationNames)
     {
-        $this->logger->info("Save violation types.");
-        $violationTypes = [];
-        foreach ($violationTypeNames as $typeName) {
-            $violationTypes[] = Type::firstOrCreate(['name' => $typeName])->id;
+        $this->logger->info("Save violations.");
+        $violations = [];
+        foreach ($violationNames as $violationName) {
+            $violations[] = Violation::firstOrCreate(['name' => $violationName])->id;
         }
-        $metadata->violation_types()->sync($violationTypes);
+        $metadata->violations()->sync($violations);
     }
 
-    private function savePatterns($metadataId, $patterns)
+    private function saveCorrectUsages($metadataId, $correctUsages)
     {
-        $this->logger->info("Save patterns.");
-        if ($patterns) {
-            foreach ($patterns as $pattern) {
-                $p = Pattern::firstOrNew(['metadata_id' => $metadataId]);
-                $p->code = $pattern['snippet']['code'];
-                $p->line = $pattern['snippet']['first_line'];
+        $this->logger->info("Save correct usages.");
+        if ($correctUsages) {
+            foreach ($correctUsages as $correctUsage) {
+                $p = CorrectUsage::firstOrNew(['metadata_id' => $metadataId]);
+                $p->code = $correctUsage['snippet']['code'];
+                $p->line = $correctUsage['snippet']['first_line'];
                 $p->save();
             }
         }

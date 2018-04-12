@@ -13,7 +13,7 @@ use MuBench\ReviewSite\Models\Reviewer;
 use MuBench\ReviewSite\Models\ReviewState;
 use MuBench\ReviewSite\Models\Run;
 use MuBench\ReviewSite\Models\Tag;
-use MuBench\ReviewSite\Models\Type;
+use MuBench\ReviewSite\Models\Violation;
 use Slim\Http\Request;
 use Slim\Http\Response;
 
@@ -42,13 +42,13 @@ class ReviewsController extends Controller
         list($previous_misuse, $next_misuse, $next_reviewable_misuse, $misuse) =
             $this->determineNavigationTargets($all_misuses, $project_muid, $version_muid, $misuse_muid, $reviewer);
 
-        $all_violation_types = Type::all();
+        $all_violations = Violation::all();
         $all_tags = Tag::all();
         $review = $misuse->getReview($reviewer);
         return $this->renderer->render($response, 'review.phtml', ['reviewer' => $reviewer, 'is_reviewer' => $is_reviewer,
             'misuse' => $misuse, 'experiment' => $experiment,
             'detector' => $detector, 'review' => $review,
-            'violation_types' => $all_violation_types, 'tags' => $all_tags, 'next_misuse' => $next_misuse, 'previous_misuse' => $previous_misuse, 'next_reviewable_misuse' => $next_reviewable_misuse]);
+            'violations' => $all_violations, 'tags' => $all_tags, 'next_misuse' => $next_misuse, 'previous_misuse' => $previous_misuse, 'next_reviewable_misuse' => $next_reviewable_misuse]);
     }
 
     public function getTodo(Request $request, Response $response, array $args)
@@ -143,7 +143,7 @@ class ReviewsController extends Controller
             $findingReview = FindingReview::firstOrNew(['review_id' => $review->id, 'rank' => $rank]);
             $findingReview->decision = $findings_review['hit'];
             $findingReview->save();
-            $findingReview->violation_types()->sync($findings_review['types']);
+            $findingReview->violations()->sync($findings_review['violations']);
         }
     }
 

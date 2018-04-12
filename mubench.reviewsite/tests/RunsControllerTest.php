@@ -411,12 +411,12 @@ class RunsControllerTest extends SlimTestCase
         $reviewController = new ReviewsController($this->container);
         foreach ($decisions as $index => $decision) {
             $reviewer = Reviewer::firstOrCreate(['name' => '-reviewer' . $index . '-']);
-            $reviewController->updateOrCreateReview($misuse->id, $reviewer->id, '-comment-', [['hit' => $decision, 'types' => []]]);
+            $reviewController->updateOrCreateReview($misuse->id, $reviewer->id, '-comment-', [['hit' => $decision, 'violations' => []]]);
         }
 
         if ($resolutionDecision) {
             $resolutionReviewer = Reviewer::where(['name' => 'resolution'])->first();
-            $reviewController->updateOrCreateReview($misuse->id, $resolutionReviewer->id, '-comment-', [['hit' => $resolutionDecision, 'types' => []]]);
+            $reviewController->updateOrCreateReview($misuse->id, $resolutionReviewer->id, '-comment-', [['hit' => $resolutionDecision, 'violations' => []]]);
         }
     }
 

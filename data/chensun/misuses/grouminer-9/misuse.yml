@@ -1,6 +1,6 @@
 api:
 - java.sql.PreparedStatement
-characteristics:
+violations:
 - missing/call
 crash: false
 description: |

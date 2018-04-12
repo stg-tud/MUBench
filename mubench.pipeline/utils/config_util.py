@@ -170,7 +170,7 @@ def __add_compile_subprocess(available_datasets: List[str], subparsers) -> None:
     compile_parser = subparsers.add_parser('compile', formatter_class=SortingHelpFormatter,
                                            help="Compile project versions. "
                                                 "Runs `checkout`, if necessary.",
-                                           description="Compile project versions and correct usages (patterns) "
+                                           description="Compile project versions and correct usages"
                                                        "corresponding to the known misuses in these versions. "
                                                        "Runs `checkout`, if necessary. "
                                                        "Places compile results in `checkouts`.")
@@ -201,9 +201,9 @@ def __add_run_subprocess(available_detectors: List[str], available_datasets: Lis
 def __add_run_ex1_subprocess(available_detectors: List[str], available_datasets: List[str], subparsers) -> None:
     experiment_parser = subparsers.add_parser("ex1", formatter_class=SortingHelpFormatter,
                                               help="Experiment 1: Run a detector on misuses, providing respective "
-                                                   "correct usages (patterns), to measure its recall.",
+                                                   "correct usages, to measure its recall.",
                                               description="Experiment 1: Run a detector on misuses, providing "
-                                                          "respective correct usages (patterns), to measure the recall "
+                                                          "respective correct usages, to measure the recall "
                                                           "of the detector's detection strategy in isolation.")
     __setup_filter_arguments(experiment_parser, available_datasets)
     __setup_checkout_arguments(experiment_parser)
@@ -273,13 +273,12 @@ def __add_publish_metadata(available_datasets, publish_subparsers) -> None:
 def __add_publish_ex1_subprocess(available_detectors: List[str], available_datasets: List[str], subparsers) -> None:
     experiment_parser = subparsers.add_parser("ex1", formatter_class=SortingHelpFormatter,
                                               help="Experiment 1: Publish potential hits for known misuses to assess "
-                                                   "a detector's recall when it uses provided correct usages "
-                                                   "(patterns).",
+                                                   "a detector's recall when it uses provided correct usages.",
                                               description="Experiment 1: Publish potential hits for known misuses, "
                                                           "i.e., detector findings in the same file and method as a "
                                                           "known misuse, to assess the detector's recall. "
                                                           "Considers the detector's findings when run on misuses, "
-                                                          "providing respective correct usages (patterns). "
+                                                          "providing respective correct usages. "
                                                           "This measures the recall of the detector's detection "
                                                           "strategy in isolation.")
     __setup_filter_arguments(experiment_parser, available_datasets)

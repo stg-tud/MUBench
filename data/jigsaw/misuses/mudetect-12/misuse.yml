@@ -1,6 +1,6 @@
 api:
 - org.w3c.tools.resources.ResourceReference
-characteristics:
+violations:
 - redundant/exception_handling
 crash: false
 description: |

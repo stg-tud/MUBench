@@ -59,24 +59,24 @@ class TestMisuseCheckTask:
 
         self.uut._report_missing_key.assert_any_call("api", "-project-/misuses/-id-/misuse.yml")
 
-    def test_missing_characteristics(self, _, __):
+    def test_missing_violations(self, _, __):
         project = create_project("-project-", meta={})
         misuse = create_misuse("-id-", project=project, meta={})
         version = create_version("-version-", meta={}, project=project, misuses=[misuse])
 
         self.uut.run(project, version, misuse)
 
-        self.uut._report_missing_key.assert_any_call("characteristics", "-project-/misuses/-id-/misuse.yml")
+        self.uut._report_missing_key.assert_any_call("violations", "-project-/misuses/-id-/misuse.yml")
 
-    def test_empty_characteristics(self, _, __):
-        meta = {"characteristics": []}
+    def test_empty_violations(self, _, __):
+        meta = {"violations": []}
         project = create_project("-project-", meta={})
         misuse = create_misuse("-id-", project=project, meta=meta)
         version = create_version("-version-", meta={}, project=project, misuses=[misuse])
 
         self.uut.run(project, version, misuse)
 
-        self.uut._report_missing_key.assert_any_call("characteristics", "-project-/misuses/-id-/misuse.yml")
+        self.uut._report_missing_key.assert_any_call("violations", "-project-/misuses/-id-/misuse.yml")
 
     def test_missing_description(self, _, __):
         project = create_project("-project-", meta={})
@@ -218,7 +218,7 @@ class TestMisuseCheckTask:
                not in self.uut._report_missing_key.call_args_list
 
     def test_invalid_violation_type(self, _, __):
-        meta = {"characteristics": ["invalid/violation_type"]}
+        meta = {"violations": ["invalid/violation_type"]}
         project = create_project("-project-", meta={})
         misuse = create_misuse("-id-", project=project, meta=meta)
         version = create_version("-version-", meta={}, project=project, misuses=[misuse])
@@ -230,7 +230,7 @@ class TestMisuseCheckTask:
                                                                 "-project-/misuses/-id-/misuse.yml")
 
     def test_valid_violation_type(self, _, __):
-        meta = {"characteristics": ["missing/condition/value_or_state"]}
+        meta = {"violations": ["missing/condition/value_or_state"]}
         project = create_project("-project-", meta={})
         misuse = create_misuse("-id-", project=project, meta=meta)
         version = create_version("-version-", meta={}, project=project, misuses=[misuse])

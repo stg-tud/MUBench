@@ -19,8 +19,8 @@ public class DetectorArgs {
 		String findingsFile = null;
 		String runFile = null;
 		DetectorMode detectorMode = null;
-		String patternSrcPath = null;
-		String patternClassPath = null;
+		String correctUsageSrcPath = null;
+		String correctUsageClassPath = null;
 		String[] targetSrcPaths = null;
 		String[] targetClassPaths = null;
 		String dependencyClassPath = null;
@@ -37,10 +37,10 @@ public class DetectorArgs {
 					runFile = next_arg;
 					break;
 				case keyTrainingSrcPath:
-					patternSrcPath = next_arg;
+					correctUsageSrcPath = next_arg;
 					break;
 				case keyTrainingClassPath:
-					patternClassPath = next_arg;
+					correctUsageClassPath = next_arg;
 					break;
 				case keyTargetSrcPath:
 					targetSrcPaths = next_arg.split(":");
@@ -59,26 +59,26 @@ public class DetectorArgs {
 			}
 		}
 
-		return new DetectorArgs(findingsFile, runFile, detectorMode, patternSrcPath, patternClassPath, targetSrcPaths,
+		return new DetectorArgs(findingsFile, runFile, detectorMode, correctUsageSrcPath, correctUsageClassPath, targetSrcPaths,
 				targetClassPaths, dependencyClassPath);
 	}
 
 
 	private final String findingsFile;
 	private final String runInfoFile;
-	private final String patternSrcPath;
-	private final String patternClassPath;
+	private final String correctUsageSrcPath;
+	private final String correctUsageClassPath;
 	private final String[] targetSrcPaths;
 	private final String[] targetClassPaths;
 	private final String dependencyClassPath;
 	private final DetectorMode detectorMode;
 
-	DetectorArgs(String findingsFile, String runInfoFile, DetectorMode detectorMode, String patternSrcPath,
-				 String patternClassPath, String[] targetSrcPaths, String[] targetClassPaths, String dependencyClassPath) {
+	DetectorArgs(String findingsFile, String runInfoFile, DetectorMode detectorMode, String correctUsageSrcPath,
+				 String correctUsageClassPath, String[] targetSrcPaths, String[] targetClassPaths, String dependencyClassPath) {
 		this.findingsFile = findingsFile;
 		this.runInfoFile = runInfoFile;
-		this.patternSrcPath = patternSrcPath;
-		this.patternClassPath = patternClassPath;
+		this.correctUsageSrcPath = correctUsageSrcPath;
+		this.correctUsageClassPath = correctUsageClassPath;
 		this.targetSrcPaths = targetSrcPaths;
 		this.targetClassPaths = targetClassPaths;
 		this.dependencyClassPath = dependencyClassPath;
@@ -112,27 +112,27 @@ public class DetectorArgs {
 	}
 
 	/**
-	 * @return path to the source files of the pattern for a particular misuse. Should be used to extract the
-	 * patterns in detect-only mode.
+	 * @return path to the source files of the correct usage for a particular misuse. Should be used to extract the
+	 * correct usages in detect-only mode.
 	 * @throws FileNotFoundException if the path was not provided in the runner invocation, e.g., if the runner is
 	 * invoked in mine-and-detect mode.
 	 */
 	public String getPatternSrcPath() throws FileNotFoundException {
-		if (patternSrcPath == null)
+		if (correctUsageSrcPath == null)
 			throw new FileNotFoundException("training source path not provided");
-		return patternSrcPath;
+		return correctUsageSrcPath;
 	}
 
 	/**
-	 * @return path to the class files of the patterns for a particular misuse. Should be used to extract the
-	 * patterns in detect-only mode.
+	 * @return path to the class files of the correct usages for a particular misuse. Should be used to extract the
+	 * correct usages in detect-only mode.
 	 * @throws FileNotFoundException if the path was not provided in the runner invocation, e.g., if the runner is
 	 * invoked in mine-and-detect mode.
 	 */
 	public String getPatternClassPath() throws FileNotFoundException {
-		if (patternClassPath == null)
+		if (correctUsageClassPath == null)
 			throw new FileNotFoundException("training classpath not provided");
-		return patternClassPath;
+		return correctUsageClassPath;
 	}
 
 

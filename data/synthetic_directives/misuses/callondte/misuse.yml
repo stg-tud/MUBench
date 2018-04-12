@@ -1,6 +1,6 @@
 api:
 - javax.swing.JFrame
-characteristics:
+violations:
 - missing/condition/context
 crash: false
 description: >

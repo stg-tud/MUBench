@@ -1,6 +1,6 @@
 api:
 - java.lang.Object
-characteristics:
+violations:
 - redundant/condition/synchronization
 crash: true
 description: >

@@ -235,17 +235,17 @@ $metadata->method = 'method(P)';
 $metadata->diff_url = 'http://diff/url';
 $metadata->save();
 
-echo 'Creating patterns<br/>';
-$pattern = new \MuBench\ReviewSite\Models\Pattern;
-$pattern->metadata_id = 1;
-$pattern->code = "m(A){\n\ta(A);\n}";
-$pattern->line = 10;
-$pattern->save();
-$pattern = new \MuBench\ReviewSite\Models\Pattern;
-$pattern->metadata_id = 2;
-$pattern->code = "m(A){\n\ta(A);\n}";
-$pattern->line = 10;
-$pattern->save();
+echo 'Creating correct usages<br/>';
+$correctUsage = new \MuBench\ReviewSite\Models\CorrectUsage;
+$correctUsage->metadata_id = 1;
+$correctUsage->code = "m(A){\n\ta(A);\n}";
+$correctUsage->line = 10;
+$correctUsage->save();
+$correctUsage = new \MuBench\ReviewSite\Models\CorrectUsage;
+$correctUsage->metadata_id = 2;
+$correctUsage->code = "m(A){\n\ta(A);\n}";
+$correctUsage->line = 10;
+$correctUsage->save();
 
 echo 'Creating misuses<br/>';
 $misuse = new \MuBench\ReviewSite\Models\Misuse;
@@ -340,15 +340,15 @@ $findingReview->rank = '1';
 $findingReview->save();
 
 
-echo 'Creating Violation Types<br/>';
-$type = new \MuBench\ReviewSite\Models\Type;
+echo 'Creating Violations<br/>';
+$type = new \MuBench\ReviewSite\Models\Violation;
 $type->name = 'missing/call';
 $type->save();
 
-echo 'Creating Violation Types for metadata misuses<br/>';
+echo 'Creating Violations for metadata misuses<br/>';
 $capsule->table('metadata_types')->insert(array('metadata_id' => 1, 'type_id' => 1));
 
-echo 'Creating Violation Types for finding review<br/>';
+echo 'Creating Violations for finding review<br/>';
 $capsule->table('finding_review_types')->insert(array('finding_review_id' => 1, 'type_id' => 1));
 
 

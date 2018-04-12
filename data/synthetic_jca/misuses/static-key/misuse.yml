@@ -1,6 +1,6 @@
 api:
 - javax.crypto.spec.SecretKeySpec
-characteristics:
+violations:
 - missing/condition/value_or_state
 crash: false
 description: >

@@ -1,6 +1,6 @@
 api:
 - javax.crypto.Mac
-characteristics:
+violations:
 - redundant/call
 description: >
   May call Mac.init(...) multiple times on the same instance

@@ -1,6 +1,6 @@
 api:
 - java.util.Iterator
-characteristics:
+violations:
 - missing/condition/value_or_state
 - missing/call
 crash: true

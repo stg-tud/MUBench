@@ -162,7 +162,7 @@ class RunsController extends Controller
             foreach($misuse->reviews as $review){
                 $findings_reviews = $review->finding_reviews;
                 foreach($findings_reviews as $finding_review){
-                    $finding_review->violation_types()->detach();
+                    $finding_review->violations()->detach();
                 }
                 $review->finding_reviews()->delete();
                 $review->reviewer()->dissociate();
@@ -186,7 +186,7 @@ class RunsController extends Controller
             $misuses = $run->misuses->sortBy('misuse_muid', SORT_NATURAL);
             if($experiment->id === 1) {
                 foreach($misuses as $misuse){
-                    if($misuse->metadata && !$misuse->metadata->patterns->isEmpty()){
+                    if($misuse->metadata && !$misuse->metadata->correct_usages->isEmpty()){
                         $filtered_misuses->add($misuse);
                     }
                 }
@@ -515,13 +515,13 @@ class RunsController extends Controller
     {
         $results = array();
         foreach($detectors as $detector){
-            $runs = Run::of($detector)->in($experiment)->with(['misuses.reviews.reviewer', 'misuses.metadata.patterns'])->get();
+            $runs = Run::of($detector)->in($experiment)->with(['misuses.reviews.reviewer', 'misuses.metadata.correct_usages'])->get();
             foreach ($runs as &$run) {
                 $misuses = $run->misuses->sortBy('misuse_muid', SORT_NATURAL);
                 $filtered_misuses = new Collection;
                 if($experiment->id === 1){
                     foreach ($misuses as $misuse) {
-                        if (!is_null($misuse->metadata) && !$misuse->metadata->patterns->isEmpty()) {
+                        if (!is_null($misuse->metadata) && !$misuse->metadata->correct_usages->isEmpty()) {
                             $filtered_misuses->add($misuse);
                         }
                     }
