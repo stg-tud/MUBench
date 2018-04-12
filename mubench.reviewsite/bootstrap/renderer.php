@@ -38,11 +38,25 @@ $container['renderer'] = function ($container) {
         return $detector_name;
     };
 
+    $reviewerName = function($reviewer)  use ($blind_mode) {
+        if($blind_mode){
+            return "reviewer-" . $reviewer->id;
+        }
+        return $reviewer->name;
+    };
+
     $detectorPathId = function($detector) use ($blind_mode) {
         if($blind_mode){
             return $detector->id;
         }
         return $detector->muid;
+    };
+
+    $reviewerPathId = function($reviewer) use ($blind_mode) {
+        if($blind_mode){
+            return $reviewer->id;
+        }
+        return $reviewer->name;
     };
 
     $markdown_parser = new Parsedown();
