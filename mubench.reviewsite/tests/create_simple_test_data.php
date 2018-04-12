@@ -146,6 +146,10 @@ $run->save();
 
 echo 'Creating findings entries<br/>';
 $finding = new \MuBench\ReviewSite\Models\Finding;
+$finding->setDetector($detector2);
+Schema::dropIfExists($finding->getTable());
+$runsController->createFindingsTable($finding->getTable());
+$finding = new \MuBench\ReviewSite\Models\Finding;
 $finding->setDetector($detector);
 Schema::dropIfExists($finding->getTable());
 $runsController->createFindingsTable($finding->getTable());
