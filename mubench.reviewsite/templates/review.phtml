@@ -371,7 +371,7 @@ $origin_path = $origin_path ? $origin_path : $pathFor('experiment.detector', arr
         <?php elseif($review && (!$user || !$is_reviewer)) :?>
                 <table class="invisible">
                     <tr><td>Reviewer Name:</td>
-                        <td><?= htmlspecialchars($review->reviewer->name); ?></td></tr>
+                        <td><?= htmlspecialchars($blind_mode ? "reviewer-{$review->reviewer->id}" : $review->reviewer->name); ?></td></tr>
                     <tr><td class="vtop"><label for="review_comment">Comment</label>:</td>
                         <td>
                             <?= $markdown_parser->text($review->comment); ?>

@@ -141,17 +141,17 @@ $columns_to_ignore = array(
                         <?php elseif ($review_state == ReviewState::NEEDS_CLARIFICATION): ?>
                             <i class="fa fa-question-circle" aria-hidden="true" style="color:blue;" title="Needs Clarification"></i>
                         <?php elseif ($review_state == ReviewState::DISAGREEMENT): ?>
-                        <a href="<?= $pathFor('review', array('experiment_id' => $experiment->id, 'detector_muid' => $detector->muid, 'project_muid' => $project, 'version_muid' => $version, 'misuse_muid' => $misuse->misuse_muid, 'reviewer_name' => $resolution_reviewer->name)) ?>"><i class="fa fa-exclamation-triangle" aria-hidden="true" style="color:red;" title="Disagreement"></i></a>
+                        <a href="<?= $pathFor('review', array('experiment_id' => $experiment->id, 'detector_muid' => $detector->muid, 'project_muid' => $project, 'version_muid' => $version, 'misuse_muid' => $misuse->misuse_muid, 'reviewer_name' => ($blind_mode ? $resolution_reviewer->id : $resolution_reviewer->name))) ?>"><i class="fa fa-exclamation-triangle" aria-hidden="true" style="color:red;" title="Disagreement"></i></a>
                         <?php elseif ($review_state == ReviewState::AGREEMENT_YES): ?>
                             <i class="fa fa-thumbs-o-up" aria-hidden="true" style="color:green;" title="Agreement: Yes"></i>
                         <?php elseif ($review_state == ReviewState::AGREEMENT_NO): ?>
                             <i class="fa fa-thumbs-o-down" aria-hidden="true" style="color:darkred;" title="Agreement: No"></i>
                         <?php elseif ($review_state == ReviewState::RESOLVED_YES): ?>
                             <i class="fa fa-thumbs-o-up" aria-hidden="true" style="color:green;" title="Resolved: Yes"></i>
-                            (<a href="<?= $pathFor('review', array('experiment_id' => $experiment->id, 'detector_muid' => $detector->muid, 'project_muid' => $project, 'version_muid' => $version, 'misuse_muid' => $misuse->misuse_muid, 'reviewer_name' => $resolution_reviewer->name)) ?>"><i class="fa fa-handshake-o" aria-hidden="true" title="Resolution"></i></a>)
+                            (<a href="<?= $pathFor('review', array('experiment_id' => $experiment->id, 'detector_muid' => $detector->muid, 'project_muid' => $project, 'version_muid' => $version, 'misuse_muid' => $misuse->misuse_muid, 'reviewer_name' => ($blind_mode ? $resolution_reviewer->id : $resolution_reviewer->name))) ?>"><i class="fa fa-handshake-o" aria-hidden="true" title="Resolution"></i></a>)
                         <?php elseif ($review_state == ReviewState::RESOLVED_NO): ?>
                             <i class="fa fa-thumbs-o-down" aria-hidden="true" style="color:darkred;" title="Resolved: No"></i>
-                            (<a href="<?= $pathFor('review', array('experiment_id' => $experiment->id, 'detector_muid' => $detector->muid, 'project_muid' => $project, 'version_muid' => $version, 'misuse_muid' => $misuse->misuse_muid, 'reviewer_name' => $resolution_reviewer->name)) ?>"><i class="fa fa-handshake-o" aria-hidden="true" title="Resolution"></i></a>)
+                            (<a href="<?= $pathFor('review', array('experiment_id' => $experiment->id, 'detector_muid' => $detector->muid, 'project_muid' => $project, 'version_muid' => $version, 'misuse_muid' => $misuse->misuse_muid, 'reviewer_name' => ($blind_mode ? $resolution_reviewer->id : $resolution_reviewer->name))) ?>"><i class="fa fa-handshake-o" aria-hidden="true" title="Resolution"></i></a>)
                         <?php endif; ?>
                         <?php if($misuse->hasReviewed($user)): ?>
                             <?php
@@ -197,7 +197,10 @@ $columns_to_ignore = array(
                     <td class="<?= $style_classes ?>">
                         <ul class="inline">
                             <?php foreach($misuse->getReviews() as $review) : /** @var /Mubench/ReviewSite/Models/Review $review */ ?>
-                                <li style="display:inline"><a href="<?= $pathFor('review', array('experiment_id' => $experiment->id, 'detector_muid' => $detector->muid, 'project_muid' => $project, 'version_muid' => $version, 'misuse_muid' => $misuse->misuse_muid, 'reviewer_name' => $review->reviewer->name)) ?>"><?= $review->reviewer->name ?></a></li>
+                                <?php
+                                    $reviewer_name = $blind_mode ? "reviewer-{$review->reviewer->id}": $review->reviewer->name;
+                                ?>
+                                <li style="display:inline"><a href="<?= $pathFor('review', array('experiment_id' => $experiment->id, 'detector_muid' => $detector->muid, 'project_muid' => $project, 'version_muid' => $version, 'misuse_muid' => $misuse->misuse_muid, 'reviewer_name' => $blind_mode ? $review->reviewer->id : $review->reviewer->name)) ?>"><?= $reviewer_name ?></a></li>
                             <?php endforeach; ?>
                         </ul>
                     </td>
@@ -208,7 +211,7 @@ $columns_to_ignore = array(
                         <?php if (!$user): ?>
                             <a href="<?= $pathFor('view', array('experiment_id' => $experiment->id, 'detector_muid' => $detector->muid, 'project_muid' => $project, 'version_muid' => $version, 'misuse_muid' => $misuse->misuse_muid)); ?>" class="<?= $button_classes ?>">view</a>
                         <?php elseif ($misuse->hasReviewed($user)): ?>
-                            <a href="<?= $pathFor('review', array('experiment_id' => $experiment->id, 'detector_muid' => $detector->muid, 'project_muid' => $project, 'version_muid' => $version, 'misuse_muid' => $misuse->misuse_muid, 'reviewer_name' => $user->name)) ?><?= $origin_param ?><?= $experiment->id === 2 ? "&ex2_review_size=$ex2_review_size" : "" ?>" class="<?= $button_classes ?>">edit
+                            <a href="<?= $pathFor('review', array('experiment_id' => $experiment->id, 'detector_muid' => $detector->muid, 'project_muid' => $project, 'version_muid' => $version, 'misuse_muid' => $misuse->misuse_muid, 'reviewer_name' => ($blind_mode ? $user->id : $user->name))) ?><?= $origin_param ?><?= $experiment->id === 2 ? "&ex2_review_size=$ex2_review_size" : "" ?>" class="<?= $button_classes ?>">edit
                             <?php $your_decision = $misuse->getReview($user)->getDecision() ?>
                             <?php if ($your_decision == Decision::YES): ?>
                                 (<i class="fa fa-thumbs-o-up" aria-hidden="true" style="color:green;" title="Yes"></i>)
@@ -221,7 +224,7 @@ $columns_to_ignore = array(
                             <?php endif; ?>
                         </a>
                     <?php else: ?>
-                        <a href="<?= $pathFor('review', array('experiment_id' => $experiment->id, 'detector_muid' => $detector->muid, 'project_muid' => $project, 'version_muid' => $version, 'misuse_muid' => $misuse->misuse_muid, 'reviewer_name' => $user->name)); ?><?= $origin_param ?><?= $experiment->id === 2 ? "&ex2_review_size=$ex2_review_size" : "" ?>" class="<?= $button_classes ?>">review</a>
+                        <a href="<?= $pathFor('review', array('experiment_id' => $experiment->id, 'detector_muid' => $detector->muid, 'project_muid' => $project, 'version_muid' => $version, 'misuse_muid' => $misuse->misuse_muid, 'reviewer_name' => ($blind_mode ? $user->id : $user->name))); ?><?= $origin_param ?><?= $experiment->id === 2 ? "&ex2_review_size=$ex2_review_size" : "" ?>" class="<?= $button_classes ?>">review</a>
                     <?php endif; ?>
                 </td>
                 <td class="<?= $style_classes ?>" style="max-width: 300px;">
