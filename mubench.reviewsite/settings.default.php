@@ -33,15 +33,17 @@ return [
             'name' => 'mubench',
             'path' => __DIR__ . '/logs/app.log',
             'level' => \Monolog\Logger::DEBUG,
+        ],
+
+        // blind mode options
+        'blind_mode' => [
+            'enabled' => false,
+            'detector_blind_names' => []
         ]
     ],
     
     // Reviewer login credentials
     'users' => [
         "admin" => "pass"
-    ],
-    'blind_mode' => [
-        'enabled' => false,
-        'detector_blind_names' => []
     ]
 ];
