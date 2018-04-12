@@ -29,19 +29,28 @@ use MuBench\ReviewSite\Models\Experiment;
         <ul id="experiments">
         <?php foreach($experiments as $experiment) : ?>
             <li><span>Experiment <?= $experiment->id ?>: <?= htmlspecialchars($experiment->name) ?></span>
-                <ul>
+                <table class="invisible">
+                <tr>
+                    <th></th>
+                    <th></th>
+                </tr>
                 <?php if ($detectors[$experiment->id]): ?>
                     <?php foreach ($detectors[$experiment->id] as $detector): ?>
-                        <li><a href="<?= $pathFor('experiment.detector', ['experiment_id' => $experiment->id, 'detector_muid' => $detectorPathId($detector)]) ?>"><?= $detectorName($detector) ?></a>
-                            <?php if($user) : ?>
-                                <?php include "includes/detector_review_state.phtml" ?>
-                            <?php endif; ?>
-                        </li>
+                        <tr>
+                            <td>
+                                <a href="<?= $pathFor('experiment.detector', ['experiment_id' => $experiment->id, 'detector_muid' => $detectorPathId($detector)]) ?>"><?= $detectorName($detector) ?></a>
+                            </td>
+                            <td>
+                                <?php if($user) : ?>
+                                    <?php include "includes/detector_review_state.phtml" ?>
+                                <?php endif; ?>
+                            </td>
+                        </tr>
                     <?php endforeach ?>
                 <?php else: ?>
-                    <li>No Results</li>
+                    <tr><td>No Results</td></tr>
                 <?php endif ?>
-                </ul>
+                </table>
             </li>
         <?php endforeach; ?>
         </ul>
