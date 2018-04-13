@@ -25,7 +25,7 @@ MuBench CI Status: [![MuBench CI Status](https://api.shippable.com/projects/570d
 
 1. Install [Docker](https://www.docker.com/products/overview#/install_the_platform).
 2. `$> cd /mubench/install/path/`
-3. `$> docker run --rm -v $PWD:/mubench svamann/mubench git clone https://github.com/stg-tud/MUBench.git .`
+3. `$> docker run --rm -v $PWD:/mubench svamann/mubench-pipeline git clone https://github.com/stg-tud/MUBench.git .`
 4. `$> ./mubench check`
 
 ### Windows
@@ -36,7 +36,7 @@ MuBench CI Status: [![MuBench CI Status](https://api.shippable.com/projects/570d
   1. Right click the Docker icon in the system tray and choose "Settings."
   2. Open the "Shared Drives" tab.
   3. Ensure that the X-drive is selected and apply.
-4. `$> docker run --rm -v "%cd:\=/%":/mubench svamann/mubench git clone https://github.com/stg-tud/MUBench.git .`
+4. `$> docker run --rm -v "%cd:\=/%":/mubench svamann/mubench-pipeline git clone https://github.com/stg-tud/MUBench.git .`
 5. `$> ./mubench.bat check`
 
 ## Use
