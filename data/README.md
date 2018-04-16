@@ -2,11 +2,37 @@
 
 # MUBench : Dataset
 
-The MUBench Dataset references projects with known API misuses. Each subfolder of this directory identifies one project. For each project, the dataset references one or more project versions that contain the known misuses (usually the version immediately before a particular misuse was fixed). The dataset also specifies the misuses themselves and links misuses and project versions.
+The MUBench Dataset references projects with known API misuses.
+Each subfolder of this directory identifies one project.
+For each project, the dataset references one or more project versions that contain the known misuses (usually the version immediately before a particular misuse was fixed).
+The dataset also specifies the misuses themselves and links misuses and project versions.
 
-When running experiments you may use the qualified project, version, or misuse ids to select particular datapoints for your experiment. The project id is the name of the respective subfolder in this directory. The qualified version id has the form `<project-id>.<version-id>`, where the version id is the name of the respective directory in `<project-id>/versions/`. The qualified misuse id has the form `<project-id>.<misuse-id>`, where the misuse id is the name of the respective directory in `<project-id>/misuses/`.
+## Filtering
 
-You may also use qualified project, version, or misuse ids to specify sub-dataset in [datasets.yml](datasets.yml), to conveniently run experiments on certain subsets of the entire dataset.
+When [running experiments](../mubench.pipeline/#run-experiments), we recommend to specify a subset of the entire MUBench dataset to run detectors on.
+
+### Datasets
+
+The easiest way is to use predefined experiment datasets, by passing their Id as an argument to the `--datasets` command-line option.
+Available datasets are declared in the [datasets.yml](datasets.yml) file.
+You may also add your own datasets to this file, by listing the [individual dataset entities](#individual-entities) you want to include.
+
+Example: `$> ./mubench run ex2 DemoDetector --datasets TSE17-ExPrecision`
+
+### Individual Entities
+
+You may run experiments on individual dataset entities, by passing the entity Id as an argument to the `--only` command-line option.
+Entities are projects, project versions, or misuses.
+Their Ids are constructed as follows:
+
+* The project Id is the name of the respective subfolder in this directory.
+* The version Id has the form `<project-id>.<version-id>`, where the version Id is the name of the respective directory in `<project-id>/versions/`.
+* The misuse Id has the form `<project-id>.<version-id>.<misuse-id>`, where the misuse Id is the name of the respective directory in `<project-id>/misuses/`.
+
+Example: `$> ./mubench run ex1 DemoDetector --only aclang.587`
+
+*Hint:* You may exclude individual entities using the `--skip` command-line option. Exclusion takes precedence over inclusion.
+
 
 ## Statistics
 

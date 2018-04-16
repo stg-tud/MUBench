@@ -1,10 +1,12 @@
 <img align="right" width="320" height="320" alt="MUBench Logo" src="./meta/logo.png?raw=true" />
 
-# MUBench : A Benchmark for API-Misuse Detectors
+# MUBench
 
-The MUBench dataset is an [MSR 2016 Data Showcase](http://2016.msrconf.org/#/data) and an benchmarking pipeline for API-misuse detectors. Please feel free to [contact Sven Amann](http://www.stg.tu-darmstadt.de/staff/sven_amann), if you have any questions.
+An automated benchmark for API-misuse detectors.
 
-MuBench CI Status: [![MuBench CI Status](https://api.shippable.com/projects/570d22d52a8192902e1bfa79/badge?branch=master)](https://app.shippable.com/projects/570d22d52a8192902e1bfa79)
+Please feel free to [contact Sven Amann](http://www.stg.tu-darmstadt.de/staff/sven_amann), if you have any questions.
+
+CI Status: [![CI Status](https://api.shippable.com/projects/570d22d52a8192902e1bfa79/badge?branch=master)](https://app.shippable.com/projects/570d22d52a8192902e1bfa79)
 
 ## Contributors
 
@@ -17,35 +19,33 @@ MuBench CI Status: [![MuBench CI Status](https://api.shippable.com/projects/570d
 
 ## Publications
 
-* ['*MUBench: A Benchmark of API-Misuse Detectors*'](http://sven-amann.de/publications/2016-05-MSR-MUBench-dataset.html)
+* ['*MUBench: A Benchmark of API-Misuse Detectors*'](http://sven-amann.de/publications/2016-05-MSR-MUBench-dataset.html) ([MSR '16 Data Showcase](http://2016.msrconf.org/#/data))
+* ['*A Systematic Evaluation of Static API-Misuse Detectors*'](https://arxiv.org/abs/1712.00242) (TSE '18)
 
-## Install
+## Getting Started
 
-### Linux/OSX
+With MUBench, you may run [different API-misuse detectors](detectors/) in [a number of experiments](mubench.pipeline/#experiments) to determine their precision and recall.
+To this end, MUBench provides [a curated dataset of real-world projects and known misuses](data/).
+In each experiment run, the respective detector emits findings which you need to review manually.
+To this end, MUBench publishes (a subset of) the findings to [a review website](mubench.reviewsite/).
+After you completed your reviews, the site automatically computes experiment statistics.
 
-1. Install [Docker](https://www.docker.com/products/overview#/install_the_platform).
-2. `$> cd /mubench/install/path/`
-3. `$> docker run --rm -v $PWD:/mubench svamann/mubench-pipeline git clone https://github.com/stg-tud/MUBench.git .`
-4. `$> ./mubench check`
+### Setup
 
-### Windows
+1. [Setup a review (web)site](mubench.reviewsite/#setup) to publish detector findings to
+2. [Setup the experiment pipeline](mubench.pipeline/#setup) to run experiments
 
-1. Install [Docker](https://www.docker.com/products/overview#/install_the_platform).
-2. `$> cd X:\mubench\install\path\`
-3. Allow Docker to mount from your X-drive:
-  1. Right click the Docker icon in the system tray and choose "Settings."
-  2. Open the "Shared Drives" tab.
-  3. Ensure that the X-drive is selected and apply.
-4. `$> docker run --rm -v "%cd:\=/%":/mubench svamann/mubench-pipeline git clone https://github.com/stg-tud/MUBench.git .`
-5. `$> ./mubench.bat check`
+### Use
 
-## Use
-
-To use the MUBench pipeline, you need to [Setup a Review Site](mubench.reviewsite/) for MUBench to publish detector results to. Afterwards, you can [Run Benchmark Experiments](mubench.pipeline/).
+1. [Run experiments](mubench.pipeline/#run-experiments), using `./mubench run`
+2. [Publish detector findings to your review site](mubench.reviewsite/#publish-detector-findings), using `./mubench publish`
 
 ## Contribute
 
-We want MUBench to grow, so please be welcome to [Add Your Own Project or Misuse to the Dataset](data/) or [Add Your Own Detector](mubench.cli/) to the benchmark.
+We want MUBench to grow, so please be welcome to
+
+* [Add Your Own Project or Misuse to the Dataset](data/).
+* [Add Your Own Detector to the Benchmark](mubench.cli/).
 
 ## License
 

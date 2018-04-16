@@ -2,48 +2,95 @@
 
 # MUBench : Pipeline
 
-MUBench comes as a Docker container that is controlled via the command line. Run `./mubench -h` for details about the available commands and options.
+MUBench comes with a Docker image to allow platform independent execution of experiments.
+The MUBench Pipeline offers a command-line interface (via `./mubench` on Linux/OSX and via `./mubench.bat` on Windows).
+Check `./mubench -h` for details about the available commands and options.
 
-We provide the same command-line interface for Linux/OSX via `./mubench` and for Windows via `./mubench.bat`.
 
 ## Computing Resources
 
-Docker limits the computing resources available to a docker run. You can adjust this in the advanced preferences. Our recommendations are:
+Docker limits the computing resources available to experiment runs.
+You can adjust this in the advanced preferences.
+Specific requirements depend on the detector you evaluate, but our minimum recommendations are:
 
 * CPUs: &ge;2
 * Memory: &ge;8.0 GB
 
-Remember that you may also have to provide more memory to the JVM for the detector run, for example, by passing `--java-options Xmx8G` to the pipeline invocation.
+*Hint:* You also have to make the memory available to the JVM for the detector run, by passing `--java-options Xmx8G` to the command-line interface.
+
+
+## Setup
+
+### Linux/OSX
+
+1. Install [Docker](https://www.docker.com/products/overview#/install_the_platform).
+2. `$> cd /mubench/install/path/`
+3. `$> docker run --rm -v $PWD:/mubench svamann/mubench git clone https://github.com/stg-tud/MUBench.git .`
+4. `$> ./mubench check setup`
+
+### Windows
+
+1. Install [Docker](https://www.docker.com/products/overview#/install_the_platform).
+2. `$> cd X:\mubench\install\path\`
+3. Depending on your system and Docker version you may have to [enable directory mounts for drive X](https://rominirani.com/docker-on-windows-mounting-host-directories-d96f3f056a2c).
+4. `$> docker run --rm -v "%cd:\=/%":/mubench svamann/mubench git clone https://github.com/stg-tud/MUBench.git .`
+5. `$> ./mubench.bat check setup`
 
 
 ## Run Experiments
 
-The easiest way to run experiments is to execute
+The base command to run an experiment is
 
-    ./mubench publish findings <D> <E> -s <R> -u <RU> -p <RP>
+    $> ./mubench run <E> <D> --datasets <DS>
 
-Where `<D>` is the [id of the detector](#detectors), `<E>` is the [number of the experiment](#experiments) to run, `<R>` is the URL of [your review site](../mubench.reviewsite/), `<RU>` is the user name to access your review site as, and `<RP>` is the respective password.
+Where
 
-### Detectors
+* `<E>` is the [id of the experiment](#experiments) to run
+* `<D>` is the [id of the detector](../detectors), and
+* `<DS>` specifies [the dataset](../data/#filtering) to use for the experiment.
 
-Run `./mubench detect -h` for a list of available detector ids.
+The first time MUBench runs a detector on a certain project, that project is cloned from version control and compiled.
+These preparation steps may take a while.
+Subsequently, MUBench uses the local clone and the previously compiled classes, such that experiments may run offline and need close to no preparation time.
+
+Example: `$> ./mubench run ex2 DemoDetector --datasets TSE17-ExPrecision`
+
+Check `./mubench run -h` for further details.
+
+If you want to run and experiment and immediately [publish detector findings to a review site](../mubench.reviewsite/#publish-detector-findings), you may use
+
+    $> ./mubench publish <E> <D> --datasets <DS> -s <R> -u <RU> -p <RP>
+
+Where
+
+* `<E>`, `<D>`, and `<DS>` are as above.
+* `<R>` is the URL of [your review site](../mubench.reviewsite/),
+* `<RU>` is the user name to access your review site as, and
+* `<RP>` is the respective password.
+
+Example: `./mubench run ex2 DemoDetector --datasets TSE17-ExPrecision -s http://artifact.page/tse17/` -u sven -p 1234
+
+Check `./mubench publish -h` for further details.
+
+*Hint:* The `--datasets` filter is optional.
+We recommend to always [use a filter](../data/#filtering), since running on the entire benchmark requires much disk space and time.
+
+*Hint:* You may run the preparation steps individually. See `./mubench -h` for details.
+
 
 ### Experiments
 
 Available experiments are:
 
-1. Provide detectors with example code of a correct usage, to evaluate the recall of their detection strategy with respect to the misuses in the [MUBench Dataset](../data/) in isolation.
-2. Run detectors "in the wild", i.e., both their pattern mining and detection, to evaluate their precision in an end-user setting.
-3. Run detectors "in the wild", i.e., both their pattern mining and detection, to evaluate their recall with respect to the misuses in the [MUBench Dataset](../data/).
+* `ex2` (P) - Measures the precision of the detectors. It runs the detector on real-world projects and requires reviews of the top-N findings per target project, in order to determine the precision.
+* `ex1` (RUB) - Measures the recall upper bound of detectors. It provides detector with hand-crafted examples of correct usage corresponding to the [known misuses in the dataset](../data), as a reference for identifying misuses. Requires reviews of all potential hits, i.e., findings in the same method as a [known misuse](../data), in order to determine the recall upper bound.
+* `ex3` (R) - Measures the recall of detectors. It runs the detector on real-world projects and requires reviews of all potential hits, i.e., findings in the same method as a [known misuse](../data), in order to determine the recall.
 
-### Execution
-
-MUBench runs the detectors on the projects/misuses specified in the [MUBench Dataset](../data/). The first time a project is used in benchmarking, the repository containing that project is cloned (this may take a while). Subsequently, the existing clone is used, such that benchmarking runs offline. Before the first detector is run on a project, MUBench compiles the project (this may take a while). Subsequently, the compiled classes are reused. Then the detector is invoked, and finally the results are published to [the review site](../mubench.reviewsite/).
-
-### Advanced Use
-
-You may run individual benchmark steps or select subsets of the entire dataset. See `./mubench -h` for details.
 
 ### Default Configuration
 
-You can specify defaults for command-line arguments by creating a `./default.config`. The file follows [the YAML format](http://yaml.org/). Values for all command-line arguments that begin with `--` can be speficied by using their respective full name as a key. To set command-line flags by default, set their value to `True`. For an example configuration, see [the default.example.config](../default.example.config). Argument values specified on the command line always take precedence over respective default values.
+You can specify defaults for command-line arguments by creating a `./default.config` in [the YAML format](http://yaml.org/).
+Values for all command-line arguments that begin with `--` may be specified in this file using the argument's full name as the key.
+To set command-line flags by default, use `True` as their value.
+For an example configuration, see [the default.example.config](../default.example.config).
+Argument values specified on the command line always take precedence over respective default values.
