@@ -208,6 +208,7 @@ def __add_run_subprocess(available_detectors: List[str], available_datasets: Lis
     __add_run_ex2_subprocess(available_detectors, available_datasets, run_subparsers)
     __add_run_ex3_subprocess(available_detectors, available_datasets, run_subparsers)
     __add_run_cross_project_create_index(available_datasets, run_subparsers)
+    __add_run_cross_project_create_project_list(run_subparsers)
     __add_run_cross_project_prepare(run_subparsers)
 
 
@@ -269,6 +270,12 @@ def __add_run_cross_project_prepare(subparsers) -> None:
     parser.add_argument("-bp", "--boa-password", metavar="BOAPASS", dest="boa_password",
                         default=__get_default('boa-password', None),
                         help="TODO")
+
+
+def __add_run_cross_project_create_project_list(subparsers) -> None:
+    parser = subparsers.add_parser("xpcpl", formatter_class=SortingHelpFormatter,
+                                   help="TODO",
+                                   description="TODO")
 
 
 def __add_publish_subprocess(available_detectors: List[str], available_datasets: List[str], subparsers) -> None:

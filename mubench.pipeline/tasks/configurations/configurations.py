@@ -8,6 +8,7 @@ from tasks.implementations.collect_projects import CollectProjectsTask
 from tasks.implementations.collect_versions import CollectVersionsTask
 from tasks.implementations.compile_misuse import CompileMisuseTask
 from tasks.implementations.compile_version import CompileVersionTask
+from tasks.implementations.crossproject_create_project_list import CrossProjectCreateProjectListTask
 from tasks.implementations.crossproject_prepare import CrossProjectPrepareTask
 from tasks.implementations.dataset_check_misuse import MisuseCheckTask
 from tasks.implementations.dataset_check_project import ProjectCheckTask
@@ -188,6 +189,17 @@ class RunCrossProjectPrepare(TaskConfiguration):
     def tasks(self, config) -> List:
         return [CrossProjectPrepareTask(config.root_path, config.xp_checkouts_path, config.xp_index_file,
                                         config.run_timestamp, config.boa_user, config.boa_password)]
+
+
+class RunCrossProjectCreateProjectList(TaskConfiguration):
+    ID = "xpcpl"
+
+    @staticmethod
+    def mode() -> str:
+        return "run {}".format(RunCrossProjectCreateProjectList.ID)
+
+    def tasks(self, config) -> List:
+        return [CrossProjectCreateProjectListTask(config.root_path, config.xp_index_file, config.xp_checkouts_path)]
 
 
 class PublishBenchmarkExperiment(TaskConfiguration):
