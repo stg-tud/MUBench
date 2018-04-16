@@ -70,6 +70,8 @@ def _get_command_line_parser(available_detectors: List[str], available_scripts: 
 
     subparsers.required = True
 
+    parser.add_argument('--root-path', dest='root_path', default=__get_default('root-path', MUBENCH_ROOT_PATH),
+                        help=argparse.SUPPRESS)
     parser.add_argument('--use-tmp-wrkdir', dest='use_tmp_wrkdir', default=__get_default('use-tmp-wrkdir', False),
                         help=argparse.SUPPRESS, action='store_true')
     parser.add_argument('--data-path', dest='data_path', default=__get_default('data-path', __DATA_PATH),
@@ -206,6 +208,7 @@ def __add_run_subprocess(available_detectors: List[str], available_datasets: Lis
     __add_run_ex2_subprocess(available_detectors, available_datasets, run_subparsers)
     __add_run_ex3_subprocess(available_detectors, available_datasets, run_subparsers)
     __add_run_cross_project_create_index(available_datasets, run_subparsers)
+    __add_run_cross_project_prepare(run_subparsers)
 
 
 def __add_run_ex1_subprocess(available_detectors: List[str], available_datasets: List[str], subparsers) -> None:
@@ -253,6 +256,19 @@ def __add_run_cross_project_create_index(available_datasets: List[str], subparse
                                               help="TODO",
                                               description="TODO")
     __setup_filter_arguments(parser, available_datasets)
+
+
+def __add_run_cross_project_prepare(subparsers) -> None:
+    parser = subparsers.add_parser("xpprep", formatter_class=SortingHelpFormatter,
+                                   help="TODO",
+                                   description="TODO")
+
+    parser.add_argument("-bu", "--boa-username", metavar="BOAUSER", dest="boa_user",
+                        default=__get_default('boa-username', None),
+                        help="TODO")
+    parser.add_argument("-bp", "--boa-password", metavar="BOAPASS", dest="boa_password",
+                        default=__get_default('boa-password', None),
+                        help="TODO")
 
 
 def __add_publish_subprocess(available_detectors: List[str], available_datasets: List[str], subparsers) -> None:
