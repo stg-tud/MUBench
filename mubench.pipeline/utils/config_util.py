@@ -13,6 +13,8 @@ from utils.io import read_yaml
 MUBENCH_ROOT_PATH = abspath(join(dirname(abspath(__file__)), os.pardir, os.pardir))
 __DATA_PATH = join(MUBENCH_ROOT_PATH, "data")
 __CHECKOUTS_PATH = join(MUBENCH_ROOT_PATH, "checkouts")
+__XP_CHECKOUTS_PATH = join(MUBENCH_ROOT_PATH, "checkouts-xp")
+__XP_INDEX_FILE = join(__XP_CHECKOUTS_PATH, "index.csv")
 __COMPILES_PATH = __CHECKOUTS_PATH
 __FINDINGS_PATH = join(MUBENCH_ROOT_PATH, "findings")
 __DATASETS_FILE_PATH = join(MUBENCH_ROOT_PATH, 'data', 'datasets.yml')
@@ -74,6 +76,10 @@ def _get_command_line_parser(available_detectors: List[str], available_scripts: 
                         help=argparse.SUPPRESS)
     parser.add_argument('--checkouts-path', dest='checkouts_path',
                         default=__get_default('checkouts-path', __CHECKOUTS_PATH), help=argparse.SUPPRESS)
+    parser.add_argument('--xp-checkouts-path', dest='xp_checkouts_path',
+                        default=__get_default('xp-checkouts-path', __XP_CHECKOUTS_PATH), help=argparse.SUPPRESS)
+    parser.add_argument('--xp-index-file', dest='xp_index_file',
+                        default=__get_default('xp-index-file', __XP_INDEX_FILE), help=argparse.SUPPRESS)
     parser.add_argument('--compiles-path', dest='compiles_path', default=__get_default('compiles-path', __COMPILES_PATH),
                         help=argparse.SUPPRESS)
     parser.add_argument('--findings-path', dest='findings_path', default=__get_default('findings-path', __FINDINGS_PATH),
@@ -199,6 +205,7 @@ def __add_run_subprocess(available_detectors: List[str], available_datasets: Lis
     __add_run_ex1_subprocess(available_detectors, available_datasets, run_subparsers)
     __add_run_ex2_subprocess(available_detectors, available_datasets, run_subparsers)
     __add_run_ex3_subprocess(available_detectors, available_datasets, run_subparsers)
+    __add_run_cross_project_create_index(available_datasets, run_subparsers)
 
 
 def __add_run_ex1_subprocess(available_detectors: List[str], available_datasets: List[str], subparsers) -> None:
@@ -239,6 +246,13 @@ def __add_run_ex3_subprocess(available_detectors: List[str], available_datasets:
     __setup_checkout_arguments(experiment_parser)
     __setup_compile_arguments(experiment_parser)
     __setup_run_arguments(experiment_parser, available_detectors)
+
+
+def __add_run_cross_project_create_index(available_datasets: List[str], subparsers) -> None:
+    parser = subparsers.add_parser("xpci", formatter_class=SortingHelpFormatter,
+                                              help="TODO",
+                                              description="TODO")
+    __setup_filter_arguments(parser, available_datasets)
 
 
 def __add_publish_subprocess(available_detectors: List[str], available_datasets: List[str], subparsers) -> None:

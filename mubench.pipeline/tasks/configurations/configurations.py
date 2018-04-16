@@ -1,5 +1,6 @@
 from typing import List
 
+from tasks.implementations.crossproject_create_index import CrossProjectCreateIndexTask
 from tasks.implementations import stats
 from tasks.implementations.checkout import CheckoutTask
 from tasks.implementations.collect_misuses import CollectMisusesTask
@@ -162,6 +163,18 @@ class RunBenchmarkExperiment(TaskConfiguration):
                                          config.java_options)
         detect = DetectAllFindingsTask(config.findings_path, config.force_detect, config.timeout, config.run_timestamp)
         return [load_detector] + CheckoutTaskConfiguration().tasks(config) + [compile_version, detect]
+
+
+class RunCrossProjectCreateIndex(TaskConfiguration):
+    ID = "xpci"
+
+    @staticmethod
+    def mode() -> str:
+        return "run {}".format(RunCrossProjectCreateIndex.ID)
+
+    def tasks(self, config) -> List:
+        return [CollectProjectsTask(config.data_path), CollectVersionsTask(config.development_mode),
+                CollectMisusesTask(), CrossProjectCreateIndexTask(config.xp_index_file)]
 
 
 class PublishBenchmarkExperiment(TaskConfiguration):
