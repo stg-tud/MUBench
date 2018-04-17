@@ -352,7 +352,7 @@ class RunsController extends Controller
     /** @noinspection PhpUnusedPrivateMethodInspection used in createOrUpdateFindingsTable */
     function createFindingsTable($table_name)
     {
-        Schema::create($table_name, function (Blueprint $table) {
+        Schema::create($table_name, function (Blueprint $table) use ($table_name){
             $table->increments('id');
             $table->integer('misuse_id');
             $table->integer('experiment_id');
@@ -366,7 +366,7 @@ class RunsController extends Controller
             $table->dateTime('created_at');
             $table->dateTime('updated_at');
             $table->index(['misuse_id']);
-            $table->unique(['experiment_id', 'project_muid', 'version_muid', 'misuse_muid', 'rank']);
+            $table->unique(['experiment_id', 'project_muid', 'version_muid', 'misuse_muid', 'rank'],"findings_id_{$table_name}");
         });
     }
 
