@@ -6,7 +6,6 @@ namespace MuBench\ReviewSite\Controllers;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use MuBench\ReviewSite\Models\Detector;
 use MuBench\ReviewSite\Models\DetectorResult;
@@ -19,7 +18,7 @@ use MuBench\ReviewSite\Models\Reviewer;
 use MuBench\ReviewSite\Models\ReviewState;
 use MuBench\ReviewSite\Models\Run;
 use MuBench\ReviewSite\Models\Snippet;
-use MuBench\ReviewSite\Models\Type;
+use MuBench\ReviewSite\Models\Violation;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 use Slim\Http\Request;
@@ -84,34 +83,6 @@ class RunsController extends Controller
         $stats = $this->getResultsForExperiment($experiment, $detectors, $ex2_review_size);
         return download($response, self::exportStatistics($experiment, $stats),
             "stats_" . $experiment->id . ".csv");
-    }
-
-    public function import(Request $request, Response $response)
-    {
-        return $this->renderer->render($response, 'import_db.phtml');
-    }
-
-    public function import_runs(Request $request, Response $response, array $args)
-    {
-        $experiment_id = $args['experiment_id'];
-        $detector_muid = $args['detector_muid'];
-
-        $formdata = $request->getParsedBody();
-        $project_muid = $formdata['project_muid'];
-        $version_muid = $formdata['version_muid'];
-
-        $host = $formdata['host'];
-        $database = $formdata['database'];
-        $username = $formdata['username'];
-        $password = $formdata['password'];
-        $prefix = $formdata['prefix'];
-
-        $connection = $this->createNewDBConnection($host, $database, $username, $password, $prefix);
-        if($connection){
-            $this->importRunsFromConnection($experiment_id, $detector_muid, $project_muid, $version_muid, $connection);
-            return $response->withJson("success",200);
-        }
-        return $response->withJson("failure: could not connect to db",500);
     }
 
     public function postRun(Request $request, Response $response, array $args)
@@ -346,7 +317,7 @@ class RunsController extends Controller
         return $detector;
     }
 
-    private function createOrUpdateRunsTable(Detector $detector, $run)
+    function createOrUpdateRunsTable(Detector $detector, $run)
     {
         $propertyToColumnNameMapping = $this->getColumnNamesFromProperties($run);
         $propertyToColumnNameMapping = $this->removeDisruptiveStatsColumns($propertyToColumnNameMapping);
@@ -355,7 +326,7 @@ class RunsController extends Controller
         $this->createOrUpdateTable($run->getTable(), $propertyToColumnNameMapping, array($this, 'createRunsTable'));
     }
 
-    private function createOrUpdateFindingsTable(Detector $detector, $findings)
+    function createOrUpdateFindingsTable(Detector $detector, $findings)
     {
         $propertyToColumnNameMapping = $this->getPropertyToColumnNameMapping($findings);
         $propertyToColumnNameMapping = $this->removeDisruptiveFindingsColumns($propertyToColumnNameMapping);
@@ -379,7 +350,7 @@ class RunsController extends Controller
 
     private function getPropertyColumnNames($table_name)
     {
-        return DB::connection('default')->getSchemaBuilder()->getColumnListing($table_name);
+        return Schema::getColumnListing($table_name);
     }
 
     /** @noinspection PhpUnusedPrivateMethodInspection used in createOrUpdateFindingsTable */
@@ -652,166 +623,4 @@ class RunsController extends Controller
         }
     }
 
-    private function createNewDBConnection($host, $database, $username, $password, $prefix)
-    {
-        $this->capsule->addConnection([
-            'driver' => 'mysql',
-            'host' => $host,
-            'database' => $database,
-            'username' => $username,
-            'password' => $password,
-            'charset' => 'utf8',
-            'collation' => 'utf8_unicode_ci',
-            'prefix' => $prefix,
-        ], 'extern');
-        return $this->capsule->getConnection('extern');
-    }
-
-    function importRunsFromConnection($experiment_id, $detector_muid, $project_muid, $version_muid, $connection): void
-    {
-        list($local_detector, $detector) = $this->getLocalAndExternDetector($detector_muid, $connection);
-
-        $run = new Run;
-        $run->setDetector($detector);
-        $run->setConnection($connection->getName());
-
-        if ($project_muid != "" && $version_muid != "") {
-            $runs = $run->in(Experiment::find($experiment_id))->where(['version_muid' => $version_muid, 'project_muid' => $project_muid])->get();
-        } else {
-            $runs = $run->in(Experiment::find($experiment_id))->get();
-        }
-        foreach ($runs as $run) {
-            $cloned_run = $this->importRun($local_detector, $run);
-
-            foreach ($run->misuses as $misuse) {
-                $cloned_misuse = $cloned_run->misuses()->where('misuse_muid', $misuse->misuse_muid)->first();
-                if (!$cloned_misuse) {
-                    list($cloned_misuse, $cloned_metadata) = $this->importMisuse($misuse, $cloned_run, $local_detector);
-                }
-
-                $this->importMisuseFindings($misuse->findings, $local_detector, $cloned_misuse);
-
-                $this->importMisuseSnippets($connection, $misuse);
-
-                if ($misuse->metadata) {
-                    $violationTypes = $this->importMetadataPatternsAndTypes($misuse, $cloned_metadata);
-                    $cloned_metadata->violation_types()->sync($violationTypes);
-                }
-
-                $tag_ids = $this->importTags($misuse);
-                $cloned_misuse->misuse_tags()->sync($tag_ids);
-
-                foreach ($misuse->reviews as $review) {
-                    $this->importReviews($review, $cloned_misuse);
-                }
-            }
-        }
-    }
-
-    private function cloneAndResetConnectionModel(Model $model){
-        $clone = $model->replicate();
-        $clone->setConnection('default');
-        return $clone;
-    }
-
-    private function importReviews($review, $cloned_misuse)
-    {
-        $reviewer = Reviewer::firstOrCreate(['name' => $review->reviewer->name]);
-        $cloned_review = $this->cloneAndResetConnectionModel($review);
-        $cloned_review->misuse_id = $cloned_misuse->id;
-        $cloned_review->reviewer_id = $reviewer->id;
-        $cloned_review->save();
-        foreach ($review->finding_reviews as $finding_review) {
-            $cloned_finding_review = $this->cloneAndResetConnectionModel($finding_review);
-            $cloned_finding_review->review_id = $cloned_review->id;
-            $cloned_finding_review->save();
-            $types = [];
-            foreach ($finding_review->violation_types as $type) {
-                $type = Type::firstOrCreate(['name' => $type->name]);
-                $types[] = $type->id;
-            }
-            $cloned_finding_review->violation_types()->sync($types);
-        }
-    }
-
-    private function importTags($misuse): array
-    {
-        $tag_ids = [];
-        foreach ($misuse->misuse_tags as $tag) {
-            $cloned_tag = $this->cloneAndResetConnectionModel($tag);
-            $cloned_tag->save();
-            $tag_ids[] = $cloned_tag->id;
-        }
-        return $tag_ids;
-    }
-
-    private function importMetadataPatternsAndTypes($misuse, $cloned_metadata): array
-    {
-        foreach ($misuse->metadata->patterns as $pattern) {
-            $cloned_pattern = $this->cloneAndResetConnectionModel($pattern);
-            $cloned_pattern->metadata_id = $cloned_metadata->id;
-            $cloned_pattern->save();
-        }
-        $violationTypes = [];
-        foreach ($misuse->metadata->violation_types as $type) {
-            $cloned_type = $this->cloneAndResetConnectionModel($type);
-            $cloned_type->save();
-            $violationTypes[] = $cloned_type->id;
-        }
-        return $violationTypes;
-    }
-
-    private function importMisuseSnippets($connection, $misuse)
-    {
-        $snippet = new Snippet;
-        $snippet->setConnection($connection->getName());
-        $snippets = $snippet->of($misuse->getProject(), $misuse->getVersion(), $misuse->misuse_muid, $misuse->getFile())->get();
-        foreach ($snippets as $snippet) {
-            $cloned_snippet = $this->cloneAndResetConnectionModel($snippet);
-            $cloned_snippet->save();
-        }
-    }
-
-    private function importMisuseFindings($findings, $detector, $misuse)
-    {
-        $this->createOrUpdateFindingsTable($detector, $findings->toArray());
-        foreach ($findings as $finding) {
-            $cloned_finding = $this->cloneAndResetConnectionModel($finding);
-            $cloned_finding->setDetector($detector);
-            $cloned_finding->misuse_id = $misuse->id;
-            $cloned_finding->save();
-        }
-    }
-
-    private function importMisuse($misuse, $run, $detector): array
-    {
-        $cloned_misuse = $this->cloneAndResetConnectionModel($misuse);
-        $cloned_misuse->run_id = $run->id;
-        if ($misuse->metadata) {
-            $cloned_metadata = $this->cloneAndResetConnectionModel($misuse->metadata);
-            $cloned_metadata->save();
-            $cloned_misuse->metadata_id = $cloned_metadata->id;
-        }
-        $cloned_misuse->detector_id = $detector->id;
-        $cloned_misuse->save();
-        return array($cloned_misuse, $cloned_metadata);
-    }
-
-    private function importRun($detector, $run)
-    {
-        $this->createOrUpdateRunsTable($detector, $run->getAttributes());
-        $cloned_run = $this->cloneAndResetConnectionModel($run);
-        $cloned_run->setDetector($detector);
-        $cloned_run->save();
-        return $cloned_run;
-    }
-
-    private function getLocalAndExternDetector($detector_muid, $connection): array
-    {
-        $local_detector = $this->getOrCreateDetector($detector_muid);
-        $detector = new Detector;
-        $detector->setConnection($connection->getName());
-        $detector = $detector->find($detector_muid);
-        return array($local_detector, $detector);
-    }
 }
