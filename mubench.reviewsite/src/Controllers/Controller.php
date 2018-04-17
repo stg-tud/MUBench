@@ -22,12 +22,4 @@ class Controller
         return null;
     }
 
-    function getDetector($detector_id){
-        $detector = Detector::find($detector_id);
-        if(!$detector){
-            return Detector::where('id', $detector_id)->first();
-        }
-        return $detector;
-    }
-
 }

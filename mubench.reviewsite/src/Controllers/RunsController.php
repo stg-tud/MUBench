@@ -28,7 +28,7 @@ class RunsController extends Controller
         $detector_muid = $args['detector_muid'];
 
         $experiment = Experiment::find($experiment_id);
-        $detector = $this->getDetector($detector_muid);
+        $detector = Detector::findByIdOrName($detector_muid);
 
         $ex2_review_size = $request->getQueryParam("ex2_review_size", $this->settings['default_ex2_review_size']);
 
@@ -46,7 +46,7 @@ class RunsController extends Controller
         $experiment_id = $args['experiment_id'];
         $detector_muid = $args['detector_muid'];
 
-        $detector = $this->getDetector($detector_muid);
+        $detector = Detector::findByIdOrName($detector_muid);
         $experiment = Experiment::find($experiment_id);
         $ex2_review_size = $request->getQueryParam("ex2_review_size", $this->settings['default_ex2_review_size']);
 
@@ -101,7 +101,7 @@ class RunsController extends Controller
         $files = $request->getUploadedFiles();
         $this->logger->info("received " . count($files) . " files");
         if ($files) {
-            $detector = $this->getDetector($detector_muid);
+            $detector = Detector::findByIdOrName($detector_muid);
             foreach ($files as $img) {
                 $this->handleImage($experimentId, $detector->id, $project_muid, $version_muid, $img);
             }
@@ -135,7 +135,7 @@ class RunsController extends Controller
         $project_muid = $args['project_muid'];
         $version_muid = $args['version_muid'];
 
-        $detector = $this->getDetector($detector_muid);
+        $detector = Detector::findByIdOrName($detector_muid);
 
         $run = Run::of($detector)->in(Experiment::find($experimentId))->get()->where('project_muid', $project_muid)->where('version_muid', $version_muid)->first();
         if($run){
