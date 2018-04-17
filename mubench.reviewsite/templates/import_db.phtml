@@ -101,9 +101,7 @@ use MuBench\ReviewSite\Models\ReviewState;
 
 <script>
     var url = "<?= $site_base_url ?>";
-    console.log("Loading");
     function import_db(){
-        console.log("Hello");
         var import_form = document.getElementById('import_form');
         var new_url = url;
         new_url += "private/experiments/";
@@ -112,7 +110,6 @@ use MuBench\ReviewSite\Models\ReviewState;
         new_url += document.getElementsByName('detector')[0].value;
         new_url += "/import";
         import_form.action = new_url;
-        console.log(import_form);
         var request = new XMLHttpRequest();
         var formData = new FormData(import_form);
         request.open('POST', new_url, true);
