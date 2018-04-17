@@ -1,5 +1,6 @@
 <?php
 
+use MuBench\ReviewSite\ViewExtensions\AnonymousViewExtension;
 use MuBench\ReviewSite\Models\Reviewer;
 use Slim\Views\PhpRenderer;
 
@@ -29,35 +30,7 @@ $container['renderer'] = function ($container) {
         return $container->router->pathFor($routeName, $args);
     };
 
-    $blind_mode = $container->settings['blind_mode']['enabled'];
-
-    $detectorName = function($detector_name) use ($container, $blind_mode) {
-        if($blind_mode && array_key_exists($detector_name, $container->settings['blind_mode']['detector_blind_names'])){
-            return $container->settings['blind_mode']['detector_blind_names'][$detector_name];
-        }
-        return $detector_name;
-    };
-
-    $reviewerName = function($reviewer)  use ($blind_mode) {
-        if($blind_mode){
-            return "reviewer-" . $reviewer->id;
-        }
-        return $reviewer->name;
-    };
-
-    $detectorPathId = function($detector) use ($blind_mode) {
-        if($blind_mode){
-            return $detector->id;
-        }
-        return $detector->muid;
-    };
-
-    $reviewerPathId = function($reviewer) use ($blind_mode) {
-        if($blind_mode){
-            return $reviewer->id;
-        }
-        return $reviewer->name;
-    };
+    $anonymousViewExtension = new AnonymousViewExtension($container);
 
     $markdown_parser = new Parsedown();
     $markdown_parser->setBreaksEnabled(True);
@@ -96,10 +69,10 @@ $container['renderer'] = function ($container) {
         'ex2_review_size' => $request->getQueryParam("ex2_review_size", $container->settings["default_ex2_review_size"]),
 
         'markdown_parser' => $markdown_parser,
-        'detectorName' => $detectorName,
-        'reviewerName' => $reviewerName,
-        'detectorPathId' => $detectorPathId,
-        'reviewerPathId' => $reviewerPathId
+        'detectorName' => array($anonymousViewExtension, "getDetectorName"),
+        'reviewerName' => array($anonymousViewExtension, "getReviewerName"),
+        'detectorPathId' => array($anonymousViewExtension,"getDetectorPathId"),
+        'reviewerPathId' => array($anonymousViewExtension, "getReviewerPathId")
     ];
 
     return new PhpRenderer(__DIR__ . '/../templates/', $defaultTemplateVariables);
