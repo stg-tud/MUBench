@@ -264,12 +264,12 @@ def __add_run_cross_project_prepare(subparsers) -> None:
                                    help="TODO",
                                    description="TODO")
 
-    parser.add_argument("-bu", "--boa-username", metavar="BOAUSER", dest="boa_user",
-                        default=__get_default('boa-username', None),
-                        help="TODO")
-    parser.add_argument("-bp", "--boa-password", metavar="BOAPASS", dest="boa_password",
-                        default=__get_default('boa-password', None),
-                        help="TODO")
+    boa_user = __get_default('boa-user', None)
+    boa_password = __get_default('boa-password', None)
+    parser.add_argument("-bu", "--boa-user", metavar="BOAUSER", required=not boa_user,
+                        default=boa_user, help="Your boa username.")
+    parser.add_argument("-bp", "--boa-password", metavar="BOAPASSWORD", required=not boa_password,
+                        default=boa_password, help="Your boa password.")
 
 
 def __add_run_cross_project_create_project_list(subparsers) -> None:
