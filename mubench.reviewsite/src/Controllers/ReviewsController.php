@@ -28,15 +28,12 @@ class ReviewsController extends Controller
         $misuse_muid = $args['misuse_muid'];
 
         $experiment = Experiment::find($experiment_id);
-        $detector = $this->getDetector($detector_muid);
+        $detector = Detector::findByIdOrName($detector_muid);
         $ex2_review_size = $request->getQueryParam("ex2_review_size", $this->settings['default_ex2_review_size']);
 
         $reviewer = $this->user;
         if(array_key_exists('reviewer_name', $args)){
-            $reviewer = Reviewer::where(['id' => $args['reviewer_name']])->first();
-            if(!$reviewer){
-                $reviewer = Review::find($args['reviewer_name']);
-            }
+            $reviewer = Reviewer::findByIdOrName($args['reviewer_name']);
         }
 
         $resolution_reviewer = Reviewer::where(['name' => 'resolution'])->first();
@@ -64,7 +61,7 @@ class ReviewsController extends Controller
         $reviewer_name = $args['reviewer_name'];
 
         $experiment = Experiment::find($experiment_id);
-        $reviewer = Reviewer::where(['name' => $reviewer_name])->first();
+        $reviewer = Reviewer::findByIdOrName($reviewer_name);
 
         $detectors = Detector::withFindings($experiment);
 
@@ -90,7 +87,7 @@ class ReviewsController extends Controller
         $reviewer_name = $args['reviewer_name'];
 
         $experiment = Experiment::find($experiment_id);
-        $reviewer = Reviewer::where(['name' => $reviewer_name])->first();
+        $reviewer = Reviewer::findByIdOrName($reviewer_name);
 
         $detectors = Detector::withFindings($experiment);
 
@@ -124,7 +121,7 @@ class ReviewsController extends Controller
         $hits = $review['review_hit'];
 
         $reviewer_name = $args['reviewer_name'];
-        $reviewer = Reviewer::where(['name' => $reviewer_name])->first();
+        $reviewer = Reviewer::findByIdOrName($reviewer_name);
         $this->updateOrCreateReview($misuse_id, $reviewer->id, $comment, $hits);
 
         if ($review["origin"] != "") {

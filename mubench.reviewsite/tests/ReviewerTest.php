@@ -27,4 +27,22 @@ class ReviewerTest extends SlimTestCase
 
         self::assertFalse($reviewer->isResolutionReviewer());
     }
+
+    function test_find_reviewer_by_id()
+    {
+        $expectedReviewer = Reviewer::create(['name' => '-reviewer-']);
+        $reviewer = Reviewer::findByIdOrName($expectedReviewer->id);
+
+        self::assertEquals($expectedReviewer->id, $reviewer->id);
+        self::assertEquals($expectedReviewer->name, $reviewer->name);
+    }
+
+    function test_find_reviewer_by_name()
+    {
+        $expectedReviewer = Reviewer::create(['name' => '-reviewer-']);
+        $reviewer = Reviewer::findByIdOrName('-reviewer-');
+
+        self::assertEquals($expectedReviewer->id, $reviewer->id);
+        self::assertEquals($expectedReviewer->name, $reviewer->name);
+    }
 }

@@ -26,4 +26,13 @@ class Reviewer extends Model
     {
         return Reviewer::firstOrCreate(['name' => self::RESOLUTION_REVIEWER_NAME]);
     }
+
+    public static function findByIdOrName($reviewer_id)
+    {
+        $reviewer = Reviewer::find($reviewer_id);
+        if(!$reviewer){
+            return Reviewer::where('name', $reviewer_id)->first();
+        }
+        return $reviewer;
+    }
 }
