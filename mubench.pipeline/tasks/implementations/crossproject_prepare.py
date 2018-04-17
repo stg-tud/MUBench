@@ -91,7 +91,7 @@ class CrossProjectPrepareTask:
         write_yamls(data, metadata_path)
 
     def _get_subtypes(self, target_type):
-        if not self._subtypes:
+        if not self._subtypes and exists(self.subtypes_path):
             with open(self.subtypes_path) as subtypes_file:
                 for subtypes_row in csv.reader(subtypes_file, delimiter="\t"):
                     self._subtypes[subtypes_row[0]] = subtypes_row[1:]
