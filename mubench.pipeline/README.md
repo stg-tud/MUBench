@@ -94,3 +94,17 @@ Values for all command-line arguments that begin with `--` may be specified in t
 To set command-line flags by default, use `True` as their value.
 For an example configuration, see [the default.example.config](../default.example.config).
 Argument values specified on the command line always take precedence over respective default values.
+
+
+## Experiment Data
+
+When running experiments, MUBench persists experiment data on the host machine.
+This data is stored in [Docker Volumes](https://docs.docker.com/storage/volumes/), which are mounted into the container running an experiment.
+Currently, MUBench uses the following volumes:
+
+* `mubench-checkouts` stores the project checkouts and compiled classes (mount point: `/mubench/checkouts`)
+* `mubench-findings` stores the detector-run information and detector findings (mount point: `/mubench/findings`)
+
+To manually view the data on the volumes, you can open a Linux shell to a container mounting them with
+
+    $> ./mubench browse
