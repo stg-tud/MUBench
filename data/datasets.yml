@@ -244,31 +244,54 @@ Legunsen-ASE16: # All misuses imported from Lagunsen et al.'s ASE'16 study.
 
 DMMC: # Misuses identified by the DMMC detector
   # Misuses identified in the FSE18 experiments
+  - argouml.026.tikanga11-1
+  - argouml.026.tikanga11-3
+  - argouml.026.tikanga11-4
+  - asterisk-java.304421c.dmmc-8
+  - asterisk-java.304421c.dmmc-9
+  - bcel.24014e5.101
   - lucene.1918.mudetect-5
   - lucene.1918.mudetect-9
+  - testng.677302c.dmmc-0
+  - testng.677302c.dmmc-4
   # Misuses identified in the TSE17 experiments
   - closure.319.dmmc-1023
   - closure.319.dmmc-13
   - itext.5091.dmmc-15
   - itext.5091.dmmc-16
+  - itext.5091.dmmc-16a
   - itext.5091.dmmc-18
   - itext.5091.dmmc-61
   - itext.5091.dmmc-357
   - itext.5091.dmmc-937
   - jackrabbit.1750.5
   - jfreechart.1025.1
-  - lucene.1918.tikanga-1
+  - lucene.1918.tikanga-1a
 
 Jadet: # Misuses identified by the Jadet detector
+  # Misuses identified in the FSE18 experiments
+  - chensun.cf23b99.grouminer-3
+  - chensun.cf23b99.grouminer-3a
+  - chensun.cf23b99.jadet-1
+  - chensun.cf23b99.jadet-1a
+  - chensun.cf23b99.jadet-2
+  - chensun.cf23b99.jadet-2a
+  - chensun.cf23b99.jadet-5
+  - chensun.cf23b99.jadet-5a
   # Misuses identified in the TSE17 experiments
   - itext.5091.jadet-5
   - itext.5091.jadet-9
   - lucene.1918.tikanga-1
+  - lucene.1918.tikanga-1a
+  - lucene.1918.tikanga-1b
+  - lucene.1918.tikanga-1c
+  - lucene.1918.tikanga-1d
 
 Tikanga: # Misuses identified by the Tikanga detector
   # Misuses identified in the FSE18 experiments
-  - closure.319.mudetect-12
+  - closure.319.mudetect-13
   - closure.319.mudetect-17
+  - jigsaw.205.tikanga-0
   - lucene.1918.mudetect-5
   # Misuses identified in the TSE17 experiments
   - closure.319.tikanga-2
@@ -279,6 +302,10 @@ Tikanga: # Misuses identified by the Tikanga detector
   - itext.5091.jadet-9
   - lucene.1918.tikanga-0
   - lucene.1918.tikanga-1
+  - lucene.1918.tikanga-1a
+  - lucene.1918.tikanga-1b
+  - lucene.1918.tikanga-1c
+  - lucene.1918.tikanga-1d
   # Misuses identified in the experiments from the original publication
   - argouml.026.tikanga11-1
   - argouml.026.tikanga11-2
@@ -286,32 +313,162 @@ Tikanga: # Misuses identified by the Tikanga detector
   - argouml.026.tikanga11-4
 
 GrouMiner: # Misuses identified by the GrouMiner detector
-  # Misuses identified in the experiments from the original publication
-  - jigsaw.205.1
+  # Misuses identified in the FSE18 experiments
+  - chensun.cf23b99.grouminer-3
+  - chensun.cf23b99.grouminer-3a
+  - chensun.cf23b99.grouminer-9
+  - chensun.cf23b99.jadet-2
+  - chensun.cf23b99.jadet-2a
+  - testng.677302c.grouminer-4
+  - testng.677302c.grouminer-17
 
 MUDetect: # Misuses identified by the MUDetect detector
   # Misuses identified in the FSE18 experiments
-  - aclang.587.1
-  - aclang.587.2
-  - closure.319.dmmc-1023
+  - argouml.026.tikanga11-1
+  - argouml.026.tikanga11-2
+  - argouml.026.tikanga11-3
+  - argouml.026.tikanga11-4
+  - chensun.cf23b99.grouminer-3
+  - chensun.cf23b99.grouminer-9
+  - chensun.cf23b99.jadet-1
+  - chensun.cf23b99.jadet-1a
+  - chensun.cf23b99.jadet-2a
+  - chensun.cf23b99.mudetect-1
+  - chensun.cf23b99.mudetect-4
+  - chensun.cf23b99.mudetect-12
+  - chensun.cf23b99.mudetect-13
   - closure.319.dmmc-13
+  - closure.319.dmmc-1023
   - closure.319.mudetect-12
   - closure.319.mudetect-13
   - closure.319.mudetect-17
   - closure.319.mudetect-18
   - closure.319.tikanga-2
   - closure.319.tikanga-6
+  - httpclient.302.mudetect-14
   - itext.5091.dmmc-15
   - itext.5091.dmmc-16
+  - itext.5091.dmmc-16a
   - itext.5091.dmmc-18
   - itext.5091.dmmc-61
   - itext.5091.dmmc-357
   - itext.5091.dmmc-937
-  - itext.5091.mudetect-15
+  - itext.5091.mudetect-10
+  - itext.5091.mudetect-38
+  - jigsaw.205.mudetect-10
+  - jigsaw.205.mudetect-12
+  - jigsaw.205.tikanga-0
+  - lucene.1918.mudetect-5
+  - lucene.1918.mudetect-9
+  - lucene.1918.mudetect-10
+  - lucene.1918.tikanga-0
+  - lucene.1918.tikanga-1
+  - lucene.1918.tikanga-1a
+  - lucene.1918.tikanga-1b
+  - lucene.1918.tikanga-1d
+  - testng.677302c.dmmc-4
+  - testng.677302c.grouminer-4
+  - testng.677302c.grouminer-17
+  - thomas-s-b-visualee.410a80f.30
+  - thomas-s-b-visualee.410a80f.32
+
+MUDetectXP: # Misuses identified by the MUDetectXP detector
+  # Misuses identified in the FSE18 experiments
+  - argouml.026.tikanga11-1
+  - argouml.026.tikanga11-2
+  - argouml.026.tikanga11-3
+  - argouml.026.tikanga11-4
+  - asterisk-java.41461b4.194
+  - chensun.cf23b99.grouminer-3
+  - chensun.cf23b99.grouminer-3a
+  - chensun.cf23b99.jadet-1
+  - chensun.cf23b99.jadet-1a
+  - chensun.cf23b99.jadet-2a
+  - chensun.cf23b99.jadet-5
+  - chensun.cf23b99.jadet-5a
+  - chensun.cf23b99.mudetect-4
+  - closure.319.dmmc-13
+  - closure.319.dmmc-1023
+  - closure.319.mudetect-12
+  - closure.319.mudetect-13
+  - closure.319.mudetect-17
+  - closure.319.mudetect-18
+  - closure.319.mudetectxp-13
+  - closure.319.mudetectxp-16
+  - closure.319.mudetectxp-17
+  - closure.319.tikanga-2
+  - closure.319.tikanga-6
+  - hoverruan-weiboclient4j.6ca0c73.128
+  - hoverruan-weiboclient4j.6ca0c73.129
+  - hoverruan-weiboclient4j.6ca0c73.130
+  - hoverruan-weiboclient4j.6ca0c73.131
+  - hoverruan-weiboclient4j.6ca0c73.132
+  - hoverruan-weiboclient4j.6ca0c73.133
+  - hoverruan-weiboclient4j.6ca0c73.134
+  - itext.5091.dmmc-15
+  - itext.5091.dmmc-16a
+  - itext.5091.dmmc-18
+  - itext.5091.dmmc-61
+  - itext.5091.dmmc-357
+  - itext.5091.dmmc-937
+  - ivantrendafilov-confucius.2c30287.96
+  - ivantrendafilov-confucius.2c30287.97
+  - ivantrendafilov-confucius.2c30287.98
+  - jmrtd.51.1
+  - jodatime.cc35fb2.269
+  - jodatime.cc35fb2.270
+  - jodatime.cc35fb2.271
+  - jodatime.cc35fb2.272
+  - jodatime.cc35fb2.273
+  - jodatime.cc35fb2.274
+  - jodatime.cc35fb2.275
+  - jodatime.cc35fb2.276
+  - jodatime.cc35fb2.277
+  - jodatime.cc35fb2.278
+  - jodatime.cc35fb2.279
+  - jodatime.cc35fb2.280
+  - jodatime.cc35fb2.281
+  - jodatime.cc35fb2.282
+  - jodatime.cc35fb2.283
+  - jodatime.cc35fb2.284
+  - jodatime.cc35fb2.285
+  - jodatime.cc35fb2.286
+  - jodatime.cc35fb2.287
+  - jodatime.cc35fb2.288
+  - jodatime.cc35fb2.289
+  - jodatime.cc35fb2.290
+  - jodatime.cc35fb2.291
+  - jodatime.cc35fb2.292
+  - jodatime.cc35fb2.293
+  - jodatime.cc35fb2.294
+  - jodatime.cc35fb2.295
+  - jodatime.cc35fb2.296
+  - jodatime.cc35fb2.297
+  - jodatime.cc35fb2.298
+  - jodatime.cc35fb2.299
+  - jodatime.cc35fb2.300
+  - jodatime.cc35fb2.301
+  - jodatime.cc35fb2.302
+  - jodatime.cc35fb2.303
+  - jodatime.cc35fb2.304
+  - jodatime.cc35fb2.363
+  - jriecken-gae-java-mini-profiler.80f3a59.39
   - lucene.1918.mudetect-5
   - lucene.1918.mudetect-9
   - lucene.1918.tikanga-0
-  - lucene.1918.tikanga-1
+  - lucene.1918.tikanga-1d
+  - synthetic_directives.jsl.repetitive
+  - synthetic_survey.jsl.cme
+  - synthetic_survey.jsl.flip-2
+  - synthetic_survey.jsl.hasnext
+  - synthetic_survey.jsl.pack-1
+  - synthetic_survey.jsl.pack-2
+  - synthetic_survey.jsl.setfirst
+  - tbuktu-ntru.8126929.473
+  - tbuktu-ntru.8126929.474
+  - testng.677302c.dmmc-4
+  - thomas-s-b-visualee.410a80f.30
+  - thomas-s-b-visualee.410a80f.32
 
 ###
 ### The datasets used for the experiments in the TSE'17 paper.
