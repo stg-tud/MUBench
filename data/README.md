@@ -7,6 +7,15 @@ Each subfolder of this directory identifies one project.
 For each project, the dataset references one or more project versions that contain the known misuses (usually the version immediately before a particular misuse was fixed).
 The dataset also specifies the misuses themselves and links misuses and project versions.
 
+Building up the MUBench dataset required imense manual effort.
+Any [contribution](#contribute) is welcome.
+At this point, we want to thank several people for their support:
+
+* Mattis Kämmerer and Jonas Schlitzer for their hard work to try compile tons of arbitrary project checkouts.
+* Michael Pradel for providing list of findings from his previous studies.
+* Owolabi Legunsen for providing the dataset from ["How Good are the Specs? A Study of the Bug-Finding Effectiveness of Existing Java API Specifications" (ASE'16)](http://fsl.cs.illinois.edu/spec-eval/)
+
+
 ## Filtering
 
 When [running experiments](../mubench.pipeline/#run-experiments), we recommend to specify a subset of the entire MUBench dataset to run detectors on.
@@ -36,54 +45,44 @@ Example: `$> ./mubench run ex1 DemoDetector --only aclang.587`
 
 ## Statistics
 
-The current dataset contains 209 misuses from 108 project versions of 50 projects.
-It contains 162 misuses in 47 compilable project versions of 25 projects.
-It contains 64 misuses with corresponding crafted examples of correct usage, 39 from 29 compilable versions of 13 projects and 25 hand-crafted examples.
+The MUBench dataset is continuously growing.
+To get up-to-date statistics on the dataset, please [install the MUBench Pipeline](../mubench.pipeline/#setup) and run
 
-**Manually Collected:**
+    $> ./mubench stats general
 
-* 25 misuses from a developer survey
-* 24 misuses from manual review of [the BugClassify dataset](https://www.st.cs.uni-saarland.de/softevo/bugclassify/)
-* 17 misuses from manual review of [the Defects4J dataset](https://github.com/rjust/defects4j)
-* 16 misuses from manual review of the QACrashFix dataset (became unavailable)
-* 11 misuses from manual review of commits changing `javax.crypto.Cipher` usages on Sourceforge
-* 3 misuses from manual review of commits changing `javax.crypto.Cipher` usages on GitHub
-* 3 misuses from "Analyse der Verwendung von Kryptographie-APIs in Java-basierten Anwendungen", Ziegler, Master's Thesis, Uni Bremen, Germany
-* 2 misuses from API-usage constraints reported in ["What should developers be aware of?", Monperrus et al., Empirical Software Engineering '12](https://arxiv.org/abs/1205.6363)
-* 1 misuses from manual review of [the iBugs dataset](https://www.st.cs.uni-saarland.de/ibugs/)
+Check `./mubench stats -h` for further details on other available dataset statistics and [filter options](#filtering).
 
-**Identified by API-Misuse Detectors:**
+We subsequently report statistics on the subsets of the MUBench Dataset that were used in previous publications.
 
-* 77 misuses from 18 versions of 12 projects; source: ["How Good are the Specs? A Study of the Bug-Finding Effectiveness of Existing Java API Specifications", Owolabi et al., ASE'16](http://fsl.cs.illinois.edu/spec-eval/)
-* 9 Pradel
-* 8 DMMC
-* 7 MUDetect
-* 4 Tikanga
-* 2 Jadet
+### MUBench: A Benchmark for API-Misuse Detectors
 
-### ICSE 18
+Details: ['*MUBench: A Benchmark for API-Misuse Detectors*'](http://sven-amann.de/publications/2016-05-MSR-MUBench-dataset.html) ([MSR '16 Data Showcase](http://2016.msrconf.org/#/data))
 
-*Total*: 132 misuses total, 85 misuses in compilable project versions
+* *Initial dataset*: 90 misuses (73 from 55 versions of 21 projects, 17 hand-crafted examples)
 
-*Experiment 1*: 64 misuses, 39 from 29 versions of 13 projects and 25 hand-crafted examples
+### A Systematic Evaluation of Static API-Misuse Detectors
 
-*Experiment 2*: 5 projects, 7 previously-unknown misuses identified in the MUDetect's top-20 findings
+Details: ["A Systematic Evaluation of Static API-Misuse Detectors"](http://sven-amann.de/publications/2018-03-A-Systematic-Evalution-of-Static-API-Misuse-Detectors/), TSE, 2018
 
-*Experiment 3*: 85 misuses, 60 from 29 versions of 13 projects and 25 hand-crafted examples
+Dataset considered in the creation of the API Misuse Classification (MUC):
 
-### TSE 17
+* *Extended dataset*: 100 misuses (73 from 55 versions of 21 projects, 27 hand-crafted examples)
 
-*Total*: 125 misuses total, 78 misuses in compilable project versions
+Datasets used to benchmark the detectors DMMC, GrouMiner, Jadet, and Tikanga (includes only compilable project versions):
 
-*Experiment 1*: 64 misuses, 39 from 29 versions of 13 projects and 25 hand-crafted examples
+* *Experiment P (precision)*
+  * Dataset `TSE17-ExPrecision`, contains 5 projects
+  * Dataset `TSE17-ExPrecision-TruePositives` contains 14 previously-unknown misuses identified in the detectors' top-20 findings on the above 5 projects
+* *Experiment RUB (recall upper bound)*
+  * Dataset `TSE17-ExRecallUpperBound` contains 64 misuses (39 from 29 versions of 13 projects, 25 hand-crafted examples)
+* *Experiment R (recall)*
+  * Dataset `TSE17-ExRecall` contains 53 misuses (all from 29 versions of 13 projects, no hand-crafted examples)'
 
-*Experiment 2*: 5 projects, 14 previously-unknown misuses identified in the detectors' top-20 findings
-
-*Experiment 3*: 53 misuses from 29 versions of 13 projects (no hand-crafted examples)
 
 ## Contribute
 
-To contribute to the MUBench Dataset, please [contact Sven Amann](http://www.stg.tu-darmstadt.de/staff/sven_amann) with details about the misuses. For each misuse, please try to provide
+To contribute to the MUBench Dataset, please [contact Sven Amann](http://www.stg.tu-darmstadt.de/staff/sven_amann) with details about the misuses.
+For each misuse, please try to provide
 
 * A description of the misuse (and its fix).
 * A link to the website of the project you found the misuse in.
