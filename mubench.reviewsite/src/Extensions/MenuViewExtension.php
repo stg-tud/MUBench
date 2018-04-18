@@ -1,17 +1,13 @@
 <?php
-namespace MuBench\ReviewSite\Controllers;
+namespace MuBench\ReviewSite\Extensions;
 
 
+use MuBench\ReviewSite\Controllers\RunsController;
 use MuBench\ReviewSite\Models\Misuse;
 use MuBench\ReviewSite\Models\ReviewState;
 
-class TemplateController extends Controller
+class MenuViewExtension
 {
-
-    public function __construct($container)
-    {
-        parent::__construct($container);
-    }
 
     public function getReviewStates($experiment, $detector, $ex2_review_size)
     {

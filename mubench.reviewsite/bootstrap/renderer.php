@@ -2,7 +2,7 @@
 
 use MuBench\ReviewSite\ViewExtensions\AnonymousViewExtension;
 use MuBench\ReviewSite\Controllers\RunsController;
-use MuBench\ReviewSite\Controllers\TemplateController;
+use MuBench\ReviewSite\Extensions\MenuViewExtension;
 use MuBench\ReviewSite\Models\Misuse;
 use MuBench\ReviewSite\Models\Reviewer;
 use MuBench\ReviewSite\Models\ReviewState;
@@ -73,7 +73,7 @@ $container['renderer'] = function ($container) {
         'ex2_review_size' => $request->getQueryParam("ex2_review_size", $container->settings["default_ex2_review_size"]),
 
         'markdown_parser' => $markdown_parser,
-        'templateController' => new TemplateController($container),
+        'menuViewExtension' => new MenuViewExtension($container),
         'detectorName' => array($anonymousViewExtension, "getDetectorName"),
         'reviewerName' => array($anonymousViewExtension, "getReviewerName"),
         'detectorPathId' => array($anonymousViewExtension,"getDetectorPathId"),

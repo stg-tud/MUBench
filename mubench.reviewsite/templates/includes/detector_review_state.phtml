@@ -1,6 +1,6 @@
 <?php
 /**
- * @var \MuBench\ReviewSite\Controllers\TemplateController $templateController
+ * @var \MuBench\ReviewSite\Extensions\MenuViewExtension $menuViewExtension
  * @var Experiment $experiment the selected experiment
  * @var Detector $detector the selected detector
  */
@@ -9,7 +9,7 @@ use MuBench\ReviewSite\Models\Detector;
 use MuBench\ReviewSite\Models\Experiment;
 use MuBench\ReviewSite\Models\ReviewState;
 
-$review_states = $templateController->getReviewStates($experiment, $detector, $ex2_review_size);
+$review_states = $menuViewExtension->getReviewStates($experiment, $detector, $ex2_review_size);
 ?>
 
 <?php if ($review_states[ReviewState::NEEDS_REVIEW]): ?>

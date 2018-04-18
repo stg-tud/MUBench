@@ -2,7 +2,7 @@
 
 use MuBench\ReviewSite\Controllers\ReviewsController;
 use MuBench\ReviewSite\Controllers\RunsController;
-use MuBench\ReviewSite\Controllers\TemplateController;
+use MuBench\ReviewSite\Extensions\MenuViewExtension;
 use MuBench\ReviewSite\Models\Detector;
 use MuBench\ReviewSite\Models\Experiment;
 use MuBench\ReviewSite\Models\Reviewer;
@@ -12,7 +12,7 @@ use MuBench\ReviewSite\Models\Run;
 require_once "SlimTestCase.php";
 
 
-class TemplateControllerTest extends SlimTestCase
+class MenuViewExtensionTest extends SlimTestCase
 {
     private $run_with_two_potential_hits_for_one_misuse;
 
@@ -61,24 +61,24 @@ class TemplateControllerTest extends SlimTestCase
 
     function testDetectorNeedsReview()
     {
-        $templateController = new TemplateController($this->container);
-        $review_states = $templateController->getReviewStates($this->experiment, $this->detector, 20);
+        $menuViewExntesion = new MenuViewExtension($this->container);
+        $review_states = $menuViewExntesion->getReviewStates($this->experiment, $this->detector, 20);
         self::assertEquals([ReviewState::NEEDS_REVIEW=>true, ReviewState::NEEDS_CLARIFICATION=>false, ReviewState::DISAGREEMENT=>false], $review_states);
     }
 
     function testDetectorNeedsClarification()
     {
         $this->reviewMisuse("?", "?");
-        $templateController = new TemplateController($this->container);
-        $review_states = $templateController->getReviewStates($this->experiment, $this->detector, 20);
+        $menuViewExntesion = new MenuViewExtension($this->container);
+        $review_states = $menuViewExntesion->getReviewStates($this->experiment, $this->detector, 20);
         self::assertEquals([ReviewState::NEEDS_REVIEW=>false, ReviewState::NEEDS_CLARIFICATION=>true, ReviewState::DISAGREEMENT=>false], $review_states);
     }
 
     function testDetectorDisagreement()
     {
         $this->reviewMisuse("No", "Yes");
-        $templateController = new TemplateController($this->container);
-        $review_states = $templateController->getReviewStates($this->experiment, $this->detector, 20);
+        $menuViewExntesion = new MenuViewExtension($this->container);
+        $review_states = $menuViewExntesion->getReviewStates($this->experiment, $this->detector, 20);
         self::assertEquals([ReviewState::NEEDS_REVIEW=>false, ReviewState::NEEDS_CLARIFICATION=>false, ReviewState::DISAGREEMENT=>true], $review_states);
     }
 
