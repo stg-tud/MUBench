@@ -36,9 +36,9 @@ To setup a MUBench review site on a webserver, proceed as follows:
 2. `$> ./mubench reviewsite init`
 3. Copy [`mubench.reviewsite/settings.default.php`](settings.default.php) to `mubench.reviewsite/settings.php`.
 4. Adjust `settings.php` to your environment:
-  - Enter your database-connection details below `db`.
-  - Enter your `site_base_url`.
-  - List your reviewer credentials below `users`.
+    * Enter your database-connection details below `db`.
+    * Enter your `site_base_url`.
+    * List your reviewer credentials below `users`.
 5. Upload the contents of `mubench.reviewsite/` to your webserver.
 6. Grant the server read/write permissions on the `upload` and `logs` directories.
 7. Go to `http://<your-site.url/`[`setup/setup.php`](https://github.com/stg-tud/MUBench/blob/master/mubench.reviewsite/setup/setup.php) to initialize your database. **This will override existing tables!**
