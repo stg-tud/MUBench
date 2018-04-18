@@ -59,7 +59,7 @@ class ImportRunsController extends RunsController
         return $this->capsule->getConnection('extern');
     }
 
-    private function importRunsFromConnection($experiment_id, $detector_muid, $project_muid, $version_muid, $connection): void
+    function importRunsFromConnection($experiment_id, $detector_muid, $project_muid, $version_muid, $connection): void
     {
         list($local_detector, $detector) = $this->getLocalAndExternalDetector($detector_muid, $connection);
 
@@ -203,6 +203,7 @@ class ImportRunsController extends RunsController
     {
         $imported_misuse = $this->importAndResetConnectionModel($misuse);
         $imported_misuse->run_id = $run->id;
+        $imported_metadata = null;
         if ($misuse->metadata) {
             $imported_metadata = $this->importAndResetConnectionModel($misuse->metadata);
             $imported_metadata->save();

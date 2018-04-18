@@ -377,7 +377,7 @@ class RunsController extends Controller
     /** @noinspection PhpUnusedPrivateMethodInspection used in createOrUpdateRunsTable */
     function createRunsTable($table_name)
     {
-        Schema::connection('default')->create($table_name, function (Blueprint $table) {
+        Schema::create($table_name, function (Blueprint $table) {
             $table->increments('id');
             $table->integer('experiment_id');
             $table->string('project_muid', 50);
@@ -435,9 +435,9 @@ class RunsController extends Controller
 
     function addColumnToTable($table_name, $column)
     {
-        Schema::connection('default')->table($table_name, function ($table) use ($column) {
-            $table->text($column)->nullable();
-        });
+            Schema::table($table_name, function ($table) use ($column) {
+                $table->text($column)->nullable();
+            });
     }
 
     private function storeFindings(Detector $detector, Experiment $experiment, $projectId, $versionId, Run $run, $findings)
