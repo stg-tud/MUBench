@@ -19,8 +19,8 @@ CI Status: [![CI Status](https://api.shippable.com/projects/570d22d52a8192902e1b
 
 ## Publications
 
-* ['*MUBench: A Benchmark of API-Misuse Detectors*'](http://sven-amann.de/publications/2016-05-MSR-MUBench-dataset.html) ([MSR '16 Data Showcase](http://2016.msrconf.org/#/data))
-* ['*A Systematic Evaluation of Static API-Misuse Detectors*'](https://arxiv.org/abs/1712.00242) (TSE '18)
+* ['*MUBench: A Benchmark for API-Misuse Detectors*'](http://sven-amann.de/publications/2016-05-MSR-MUBench-dataset.html) ([MSR '16 Data Showcase](http://2016.msrconf.org/#/data))
+* ['*A Systematic Evaluation of Static API-Misuse Detectors*'](http://sven-amann.de/publications/2018-03-A-Systematic-Evalution-of-Static-API-Misuse-Detectors/) (TSE '18)
 
 ## Getting Started
 
