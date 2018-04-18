@@ -59,27 +59,36 @@ class MenuViewExtensionTest extends SlimTestCase
         $this->reviewer2 = Reviewer::create(['name' => "r2"]);
     }
 
-    function testDetectorNeedsReview()
+    function testDetectorNeedsReviewGlobalAndPersonal()
     {
         $menuViewExntesion = new MenuViewExtension($this->container);
-        $review_states = $menuViewExntesion->getReviewStates($this->experiment, $this->detector, 20);
-        self::assertEquals([ReviewState::NEEDS_REVIEW=>true, ReviewState::NEEDS_CLARIFICATION=>false, ReviewState::DISAGREEMENT=>false], $review_states);
+        $review_states = $menuViewExntesion->getReviewStates($this->experiment, $this->detector, 20, $this->reviewer1);
+        self::assertEquals([ReviewState::NEEDS_REVIEW=>["global" => true, "personal" => true], ReviewState::NEEDS_CLARIFICATION=>false, ReviewState::DISAGREEMENT=>false], $review_states);
+    }
+
+    function testDetectorNeedsReviewGlobalNotPersonal()
+    {
+        $this->reviewController->updateOrCreateReview($this->run->misuses[0]->id, $this->reviewer1->id, '-comment-', [['hit' => "Yes", 'types' => []]]);
+
+        $menuViewExntesion = new MenuViewExtension($this->container);
+        $review_states = $menuViewExntesion->getReviewStates($this->experiment, $this->detector, 20, $this->reviewer1);
+        self::assertEquals([ReviewState::NEEDS_REVIEW=>["global" => true, "personal" => false], ReviewState::NEEDS_CLARIFICATION=>false, ReviewState::DISAGREEMENT=>false], $review_states);
     }
 
     function testDetectorNeedsClarification()
     {
         $this->reviewMisuse("?", "?");
         $menuViewExntesion = new MenuViewExtension($this->container);
-        $review_states = $menuViewExntesion->getReviewStates($this->experiment, $this->detector, 20);
-        self::assertEquals([ReviewState::NEEDS_REVIEW=>false, ReviewState::NEEDS_CLARIFICATION=>true, ReviewState::DISAGREEMENT=>false], $review_states);
+        $review_states = $menuViewExntesion->getReviewStates($this->experiment, $this->detector, 20, $this->reviewer1);
+        self::assertEquals([ReviewState::NEEDS_REVIEW=>["global" => false, "personal" => false], ReviewState::NEEDS_CLARIFICATION=>true, ReviewState::DISAGREEMENT=>false], $review_states);
     }
 
     function testDetectorDisagreement()
     {
         $this->reviewMisuse("No", "Yes");
         $menuViewExntesion = new MenuViewExtension($this->container);
-        $review_states = $menuViewExntesion->getReviewStates($this->experiment, $this->detector, 20);
-        self::assertEquals([ReviewState::NEEDS_REVIEW=>false, ReviewState::NEEDS_CLARIFICATION=>false, ReviewState::DISAGREEMENT=>true], $review_states);
+        $review_states = $menuViewExntesion->getReviewStates($this->experiment, $this->detector, 20, $this->reviewer1);
+        self::assertEquals([ReviewState::NEEDS_REVIEW=>["global" => false, "personal" => false], ReviewState::NEEDS_CLARIFICATION=>false, ReviewState::DISAGREEMENT=>true], $review_states);
     }
 
     private function reviewMisuse($reviewer1_decision, $reviewer2_decision)
