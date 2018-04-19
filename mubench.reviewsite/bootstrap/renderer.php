@@ -1,5 +1,6 @@
 <?php
 
+use MuBench\ReviewSite\ViewExtensions\AnonymousViewExtension;
 use MuBench\ReviewSite\Models\Reviewer;
 use Slim\Views\PhpRenderer;
 
@@ -28,6 +29,8 @@ $container['renderer'] = function ($container) {
         $routeName = $user || $private ? "private.$routeName" : $routeName;
         return $container->router->pathFor($routeName, $args);
     };
+
+    $anonymousViewExtension = new AnonymousViewExtension($container);
 
     $markdown_parser = new Parsedown();
     $markdown_parser->setBreaksEnabled(True);
@@ -65,7 +68,11 @@ $container['renderer'] = function ($container) {
 
         'ex2_review_size' => $request->getQueryParam("ex2_review_size", $container->settings["default_ex2_review_size"]),
 
-        'markdown_parser' => $markdown_parser
+        'markdown_parser' => $markdown_parser,
+        'detectorName' => array($anonymousViewExtension, "getDetectorName"),
+        'reviewerName' => array($anonymousViewExtension, "getReviewerName"),
+        'detectorPathId' => array($anonymousViewExtension,"getDetectorPathId"),
+        'reviewerPathId' => array($anonymousViewExtension, "getReviewerPathId")
     ];
 
     return new PhpRenderer(__DIR__ . '/../templates/', $defaultTemplateVariables);

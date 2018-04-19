@@ -28,10 +28,14 @@ class ReviewsController extends Controller
         $misuse_muid = $args['misuse_muid'];
 
         $experiment = Experiment::find($experiment_id);
-        $detector = Detector::find($detector_muid);
+        $detector = Detector::findByIdOrName($detector_muid);
         $ex2_review_size = $request->getQueryParam("ex2_review_size", $this->settings['default_ex2_review_size']);
 
-        $reviewer = array_key_exists('reviewer_name', $args) ? Reviewer::where(['name' => $args['reviewer_name']])->first() : $this->user;
+        $reviewer = $this->user;
+        if(array_key_exists('reviewer_name', $args)){
+            $reviewer = Reviewer::findByIdOrName($args['reviewer_name']);
+        }
+
         $resolution_reviewer = Reviewer::where(['name' => 'resolution'])->first();
         $is_reviewer = ($this->user && $reviewer && $this->user->id == $reviewer->id) || ($reviewer && $reviewer->id == $resolution_reviewer->id);
 
@@ -57,7 +61,7 @@ class ReviewsController extends Controller
         $reviewer_name = $args['reviewer_name'];
 
         $experiment = Experiment::find($experiment_id);
-        $reviewer = Reviewer::where(['name' => $reviewer_name])->first();
+        $reviewer = Reviewer::findByIdOrName($reviewer_name);
 
         $detectors = Detector::withFindings($experiment);
 
@@ -83,7 +87,7 @@ class ReviewsController extends Controller
         $reviewer_name = $args['reviewer_name'];
 
         $experiment = Experiment::find($experiment_id);
-        $reviewer = Reviewer::where(['name' => $reviewer_name])->first();
+        $reviewer = Reviewer::findByIdOrName($reviewer_name);
 
         $detectors = Detector::withFindings($experiment);
 
@@ -117,7 +121,7 @@ class ReviewsController extends Controller
         $hits = $review['review_hit'];
 
         $reviewer_name = $args['reviewer_name'];
-        $reviewer = Reviewer::where(['name' => $reviewer_name])->first();
+        $reviewer = Reviewer::findByIdOrName($reviewer_name);
         $this->updateOrCreateReview($misuse_id, $reviewer->id, $comment, $hits);
 
         if ($review["origin"] != "") {

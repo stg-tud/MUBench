@@ -6,6 +6,8 @@
  * @var array $run all run information
  * @var array $additional_stats all stat columns from the run information besides project, version, runtime, result and number_of_findings
  * @var Parsedown $markdown_parser markdown parser
+ * @var callable $detectorName function to resolve detector names if blinded
+ * @var callable $reviewerName function to return anonymous reviewer name if blinded else the reviewer name
  */
 
 use MuBench\ReviewSite\Models\Misuse;
@@ -17,7 +19,7 @@ use MuBench\ReviewSite\Models\Misuse;
                             <span class="close"
                                   id="<?= htmlspecialchars($project) ?>_<?= htmlspecialchars($version) ?>_<?= htmlspecialchars($misuse->id) ?>">&times;</span>
         <table class="invisible">
-            <tr><td><b>Detector:</b></td><td><?= htmlspecialchars($detector->muid); ?></td></tr>
+            <tr><td><b>Detector:</b></td><td><?= htmlspecialchars($detectorName($detector->muid)); ?></td></tr>
             <tr><td><b>Target:</b></td><td>project '<?= $markdown_parser->text($misuse->getProject()); ?>' version <?= $markdown_parser->text($misuse->getVersion()); ?></td></tr>
             <tr><td><b>Misuse:</b></td><td>misuse '<?= $markdown_parser->text($misuse->misuse_muid); ?>'</td></tr>
             <tr><td><b>Tags:</b></td>
@@ -36,7 +38,7 @@ use MuBench\ReviewSite\Models\Misuse;
                 <table class="invisible">
                     <tr>
                         <td><b>Reviewer:</b></td>
-                            <td><a href="<?= $pathFor('review', array('experiment_id' => $experiment->id, 'detector_muid' => $detector->muid, 'project_muid' => $project, 'version_muid' => $version, 'misuse_muid' => $misuse->misuse_muid, 'reviewer_name' => $review->reviewer->name)) ?>"><?= htmlspecialchars($review->reviewer->name) ?></a></td>
+                        <td><a href="<?= $pathFor('review', array('experiment_id' => $experiment->id, 'detector_muid' => $detectorPathId($detector), 'project_muid' => $project, 'version_muid' => $version, 'misuse_muid' => $misuse->misuse_muid, 'reviewer_name' => $reviewerPathId($review->reviewer))) ?>"><?= htmlspecialchars($reviewerName($review->reviewer)) ?></a></td>
                     </tr>
                     <tr style="padding-top:0;margin-top:0;">
                         <td><b>Decision:</b></td>

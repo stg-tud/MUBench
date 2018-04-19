@@ -14,6 +14,11 @@
  * @var array $experiments all experiments (Experiment)
  * @var array $detectors detectors (Detector) with results per experiment
  * @var array $misuses the misuses reviewed by the current user, indexed by experiment id and detector name
+ *
+ * @var callable $detectorName function to resolve detector names if blinded
+ * @var callable $detectorPathId function to return detector id if blinded
+ * @var callable $reviewerName function to return anonymous reviewer name if blinded else the reviewer name
+ * @var callable $reviewerPathId function to return reviewer id if blinded else the reviewer name
  */
 
 use MuBench\ReviewSite\Models\Decision;
@@ -66,7 +71,7 @@ use MuBench\ReviewSite\Models\ReviewState;
                 <td class="<?= $style_classes ?>">
                     <?= htmlspecialchars($misuse->misuse_muid); ?></td>
                 <?php
-                $resolution_review = $pathFor('review', array('experiment_id' => $experiment->id, 'detector_muid' => $misuse->detector->muid, 'project_muid' => $misuse->getProject(), 'version_muid' => $misuse->getVersion(), 'misuse_muid' => $misuse->misuse_muid, 'reviewer_name' => $resolution_reviewer->name));
+                $resolution_review = $pathFor('review', array('experiment_id' => $experiment->id, 'detector_muid' => $detectorPathId($misuse->detector), 'project_muid' => $misuse->getProject(), 'version_muid' => $misuse->getVersion(), 'misuse_muid' => $misuse->misuse_muid, 'reviewer_name' => $reviewerPathId($resolution_reviewer)));
                 ?>
                 <td class="<?= $style_classes ?>">
                     <?php $review_state = $misuse->getReviewState() ?>
@@ -94,13 +99,13 @@ use MuBench\ReviewSite\Models\ReviewState;
                         <?php foreach($misuse->getReviews() as $review) : /** @var \MuBench\ReviewSite\Models\Review $review */ ?>
                             <?php $reviewer_name = htmlspecialchars($review->reviewer->name) ?>
                             <?php if($reviewer_name !== $user->name) : ?>
-                                <li style="display:inline"><a href="<?= $pathFor('review', array('experiment_id' => $experiment->id, 'detector_muid' => $misuse->detector->muid, 'project_muid' => $misuse->getProject(), 'version_muid' => $misuse->getVersion(), 'misuse_muid' => $misuse->misuse_muid, 'reviewer_name' => $review->reviewer->name)) ?>"><?= $reviewer_name ?></a></li>
+                                <li style="display:inline"><a href="<?= $pathFor('review', array('experiment_id' => $experiment->id, 'detector_muid' => $detectorPathId($misuse->detector), 'project_muid' => $misuse->getProject(), 'version_muid' => $misuse->getVersion(), 'misuse_muid' => $misuse->misuse_muid, 'reviewer_name' => $reviewerPathId($review->reviewer))) ?>"><?= $reviewerName($review->reviewer); ?></a></li>
                             <?php endif; ?>
                         <?php endforeach; ?>
                     </ul>
                 </td>
                 <td class="<?= $style_classes ?>">
-                    <a href="<?= $pathFor('review', array('experiment_id' => $experiment->id, 'detector_muid' => $misuse->detector->muid, 'project_muid' => $misuse->getProject(), 'version_muid' => $misuse->getVersion(), 'misuse_muid' => $misuse->misuse_muid, 'reviewer_name' => $user->name)) ?><?= $origin_param ?>" class="button">edit
+                    <a href="<?= $pathFor('review', array('experiment_id' => $experiment->id, 'detector_muid' => $detectorPathId($misuse->detector), 'project_muid' => $misuse->getProject(), 'version_muid' => $misuse->getVersion(), 'misuse_muid' => $misuse->misuse_muid, 'reviewer_name' => $reviewerPathId($user))) ?><?= $origin_param ?>" class="button">edit
                         <?php $your_decision = $misuse->getReview($user)->getDecision() ?>
                         <?php if ($your_decision == Decision::YES): ?>
                             (<i class="fa fa-thumbs-o-up" aria-hidden="true" style="color:green;" title="Yes"></i>)

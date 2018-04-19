@@ -23,7 +23,17 @@ return [
         
         // The default number of findings to display in Experiment P (Precision).
         'default_ex2_review_size' => '20',
-        
+
+        // Configuration to put the site in blind-review mode. When enabled,
+        // reviewer names are replaced by 'reviewer-1', 'reviewer-2', etc. in
+        // both the website itself and the URLs.
+        // Detector names are replaced according to the mapping specified
+        // below.
+        'blind_mode' => [
+            'enabled' => false,
+            'detector_blind_names' => []
+        ],
+
         // Slim 3
         'displayErrorDetails' => false, // set to false in production
         'addContentLengthHeader' => false, // Allow the web server to send the content-length header

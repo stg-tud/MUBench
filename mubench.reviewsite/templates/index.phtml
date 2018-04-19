@@ -3,7 +3,8 @@
  * @var string $user the logged in user, if any
  * @var callable $pathFor function to resolve router paths
  * @var callable $srcUrlFor function to resolve resources
- *
+ * @var callable $detectorName function to resolve detector names if blinded
+ * @var callable $detectorPathId function to return detector id if blinded
  * @var array $experiments all experiments (Experiment)
  * @var array $detectors detectors (Detector) with results per experiment
  * @var Experiment $experiment the selected experiment, if any
@@ -30,7 +31,7 @@ use MuBench\ReviewSite\Models\Experiment;
                 <ul>
                 <?php if ($detectors[$experiment->id]): ?>
                     <?php foreach ($detectors[$experiment->id] as $detector): ?>
-                        <li><a href="<?= $pathFor('experiment.detector', ['experiment_id' => $experiment->id, 'detector_muid' => $detector->muid]) ?>"><?= $detector->muid ?></a></li>
+                        <li><a href="<?= $pathFor('experiment.detector', ['experiment_id' => $experiment->id, 'detector_muid' => $detectorPathId($detector)]) ?>"><?= $detectorName($detector->muid) ?></a></li>
                     <?php endforeach ?>
                 <?php else: ?>
                     <li>No Results</li>

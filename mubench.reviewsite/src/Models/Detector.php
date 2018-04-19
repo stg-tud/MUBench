@@ -45,4 +45,13 @@ class Detector extends Model
     {
         return Finding::of($this)->in($experiment)->exists();
     }
+
+    public static function findByIdOrName($detector_id)
+    {
+        $detector = Detector::find($detector_id);
+        if(!$detector){
+            return Detector::where('id', $detector_id)->first();
+        }
+        return $detector;
+    }
 }

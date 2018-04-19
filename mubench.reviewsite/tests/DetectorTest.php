@@ -77,4 +77,22 @@ class DetectorTest extends SlimTestCase
 
         self::assertNotEmpty($detectorsWithFindings);
     }
+
+    function test_find_detector_by_id()
+    {
+        $expectedDetector = Detector::create(['muid' => '-d-']);
+        $detector = Detector::findByIdOrName($expectedDetector->id);
+
+        self::assertEquals($expectedDetector->id, $detector->id);
+        self::assertEquals($expectedDetector->muid, $detector->muid);
+    }
+
+    function test_find_detector_by_name()
+    {
+        $expectedDetector = Detector::create(['muid' => '-d-']);
+        $detector = Detector::findByIdOrName('-d-');
+
+        self::assertEquals($expectedDetector->id, $detector->id);
+        self::assertEquals($expectedDetector->muid, $detector->muid);
+    }
 }

@@ -17,6 +17,10 @@
  * @var Parsedown $markdown_parser markdown parser
  *
  * @var array $misuses
+ * @var callable $detectorName function to resolve detector names if blinded
+ * @var callable $detectorPathId function to return detector id if blinded
+ * @var callable $reviewerName function to return anonymous reviewer name if blinded else the reviewer name
+ * @var callable $reviewerPathId function to return reviewer id if blinded else the reviewer name
  */
 
 use MuBench\ReviewSite\Models\ReviewState;
@@ -62,7 +66,7 @@ use MuBench\ReviewSite\Models\ReviewState;
         ?>
         <tr>
             <td class="<?= $style_classes ?>">
-                <?= $new_project ? $markdown_parser->text($detector) : ""; ?></td>
+                <?= $new_project ? $markdown_parser->text($detectorName($detector)) : ""; ?></td>
             <td class="<?= $style_classes ?>">
                 <?= $new_project ? $markdown_parser->text($project) : ""; ?></td>
             <td class="<?= $style_classes ?>">
@@ -70,7 +74,7 @@ use MuBench\ReviewSite\Models\ReviewState;
             <td class="<?= $style_classes ?>">
                 <?= $markdown_parser->text($misuse->misuse_muid); ?></td>
             <?php
-            $resolution_review = $pathFor('review', array('experiment_id' => $experiment->id, 'detector_muid' => $misuse->detector->muid, 'project_muid' => $misuse->getProject(), 'version_muid' => $misuse->getVersion(), 'misuse_muid' => $misuse->misuse_muid, 'reviewer_name' => $resolution_reviewer->name));
+            $resolution_review = $pathFor('review', array('experiment_id' => $experiment->id, 'detector_muid' => $detectorPathId($misuse->detector), 'project_muid' => $misuse->getProject(), 'version_muid' => $misuse->getVersion(), 'misuse_muid' => $misuse->misuse_muid, 'reviewer_name' => $reviewerPathId($resolution_reviewer)));
             ?>
             <td class="<?= $style_classes ?>">
                 <?php $review_state = $misuse->getReviewState() ?>
@@ -96,12 +100,12 @@ use MuBench\ReviewSite\Models\ReviewState;
             <td class="<?= $style_classes ?>">
                 <ul class="inline">
                     <?php foreach($misuse->getReviews() as $review) : /** @var \MuBench\ReviewSite\Models\Review $review */ ?>
-                        <?php $reviewer_name = htmlspecialchars($review->reviewer->name) ?>
-                        <li style="display:inline"><a href="<?= $pathFor('review', array('experiment_id' => $experiment->id, 'detector_muid' => $misuse->detector->muid, 'project_muid' => $misuse->getProject(), 'version_muid' => $misuse->getVersion(), 'misuse_muid' => $misuse->misuse_muid, 'reviewer_name' => $review->reviewer->name)) ?><?= $reviewer_name ?>"></a></li>
+                    <?php $reviewer_name = htmlspecialchars($reviewerName($review->reviewer)) ?>
+                        <li style="display:inline"><a href="<?= $pathFor('review', array('experiment_id' => $experiment->id, 'detector_muid' => $detectorPathId($misuse->detector), 'project_muid' => $misuse->getProject(), 'version_muid' => $misuse->getVersion(), 'misuse_muid' => $misuse->misuse_muid, 'reviewer_name' => $reviewerPathId($review->reviewer))) ?><?= $reviewerName($review->reviewer) ?>"></a></li>
                     <?php endforeach; ?>
                 </ul>
             </td>
-            <td><a href="<?= $pathFor('review', array('experiment_id' => $experiment->id, 'detector_muid' => $misuse->detector->muid, 'project_muid' => $misuse->getProject(), 'version_muid' => $misuse->getVersion(), 'misuse_muid' => $misuse->misuse_muid, 'reviewer_name' => $user->name));
+            <td><a href="<?= $pathFor('review', array('experiment_id' => $experiment->id, 'detector_muid' => $detectorPathId($misuse->detector), 'project_muid' => $misuse->getProject(), 'version_muid' => $misuse->getVersion(), 'misuse_muid' => $misuse->misuse_muid, 'reviewer_name' => $reviewerPathId($user)));
                             ?><?= $origin_param ?>" class="button">review</a></td>
         </tr>
         <?php
