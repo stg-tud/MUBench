@@ -38,7 +38,7 @@ use MuBench\ReviewSite\Models\Experiment;
                     <?php foreach ($detectors[$experiment->id] as $detector): ?>
                         <tr>
                             <td>
-                                <a href="<?= $pathFor('experiment.detector', ['experiment_id' => $experiment->id, 'detector_muid' => $detectorPathId($detector)]) ?>"><?= $detectorName($detector) ?></a>
+                                <a href="<?= $pathFor('experiment.detector', ['experiment_id' => $experiment->id, 'detector_muid' => $detectorPathId($detector)]) ?>"><?= $detectorName($detector->muid) ?></a>
                             </td>
                             <td>
                                 <?php if($user) : ?>
