@@ -2,8 +2,6 @@
 
 namespace MuBench\ReviewSite\Controllers;
 
-use MuBench\ReviewSite\Models\Detector;
-
 class Controller
 {
     private $container;
@@ -21,5 +19,4 @@ class Controller
         }
         return null;
     }
-
 }
