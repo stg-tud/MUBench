@@ -2,7 +2,7 @@
 
 use MuBench\ReviewSite\ViewExtensions\AnonymousViewExtension;
 use MuBench\ReviewSite\Controllers\RunsController;
-use MuBench\ReviewSite\Extensions\MenuViewExtension;
+use MuBench\ReviewSite\ViewExtensions\MenuViewExtension;
 use MuBench\ReviewSite\Models\Misuse;
 use MuBench\ReviewSite\Models\Reviewer;
 use MuBench\ReviewSite\Models\ReviewState;

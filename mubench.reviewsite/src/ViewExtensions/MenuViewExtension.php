@@ -1,5 +1,5 @@
 <?php
-namespace MuBench\ReviewSite\Extensions;
+namespace MuBench\ReviewSite\ViewExtensions;
 
 
 use MuBench\ReviewSite\Controllers\RunsController;

@@ -2,7 +2,7 @@
 
 use MuBench\ReviewSite\Controllers\ReviewsController;
 use MuBench\ReviewSite\Controllers\RunsController;
-use MuBench\ReviewSite\Extensions\MenuViewExtension;
+use MuBench\ReviewSite\ViewExtensions\MenuViewExtension;
 use MuBench\ReviewSite\Models\Detector;
 use MuBench\ReviewSite\Models\Experiment;
 use MuBench\ReviewSite\Models\Reviewer;
