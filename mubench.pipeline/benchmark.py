@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import calendar
 import logging.handlers
+import platform
 import sys
 from datetime import datetime
 from os import makedirs
@@ -9,10 +10,9 @@ from os.path import join, exists
 from requirements import RequirementsCheck
 from tasks.configurations.configurations import get_task_configuration
 from tasks.task_runner import TaskRunner
-from utils import config_util
+from utils import config_util, logging_colorization
 from utils.data_entity_lists import DataEntityLists
 from utils.dataset_util import get_white_list
-from utils.logging import IndentFormatter
 
 
 class Benchmark:
@@ -46,10 +46,14 @@ config.run_timestamp = calendar.timegm(now.timetuple())
 
 logger = logging.getLogger()
 logger.setLevel(logging.DEBUG)
+
 handler = logging.StreamHandler()
-handler.setFormatter(IndentFormatter("%(indent)s%(message)s"))
 handler.setLevel(logging.INFO)
+logging_colorization.register_levelcolor_replacement_field(handler)
+formatter = logging.Formatter("[%(levelcolor)s%(levelname)-7s%(resetcolor)s] %(message)s")
+handler.setFormatter(formatter)
 logger.addHandler(handler)
+
 LOG_DIR = "logs"
 if not exists(LOG_DIR):
     makedirs(LOG_DIR)

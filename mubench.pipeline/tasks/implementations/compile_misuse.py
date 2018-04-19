@@ -25,17 +25,20 @@ class CompileMisuseTask:
         if self.force_compile or version_compile.timestamp > misuse_compile.timestamp:
             misuse_compile.delete()
 
-        logger.info("Compiling %s...", misuse)
+        if not exists(misuse_compile.misuse_source_path):
+            logger.debug("Copying misuse sources...")
+            for source_path in version_compile.original_sources_paths:
+                CompileMisuseTask._copy_misuse_sources(source_path, misuse, misuse_compile.misuse_source_path)
 
-        logger.debug("Copying misuse sources...")
-        for source_path in version_compile.original_sources_paths:
-            CompileMisuseTask._copy_misuse_sources(source_path, misuse, misuse_compile.misuse_source_path)
-        logger.debug("Copying misuse classes...")
-        for classes_path in version_compile.original_classes_paths:
-            CompileMisuseTask._copy_misuse_classes(classes_path, misuse, misuse_compile.misuse_classes_path)
+        if not exists(misuse_compile.misuse_classes_path):
+            logger.debug("Copying misuse classes...")
+            for classes_path in version_compile.original_classes_paths:
+                CompileMisuseTask._copy_misuse_classes(classes_path, misuse, misuse_compile.misuse_classes_path)
 
         try:
-            logger.info("Compiling correct usage for %s...", misuse)
+            if misuse_compile.needs_copy_sources() or misuse_compile.needs_compile():
+                logger.info("Compiling correct usage for %s...", misuse)
+
             if misuse_compile.needs_copy_sources():
                 logger.debug("Copying correct-usage sources...")
                 copy_tree(misuse.correct_usage_path, misuse_compile.correct_usage_sources_path)

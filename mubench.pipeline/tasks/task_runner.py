@@ -44,18 +44,12 @@ class TaskRunner:
 
         results = TaskRunner.__as_iterable(results)
 
-        if len(results) == 0:
-            logger = logging.getLogger("task_runner.{}".format(task_name))
-            logger.warning("Task {} returned no results; skipping succeeding tasks.".format(task_name))
-
         for result in results:
             result_type_already_exists = type(result) in [type(previous_result) for previous_result in previous_results]
             if result_type_already_exists:
                 raise TaskParameterDuplicateTypeWarning(task, type(result))
 
             if current_task_index + 1 < len(self.tasks):
-                next_task = type(self.tasks[current_task_index + 1]).__name__
-
                 if isinstance(result, Continue):
                     next_results = previous_results
                 else:
