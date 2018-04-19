@@ -63,7 +63,19 @@ $columns_to_ignore = array(
         <input type="submit" value="update" />
     </form>
 <?php endif; ?>
-<table>
+<label>
+    <input onclick="filter(this)" type="checkbox">
+    needs review
+</label>
+<label>
+    <input onclick="filter(this)" type="checkbox">
+    question
+</label>
+<label>
+    <input onclick="filter(this)" type="checkbox">
+    conflict
+</label>
+<table id="test">
     <thead>
     <tr>
         <th>Project</th>
@@ -108,19 +120,19 @@ $columns_to_ignore = array(
             ?>
             <tr>
                 <td class="<?= $style_classes ?>">
-                    <?= $new_project ? $markdown_parser->text($project) : ""; ?></td>
+                    <span class="<?= $new_project ? "" : "td-invisible" ?>"><?= $markdown_parser->text($project) ?></span></td>
                 <td class="<?= $style_classes ?>">
-                    <?= $new_version ? $markdown_parser->text($version) : ""; ?></td>
+                    <span class="<?= $new_version ? "" : "td-invisible" ?>"><?= $markdown_parser->text($version) ?></span></td>
                 <td class="<?= $style_classes ?>">
-                    <?= $new_version ? $markdown_parser->text($run->result) : ""; ?></td>
+                    <span class="<?= $new_version ? "" : "td-invisible" ?>"><?= $markdown_parser->text($run->result) ?></span></td>
                 <td class="<?= $style_classes ?> right">
-                    <?= $new_version ? $markdown_parser->text($run->number_of_findings) : ""; ?></td>
+                    <span class="<?= $new_version ? "" : "td-invisible" ?>"><?= $markdown_parser->text($run->number_of_findings) ?></span></td>
                 <td class="<?= $style_classes ?> right">
-                    <?= $new_version ? $markdown_parser->text(number_format($run->runtime, 1)) . "s" : ""; ?></td>
+                    <span class="<?= $new_version ? "" : "td-invisible" ?>"><?= $markdown_parser->text(number_format($run->runtime, 1)) . "s" ?></span></td>
                 <td class="<?= $style_classes ?> right">
-                    <?php if ($new_version) : ?>
+                    <span class="<?= $new_version ? "" : "td-invisible" ?>">
                         <?php include "includes/stats_modal.phtml"; ?>
-                    <?php endif; ?>
+                    </span>
                 </td>
                 <td class="<?= $style_classes ?>">
                     <?= $markdown_parser->text($misuse->misuse_muid); ?></td>
@@ -254,19 +266,19 @@ $columns_to_ignore = array(
             ?>
             <tr>
                 <td class="<?= $style_classes ?>">
-                    <?= $new_project ? $markdown_parser->text($project) : ""; ?></td>
+                    <span class="<?= $new_project ? "" : "td-invisible" ?>"><?= $markdown_parser->text($project) ?></span></td>
                 <td class="<?= $style_classes ?>">
-                    <?= $new_version ? $markdown_parser->text($version) : ""; ?></td>
+                    <span class="<?= $new_version ? "" : "td-invisible" ?>"><?= $markdown_parser->text($version) ?></span></td>
                 <td class="<?= $style_classes ?>">
-                    <?= $new_version ? $markdown_parser->text($run['result']) : ""; ?></td>
+                    <span class="<?= $new_version ? "" : "td-invisible" ?>"><?= $markdown_parser->text($run->result) ?></span></td>
                 <td class="<?= $style_classes ?> right">
-                    <?= $new_version ? $markdown_parser->text($run['number_of_findings']) : ""; ?></td>
+                    <span class="<?= $new_version ? "" : "td-invisible" ?>"><?= $markdown_parser->text($run->number_of_findings) ?></span></td>
                 <td class="<?= $style_classes ?> right">
-                    <?= $new_version ? $markdown_parser->text(substr($run['runtime'], 0, 4)) . "s" : ""; ?></td>
+                    <span class="<?= $new_version ? "" : "td-invisible" ?>"><?= $markdown_parser->text(number_format($run->runtime, 1)) . "s" ?></span></td>
                 <td class="<?= $style_classes ?> right">
-                    <?php if ($new_version) : ?>
+                    <span class="<?= $new_version ? "" : "td-invisible" ?>">
                         <?php include "includes/stats_modal.phtml"; ?>
-                    <?php endif; ?>
+                    </span>
                 </td>
                 <td class="<?= $style_classes ?>"></td>
                 <?php if ($experiment->id !== 2): ?>
@@ -291,6 +303,66 @@ $columns_to_ignore = array(
     window.onclick = function (event) {
         if (event.target.className == "modal" || event.target.className == "close") {
             document.getElementById(event.target.id).style.display = "None";
+        }
+    };
+
+    function filter(){
+        var checkboxes = document.querySelectorAll("input[type='checkbox']");
+        var icon_filters = ['i.fa.fa-search', 'i.fa.fa-question-circle', 'i.fa.fa-exclamation-triangle'];
+        var test = document.getElementById("test");
+        var rows = test.querySelectorAll("tr");
+        var statsVisible = false;
+        var lastProject = undefined;
+        var review = false;
+        for(var i = 0; i < checkboxes.length; ++i){
+            review = review || checkboxes[i].checked;
+        }
+        for(var i = 0; i < rows.length; ++i){
+            var row = rows[i];
+            if(row.parentNode.parentNode.id != "test" || row.children[0].tagName == "TH"){
+                continue;
+            }
+            var dontFilter = false;
+            for(var z = 0; z < icon_filters.length; ++z){
+                if(!checkboxes[z].checked){
+                    continue;
+                }
+                console.log(icon_filters[z]);
+                dontFilter = dontFilter || (row.childNodes[15].querySelectorAll(icon_filters[z]).length > 0)
+                console.log(dontFilter);
+            }
+            var project = (row.childNodes[1].childNodes[1].childNodes[0].innerText);
+            if(lastProject != project){
+                lastProject = project;
+                statsVisible = false;
+            }
+            if(review){
+                if(dontFilter) {
+                    row.style.display = "";
+                    for(var j = 1; j < 13; j += 2){
+                        if(row.childNodes[j].childNodes[1].className != "" && !statsVisible){
+                            row.childNodes[j].childNodes[1].className = "";
+                        }else if(statsVisible){
+                            row.childNodes[j].childNodes[1].className = "td-invisible";
+                        }
+                    }
+                    statsVisible = true;
+                }else{
+                    row.style.display = "none";
+                }
+            }else{
+                row.style.display = "";
+                for(var j = 1; j < 13; j += 2) {
+                    if (row.childNodes[j].childNodes[1].className == "" && !statsVisible) {
+                        statsVisible = true;
+                        break;
+                    } else if (statsVisible) {
+                        row.childNodes[j].childNodes[1].className = "td-invisible";
+                    }
+                }
+            }
+
+
         }
     }
 </script>
