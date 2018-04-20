@@ -19,10 +19,10 @@ public class DetectorArgs {
 		String findingsFile = null;
 		String runFile = null;
 		DetectorMode detectorMode = null;
-		String correctUsageSrcPath = null;
-		String correctUsageClassPath = null;
+		String[] trainingSrcPaths = null;
+		String trainingClassPath = null;
 		String[] targetSrcPaths = null;
-		String[] targetClassPaths = null;
+		String targetClassPath = null;
 		String dependencyClassPath = null;
 
 		for (int i = 0; i < args.length; i += 2) {
@@ -37,16 +37,16 @@ public class DetectorArgs {
 					runFile = next_arg;
 					break;
 				case keyTrainingSrcPath:
-					correctUsageSrcPath = next_arg;
+					trainingSrcPaths = next_arg.split(":");
 					break;
 				case keyTrainingClassPath:
-					correctUsageClassPath = next_arg;
+					trainingClassPath = next_arg;
 					break;
 				case keyTargetSrcPath:
 					targetSrcPaths = next_arg.split(":");
 					break;
 				case keyTargetClassPath:
-					targetClassPaths = next_arg.split(":");
+					targetClassPath = next_arg;
 					break;
 				case keyDependenciesClassPath:
 					dependencyClassPath = next_arg;
@@ -59,28 +59,28 @@ public class DetectorArgs {
 			}
 		}
 
-		return new DetectorArgs(findingsFile, runFile, detectorMode, correctUsageSrcPath, correctUsageClassPath, targetSrcPaths,
-				targetClassPaths, dependencyClassPath);
+		return new DetectorArgs(findingsFile, runFile, detectorMode, trainingSrcPaths, trainingClassPath, targetSrcPaths,
+				targetClassPath, dependencyClassPath);
 	}
 
 
 	private final String findingsFile;
 	private final String runInfoFile;
-	private final String correctUsageSrcPath;
-	private final String correctUsageClassPath;
+	private final String[] trainingSrcPaths;
+	private final String trainingClassPath;
 	private final String[] targetSrcPaths;
-	private final String[] targetClassPaths;
+	private final String targetClassPath;
 	private final String dependencyClassPath;
 	private final DetectorMode detectorMode;
 
-	DetectorArgs(String findingsFile, String runInfoFile, DetectorMode detectorMode, String correctUsageSrcPath,
-				 String correctUsageClassPath, String[] targetSrcPaths, String[] targetClassPaths, String dependencyClassPath) {
+	DetectorArgs(String findingsFile, String runInfoFile, DetectorMode detectorMode, String[] trainingSrcPaths,
+				 String trainingClassPath, String[] targetSrcPaths, String targetClassPath, String dependencyClassPath) {
 		this.findingsFile = findingsFile;
 		this.runInfoFile = runInfoFile;
-		this.correctUsageSrcPath = correctUsageSrcPath;
-		this.correctUsageClassPath = correctUsageClassPath;
+		this.trainingSrcPaths = trainingSrcPaths;
+		this.trainingClassPath = trainingClassPath;
 		this.targetSrcPaths = targetSrcPaths;
-		this.targetClassPaths = targetClassPaths;
+		this.targetClassPath = targetClassPath;
 		this.dependencyClassPath = dependencyClassPath;
 		this.detectorMode = detectorMode;
 	}
@@ -112,27 +112,29 @@ public class DetectorArgs {
 	}
 
 	/**
-	 * @return path to the source files of the correct usage for a particular misuse. Should be used to extract the
-	 * correct usages in detect-only mode.
+	 * @return paths to the source files that may be used to train the detector, i.e., the path to the correct usage in
+     * detect-only mode. No training data is provided in mine-and-detect mode. Here, {@link #getTargetSrcPaths()} should
+     * be used for training instead.
 	 * @throws FileNotFoundException if the path was not provided in the runner invocation, e.g., if the runner is
 	 * invoked in mine-and-detect mode.
 	 */
-	public String getPatternSrcPath() throws FileNotFoundException {
-		if (correctUsageSrcPath == null)
-			throw new FileNotFoundException("training source path not provided");
-		return correctUsageSrcPath;
+	public String[] getTrainingSrcPaths() throws FileNotFoundException {
+		if (trainingSrcPaths == null)
+			throw new FileNotFoundException("no training source path provided");
+		return trainingSrcPaths;
 	}
 
 	/**
-	 * @return path to the class files of the correct usages for a particular misuse. Should be used to extract the
-	 * correct usages in detect-only mode.
+	 * @return path to the class files that may be used to train the detector, i.e., the path to the correct usage in
+     * detect-only mode. No training data is provided in mine-and-detect mode. Here, {@link #getTargetClassPath()}
+     * should be used for training instead.
 	 * @throws FileNotFoundException if the path was not provided in the runner invocation, e.g., if the runner is
 	 * invoked in mine-and-detect mode.
 	 */
-	public String getPatternClassPath() throws FileNotFoundException {
-		if (correctUsageClassPath == null)
-			throw new FileNotFoundException("training classpath not provided");
-		return correctUsageClassPath;
+	public ClassPath getTrainingClassPath() throws FileNotFoundException {
+		if (trainingClassPath == null)
+			throw new FileNotFoundException("no training classpath provided");
+		return new ClassPath(trainingClassPath);
 	}
 
 
@@ -143,7 +145,7 @@ public class DetectorArgs {
 	 */
 	public String[] getTargetSrcPaths() throws FileNotFoundException {
 		if (targetSrcPaths == null)
-			throw new FileNotFoundException("target source path not provided");
+			throw new FileNotFoundException("no target source path provided");
 		return targetSrcPaths;
 	}
 
@@ -152,16 +154,17 @@ public class DetectorArgs {
 	 * training the detector.
 	 * @throws FileNotFoundException if the paths were not provided in the runner invocation
 	 */
-	public String[] getTargetClassPaths() throws FileNotFoundException {
-		if (targetClassPaths == null)
-			throw new FileNotFoundException("target classpath not provided");
-		return targetClassPaths;
+	public ClassPath getTargetClassPath() throws FileNotFoundException {
+		if (targetClassPath == null)
+			throw new FileNotFoundException("no target classpath provided");
+		return new ClassPath(targetClassPath);
 	}
 
     /**
-     * @return a classpath referencing the dependencies of the code in the {@link #getTargetPath()}.
+     * @return a classpath referencing the dependencies of the target code
+     * ({@link #getTargetSrcPaths()}/{@link #getTargetClassPath()}).
      */
-    public String[] getDependencyClassPath() throws FileNotFoundException {
-        return dependencyClassPath == null ? new String[0] : dependencyClassPath.split(":");
+    public ClassPath getDependencyClassPath() {
+        return dependencyClassPath == null ? new ClassPath("") : new ClassPath(dependencyClassPath);
     }
 }

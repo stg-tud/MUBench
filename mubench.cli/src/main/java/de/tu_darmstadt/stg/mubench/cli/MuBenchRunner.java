@@ -34,8 +34,8 @@ public final class MuBenchRunner {
     private DetectionStrategy mineAndDetectStrategy;
 
     /**
-     * @param detectOnlyStrategy Run detection in detect-only mode. Should use {@link DetectorArgs#getPatternSrcPath()}
-     *                           or {@link DetectorArgs#getPatternClassPath()} to learn correct usages and identify
+     * @param detectOnlyStrategy Run detection in detect-only mode. Should use {@link DetectorArgs#getTrainingSrcPaths()}
+     *                           or {@link DetectorArgs#getTrainingClassPath()} to learn correct usages and identify
      *                           respective violations in {@link DetectorArgs#getTargetSrcPaths()} or
      *                           {@link DetectorArgs#getTargetClassPaths()}, respectively.
      */
