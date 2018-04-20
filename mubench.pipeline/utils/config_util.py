@@ -92,6 +92,8 @@ def _get_command_line_parser(available_detectors: List[str], available_scripts: 
                         default=__get_default('xp-checkouts-path', __XP_CHECKOUTS_PATH), help=argparse.SUPPRESS)
     parser.add_argument('--xp-index-file', dest='xp_index_file',
                         default=__get_default('xp-index-file', __XP_INDEX_FILE), help=argparse.SUPPRESS)
+    parser.add_argument('--max-project-sample-size', dest='max_project_sample_size',
+                        default=__get_default('max-project-sample-size', 50), help=argparse.SUPPRESS)
 
     __add_check_subprocess(available_datasets, subparsers)
     __add_info_subprocess(available_datasets, subparsers)

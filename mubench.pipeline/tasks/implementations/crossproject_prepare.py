@@ -11,10 +11,8 @@ from utils.shell import CommandFailedError
 
 
 class CrossProjectPrepareTask:
-    MAX_PROJECT_SAMPLE_SIZE = 50
-
     def __init__(self, root_path: str, checkouts_base_path: str, index_file: str, timestamp: int,
-                 boa_user: str, boa_password: str):
+                 max_project_sample_size: int, boa_user: str, boa_password: str):
         self.root_path = root_path
         self.checkouts_base_path = checkouts_base_path
         self.project_checkouts_path = join(checkouts_base_path, "checkouts")
@@ -22,6 +20,7 @@ class CrossProjectPrepareTask:
         self.subtypes_path = os.path.join(checkouts_base_path, "subtypes.csv")
         self.index_file = index_file
         self.timestamp = timestamp
+        self.max_project_sample_size = max_project_sample_size
         self.boa_user = boa_user
         self.boa_password = boa_password
 
@@ -81,8 +80,8 @@ class CrossProjectPrepareTask:
                 except UnicodeEncodeError:
                     logger.warning("    Illegal characters in project data.")
 
-                if len(data) >= self.MAX_PROJECT_SAMPLE_SIZE:
-                    logger.warning("  Stopping after %r of %r example projects.", self.MAX_PROJECT_SAMPLE_SIZE,
+                if len(data) >= self.max_project_sample_size:
+                    logger.warning("  Stopping after %r of %r example projects.", self.max_project_sample_size,
                                    len(projects))
                     write_yamls(data, metadata_path)
                     return
