@@ -8,25 +8,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 /**
- * Implement a concrete runner like this:
- * <pre><code>
- * public class XYRunner {
- *   public static void main(String[] args) {
- *     new MuBenchRunner().
- *       .withDetectOnlyStrategy((DetectorArgs as, DetectorOutput.Builder output) -> {
- *          return output
- *            .withRunInfo("detection using provided correct usages", "true")
- *            .withFindings(findMisuses(da));
- *       })
- *       .withMineAndDetectStrategy((DetectorArgs as, DetectorOutput.Builder output) -> {
- *          return output
- *            .withRunInfo("detection using mined patterns", "true")
- *            .withFindings(findMisuses(da));
- *       })
- *       .run(args);
- *   }
- * }
- * </code></pre>
+ * Interfaces between the MUBench Pipeline and detector implementations. For a usage example
+ * see {@link de.tu_darmstadt.stg.mubench.demo.DemoRunner}.
  */
 @SuppressWarnings("WeakerAccess")
 public final class MuBenchRunner {
@@ -37,7 +20,8 @@ public final class MuBenchRunner {
      * @param detectOnlyStrategy Run detection in detect-only mode. Should use {@link DetectorArgs#getTrainingSrcPaths()}
      *                           or {@link DetectorArgs#getTrainingClassPath()} to learn correct usages and identify
      *                           respective violations in {@link DetectorArgs#getTargetSrcPaths()} or
-     *                           {@link DetectorArgs#getTargetClassPaths()}, respectively.
+     *                           {@link DetectorArgs#getTargetClassPath()}, respectively.
+     * @return this runner, for fluent calls
      */
     public MuBenchRunner withDetectOnlyStrategy(DetectionStrategy detectOnlyStrategy) {
         this.detectOnlyStrategy = detectOnlyStrategy;
@@ -46,15 +30,23 @@ public final class MuBenchRunner {
 
     /**
      * @param mineAndDetectStrategy Run detection in mine-and-detect mode. Should identify misuses in
-     *                              {@link DetectorArgs#getTargetSrcPaths()} or {@link DetectorArgs#getTargetClassPaths()}.
+     *                              {@link DetectorArgs#getTargetSrcPaths()} or
+     *                              {@link DetectorArgs#getTargetClassPath()}.
      *                              May use {@link DetectorArgs#getTargetSrcPaths()} and
-     *                              {@link DetectorArgs#getTargetClassPaths()} for pattern mining.
+     *                              {@link DetectorArgs#getTargetClassPath()} for pattern mining.
+     * @return this runner, for fluent calls
      */
     public MuBenchRunner withMineAndDetectStrategy(DetectionStrategy mineAndDetectStrategy) {
         this.mineAndDetectStrategy = mineAndDetectStrategy;
         return this;
     }
 
+    /**
+     * Invoke the runner.
+     *
+     * @param args the command-line arguments passed from the MUBench Pipeline.
+     * @throws Exception on errors
+     */
     @SuppressWarnings("unused")
     public void run(String[] args) throws Exception {
         DetectorArgs detectorArgs = DetectorArgs.parse(args);
@@ -63,7 +55,7 @@ public final class MuBenchRunner {
         report(output.getRunInfo(), detectorArgs.getRunInfoFile());
     }
 
-    protected DetectorOutput detect(DetectorArgs args) throws Exception {
+    private DetectorOutput detect(DetectorArgs args) throws Exception {
         switch (args.getDetectorMode()) {
             case DETECT_ONLY:
                 return detect(detectOnlyStrategy, args);
@@ -82,7 +74,7 @@ public final class MuBenchRunner {
         return strategy.detectViolations(args, builder);
     }
 
-    protected void report(YamlEntity entity, Path findingsFile) throws IOException {
+    private void report(YamlEntity entity, Path findingsFile) throws IOException {
         try (OutputStream os = Files.newOutputStream(findingsFile)) {
             entity.write(os);
         }

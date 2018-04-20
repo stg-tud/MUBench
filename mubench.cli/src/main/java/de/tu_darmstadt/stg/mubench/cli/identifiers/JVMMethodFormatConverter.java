@@ -9,7 +9,8 @@ import java.util.regex.Pattern;
 /**
  * This class converts from JVM method representation to the method representation in MUBench
  *
- * @author govind singh, mattis manfred kaemmerer
+ * @author govind singh
+ * @author mattis manfred kaemmerer
  */
 public class JVMMethodFormatConverter {
     /* Constants */
@@ -99,9 +100,8 @@ public class JVMMethodFormatConverter {
             return typeAsString;
         }
 
-        /**
-         * https://stackoverflow.com/questions/604424/lookup-enum-by-string-
-         * value
+        /*
+         * https://stackoverflow.com/questions/604424/lookup-enum-by-string-value
          */
         public static PrimitiveTypeRepresentation convertToPrimitiveType(char basicType) {
             for (PrimitiveTypeRepresentation t : PrimitiveTypeRepresentation.values()) {

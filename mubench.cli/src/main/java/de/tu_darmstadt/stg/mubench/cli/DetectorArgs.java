@@ -4,6 +4,9 @@ import java.io.FileNotFoundException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+/**
+ * Represents the input passed from the MUBench Pipeline to a runner, as input to the detector.
+ */
 @SuppressWarnings("WeakerAccess")
 public class DetectorArgs {
 	static final String keyFindingsFile = "target";
@@ -99,6 +102,7 @@ public class DetectorArgs {
 
 	/**
 	 * @return directory to write additional output to, e.g., for debugging purposes.
+     * @throws FileNotFoundException if the directory was not provided
 	 */
 	@SuppressWarnings("unused")
 	public Path getAdditionalOutputPath() throws FileNotFoundException {
