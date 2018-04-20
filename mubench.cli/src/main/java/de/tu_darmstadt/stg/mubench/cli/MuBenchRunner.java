@@ -18,9 +18,10 @@ public final class MuBenchRunner {
 
     /**
      * @param detectOnlyStrategy Run detection in detect-only mode. Should use {@link DetectorArgs#getTrainingSrcPaths()}
-     *                           or {@link DetectorArgs#getTrainingClassPath()} to learn correct usages and identify
-     *                           respective violations in {@link DetectorArgs#getTargetSrcPaths()} or
-     *                           {@link DetectorArgs#getTargetClassPath()}, respectively.
+     *                           or {@link DetectorArgs#getTrainingClassPath()} to extract patterns from the provided
+     *                           correct usages and identify respective violations in
+     *                           {@link DetectorArgs#getTargetSrcPaths()} or {@link DetectorArgs#getTargetClassPath()},
+     *                           respectively.
      * @return this runner, for fluent calls
      */
     public MuBenchRunner withDetectOnlyStrategy(DetectionStrategy detectOnlyStrategy) {
