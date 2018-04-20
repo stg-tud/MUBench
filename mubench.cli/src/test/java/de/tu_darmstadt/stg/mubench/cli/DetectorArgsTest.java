@@ -34,12 +34,12 @@ public class DetectorArgsTest {
 	}
 
 	@Test
-	public void parsesTrainingPath() throws FileNotFoundException {
+	public void parsesTrainingPaths() throws FileNotFoundException {
 		DetectorArgs actual = DetectorArgs.parse(
 				new String[] { DetectorArgs.keyTrainingSrcPath, "psrc", DetectorArgs.keyTrainingClassPath, "pclasspath" });
 
-        assertEquals("psrc", actual.getPatternSrcPath());
-		assertEquals("pclasspath", actual.getPatternClassPath().getClasspath());
+        assertEquals("psrc", actual.getTrainingSrcPaths()[0]);
+		assertEquals("pclasspath", actual.getTrainingClassPath().getClasspath());
 	}
 
 	@Test
@@ -94,12 +94,12 @@ public class DetectorArgsTest {
 
     @Test(expected = FileNotFoundException.class)
     public void throwsOnNoTrainingSrcPath() throws FileNotFoundException {
-        DetectorArgs.parse(new String[0]).getPatternSrcPath();
+        DetectorArgs.parse(new String[0]).getTrainingSrcPaths();
     }
 
     @Test(expected = FileNotFoundException.class)
     public void throwsOnNoTrainingClassPath() throws FileNotFoundException {
-        DetectorArgs.parse(new String[0]).getPatternClassPath();
+        DetectorArgs.parse(new String[0]).getTrainingClassPath();
     }
 
     @Test(expected = FileNotFoundException.class)
