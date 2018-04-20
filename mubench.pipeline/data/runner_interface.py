@@ -224,7 +224,7 @@ class RunnerInterface_0_0_10(RunnerInterface_0_0_8):
 
 
 # noinspection PyPep8Naming
-class RunnerInterface_0_0_11(RunnerInterface_0_0_8):
+class RunnerInterface_0_0_11(RunnerInterface_0_0_10):
     @staticmethod
     def version():
         return StrictVersion("0.0.11")
@@ -238,3 +238,14 @@ class RunnerInterface_0_0_11(RunnerInterface_0_0_8):
         detector_arguments["target_src_path"] = ":".join(detector_arguments["target_src_path"])
         detector_arguments["target_classpath"] = ":".join(detector_arguments["target_classpath"])
         return CommandLineArgsRunnerInterface._get_cli_args(detector_arguments)
+
+
+# noinspection PyPep8Naming
+class RunnerInterface_0_0_13(RunnerInterface_0_0_11):
+    @staticmethod
+    def version():
+        return StrictVersion("0.0.13")
+
+    @staticmethod
+    def changelog():
+        return ""  # Only changed Java-side interface.
