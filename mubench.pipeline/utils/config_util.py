@@ -13,12 +13,12 @@ from utils.io import read_yaml
 MUBENCH_ROOT_PATH = abspath(join(dirname(abspath(__file__)), os.pardir, os.pardir))
 __DATA_PATH = join(MUBENCH_ROOT_PATH, "data")
 __CHECKOUTS_PATH = join(MUBENCH_ROOT_PATH, "checkouts")
-__XP_CHECKOUTS_PATH = join(MUBENCH_ROOT_PATH, "checkouts-xp")
-__XP_INDEX_FILE = join(__XP_CHECKOUTS_PATH, "index.csv")
 __COMPILES_PATH = __CHECKOUTS_PATH
 __FINDINGS_PATH = join(MUBENCH_ROOT_PATH, "findings")
 __DATASETS_FILE_PATH = join(MUBENCH_ROOT_PATH, 'data', 'datasets.yml')
 __DETECTORS_PATH = join(MUBENCH_ROOT_PATH, "detectors")
+__XP_CHECKOUTS_PATH = join(MUBENCH_ROOT_PATH, "checkouts-xp")
+__XP_INDEX_FILE = join(__XP_CHECKOUTS_PATH, "index.csv")
 
 
 class SortingHelpFormatter(HelpFormatter):
@@ -78,10 +78,6 @@ def _get_command_line_parser(available_detectors: List[str], available_scripts: 
                         help=argparse.SUPPRESS)
     parser.add_argument('--checkouts-path', dest='checkouts_path',
                         default=__get_default('checkouts-path', __CHECKOUTS_PATH), help=argparse.SUPPRESS)
-    parser.add_argument('--xp-checkouts-path', dest='xp_checkouts_path',
-                        default=__get_default('xp-checkouts-path', __XP_CHECKOUTS_PATH), help=argparse.SUPPRESS)
-    parser.add_argument('--xp-index-file', dest='xp_index_file',
-                        default=__get_default('xp-index-file', __XP_INDEX_FILE), help=argparse.SUPPRESS)
     parser.add_argument('--compiles-path', dest='compiles_path', default=__get_default('compiles-path', __COMPILES_PATH),
                         help=argparse.SUPPRESS)
     parser.add_argument('--findings-path', dest='findings_path', default=__get_default('findings-path', __FINDINGS_PATH),
@@ -92,6 +88,10 @@ def _get_command_line_parser(available_detectors: List[str], available_scripts: 
                         default=__get_default('detectors-path', __DETECTORS_PATH), help=argparse.SUPPRESS)
     parser.add_argument('--development-mode', dest='development_mode', default=__get_default('development-mode', False),
                         help=argparse.SUPPRESS, action='store_true')
+    parser.add_argument('--xp-checkouts-path', dest='xp_checkouts_path',
+                        default=__get_default('xp-checkouts-path', __XP_CHECKOUTS_PATH), help=argparse.SUPPRESS)
+    parser.add_argument('--xp-index-file', dest='xp_index_file',
+                        default=__get_default('xp-index-file', __XP_INDEX_FILE), help=argparse.SUPPRESS)
 
     __add_check_subprocess(available_datasets, subparsers)
     __add_info_subprocess(available_datasets, subparsers)
