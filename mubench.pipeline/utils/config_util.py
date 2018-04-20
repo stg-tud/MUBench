@@ -209,8 +209,6 @@ def __add_run_subprocess(available_detectors: List[str], available_datasets: Lis
     __add_run_ex1_subprocess(available_detectors, available_datasets, run_subparsers)
     __add_run_ex2_subprocess(available_detectors, available_datasets, run_subparsers)
     __add_run_ex3_subprocess(available_detectors, available_datasets, run_subparsers)
-    __add_run_cross_project_create_index(available_datasets, run_subparsers)
-    __add_run_cross_project_create_project_list(run_subparsers)
     __add_run_cross_project_prepare(run_subparsers)
 
 
@@ -254,13 +252,6 @@ def __add_run_ex3_subprocess(available_detectors: List[str], available_datasets:
     __setup_run_arguments(experiment_parser, available_detectors)
 
 
-def __add_run_cross_project_create_index(available_datasets: List[str], subparsers) -> None:
-    parser = subparsers.add_parser("xpci", formatter_class=SortingHelpFormatter,
-                                              help="TODO",
-                                              description="TODO")
-    __setup_filter_arguments(parser, available_datasets)
-
-
 def __add_run_cross_project_prepare(subparsers) -> None:
     parser = subparsers.add_parser("xpprep", formatter_class=SortingHelpFormatter,
                                    help="TODO",
@@ -272,12 +263,6 @@ def __add_run_cross_project_prepare(subparsers) -> None:
                         default=boa_user, help="Your boa username.")
     parser.add_argument("-bp", "--boa-password", metavar="BOAPASSWORD", required=not boa_password,
                         default=boa_password, help="Your boa password.")
-
-
-def __add_run_cross_project_create_project_list(subparsers) -> None:
-    parser = subparsers.add_parser("xpcpl", formatter_class=SortingHelpFormatter,
-                                   help="TODO",
-                                   description="TODO")
 
 
 def __add_publish_subprocess(available_detectors: List[str], available_datasets: List[str], subparsers) -> None:

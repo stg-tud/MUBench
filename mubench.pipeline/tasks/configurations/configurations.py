@@ -21,6 +21,7 @@ from tasks.implementations.info import ProjectInfoTask, VersionInfoTask, MisuseI
 from tasks.implementations.load_detector import LoadDetectorTask
 from tasks.implementations.publish_findings import PublishFindingsTask
 from tasks.implementations.publish_metadata import PublishMetadataTask
+from tasks.task_runner import TaskRunner
 from utils.dataset_util import get_available_datasets
 
 
@@ -167,18 +168,6 @@ class RunBenchmarkExperiment(TaskConfiguration):
         return [load_detector] + CheckoutTaskConfiguration().tasks(config) + [compile_version, detect]
 
 
-class RunCrossProjectCreateIndex(TaskConfiguration):
-    ID = "xpci"
-
-    @staticmethod
-    def mode() -> str:
-        return "run {}".format(RunCrossProjectCreateIndex.ID)
-
-    def tasks(self, config) -> List:
-        return [CollectProjectsTask(config.data_path), CollectVersionsTask(config.development_mode),
-                CollectMisusesTask(), CrossProjectCreateIndexTask(config.xp_index_file)]
-
-
 class RunCrossProjectPrepare(TaskConfiguration):
     ID = "xpprep"
 
@@ -187,19 +176,15 @@ class RunCrossProjectPrepare(TaskConfiguration):
         return "run {}".format(RunCrossProjectPrepare.ID)
 
     def tasks(self, config) -> List:
-        return [CrossProjectPrepareTask(config.root_path, config.xp_checkouts_path, config.xp_index_file,
-                                        config.run_timestamp, config.boa_user, config.boa_password)]
-
-
-class RunCrossProjectCreateProjectList(TaskConfiguration):
-    ID = "xpcpl"
-
-    @staticmethod
-    def mode() -> str:
-        return "run {}".format(RunCrossProjectCreateProjectList.ID)
-
-    def tasks(self, config) -> List:
-        return [CrossProjectCreateProjectListTask(config.root_path, config.xp_index_file, config.xp_checkouts_path)]
+        create_index_tasks = [CollectProjectsTask(config.data_path), CollectVersionsTask(config.development_mode),
+                              CollectMisusesTask(), CrossProjectCreateIndexTask(config.xp_index_file)]
+        create_index = TaskRunner(create_index_tasks)
+        # noinspection PyTypeChecker
+        return [create_index,
+                CrossProjectPrepareTask(config.root_path, config.xp_checkouts_path, config.xp_index_file,
+                                        config.run_timestamp, config.max_project_sample_size, config.boa_user,
+                                        config.boa_password),
+                CrossProjectCreateProjectListTask(config.root_path, config.xp_index_file, config.xp_checkouts_path)]
 
 
 class PublishBenchmarkExperiment(TaskConfiguration):
