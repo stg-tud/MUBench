@@ -15,6 +15,7 @@ from tests.test_utils.data_util import create_project, create_version
 
 
 # noinspection PyAttributeOutsideInit
+@patch("tasks.implementations.publish_findings.PublishFindingsTask._PublishFindingsTask__get_potential_hit_size")
 @patch("tasks.implementations.publish_findings.post")
 class TestPublishFindingsTask:
     def setup(self):
@@ -49,7 +50,8 @@ class TestPublishFindingsTask:
 
         self.uut = PublishFindingsTask(self.experiment_id, "/sources", "http://dummy.url", "-username-", "-password-")
 
-    def test_post_url(self, post_mock):
+    def test_post_url(self, post_mock, getsize_mock):
+        getsize_mock.return_value = 0
         self.uut.run(self.project, self.version, self.test_detector_execution, self.test_potential_hits,
                      self.version_compile, self.detector)
 
@@ -57,7 +59,8 @@ class TestPublishFindingsTask:
             "1", self.detector.id, self.project.id, self.version.version_id), post_mock.call_args[0][0])
 
     @patch("tasks.implementations.publish_findings.getpass.getpass")
-    def test_post_auth_prompt(self, pass_mock, post_mock):
+    def test_post_auth_prompt(self, pass_mock, post_mock, getsize_mock):
+        getsize_mock.return_value = 0
         pass_mock.return_value = "-password-"
 
         self.uut.run(self.project, self.version, self.test_detector_execution, self.test_potential_hits,
@@ -67,7 +70,8 @@ class TestPublishFindingsTask:
         assert_equals("-password-", post_mock.call_args[1]["password"])
 
     @patch("tasks.implementations.publish_findings.getpass.getpass")
-    def test_post_auth_provided(self, pass_mock, post_mock):
+    def test_post_auth_provided(self, pass_mock, post_mock, getsize_mock):
+        getsize_mock.return_value = 0
         pass_mock.side_effect = UserWarning("should skip prompt")
         self.uut.review_site_password = "-password-"
 
@@ -78,7 +82,8 @@ class TestPublishFindingsTask:
         assert_equals("-password-", post_mock.call_args[1]["password"])
 
     @patch("tasks.implementations.publish_findings.PublishFindingsTask._convert_graphs_to_files")
-    def test_publish_successful_run(self, convert_mock, post_mock):
+    def test_publish_successful_run(self, convert_mock, post_mock, getsize_mock):
+        getsize_mock.return_value = 0
         self.test_detector_execution.is_success = lambda: True
         self.test_detector_execution.runtime = 42
         self.test_detector_execution.number_of_findings = 5
@@ -103,7 +108,8 @@ class TestPublishFindingsTask:
         }, post_mock.call_args[0][1])
 
     @patch("tasks.implementations.publish_findings.PublishFindingsTask._convert_graphs_to_files")
-    def test_publish_successful_run_files(self, convert_mock, post_mock):
+    def test_publish_successful_run_files(self, convert_mock, post_mock, getsize_mock):
+        getsize_mock.return_value = 0
         self.test_detector_execution.is_success = lambda: True
 
         self.test_potential_hits = PotentialHits([
@@ -117,7 +123,8 @@ class TestPublishFindingsTask:
         assert_equals(["-file1-", "-file2-"], post_mock.call_args[1]["file_paths"])
 
     @patch("tasks.implementations.publish_findings.PublishFindingsTask._convert_graphs_to_files")
-    def test_publish_successful_run_in_chunks(self, convert_mock, post_mock):
+    def test_publish_successful_run_in_chunks(self, convert_mock, post_mock, getsize_mock):
+        getsize_mock.return_value = 0
         self.uut.max_files_per_post = 1
         self.test_detector_execution.is_success = lambda: True
         self.test_potential_hits = PotentialHits([
@@ -133,7 +140,8 @@ class TestPublishFindingsTask:
         assert_equals(["-file2-"], post_mock.call_args_list[1][1]["file_paths"])
 
     @patch("tasks.implementations.publish_findings.PublishFindingsTask._convert_graphs_to_files")
-    def test_publish_successful_run_in_partial_chunks(self, convert_mock, post_mock):
+    def test_publish_successful_run_in_partial_chunks(self, convert_mock, post_mock, getsize_mock):
+        getsize_mock.return_value = 0
         self.uut.max_files_per_post = 3
         self.test_detector_execution.is_success = lambda: True
         self.test_potential_hits = PotentialHits([
@@ -147,7 +155,8 @@ class TestPublishFindingsTask:
         assert_equals(2, len(post_mock.call_args_list))
 
     @patch("tasks.implementations.publish_findings.PublishFindingsTask._convert_graphs_to_files")
-    def test_publish_successful_run_code_snippets(self, convert_mock, post_mock):
+    def test_publish_successful_run_code_snippets(self, convert_mock, post_mock, getsize_mock):
+        getsize_mock.return_value = 0
         self.test_detector_execution.is_success = lambda: True
         self.test_potential_hits = PotentialHits(
             [self._create_finding({"rank": "42"}, convert_mock, snippets=[Snippet("-code-", 23)])])
@@ -159,7 +168,8 @@ class TestPublishFindingsTask:
                       post_mock.call_args[0][1]["potential_hits"][0]["target_snippets"])
 
     @patch("tasks.implementations.publish_findings.PublishFindingsTask._convert_graphs_to_files")
-    def test_publish_successful_run_code_snippets_extraction_fails(self, convert_mock, post_mock):
+    def test_publish_successful_run_code_snippets_extraction_fails(self, convert_mock, post_mock, getsize_mock):
+        getsize_mock.return_value = 0
         self.test_detector_execution.is_success = lambda: True
         finding = self._create_finding({"rank": "42"}, convert_mock)
         finding.get_snippets = MagicMock(return_value=[])
@@ -170,7 +180,8 @@ class TestPublishFindingsTask:
 
         assert_equals([], post_mock.call_args[0][1]["potential_hits"][0]["target_snippets"])
 
-    def test_publish_erroneous_run(self, post_mock):
+    def test_publish_erroneous_run(self, post_mock, getsize_mock):
+        getsize_mock.return_value = 0
         self.test_detector_execution.number_of_findings = 0
         self.test_detector_execution.is_error = lambda: True
         self.test_detector_execution.runtime = 1337
@@ -186,7 +197,8 @@ class TestPublishFindingsTask:
             "timestamp": self.test_run_timestamp
         }, post_mock.call_args[0][1])
 
-    def test_publish_timeout_run(self, post_mock):
+    def test_publish_timeout_run(self, post_mock, getsize_mock):
+        getsize_mock.return_value = 0
         self.test_detector_execution.is_timeout = lambda: True
         self.test_detector_execution.runtime = 1000000
         self.test_detector_execution.number_of_findings = 0
@@ -202,7 +214,8 @@ class TestPublishFindingsTask:
             "timestamp": self.test_run_timestamp
         }, post_mock.call_args[0][1])
 
-    def test_publish_not_run(self, post_mock):
+    def test_publish_not_run(self, post_mock, getsize_mock):
+        getsize_mock.return_value = 0
         self.test_detector_execution.runtime = 0
         self.test_detector_execution.number_of_findings = 0
 
@@ -218,7 +231,8 @@ class TestPublishFindingsTask:
         }, post_mock.call_args[0][1])
 
     @patch("tasks.implementations.publish_findings.PublishFindingsTask._convert_graphs_to_files")
-    def test_with_markdown(self, convert_mock, post_mock):
+    def test_with_markdown(self, convert_mock, post_mock, getsize_mock):
+        getsize_mock.return_value = 0
         self.test_detector_execution.is_success = lambda: True
         potential_hits = [self._create_finding({"list": ["hello", "world"], "dict": {"key": "value"}}, convert_mock)]
         self.test_potential_hits = PotentialHits(potential_hits)
@@ -232,7 +246,8 @@ class TestPublishFindingsTask:
                       post_mock.call_args[0][1]["potential_hits"])
 
     @patch("tasks.implementations.publish_findings.replace_dot_graph_with_image")
-    def test_converts_graphs(self, replace_mock, post_mock):
+    def test_converts_graphs(self, replace_mock, post_mock, getsize_mock):
+        getsize_mock.return_value = 0
         self.test_detector_execution.is_success = lambda: True
 
         self.test_potential_hits = PotentialHits([
@@ -253,7 +268,8 @@ class TestPublishFindingsTask:
         assert_equals([self.test_detector_execution.findings_path + "/graph"], post_mock.call_args[1]["file_paths"])
 
     @patch("tasks.implementations.publish_findings.replace_dot_graph_with_image")
-    def test_converts_directed_graphs(self, replace_mock, post_mock):
+    def test_converts_directed_graphs(self, replace_mock, post_mock, getsize_mock):
+        getsize_mock.return_value = 0
         self.test_detector_execution.is_success = lambda: True
 
         self.test_potential_hits = PotentialHits([
@@ -272,6 +288,24 @@ class TestPublishFindingsTask:
                      self.version_compile, self.detector)
 
         assert_equals([self.test_detector_execution.findings_path + "/graph"], post_mock.call_args[1]["file_paths"])
+
+    @patch("tasks.implementations.publish_findings.PublishFindingsTask._convert_graphs_to_files")
+    def test_publish_successful_run_in_sized_chunks(self, convert_mock, post_mock, getsize_mock):
+        self.uut.max_files_per_post = 100
+        self.uut.max_file_size_per_post = 1500
+        getsize_mock.return_value = 1024
+        self.test_detector_execution.is_success = lambda: True
+        self.test_potential_hits = PotentialHits([
+            self._create_finding({"rank": "-1-"}, convert_mock, file_paths=["-file1-"]),
+            self._create_finding({"rank": "-2-"}, convert_mock, file_paths=["-file2-"])
+        ])
+
+        self.uut.run(self.project, self.version, self.test_detector_execution, self.test_potential_hits,
+                     self.version_compile, self.detector)
+
+        assert_equals(len(post_mock.call_args_list), 2)
+        assert_equals(["-file1-"], post_mock.call_args_list[0][1]["file_paths"])
+        assert_equals(["-file2-"], post_mock.call_args_list[1][1]["file_paths"])
 
     def _create_finding(self, data: Dict, convert_mock=None, file_paths=None, snippets=None):
         if snippets is None:
