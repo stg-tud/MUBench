@@ -169,11 +169,9 @@ class RunBenchmarkExperiment(TaskConfiguration):
 
 
 class RunCrossProjectPrepare(TaskConfiguration):
-    ID = "xpprep"
-
     @staticmethod
     def mode() -> str:
-        return "run {}".format(RunCrossProjectPrepare.ID)
+        return "checkout-xp"
 
     def tasks(self, config) -> List:
         create_index_tasks = [CollectProjectsTask(config.data_path), CollectVersionsTask(config.development_mode),

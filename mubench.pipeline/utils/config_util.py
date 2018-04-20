@@ -102,6 +102,7 @@ def _get_command_line_parser(available_detectors: List[str], available_scripts: 
     __add_run_subprocess(available_detectors, available_datasets, subparsers)
     __add_publish_subprocess(available_detectors, available_datasets, subparsers)
     __add_stats_subprocess(available_scripts, available_datasets, subparsers)
+    __add_checkout_cross_project_subprocess(available_datasets, subparsers)
 
     # Add subprocesses provided by the ./mubench script
     __add_browse_subprocess(subparsers)
@@ -209,7 +210,6 @@ def __add_run_subprocess(available_detectors: List[str], available_datasets: Lis
     __add_run_ex1_subprocess(available_detectors, available_datasets, run_subparsers)
     __add_run_ex2_subprocess(available_detectors, available_datasets, run_subparsers)
     __add_run_ex3_subprocess(available_detectors, available_datasets, run_subparsers)
-    __add_run_cross_project_prepare(run_subparsers)
 
 
 def __add_run_ex1_subprocess(available_detectors: List[str], available_datasets: List[str], subparsers) -> None:
@@ -252,10 +252,12 @@ def __add_run_ex3_subprocess(available_detectors: List[str], available_datasets:
     __setup_run_arguments(experiment_parser, available_detectors)
 
 
-def __add_run_cross_project_prepare(subparsers) -> None:
-    parser = subparsers.add_parser("xpprep", formatter_class=SortingHelpFormatter,
+def __add_checkout_cross_project_subprocess(available_datasets: List[str], subparsers) -> None:
+    parser = subparsers.add_parser("checkout-xp", formatter_class=SortingHelpFormatter,
                                    help="TODO",
                                    description="TODO")
+
+    __setup_filter_arguments(parser, available_datasets)
 
     boa_user = __get_default('boa-user', None)
     boa_password = __get_default('boa-password', None)
