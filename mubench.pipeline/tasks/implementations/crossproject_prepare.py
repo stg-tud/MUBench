@@ -11,7 +11,6 @@ from utils.shell import CommandFailedError
 
 
 class CrossProjectPrepareTask:
-    MAX_SUBTYPES_SAMPLE_SIZE = 25
     MAX_PROJECT_SAMPLE_SIZE = 50
 
     def __init__(self, root_path: str, checkouts_base_path: str, index_file: str, timestamp: int,
