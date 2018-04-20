@@ -1,0 +1,4 @@
+#!/bin/bash
+
+DOCKER_IMAGE=${MUBENCH_DOCKER_IMAGE_USERNAME}/mubench-pipeline:${MUBENCH_DOCKER_IMAGE_TAG}
+docker run --rm -v "$MUBENCH_ROOT":/mubench -v ${MUBENCH_PIPELINE_CHECKOUTS_VOLUME}:/mubench/checkouts -v ${MUBENCH_PIPELINE_FINDINGS_VOLUME}:/mubench/findings ${DOCKER_IMAGE} python ./mubench.pipeline/benchmark.py "$@"
