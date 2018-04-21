@@ -289,6 +289,22 @@ class TestPublishFindingsTask:
 
         assert_equals(len(post_mock.call_args_list), 2)
 
+    @patch("tasks.implementations.publish_findings.PublishFindingsTask._convert_graphs_to_files")
+    def test_add_at_least_one_hit_to_chunk(self, convert_mock, post_mock, get_potential_hit_size_mock):
+        self.uut.max_post_size_in_bytes = 0
+        self.uut.max_files_per_post = 0
+        get_potential_hit_size_mock.return_value = 1
+        self.test_detector_execution.is_success = lambda: True
+        self.test_potential_hits = PotentialHits([
+            self._create_finding({"rank": "-1-"}, convert_mock, file_paths=["-file1-"])
+        ])
+
+        self.uut.run(self.project, self.version, self.test_detector_execution, self.test_potential_hits,
+                     self.version_compile, self.detector)
+
+        assert_equals(len(post_mock.call_args_list), 1)
+        assert_equals([{"rank": "-1-", "target_snippets": []}], post_mock.call_args[0][1]["potential_hits"])
+
     def _create_finding(self, data: Dict, convert_mock=None, file_paths=None, snippets=None):
         if snippets is None:
             snippets = []
