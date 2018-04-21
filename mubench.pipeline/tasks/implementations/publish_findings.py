@@ -5,6 +5,8 @@ from typing import List, Dict
 from urllib.parse import urljoin
 
 import re
+
+from os.path import getsize
 from requests import RequestException
 
 from data.detector import Detector
@@ -160,7 +162,7 @@ class PublishFindingsTask:
 
     @staticmethod
     def __get_potential_hit_size(potential_hit: 'SpecializedFinding') -> int:
-        return getsizeof(potential_hit)
+        return getsizeof(potential_hit) + sum([getsize(file) for file in potential_hit.files])
 
 
 class SpecializedFinding(Finding):
