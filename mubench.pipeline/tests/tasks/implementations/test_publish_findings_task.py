@@ -276,7 +276,7 @@ class TestPublishFindingsTask:
 
     @patch("tasks.implementations.publish_findings.PublishFindingsTask._convert_graphs_to_files")
     def test_publish_successful_run_in_sized_chunks(self, convert_mock, post_mock, get_potential_hit_size_mock):
-        self.uut.max_file_size_per_post = 1500
+        self.uut.max_post_size_in_bytes = 1500
         get_potential_hit_size_mock.return_value = 1024
         self.test_detector_execution.is_success = lambda: True
         self.test_potential_hits = PotentialHits([

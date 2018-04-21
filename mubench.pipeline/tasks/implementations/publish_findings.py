@@ -26,7 +26,7 @@ class PublishFindingsTask:
                  review_site_password: str = ""):
         super().__init__()
         self.max_files_per_post = 20  # 20 is PHP's default limit to the number of files per request
-        self.max_file_size_per_post = 5000  # choose a moderate value since we only approximate upload size
+        self.max_post_size_in_bytes = 5000  # choose a moderate value since we only approximate upload size
 
         self.experiment_id = experiment_id
         self.compiles_base_path = compiles_base_path
@@ -63,7 +63,7 @@ class PublishFindingsTask:
             for potential_hit in potential_hits.findings]
 
         try:
-            for postable_potential_hits_slice in self.__slice_by_max_files_and_size_per_post(postable_potential_hits):
+            for postable_potential_hits_slice in self.__slice_by_number_of_files_and_post_size(postable_potential_hits):
                 file_paths = self.__get_file_paths(postable_potential_hits_slice)
                 postable_data = self.__to_postable_data(run_info, result, postable_potential_hits_slice)
                 self.__post(project, version, detector, postable_data, file_paths)
@@ -74,16 +74,16 @@ class PublishFindingsTask:
             else:
                 logger.error("%s", e)
 
-    def __slice_by_max_files_and_size_per_post(self, potential_hits: List['SpecializedFinding']) -> List[List[Finding]]:
+    def __slice_by_number_of_files_and_post_size(self, potential_hits: List['SpecializedFinding']) -> List[List[Finding]]:
         potential_hits_slice = []
         number_of_files_in_slice = 0
         size_of_slice = 0
         for potential_hit in potential_hits:
             number_of_files_in_hit = len(potential_hit.files)
             size_of_hit = self.__get_potential_hit_size(potential_hit)
-            file_count_limit = number_of_files_in_slice + number_of_files_in_hit > self.max_files_per_post
-            file_size_limit = size_of_slice + size_of_hit > self.max_file_size_per_post
-            if potential_hits_slice and (file_count_limit or file_size_limit):
+            exceeds_max_files_per_post = number_of_files_in_slice + number_of_files_in_hit > self.max_files_per_post
+            exceeds_max_post_size = size_of_slice + size_of_hit > self.max_post_size_in_bytes
+            if potential_hits_slice and (exceeds_max_files_per_post or exceeds_max_post_size):
                 yield potential_hits_slice
                 potential_hits_slice = [potential_hit]
                 number_of_files_in_slice = number_of_files_in_hit
