@@ -29,7 +29,7 @@ class PublishFindingsTask:
                  review_site_password: str = ""):
         super().__init__()
         self.max_files_per_post = 20  # 20 is PHP's default limit to the number of files per request
-        self.max_post_size_in_bytes = 5000  # choose a moderate value since we only approximate upload size
+        self.max_post_size_in_bytes = 7000  # choose a moderate value since we only approximate upload size
 
         self.experiment_id = experiment_id
         self.compiles_base_path = compiles_base_path
