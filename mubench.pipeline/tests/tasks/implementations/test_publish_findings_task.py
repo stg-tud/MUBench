@@ -276,21 +276,18 @@ class TestPublishFindingsTask:
 
     @patch("tasks.implementations.publish_findings.PublishFindingsTask._convert_graphs_to_files")
     def test_publish_successful_run_in_sized_chunks(self, convert_mock, post_mock, get_potential_hit_size_mock):
-        self.uut.max_files_per_post = 100
         self.uut.max_file_size_per_post = 1500
         get_potential_hit_size_mock.return_value = 1024
         self.test_detector_execution.is_success = lambda: True
         self.test_potential_hits = PotentialHits([
-            self._create_finding({"rank": "-1-"}, convert_mock, file_paths=["-file1-"]),
-            self._create_finding({"rank": "-2-"}, convert_mock, file_paths=["-file2-"])
+            self._create_finding({"rank": "-1-"}, convert_mock),
+            self._create_finding({"rank": "-2-"}, convert_mock)
         ])
 
         self.uut.run(self.project, self.version, self.test_detector_execution, self.test_potential_hits,
                      self.version_compile, self.detector)
 
         assert_equals(len(post_mock.call_args_list), 2)
-        assert_equals(["-file1-"], post_mock.call_args_list[0][1]["file_paths"])
-        assert_equals(["-file2-"], post_mock.call_args_list[1][1]["file_paths"])
 
     def _create_finding(self, data: Dict, convert_mock=None, file_paths=None, snippets=None):
         if snippets is None:
