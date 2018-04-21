@@ -16,6 +16,7 @@ from data.project_version import ProjectVersion
 from data.snippets import SnippetUnavailableException
 from data.version_compile import VersionCompile
 from tasks.implementations.findings_filters import PotentialHits
+from utils.size import total_size
 from utils.web_util import post, as_markdown
 
 _SNIPPETS_KEY = "target_snippets"
@@ -166,3 +167,6 @@ class SpecializedFinding(Finding):
     def __init__(self, data: Dict[str, str], files: List[str] = None):
         super().__init__(data)
         self.files = files or []
+
+    def __sizeof__(self):
+        return total_size(self.__dict__) + total_size(self.files)
