@@ -398,10 +398,10 @@ class RunsControllerTest extends SlimTestCase
 
     function test_get_misuse_results_no_runs()
     {
-        $detector = Detector::find('-d-');
+        $this->runsController->addRun(2, '-d1-', '-p-', '-v-', $this->run_with_two_potential_hits_for_one_misuse);
         $experiment = Experiment::find(1);
 
-        $misuses = $this->runsController->getMisuseResults($experiment, [$detector]);
+        $misuses = $this->runsController->getMisuseResults($experiment, [$this->detector1]);
         self::assertEquals([], $misuses);
     }
 
