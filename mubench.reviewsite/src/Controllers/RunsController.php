@@ -84,7 +84,7 @@ class RunsController extends Controller
         return $this->renderer->render($response, 'experiment_stats.phtml', ['exp' => $experiment, 'experiment_results' => $results, 'ex2_review_size' => $ex2_review_size, 'misuses' => $misuse_results, 'det' => $detectors]);
     }
 
-    public function getMisuseResults($experiment, $detectors)
+    function getMisuseResults($experiment, $detectors)
     {
         $misuse_results = [];
 
