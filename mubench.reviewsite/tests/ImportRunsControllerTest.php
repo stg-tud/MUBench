@@ -109,7 +109,7 @@ class ImportRunsControllerTest extends SlimTestCase
         \MuBench\ReviewSite\Models\Detector::boot();
     }
 
-    private function setupDatabaseTables(): void
+    private function setupDatabaseTables()
     {
         $schema = Schema::connection('default');
         require __DIR__ . '/../setup/create_database_tables.php';
@@ -117,13 +117,13 @@ class ImportRunsControllerTest extends SlimTestCase
         require __DIR__ . '/../setup/create_database_tables.php';
     }
 
-    private function createTempDBFiles(): void
+    private function createTempDBFiles()
     {
        $this->db1 = tempnam('./', "test-db-");
        $this->db2 = tempnam('./', "test-db-");
     }
 
-    private function deleteTempDBFiles(): void
+    private function deleteTempDBFiles()
     {
         unlink($this->db1);
         unlink($this->db2);

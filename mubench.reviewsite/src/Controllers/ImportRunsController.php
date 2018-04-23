@@ -59,7 +59,7 @@ class ImportRunsController extends RunsController
         return $this->capsule->getConnection('extern');
     }
 
-    function importRunsFromConnection($experiment_id, $detector_muid, $project_muid, $version_muid, $connection): void
+    function importRunsFromConnection($experiment_id, $detector_muid, $project_muid, $version_muid, $connection)
     {
         list($local_detector, $detector) = $this->getLocalAndExternalDetector($detector_muid, $connection);
 
