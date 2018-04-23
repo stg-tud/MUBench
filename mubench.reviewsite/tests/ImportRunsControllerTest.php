@@ -3,16 +3,23 @@
 require_once "SlimTestCase.php";
 
 use Illuminate\Support\Facades\Schema;
+use MuBench\ReviewSite\Controllers\ImportRunsController;
+use MuBench\ReviewSite\Controllers\MetadataController;
 use MuBench\ReviewSite\Controllers\RunsController;
+use MuBench\ReviewSite\Controllers\TagsController;
 use MuBench\ReviewSite\Models\Detector;
 use MuBench\ReviewSite\Models\Experiment;
+use MuBench\ReviewSite\Models\Reviewer;
 use MuBench\ReviewSite\Models\Run;
 use Illuminate\Container\Container;
 use Illuminate\Events\Dispatcher;
+use MuBench\ReviewSite\Models\Snippet;
+use MuBench\ReviewSite\Models\Violation;
 
 class ImportRunsControllerTest extends SlimTestCase
 {
     private $run_with_two_potential_hits_for_one_misuse;
+    private $metadata;
 
     private $db1;
 
@@ -45,6 +52,17 @@ class ImportRunsControllerTest extends SlimTestCase
                     'file' => 'test'
                 ]]
         ];
+        $this->metadata = [
+            'project' => '-p-',
+            'version' => '-v-',
+            'misuse' => '-m-',
+            'description' => '-desc-',
+            'fix' => ['diff-url' => '-diff-', 'description' => '-fix-desc-'],
+            'location' => ['file' => '-file-location-', 'method' => '-method-location-'],
+            'violations' => ['missing/call'],
+            'correct_usages' => [['id' => '-p1-', 'snippet' => ['code' => '-code-', 'first_line' => 42]]],
+            'target_snippets' => [['code' => '-target-snippet-code-', 'first_line_number' => 273]]
+        ];
         $this->createTempDBFiles();
     }
 
@@ -55,18 +73,50 @@ class ImportRunsControllerTest extends SlimTestCase
 
     function test_import_run()
     {
+        // make first db default to fill
         $this->addDBConnections('default', 'extern');
         $this->setupDatabaseTables();
-        $runsController = new RunsController($this->container);
-        $runsController->addRun(2, '-d-', '-p-', '-v-', $this->run_with_two_potential_hits_for_one_misuse);
-        $expectedRun = Run::of(Detector::find('-d-'))->in(Experiment::find(2))->where(['project' => '-p-', 'version' => '-v-'])->first();
 
+        $this->createFullRunWithReview();
+
+        $expectedRun = Run::of(Detector::find('-d-'))->in(Experiment::find(1))->where(['project_muid' => '-p-', 'version_muid' => '-v-'])->first();
+
+        // need to fetch snippets beforehand because call in Misuse class works on default connection
+        $expectedSnippets = Snippet::all();
+
+        // switch dbs around, extern db is filled
         $this->addDBConnections('extern', 'default');
-        $importRunsController = new \MuBench\ReviewSite\Controllers\ImportRunsController($this->container);
-        $importRunsController->importRunsFromConnection(2, '-d-', '-p-', '-v-', $this->container['capsule']->getConnection('extern'));
-        $importedRun = Run::of(Detector::find('-d-'))->in(Experiment::find(2))->where(['project' => '-p-', 'version' => '-v-'])->first();
 
-        self::assertEquals($expectedRun, $importedRun);
+        $importRunsController = new ImportRunsController($this->container);
+        $importRunsController->importRunsFromConnection(1, '-d-', '-p-', '-v-', $this->container['capsule']->getConnection('extern'));
+
+        $importedRun = Run::of(Detector::find('-d-'))->in(Experiment::find(1))->where(['project_muid' => '-p-', 'version_muid' => '-v-'])->first();
+
+        self::assertNotNull($importedRun);
+        self::assertEquals($expectedRun->getAttributes(), $importedRun->getAttributes());
+        self::assertEquals($expectedRun->misuses, $importedRun->misuses);
+        $actualMisuse = $importedRun->misuses[0];
+        $expectedMisuse = $expectedRun->misuses[0];
+        self::assertNotNull($actualMisuse->metadata);
+        self::assertEquals($expectedMisuse->metadata, $actualMisuse->metadata);
+        self::assertNotNull($actualMisuse->metadata->violations);
+        self::assertEquals($expectedMisuse->metadata->violations, $actualMisuse->metadata->violations);
+        self::assertNotNull($actualMisuse->metadata->correct_usages);
+        self::assertEquals($expectedMisuse->metadata->correct_usages, $actualMisuse->metadata->correct_usages);
+        self::assertNotEmpty($actualMisuse->findings);
+        self::assertEquals($expectedMisuse->findings, $actualMisuse->findings);
+        self::assertNotEmpty($actualMisuse->snippets());
+        self::assertEquals($expectedSnippets, $actualMisuse->snippets());
+        self::assertNotEmpty($actualMisuse->misuse_tags);
+        self::assertEquals($expectedMisuse->misuse_tags[0]->getAttributes(), $actualMisuse->misuse_tags[0]->getAttributes());
+        self::assertNotEmpty($actualMisuse->reviews);
+        self::assertEquals($expectedMisuse->reviews, $actualMisuse->reviews);
+        $expectedReview = $expectedMisuse->reviews[0];
+        $actualReview = $actualMisuse->reviews[0];
+        self::assertEquals($expectedReview->reviewer->name, $actualReview->reviewer->name);
+        self::assertNotEmpty($actualReview->finding_reviews);
+        self::assertEquals($expectedReview->finding_reviews, $actualReview->finding_reviews);
+        self::assertEquals($expectedReview->finding_reviews[0]->violations, $actualReview->finding_reviews[0]->violations);
     }
 
     private function addDBConnections($firstdb, $seconddb)
@@ -127,6 +177,21 @@ class ImportRunsControllerTest extends SlimTestCase
     {
         unlink($this->db1);
         unlink($this->db2);
+    }
+
+    public function createFullRunWithReview()
+    {
+        $runsController = new RunsController($this->container);
+        $metadataController = new MetadataController($this->container);
+        $tagController = new TagsController($this->container);
+        $reviewController = new \MuBench\ReviewSite\Controllers\ReviewsController($this->container);
+
+        $reviewer = Reviewer::create(['name' => 'reviewer']);
+        $violation = Violation::create(['name' => 'missing/call']);
+        $metadataController->putMetadataCollection([$this->metadata]);
+        $runsController->addRun(1, '-d-', '-p-', '-v-', $this->run_with_two_potential_hits_for_one_misuse);
+        $tagController->addTagToMisuse(1, 'test-dataset');
+        $reviewController->updateOrCreateReview(1, $reviewer->id, '-comment-', [['hit' => 'Yes', 'violations' => [$violation->id]]]);
     }
 
 
