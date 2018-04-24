@@ -1,4 +1,4 @@
-usage: ./mubench [-h]
+usage: ./mubench browse [-h]
 
 Browse docker volumes.
 
