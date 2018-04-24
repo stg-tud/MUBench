@@ -1,0 +1,13 @@
+usage: ./mubench [-h] [TASK]
+
+Run MUBench, the benchmark for API-misuse detectors.
+
+positional arguments:
+  TASK                  MUBench provides several tasks. Run `./mubench <task> -h` for details.
+			Available tasks are {pipeline, reviewsite, update, browse}. Defaults to `pipeline`.
+
+optional arguments:
+  -h                    show this help message and exit
+
+For details, check out https://github.com/stg-tud/MUBench.
+

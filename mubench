@@ -6,10 +6,15 @@ TASKS=${MUBENCH_ROOT}/mubench.bin
 
 source ${TASKS}/environment
 
-TASK=${TASKS}/$1
-if [ -f "${TASK}" ]; then
-  shift  # remove requested task argument
-  source "${TASK}" "$@"
+if [ "$1" = "-h" ]; then
+  echo "$(cat "${MUBENCH_DOCS}/mubench.txt")"
+  exit 0
 else
-  source "${TASKS}/pipeline" "$@"
+  TASK=${TASKS}/$1
+  if [ -f "${TASK}" ]; then
+    shift  # remove requested task argument
+    source "${TASK}" "$@"
+  else
+    source "${TASKS}/pipeline" "$@"
+  fi;
 fi;
