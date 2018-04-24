@@ -1,1 +1,6 @@
+if [ $1 = "-h"]; then
+  echo "$(cat "${MUBENCH_DOCS}/update.txt")"
+  exit 0
+fi;
+
 docker run --rm -v "$MUBENCH_ROOT":/mubench ${MUBENCH_PIPELINE_DOCKER_IMAGE} git pull 

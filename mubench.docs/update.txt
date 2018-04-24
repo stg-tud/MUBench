@@ -1,0 +1,6 @@
+usage: ./mubench browse [-h]
+
+Update MUBench.
+
+optional arguments:
+  -h                    show this help message and exit
