@@ -1,11 +1,9 @@
-REVIEWSITE_ROOT=${MUBENCH_ROOT}/mubench.reviewsite
-
 if [ "$1" = 'init' ]; then
   echo "Initializing MUBench review site..."
-  docker run --rm -v "$REVIEWSITE_ROOT":/mubench-reviewsite ${DOCKER_IMAGE} /bin/sh ./configure.sh
+  docker run --rm -v "$MUBENCH_REVIEWSITE_ROOT":/mubench-reviewsite ${DOCKER_IMAGE} /bin/sh ./configure.sh
 elif [ "$1" = 'start' ]; then
   echo "Starting MUBench review site at http://localhost:${REVIEWSITE_PORT}..."
-  output=$(docker run --rm -itd -p ${REVIEWSITE_PORT}:80 -v "$REVIEWSITE_ROOT":/mubench-reviewsite --name ${REVIEWSITE_DOCKER_CID} ${MUBENCH_REVIEWSITE_DOCKER_IMAGE} 2>&1) || echo $output
+  output=$(docker run --rm -itd -p ${REVIEWSITE_PORT}:80 -v "$MUBENCH_REVIEWSITE_ROOT":/mubench-reviewsite --name ${REVIEWSITE_DOCKER_CID} ${MUBENCH_REVIEWSITE_DOCKER_IMAGE} 2>&1) || echo $output
 elif [ "$1" = 'stop' ]; then
   echo "Stopping MUBench review site..."
   docker stop ${REVIEWSITE_DOCKER_CID}
