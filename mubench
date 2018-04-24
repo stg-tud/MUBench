@@ -4,7 +4,7 @@ SCRIPT_DIR=$(dirname "$([[ "$0" = /* ]] && echo "$0" || echo "$PWD/${0#./}")")
 MUBENCH_ROOT=$SCRIPT_DIR
 META_TASKS=${MUBENCH_ROOT}/mubench.meta_tasks
 
-source ${META_TASKS}/setup-env
+source ${META_TASKS}/environment
 
 REQUESTED_TASK=${META_TASKS}/$1
 if [ -f "${REQUESTED_TASK}" ]; then
