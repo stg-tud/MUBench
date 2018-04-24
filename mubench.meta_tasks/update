@@ -1,2 +1,1 @@
-DOCKER_IMAGE=${MUBENCH_DOCKER_IMAGE_USERNAME}/mubench-pipeline:${MUBENCH_DOCKER_IMAGE_TAG} 
-docker run --rm -v "$MUBENCH_ROOT":/mubench ${DOCKER_IMAGE} git pull 
+docker run --rm -v "$MUBENCH_ROOT":/mubench ${MUBENCH_PIPELINE_DOCKER_IMAGE} git pull 

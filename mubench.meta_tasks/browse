@@ -1,2 +1,1 @@
-DOCKER_IMAGE=${MUBENCH_DOCKER_IMAGE_USERNAME}/mubench-pipeline:${MUBENCH_DOCKER_IMAGE_TAG}
-docker run --rm -it -v "$MUBENCH_ROOT":/mubench -v ${MUBENCH_PIPELINE_CHECKOUTS_VOLUME}:/mubench/checkouts -v ${MUBENCH_PIPELINE_FINDINGS_VOLUME}:/mubench/findings ${DOCKER_IMAGE} /bin/bash
+docker run --rm -it -v "$MUBENCH_ROOT":/mubench -v ${MUBENCH_PIPELINE_CHECKOUTS_VOLUME}:/mubench/checkouts -v ${MUBENCH_PIPELINE_FINDINGS_VOLUME}:/mubench/findings ${MUBENCH_PIPELINE_DOCKER_IMAGE} /bin/bash
