@@ -11,8 +11,13 @@ if [ "$1" = "-h" ]; then
   exit 0
 else
   TASK=${TASKS}/$1
+  DOC="${MUBENCH_DOCS}/$1.txt"
   if [ -f "${TASK}" ]; then
     shift  # remove requested task argument
+    if [ "$1" = "-h" ] && [ -f "${DOC}" ]; then
+      echo "$(cat "${DOC}")"
+      exit 0
+    fi;
     source "${TASK}" "$@"
   else
     source "${TASKS}/pipeline" "$@"
