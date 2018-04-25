@@ -22,7 +22,7 @@ function filterRow(row){
 
 function changeStatsDisplay(row, visible, visibleProject){
     let stats = row.querySelectorAll("span[class^='stats']");
-    let statsClassName = visible ? "stats" : "stats td-invisible";
+    let statsClassName = visible ? "stats" : "stats invisible";
     let startIndex = (visibleProject ? 0 : 1);
     for(let i = startIndex; i < stats.length; ++i){
         stats[i].className = statsClassName;

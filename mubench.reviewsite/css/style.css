@@ -185,7 +185,6 @@ td.top { border-top: 1px solid black; }
 td.right { text-align: right; }
 
 td.no-hit { color: lightgray; }
-.td-invisible { display: none; }
 a.button.no-hit { color: #AAAAAA; }
 
 table.potential_hits th {
@@ -379,6 +378,10 @@ a.disabled {
 
 .row-hover:hover td {
     background-color: #f1f1f1;
+}
+
+span.stats.invisible {
+    display:none;
 }
 
 #filter-menu {
