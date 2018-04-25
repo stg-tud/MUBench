@@ -3,16 +3,16 @@ from itertools import chain
 from collections import deque
 
 
-__handlers = {tuple: iter,
-              list: iter,
-              deque: iter,
-              dict: lambda d: chain.from_iterable(d.items()),
-              set: iter,
-              frozenset: iter,
-              }
+__default_handlers = {tuple: iter,
+                      list: iter,
+                      deque: iter,
+                      dict: lambda d: chain.from_iterable(d.items()),
+                      set: iter,
+                      frozenset: iter,
+                      }
 
 
-def total_size(o, verbose=False):
+def total_size(o, verbose=False, handlers=None):
     """ Returns the approximate memory footprint an object and all of its contents.
 
     Automatically finds the contents of the following builtin containers and
@@ -25,6 +25,7 @@ def total_size(o, verbose=False):
     """
     seen = set()  # track which object id's have already been seen
     default_size = getsizeof(0)  # estimate sizeof object without __sizeof__
+    handlers = __default_handlers.update(handlers)
 
     def sizeof(obj):
         if id(obj) in seen:  # do not double count the same object
@@ -35,7 +36,7 @@ def total_size(o, verbose=False):
         if verbose:
             print(s, type(obj), repr(obj), file=stderr)
 
-        for type_, handler in __handlers.items():
+        for type_, handler in handlers.items():
             if isinstance(obj, type_):
                 s += sum(map(sizeof, handler(obj)))
                 break
