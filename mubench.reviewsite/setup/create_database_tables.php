@@ -61,6 +61,7 @@ $schema->create($metadata->getTable(), function (Blueprint $table) {
     $table->text('fix_description');
     $table->text('file');
     $table->text('method');
+    $table->text('line');
     $table->text('diff_url');
     $table->dateTime('created_at');
     $table->dateTime('updated_at');

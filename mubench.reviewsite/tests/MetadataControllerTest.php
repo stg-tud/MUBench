@@ -30,7 +30,7 @@ class MetadataControllerTest extends SlimTestCase
             'misuse' => '-m-',
             'description' => '-desc-',
             'fix' => ['diff-url' => '-diff-', 'description' => '-fix-desc-'],
-            'location' => ['file' => '-file-location-', 'method' => '-method-location-'],
+            'location' => ['file' => '-file-location-', 'method' => '-method-location-', 'line' => -1],
             'violations' => ['missing/call'],
             'correct_usages' => [['id' => '-p1-', 'snippet' => ['code' => '-code-', 'first_line' => 42]]],
             'target_snippets' => [['code' => '-target-snippet-code-', 'first_line_number' => 273]]
@@ -49,6 +49,7 @@ class MetadataControllerTest extends SlimTestCase
         self::assertEquals('-fix-desc-', $this->metadata->fix_description);
         self::assertEquals('-file-location-', $this->metadata->file);
         self::assertEquals('-method-location-', $this->metadata->method);
+        self::assertEquals(-1, $this->metadata->line);
         self::assertEquals('-diff-', $this->metadata->diff_url);
         self::assertEquals(1, count($this->metadata->correct_usages));
         self::assertEquals('-code-', $this->metadata->correct_usages[0]->code);
@@ -74,6 +75,7 @@ class MetadataControllerTest extends SlimTestCase
         self::assertEquals('-fix-desc-', $metadata->fix_description);
         self::assertEquals('-file-location-', $metadata->file);
         self::assertEquals('-method-location-', $metadata->method);
+        self::assertEquals(-1, $metadata->line);
         self::assertEquals('-diff-', $metadata->diff_url);
         self::assertEquals(1, count($metadata->correct_usages));
         self::assertEquals('-code-', $metadata->correct_usages[0]->code);

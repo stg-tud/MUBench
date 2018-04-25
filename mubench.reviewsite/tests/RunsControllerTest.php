@@ -149,10 +149,10 @@ class RunsControllerTest extends SlimTestCase
         $metadataController = new MetadataController($this->container);
         $metadataController->updateMetadata('-p-', '-v-', '-m1-', '-desc-',
             ['diff-url' => '-diff-', 'description' => '-fix-desc-'],
-            ['file' => '-file-location-', 'method' => '-method-location-'], [], [], []);
+            ['file' => '-file-location-', 'method' => '-method-location-', 'line' => -1], [], [], []);
         $metadataController->updateMetadata('-p-', '-v-', '-m2-', '-desc-',
             ['diff-url' => '-diff-', 'description' => '-fix-desc-'],
-            ['file' => '-file-location-', 'method' => '-method-location-'], [], [], []);
+            ['file' => '-file-location-', 'method' => '-method-location-', 'line' => -1], [], [], []);
 
         $this->runsController->addRun(3, '-d-', '-p-', '-v-', $run_without_hits);
 
@@ -174,7 +174,7 @@ class RunsControllerTest extends SlimTestCase
         $metadataController = new MetadataController($this->container);
         $metadataController->updateMetadata('-p-', '-v-', '-m1-', '-desc-',
             ['diff-url' => '-diff-', 'description' => '-fix-desc-'],
-            ['file' => '-file-location-', 'method' => '-method-location-'], [], [], []);
+            ['file' => '-file-location-', 'method' => '-method-location-', 'line' => -1], [], [], []);
 
         $this->runsController->addRun(3, '-d-', '-p-', '-v-', $run_without_hits);
         $this->runsController->addRun(3, '-d-', '-p-', '-v-', $run_without_hits);
@@ -196,7 +196,7 @@ class RunsControllerTest extends SlimTestCase
         $metadataController = new MetadataController($this->container);
         $metadataController->updateMetadata('-p-', '-v-', '-m-', '-desc-',
             ['diff-url' => '-diff-', 'description' => '-fix-desc-'],
-            ['file' => '-file-location-', 'method' => '-method-location-'], [], [], []);
+            ['file' => '-file-location-', 'method' => '-method-location-', 'line' => -1], [], [], []);
 
         $this->runsController->addRun(2, '-d-', '-p-', '-v-', $run_without_hits);
 
@@ -258,7 +258,7 @@ class RunsControllerTest extends SlimTestCase
         $metadataController = new MetadataController($this->container);
         $metadataController->updateMetadata('-p-', '-v-', '-m-', '-desc-',
             ['diff-url' => '-diff-', 'description' => '-fix-desc-'],
-            ['file' => '-file-location-', 'method' => '-method-location-'], [], [], []);
+            ['file' => '-file-location-', 'method' => '-method-location-', 'line' => -1], [], [], []);
 
         $this->runsController->addRun(1, '-d-', '-p-', '-v-', [
             "result" =>"success",
