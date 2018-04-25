@@ -131,7 +131,7 @@ $columns_to_ignore = array(
                     <span class="<?= $new_version ? "" : "td-invisible" ?>"><?= $markdown_parser->text(number_format($run->runtime, 1)) . "s" ?></span></td>
                 <td class="<?= $style_classes ?> right">
                     <span class="<?= $new_version ? "" : "td-invisible" ?>">
-                        <?php include "includes/stats_modal.phtml"; ?>
+                        <i value="<?= htmlspecialchars($project) ?>_<?= htmlspecialchars($version) ?>" onclick="showModal(this)" class="fa fa-info-circle clickable-icon" aria-hidden="true"></i>
                     </span>
                 </td>
                 <td class="<?= $style_classes ?>">
@@ -277,7 +277,7 @@ $columns_to_ignore = array(
                     <span class="<?= $new_version ? "" : "td-invisible" ?>"><?= $markdown_parser->text(number_format($run->runtime, 1)) . "s" ?></span></td>
                 <td class="<?= $style_classes ?> right">
                     <span class="<?= $new_version ? "" : "td-invisible" ?>">
-                        <?php include "includes/stats_modal.phtml"; ?>
+                        <i value="<?= htmlspecialchars($project) ?>_<?= htmlspecialchars($version) ?>" onclick="showModal(this)" class="fa fa-info-circle clickable-icon" aria-hidden="true"></i>
                     </span>
                 </td>
                 <td class="<?= $style_classes ?>"></td>
@@ -294,6 +294,13 @@ $columns_to_ignore = array(
     </tbody>
 </table>
 
+<?php foreach ($runs as $run) : ?>
+    <?php
+    $project = $run->project_muid;
+    $version = $run->version_muid;
+    ?>
+    <?php include "includes/stats_modal.phtml"; ?>
+<?php endforeach; ?>
 
 <script>
     function showModal(button) {
