@@ -61,7 +61,7 @@ class RunsControllerTest extends SlimTestCase
                     "misuse" => "-m-",
                     "rank" => 2,
                     "target_snippets" => [
-                        ["first_line_number" => 7, "code" => "-code-\n\n"]
+                        ["first_line_number" => 6, "code" => "-code-\n\n"]
                     ],
                     "startline" => 7,
                     "file" => "//src/file",
@@ -103,7 +103,7 @@ class RunsControllerTest extends SlimTestCase
 
         self::assertEquals(1, sizeof($run->misuses));
         self::assertEquals(2, sizeof($run->misuses[0]->findings));
-        self::assertEquals(2, sizeof($run->misuses[0]->snippets()));
+        self::assertEquals(1, sizeof($run->misuses[0]->snippets()));
 
         $misuse = $run->misuses[0];
         $finding = $misuse->findings[0];
