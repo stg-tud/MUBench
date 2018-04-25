@@ -12,6 +12,7 @@ __default_handlers = {tuple: iter,
                       }
 
 
+# source: https://code.activestate.com/recipes/577504/
 def total_size(o, verbose=False, handlers=None):
     """ Returns the approximate memory footprint an object and all of its contents.
 
