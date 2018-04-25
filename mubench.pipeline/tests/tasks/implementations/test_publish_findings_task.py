@@ -15,7 +15,7 @@ from tests.test_utils.data_util import create_project, create_version
 
 
 # noinspection PyAttributeOutsideInit
-@patch("tasks.implementations.publish_findings.PublishFindingsTask._PublishFindingsTask__get_potential_hit_size", return_value=0)
+@patch("tasks.implementations.publish_findings.total_size", return_value=0)
 @patch("tasks.implementations.publish_findings.post")
 class TestPublishFindingsTask:
     def setup(self):

@@ -1,12 +1,10 @@
 import getpass
 import logging
-from sys import getsizeof
+import re
+from os.path import getsize
 from typing import List, Dict
 from urllib.parse import urljoin
 
-import re
-
-from os.path import getsize
 from requests import RequestException
 
 from data.detector import Detector
@@ -83,7 +81,7 @@ class PublishFindingsTask:
         size_of_slice = 0
         for potential_hit in potential_hits:
             number_of_files_in_hit = len(potential_hit.files)
-            size_of_hit = self.__get_potential_hit_size(potential_hit)
+            size_of_hit = total_size(potential_hit)
             exceeds_max_files_per_post = number_of_files_in_slice + number_of_files_in_hit > self.max_files_per_post
             exceeds_max_post_size = size_of_slice + size_of_hit > self.max_post_size_in_bytes
             if potential_hits_slice and (exceeds_max_files_per_post or exceeds_max_post_size):
@@ -160,10 +158,6 @@ class PublishFindingsTask:
 
         return files
 
-    @staticmethod
-    def __get_potential_hit_size(potential_hit: 'SpecializedFinding') -> int:
-        return getsizeof(potential_hit) + sum([getsize(file) for file in potential_hit.files])
-
 
 class SpecializedFinding(Finding):
     def __init__(self, data: Dict[str, str], files: List[str] = None):
@@ -171,4 +165,4 @@ class SpecializedFinding(Finding):
         self.files = files or []
 
     def __sizeof__(self):
-        return total_size(self.__dict__) + total_size(self.files)
+        return total_size(self.__dict__) + sum([getsize(file) for file in self.files])
