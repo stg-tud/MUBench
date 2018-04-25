@@ -63,19 +63,23 @@ $columns_to_ignore = array(
         <input type="submit" value="update" />
     </form>
 <?php endif; ?>
-<label>
-    <input onclick="filter(this)" type="checkbox">
-    needs review
-</label>
-<label>
-    <input onclick="filter(this)" type="checkbox">
-    question
-</label>
-<label>
-    <input onclick="filter(this)" type="checkbox">
-    conflict
-</label>
-<table id="test">
+<?php if($user): ?>
+    <div id="filter-menu">
+        <label class="filter-label">
+            <input class="filter-checkbox" onclick="filter(this)" type="checkbox" value="i.fa.fa-search">
+            <span>Needs Review</span>
+        </label>
+        <label class="filter-label">
+            <input class="filter-checkbox" onclick="filter(this)" type="checkbox" value="i.fa.fa-question-circle">
+            <span>Needs Clarification</span>
+        </label>
+        <label class="filter-label">
+            <input class="filter-checkbox" onclick="filter(this)" type="checkbox" value="i.fa.fa-exclamation-triangle">
+            <span>Disagreement</span>
+        </label>
+    </div>
+<?php endif; ?>
+<table id="detector_table">
     <thead>
     <tr>
         <th>Project</th>
@@ -120,17 +124,17 @@ $columns_to_ignore = array(
             ?>
             <tr>
                 <td class="<?= $style_classes ?>">
-                    <span class="<?= $new_project ? "" : "td-invisible" ?>"><?= $markdown_parser->text($project) ?></span></td>
+                    <span class="stats <?= $new_project ? "" : "td-invisible" ?>"><?= $markdown_parser->text($project) ?></span></td>
                 <td class="<?= $style_classes ?>">
-                    <span class="<?= $new_version ? "" : "td-invisible" ?>"><?= $markdown_parser->text($version) ?></span></td>
+                    <span class="stats <?= $new_version ? "" : "td-invisible" ?>"><?= $markdown_parser->text($version) ?></span></td>
                 <td class="<?= $style_classes ?>">
-                    <span class="<?= $new_version ? "" : "td-invisible" ?>"><?= $markdown_parser->text($run->result) ?></span></td>
+                    <span class="stats <?= $new_version ? "" : "td-invisible" ?>"><?= $markdown_parser->text($run->result) ?></span></td>
                 <td class="<?= $style_classes ?> right">
-                    <span class="<?= $new_version ? "" : "td-invisible" ?>"><?= $markdown_parser->text($run->number_of_findings) ?></span></td>
+                    <span class="stats <?= $new_version ? "" : "td-invisible" ?>"><?= $markdown_parser->text($run->number_of_findings) ?></span></td>
                 <td class="<?= $style_classes ?> right">
-                    <span class="<?= $new_version ? "" : "td-invisible" ?>"><?= $markdown_parser->text(number_format($run->runtime, 1)) . "s" ?></span></td>
+                    <span class="stats <?= $new_version ? "" : "td-invisible" ?>"><?= $markdown_parser->text(number_format($run->runtime, 1)) . "s" ?></span></td>
                 <td class="<?= $style_classes ?> right">
-                    <span class="<?= $new_version ? "" : "td-invisible" ?>">
+                    <span class="stats <?= $new_version ? "" : "td-invisible" ?>">
                         <i value="<?= htmlspecialchars($project) ?>_<?= htmlspecialchars($version) ?>" onclick="showModal(this)" class="fa fa-info-circle clickable-icon" aria-hidden="true"></i>
                     </span>
                 </td>
@@ -312,66 +316,9 @@ $columns_to_ignore = array(
             document.getElementById(event.target.id).style.display = "None";
         }
     };
-
-    function filter(){
-        var checkboxes = document.querySelectorAll("input[type='checkbox']");
-        var icon_filters = ['i.fa.fa-search', 'i.fa.fa-question-circle', 'i.fa.fa-exclamation-triangle'];
-        var test = document.getElementById("test");
-        var rows = test.querySelectorAll("tr");
-        var statsVisible = false;
-        var lastProject = undefined;
-        var review = false;
-        for(var i = 0; i < checkboxes.length; ++i){
-            review = review || checkboxes[i].checked;
-        }
-        for(var i = 0; i < rows.length; ++i){
-            var row = rows[i];
-            if(row.parentNode.parentNode.id != "test" || row.children[0].tagName == "TH"){
-                continue;
-            }
-            var dontFilter = false;
-            for(var z = 0; z < icon_filters.length; ++z){
-                if(!checkboxes[z].checked){
-                    continue;
-                }
-                console.log(icon_filters[z]);
-                dontFilter = dontFilter || (row.childNodes[15].querySelectorAll(icon_filters[z]).length > 0)
-                console.log(dontFilter);
-            }
-            var project = (row.childNodes[1].childNodes[1].childNodes[0].innerText);
-            if(lastProject != project){
-                lastProject = project;
-                statsVisible = false;
-            }
-            if(review){
-                if(dontFilter) {
-                    row.style.display = "";
-                    for(var j = 1; j < 13; j += 2){
-                        if(row.childNodes[j].childNodes[1].className != "" && !statsVisible){
-                            row.childNodes[j].childNodes[1].className = "";
-                        }else if(statsVisible){
-                            row.childNodes[j].childNodes[1].className = "td-invisible";
-                        }
-                    }
-                    statsVisible = true;
-                }else{
-                    row.style.display = "none";
-                }
-            }else{
-                row.style.display = "";
-                for(var j = 1; j < 13; j += 2) {
-                    if (row.childNodes[j].childNodes[1].className == "" && !statsVisible) {
-                        statsVisible = true;
-                        break;
-                    } else if (statsVisible) {
-                        row.childNodes[j].childNodes[1].className = "td-invisible";
-                    }
-                }
-            }
-
-
-        }
-    }
 </script>
+<?php if($user) : ?>
+    <script src="<?= $site_base_url ?>js/detector-filter.js"></script>
+<?php endif; ?>
 </body>
 </html>

@@ -380,3 +380,22 @@ a.disabled {
 .row-hover:hover td {
     background-color: #f1f1f1;
 }
+
+#filter-menu {
+    margin: 5px;
+}
+
+#filter-menu label {
+    padding-right: 10px;
+    margin: 5px;
+    cursor: pointer;
+}
+#filter-menu input {
+    vertical-align: middle;
+    width:15px;
+    height:15px;
+    cursor: pointer;
+}
+#filter-menu label span {
+    vertical-align: middle;
+}
