@@ -4,6 +4,7 @@ namespace MuBench\ReviewSite\Controllers;
 
 
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 use MuBench\ReviewSite\Models\Detector;
@@ -13,8 +14,11 @@ use MuBench\ReviewSite\Models\ExperimentResult;
 use MuBench\ReviewSite\Models\Finding;
 use MuBench\ReviewSite\Models\Metadata;
 use MuBench\ReviewSite\Models\Misuse;
+use MuBench\ReviewSite\Models\Reviewer;
 use MuBench\ReviewSite\Models\ReviewState;
 use MuBench\ReviewSite\Models\Run;
+use MuBench\ReviewSite\Models\Snippet;
+use MuBench\ReviewSite\Models\Violation;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 use Slim\Http\Request;
@@ -308,7 +312,6 @@ class RunsController extends Controller
                 return False;
             }
         }
-
         $potential_hits = $run['potential_hits'];
 
         $this->createOrUpdateRunsTable($detector, $run);
@@ -353,7 +356,7 @@ class RunsController extends Controller
         return $detector;
     }
 
-    private function createOrUpdateRunsTable(Detector $detector, $run)
+    function createOrUpdateRunsTable(Detector $detector, $run)
     {
         $propertyToColumnNameMapping = $this->getColumnNamesFromProperties($run);
         $propertyToColumnNameMapping = $this->removeDisruptiveStatsColumns($propertyToColumnNameMapping);
@@ -362,7 +365,7 @@ class RunsController extends Controller
         $this->createOrUpdateTable($run->getTable(), $propertyToColumnNameMapping, array($this, 'createRunsTable'));
     }
 
-    private function createOrUpdateFindingsTable(Detector $detector, $findings)
+    function createOrUpdateFindingsTable(Detector $detector, $findings)
     {
         $propertyToColumnNameMapping = $this->getPropertyToColumnNameMapping($findings);
         $propertyToColumnNameMapping = $this->removeDisruptiveFindingsColumns($propertyToColumnNameMapping);
@@ -471,9 +474,9 @@ class RunsController extends Controller
 
     function addColumnToTable($table_name, $column)
     {
-        Schema::table($table_name, function ($table) use ($column) {
-            $table->text($column)->nullable();
-        });
+            Schema::table($table_name, function ($table) use ($column) {
+                $table->text($column)->nullable();
+            });
     }
 
     private function storeFindings(Detector $detector, Experiment $experiment, $projectId, $versionId, Run $run, $findings)
@@ -658,4 +661,5 @@ class RunsController extends Controller
             rmdir($path);
         }
     }
+
 }

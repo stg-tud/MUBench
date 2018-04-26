@@ -1,5 +1,7 @@
 <?php
 
+use Illuminate\Support\Facades\Schema;
+
 session_start();
 date_default_timezone_set('Europe/Berlin');
 
@@ -11,6 +13,8 @@ $app = new \Slim\App($settings);
 $container = $app->getContainer();
 
 require __DIR__ . '/../bootstrap/db.php';
+
+$schema = Schema::connection('default');
 
 require __DIR__ . '/../setup/create_database_tables.php';
 ?>

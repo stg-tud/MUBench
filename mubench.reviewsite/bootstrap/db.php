@@ -12,6 +12,8 @@ use Illuminate\Events\Dispatcher;
 $capsule->setEventDispatcher(new Dispatcher(new Container()));
 $capsule->bootEloquent();
 
+$container['capsule'] = $capsule;
+
 // The schema accesses the database through the app, which we do not have in
 // this context. Therefore, use an array to provide the database. This seems
 // to work fine.

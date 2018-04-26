@@ -78,7 +78,7 @@ class SlimTestCase extends TestCase
         require __DIR__ . '/../bootstrap/auth.php';
         require __DIR__ . '/../bootstrap/renderer.php';
         $this->logger = new \Monolog\Logger("test");
-
+        $schema = Schema::connection('default');
         require __DIR__ . '/../setup/create_database_tables.php';
         require __DIR__ . '/../src/routes.php';
         require_once __DIR__ . '/../src/route_utils.php';
