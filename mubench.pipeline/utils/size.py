@@ -13,7 +13,7 @@ __default_handlers = {tuple: iter,
 
 
 # source: https://code.activestate.com/recipes/577504/
-def total_size(o, verbose=False, handlers=None):
+def total_size(o, verbose=False, additional_handlers=None):
     """ Returns the approximate memory footprint an object and all of its contents.
 
     Automatically finds the contents of the following builtin containers and
@@ -26,7 +26,9 @@ def total_size(o, verbose=False, handlers=None):
     """
     seen = set()  # track which object id's have already been seen
     default_size = getsizeof(0)  # estimate sizeof object without __sizeof__
-    handlers = __default_handlers.update(handlers)
+    handlers = dict(__default_handlers)
+    if additional_handlers:
+        handlers.update(additional_handlers)
 
     def sizeof(obj):
         if id(obj) in seen:  # do not double count the same object
