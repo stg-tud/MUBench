@@ -67,7 +67,23 @@ $columns_to_ignore = array(
         <input type="submit" value="update" />
     </form>
 <?php endif; ?>
-<table>
+<?php if($user): ?>
+    <div id="filter-menu">
+        <label class="filter-label">
+            <input class="filter-checkbox" onclick="filter(this)" type="checkbox" value="i.fa.fa-search">
+            <span>Needs Review</span>
+        </label>
+        <label class="filter-label">
+            <input class="filter-checkbox" onclick="filter(this)" type="checkbox" value="i.fa.fa-question-circle">
+            <span>Needs Clarification</span>
+        </label>
+        <label class="filter-label">
+            <input class="filter-checkbox" onclick="filter(this)" type="checkbox" value="i.fa.fa-exclamation-triangle">
+            <span>Disagreement</span>
+        </label>
+    </div>
+<?php endif; ?>
+<table id="detector_table">
     <thead>
     <tr>
         <th>Project</th>
@@ -112,19 +128,19 @@ $columns_to_ignore = array(
             ?>
             <tr>
                 <td class="<?= $style_classes ?>">
-                    <?= $new_project ? $markdown_parser->text($project) : ""; ?></td>
+                    <span class="stats <?= $new_project ? "" : "invisible" ?>"><?= $markdown_parser->text($project) ?></span></td>
                 <td class="<?= $style_classes ?>">
-                    <?= $new_version ? $markdown_parser->text($version) : ""; ?></td>
+                    <span class="stats <?= $new_version ? "" : "invisible" ?>"><?= $markdown_parser->text($version) ?></span></td>
                 <td class="<?= $style_classes ?>">
-                    <?= $new_version ? $markdown_parser->text($run->result) : ""; ?></td>
+                    <span class="stats <?= $new_version ? "" : "invisible" ?>"><?= $markdown_parser->text($run->result) ?></span></td>
                 <td class="<?= $style_classes ?> right">
-                    <?= $new_version ? $markdown_parser->text($run->number_of_findings) : ""; ?></td>
+                    <span class="stats <?= $new_version ? "" : "invisible" ?>"><?= $markdown_parser->text($run->number_of_findings) ?></span></td>
                 <td class="<?= $style_classes ?> right">
-                    <?= $new_version ? $markdown_parser->text(number_format($run->runtime, 1)) . "s" : ""; ?></td>
+                    <span class="stats <?= $new_version ? "" : "invisible" ?>"><?= $markdown_parser->text(number_format($run->runtime, 1)) . "s" ?></span></td>
                 <td class="<?= $style_classes ?> right">
-                    <?php if ($new_version) : ?>
-                        <?php include "includes/stats_modal.phtml"; ?>
-                    <?php endif; ?>
+                    <span class="stats <?= $new_version ? "" : "invisible" ?>">
+                        <i value="<?= htmlspecialchars($project) ?>_<?= htmlspecialchars($version) ?>" onclick="showModal(this)" class="fa fa-info-circle clickable-icon" aria-hidden="true"></i>
+                    </span>
                 </td>
                 <td class="<?= $style_classes ?>">
                     <?= $markdown_parser->text($misuse->misuse_muid); ?></td>
@@ -272,7 +288,7 @@ $columns_to_ignore = array(
                     <?= $new_version ? $markdown_parser->text(substr($run['runtime'], 0, 4)) . "s" : ""; ?></td>
                 <td class="<?= $style_classes ?> right">
                     <?php if ($new_version) : ?>
-                        <?php include "includes/stats_modal.phtml"; ?>
+                        <i value="<?= htmlspecialchars($project) ?>_<?= htmlspecialchars($version) ?>" onclick="showModal(this)" class="fa fa-info-circle clickable-icon" aria-hidden="true"></i>
                     <?php endif; ?>
                 </td>
                 <td class="<?= $style_classes ?>"></td>
@@ -289,6 +305,13 @@ $columns_to_ignore = array(
     </tbody>
 </table>
 
+<?php foreach ($runs as $run) : ?>
+    <?php
+    $project = $run->project_muid;
+    $version = $run->version_muid;
+    ?>
+    <?php include "includes/stats_modal.phtml"; ?>
+<?php endforeach; ?>
 
 <script>
     function showModal(button) {
@@ -299,7 +322,10 @@ $columns_to_ignore = array(
         if (event.target.className == "modal" || event.target.className == "close") {
             document.getElementById(event.target.id).style.display = "None";
         }
-    }
+    };
 </script>
+<?php if($user) : ?>
+    <script src="<?= $site_base_url ?>js/detector-filter.js"></script>
+<?php endif; ?>
 </body>
 </html>
