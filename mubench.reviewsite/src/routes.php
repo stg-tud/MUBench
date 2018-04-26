@@ -20,6 +20,7 @@ $app->group('/experiments/{experiment_id}', function() use ($app) {
         });
     });
     $app->get('/results.csv', \MuBench\ReviewSite\Controllers\RunsController::class . ":downloadResults")->setName('stats.results.csv');
+    $app->get('/results', \MuBench\ReviewSite\Controllers\RunsController::class.":getExperimentResults")->setName('stats.exp.results');
 });
 $app->get('/results', \MuBench\ReviewSite\Controllers\RunsController::class.":getResults")->setName('stats.results');
 $app->get('/tags', \MuBench\ReviewSite\Controllers\TagsController::class.":getTags")->setName('stats.tags');
@@ -41,6 +42,7 @@ $app->group('/private', function () use ($app) {
         $app->get('/reviews/{reviewer_name}/open', \MuBench\ReviewSite\Controllers\ReviewsController::class . ":getTodo")->setName('private.todo');
         $app->get('/reviews/{reviewer_name}/closed', \MuBench\ReviewSite\Controllers\ReviewsController::class . ":getOverview")->setName('private.overview');
         $app->get('/results.csv', \MuBench\ReviewSite\Controllers\RunsController::class.":downloadResults")->setName('private.stats.results.csv');
+        $app->get('/results', \MuBench\ReviewSite\Controllers\RunsController::class.":getExperimentResults")->setName('private.stats.exp.results');
     });
     $app->get('/results', \MuBench\ReviewSite\Controllers\RunsController::class.":getResults")->setName('private.stats.results');
     $app->get('/tags', \MuBench\ReviewSite\Controllers\TagsController::class.":getTags")->setName('private.stats.tags');

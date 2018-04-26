@@ -382,6 +382,29 @@ class RunsControllerTest extends SlimTestCase
         }
     }
 
+    function test_get_misuse_results_two_detectors()
+    {
+        $this->runsController->addRun(1, '-d1-', '-p1-', '-v-', $this->run_with_two_potential_hits_for_one_misuse);
+        $this->runsController->addRun(1, '-d2-', '-p2-', '-v-', $this->run_with_two_potential_hits_for_one_misuse);
+        $experiment = Experiment::find(1);
+        $actualMisuse1 = Run::of($this->detector1)->in($experiment)->where('project_muid', '-p1-')->where('version_muid', '-v-')->first()->misuses[0];
+        $actualMisuse2 = Run::of($this->detector2)->in($experiment)->where('project_muid', '-p2-')->where('version_muid', '-v-')->first()->misuses[0];
+
+
+        $misuses = $this->runsController->getMisuseResults($experiment, [$this->detector1, $this->detector2]);
+        self::assertEquals($actualMisuse1->getAttributes(), $misuses['-p1-']['-v-']['-m-'][$this->detector1->muid]->getAttributes());
+        self::assertEquals($actualMisuse2->getAttributes(), $misuses['-p2-']['-v-']['-m-'][$this->detector2->muid]->getAttributes());
+    }
+
+    function test_get_misuse_results_no_runs()
+    {
+        $this->runsController->addRun(2, '-d1-', '-p-', '-v-', $this->run_with_two_potential_hits_for_one_misuse);
+        $experiment = Experiment::find(1);
+
+        $misuses = $this->runsController->getMisuseResults($experiment, [$this->detector1]);
+        self::assertEquals([], $misuses);
+    }
+
     private function createSomeRun($id, Experiment $experiment, Detector $detector, $misuses)
     {
         $run = new \MuBench\ReviewSite\Models\Run;

@@ -1,0 +1,77 @@
+<?php
+/**
+ * @var array $experiment_results array of RunsResult
+ */
+
+use MuBench\ReviewSite\Models\RunsResult;
+
+?>
+
+<a class="button" href="<?= $pathFor('stats.results.csv', ['experiment_id' => 3])?>"><i class="fa fa-download" aria-hidden="true"> download csv</i></a>
+
+<table>
+    <thead>
+    <tr>
+        <th></th>
+        <th></th>
+        <th></th>
+        <th></th>
+        <th></th>
+        <th></th>
+        <th colspan="3">Agreements</th>
+        <th colspan="3">Disagreements</th>
+        <th colspan="3">Kappa</th>
+        <th></th>
+        <th></th>
+    </tr>
+    <tr>
+        <th>Detector</th>
+        <th>Projects</th>
+        <th>Misuses</th>
+        <th>Potential Hits</th>
+        <th>Open Reviews</th>
+        <th>Open '?'</th>
+        <th>Yes</th>
+        <th>No</th>
+        <th>Total</th>
+        <th>Yes/No</th>
+        <th>No/Yes</th>
+        <th>Total</th>
+        <th>p<sub>0</sub></th>
+        <th>p<sub>e</sub></th>
+        <th>Score</th>
+        <th>Hits</th>
+        <th>Recall</th>
+        <th> </th>
+    </tr>
+    </thead>
+
+    <?php foreach ($experiment_results as $key => $result) : /** @var RunsResult $results */ ?>
+        <tbody>
+        <tr>
+            <td><?= $result->getDisplayName() ?></td>
+            <td class="right"><?= $result->number_of_projects ?></td>
+            <td class="right"><?= $result->number_of_misuses ?></td>
+            <td class="right"><?= $result->misuses_to_review ?></td>
+            <td class="right"><?= $result->open_reviews ?></td>
+            <td class="right"><?= $result->number_of_needs_clarification ?></td>
+
+            <td class="right"><?= $result->yes_agreements ?></td>
+            <td class="right"><?= $result->no_agreements ?></td>
+            <td class="right"><?= $result->getNumberOfAgreements() ?></td>
+            <td class="right"><?= $result->yes_no_disagreements ?></td>
+            <td class="right"><?= $result->no_yes_disagreements ?></td>
+            <td class="right"><?= $result->getNumberOfDisagreements() ?></td>
+
+            <td class="right"><?= round($result->getKappaP0(), 3) ?></td>
+            <td class="right"><?= round($result->getKappaPe(), 3) ?></td>
+            <td class="right"><?= round($result->getKappaScore(), 3) ?></td>
+            <td class="right"><?= $result->number_of_hits ?></td>
+            <td class="right"><?= round($result->getRecall() * 100, 1) ?>%</td>
+            <td class="right">
+                <?php include "result_status.phtml" ?>
+            </td>
+        </tr>
+        </tbody>
+    <?php endforeach; ?>
+</table>

@@ -69,6 +69,45 @@ class RunsController extends Controller
         return $this->renderer->render($response, 'result_stats.phtml', ['results' => $results, 'ex2_review_size' => $ex2_review_size]);
     }
 
+    public function getExperimentResults(Request $request, Response $response, array $args)
+    {
+        $ex2_review_size = $request->getQueryParam("ex2_review_size", $this->settings['default_ex2_review_size']);
+        $experiment_id = $args['experiment_id'];
+
+        $experiment = Experiment::find($experiment_id);
+
+        $detectors = Detector::withRuns($experiment);
+        $results = $this->getResultsForExperiment($experiment, $detectors, $ex2_review_size);
+
+        $misuse_results = $this->getMisuseResults($experiment, $detectors);
+
+        return $this->renderer->render($response, 'experiment_stats.phtml', ['exp' => $experiment, 'experiment_results' => $results, 'ex2_review_size' => $ex2_review_size, 'misuses' => $misuse_results, 'det' => $detectors]);
+    }
+
+    function getMisuseResults($experiment, $detectors)
+    {
+        $misuse_results = [];
+
+        foreach($detectors as $detector){
+            $runs = Run::of($detector)->in($experiment)->get();
+            foreach($runs as $run){
+                foreach($run->misuses as $misuse){
+                    if(!array_key_exists($misuse->getProject(), $misuse_results)){
+                        $misuse_results[$misuse->getProject()] = array();
+                    }
+                    if(!array_key_exists($misuse->getVersion(), $misuse_results[$misuse->getProject()])){
+                        $misuse_results[$misuse->getProject()][$misuse->getVersion()] = array();
+                    }
+                    if(!array_key_exists($misuse->misuse_muid, $misuse_results[$misuse->getProject()][$misuse->getVersion()])){
+                        $misuse_results[$misuse->getProject()][$misuse->getVersion()][$misuse->misuse_muid] = array();
+                    }
+                    $misuse_results[$misuse->getProject()][$misuse->getVersion()][$misuse->misuse_muid][$detector->muid] = $misuse;
+                }
+            }
+        }
+        return $misuse_results;
+    }
+
     public function downloadResults(Request $request, Response $response, array $args)
     {
         $ex2_review_size = $request->getQueryParam("ex2_review_size", $this->settings['default_ex2_review_size']);
