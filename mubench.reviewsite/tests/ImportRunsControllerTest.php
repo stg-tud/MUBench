@@ -80,14 +80,14 @@ class ImportRunsControllerTest extends SlimTestCase
         $this->createFullRunWithReview();
         sleep(1);
 
+        // need to fetch all parts beforehand because relation calls are still made on default connection
         $expectedRun = Run::of(Detector::find('-d-'))->in(Experiment::find(1))->where(['project_muid' => '-p-', 'version_muid' => '-v-'])->first();
-
-        // need to fetch snippets beforehand because call in Misuse class works on default connection
+        $expectedRun->setConnection('extern');
         $expectedSnippets = Snippet::all();
 
         // switch dbs around, extern db is filled
         $this->addDBConnections('extern', 'default');
-        
+
         $importRunsController = new ImportRunsController($this->container);
         $importRunsController->importRunsFromConnection(1, '-d-', '-p-', '-v-', $this->container['capsule']->getConnection('extern'));
 
