@@ -2,6 +2,7 @@
 
 require_once "SlimTestCase.php";
 
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Schema;
 use MuBench\ReviewSite\Controllers\ImportRunsController;
 use MuBench\ReviewSite\Controllers\MetadataController;
@@ -94,40 +95,31 @@ class ImportRunsControllerTest extends SlimTestCase
         $importedRun = Run::of(Detector::find('-d-'))->in(Experiment::find(1))->where(['project_muid' => '-p-', 'version_muid' => '-v-'])->first();
 
         self::assertNotNull($importedRun);
-        $expectedRunAttributes = $expectedRun->getAttributes();
-        $importedRunAttributes = $importedRun->getAttributes();
-        $expectedRunUpdatedAt = $expectedRunAttributes['updated_at'];
-        $importedRunUpdatedAt = $importedRunAttributes['updated_at'];
-
-        // remove updated_at from attributes
-        unset($expectedRunAttributes['updated_at']);
-        unset($importedRunAttributes['updated_at']);
-
-        self::assertEquals($expectedRunAttributes, $importedRunAttributes);
-        self::assertNotEquals($expectedRunUpdatedAt, $importedRunUpdatedAt);
-        self::assertEquals($expectedRun->misuses, $importedRun->misuses);
+        self::assertAttributesEqualExceptUpdatedAt($expectedRun, $importedRun);
+        self::assertNotEmpty($importedRun->misuses);
         $actualMisuse = $importedRun->misuses[0];
         $expectedMisuse = $expectedRun->misuses[0];
+        self::assertAttributesEqualExceptUpdatedAt($expectedMisuse, $actualMisuse);
         self::assertNotNull($actualMisuse->metadata);
-        self::assertEquals($expectedMisuse->metadata, $actualMisuse->metadata);
-        self::assertNotNull($actualMisuse->metadata->violations);
-        self::assertEquals($expectedMisuse->metadata->violations, $actualMisuse->metadata->violations);
-        self::assertNotNull($actualMisuse->metadata->correct_usages);
-        self::assertEquals($expectedMisuse->metadata->correct_usages, $actualMisuse->metadata->correct_usages);
+        self::assertAttributesEqualExceptUpdatedAt($expectedMisuse->metadata, $actualMisuse->metadata);
+        self::assertNotEmpty($actualMisuse->metadata->violations);
+        self::assertEquals($expectedMisuse->metadata->violations[0]->getAttributes(), $actualMisuse->metadata->violations[0]->getAttributes());
+        self::assertNotEmpty($actualMisuse->metadata->correct_usages);
+        self::assertEquals($expectedMisuse->metadata->correct_usages[0]->getAttributes(), $actualMisuse->metadata->correct_usages[0]->getAttributes());
         self::assertNotEmpty($actualMisuse->findings);
-        self::assertEquals($expectedMisuse->findings, $actualMisuse->findings);
+        self::assertAttributesEqualExceptUpdatedAt($expectedMisuse->findings[0], $actualMisuse->findings[0]);
         self::assertNotEmpty($actualMisuse->snippets());
         self::assertEquals($expectedSnippets, $actualMisuse->snippets());
         self::assertNotEmpty($actualMisuse->misuse_tags);
         self::assertEquals($expectedMisuse->misuse_tags[0]->getAttributes(), $actualMisuse->misuse_tags[0]->getAttributes());
         self::assertNotEmpty($actualMisuse->reviews);
-        self::assertEquals($expectedMisuse->reviews, $actualMisuse->reviews);
+        self::assertAttributesEqualExceptUpdatedAt($expectedMisuse->reviews[0], $actualMisuse->reviews[0]);
         $expectedReview = $expectedMisuse->reviews[0];
         $actualReview = $actualMisuse->reviews[0];
         self::assertEquals($expectedReview->reviewer->name, $actualReview->reviewer->name);
         self::assertNotEmpty($actualReview->finding_reviews);
-        self::assertEquals($expectedReview->finding_reviews, $actualReview->finding_reviews);
-        self::assertEquals($expectedReview->finding_reviews[0]->violations, $actualReview->finding_reviews[0]->violations);
+        self::assertEquals($expectedReview->finding_reviews[0]->getAttributes(), $actualReview->finding_reviews[0]->getAttributes());
+        self::assertEquals($expectedReview->finding_reviews[0]->violations[0]->getAttributes(), $actualReview->finding_reviews[0]->violations[0]->getAttributes());
     }
 
     private function addDBConnections($firstdb, $seconddb)
@@ -190,7 +182,7 @@ class ImportRunsControllerTest extends SlimTestCase
         unlink($this->db2);
     }
 
-    public function createFullRunWithReview()
+    private function createFullRunWithReview()
     {
         $runsController = new RunsController($this->container);
         $metadataController = new MetadataController($this->container);
@@ -203,6 +195,15 @@ class ImportRunsControllerTest extends SlimTestCase
         $runsController->addRun(1, '-d-', '-p-', '-v-', $this->run_with_two_potential_hits_for_one_misuse);
         $tagController->addTagToMisuse(1, 'test-dataset');
         $reviewController->updateOrCreateReview(1, $reviewer->id, '-comment-', [['hit' => 'Yes', 'violations' => [$violation->id]]]);
+    }
+
+    private static function assertAttributesEqualExceptUpdatedAt(Model $expectedModel, Model $actualModel){
+        $expectedAttributes = $expectedModel->getAttributes();
+        $actualAttributes = $actualModel->getAttributes();
+        unset($expectedAttributes['updated_at']);
+        unset($actualAttributes['updated_at']);
+        self::assertEquals($expectedAttributes, $actualAttributes);
+        self::assertNotEquals($expectedModel->updated_at, $actualModel->updated_at);
     }
 
 
