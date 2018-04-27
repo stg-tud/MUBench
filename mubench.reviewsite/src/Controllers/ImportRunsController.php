@@ -95,6 +95,7 @@ class ImportRunsController extends RunsController
         $this->createOrUpdateRunsTable($detector, $run->getAttributes());
         $imported_run = $this->importAndResetConnectionModel($run);
         $imported_run->setDetector($detector);
+        $imported_run->setCreatedAt($run->created_at);
         $imported_run->save();
         return $imported_run;
     }
