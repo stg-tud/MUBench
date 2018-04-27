@@ -95,7 +95,6 @@ class ImportRunsController extends RunsController
         $this->createOrUpdateRunsTable($detector, $run->getAttributes());
         $imported_run = $this->importAndResetConnectionModel($run);
         $imported_run->setDetector($detector);
-        $imported_run->setCreatedAt($run->created_at);
         $imported_run->save();
         return $imported_run;
     }
@@ -103,6 +102,9 @@ class ImportRunsController extends RunsController
     private function importAndResetConnectionModel(Model $model){
         $imported_model = $model->replicate();
         $imported_model->setConnection('default');
+        if(array_key_exists('created_at', $model->getAttributes())){
+            $imported_model->setCreatedAt($model->created_at);
+        }
         return $imported_model;
     }
 
