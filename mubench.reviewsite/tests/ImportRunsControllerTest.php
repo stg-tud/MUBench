@@ -78,6 +78,7 @@ class ImportRunsControllerTest extends SlimTestCase
         $this->setupDatabaseTables();
 
         $this->createFullRunWithReview();
+        sleep(1);
 
         $expectedRun = Run::of(Detector::find('-d-'))->in(Experiment::find(1))->where(['project_muid' => '-p-', 'version_muid' => '-v-'])->first();
 
@@ -86,14 +87,23 @@ class ImportRunsControllerTest extends SlimTestCase
 
         // switch dbs around, extern db is filled
         $this->addDBConnections('extern', 'default');
-
         $importRunsController = new ImportRunsController($this->container);
         $importRunsController->importRunsFromConnection(1, '-d-', '-p-', '-v-', $this->container['capsule']->getConnection('extern'));
 
         $importedRun = Run::of(Detector::find('-d-'))->in(Experiment::find(1))->where(['project_muid' => '-p-', 'version_muid' => '-v-'])->first();
 
         self::assertNotNull($importedRun);
-        self::assertEquals($expectedRun->getAttributes(), $importedRun->getAttributes());
+        $expectedRunAttributes = $expectedRun->getAttributes();
+        $importedRunAttributes = $importedRun->getAttributes();
+        $expectedRunUpdatedAt = $expectedRunAttributes['updated_at'];
+        $importedRunUpdatedAt = $importedRunAttributes['updated_at'];
+
+        // remove updated_at from attributes
+        unset($expectedRunAttributes['updated_at']);
+        unset($importedRunAttributes['updated_at']);
+
+        self::assertEquals($expectedRunAttributes, $importedRunAttributes);
+        self::assertNotEquals($expectedRunUpdatedAt, $importedRunUpdatedAt);
         self::assertEquals($expectedRun->misuses, $importedRun->misuses);
         $actualMisuse = $importedRun->misuses[0];
         $expectedMisuse = $expectedRun->misuses[0];
