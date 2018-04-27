@@ -87,6 +87,7 @@ class ImportRunsControllerTest extends SlimTestCase
 
         // switch dbs around, extern db is filled
         $this->addDBConnections('extern', 'default');
+        
         $importRunsController = new ImportRunsController($this->container);
         $importRunsController->importRunsFromConnection(1, '-d-', '-p-', '-v-', $this->container['capsule']->getConnection('extern'));
 
