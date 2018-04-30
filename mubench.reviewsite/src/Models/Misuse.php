@@ -53,12 +53,16 @@ class Misuse extends Model
         }
         $fitting_snippets = array();
         foreach($snippets as $snippet){
-            $snippet_lines = count(preg_split('/\n|\r/',"m(A){\n\ta(A);\n}"));
+            $snippet_lines = count(preg_split('/\n/', $snippet->snippet));
             $last_line = $snippet->line + $snippet_lines;
             if($snippet->line <= min($finding_lines) && $last_line >= max($finding_lines)){
                 $fitting_snippets[] = $snippet;
             }
         }
+        if(count($fitting_snippets) == 0){
+            return $snippets;
+        }
+
         return $fitting_snippets;
     }
 
