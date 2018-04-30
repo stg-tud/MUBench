@@ -102,6 +102,9 @@ class ImportRunsController extends RunsController
     private function importAndResetConnectionModel(Model $model){
         $imported_model = $model->replicate();
         $imported_model->setConnection('default');
+        if(array_key_exists('created_at', $model->getAttributes())){
+            $imported_model->setCreatedAt($model->created_at);
+        }
         return $imported_model;
     }
 
