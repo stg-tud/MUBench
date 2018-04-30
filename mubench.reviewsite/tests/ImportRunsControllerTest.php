@@ -58,7 +58,7 @@ class ImportRunsControllerTest extends SlimTestCase
             'misuse' => '-m-',
             'description' => '-desc-',
             'fix' => ['diff-url' => '-diff-', 'description' => '-fix-desc-'],
-            'location' => ['file' => '-file-location-', 'method' => '-method-location-'],
+            'location' => ['file' => '-file-location-', 'method' => '-method-location-', 'line' => -1],
             'violations' => ['missing/call'],
             'correct_usages' => [['id' => '-p1-', 'snippet' => ['code' => '-code-', 'first_line' => 42]]],
             'target_snippets' => [['code' => '-target-snippet-code-', 'first_line_number' => 273]]

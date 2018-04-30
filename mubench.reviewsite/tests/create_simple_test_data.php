@@ -283,6 +283,7 @@ $metadata->description = 'desc';
 $metadata->fix_description = 'fix-desc';
 $metadata->file = '/some/file.ext';
 $metadata->method = 'method(P)';
+$metadata->line = '1';
 $metadata->diff_url = 'http://diff/url';
 $metadata->save();
 
