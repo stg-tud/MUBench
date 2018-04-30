@@ -42,47 +42,42 @@ class MisuseTest extends SlimTestCase
         self::assertFalse($misuse->hasResolutionReview());
     }
 
-    public function testCheckSnippetsWithFindings()
+    public function testFindsSnippetForFinding()
     {
-        $this->createRunWithFinding(11);
+        $this->createRunWithFindingInLine(11);
 
         SnippetsController::createSnippetIfNotExists("-p-", "-v-", "-m-", "//src/file", 10, "m(A){\n\ta(A);\n}");
 
         $run = Run::of(Detector::find('-d-'))->in(Experiment::find(1))->first();
 
-        self::assertEquals(1, $run->misuses->count());
         self::assertEquals(1, count($run->misuses[0]->snippets()));
         self::assertEquals(10, $run->misuses[0]->snippets()[0]->line);
     }
 
-    public function testCheckSnippetsWithMetadataAndFindings()
+    public function testFiltersUnrelatedSnippet()
     {
-        $this->createRunWithFinding(10);
-
-        $metadataController = new MetadataController($this->container);
-        $metadataController->putMetadataCollection([[
-            'project' => '-p-',
-            'version' => '-v-',
-            'misuse' => '-m-',
-            'description' => '-desc-',
-            'fix' => ['diff-url' => '-diff-', 'description' => '-fix-desc-'],
-            'location' => ['file' => '//src/file', 'method' => '-method-location-', 'line' => 11],
-            'violations' => ['missing/call'],
-            'correct_usages' => [['id' => '-p1-', 'snippet' => ['code' => '-code-', 'first_line' => 42]]],
-            'target_snippets' => [['code' => "m(A){\n\ta(A);\n}", 'first_line_number' => 10]]
-        ]]);
+        $this->createRunWithFindingInLine(11);
+        $this->createSnippetWithStartLine(9);
         $this->createSnippetWithStartLine(15);
-        $this->createSnippetWithStartLine(8);
 
         $run = Run::of(Detector::find('-d-'))->in(Experiment::find(1))->first();
-        $snippets = Snippet::all();
-        self::assertEquals(1, $run->misuses->count());
-        self::assertEquals(2, count($run->misuses[0]->snippets()));
-        self::assertEquals(8, $run->misuses[0]->snippets()[0]->line);
-        self::assertEquals(10, $run->misuses[0]->snippets()[1]->line);
+
+        self::assertEquals(1, count($run->misuses[0]->snippets()));
+        self::assertEquals(9, $run->misuses[0]->snippets()[0]->line);
     }
 
-    public function createRunWithFinding($line)
+    public function testNoMatchingSnippetsDisplayAll()
+    {
+        $this->createRunWithFindingInLine(20);
+        $this->createSnippetWithStartLine(12);
+        $this->createSnippetWithStartLine(9);
+
+        $run = Run::of(Detector::find('-d-'))->in(Experiment::find(1))->first();
+
+        self::assertEquals(2, count($run->misuses[0]->snippets()));
+    }
+
+    public function createRunWithFindingInLine($line)
     {
         $runsController = new RunsController($this->container);
         $runsController->addRun(1, '-d-', '-p-', '-v-', [
