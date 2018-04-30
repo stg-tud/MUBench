@@ -90,8 +90,8 @@ $origin_path = $origin_path ? $origin_path : $pathFor('experiment.detector', arr
                     <?php if($misuse->metadata && $misuse->metadata->line != '-1') : ?>
                         <?php foreach($misuse->snippets() as $snippet) : ?>
                             #code_<?= htmlspecialchars($snippet->id)?> li:nth-child(<?= htmlspecialchars(abs($snippet->line - $misuse->metadata->line - 1)); ?>):before {
-                                content: "<?= str_pad('m', 4, " ", STR_PAD_LEFT) ?>";
-                                background-color: red;
+                                content: "<?= str_pad(' ', 4, " ", STR_PAD_LEFT) ?>";
+                                background-color: blue;
                             }
                         <?php endforeach; ?>
                     <?php endif; ?>
