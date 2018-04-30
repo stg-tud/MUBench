@@ -68,7 +68,7 @@ Where
 * `<RU>` is the user name to access your review site as, and
 * `<RP>` is the respective password.
 
-Example: `./mubench run ex2 DemoDetector --datasets TSE17-ExPrecision -s http://artifact.page/tse17/ -u sven -p 1234`
+Example: `./mubench publish ex2 DemoDetector --datasets TSE17-ExPrecision -s http://artifact.page/tse17/ -u sven -p 1234`
 
 Check `./mubench publish -h` for further details.
 
