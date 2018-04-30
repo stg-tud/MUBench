@@ -50,9 +50,9 @@ class RunsControllerTest extends SlimTestCase
                     "misuse" => "-m-",
                     "rank" => 0,
                     "target_snippets" => [
-                        ["first_line_number" => 6, "code" => "-code-\n\n"]
+                        ["first_line_number" => 6, "code" => "-code-"]
                     ],
-                    "startline" => 7,
+                    "startline" => 6,
                     "file" => "//src/file",
                     "custom1" => "-val1-",
                     "custom2" => "-val2-"
@@ -61,9 +61,9 @@ class RunsControllerTest extends SlimTestCase
                     "misuse" => "-m-",
                     "rank" => 2,
                     "target_snippets" => [
-                        ["first_line_number" => 6, "code" => "-code-\n\n"]
+                        ["first_line_number" => 5, "code" => "-code-"]
                     ],
-                    "startline" => 7,
+                    "startline" => 6,
                     "file" => "//src/file",
                     "custom1" => "-val1-",
                     "custom2" => "-val2-"
@@ -103,7 +103,7 @@ class RunsControllerTest extends SlimTestCase
 
         self::assertEquals(1, sizeof($run->misuses));
         self::assertEquals(2, sizeof($run->misuses[0]->findings));
-        self::assertEquals(1, sizeof($run->misuses[0]->snippets()));
+        self::assertEquals(2, sizeof($run->misuses[0]->snippets()));
 
         $misuse = $run->misuses[0];
         $finding = $misuse->findings[0];
@@ -123,8 +123,8 @@ class RunsControllerTest extends SlimTestCase
         self::assertEquals('0', $finding->rank);
         self::assertEquals('-val1-', $finding['custom1']);
         self::assertEquals('-val2-', $finding['custom2']);
-        self::assertEquals("-code-\n\n", $snippet->snippet);
-        self::assertEquals('6', $snippet->line);
+        self::assertEquals("-code-", $snippet->snippet);
+        self::assertEquals('5', $snippet->line);
     }
 
     function test_store_ex3()
