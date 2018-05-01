@@ -62,7 +62,7 @@ function saveReview(v){
 }
 
 document.addEventListener("keypress", function(event){
-    if(event.target.tagName == 'SELECT' || event.target.tagName == 'BODY'){
+    if(event.key == "Enter" && (event.target.tagName == 'SELECT' || event.target.tagName == 'BODY')){
         if(next_reviewable == 1){
             saveReview('review');
         }else{
