@@ -15,8 +15,8 @@ if [ $HELP ] && [ $# = 1 ]; then
   docker run --rm -v "$MUBENCH_ROOT":/mubench ${MUBENCH_PIPELINE_DOCKER_IMAGE} python3 ${MUBENCH_DOCS}/mubench.py "$@"
   exit 0
 else
-  TASK=${TASKS}/$1
-  DOC=${MUBENCH_DOCS}/$1.py
+  TASK="${TASKS}/$1"
+  DOC="${MUBENCH_DOCS}/$1.py"
   if [ -f "${TASK}" ]; then
     shift  # remove requested task argument
     if [ $HELP ] && [ -f "${MUBENCH_ROOT}/${DOC}" ]; then
