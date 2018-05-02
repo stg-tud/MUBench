@@ -5,6 +5,8 @@ from operator import attrgetter
 from os.path import join, abspath, dirname
 from typing import List, Any
 
+import sys
+
 from data.detector import get_available_detector_ids, Detector
 from tasks.implementations import stats
 from utils.dataset_util import get_available_dataset_ids
@@ -261,7 +263,12 @@ def __add_checkout_cross_project_subprocess(available_datasets: List[str], subpa
 
     __setup_filter_arguments(parser, available_datasets)
 
-    __setup_boa_arguments(parser)
+    boa_user = __get_default('boa-user', None)
+    boa_password = __get_default('boa-password', None)
+    parser.add_argument("-bu", "--boa-user", metavar="BOAUSER", required=not boa_user,
+                        default=boa_user, help="Your boa username.")
+    parser.add_argument("-bp", "--boa-password", metavar="BOAPASSWORD", required=not boa_password,
+                        default=boa_password, help="Your boa password.")
 
 
 def __add_publish_subprocess(available_detectors: List[str], available_datasets: List[str], subparsers) -> None:
@@ -426,15 +433,14 @@ def __setup_publish_precision_arguments(parser: ArgumentParser) -> None:
 def __setup_cross_project_arguments(parser: ArgumentParser) -> None:
     parser.add_argument('--with-xp', dest='with_xp', action='store_true', default=__get_default('with-xp', False),
                         help="use sampled projects with usages for learning.")
-    __setup_boa_arguments(parser)
 
-
-def __setup_boa_arguments(parser):
     boa_user = __get_default('boa-user', None)
     boa_password = __get_default('boa-password', None)
-    parser.add_argument("-bu", "--boa-user", metavar="BOAUSER", required=not boa_user,
+    parser.add_argument("-bu", "--boa-user", metavar="BOAUSER",
+                        required='--with-xp' in sys.argv and not boa_user,
                         default=boa_user, help="Your boa username.")
-    parser.add_argument("-bp", "--boa-password", metavar="BOAPASSWORD", required=not boa_password,
+    parser.add_argument("-bp", "--boa-password", metavar="BOAPASSWORD",
+                        required='--with-xp' in sys.argv and not boa_password,
                         default=boa_password, help="Your boa password.")
 
 
