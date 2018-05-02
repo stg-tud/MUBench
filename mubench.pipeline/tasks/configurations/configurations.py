@@ -10,7 +10,8 @@ from tasks.implementations.compile_misuse import CompileMisuseTask
 from tasks.implementations.compile_version import CompileVersionTask
 from tasks.implementations.crossproject_create_project_list import CrossProjectCreateProjectListTask
 from tasks.implementations.crossproject_prepare import CrossProjectPrepareTask
-from tasks.implementations.crossproject_read_index import CrossProjectReadIndexTask, CrossProjectReadIndexPerMisuseTask
+from tasks.implementations.crossproject_read_index import CrossProjectReadIndexTask, CrossProjectReadIndexPerMisuseTask, \
+    CrossProjectReadIndexPerVersionTask
 from tasks.implementations.dataset_check_misuse import MisuseCheckTask
 from tasks.implementations.dataset_check_project import ProjectCheckTask
 from tasks.implementations.dataset_check_version import VersionCheckTask
@@ -108,9 +109,18 @@ class RunProvidedPatternsExperiment(TaskConfiguration):
                                          config.java_options)
         detect = DetectProvidedCorrectUsagesTask(config.findings_path, config.force_detect, config.timeout,
                                                  config.run_timestamp)
-        return [load_detector] + CheckoutTaskConfiguration().tasks(config) + [compile_version, collect_misuses,
-                                                                              filter_misuses_without_correct_usages,
-                                                                              compile_misuse, detect]
+
+        prepare_cross_project = []
+        if config.with_xp:
+            prepare_cross_project = [CrossProjectCreateIndexTask(config.xp_index_file),
+                                     CrossProjectReadIndexPerMisuseTask(config.xp_index_file),
+                                     CrossProjectPrepareTask(config.root_path, config.xp_checkouts_path, config.run_timestamp,
+                                                             config.max_project_sample_size, config.boa_user, config.boa_password)]
+
+        # noinspection PyTypeChecker
+        return [load_detector] + CheckoutTaskConfiguration().tasks(config) + \
+            [compile_version, collect_misuses, filter_misuses_without_correct_usages, compile_misuse] + \
+            prepare_cross_project + [detect]
 
 
 class PublishProvidedPatternsExperiment(TaskConfiguration):
@@ -166,7 +176,18 @@ class RunBenchmarkExperiment(TaskConfiguration):
         load_detector = LoadDetectorTask(config.detectors_path, config.detector, config.requested_release,
                                          config.java_options)
         detect = DetectAllFindingsTask(config.findings_path, config.force_detect, config.timeout, config.run_timestamp)
-        return [load_detector] + CheckoutTaskConfiguration().tasks(config) + [compile_version, detect]
+
+        prepare_cross_project = []
+        if config.with_xp:
+            prepare_cross_project = [CrossProjectCreateIndexTask(config.xp_index_file),
+                                     CrossProjectReadIndexPerVersionTask(config.xp_index_file),
+                                     CrossProjectPrepareTask(config.root_path, config.xp_checkouts_path,
+                                                             config.run_timestamp, config.max_project_sample_size,
+                                                             config.boa_user, config.boa_password)]
+
+        # noinspection PyTypeChecker
+        return [load_detector] + CheckoutTaskConfiguration().tasks(config) + [compile_version] + \
+            prepare_cross_project + [detect]
 
 
 class RunCrossProjectPrepare(TaskConfiguration):

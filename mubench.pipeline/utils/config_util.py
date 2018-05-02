@@ -223,6 +223,7 @@ def __add_run_ex1_subprocess(available_detectors: List[str], available_datasets:
     __setup_checkout_arguments(experiment_parser)
     __setup_compile_arguments(experiment_parser)
     __setup_run_arguments(experiment_parser, available_detectors)
+    __setup_cross_project_arguments(experiment_parser)
 
 
 def __add_run_ex2_subprocess(available_detectors: List[str], available_datasets: List[str], subparsers) -> None:
@@ -250,6 +251,7 @@ def __add_run_ex3_subprocess(available_detectors: List[str], available_datasets:
     __setup_checkout_arguments(experiment_parser)
     __setup_compile_arguments(experiment_parser)
     __setup_run_arguments(experiment_parser, available_detectors)
+    __setup_cross_project_arguments(experiment_parser)
 
 
 def __add_checkout_cross_project_subprocess(available_datasets: List[str], subparsers) -> None:
@@ -259,12 +261,7 @@ def __add_checkout_cross_project_subprocess(available_datasets: List[str], subpa
 
     __setup_filter_arguments(parser, available_datasets)
 
-    boa_user = __get_default('boa-user', None)
-    boa_password = __get_default('boa-password', None)
-    parser.add_argument("-bu", "--boa-user", metavar="BOAUSER", required=not boa_user,
-                        default=boa_user, help="Your boa username.")
-    parser.add_argument("-bp", "--boa-password", metavar="BOAPASSWORD", required=not boa_password,
-                        default=boa_password, help="Your boa password.")
+    __setup_boa_arguments(parser)
 
 
 def __add_publish_subprocess(available_detectors: List[str], available_datasets: List[str], subparsers) -> None:
@@ -315,6 +312,7 @@ def __add_publish_ex1_subprocess(available_detectors: List[str], available_datas
     __setup_compile_arguments(experiment_parser)
     __setup_run_arguments(experiment_parser, available_detectors)
     __setup_publish_arguments(experiment_parser)
+    __setup_cross_project_arguments(experiment_parser)
 
 
 def __add_publish_ex2_subprocess(available_detectors: List[str], available_datasets: List[str], subparsers) -> None:
@@ -351,6 +349,7 @@ def __add_publish_ex3_subprocess(available_detectors: List[str], available_datas
     __setup_compile_arguments(experiment_parser)
     __setup_run_arguments(experiment_parser, available_detectors)
     __setup_publish_arguments(experiment_parser)
+    __setup_cross_project_arguments(experiment_parser)
 
 
 def __setup_filter_arguments(parser: ArgumentParser, available_datasets: List[str]) -> None:
@@ -422,6 +421,21 @@ def __setup_publish_precision_arguments(parser: ArgumentParser) -> None:
     parser.add_argument('--limit', type=upload_limit, default=__get_default('limit', default_limit), metavar='n',
                         dest="limit", help="publish only the top-n findings. Defaults to {}. "
                                            "Use `--limit 0` to publish only run stats.".format(default_limit))
+
+
+def __setup_cross_project_arguments(parser: ArgumentParser) -> None:
+    parser.add_argument('--with-xp', dest='with_xp', action='store_true', default=__get_default('with-xp', False),
+                        help="use sampled projects with usages for learning.")
+    __setup_boa_arguments(parser)
+
+
+def __setup_boa_arguments(parser):
+    boa_user = __get_default('boa-user', None)
+    boa_password = __get_default('boa-password', None)
+    parser.add_argument("-bu", "--boa-user", metavar="BOAUSER", required=not boa_user,
+                        default=boa_user, help="Your boa username.")
+    parser.add_argument("-bp", "--boa-password", metavar="BOAPASSWORD", required=not boa_password,
+                        default=boa_password, help="Your boa password.")
 
 
 def __add_browse_subprocess(subparsers) -> None:
