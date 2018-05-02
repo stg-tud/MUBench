@@ -6,19 +6,27 @@ from typing import List
 
 from boa.BOA import BOA
 from buildtools.maven import Project
+from tasks.implementations.crossproject_read_index import CrossProjectMisuseApis
 from utils.io import write_yamls, write_yaml, is_empty
 from utils.shell import CommandFailedError
 
 
+class CrossProjectSourcesPaths:
+    def __init__(self, paths: List[str]):
+        self.__paths = paths
+
+    def get(self):
+        return list(self.__paths)
+
+
 class CrossProjectPrepareTask:
-    def __init__(self, root_path: str, checkouts_base_path: str, index_file: str, timestamp: int,
+    def __init__(self, root_path: str, checkouts_base_path: str, timestamp: int,
                  max_project_sample_size: int, boa_user: str, boa_password: str):
         self.root_path = root_path
         self.checkouts_base_path = checkouts_base_path
         self.project_checkouts_path = join(checkouts_base_path, "checkouts")
         self.boa_results_path = join(checkouts_base_path, "boa-results")
         self.subtypes_path = os.path.join(checkouts_base_path, "subtypes.csv")
-        self.index_file = index_file
         self.timestamp = timestamp
         self.max_project_sample_size = max_project_sample_size
         self.boa_user = boa_user
@@ -26,35 +34,35 @@ class CrossProjectPrepareTask:
 
         self._subtypes = {}
 
-    def run(self):
+    def run(self, apis: CrossProjectMisuseApis):
         logger = logging.getLogger("tasks.cross_project_prepare")
-        with open(self.index_file) as index:
-            boa = BOA(self.boa_user, self.boa_password, self.boa_results_path)
-            for row in csv.reader(index, delimiter="\t"):
-                # skip blank lines, e.g., on trailing newline
-                if not row:
-                    continue
+        sources_paths = []
 
-                project_id = row[0]
-                version_id = row[1]
-                target_types = sorted(row[6:])
-                try:
-                    target_example_file = os.path.join(self.project_checkouts_path, "-".join(sorted(target_types)) + ".yml")
-                    if not exists(target_example_file):
-                        logger.info("Preparing examples for %s.%s (type(s): %s)...", project_id, version_id,
-                                    target_types)
-                        self._prepare_example_projects(target_types, boa, target_example_file)
-                    elif is_empty(target_example_file):
-                        logger.info("No example projects for %s.%s (type(s): %s)", project_id, version_id, target_types)
-                    else:
-                        logger.info("Already prepared examples for %s.%s (type(s): %s)", project_id, version_id,
-                                    target_types)
-                except Exception as error:
-                    logger.exception("failed", exc_info=error)
+        boa = BOA(self.boa_user, self.boa_password, self.boa_results_path)
+        for api in apis.get():
+            project_id = api.project_id
+            version_id = api.version_id
+            target_types = api.target_types
+            try:
+                target_example_file = os.path.join(self.project_checkouts_path, "-".join(sorted(target_types)) + ".yml")
+                if not exists(target_example_file):
+                    logger.info("Preparing examples for %s.%s (type(s): %s)...", project_id, version_id,
+                                target_types)
+                    sources_paths.extend(self._prepare_example_projects(target_types, boa, target_example_file))
+                elif is_empty(target_example_file):
+                    logger.info("No example projects for %s.%s (type(s): %s)", project_id, version_id, target_types)
+                else:
+                    logger.info("Already prepared examples for %s.%s (type(s): %s)", project_id, version_id,
+                                target_types)
+            except Exception as error:
+                logger.exception("failed", exc_info=error)
 
-    def _prepare_example_projects(self, target_types: List, boa: BOA, metadata_path: str):
+        return CrossProjectSourcesPaths(sources_paths)
+
+    def _prepare_example_projects(self, target_types: List, boa: BOA, metadata_path: str) -> List[str]:
         logger = logging.getLogger("tasks.cross_project_prepare")
         data = []
+        sources_paths = []
         for type_combination in self._create_type_combinations(target_types):
             projects = boa.query_projects_with_type_usages(target_types, type_combination)
             for project in projects:
@@ -77,6 +85,7 @@ class CrossProjectPrepareTask:
                                      "checkout_timestamp": self.timestamp}
                     write_yaml(project_entry)  # check for encoding problems
                     data.append(project_entry)
+                    sources_paths.extend(Project(checkout.path).get_sources_paths())
                 except UnicodeEncodeError:
                     logger.warning("    Illegal characters in project data.")
 
@@ -84,9 +93,10 @@ class CrossProjectPrepareTask:
                     logger.warning("  Stopping after %r of %r example projects.", self.max_project_sample_size,
                                    len(projects))
                     write_yamls(data, metadata_path)
-                    return
+                    return sources_paths
 
         write_yamls(data, metadata_path)
+        return sources_paths
 
     def _get_subtypes(self, target_type):
         if not self._subtypes and exists(self.subtypes_path):

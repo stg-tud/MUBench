@@ -10,6 +10,7 @@ from tasks.implementations.compile_misuse import CompileMisuseTask
 from tasks.implementations.compile_version import CompileVersionTask
 from tasks.implementations.crossproject_create_project_list import CrossProjectCreateProjectListTask
 from tasks.implementations.crossproject_prepare import CrossProjectPrepareTask
+from tasks.implementations.crossproject_read_index import CrossProjectReadIndexTask, CrossProjectReadIndexPerMisuseTask
 from tasks.implementations.dataset_check_misuse import MisuseCheckTask
 from tasks.implementations.dataset_check_project import ProjectCheckTask
 from tasks.implementations.dataset_check_version import VersionCheckTask
@@ -179,8 +180,8 @@ class RunCrossProjectPrepare(TaskConfiguration):
         create_index = TaskRunner(create_index_tasks)
         # noinspection PyTypeChecker
         return [create_index,
-                CrossProjectPrepareTask(config.root_path, config.xp_checkouts_path, config.xp_index_file,
-                                        config.run_timestamp, config.max_project_sample_size, config.boa_user,
+                CrossProjectReadIndexTask(config.xp_index_file),
+                CrossProjectPrepareTask(config.root_path, config.xp_checkouts_path, config.run_timestamp, config.max_project_sample_size, config.boa_user,
                                         config.boa_password),
                 CrossProjectCreateProjectListTask(config.root_path, config.xp_index_file, config.xp_checkouts_path)]
 
