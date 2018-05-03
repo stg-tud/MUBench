@@ -1,4 +1,4 @@
-function addTagEvent(event){
+function addTag(event){
     if (event.key === "Enter") {
         let misuseTagsDiv = document.getElementById('misuse-tags');
         tagName = event.target.value;
