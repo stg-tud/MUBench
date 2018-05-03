@@ -67,3 +67,8 @@ class CrossProjectReadIndexPerVersionTask:
                     apis.append(CrossProjectMisuseApi(row))
 
         return CrossProjectMisuseApis(apis)
+
+
+class CrossProjectSkipReadIndexTask:
+    def run(self):
+        return CrossProjectMisuseApis([])
