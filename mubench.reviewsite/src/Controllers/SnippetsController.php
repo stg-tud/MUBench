@@ -34,8 +34,8 @@ class SnippetsController extends Controller
         return $response->withRedirect($form['path']);
     }
 
-    static function createSnippetIfNotExists($projectId, $versionId, $misuseId, $file, $line, $code)
+    static function createSnippetIfNotExists($projectId, $versionId, $misuseId, $file, $line, $code, $detectorId = "")
     {
-        Snippet::createIfNotExists($projectId, $versionId, $misuseId, $file, $line, $code);
+        Snippet::createIfNotExists($projectId, $versionId, $misuseId, $file, $line, $code, $detectorId);
     }
 }
