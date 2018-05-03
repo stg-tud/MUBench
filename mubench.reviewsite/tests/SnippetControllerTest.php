@@ -36,4 +36,11 @@ class SnippetControllerTest extends SlimTestCase
         $this->snippetController->createSnippetIfNotExists('-p-', '-v-', '-m-', '//src/file', 10, '-code-');
         self::assertEquals(1, Snippet::all()->count());
     }
+
+    function test_same_snippets_different_detectors()
+    {
+        $this->snippetController->createSnippetIfNotExists('-p-', '-v-', '-m-', '//src/file', 10, '-code-', '-d1-');
+        $this->snippetController->createSnippetIfNotExists('-p-', '-v-', '-m-', '//src/file', 10, '-code-', '-d2-');
+        self::assertEquals(2, Snippet::all()->count());
+    }
 }
