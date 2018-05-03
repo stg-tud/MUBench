@@ -1,6 +1,6 @@
 import logging
 from os.path import join
-from typing import Optional
+from typing import Optional, List
 
 from data.detector import Detector
 from data.detector_run import DetectorRun
@@ -9,7 +9,9 @@ from data.misuse_compile import MisuseCompile
 from data.project_version import ProjectVersion
 from data.version_compile import VersionCompile
 from tasks.configurations.detector_interface_configuration import key_detector_mode, \
-    key_training_src_path, key_training_classes_path, key_target_src_paths, key_target_classes_paths, key_dependency_classpath
+    key_training_src_path, key_training_classes_path, key_target_src_paths, key_target_classes_paths, \
+    key_dependency_classpath
+from tasks.implementations.crossproject_prepare import CrossProjectSourcesPaths
 
 
 class DetectProvidedCorrectUsagesTask:
@@ -23,24 +25,30 @@ class DetectProvidedCorrectUsagesTask:
         self.current_timestamp = current_timestamp
 
     def run(self, detector: Detector, version: ProjectVersion, version_compile: VersionCompile, misuse: Misuse,
-            misuse_compile: MisuseCompile):
-        run = DetectorRun(detector, version, self._get_findings_path(detector, version, misuse))
+            misuse_compile: MisuseCompile, xp_sources_paths: CrossProjectSourcesPaths):
+        run = self._get_detector_run(detector, misuse, version)
 
-        run.ensure_executed(self._get_detector_arguments(version_compile, misuse_compile),
+        detector_arguments = self._get_detector_arguments(version_compile, misuse_compile, xp_sources_paths.get())
+
+        run.ensure_executed(detector_arguments,
                             self.timeout, self.force_detect, self.current_timestamp, misuse_compile.timestamp,
                             logging.getLogger("task.detect"))
 
         return run
+
+    def _get_detector_run(self, detector, misuse, version):
+        return DetectorRun(detector, version, self._get_findings_path(detector, version, misuse))
 
     def _get_findings_path(self, detector: Detector, version: ProjectVersion, misuse: Misuse):
         return join(self.findings_base_path, DetectProvidedCorrectUsagesTask.__RUN_MODE_NAME, detector.id,
                     version.project_id, version.version_id, misuse.misuse_id)
 
     @staticmethod
-    def _get_detector_arguments(version_compile: VersionCompile, misuse_compile: MisuseCompile):
+    def _get_detector_arguments(version_compile: VersionCompile, misuse_compile: MisuseCompile,
+                                xp_training_sources_paths: List[str]):
         return {
             key_detector_mode: DetectProvidedCorrectUsagesTask.__DETECTOR_MODE,
-            key_training_src_path: misuse_compile.correct_usage_sources_path,
+            key_training_src_path: [misuse_compile.correct_usage_sources_path] + xp_training_sources_paths,
             key_training_classes_path: misuse_compile.correct_usage_classes_path,
             key_target_src_paths: [misuse_compile.misuse_source_path],
             key_target_classes_paths: [misuse_compile.misuse_classes_path],
