@@ -44,7 +44,26 @@ class Misuse extends Model
 
     public function snippets()
     {
-        return Snippet::of($this->getProject(), $this->getVersion(), $this->misuse_muid, $this->getFile())->get();
+        $snippets = Snippet::of($this->getProject(), $this->getVersion(), $this->misuse_muid, $this->getFile())->get();
+        $finding_lines = $this->findings->map(function ($finding) {
+            return intval($finding['startline']);
+        })->toArray();
+        if($this->metadata && $this->metadata->line != -1){
+            $finding_lines[] = $this->metadata->line;
+        }
+        $fitting_snippets = array();
+        foreach($snippets as $snippet){
+            $snippet_lines = count(preg_split('/\n/', $snippet->snippet));
+            $last_line = $snippet->line + $snippet_lines;
+            if($snippet->line <= min($finding_lines) && $last_line >= max($finding_lines)){
+                $fitting_snippets[] = $snippet;
+            }
+        }
+        if(count($fitting_snippets) == 0){
+            return $snippets;
+        }
+
+        return $fitting_snippets;
     }
 
     public function getFile()

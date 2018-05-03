@@ -69,6 +69,7 @@ class MetadataController extends Controller
         $metadata->diff_url = $fix['diff-url'];
         $metadata->file = $location['file'];
         $metadata->method = $location['method'];
+        $metadata->line = $location['line'];
         $metadata->save();
         return $metadata;
     }
