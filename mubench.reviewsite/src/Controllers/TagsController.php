@@ -16,8 +16,9 @@ class TagsController extends Controller
         $tag_id = $formData['tag_name'];
         $misuse_id = $formData['misuse_id'];
 
-        $this->addTagToMisuse($misuse_id, $tag_id);
-        return $response->withRedirect($formData['path']);
+        $tag = $this->addTagToMisuse($misuse_id, $tag_id);
+        $response->withJson('{"id":'.  $tag->id . ', "color":"' . $tag->color . '", "fontColor": "' . $tag->getFontColor() .'"}');
+        return $response->withStatus(200);
     }
 
     public function manageTags(Request $request, Response $response, array $args)
@@ -57,7 +58,7 @@ class TagsController extends Controller
 
         $this->deleteTagFromMisuse($misuse_id, $tag_id);
 
-        return $response->withRedirect($formData['path']);
+        return $response->withStatus(200);
     }
 
     public function getTags(Request $request, Response $response, array $args)
@@ -98,6 +99,7 @@ class TagsController extends Controller
             $tag->save();
         }
         Misuse::find($misuseId)->misuse_tags()->syncWithoutDetaching($tag->id);
+        return $tag;
     }
 
     function deleteTagFromMisuse($misuseId, $tagId)
