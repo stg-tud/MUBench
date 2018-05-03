@@ -490,7 +490,7 @@ class RunsController extends Controller
             }
             $this->storeFinding($detector, $experiment, $projectId, $versionId, $misuseId, $misuse, $finding);
             if ($experiment->id === 2) {
-                $this->storeFindingTargetSnippets($projectId, $versionId, $misuseId, $finding['file'], $finding['target_snippets']);
+                $this->storeFindingTargetSnippets($detector, $projectId, $versionId, $misuseId, $finding['file'], $finding['target_snippets']);
             }
         }
     }
@@ -547,10 +547,10 @@ class RunsController extends Controller
         return $savedRun;
     }
 
-    private function storeFindingTargetSnippets($projectId, $versionId, $misuseId, $file, $snippets)
+    private function storeFindingTargetSnippets(Detector $detector, $projectId, $versionId, $misuseId, $file, $snippets)
     {
         foreach ($snippets as $snippet) {
-            SnippetsController::createSnippetIfNotExists($projectId, $versionId, $misuseId, $file, $snippet['first_line_number'], $snippet['code']);
+            SnippetsController::createSnippetIfNotExists($projectId, $versionId, $misuseId, $file, $snippet['first_line_number'], $snippet['code'], $detector->muid);
         }
     }
 
