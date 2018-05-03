@@ -26,7 +26,7 @@ function removeTag(tagId, button){
 function getTagTemplate(tagName, tag){
     let template = `
         <div class="misuse-tag" style="background-color:${tag.color};color:${tag.fontColor};">
-            <span id="${tag.id}">${tagName}</span>
+            <span id="${tagName}">${tagName}</span>
             <button onclick="removeTag(${tag.id}, this)" style="border:none;outline:none;margin:0;padding:0;background-color:${tag.color}"><i class="fa fa-trash"></i></button>
         </div>`;
     return template;
