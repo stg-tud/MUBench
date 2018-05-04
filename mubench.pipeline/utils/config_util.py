@@ -225,7 +225,6 @@ def __add_run_ex1_subprocess(available_detectors: List[str], available_datasets:
     __setup_checkout_arguments(experiment_parser)
     __setup_compile_arguments(experiment_parser)
     __setup_run_arguments(experiment_parser, available_detectors)
-    __setup_cross_project_arguments(experiment_parser)
 
 
 def __add_run_ex2_subprocess(available_detectors: List[str], available_datasets: List[str], subparsers) -> None:
