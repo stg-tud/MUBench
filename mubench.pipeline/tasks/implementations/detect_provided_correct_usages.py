@@ -25,10 +25,10 @@ class DetectProvidedCorrectUsagesTask:
         self.current_timestamp = current_timestamp
 
     def run(self, detector: Detector, version: ProjectVersion, version_compile: VersionCompile, misuse: Misuse,
-            misuse_compile: MisuseCompile, xp_sources_paths: CrossProjectSourcesPaths):
+            misuse_compile: MisuseCompile):
         run = self._get_detector_run(detector, misuse, version)
 
-        detector_arguments = self._get_detector_arguments(version_compile, misuse_compile, xp_sources_paths.get())
+        detector_arguments = self._get_detector_arguments(version_compile, misuse_compile)
 
         run.ensure_executed(detector_arguments,
                             self.timeout, self.force_detect, self.current_timestamp, misuse_compile.timestamp,
@@ -44,11 +44,10 @@ class DetectProvidedCorrectUsagesTask:
                     version.project_id, version.version_id, misuse.misuse_id)
 
     @staticmethod
-    def _get_detector_arguments(version_compile: VersionCompile, misuse_compile: MisuseCompile,
-                                xp_training_sources_paths: List[str]):
+    def _get_detector_arguments(version_compile: VersionCompile, misuse_compile: MisuseCompile):
         return {
             key_detector_mode: DetectProvidedCorrectUsagesTask.__DETECTOR_MODE,
-            key_training_src_path: [misuse_compile.correct_usage_sources_path] + xp_training_sources_paths,
+            key_training_src_path: [misuse_compile.correct_usage_sources_path],
             key_training_classes_path: misuse_compile.correct_usage_classes_path,
             key_target_src_paths: [misuse_compile.misuse_source_path],
             key_target_classes_paths: [misuse_compile.misuse_classes_path],

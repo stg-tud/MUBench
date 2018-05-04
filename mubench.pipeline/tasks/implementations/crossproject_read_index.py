@@ -37,38 +37,6 @@ class CrossProjectReadIndexTask:
         return CrossProjectMisuseApis(apis)
 
 
-class CrossProjectReadIndexPerMisuseTask:
-    def __init__(self, index_file: str):
-        self.index = index_file
-
-    def run(self, misuse: Misuse):
-        apis = []
-
-        with open(self.index) as index_file:
-            for row in csv.reader(index_file, delimiter="\t"):
-                # skip blank lines, e.g., on trailing newline
-                if row and misuse.id == ".".join(row[:3]).lower():
-                    apis.append(CrossProjectMisuseApi(row))
-
-        return CrossProjectMisuseApis(apis)
-
-
-class CrossProjectReadIndexPerVersionTask:
-    def __init__(self, index_file: str):
-        self.index = index_file
-
-    def run(self, version: ProjectVersion):
-        apis = []
-
-        with open(self.index) as index_file:
-            for row in csv.reader(index_file, delimiter="\t"):
-                # skip blank lines, e.g., on trailing newline
-                if row and version.id == ".".join(row[:2]).lower():
-                    apis.append(CrossProjectMisuseApi(row))
-
-        return CrossProjectMisuseApis(apis)
-
-
 class CrossProjectSkipReadIndexTask:
     def run(self):
         return CrossProjectMisuseApis([])

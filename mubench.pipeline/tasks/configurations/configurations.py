@@ -10,8 +10,7 @@ from tasks.implementations.compile_misuse import CompileMisuseTask
 from tasks.implementations.compile_version import CompileVersionTask
 from tasks.implementations.crossproject_create_project_list import CrossProjectCreateProjectListTask
 from tasks.implementations.crossproject_prepare import CrossProjectPrepareTask
-from tasks.implementations.crossproject_read_index import CrossProjectReadIndexTask, CrossProjectReadIndexPerMisuseTask, \
-    CrossProjectReadIndexPerVersionTask, CrossProjectSkipReadIndexTask
+from tasks.implementations.crossproject_read_index import CrossProjectReadIndexTask, CrossProjectSkipReadIndexTask
 from tasks.implementations.dataset_check_misuse import MisuseCheckTask
 from tasks.implementations.dataset_check_project import ProjectCheckTask
 from tasks.implementations.dataset_check_version import VersionCheckTask
@@ -169,7 +168,7 @@ class RunBenchmarkExperiment(TaskConfiguration):
                                          config.java_options)
         detect = DetectAllFindingsTask(config.findings_path, config.force_detect, config.timeout, config.run_timestamp)
 
-        read_index = CrossProjectReadIndexPerVersionTask(config.xp_index_file) if config.with_xp \
+        read_index = CrossProjectReadIndexTask(config.xp_index_file) if config.with_xp \
             else CrossProjectSkipReadIndexTask()
         prepare_cross_project = [CrossProjectCreateIndexTask(config.xp_index_file),
                                  read_index,
