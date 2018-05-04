@@ -138,8 +138,18 @@ class RunAllFindingsExperiment(TaskConfiguration):
                                              config.force_compile, config.use_tmp_wrkdir)
         load_detector = LoadDetectorTask(config.detectors_path, config.detector, config.requested_release,
                                          config.java_options)
+
+        read_index = CrossProjectReadIndexTask(config.xp_index_file) if config.with_xp \
+            else CrossProjectSkipReadIndexTask()
+        prepare_cross_project = [CrossProjectCreateIndexTask(config.xp_index_file),
+                                 read_index,
+                                 CrossProjectPrepareTask(config.root_path, config.xp_checkouts_path,
+                                                         config.run_timestamp,
+                                                         config.max_project_sample_size, config.boa_user,
+                                                         config.boa_password)]
+
         detect = DetectAllFindingsTask(config.findings_path, config.force_detect, config.timeout, config.run_timestamp)
-        return [load_detector] + CheckoutTaskConfiguration().tasks(config) + [compile_version, detect]
+        return [load_detector] + CheckoutTaskConfiguration().tasks(config) + prepare_cross_project + [compile_version, detect]
 
 
 class PublishAllFindingsExperiment(TaskConfiguration):
