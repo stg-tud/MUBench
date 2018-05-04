@@ -20,7 +20,7 @@ __FINDINGS_PATH = join(MUBENCH_ROOT_PATH, "findings")
 __DATASETS_FILE_PATH = join(MUBENCH_ROOT_PATH, 'data', 'datasets.yml')
 __DETECTORS_PATH = join(MUBENCH_ROOT_PATH, "detectors")
 __XP_CHECKOUTS_PATH = join(MUBENCH_ROOT_PATH, "checkouts-xp")
-__XP_INDEX_FILE = join(__XP_CHECKOUTS_PATH, "index.csv")
+__XP_INDEX_FILE = join(__XP_CHECKOUTS_PATH, "index")
 
 
 class SortingHelpFormatter(HelpFormatter):

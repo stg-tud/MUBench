@@ -1,7 +1,6 @@
 import csv
 from typing import List
 
-from data.misuse import Misuse
 from data.project_version import ProjectVersion
 
 
@@ -25,10 +24,10 @@ class CrossProjectReadIndexTask:
     def __init__(self, index_file: str):
         self.index = index_file
 
-    def run(self):
+    def run(self, version: ProjectVersion):
         apis = []
 
-        with open(self.index) as index_file:
+        with open(self.index + '-' + version.id) as index_file:
             for row in csv.reader(index_file, delimiter="\t"):
                 # skip blank lines, e.g., on trailing newline
                 if row:

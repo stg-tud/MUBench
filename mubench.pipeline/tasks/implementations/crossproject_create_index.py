@@ -17,4 +17,4 @@ class CrossProjectCreateIndexTask:
         print("{}\t{}\t{}\t{}\t{}\t{}\t{}".format(project.id, version.version_id, misuse.misuse_id,
                                                   ':'.join(version.source_dirs),
                                                   misuse.location.file, misuse.location.method,
-                                                  "\t".join(misuse.apis)), file=safe_open(self.index_file, "a"))
+                                                  "\t".join(misuse.apis)), file=safe_open(self.index_file + '-' + version.id, "a"))
