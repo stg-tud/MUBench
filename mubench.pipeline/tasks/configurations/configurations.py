@@ -110,19 +110,9 @@ class RunProvidedPatternsExperiment(TaskConfiguration):
         detect = DetectProvidedCorrectUsagesTask(config.findings_path, config.force_detect, config.timeout,
                                                  config.run_timestamp)
 
-        read_index = CrossProjectReadIndexPerMisuseTask(config.xp_index_file) if config.with_xp \
-            else CrossProjectSkipReadIndexTask()
-        prepare_cross_project = [CrossProjectCreateIndexTask(config.xp_index_file),
-                                 read_index,
-                                 CrossProjectPrepareTask(config.root_path, config.xp_checkouts_path,
-                                                         config.run_timestamp,
-                                                         config.max_project_sample_size, config.boa_user,
-                                                         config.boa_password)]
-
         # noinspection PyTypeChecker
         return [load_detector] + CheckoutTaskConfiguration().tasks(config) + \
-               [compile_version, collect_misuses, filter_misuses_without_correct_usages, compile_misuse] + \
-               prepare_cross_project + [detect]
+               [compile_version, collect_misuses, filter_misuses_without_correct_usages, compile_misuse] + [detect]
 
 
 class PublishProvidedPatternsExperiment(TaskConfiguration):
