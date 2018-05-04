@@ -139,10 +139,10 @@ class RunAllFindingsExperiment(TaskConfiguration):
         load_detector = LoadDetectorTask(config.detectors_path, config.detector, config.requested_release,
                                          config.java_options)
 
+        create_index = TaskRunner([CollectMisusesTask(), CrossProjectCreateIndexTask(config.xp_index_file)])
         read_index = CrossProjectReadIndexTask(config.xp_index_file) if config.with_xp \
             else CrossProjectSkipReadIndexTask()
-        prepare_cross_project = [CrossProjectCreateIndexTask(config.xp_index_file),
-                                 read_index,
+        prepare_cross_project = [create_index, read_index,
                                  CrossProjectPrepareTask(config.root_path, config.xp_checkouts_path,
                                                          config.run_timestamp,
                                                          config.max_project_sample_size, config.boa_user,
@@ -178,10 +178,10 @@ class RunBenchmarkExperiment(TaskConfiguration):
                                          config.java_options)
         detect = DetectAllFindingsTask(config.findings_path, config.force_detect, config.timeout, config.run_timestamp)
 
+        create_index = TaskRunner([CollectMisusesTask(), CrossProjectCreateIndexTask(config.xp_index_file)])
         read_index = CrossProjectReadIndexTask(config.xp_index_file) if config.with_xp \
             else CrossProjectSkipReadIndexTask()
-        prepare_cross_project = [CrossProjectCreateIndexTask(config.xp_index_file),
-                                 read_index,
+        prepare_cross_project = [create_index, read_index,
                                  CrossProjectPrepareTask(config.root_path, config.xp_checkouts_path,
                                                          config.run_timestamp,
                                                          config.max_project_sample_size, config.boa_user,
