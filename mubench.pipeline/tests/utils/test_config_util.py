@@ -184,7 +184,7 @@ def test_fails_on_negative_limit():
 
 def test_run_with_xp():
     parser = _get_command_line_parser(['DemoDetector'], [], [])
-    result = parser.parse_args(['run', 'ex1', 'DemoDetector', '--with-xp', '-bp', 'aaa', '-bu', 'bbb'])
+    result = parser.parse_args(['run', 'ex2', 'DemoDetector', '--with-xp', '-bp', 'aaa', '-bu', 'bbb'])
     assert_equals(True, result.with_xp)
     assert_equals('aaa', result.boa_password)
     assert_equals('bbb', result.boa_user)
