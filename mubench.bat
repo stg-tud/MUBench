@@ -1,16 +1,15 @@
 @ECHO OFF
 
-SETLOCAL SCRIPT_DIR=%~dp0
-SETLOCAL "SCRIPT_DIR=%SCRIPT_DIR:\=/%"
+SET SCRIPT_DIR=%~dp0
 SET MUBENCH_ROOT=%SCRIPT_DIR%
-SET TASKS=%MUBENCH_ROOT%\mubench.bin
+SET TASKS=%MUBENCH_ROOT%mubench.bin\
 
-%TASKS%\environment.bat
+CALL %TASKS%environment.bat
 
-SETLOCAL TASK="%MUBENCH_ROOT%\%~1.bin"
+SET TASK=%TASKS%%~1.bat
 IF EXIST %TASK% (
   SHIFT
   CALL %TASK% %*
 ) ELSE (
-  CALL "%MUBENCH_ROOT%\pipeline.bin" %*
+  CALL %TASKS%pipeline.bat %*
 )

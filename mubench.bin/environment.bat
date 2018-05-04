@@ -5,4 +5,4 @@ SET REVIEWSITE_DOCKER_IMAGE=svamann/mubench-reviewsite:latest
 SET REVIEWSITE_DOCKER_CID=mubench-reviewsite-standalone
 SET REVIEWSITE_PORT=8080
 SET REVIEWSITE_DATA_VOLUME=mubench-reviews
-SET REVIEWSITE_ROOT=%MUBENCH_ROOT%\mubench.reviewsite
+SET REVIEWSITE_ROOT=%MUBENCH_ROOT%mubench.reviewsite
