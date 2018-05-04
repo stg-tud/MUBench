@@ -13,15 +13,18 @@ class TaskRunner:
     def __init__(self, tasks: List):
         self.tasks = tasks
         self.logger = logging.getLogger("task_runner")
+        self.__accumulated_result = None
 
     def run(self, *initial_parameters: Tuple[Any]):
         if not self.tasks:
             return
 
+        self.__accumulated_result = None
         self.__run(0, list(initial_parameters))
         for task in self.tasks:
             if callable(getattr(task, 'end', None)):
                 task.end()
+        return self.__accumulated_result
 
     def __run(self, current_task_index: int, previous_results: List):
         task = self.tasks[current_task_index]
@@ -38,6 +41,14 @@ class TaskRunner:
             logger.warning("%s", exception)
             logger.debug("Full exception:", exc_info=True)
             return
+
+        is_leaf_task = current_task_index == len(self.tasks) - 1
+        is_accumulable_result = hasattr(results, '__add__')
+        if is_leaf_task and is_accumulable_result:
+            if self.__accumulated_result is None:
+                self.__accumulated_result = results
+            else:
+                self.__accumulated_result += results
 
         if results is None:
             results = [Continue()]

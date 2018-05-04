@@ -186,6 +186,24 @@ class TestTaskRunner:
         uut = TaskRunner([])
         uut.run()
 
+    def test_does_not_attempt_to_accumulate_non_accumulable_results(self):
+        branch_three_times = VoidTask(['-some string-', '-some string-', '-some string-'])
+        return_string = VoidTask(object())
+        uut = TaskRunner([branch_three_times, return_string])
+
+        result = uut.run()
+
+        assert_equals(None, result)
+
+    def test_returns_accumulated_results_of_last_task(self):
+        branch_three_times = VoidTask(['-some string-', '-some string-', '-some string-'])
+        return_string = VoidTask(42)
+        uut = TaskRunner([branch_three_times, return_string])
+
+        result = uut.run()
+
+        assert_equals(126, result)
+
 
 class MockTask:
     def __init__(self, results: Any = None):
