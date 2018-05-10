@@ -402,3 +402,7 @@ span.stats.invisible {
 #filter-menu label span {
     vertical-align: middle;
 }
+
+input.colorinput.invalid {
+    background-color: pink;
+}

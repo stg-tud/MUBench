@@ -57,7 +57,7 @@ use MuBench\ReviewSite\Models\ReviewState;
                     <div id="color-field-<?= htmlspecialchars($tag->id) ?>" style="background-color:<?= htmlspecialchars($tag->color) ?>;width:15px;height:15px;margin-top:4px"></div>
                 </td>
                 <td>
-                    <input id="color-input-<?= htmlspecialchars($tag->id) ?>" name="tags[<?= htmlspecialchars($tag->id); ?>][color]" oninput="changeColor(this)" value="<?= htmlspecialchars($tag->color) ?>">
+                    <input class="colorinput" id="color-input-<?= htmlspecialchars($tag->id) ?>" name="tags[<?= htmlspecialchars($tag->id); ?>][color]" oninput="changeColor(this)" value="<?= htmlspecialchars($tag->color) ?>">
                 </td>
                 <td>
                     <a href="<?= $pathFor('tags.delete', array('tag_id' => $tag->id)) ?>"><i class="fa fa-trash fa-1"></i></a>
@@ -66,7 +66,7 @@ use MuBench\ReviewSite\Models\ReviewState;
     <?php endforeach; ?>
     </tbody>
 </table>
-    <input type="submit" value="Update tags" />
+    <a class="button" onclick="updateTags()">Update tags</a>
 </form>
 
 <script>
@@ -76,7 +76,28 @@ use MuBench\ReviewSite\Models\ReviewState;
         colorField.style.backgroundColor = src.value;
     }
 
+    // https://stackoverflow.com/questions/1636350/how-to-identify-a-given-string-is-hex-color-format
+    let regx = /^#(?:[0-9a-fA-F]{3}){1,2}$/;
+    let form = document.getElementById("update.form");
 
+    function colorValidation(){
+        let colors = form.querySelectorAll("input.colorinput");
+        for(let i = 0; i < colors.length; ++i){
+            let colorInput = colors[i];
+            if(!regx.test(colorInput.value)){
+                colorInput.className += ' invalid';
+            }else{
+                colorInput.className = colorInput.className.replace(' invalid', '');
+            }
+        }
+    }
+
+    function updateTags(){
+        colorValidation();
+        if(form.querySelectorAll("input.colorinput.invalid").length === 0){
+            form.submit();
+        }
+    }
 </script>
 </body>
 </html>
