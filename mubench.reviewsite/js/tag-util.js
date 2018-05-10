@@ -8,7 +8,7 @@ function addTag(event){
                 "misuse_id": misuseId
             };
             postJson(addUrl, msg, function(r){
-                let tag = JSON.parse(JSON.parse(r.srcElement.responseText));
+                let tag = JSON.parse(r.srcElement.responseText);
                 misuseTagsDiv.innerHTML += getTagTemplate(tagName, tag);
             });
         }
