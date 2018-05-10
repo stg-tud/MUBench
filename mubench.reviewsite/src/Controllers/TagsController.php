@@ -17,7 +17,14 @@ class TagsController extends Controller
         $misuse_id = $formData['misuse_id'];
 
         $tag = $this->addTagToMisuse($misuse_id, $tag_id);
-        $response->withJson('{"id":'.  $tag->id . ', "color":"' . $tag->color . '", "fontColor": "' . $tag->getFontColor() .'"}');
+        $removeUrl = $this->router->pathFor('private.tag.remove', array('experiment_id' => $args["experiment_id"],
+            'detector_muid' => $args["detector_muid"],
+            'project_muid' => $args["project_muid"],
+            'version_muid' => $args["version_muid"],
+            'misuse_muid' => $args["misuse_muid"],
+            'tag_id' => $tag->id));
+        
+        $response->withJson(array("id" => $tag->id, "color" => $tag->color, "fontColor" => $tag->getFontColor(), "removeUrl" => $removeUrl));
     }
 
     public function manageTags(Request $request, Response $response, array $args)
