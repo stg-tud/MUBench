@@ -22,7 +22,7 @@ class Snippet extends Model
         ]);
     }
 
-    public static function createIfNotExists($projectId, $versionId, $misuseId, $file, $line, $code, $detectorId = "")
+    public static function createIfNotExists($projectId, $versionId, $misuseId, $file, $line, $code, $detectorId = null)
     {
         $query = Snippet::of($projectId, $versionId, $misuseId, $file)->where('line', $line);
         if($detectorId !== ""){
