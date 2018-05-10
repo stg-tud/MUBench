@@ -18,7 +18,6 @@ class TagsController extends Controller
 
         $tag = $this->addTagToMisuse($misuse_id, $tag_id);
         $response->withJson('{"id":'.  $tag->id . ', "color":"' . $tag->color . '", "fontColor": "' . $tag->getFontColor() .'"}');
-        return $response->withStatus(200);
     }
 
     public function manageTags(Request $request, Response $response, array $args)
@@ -57,8 +56,6 @@ class TagsController extends Controller
         $misuse_id = $formData['misuse_id'];
 
         $this->deleteTagFromMisuse($misuse_id, $tag_id);
-
-        return $response->withStatus(200);
     }
 
     public function getTags(Request $request, Response $response, array $args)
