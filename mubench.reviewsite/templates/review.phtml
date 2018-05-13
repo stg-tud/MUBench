@@ -111,8 +111,9 @@ $origin_path = $origin_path ? $origin_path : $pathFor('experiment.detector', arr
                 <td><b>Tags:</b></td>
                 <td>
                     <div id="misuse-tags" style="margin:0;padding:0;display:inline-block">
-                    <?php if($misuse->misuse_tags): ?>
-                    <?php foreach($misuse->misuse_tags as $tag) : ?>
+                    <?php $misuse_tags = $misuse->getTags($reviewer); ?>
+                    <?php if($misuse_tags): ?>
+                        <?php foreach($misuse_tags as $tag) : ?>
                             <div class="misuse-tag" style="background-color:<?= htmlspecialchars($tag->color) ?>;color:<?= htmlspecialchars($tag->getFontColor()) ?>;">
                                 <span id="<?= htmlspecialchars($tag->name) ?>"><?= htmlspecialchars($tag->name) ?></span>
                                 <?php if($user) : ?>

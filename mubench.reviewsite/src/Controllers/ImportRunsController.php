@@ -159,7 +159,7 @@ class ImportRunsController extends RunsController
         foreach ($misuse->misuse_tags as $tag) {
             $imported_tag = $this->importAndResetConnectionModel($tag);
             $imported_tag->save();
-            $tag_ids[] = $imported_tag->id;
+            $tag_ids[$imported_tag->id] = ['reviewer_id' => $imported_tag->pivot->reviewer_id];
         }
         return $tag_ids;
     }
