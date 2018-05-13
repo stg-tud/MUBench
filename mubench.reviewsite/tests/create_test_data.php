@@ -16,4 +16,6 @@ require __DIR__ . '/../bootstrap/db.php';
 
 require __DIR__ . '/../setup/db_table_utils.php';
 
+createTables('default');
+
 require __DIR__ . '/create_simple_test_data.php';
