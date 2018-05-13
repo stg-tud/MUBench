@@ -24,7 +24,7 @@ class Misuse extends Model
 
     public function misuse_tags()
     {
-        return $this->belongsToMany(Tag::class, 'misuse_tags', 'misuse_id', 'tag_id');
+        return $this->belongsToMany(Tag::class, 'misuse_tags', 'misuse_id', 'tag_id')->withPivot(['reviewer_id']);
     }
 
     public function detector()

@@ -1,9 +1,10 @@
-function addTag(url, misuseId, tagName){
+function addTag(url, misuseId, reviewerId, tagName){
         let misuseTagsDiv = document.getElementById('misuse-tags')
         if (isExistingTag(misuseTagsDiv, tagName)) {
             let data = {
                 "tag_name": tagName,
-                "misuse_id": misuseId
+                "misuse_id": misuseId,
+                "reviewer_id": reviewerId
             };
             postJson(url, data, function(r){
                 let tag = JSON.parse(r.srcElement.responseText);
@@ -17,8 +18,8 @@ function isExistingTag(misuseTagsDiv, tagName){
     return misuseTagsDiv.querySelectorAll("span#" + tagName).length == 0;
 }
 
-function removeTag(url, misuseId, tagElement){
-    postJson(url, {"misuse_id": misuseId}, (r) => {
+function removeTag(url, misuseId, reviewerId, tagElement){
+    postJson(url, {"misuse_id": misuseId, "reviewer_id": reviewerId}, (r) => {
         let misuseTagsDiv = document.getElementById('misuse-tags');
         misuseTagsDiv.removeChild(tagElement);
     });
