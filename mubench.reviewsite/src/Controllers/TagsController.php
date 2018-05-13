@@ -15,8 +15,9 @@ class TagsController extends Controller
         $formData = $request->getParsedBody();
         $tag_id = $formData['tag_name'];
         $misuse_id = $formData['misuse_id'];
+        $reviewer_id = $formData['reviewer_id'];
 
-        $tag = $this->addTagToMisuse($misuse_id, $tag_id);
+        $tag = $this->addTagToMisuse($misuse_id, $tag_id, $reviewer_id);
         $removeUrl = $this->router->pathFor('private.tag.remove', array('experiment_id' => $args["experiment_id"],
             'detector_muid' => $args["detector_muid"],
             'project_muid' => $args["project_muid"],
@@ -61,8 +62,9 @@ class TagsController extends Controller
         $formData = $request->getParsedBody();
         $tag_id = $args['tag_id'];
         $misuse_id = $formData['misuse_id'];
+        $reviewer_id = $formData['reviewer_id'];
 
-        $this->deleteTagFromMisuse($misuse_id, $tag_id);
+        $this->deleteTagFromMisuse($misuse_id, $tag_id, $reviewer_id);
     }
 
     public function getTags(Request $request, Response $response, array $args)
@@ -93,7 +95,7 @@ class TagsController extends Controller
         $tag->delete();
     }
 
-    function addTagToMisuse($misuseId, $tagName)
+    function addTagToMisuse($misuseId, $tagName, $reviewerId)
     {
         $tag = Tag::where('name', $tagName)->first();
         if(!$tag){
@@ -102,12 +104,16 @@ class TagsController extends Controller
             $tag->color = '#808080';
             $tag->save();
         }
-        Misuse::find($misuseId)->misuse_tags()->syncWithoutDetaching($tag->id);
+
+        $misuse = Misuse::find($misuseId);
+        if($misuse->misuse_tags()->wherePivot('reviewer_id', $reviewerId)->get()->where('id', $tag->id)->count() == 0){
+            $misuse->misuse_tags()->attach([$tag->id => ['reviewer_id' => $reviewerId]]);
+        }
         return $tag;
     }
 
-    function deleteTagFromMisuse($misuseId, $tagId)
+    function deleteTagFromMisuse($misuseId, $tagId, $reviewerId)
     {
-        Misuse::find($misuseId)->misuse_tags()->detach($tagId);
+        Misuse::find($misuseId)->misuse_tags()->where('id', $tagId)->wherePivot('reviewer_id', $reviewerId)->detach();
     }
 }

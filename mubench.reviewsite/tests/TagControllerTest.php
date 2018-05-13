@@ -31,26 +31,31 @@ class TagControllerTest extends SlimTestCase
 
     function test_save_misuse_tags()
     {
-        $this->tagController->addTagToMisuse(1, 'test-dataset');
+        $this->tagController->addTagToMisuse(1, 'test-dataset', 1);
 
         $misuseTags = Misuse::find(1)->misuse_tags;
 
-        self::assertEquals('test-dataset', $misuseTags->get(0)->name);
+        self::assertEquals('test-dataset', $misuseTags->first()->name);
+        self::assertEquals(1, $misuseTags->first()->pivot->reviewer_id);
     }
 
     function test_delete_misuse_tag()
     {
-        $this->tagController->deleteTagFromMisuse(1, 2);
+        $this->tagController->addTagToMisuse(1, 'test-dataset', 1);
+        $this->tagController->addTagToMisuse(1, 'test-dataset', 2);
+        $this->tagController->deleteTagFromMisuse(1, 2, 2);
 
         $misuseTags = Misuse::find(1)->misuse_tags;
 
-        self::assertEmpty($misuseTags);
+        self::assertEquals(1, $misuseTags->count());
+        self::assertEquals('test-dataset', $misuseTags->first()->name);
+        self::assertEquals(1, $misuseTags->first()->pivot->reviewer_id);
     }
 
     function test_adding_same_tag_twice()
     {
-        $this->tagController->addTagToMisuse(1, 'test-tag');
-        $this->tagController->addTagToMisuse(1, 'test-tag');
+        $this->tagController->addTagToMisuse(1, 'test-tag', 1);
+        $this->tagController->addTagToMisuse(1, 'test-tag', 1);
 
         $misuseTags = Misuse::find(1)->misuse_tags;
 
@@ -59,7 +64,7 @@ class TagControllerTest extends SlimTestCase
 
     function test_add_unknown_tag()
     {
-        $this->tagController->addTagToMisuse(1, 'test-tag');
+        $this->tagController->addTagToMisuse(1, 'test-tag', 1);
 
         $misuseTags = Misuse::find(1)->misuse_tags;
 
@@ -68,7 +73,7 @@ class TagControllerTest extends SlimTestCase
 
     function test_update_tag()
     {
-        $this->tagController->addTagToMisuse(1, 'test-tag');
+        $this->tagController->addTagToMisuse(1, 'test-tag', 1);
 
         $tag = Tag::where('name', 'test-tag')->first();
         $tag_id = $tag->id;
@@ -82,7 +87,7 @@ class TagControllerTest extends SlimTestCase
 
     function test_delete_tag()
     {
-        $this->tagController->addTagToMisuse(1, 'test-tag');
+        $this->tagController->addTagToMisuse(1, 'test-tag', 1);
         $tag_id = Tag::where('name', 'test-tag')->first()->id;
 
 

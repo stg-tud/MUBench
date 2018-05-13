@@ -191,7 +191,7 @@ class ImportRunsControllerTest extends SlimTestCase
         $violation = Violation::create(['name' => 'missing/call']);
         $metadataController->putMetadataCollection([$this->metadata]);
         $runsController->addRun(1, '-d-', '-p-', '-v-', $this->run_with_two_potential_hits_for_one_misuse);
-        $tagController->addTagToMisuse(1, 'test-dataset');
+        $tagController->addTagToMisuse(1, 'test-dataset', 1);
         $reviewController->updateOrCreateReview(1, $reviewer->id, '-comment-', [['hit' => 'Yes', 'violations' => [$violation->id]]]);
     }
 
