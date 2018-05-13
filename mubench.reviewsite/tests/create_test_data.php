@@ -14,6 +14,6 @@ require __DIR__ . '/../bootstrap/logger.php';
 
 require __DIR__ . '/../bootstrap/db.php';
 
-require __DIR__ . '/../setup/create_database_tables.php';
+require __DIR__ . '/../setup/db_table_utils.php';
 
 require __DIR__ . '/create_simple_test_data.php';
