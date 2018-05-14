@@ -1,51 +1,30 @@
 #!/bin/bash
 
-DOCKER_IMAGE_USERNAME=svamann
-DOCKER_IMAGE_TAG=latest
-PIPELINE_CHECKOUTS_VOLUME=mubench-checkouts
-PIPELINE_FINDINGS_VOLUME=mubench-findings
-REVIEWSITE_DOCKER_CID=mubench-reviewsite-standalone
-REVIEWSITE_PORT=8080
-REVIEWSITE_DATA_VOLUME=mubench-reviews
-
 SCRIPT_DIR=$(dirname "$([[ "$0" = /* ]] && echo "$0" || echo "$PWD/${0#./}")")
 MUBENCH_ROOT=$SCRIPT_DIR
+TASKS=${MUBENCH_ROOT}/mubench.bin
 
-if [ "$1" = 'reviewsite' ]; then
-  DOCKER_IMAGE=${DOCKER_IMAGE_USERNAME}/mubench-reviewsite:${DOCKER_IMAGE_TAG}
-  REVIEWSITE_ROOT=${MUBENCH_ROOT}/mubench.reviewsite
+source ${TASKS}/environment
 
-  if [ "$2" = 'init' ]; then
-    echo "Initializing MUBench review site..."
-    docker run --rm -v "$REVIEWSITE_ROOT":/mubench-reviewsite ${DOCKER_IMAGE} /bin/sh ./configure.sh
-  elif [ "$2" = 'start' ]; then
-    echo "Starting MUBench review site at http://localhost:${REVIEWSITE_PORT}..."
-    output=$(docker run --rm -itd -p ${REVIEWSITE_PORT}:80 -v "$REVIEWSITE_ROOT":/mubench-reviewsite --name ${REVIEWSITE_DOCKER_CID} ${DOCKER_IMAGE} 2>&1) || echo $output
-  elif [ "$2" = 'stop' ]; then
-    echo "Stopping MUBench review site..."
-    docker stop ${REVIEWSITE_DOCKER_CID}
-  elif [ "$2" = 'standalone' ]; then
-    if [ "$3" = 'start' ]; then
-      echo "Starting MUBench review site at http://localhost:${REVIEWSITE_PORT}..."
-      output=$(docker run --rm -itd -p ${REVIEWSITE_PORT}:80 -v ${REVIEWSITE_DATA_VOLUME}:/mubench-reviewsite-data --name ${REVIEWSITE_DOCKER_CID} ${DOCKER_IMAGE} 2>&1) || echo $output
-    elif [ "$3" = 'stop' ]; then
-      echo "Stopping MUBench review site..."
-      docker stop ${REVIEWSITE_DOCKER_CID}
-    elif [ "$3" = 'reset' ]; then
-      echo "Resetting MUBench review site..."
-      docker volume rm ${REVIEWSITE_DATA_VOLUME}
-    else
-      echo "Unknown task:" $3
-      echo "Chose one of {start,stop,reset}"
-    fi;
-  else
-    echo "Unknown task:" $2
-    echo "Chose one of {init,start,stop,standalone}"
-  fi;
-elif [ "$1" = 'browse' ]; then
-  DOCKER_IMAGE=${DOCKER_IMAGE_USERNAME}/mubench-pipeline:${DOCKER_IMAGE_TAG}
-  docker run --rm -it -v "$MUBENCH_ROOT":/mubench -v ${PIPELINE_CHECKOUTS_VOLUME}:/mubench/checkouts -v ${PIPELINE_FINDINGS_VOLUME}:/mubench/findings ${DOCKER_IMAGE} /bin/bash
+HELP=f
+if [[ "$*" =~ "-h" ]]; then
+  HELP=t
+fi
+
+if [ $HELP ] && [ $# = 1 ]; then
+  docker run --rm -v "$MUBENCH_ROOT":/mubench ${MUBENCH_PIPELINE_DOCKER_IMAGE} python3 ${MUBENCH_DOCS}/mubench.py "$@"
+  exit 0
 else
-  DOCKER_IMAGE=${DOCKER_IMAGE_USERNAME}/mubench-pipeline:${DOCKER_IMAGE_TAG}
-  docker run --rm -v "$MUBENCH_ROOT":/mubench -v ${PIPELINE_CHECKOUTS_VOLUME}:/mubench/checkouts -v ${PIPELINE_FINDINGS_VOLUME}:/mubench/findings ${DOCKER_IMAGE} python ./mubench.pipeline/benchmark.py "$@"
+  TASK="${TASKS}/$1"
+  DOC="${MUBENCH_DOCS}/$1.py"
+  if [ -f "${TASK}" ]; then
+    shift  # remove requested task argument
+    if [ $HELP ] && [ -f "${MUBENCH_ROOT}/${DOC}" ]; then
+      docker run --rm -v "$MUBENCH_ROOT":/mubench ${MUBENCH_PIPELINE_DOCKER_IMAGE} python3 ${DOC} "$@"
+      exit 0
+    fi;
+    source "${TASK}" "$@"
+  else
+    source "${TASKS}/pipeline" "$@"
+  fi;
 fi;
