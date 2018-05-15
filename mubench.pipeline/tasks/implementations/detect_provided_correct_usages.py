@@ -47,7 +47,7 @@ class DetectProvidedCorrectUsagesTask:
     def _get_detector_arguments(version_compile: VersionCompile, misuse_compile: MisuseCompile):
         return {
             key_detector_mode: DetectProvidedCorrectUsagesTask.__DETECTOR_MODE,
-            key_training_src_path: [misuse_compile.correct_usage_sources_path],
+            key_training_src_path: misuse_compile.correct_usage_sources_path,
             key_training_classes_path: misuse_compile.correct_usage_classes_path,
             key_target_src_paths: [misuse_compile.misuse_source_path],
             key_target_classes_paths: [misuse_compile.misuse_classes_path],
