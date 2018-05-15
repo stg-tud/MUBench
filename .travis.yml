@@ -4,8 +4,6 @@ matrix:
   include:
     - language: java
       jdk: oraclejdk8
-      before_script:
-        - cd android/AppName
       script:
         # mubench.cli
         - mvn verify -f mubench.cli/pom.xml
@@ -22,6 +20,7 @@ matrix:
 #        - python ./mubench.pipeline/benchmark.py run ex1 DemoDetector --only synthetic_survey
 
     - language: php
+      php: 7.0
       script:
         # mubench.reviewsite
         - cd mubench.reviewsite
