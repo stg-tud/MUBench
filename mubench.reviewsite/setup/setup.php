@@ -14,9 +14,10 @@ $container = $app->getContainer();
 
 require __DIR__ . '/../bootstrap/db.php';
 
-require __DIR__ . '/../setup/db_table_utils.php';
+require_once __DIR__ . "/SchemaSetup.php";
 
-createTables('default');
+$schemaSetup = new SchemaSetup('default');
+$schemaSetup->run();
 
 ?>
 <link rel="stylesheet" type="text/css" href="../css/style.css"/>

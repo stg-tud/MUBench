@@ -14,8 +14,9 @@ require __DIR__ . '/../bootstrap/logger.php';
 
 require __DIR__ . '/../bootstrap/db.php';
 
-require __DIR__ . '/../setup/db_table_utils.php';
+require __DIR__ . '/../setup/SchemaSetup.php';
 
-createTables('default');
+$schemaSetup = new SchemaSetup('default');
+$schemaSetup->run();
 
 require __DIR__ . '/create_simple_test_data.php';

@@ -164,8 +164,10 @@ class ImportRunsControllerTest extends SlimTestCase
 
     private function setupDatabaseTables()
     {
-        createTables('default');
-        createTables('extern');
+        foreach(array('default', 'extern') as $connection){
+            $schemaSetup = new SchemaSetup($connection);
+            $schemaSetup->run();
+        }
     }
 
     private function createTempDBFiles()

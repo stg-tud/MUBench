@@ -12,7 +12,7 @@ use Slim\Http\RequestBody;
 use Slim\Http\Response;
 use Slim\Http\Uri;
 
-require __DIR__ . '/../setup/db_table_utils.php';
+require_once __DIR__ . '/../setup/SchemaSetup.php';
 
 
 class SlimTestCase extends TestCase
@@ -81,7 +81,8 @@ class SlimTestCase extends TestCase
         require __DIR__ . '/../bootstrap/auth.php';
         require __DIR__ . '/../bootstrap/renderer.php';
         $this->logger = new \Monolog\Logger("test");
-        createTables('default');
+        $schemaSetup = new SchemaSetup('default');
+        $schemaSetup->run();
         require __DIR__ . '/../src/routes.php';
         require_once __DIR__ . '/../src/route_utils.php';
         require_once __DIR__ . '/../src/csv_utils.php';
