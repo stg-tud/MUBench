@@ -121,14 +121,16 @@ $origin_path = $origin_path ? $origin_path : $pathFor('experiment.detector', arr
                     </div>
                     <?php if($user) : ?>
                             <div style="display:inline-block;height:100%;padding:4px;">
-                                    <input type="hidden" name="misuse_id" value="">
-                                    <input id="tag-input" class="tag-input" maxlength="100" list="tags" name="tag_name" placeholder="add new tag" autocomplete="off">
+                                    <input id="tag-input" class="tag-input" maxlength="100" list="tags" name="tag_name" placeholder="add new tag" autocomplete="off" onkeypress="if(event.key === 'Enter'){addTag('<?= $pathFor('tag.add', array('experiment_id' => $experiment->id,
+                                        'detector_muid' => $detectorPathId($detector),
+                                        'project_muid' => $misuse->getProject(),
+                                        'version_muid' => $misuse->getVersion(),
+                                        'misuse_muid' => $misuse->misuse_muid)) ?>', '<?= $misuse->id ?>', this.value)}">
                                     <datalist id="tags">
                                         <?php foreach($tags as $tag) : ?>
                                             <option value="<?= htmlspecialchars($tag->name); ?>">
                                         <?php endforeach;?>
                                     </datalist>
-                                </form>
                             </div>
                         <?php endif; ?>
                 </td>
@@ -430,28 +432,6 @@ $origin_path = $origin_path ? $origin_path : $pathFor('experiment.detector', arr
                     simplemde.value("<?= $review->comment ?>");
                     simplemde.codemirror.refresh();
                     document.getElementById("comment-area").style.display="none";
-                    <?php endif; ?>
-                    <?php if($user): ?>
-                        var addUrl = "<?= $pathFor('tag.add', array('experiment_id' => $experiment->id,
-                            'detector_muid' => $detectorPathId($detector),
-                            'project_muid' => $misuse->getProject(),
-                            'version_muid' => $misuse->getVersion(),
-                            'misuse_muid' => $misuse->misuse_muid)) ?>";
-                        var originUrl = "<?= htmlspecialchars($path . "?origin=" . $origin_path); ?>";
-                        var baseRemoveUrl = "<?= $pathFor('tag.remove', array('experiment_id' => $experiment->id,
-                            'detector_muid' => $detectorPathId($detector),
-                            'project_muid' => $misuse->getProject(),
-                            'version_muid' => $misuse->getVersion(),
-                            'misuse_muid' => $misuse->misuse_muid,
-                            'tag_id' => 0)) ?>";
-                        // remove '0/delete' from baseRemoveUrl
-                        baseRemoveUrl = baseRemoveUrl.substring(0, baseRemoveUrl.length - 8);
-                        var misuseId = "<?= htmlspecialchars($misuse->id); ?>";
-
-                        let tag = document.getElementById("tag-input");
-                        tag.addEventListener("keyup", (e) => {
-                            addTag(e);
-                        });
                     <?php endif; ?>
                 </script>
                 <script src="<?= $site_base_url ?>js/tag-util.js"></script>

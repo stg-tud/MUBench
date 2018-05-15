@@ -1,19 +1,20 @@
-function addTag(event){
-    if (event.key === "Enter") {
-        let misuseTagsDiv = document.getElementById('misuse-tags');
-        tagName = event.target.value;
-        if (misuseTagsDiv.querySelectorAll("span#" + tagName).length == 0) {
-            let msg = {
+function addTag(url, misuseId, tagName){
+        let misuseTagsDiv = document.getElementById('misuse-tags')
+        if (isExistingTag(misuseTagsDiv, tagName)) {
+            let data = {
                 "tag_name": tagName,
                 "misuse_id": misuseId
             };
-            postJson(addUrl, msg, function(r){
+            postJson(url, data, function(r){
                 let tag = JSON.parse(r.srcElement.responseText);
                 misuseTagsDiv.innerHTML += getTagTemplate(tagName, tag);
             });
         }
         event.target.value = "";
-    }
+}
+
+function isExistingTag(misuseTagsDiv, tagName){
+    return misuseTagsDiv.querySelectorAll("span#" + tagName).length == 0;
 }
 
 function removeTag(url, button){
