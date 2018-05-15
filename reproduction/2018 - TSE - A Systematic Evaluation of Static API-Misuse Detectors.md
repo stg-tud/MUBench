@@ -3,7 +3,7 @@
 * Published in: TSE'18 ([details](http://sven-amann.de/publications/2018-03-A-Systematic-Evalution-of-Static-API-Misuse-Detectors/))
 * Review site: http://www.st.informatik.tu-darmstadt.de/artifacts/mubench/reviews/tse17/
 
-To reproduce MUBench experiments, please first read our [Getting Started guide](../#getting-started).
+To reproduce MUBench experiments, please first read our [Getting Started guide](../../../#getting-started).
 Once you've setup the experiment pipeline, you may rerun experiments by executing the respective commands listed below.
 Afterwards, you may publish the detector findings to a review site for manual assessment.
 
