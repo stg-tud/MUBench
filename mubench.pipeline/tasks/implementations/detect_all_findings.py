@@ -40,10 +40,10 @@ class DetectAllFindingsTask:
 
     @staticmethod
     def _get_detector_arguments(version_compile: VersionCompile, xp_sources_paths: List[str]):
-        return {
-            key_detector_mode: DetectAllFindingsTask.__DETECTOR_MODE,
-            key_target_src_paths: version_compile.original_sources_paths,
-            key_target_classes_paths: version_compile.original_classes_paths,
-            key_dependency_classpath: version_compile.get_full_classpath(),
-            key_training_src_path: xp_sources_paths
-        }
+        detector_args = {key_detector_mode: DetectAllFindingsTask.__DETECTOR_MODE,
+                         key_target_src_paths: version_compile.original_sources_paths,
+                         key_target_classes_paths: version_compile.original_classes_paths,
+                         key_dependency_classpath: version_compile.get_full_classpath()}
+        if xp_sources_paths:
+            detector_args[key_training_src_path] = xp_sources_paths
+        return detector_args
