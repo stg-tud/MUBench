@@ -113,7 +113,7 @@ $origin_path = $origin_path ? $origin_path : $pathFor('experiment.detector', arr
                                         'project_muid' => $misuse->getProject(),
                                         'version_muid' => $misuse->getVersion(),
                                         'misuse_muid' => $misuse->misuse_muid,
-                                        'tag_id' => $tag->id)) ?>', this)"style="border:none;outline:none;background-color:<?= htmlspecialchars($tag->color) ?>;margin:0;padding:0"><i class="fa fa-trash"></i></button>
+                                        'tag_id' => $tag->id)) ?>', '<?= $misuse->id ?>', this.parentElement)"style="border:none;outline:none;background-color:<?= htmlspecialchars($tag->color) ?>;margin:0;padding:0"><i class="fa fa-trash"></i></button>
                                 <?php endif; ?>
                             </div>
                         <?php endforeach; ?>
