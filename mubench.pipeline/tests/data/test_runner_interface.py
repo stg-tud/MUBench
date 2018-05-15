@@ -6,8 +6,7 @@ from unittest.mock import MagicMock, patch
 
 from nose.tools import assert_equals, assert_true, assert_false, assert_raises
 
-from data.runner_interface import RunnerInterface, RunnerInterface_0_0_8, NoCompatibleRunnerInterface, \
-    RunnerInterface_0_0_11
+from data.runner_interface import RunnerInterface, RunnerInterface_0_0_8, RunnerInterface_0_0_11
 from tests.test_utils.data_util import create_version
 from tests.test_utils.runner_interface_test_impl import RunnerInterfaceTestImpl
 
@@ -23,11 +22,19 @@ class TestRunnerInterface:
         RunnerInterface._get_interfaces = self._orig_get_interfaces
 
     def test_get_interface_version(self):
-        actual = RunnerInterface.get(RunnerInterfaceTestImpl.TEST_VERSION, "", dict())
+        actual = RunnerInterface.get(RunnerInterfaceTestImpl.TEST_VERSION, "", [])
         assert_true(isinstance(actual, RunnerInterfaceTestImpl))
 
-    def test_get_interface_version_raises_for_unavailable_version(self):
-        assert_raises(NoCompatibleRunnerInterface, RunnerInterface.get, "1000.90.42", "", dict())
+    def test_selects_closest_version(self):
+        class LegacyInterface(RunnerInterfaceTestImpl): pass
+        LegacyInterface.version = lambda *_: StrictVersion("0.0.9")
+        class LatestInterface(RunnerInterfaceTestImpl): pass
+        LatestInterface.version = lambda *_: StrictVersion("0.0.11")
+        self.test_interfaces = [LatestInterface, LegacyInterface]
+
+        actual = RunnerInterface.get(StrictVersion("0.0.12"), "", [])
+
+        assert_equals(LatestInterface, type(actual))
 
     def test_interface_is_legacy(self):
         class LatestInterface(RunnerInterfaceTestImpl): pass
