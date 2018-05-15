@@ -46,7 +46,7 @@ class MisuseTest extends SlimTestCase
     {
         $this->createRunWithFindingInLine(11);
 
-        SnippetsController::createSnippetIfNotExists("-p-", "-v-", "-m-", "//src/file", 10, "m(A){\n\ta(A);\n}");
+        Snippet::createIfNotExists("-p-", "-v-", "-m-", "//src/file", 10, "m(A){\n\ta(A);\n}");
 
         $run = Run::of(Detector::find('-d-'))->in(Experiment::find(1))->first();
 
@@ -101,6 +101,6 @@ class MisuseTest extends SlimTestCase
     }
 
     public function createSnippetWithStartLine($line){
-        SnippetsController::createSnippetIfNotExists("-p-", "-v-", "-m-", "//src/file", $line, "m(A){\n\ta(A);\n}");
+        Snippet::createIfNotExists("-p-", "-v-", "-m-", "//src/file", $line, "m(A){\n\ta(A);\n}");
     }
 }
