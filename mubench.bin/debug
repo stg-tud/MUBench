@@ -1,0 +1,7 @@
+SRC=$(dirname $1)
+FILENAME=$(basename -- $1)
+DNAME=${FILENAME%.*}
+TARGET="/mubench/detectors/${DNAME}/debug"
+shift
+
+docker run --rm -v "$MUBENCH_ROOT":/mubench -v ${MUBENCH_PIPELINE_CHECKOUTS_VOLUME}:/mubench/checkouts -v ${MUBENCH_PIPELINE_FINDINGS_VOLUME}:/mubench/findings -v "${SRC}":"${TARGET}" -p 5005:5005 ${MUBENCH_PIPELINE_DOCKER_IMAGE} python ./mubench.pipeline/benchmark.py run $1 ${DNAME} ${*:2} --force-detect --tag debug --java-options agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=5005
