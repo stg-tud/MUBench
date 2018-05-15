@@ -13,6 +13,8 @@ class TestPotentialHit:
     # noinspection PyAttributeOutsideInit
     def setup(self):
         self.misuse = create_misuse('misuse', meta={"location": {"file": "a", "method": "m()"}})
+        self.snippets = []
+        self.misuse.get_snippets = lambda *_: self.snippets
 
     def test_matches_on_file(self):
         self.misuse.location.file = "some-class.java"
@@ -54,13 +56,30 @@ class TestPotentialHit:
         self.misuse.location.method = "method(A)"
         self.assert_potential_hit({"method": "method(p.A)"}, True)
 
+    def test_does_not_match_on_line_without_startline(self):
+        self.misuse.location.method = "method(A)"
+        self.misuse.location.line = 42
+        self.assert_potential_hit({"method": "method(A)"})
+
+    def test_matches_on_line(self):
+        self.misuse.location.method = "method(A)"
+        self.misuse.location.line = 40
+        self.snippets = [Snippet("{\n-some-\n-code-\n}", self.misuse.location.line)]
+        self.assert_potential_hit({"method": "method(A)", "startline": 41})
+
+    def test_no_line_match(self):
+        self.misuse.location.method = "method(A)"
+        self.misuse.location.line = 40
+        self.snippets = [Snippet("{\n-some-\n-code-\n}", self.misuse.location.line)]
+        self.assert_no_potential_hit({"method": "method(A)", "startline": 1337})
+
     def assert_potential_hit(self, finding_data: Dict[str, str], method_name_only: bool=False):
         finding = self.create_finding(finding_data)
-        assert finding.is_potential_hit(self.misuse, method_name_only)
+        assert finding.is_potential_hit(self.misuse, [], method_name_only)
 
     def assert_no_potential_hit(self, finding_data: Dict[str, str]):
         finding = self.create_finding(finding_data)
-        assert not finding.is_potential_hit(self.misuse)
+        assert not finding.is_potential_hit(self.misuse, [])
 
     def create_finding(self, finding_data: Dict[str, str]):
         if "file" not in finding_data:

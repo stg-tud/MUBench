@@ -15,23 +15,24 @@ class TestPotentialHits:
         self.uut = PotentialHitsFilterTask()
         self.detector_run = MagicMock()
         self.detector_run.detector = self.detector
+        self.version_compile = MagicMock()
 
     def test_no_hit(self):
         finding = Finding({"rank": "no potential hit"})
-        finding.is_potential_hit = lambda misuse, y: False
+        finding.is_potential_hit = lambda misuse, p, y: False
         self.detector_run.findings = [finding]
 
-        potential_hits = self.uut.run(create_misuse("-m1-"), self.detector_run)
+        potential_hits = self.uut.run(create_misuse("-m1-"), self.detector_run, self.version_compile)
 
         assert_equals([], potential_hits.findings)
 
     def test_potential_hit(self):
         finding = Finding({"rank": ":potential hit for m1:"})
         misuse = create_misuse("-m1-")
-        finding.is_potential_hit = lambda m, y: m == misuse
+        finding.is_potential_hit = lambda m, p, y: m == misuse
         self.detector_run.findings = [finding]
 
-        potential_hits = self.uut.run(misuse, self.detector_run)
+        potential_hits = self.uut.run(misuse, self.detector_run, self.version_compile)
 
         assert_equals(misuse.misuse_id, potential_hits.findings[0]["misuse"])
 
