@@ -550,7 +550,7 @@ class RunsController extends Controller
     private function storeFindingTargetSnippets(Detector $detector, $projectId, $versionId, $misuseId, $file, $snippets)
     {
         foreach ($snippets as $snippet) {
-            SnippetsController::createSnippetIfNotExists($projectId, $versionId, $misuseId, $file, $snippet['first_line_number'], $snippet['code'], $detector->muid);
+            Snippet::createIfNotExists($projectId, $versionId, $misuseId, $file, $snippet['first_line_number'], $snippet['code'], $detector->muid);
         }
     }
 

@@ -21,7 +21,7 @@ class SnippetsController extends Controller
         $code = $form['snippet'];
         $line = $form['line'];
         $misuse = Misuse::find($form['misuse_id']);
-        self::createSnippetIfNotExists($projectId, $versionId, $misuseId, $misuse->getFile(), $line, $code, $detectorId);
+        Snippet::createIfNotExists($projectId, $versionId, $misuseId, $misuse->getFile(), $line, $code, $detectorId);
         return $response->withRedirect($form['path']);
     }
 
@@ -35,8 +35,4 @@ class SnippetsController extends Controller
         return $response->withRedirect($form['path']);
     }
 
-    static function createSnippetIfNotExists($projectId, $versionId, $misuseId, $file, $line, $code, $detectorId = null)
-    {
-        Snippet::createIfNotExists($projectId, $versionId, $misuseId, $file, $line, $code, $detectorId);
-    }
 }
