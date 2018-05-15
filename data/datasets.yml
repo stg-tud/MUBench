@@ -581,23 +581,11 @@ TSE17-ExRecall:
   - closure.114.1
   - closure.884.3
   - closure.319.2
-  - closure.319.dmmc-1023
-  - closure.319.dmmc-13
-  - closure.319.tikanga-2
-  - closure.319.tikanga-6
   - httpclient.302.1
   - httpclient.444.2
   - httpclient.444.3
   - httpclient.452.4
   - itext.5091.1
-  - itext.5091.dmmc-15
-  - itext.5091.dmmc-16
-  - itext.5091.dmmc-18
-  - itext.5091.dmmc-61
-  - itext.5091.dmmc-357
-  - itext.5091.dmmc-937
-  - itext.5091.jadet-5
-  - itext.5091.jadet-9
   - jackrabbit.1601.1
   - jackrabbit.1678.2
   - jackrabbit.1694.3a
@@ -620,8 +608,6 @@ TSE17-ExRecall:
   - lucene.207.3
   - lucene.1251.1
   - lucene.1918.2
-  - lucene.1918.tikanga-0
-  - lucene.1918.tikanga-1
   - rhino.286251.1
 
 ###

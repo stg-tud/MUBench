@@ -22,6 +22,8 @@ CI Status: [![CI Status](https://api.shippable.com/projects/570d22d52a8192902e1b
 * ['*MUBench: A Benchmark for API-Misuse Detectors*'](http://sven-amann.de/publications/2016-05-MSR-MUBench-dataset.html) ([MSR '16 Data Showcase](http://2016.msrconf.org/#/data))
 * ['*A Systematic Evaluation of Static API-Misuse Detectors*'](http://sven-amann.de/publications/2018-03-A-Systematic-Evalution-of-Static-API-Misuse-Detectors/) (TSE '18)
 
+We provide [instructions to reproduce the MUBench experiments](reproduction/) presented in the above publications.
+
 ## Getting Started
 
 With MUBench, you may run [different API-misuse detectors](detectors/) in [a number of experiments](mubench.pipeline/#experiments) to determine their precision and recall.
