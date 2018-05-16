@@ -76,13 +76,13 @@ def copy_tree(src: str, dst: str) -> None:
             raise UserWarning("unknown file type: {}".format(content))
 
 
-class __MultilineString(str):
-    pass
+def __str_presenter(dumper, data):
+    if "\n" in data:
+        return dumper.represent_scalar('tag:yaml.org,2002:str', data, style='|')
+    return dumper.represent_scalar('tag:yaml.org,2002:str', data)
 
 
-def __multiline_string_presenter(dumper, data):
-    return dumper.represent_scalar('tag:yaml.org,2002:str', data, style='|')
-yaml.add_representer(__MultilineString, __multiline_string_presenter)
+yaml.add_representer(str, __str_presenter)
 
 
 def write_yaml(data: Dict, file: str = None):
@@ -94,30 +94,12 @@ def write_yamls(data: List[Dict], file: str = None):
 
 
 def __write_yaml(data, dump, file):
-    data = __escape_str(data)
     if file:
         create_file(file)
         with open(file, "w", encoding="utf-8") as stream:
             return dump(data, stream, Dumper=Dumper, default_flow_style=False, encoding="utf-8")
     else:
         return dump(data, Dumper=Dumper, default_flow_style=False)
-
-
-def __escape_str(data):
-    if isinstance(data, str):
-        if "\n" in data:
-            return __MultilineString(data)
-        else:
-            return data
-    elif isinstance(data, dict):
-        new = dict()
-        for key in data:
-            new[key] = __escape_str(data[key])
-        return new
-    elif isinstance(data, list):
-        return [__escape_str(item) for item in data]
-    else:
-        return data
 
 
 def read_yaml(file: str):
