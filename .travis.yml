@@ -2,29 +2,26 @@ language: python
 
 matrix:
   include:
+    # mubench.cli & mubench.utils
     - language: java
       jdk: oraclejdk8
       script:
-        # mubench.cli
         - mvn verify -f mubench.cli/pom.xml
-        # mubench.utils
         - mvn verify -f mubench.utils/pom.xml
     
+    # mubench.pipeline
     - language: python
-      python: 3.5.2
+      python: 3.5
       install:
         - pip install -r mubench.pipeline/requirements.txt
       script:
         - nosetests -w mubench.pipeline
-#        - cp mubench.cli/target/DemoDetector.jar detectors/DemoDetector/DemoDetector.jar
         - python ./mubench.pipeline/benchmark.py run ex1 DemoDetector --only synthetic_survey
 
+    # mubench.reviewsite
     - language: php
-      php:
-        - 5.6
-        - 7.0
+      php: 7.0
       script:
-        # mubench.reviewsite
         - cd mubench.reviewsite
         - ./configure.sh
         - phpunit --bootstrap vendor/autoload.php tests/
