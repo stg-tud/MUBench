@@ -36,6 +36,16 @@ class TestRunnerInterface:
 
         assert_equals(LatestInterface, type(actual))
 
+    def test_uses_most_recent_interface_on_no_compatible_version(self):
+        class LatestInterface(RunnerInterfaceTestImpl): pass
+        LatestInterface.version = lambda *_: StrictVersion("0.0.12")
+        self.test_interfaces = [LatestInterface]
+
+        actual = RunnerInterface.get(StrictVersion("0.0.6"), "", [])
+
+        assert_equals(LatestInterface, type(actual))
+
+
     def test_interface_is_legacy(self):
         class LatestInterface(RunnerInterfaceTestImpl): pass
         LatestInterface.version = lambda *_: StrictVersion("0.0.1")

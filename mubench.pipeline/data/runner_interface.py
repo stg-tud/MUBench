@@ -31,10 +31,15 @@ class RunnerInterface:
 
     @staticmethod
     def get(requested_version: StrictVersion, jar_path: str, java_options: List[str]) -> 'RunnerInterface':
-        interfaces = RunnerInterface._get_interfaces()
-        for interface in sorted(interfaces, key=lambda i: i.version(), reverse=True):
+        newest_to_oldest_interfaces = sorted(RunnerInterface._get_interfaces(), key=lambda i: i.version(), reverse=True)
+        for interface in newest_to_oldest_interfaces:
             if interface.version() <= requested_version:
                 return interface(jar_path, java_options)
+
+        logger = logging.getLogger("runner_interface")
+        logger.warning("No compatible runner interface for %s; using %s instead.", requested_version,
+                       newest_to_oldest_interfaces[0].version())
+        return newest_to_oldest_interfaces[0](jar_path, java_options)
 
     @staticmethod
     def version() -> StrictVersion:
