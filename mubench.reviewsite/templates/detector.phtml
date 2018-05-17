@@ -253,15 +253,11 @@ $columns_to_ignore = array(
                     <?php endif; ?>
                 </td>
                 <td class="<?= $style_classes ?>">
-                    <?php if($misuse->hasConclusiveReviewState()) : ?>
-                        <?php if($misuse->misuse_tags): ?>
-                            <?php foreach($misuse->misuse_tags->unique('id') as $tag) : ?>
+                            <?php foreach($misuse->getTags($user) as $tag) : ?>
                                 <div class="misuse-tag" style="background-color:<?= htmlspecialchars($tag->color) ?>;color:<?= htmlspecialchars($tag->getFontColor()) ?>;">
                                     <span><?= htmlspecialchars($tag->name) ?></span>
                                 </div>
                             <?php endforeach; ?>
-                        <?php endif; ?>
-                    <?php endif; ?>
                 </td>
             </tr>
             <?php

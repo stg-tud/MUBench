@@ -106,7 +106,8 @@ $origin_path = $origin_path ? $origin_path : $pathFor('experiment.detector', arr
             <?php if($experiment->id !== 2) : ?>
                 <tr><td><b>Misuse:</b></td><td>misuse '<?= $markdown_parser->text($misuse->misuse_muid); ?>'</td></tr>
             <?php endif; ?>
-            <?php if($user || $misuse->misuse_tags) : ?>
+            <?php $misuse_tags = $misuse->getTags($user); ?>
+            <?php if($user || $misuse_tags->count() > 0) : ?>
                 <tr>
                 <td><b>Tags:</b></td>
                 <td>
