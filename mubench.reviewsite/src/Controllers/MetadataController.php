@@ -9,6 +9,7 @@ use MuBench\ReviewSite\Models\Metadata;
 use MuBench\ReviewSite\Models\Misuse;
 use MuBench\ReviewSite\Models\CorrectUsage;
 use MuBench\ReviewSite\Models\Run;
+use MuBench\ReviewSite\Models\Snippet;
 use MuBench\ReviewSite\Models\Violation;
 use Slim\Http\Request;
 use Slim\Http\Response;
@@ -102,7 +103,7 @@ class MetadataController extends Controller
         $this->logger->info("Save target snippets.");
         if ($targetSnippets) {
             foreach ($targetSnippets as $snippet) {
-                SnippetsController::createSnippetIfNotExists($projectId, $versionId, $misuseId, $file, $snippet['first_line_number'], $snippet['code']);
+                Snippet::createIfNotExists($projectId, $versionId, $misuseId, $file, $snippet['first_line_number'], $snippet['code']);
             }
         }
     }
