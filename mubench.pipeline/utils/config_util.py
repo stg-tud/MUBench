@@ -5,6 +5,8 @@ from operator import attrgetter
 from os.path import join, abspath, dirname
 from typing import List, Any
 
+import sys
+
 from data.detector import get_available_detector_ids, Detector
 from tasks.implementations import stats
 from utils.dataset_util import get_available_dataset_ids
@@ -17,6 +19,8 @@ __COMPILES_PATH = __CHECKOUTS_PATH
 __FINDINGS_PATH = join(MUBENCH_ROOT_PATH, "findings")
 __DATASETS_FILE_PATH = join(MUBENCH_ROOT_PATH, 'data', 'datasets.yml')
 __DETECTORS_PATH = join(MUBENCH_ROOT_PATH, "detectors")
+__XP_CHECKOUTS_PATH = join(MUBENCH_ROOT_PATH, "checkouts-xp")
+__XP_INDEX_FILE = join(__XP_CHECKOUTS_PATH, "index")
 
 
 class SortingHelpFormatter(HelpFormatter):
@@ -68,6 +72,8 @@ def _get_command_line_parser(available_detectors: List[str], available_scripts: 
 
     subparsers.required = True
 
+    parser.add_argument('--root-path', dest='root_path', default=__get_default('root-path', MUBENCH_ROOT_PATH),
+                        help=argparse.SUPPRESS)
     parser.add_argument('--use-tmp-wrkdir', dest='use_tmp_wrkdir', default=__get_default('use-tmp-wrkdir', False),
                         help=argparse.SUPPRESS, action='store_true')
     parser.add_argument('--data-path', dest='data_path', default=__get_default('data-path', __DATA_PATH),
@@ -84,6 +90,12 @@ def _get_command_line_parser(available_detectors: List[str], available_scripts: 
                         default=__get_default('detectors-path', __DETECTORS_PATH), help=argparse.SUPPRESS)
     parser.add_argument('--development-mode', dest='development_mode', default=__get_default('development-mode', False),
                         help=argparse.SUPPRESS, action='store_true')
+    parser.add_argument('--xp-checkouts-path', dest='xp_checkouts_path',
+                        default=__get_default('xp-checkouts-path', __XP_CHECKOUTS_PATH), help=argparse.SUPPRESS)
+    parser.add_argument('--xp-index-file', dest='xp_index_file',
+                        default=__get_default('xp-index-file', __XP_INDEX_FILE), help=argparse.SUPPRESS)
+    parser.add_argument('--max-project-sample-size', dest='max_project_sample_size',
+                        default=__get_default('max-project-sample-size', 50), help=argparse.SUPPRESS)
 
     __add_check_subprocess(available_datasets, subparsers)
     __add_info_subprocess(available_datasets, subparsers)
@@ -92,6 +104,7 @@ def _get_command_line_parser(available_detectors: List[str], available_scripts: 
     __add_run_subprocess(available_detectors, available_datasets, subparsers)
     __add_publish_subprocess(available_detectors, available_datasets, subparsers)
     __add_stats_subprocess(available_scripts, available_datasets, subparsers)
+    __add_checkout_cross_project_subprocess(available_datasets, subparsers)
 
     # Add subprocesses provided by the ./mubench script
     __add_browse_subprocess(subparsers)
@@ -226,6 +239,7 @@ def __add_run_ex2_subprocess(available_detectors: List[str], available_datasets:
     __setup_compile_arguments(experiment_parser)
     __setup_run_arguments(experiment_parser, available_detectors)
     __setup_publish_precision_arguments(experiment_parser)
+    __setup_cross_project_arguments(experiment_parser)
 
 
 def __add_run_ex3_subprocess(available_detectors: List[str], available_datasets: List[str], subparsers) -> None:
@@ -239,6 +253,22 @@ def __add_run_ex3_subprocess(available_detectors: List[str], available_datasets:
     __setup_checkout_arguments(experiment_parser)
     __setup_compile_arguments(experiment_parser)
     __setup_run_arguments(experiment_parser, available_detectors)
+    __setup_cross_project_arguments(experiment_parser)
+
+
+def __add_checkout_cross_project_subprocess(available_datasets: List[str], subparsers) -> None:
+    parser = subparsers.add_parser("checkout-xp", formatter_class=SortingHelpFormatter,
+                                   help="TODO",
+                                   description="TODO")
+
+    __setup_filter_arguments(parser, available_datasets)
+
+    boa_user = __get_default('boa-user', None)
+    boa_password = __get_default('boa-password', None)
+    parser.add_argument("-bu", "--boa-user", metavar="BOAUSER", required=not boa_user,
+                        default=boa_user, help="Your boa username.")
+    parser.add_argument("-bp", "--boa-password", metavar="BOAPASSWORD", required=not boa_password,
+                        default=boa_password, help="Your boa password.")
 
 
 def __add_publish_subprocess(available_detectors: List[str], available_datasets: List[str], subparsers) -> None:
@@ -306,6 +336,7 @@ def __add_publish_ex2_subprocess(available_detectors: List[str], available_datas
     __setup_run_arguments(experiment_parser, available_detectors)
     __setup_publish_arguments(experiment_parser)
     __setup_publish_precision_arguments(experiment_parser)
+    __setup_cross_project_arguments(experiment_parser)
 
 
 def __add_publish_ex3_subprocess(available_detectors: List[str], available_datasets: List[str],
@@ -325,6 +356,7 @@ def __add_publish_ex3_subprocess(available_detectors: List[str], available_datas
     __setup_compile_arguments(experiment_parser)
     __setup_run_arguments(experiment_parser, available_detectors)
     __setup_publish_arguments(experiment_parser)
+    __setup_cross_project_arguments(experiment_parser)
 
 
 def __setup_filter_arguments(parser: ArgumentParser, available_datasets: List[str]) -> None:
@@ -396,6 +428,20 @@ def __setup_publish_precision_arguments(parser: ArgumentParser) -> None:
     parser.add_argument('--limit', type=upload_limit, default=__get_default('limit', default_limit), metavar='n',
                         dest="limit", help="publish only the top-n findings. Defaults to {}. "
                                            "Use `--limit 0` to publish only run stats.".format(default_limit))
+
+
+def __setup_cross_project_arguments(parser: ArgumentParser) -> None:
+    parser.add_argument('--with-xp', dest='with_xp', action='store_true', default=__get_default('with-xp', False),
+                        help="use sampled projects with usages for learning.")
+
+    boa_user = __get_default('boa-user', None)
+    boa_password = __get_default('boa-password', None)
+    parser.add_argument("-bu", "--boa-user", metavar="BOAUSER",
+                        required='--with-xp' in sys.argv and not boa_user,
+                        default=boa_user, help="Your boa username.")
+    parser.add_argument("-bp", "--boa-password", metavar="BOAPASSWORD",
+                        required='--with-xp' in sys.argv and not boa_password,
+                        default=boa_password, help="Your boa password.")
 
 
 def __add_browse_subprocess(subparsers) -> None:

@@ -64,13 +64,13 @@ class TestTaskRunner:
         third_task.assert_called_once_with(42, ":some string:")
 
     def test_runs_subsequent_task_with_generic_result_of_previous_task(self):
-        first_task = VoidTask([[1,2]])
+        first_task = VoidTask([[1, 2]])
         second_task = ListConsumingTask()
         uut = TaskRunner([first_task, second_task])
 
         uut.run()
 
-        second_task.assert_called_once_with([1,2])
+        second_task.assert_called_once_with([1, 2])
 
     def test_reports_if_a_task_requires_an_unavailable_parameter(self):
         first_task = VoidTask([42])
@@ -186,10 +186,28 @@ class TestTaskRunner:
         uut = TaskRunner([])
         uut.run()
 
+    def test_does_not_attempt_to_accumulate_non_accumulable_results(self):
+        branch_three_times = VoidTask(['-some string-', '-some string-', '-some string-'])
+        return_string = VoidTask(object())
+        uut = TaskRunner([branch_three_times, return_string])
+
+        result = uut.run()
+
+        assert_equals(None, result)
+
+    def test_returns_accumulated_results_of_last_task(self):
+        branch_three_times = VoidTask(['-some string-', '-some string-', '-some string-'])
+        return_string = VoidTask(42)
+        uut = TaskRunner([branch_three_times, return_string])
+
+        result = uut.run()
+
+        assert_equals(126, result)
+
 
 class MockTask:
-    def __init__(self, results: List = None):
-        self.results = results or []
+    def __init__(self, results: Any = None):
+        self.results = results
         self.calls = []
 
     def assert_called_once_with(self, *args):
@@ -240,7 +258,7 @@ class DuplicateIntRequestingTask(MockTask):
 
 
 class FailingTask(MockTask):
-    def __init__(self, message: str = "", results = None):
+    def __init__(self, message: str = "", results=None):
         super().__init__(results)
         self.message = message
 
@@ -250,7 +268,7 @@ class FailingTask(MockTask):
 
 
 class FailingStringConsumingTask(MockTask):
-    def __init__(self, message: str = "", results = None):
+    def __init__(self, message: str = "", results=None):
         super().__init__(results)
         self.message = message
 

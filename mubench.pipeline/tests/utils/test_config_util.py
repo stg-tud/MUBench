@@ -1,4 +1,5 @@
 import sys
+from unittest.mock import patch
 
 from nose.tools import assert_raises, assert_equals, nottest
 
@@ -179,3 +180,19 @@ def test_allow_zero_limit():
 def test_fails_on_negative_limit():
     parser = _get_command_line_parser(['DemoDetector'], [], [])
     assert_raises(SystemExit, parser.parse_args, ['publish', 'ex2', 'DemoDetector', '-s', 'site', '--limit', '-1'])
+
+
+def test_run_with_xp():
+    parser = _get_command_line_parser(['DemoDetector'], [], [])
+    result = parser.parse_args(['run', 'ex2', 'DemoDetector', '--with-xp', '-bp', 'aaa', '-bu', 'bbb'])
+    assert_equals(True, result.with_xp)
+    assert_equals('aaa', result.boa_password)
+    assert_equals('bbb', result.boa_user)
+
+
+@patch("utils.config_util.sys")
+def test_requires_boa_credentials_on_with_xp(sys_mock):
+    args = ['run', 'ex1', 'DemoDetector', '--with-xp']
+    sys_mock.argv = args
+    parser = _get_command_line_parser(['DemoDetector'], [], [])
+    assert_raises(SystemExit, parser.parse_args, args)

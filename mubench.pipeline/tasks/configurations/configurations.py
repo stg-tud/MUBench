@@ -1,5 +1,6 @@
 from typing import List
 
+from tasks.implementations.crossproject_create_index import CrossProjectCreateIndexTask
 from tasks.implementations import stats
 from tasks.implementations.checkout import CheckoutTask
 from tasks.implementations.collect_misuses import CollectMisusesTask
@@ -7,6 +8,9 @@ from tasks.implementations.collect_projects import CollectProjectsTask
 from tasks.implementations.collect_versions import CollectVersionsTask
 from tasks.implementations.compile_misuse import CompileMisuseTask
 from tasks.implementations.compile_version import CompileVersionTask
+from tasks.implementations.crossproject_create_project_list import CrossProjectCreateProjectListTask
+from tasks.implementations.crossproject_prepare import CrossProjectPrepareTask
+from tasks.implementations.crossproject_read_index import CrossProjectReadIndexTask, CrossProjectSkipReadIndexTask
 from tasks.implementations.dataset_check_misuse import MisuseCheckTask
 from tasks.implementations.dataset_check_project import ProjectCheckTask
 from tasks.implementations.dataset_check_version import VersionCheckTask
@@ -18,6 +22,7 @@ from tasks.implementations.info import ProjectInfoTask, VersionInfoTask, MisuseI
 from tasks.implementations.load_detector import LoadDetectorTask
 from tasks.implementations.publish_findings import PublishFindingsTask
 from tasks.implementations.publish_metadata import PublishMetadataTask
+from tasks.task_runner import TaskRunner
 from utils.dataset_util import get_available_datasets
 
 
@@ -103,9 +108,10 @@ class RunProvidedPatternsExperiment(TaskConfiguration):
                                          config.java_options)
         detect = DetectProvidedCorrectUsagesTask(config.findings_path, config.force_detect, config.timeout,
                                                  config.run_timestamp)
-        return [load_detector] + CheckoutTaskConfiguration().tasks(config) + [compile_version, collect_misuses,
-                                                                              filter_misuses_without_correct_usages,
-                                                                              compile_misuse, detect]
+
+        # noinspection PyTypeChecker
+        return [load_detector] + CheckoutTaskConfiguration().tasks(config) + \
+               [compile_version, collect_misuses, filter_misuses_without_correct_usages, compile_misuse] + [detect]
 
 
 class PublishProvidedPatternsExperiment(TaskConfiguration):
@@ -132,8 +138,18 @@ class RunAllFindingsExperiment(TaskConfiguration):
                                              config.force_compile, config.use_tmp_wrkdir)
         load_detector = LoadDetectorTask(config.detectors_path, config.detector, config.requested_release,
                                          config.java_options)
+
+        create_index = TaskRunner([CollectMisusesTask(), CrossProjectCreateIndexTask(config.xp_index_file)])
+        read_index = CrossProjectReadIndexTask(config.xp_index_file) if config.with_xp \
+            else CrossProjectSkipReadIndexTask()
+        prepare_cross_project = [create_index, read_index,
+                                 CrossProjectPrepareTask(config.root_path, config.xp_checkouts_path,
+                                                         config.run_timestamp,
+                                                         config.max_project_sample_size, config.boa_user,
+                                                         config.boa_password)]
+
         detect = DetectAllFindingsTask(config.findings_path, config.force_detect, config.timeout, config.run_timestamp)
-        return [load_detector] + CheckoutTaskConfiguration().tasks(config) + [compile_version, detect]
+        return [load_detector] + CheckoutTaskConfiguration().tasks(config) + prepare_cross_project + [compile_version, detect]
 
 
 class PublishAllFindingsExperiment(TaskConfiguration):
@@ -161,7 +177,36 @@ class RunBenchmarkExperiment(TaskConfiguration):
         load_detector = LoadDetectorTask(config.detectors_path, config.detector, config.requested_release,
                                          config.java_options)
         detect = DetectAllFindingsTask(config.findings_path, config.force_detect, config.timeout, config.run_timestamp)
-        return [load_detector] + CheckoutTaskConfiguration().tasks(config) + [compile_version, detect]
+
+        create_index = TaskRunner([CollectMisusesTask(), CrossProjectCreateIndexTask(config.xp_index_file)])
+        read_index = CrossProjectReadIndexTask(config.xp_index_file) if config.with_xp \
+            else CrossProjectSkipReadIndexTask()
+        prepare_cross_project = [create_index, read_index,
+                                 CrossProjectPrepareTask(config.root_path, config.xp_checkouts_path,
+                                                         config.run_timestamp,
+                                                         config.max_project_sample_size, config.boa_user,
+                                                         config.boa_password)]
+
+        # noinspection PyTypeChecker
+        return [load_detector] + CheckoutTaskConfiguration().tasks(config) + [compile_version] + \
+            prepare_cross_project + [detect]
+
+
+class RunCrossProjectPrepare(TaskConfiguration):
+    @staticmethod
+    def mode() -> str:
+        return "checkout-xp"
+
+    def tasks(self, config) -> List:
+        create_index_tasks = [CollectProjectsTask(config.data_path), CollectVersionsTask(config.development_mode),
+                              CollectMisusesTask(), CrossProjectCreateIndexTask(config.xp_index_file)]
+        create_index = TaskRunner(create_index_tasks)
+        # noinspection PyTypeChecker
+        return [create_index,
+                CrossProjectReadIndexTask(config.xp_index_file),
+                CrossProjectPrepareTask(config.root_path, config.xp_checkouts_path, config.run_timestamp, config.max_project_sample_size, config.boa_user,
+                                        config.boa_password),
+                CrossProjectCreateProjectListTask(config.root_path, config.xp_index_file, config.xp_checkouts_path)]
 
 
 class PublishBenchmarkExperiment(TaskConfiguration):
