@@ -20,11 +20,6 @@ def _as_list(dictionary: Dict) -> List:
     return l
 
 
-class NoCompatibleRunnerInterface(Exception):
-    def __init__(self, version: StrictVersion):
-        super().__init__("No compatible runner interface for version {}".format(version))
-
-
 class RunnerInterface:
     def __init__(self, jar_path: str, java_options: List[str]):
         self.jar_path = jar_path
@@ -36,12 +31,15 @@ class RunnerInterface:
 
     @staticmethod
     def get(requested_version: StrictVersion, jar_path: str, java_options: List[str]) -> 'RunnerInterface':
-        interfaces = RunnerInterface._get_interfaces()
-        matching_interfaces = [i for i in interfaces if i.version() == requested_version]
-        if matching_interfaces:
-            return matching_interfaces[0](jar_path, java_options)
-        else:
-            raise NoCompatibleRunnerInterface(requested_version)
+        newest_to_oldest_interfaces = sorted(RunnerInterface._get_interfaces(), key=lambda i: i.version(), reverse=True)
+        for interface in newest_to_oldest_interfaces:
+            if interface.version() <= requested_version:
+                return interface(jar_path, java_options)
+
+        logger = logging.getLogger("runner_interface")
+        logger.warning("No compatible runner interface for %s; using %s instead.", requested_version,
+                       newest_to_oldest_interfaces[0].version())
+        return newest_to_oldest_interfaces[0](jar_path, java_options)
 
     @staticmethod
     def version() -> StrictVersion:
@@ -213,18 +211,7 @@ class RunnerInterface_0_0_8(CommandLineArgsRunnerInterface):
 
 
 # noinspection PyPep8Naming
-class RunnerInterface_0_0_10(RunnerInterface_0_0_8):
-    @staticmethod
-    def version():
-        return StrictVersion("0.0.10")
-
-    @staticmethod
-    def changelog():
-        return ""  # Only changed Java-side interface.
-
-
-# noinspection PyPep8Naming
-class RunnerInterface_0_0_11(RunnerInterface_0_0_10):
+class RunnerInterface_0_0_11(RunnerInterface_0_0_8):
     @staticmethod
     def version():
         return StrictVersion("0.0.11")
@@ -238,14 +225,3 @@ class RunnerInterface_0_0_11(RunnerInterface_0_0_10):
         detector_arguments["target_src_path"] = ":".join(detector_arguments["target_src_path"])
         detector_arguments["target_classpath"] = ":".join(detector_arguments["target_classpath"])
         return CommandLineArgsRunnerInterface._get_cli_args(detector_arguments)
-
-
-# noinspection PyPep8Naming
-class RunnerInterface_0_0_13(RunnerInterface_0_0_11):
-    @staticmethod
-    def version():
-        return StrictVersion("0.0.13")
-
-    @staticmethod
-    def changelog():
-        return ""  # Only changed Java-side interface.
