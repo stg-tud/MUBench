@@ -110,34 +110,35 @@ $origin_path = $origin_path ? $origin_path : $pathFor('experiment.detector', arr
                 <tr>
                 <td><b>Tags:</b></td>
                 <td>
+                    <div id="misuse-tags" style="margin:0;padding:0;display:inline-block">
                     <?php if($misuse->misuse_tags): ?>
-                        <?php foreach($misuse->misuse_tags as $tag) : ?>
+                    <?php foreach($misuse->misuse_tags as $tag) : ?>
                             <div class="misuse-tag" style="background-color:<?= htmlspecialchars($tag->color) ?>;color:<?= htmlspecialchars($tag->getFontColor()) ?>;">
-                                <span><?= htmlspecialchars($tag->name) ?></span>
+                                <span id="<?= htmlspecialchars($tag->name) ?>"><?= htmlspecialchars($tag->name) ?></span>
                                 <?php if($user) : ?>
-                                <div style="display:inline-block;padding-right:2px;margin:0;color:black">
-                                    <form action="<?= $pathFor('tag.remove', array('experiment_id' => $experiment->id, 'detector_muid' => $detectorPathId($detector), 'project_muid' => $misuse->getProject(), 'version_muid' => $misuse->getVersion(), 'misuse_muid' => $misuse->misuse_muid, 'tag_id' => $tag->id)) ?>" method="post" target="">
-                                        <input type="hidden" name="path" value="<?= htmlspecialchars($path . "?origin=" . $origin_path); ?>">
-                                        <input type="hidden" name="misuse_id" value="<?= htmlspecialchars($misuse->id); ?>">
-                                        <button style="border:none;outline:none;background-color:<?= htmlspecialchars($tag->color) ?>;margin:0;padding:0" type="submit"><i class="fa fa-trash"></i></button>
-                                    </form>
-                                </div>
+                                    <button onclick="removeTag('<?= $pathFor('tag.remove', array('experiment_id' => $experiment->id,
+                                        'detector_muid' => $detectorPathId($detector),
+                                        'project_muid' => $misuse->getProject(),
+                                        'version_muid' => $misuse->getVersion(),
+                                        'misuse_muid' => $misuse->misuse_muid,
+                                        'tag_id' => $tag->id)) ?>', '<?= $misuse->id ?>', this.parentElement)"style="border:none;outline:none;background-color:<?= htmlspecialchars($tag->color) ?>;margin:0;padding:0"><i class="fa fa-trash"></i></button>
                                 <?php endif; ?>
                             </div>
                         <?php endforeach; ?>
                     <?php endif; ?>
+                    </div>
                     <?php if($user) : ?>
                             <div style="display:inline-block;height:100%;padding:4px;">
-                                <form id="tag-form" action="<?= $pathFor('tag.add', array('experiment_id' => $experiment->id, 'detector_muid' => $detectorPathId($detector), 'project_muid' => $misuse->getProject(), 'version_muid' => $misuse->getVersion(), 'misuse_muid' => $misuse->misuse_muid)) ?>" method="post" target="">
-                                    <input type="hidden" name="misuse_id" value="<?= htmlspecialchars($misuse->id); ?>">
-                                    <input type="hidden" name="path" value="<?= htmlspecialchars($path . "?origin=" . $origin_path); ?>">
-                                    <input id="tag-input" class="tag-input" maxlength="100" list="tags" name="tag_name" placeholder="add new tag" autocomplete="off">
+                                    <input id="tag-input" class="tag-input" maxlength="100" list="tags" name="tag_name" placeholder="add new tag" autocomplete="off" onkeypress="if(event.key === 'Enter'){addTag('<?= $pathFor('tag.add', array('experiment_id' => $experiment->id,
+                                        'detector_muid' => $detectorPathId($detector),
+                                        'project_muid' => $misuse->getProject(),
+                                        'version_muid' => $misuse->getVersion(),
+                                        'misuse_muid' => $misuse->misuse_muid)) ?>', '<?= $misuse->id ?>', this.value)}">
                                     <datalist id="tags">
                                         <?php foreach($tags as $tag) : ?>
                                             <option value="<?= htmlspecialchars($tag->name); ?>">
                                         <?php endforeach;?>
                                     </datalist>
-                                </form>
                             </div>
                         <?php endif; ?>
                 </td>
@@ -441,6 +442,7 @@ $origin_path = $origin_path ? $origin_path : $pathFor('experiment.detector', arr
                     document.getElementById("comment-area").style.display="none";
                     <?php endif; ?>
                 </script>
+                <script src="<?= $site_base_url ?>js/tag-util.js"></script>
             <?php endif; ?>
             </body>
         </html>

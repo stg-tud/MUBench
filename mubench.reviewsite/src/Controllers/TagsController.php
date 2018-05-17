@@ -16,8 +16,15 @@ class TagsController extends Controller
         $tag_id = $formData['tag_name'];
         $misuse_id = $formData['misuse_id'];
 
-        $this->addTagToMisuse($misuse_id, $tag_id);
-        return $response->withRedirect($formData['path']);
+        $tag = $this->addTagToMisuse($misuse_id, $tag_id);
+        $removeUrl = $this->router->pathFor('private.tag.remove', array('experiment_id' => $args["experiment_id"],
+            'detector_muid' => $args["detector_muid"],
+            'project_muid' => $args["project_muid"],
+            'version_muid' => $args["version_muid"],
+            'misuse_muid' => $args["misuse_muid"],
+            'tag_id' => $tag->id));
+        
+        $response->withJson(array("id" => $tag->id, "color" => $tag->color, "fontColor" => $tag->getFontColor(), "removeUrl" => $removeUrl));
     }
 
     public function manageTags(Request $request, Response $response, array $args)
@@ -56,8 +63,6 @@ class TagsController extends Controller
         $misuse_id = $formData['misuse_id'];
 
         $this->deleteTagFromMisuse($misuse_id, $tag_id);
-
-        return $response->withRedirect($formData['path']);
     }
 
     public function getTags(Request $request, Response $response, array $args)
@@ -98,6 +103,7 @@ class TagsController extends Controller
             $tag->save();
         }
         Misuse::find($misuseId)->misuse_tags()->syncWithoutDetaching($tag->id);
+        return $tag;
     }
 
     function deleteTagFromMisuse($misuseId, $tagId)
