@@ -235,13 +235,17 @@ class Misuse extends Model
 
     public function getTags($reviewer)
     {
-        $misuseTags = $this->misuse_tags;
         if(!$this->hasConclusiveReviewState()){
-            $misuseTags = $misuseTags->filter(function ($value, $key) use ($reviewer) {
-                return $value->pivot->reviewer_id == $reviewer->id;
-            });
+            if(!$reviewer){
+                return new Collection;
+            }else{
+                return $this->misuse_tags->filter(function ($value, $key) use ($reviewer) {
+                    return $value->pivot->reviewer_id == $reviewer->id;
+                });
+            }
+        }else{
+            return $this->misuse_tags->unique('id');
         }
-        return $misuseTags->unique('id');
     }
 
 }
