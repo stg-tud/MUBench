@@ -44,7 +44,7 @@ class PublishMetadataTask:
             "project": project.id,
             "version": version.version_id,
             "misuse": misuse.misuse_id,
-            "location": misuse.location.__dict__,
+            "locations": [location.__dict__ for location in misuse.locations],
             "description": misuse.description,
             "violations": misuse.violations,
             "fix": {

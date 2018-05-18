@@ -60,10 +60,12 @@ class TestPublishMetadataTask:
                 "-violation-1-",
                 "-violation-2-"
             ],
-            "location": {
-                "file": "/some/file.java",
-                "method": "-some.method()-"
-            }
+            "locations": [
+                {
+                    "file": "/some/file.java",
+                    "method": "-some.method()-"
+                }
+            ]
         }, project=self.project, version=self.version)
         snippets_mock.return_value = [Snippet("-code-", 42)]
 
@@ -84,11 +86,13 @@ class TestPublishMetadataTask:
                 "-violation-1-",
                 "-violation-2-"
             ],
-            "location": {
-                "file": "/some/file.java",
-                "method": "-some.method()-",
-                "line": -1
-            },
+            "locations": [
+                {
+                    "file": "/some/file.java",
+                    "method": "-some.method()-",
+                    "line": -1
+                }
+            ],
             "target_snippets": [{"first_line_number": 42, "code": "-code-"}],
             "correct_usages": []
         }])

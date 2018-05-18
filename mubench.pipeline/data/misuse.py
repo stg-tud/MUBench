@@ -137,7 +137,10 @@ class Misuse:
         return self._violations
 
     def get_snippets(self, source_base_paths: List[str]) -> List[Snippet]:
-        return get_snippets(source_base_paths, self.location.file, self.location.method, self.location.line)
+        snippets = []
+        for location in self.locations:
+            snippets.extend(get_snippets(source_base_paths, location.file, location.method, location.line))
+        return snippets
 
     def get_misuse_compile(self, base_path: str) -> MisuseCompile:
         return MisuseCompile(join(base_path, self.project_id, "misuses", self.misuse_id), self.correct_usages)
