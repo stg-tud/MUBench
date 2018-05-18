@@ -93,9 +93,6 @@ def _get_command_line_parser(available_detectors: List[str], available_scripts: 
     __add_publish_subprocess(available_detectors, available_datasets, subparsers)
     __add_stats_subprocess(available_scripts, available_datasets, subparsers)
 
-    # Add subprocesses provided by the ./mubench script
-    __add_browse_subprocess(subparsers)
-
     return parser
 
 
@@ -397,7 +394,3 @@ def __setup_publish_precision_arguments(parser: ArgumentParser) -> None:
     parser.add_argument('--limit', type=upload_limit, default=__get_default('limit', default_limit), metavar='n',
                         dest="limit", help="publish only the top-n findings. Defaults to {}. "
                                            "Use `--limit 0` to publish only run stats.".format(default_limit))
-
-
-def __add_browse_subprocess(subparsers) -> None:
-    subparsers.add_parser('browse', help="Open a Linux shell in a container mounting the MUBench Docker Volumes.")
