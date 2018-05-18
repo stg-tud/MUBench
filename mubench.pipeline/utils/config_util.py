@@ -373,8 +373,9 @@ def __setup_publish_arguments(parser: ArgumentParser) -> None:
     default_review_site = __get_default('review-site', None)
     parser.add_argument("-s", "--review-site", required=(not default_review_site), metavar="URL",
                         dest="review_site_url", default=default_review_site, help="use the specified review site")
+    default_username = __get_default('username', None)
     parser.add_argument("-u", "--username", metavar="USER", dest="review_site_user",
-                        default=__get_default('username', None),
+                        default=default_username, required=(not default_username),
                         help="use the specified user to authenticate with the review site."
                              " If a user is provided, but no password,"
                              " you will be prompted for the password before publication.")
