@@ -25,6 +25,11 @@ class SortingHelpFormatter(HelpFormatter):
         super(SortingHelpFormatter, self).add_arguments(actions)
 
 
+def __sort_subactions_by_name(subparsers) -> None:
+    orig_get_subactions = subparsers._get_subactions
+    subparsers._get_subactions = lambda *args: sorted(orig_get_subactions(*args), key=lambda action: action.metavar)
+
+
 class CaseInsensitiveChoices(list):
     def __init__(self, iterable):
         super().__init__(iterable)
@@ -66,6 +71,7 @@ def _get_command_line_parser(available_detectors: List[str], available_scripts: 
              "Run `./mubench <task> -h` for details.",
         dest='task')
 
+    __sort_subactions_by_name(subparsers)
     subparsers.required = True
 
     parser.add_argument('--use-tmp-wrkdir', dest='use_tmp_wrkdir', default=__get_default('use-tmp-wrkdir', False),
@@ -116,6 +122,7 @@ def __add_check_subprocess(available_datasets: List[str], subparsers) -> None:
     check_subparsers = check_parser.add_subparsers(dest='sub_task',
                                                    help="MUBench supports several checks. "
                                                         "Run `./mubench check <check> -h` for details.")
+    __sort_subactions_by_name(check_subparsers)
     check_subparsers.required = True
 
     __add_check_requirements_subprocess(check_subparsers)
@@ -191,6 +198,7 @@ def __add_run_subprocess(available_detectors: List[str], available_datasets: Lis
     run_subparsers = run_parser.add_subparsers(dest='sub_task',
                                                help="MUBench supports several experiments. "
                                                     "Run `./mubench run <experiment> -h` for details.")
+    __sort_subactions_by_name(run_subparsers)
     run_subparsers.required = True
 
     __add_run_ex1_subprocess(available_detectors, available_datasets, run_subparsers)
@@ -248,6 +256,7 @@ def __add_publish_subprocess(available_detectors: List[str], available_datasets:
     publish_subparsers = publish_parser.add_subparsers(dest='sub_task',
                                                        help="MUBench provides several publish tasks. "
                                                             "Run `./mubench publish <task> -h` for details.")
+    __sort_subactions_by_name(publish_subparsers)
     publish_subparsers.required = True
 
     __add_publish_metadata(available_datasets, publish_subparsers)
