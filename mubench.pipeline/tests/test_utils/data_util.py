@@ -31,7 +31,7 @@ def create_misuse(misuse_id: str, meta: Dict[str, Any] = None, project: Project 
         version = create_version("-version-", misuses=[])
     misuse = Misuse(project._base_path, project.id, version.version_id, misuse_id)
     misuse._Misuse__project = project
-    misuse._YAML = {"location": {"file": "-dummy-/-file-", "method": "-method-()"}}
+    misuse._YAML = {"locations": {"file": "-dummy-/-file-", "method": "-method-()"}}
     misuse._CORRECT_USAGES = correct_usages if correct_usages else []
     if meta:
         misuse._YAML.update(meta)
