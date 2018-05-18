@@ -35,7 +35,7 @@ class TaskRunner:
             results = task.run(*parameter_values)
         except Exception as exception:
             logger = logging.getLogger("task_runner.{}".format(task_name))
-            logger.warning("%s", exception)
+            logger.warning("Exception in %s: %s", task_name, exception)
             logger.debug("Full exception:", exc_info=True)
             return
 
