@@ -9,9 +9,12 @@ class Finding(Dict[str, str]):
         super().__init__(data)
 
     def is_potential_hit(self, misuse: Misuse, source_base_paths: List[str], method_name_only: bool = False):
-        return self.__is_match_by_file(misuse.location.file) and \
-               self.__is_match_by_method(misuse.location.method, method_name_only) and \
-               self.__is_match_by_line(misuse, source_base_paths)
+        for file_match in [location for location in misuse.locations if self.__is_match_by_file(location.file)]:
+            if self.__is_match_by_method(file_match.method, method_name_only) and \
+               self.__is_match_by_line(misuse.get_snippets(source_base_paths)):
+                return True
+
+        return False
 
     def __is_match_by_file(self, misuse_file: str):
         finding_file = self.__file()
@@ -41,11 +44,10 @@ class Finding(Dict[str, str]):
 
         return misuse_method.startswith(finding_method)
 
-    def __is_match_by_line(self, misuse: Misuse, source_base_paths: List[str]):
+    def __is_match_by_line(self, snippets: List[Snippet]):
         if self.__startline() < 0:
             return True
 
-        snippets = misuse.get_snippets(source_base_paths)
         for snippet in snippets:
             snippet_last_line_number = snippet.first_line_number + snippet.code.count("\n")
             if snippet.first_line_number < self.__startline() < snippet_last_line_number:
