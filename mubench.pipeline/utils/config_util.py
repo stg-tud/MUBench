@@ -5,6 +5,8 @@ from operator import attrgetter
 from os.path import join, abspath, dirname
 from typing import List, Any
 
+import copy
+
 from data.detector import get_available_detector_ids, Detector
 from tasks.implementations import stats
 from utils.dataset_util import get_available_dataset_ids
@@ -360,6 +362,15 @@ def __setup_compile_arguments(parser: ArgumentParser) -> None:
 
 
 def __setup_run_arguments(parser: ArgumentParser, available_detectors: List[str]) -> None:
+    class ExtendAction(argparse.Action):
+        def __call__(self, parser, namespace, values, option_string=None):
+            items = copy.copy(getattr(namespace, self.dest, []))
+            if items == self.default:
+                items = values
+            else:
+                items.extend(values)
+            setattr(namespace, self.dest, items)
+
     parser.add_argument('detector', help="the detector whose findings to evaluate",
                         choices=available_detectors)
     parser.add_argument('--force-detect', dest='force_detect', action='store_true',
@@ -368,7 +379,7 @@ def __setup_run_arguments(parser: ArgumentParser, available_detectors: List[str]
     parser.add_argument('--timeout', type=int, default=__get_default('timeout', None), metavar='s',
                         help="abort detection after the provided number of seconds")
     parser.add_argument('--java-options', metavar='option', nargs='+', dest='java_options',
-                        default=__get_default('java-options', []),
+                        default=__get_default('java-options', []), action=ExtendAction,
                         help="pass options to the java subprocess running the detector "
                              "(example: `--java-options Xmx4G` runs `java -Xmx4G`)")
     parser.add_argument('--tag', dest='requested_release', default=__get_default('requested_release', Detector.DEFAULT_RELEASE),
