@@ -10,7 +10,7 @@ description: |
   on `pop()`.
   (Same finding as `mudetect-11`)
 internal: true
-location:
+locations:
   file: org/testng/reporters/jq/ChronologicalPanel.java
   method: getContent(ISuite, XMLStringBuffer)
   line: 71

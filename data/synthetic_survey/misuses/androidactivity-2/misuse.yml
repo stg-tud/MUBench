@@ -6,7 +6,7 @@ violations:
 crash: true
 description: >
   Fails to set content view on onCreate().
-location:
+locations:
   file: mubench/examples/survey/ActivityDelegateCreateTooLate.java
   method: onCreate(Bundle)
 fix:

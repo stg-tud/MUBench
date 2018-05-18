@@ -5,7 +5,7 @@ violations:
 crash: true
 description: >
   Fails to release Cursor.
-location:
+locations:
   file: com/ushahidi/android/app/database/OpenGeoSmsDao.java
   method: getReportState(long)
 fix:

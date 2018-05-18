@@ -9,7 +9,7 @@ description: |
   string actually has sufficiently many characters. From the constant
   initialization on line 401 we take that `k` will assume the values from
   [0, 4], while `_code` might be any string.
-location:
+locations:
   file: com/itextpdf/text/pdf/BarcodeEAN.java
   method: "getBarsSupplemental5(String)"
   line: 403

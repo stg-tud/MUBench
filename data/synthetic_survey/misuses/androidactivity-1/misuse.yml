@@ -5,7 +5,7 @@ violations:
 crash: true
 description: >
   Fails to find view by id in onCreate().
-location:
+locations:
   file: mubench/examples/survey/ActivityDontDelegateCreate.java
   method: onCreate(Bundle)
 fix:

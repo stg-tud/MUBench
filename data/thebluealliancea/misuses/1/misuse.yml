@@ -6,7 +6,7 @@ violations:
 crash: true
 description: >
   Call JsonElement.getAsString() on JsonNullElement.
-location:
+locations:
   file: com/thebluealliance/androidclient/datafeed/TBAv2.java
   method: "getDistrictList(String, String)"
 fix:

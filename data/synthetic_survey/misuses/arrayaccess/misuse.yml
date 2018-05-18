@@ -6,7 +6,7 @@ violations:
 crash: true
 description: >
   Misses to check the array's size before accessing the array.
-location:
+locations:
   file: mubench/examples/survey/ArrayAccess.java
   method: misuse(int[], int)
 internal: false

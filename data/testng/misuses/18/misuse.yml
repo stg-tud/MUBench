@@ -14,7 +14,7 @@ fix:
   commit: https://github.com/cbeust/testng/commit/eaf38e591a4418dbcee671f7d16f5836931a6ca5
   revision: eaf38e591a4418dbcee671f7d16f5836931a6ca5
 internal: false
-location:
+locations:
   file: org/testng/reporters/JUnitXMLReporter.java
   method: generateReport(ITestContext)
 report: https://github.com/cbeust/testng/pull/830

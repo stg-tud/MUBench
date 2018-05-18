@@ -5,7 +5,7 @@ violations:
 crash: true
 description: >
   XYPlot.getRendererForDataset() may return null.
-location:
+locations:
   file: org/jfree/chart/plot/XYPlot.java
   method: getDataRange(ValueAxis)
 fix:

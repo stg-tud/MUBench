@@ -6,7 +6,7 @@ violations:
 crash: true
 description: >
   Misses to check that there is another element before calling Iterator.next().
-location:
+locations:
   file: mubench/examples/survey/OnlyNext.java
   method: misuse(Collection)
 fix:

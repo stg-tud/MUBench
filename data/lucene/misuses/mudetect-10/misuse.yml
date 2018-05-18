@@ -9,7 +9,7 @@ description: >
   line 4736 is skipped. Then `mergeDocStores` (line 4730) remains `false` and
   the branch accessing `segmentsSource.info(0)` at line 4790 is taken. Since
   `segmentsSource` is empty, this access causes an exception.
-location:
+locations:
   file: org/apache/lucene/index/IndexWriter.java
   method: "_mergeInit(OneMerge)"
   line: 4790

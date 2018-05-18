@@ -6,7 +6,7 @@ crash: false
 description: >
   UnionTypeBuilder.build() returns a JSType that can never be null. Branching
   on a null check therefore results in dead code.
-location:
+locations:
   file: com/google/javascript/rhino/jstype/UnionType.java
   method: meet(JSType)
 fix:

@@ -6,7 +6,7 @@ crash: true
 description: >
   HashMap.get() throws if the key is null. Since you don't know which
   implementation of Map you get, you should always guard against this.
-location:
+locations:
   file: mubench/examples/survey/Maps.java
   method: "keyMayBeNull(HashMap, String)"
 fix:

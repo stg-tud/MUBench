@@ -10,7 +10,7 @@ description: >
    `hasNextToken()`. The enclosing method implements a lookup, which may be
    expected to throw if there is no matching element. However, this is not
    explicit.
-location:
+locations:
   file: com/itextpdf/text/pdf/CJKFont.java
   method: "getBBox(int)"
   line: 396

@@ -11,7 +11,7 @@ fix:
   commit: https://github.com/apache/gora/commit/4f98503c014c359b6ab018f43920d454b0344160
   revision: 4f98503c014c359b6ab018f43920d454b0344160
 internal: false
-location:
+locations:
   file: org/apache/gora/util/TestWritableUtils.java
   method: testWritesReads()
 report: https://github.com/apache/gora/pull/55

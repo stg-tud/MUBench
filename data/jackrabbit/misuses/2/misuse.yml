@@ -5,7 +5,7 @@ violations:
 crash: true
 description: >
   Map.get() may return null.
-location:
+locations:
   file: org/apache/jackrabbit/webdav/jcr/JcrDavException.java
   method: JcrDavException(RepositoryException)
 fix:

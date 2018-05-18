@@ -6,7 +6,7 @@ violations:
 crash: true
 description: >
   Checks that an object is null before calling a method on it.
-location:
+locations:
   file: mubench/examples/directives/MayBeNull.java
   method: "misuse(Object)"
 fix:

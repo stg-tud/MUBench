@@ -8,7 +8,7 @@ description: >
   Invokes stream operations without a terminal action that causes the
   operations to actually be performed. Add a terminal operation to trigger
   execution or replace last operation by a terminal one.
-location:
+locations:
   file: com/xpinjection/java8/misused/stream/incorrect/ForgotTerminalOperation.java
   method: willDoNothingInReality()
 internal: false

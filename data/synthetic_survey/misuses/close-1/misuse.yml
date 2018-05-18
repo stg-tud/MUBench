@@ -5,7 +5,7 @@ violations:
 crash: false
 description: >
   Misses to call Closeable.close().
-location:
+locations:
   file: mubench/examples/survey/Close.java
   method: missingClose(File)
 fix:

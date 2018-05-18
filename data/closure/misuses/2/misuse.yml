@@ -5,7 +5,7 @@ violations:
 crash: true
 description: >
   Parameters.getParameter() may throw CmdLineException.
-location:
+locations:
   file: com/google/javascript/jscomp/CommandLineRunner.java
   method: parseArguments(Parameters)
 fix:

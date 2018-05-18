@@ -14,7 +14,7 @@ fix:
   commit: https://github.com/emopers/visualee/commit/58fbf0b8274fd6d46b6a76ae08457386d31a6206
   revision: 58fbf0b8274fd6d46b6a76ae08457386d31a6206
 internal: false
-location:
+locations:
   file: de/strullerbaumann/visualee/examiner/Examiner.java
   method: findAndSetPackage(JavaSource)
 report: https://github.com/Thomas-S-B/visualee/pull/3

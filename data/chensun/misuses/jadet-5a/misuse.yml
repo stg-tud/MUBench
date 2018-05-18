@@ -7,7 +7,7 @@ description: |
   The `ResultSet` fetched in line 304 is not closed in case of an exception.
   (Same finding as `mudetectxp-12`)
 internal: false
-location:
+locations:
   file: database/SocialNetworkDatabaseBoards.java
   method: authorizedGoToBoard(Connection, String, String)
   line: 304

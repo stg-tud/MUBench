@@ -5,7 +5,7 @@ violations:
 crash: true
 description: >
   StatisticalCategoryDataset.getMeanValue() may return null.
-location:
+locations:
   file: org/jfree/chart/renderer/category/StatisticalBarRenderer.java
   method: "drawVerticalItem(Graphics2D, CategoryItemRendererState, Rectangle2D, CategoryPlot, CategoryAxis, ValueAxis, StatisticalCategoryDataset, int, int)"
 fix:

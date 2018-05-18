@@ -5,7 +5,7 @@ violations:
 crash: false
 description: >
 The last for loop in the method checks iter.hasNext(), but increases iter2.next()
-location:
+locations:
   file: org/aspectj/weaver/bcel/BcelClassWeaver.java
   method: "weaveAtFieldRepeatedly(List decaFs, List itdFields,List reportedErrors)"
 fix:

@@ -7,7 +7,7 @@ description: |
   The `PreparedStatement` opened in line 636 is never closed.
   (Same finding as `mudetect-18` and `mudetectxp-8`)
 internal: false
-location:
+locations:
   file: database/SocialNetworkDatabasePosts.java
   method: getPost(Connection, String, String, String, int)
   line: 636

@@ -7,7 +7,7 @@ crash: true
 description: >
   If the zargo file to be loaded contains no `.argo` file, this method will
   throw an exception at line 261.
-location:
+locations:
   file: org/argouml/persistence/ZargoFilePersister.java
   method: "loadFromZargo(File, ProgressMgr)"
 internal: true

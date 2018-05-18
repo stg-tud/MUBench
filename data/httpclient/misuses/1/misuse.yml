@@ -5,7 +5,7 @@ violations:
 crash: false
 description: >
   Exception on HttpConnection.writeRequest() leaves the connection open.
-location:
+locations:
   file: org/apache/commons/httpclient/HttpMethodDirector.java
   method: executeWithRetry(HttpMethod)
 fix:

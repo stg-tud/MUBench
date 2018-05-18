@@ -9,7 +9,7 @@ description: >
   tasks---which is fine---, but it is also reinitialized with each iteration.
   `Cipher` does not support reinitialization and, hence, this may lead to
   erroneous encryption.
-location:
+locations:
   file: mubench/examples/jca/ReinitializingCipher.java
   method: "misuse(BufferedReader, Key)"
 fix:

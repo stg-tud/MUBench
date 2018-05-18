@@ -4,7 +4,7 @@ violations:
 - missing/condition/value_or_state
 description: >
   Uses a non-random key in CBC mode.
-location:
+locations:
   file: server/generateChecksumPostsAndReplies.java
   method: "main(String[])"
 internal: true

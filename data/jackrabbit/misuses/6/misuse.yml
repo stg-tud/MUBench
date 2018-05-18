@@ -5,7 +5,7 @@ violations:
 crash: true
 description: >
   IOManager.getDetector() may return null.
-location:
+locations:
   file: org/apache/jackrabbit/server/io/DefaultHandler.java
   method: detect(String)
 fix:

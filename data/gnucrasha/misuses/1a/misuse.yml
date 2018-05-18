@@ -7,7 +7,7 @@ crash: true
 description: >
   Call Intent.getLongExtra() with UxArgument.ORIGIN_ACCOUNT_UID parameter,
   which fails because the UUID is a string.
-location:
+locations:
   file: org/gnucash/android/ui/passcode/PassLockActivity.java
   method: onResume()
 fix:

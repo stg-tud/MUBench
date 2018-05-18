@@ -7,7 +7,7 @@ crash: false
 description: >
   On line 424, a warning message is issued (`LOG.warn()`) without a prior
   checking whether warning messages are enabled (`LOG.isWarnEnable()`).
-location:
+locations:
   file: org/apache/commons/httpclient/HttpMethodDirector.java
   method: executeWithRetry(HttpMethod)
   line: 424

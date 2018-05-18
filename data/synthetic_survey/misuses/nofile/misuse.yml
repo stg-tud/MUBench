@@ -6,7 +6,7 @@ violations:
 crash: true
 description: >
   Tries to write to a file that may not exist.
-location:
+locations:
   file: mubench/examples/survey/NoFile.java
   method: "misuse(Path, byte[])"
 fix:

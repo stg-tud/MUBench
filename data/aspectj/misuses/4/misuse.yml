@@ -6,7 +6,7 @@ crash: true
 description: >
   The verifyNoInheritedAlternateParameterization method in org.aspectj.weaver.patterns.DeclareParents class
   only checks one superclass of any given class instead of checking all of them.
-location:
+locations:
   file: org/aspectj/weaver/patterns/DeclareParents.java
   method: "verifyNoInheritedAlternateParameterization(ResolvedType typeToVerify,ResolvedType newParent,World world)"
 fix:

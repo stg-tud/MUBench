@@ -13,7 +13,7 @@ fix:
   commit: https://github.com/cbeust/testng/commit/677302cb8b5a2507df97c5822eef3a03ebc4e23a
   revision: 677302cb8b5a2507df97c5822eef3a03ebc4e23a
 internal: false
-location:
+locations:
   file: org/testng/reporters/XMLReporter.java
   method: getSuiteAttributes(ISuite)
 report: https://github.com/cbeust/testng/pull/930

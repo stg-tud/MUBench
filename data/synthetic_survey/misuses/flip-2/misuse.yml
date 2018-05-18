@@ -8,7 +8,7 @@ description: >
   the buffer (or vice versa). There''s many ways to read/write buffer, some of which
   fail if flip() is missing, while others just do nothing.
   StackOverflow: http://stackoverflow.com/questions/10166011/how-to-use-java-nio-channels-filechannel-to-write-a-byte-to-a-file-basics/10166055
-location:
+locations:
   file: mubench/examples/survey/ByteBufferFlip.java
   method: "needsFlipToCopyWhatWasWritten(byte[])"
 fix:

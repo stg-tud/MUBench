@@ -6,7 +6,7 @@ crash: true
 description: |
   On line 244, a `PdfObject` is fetched from a `PdfArray`. Since the array may
   contain a `null` value, the object should be checked before it is used.
-location:
+locations:
   file: com/itextpdf/text/pdf/SimpleBookmark.java
   method: "makeBookmarkParam(PdfArray, IntHashtable)"
 internal: true

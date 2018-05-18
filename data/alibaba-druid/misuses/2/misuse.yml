@@ -5,7 +5,7 @@ violations:
 crash: true
 description: >
   A call to Cipher.init() may throw an InvalidKeyException.
-location:
+locations:
   file: com/alibaba/druid/filter/config/ConfigTools.java
   method: "encrypt(byte[], String)"
 fix:

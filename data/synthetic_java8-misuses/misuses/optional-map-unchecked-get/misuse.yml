@@ -9,7 +9,7 @@ description: >
   `Optional.map()`, which may cause a `NullPointerException`. Safe
   way is to use `flatMap` instead, which takes care of potential
   `null` values.
-location:
+locations:
   file: com/xpinjection/java8/misused/optional/HundredAndOneApproach.java
   method: getPersonCarInsuranceName(Person)
 internal: false

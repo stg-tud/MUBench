@@ -7,7 +7,7 @@ crash: false
 description: >
   Encoded data is retrieved from a string (from storage) without explicitely
   specifying an encoding. The fix introduces base64 decoding.
-location:
+locations:
   file: de/battleforge/util/BFProperties.java
   method: getProperty(BFProps)
 fix:

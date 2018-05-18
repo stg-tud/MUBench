@@ -7,7 +7,7 @@ crash: true
 description: >
   Iterator.next() is invoked without prior check that the iterator has more elements.
   (Same finding as `mudetectxp-2`)
-location:
+locations:
   file: com/google/javascript/jscomp/ReplaceMessages.java
   method: "constructAddOrStringNode(Iterator, Node)"
 internal: false

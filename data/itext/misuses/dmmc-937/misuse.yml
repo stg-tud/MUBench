@@ -9,7 +9,7 @@ description: >
   are sufficiently many elements.
   
   (Same finding as `tikanga-12` and `mudetect-0` and `mudetectxp-0`).
-location:
+locations:
   file: com/itextpdf/text/pdf/PdfPKCS7.java
   method: "PdfPKCS7(byte[], byte[], String)"
   line: 324

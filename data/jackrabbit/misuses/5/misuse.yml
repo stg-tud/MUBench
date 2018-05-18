@@ -7,7 +7,7 @@ description: >
   InputStream.close() should be called after finished using the stream.
   The particular stream is passed to QValueFactoryImpl.create() as a parameter, but
   should be closed by the method, as defined in its contract.
-location:
+locations:
   file: org/apache/jackrabbit/spi/commons/value/QValueFactoryImpl.java
   method: "BinaryQValue(InputStream, boolean)"
 fix:

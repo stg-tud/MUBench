@@ -10,7 +10,7 @@ fix:
   commit: https://github.com/emopers/asterisk-java/commit/304421c261da68df03ad2fb96683241c8df12c0a
   revision: 304421c261da68df03ad2fb96683241c8df12c0a
 internal: false
-location:
+locations:
   file: org/asteriskjava/manager/event/AsyncAgiEvent.java
   method: decode(String)
 report: https://github.com/asterisk-java/asterisk-java/pull/85

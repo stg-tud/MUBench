@@ -5,7 +5,7 @@ violations:
 crash: true
 description: >
   Cipher.init may throw InvalidKeyException.
-location:
+locations:
   file: com/itextpdf/text/pdf/PdfPublicKeySecurityHandler.java
   method: "computeRecipientInfo(X509Certificate, byte[])"
 fix:

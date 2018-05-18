@@ -6,7 +6,7 @@ violations:
 crash: true
 description: >
   CategoryPlot.getDataset() may return null. The check for null was flipped.
-location:
+locations:
   file: org/jfree/chart/renderer/category/AbstractCategoryItemRenderer.java
   method: getLegendItems()
 fix:

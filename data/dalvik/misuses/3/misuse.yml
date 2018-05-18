@@ -4,7 +4,7 @@ violations:
 - missing/condition/value_or_state
 description: >
   Uses RSA with PKCS1Padding.
-location:
+locations:
   file: main/java/org/apache/harmony/xnet/provider/jsse/ServerHandshakeImpl.java
   method: "unwrap(byte[])"
 internal: true

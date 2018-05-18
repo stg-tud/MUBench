@@ -6,7 +6,7 @@ crash: true
 description: >
   IRFactory.initFunction() is called twice along one possible execution
   path, which causes an infinite loop.
-location:
+locations:
   file: org/mozilla/javascript/Parser.java
   method: function(int)
 fix:

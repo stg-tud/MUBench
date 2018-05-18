@@ -6,7 +6,7 @@ crash: false
 description: >
   Passes Cipher.ENCRYPT_MODE to Cipher.init(), but uses the cipher for
   decryption.
-location:
+locations:
   file: sos/mrtd/PassportAuthService.java
   method: doAA(PublicKey)
 fix:

@@ -13,7 +13,7 @@ fix:
   commit: https://github.com/cbeust/testng/commit/d6dfce36c68c295da6760ff1abd7eb0a91982a4f
   revision: d6dfce36c68c295da6760ff1abd7eb0a91982a4f
 internal: false
-location:
+locations:
   file: org/testng/reporters/jq/ChronologicalPanel.java
   method: "getContent(ISuite, XMLStringBuffer)"
 report: https://github.com/cbeust/testng/pull/928

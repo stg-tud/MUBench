@@ -7,7 +7,7 @@ description: >
   Uses a stream generator without limiting the number of elements, such that
   processing of the stream will run forever. Limit the number of elements
   to a finite number to prevent this.
-location:
+locations:
   file: com/xpinjection/java8/misused/stream/incorrect/InfiniteStreams.java
   method: infinite()
 internal: false

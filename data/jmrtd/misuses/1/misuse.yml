@@ -6,7 +6,7 @@ crash: false
 description: >
   DataOutputStream is left open.
   (Same as `mudetectxp-1`)
-location:
+locations:
   file: sos/mrtd/SecureMessagingWrapper.java
   method: "readDO8E(DataInputStream, byte[])"
 fix:

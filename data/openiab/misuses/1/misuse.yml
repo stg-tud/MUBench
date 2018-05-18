@@ -6,7 +6,7 @@ crash: true
 description: >
   Overrides UnityPlayerActivity.onDestroy(), but does not call the super
   method. Leads to exception with unreleased resources.
-location:
+locations:
   file: com/openiab/BillingActivity.java
   method: "onActivityResult(int, int, Intent)"
 fix:

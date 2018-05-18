@@ -5,7 +5,7 @@ violations:
 crash: true
 description: >
   HierarchyEntry.getParent() may return null.
-location:
+locations:
   file: org/apache/jackrabbit/jcr2spi/state/ItemState.java
   method: getParent()
 fix:

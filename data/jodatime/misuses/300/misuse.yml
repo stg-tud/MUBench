@@ -17,7 +17,7 @@ fix:
   commit: https://github.com/emopers/joda-time/commit/0e82517a7f4a2e659143ce84ff1f4ea706e9a88c
   revision: 0e82517a7f4a2e659143ce84ff1f4ea706e9a88c
 internal: false
-location:
+locations:
   file: org/joda/time/TestYears.java
   method: testSerialization()
 report: https://github.com/JodaOrg/joda-time/pull/339

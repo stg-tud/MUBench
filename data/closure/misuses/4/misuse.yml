@@ -7,7 +7,7 @@ crash: true
 description: >
   List.get() in line 176 is invoked without a prior check whether the list
   contains sufficiently many elements.
-location:
+locations:
   file: com/google/javascript/jscomp/deps/SortedDependencies.java
   method: "cycleToString(List)"
 internal: false

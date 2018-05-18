@@ -7,7 +7,7 @@ description: >
   Invokes a second terminal operation on a stream, which causes an
   "`IllegalStateException`: stream has already been operated upon or closed".
   Remove the second terminal operation to prevent this.
-location:
+locations:
   file: com/xpinjection/java8/misused/stream/incorrect/UseStreamMoreThanOnce.java
   method: streamIsClosedAfterTerminalOperation()
 internal: false

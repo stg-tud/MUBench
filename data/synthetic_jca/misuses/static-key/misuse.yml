@@ -5,7 +5,7 @@ violations:
 crash: false
 description: >
   The key used is defined statically in the code.
-location:
+locations:
   file: mubench/examples/jca/Encrypting.java
   method: encryptWithKey(byte[])
 fix:

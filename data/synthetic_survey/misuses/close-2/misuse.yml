@@ -6,7 +6,7 @@ crash: false
 description: >
   Calls Closeable.close() outside of finally block, which might fail to
   close the resource in case of an exception.
-location:
+locations:
   file: mubench/examples/survey/Close.java
   method: missingFinally(File)
 fix:

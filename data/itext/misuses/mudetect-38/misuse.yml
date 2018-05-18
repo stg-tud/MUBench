@@ -6,7 +6,7 @@ crash: true
 description: |
   The method `PdfLayer.getAsString()` is invoked and the result is immediately converted `toUnicodeString()`, without checking whether it is `null`. From [the documentation og `getAsString()`](http://itextsupport.com/apidocs/itext5/latest/com/itextpdf/text/pdf/PdfDictionary.html#getAsString-com.itextpdf.text.pdf.PdfName-) we take that this is unsafe:
   "Returns a PdfObject as a PdfString, resolving indirect references. The object associated with the PdfName given is retrieved and resolved to a direct object. If it is a PdfString, it is cast down and returned as such. Otherwise null is returned."
-location:
+locations:
   file: com/itextpdf/text/pdf/PdfLayer.java
   method: "addChild(PdfLayer)"
 internal: true

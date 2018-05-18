@@ -9,7 +9,7 @@ description: |
   type is too general, since it might accidentially hide problems unrelated to
   lock conflicts.
 internal: true
-location:
+locations:
   file: org/w3c/jigedit/tools/ToolsListerFrame.java
   method: handle(Request, URLDecoder)
   line: 266

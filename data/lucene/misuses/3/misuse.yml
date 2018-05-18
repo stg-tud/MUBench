@@ -6,7 +6,7 @@ violations:
 crash: true
 description: >
   Misses to check File.exists()/File.mkdirs() before calling File.createNewFile().
-location:
+locations:
   file: org/apache/lucene/store/FSDirectory.java
   method: obtain()
 fix:

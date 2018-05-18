@@ -9,7 +9,7 @@ description: >
   sufficiently many objects.
   
   Is also jadet-10.
-location:
+locations:
   file: com/itextpdf/text/pdf/fonts/cmaps/AbstractCMap.java
   method: "addRange(PdfString, PdfString, PdfObject)"
 internal: true

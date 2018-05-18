@@ -5,7 +5,7 @@ violations:
 crash: true
 description: >
   ObjectType.getImplicitPrototype() may return null.
-location:
+locations:
   file: com/google/javascript/jscomp/TypeCheck.java
   method: "checkInterfaceConflictProperties(NodeTraversal, Node, String, HashMap, HashMap, ObjectType)"
 fix:

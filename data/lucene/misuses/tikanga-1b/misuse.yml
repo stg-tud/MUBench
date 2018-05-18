@@ -8,7 +8,7 @@ description: >
   In line 47, `SegmentInfos.info()` is called without prior check that there
   are sufficiently many elements in the `infos` collection.
   (Same finding as `tikanga-1` and `mudetect-8`)
-location:
+locations:
   file: org/apache/lucene/index/MergeDocIDRemapper.java
   method: "MergeDocIDRemapper(SegmentInfos, int[][], int[], OneMerge, int)"
   line: 47

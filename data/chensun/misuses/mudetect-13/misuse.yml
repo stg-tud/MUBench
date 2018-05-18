@@ -6,7 +6,7 @@ crash: false
 description: |
   The `PreparedStatement pstmt` opened in line 1159 is never closed.
 internal: false
-location:
+locations:
   file: database/DatabaseAdmin.java
   method: replaceBoardManager(Connection, String)
   line: 1159

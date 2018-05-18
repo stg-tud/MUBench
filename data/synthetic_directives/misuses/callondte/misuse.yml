@@ -5,7 +5,7 @@ violations:
 crash: false
 description: >
   Creates swing UI component on the main thread.
-location:
+locations:
   file: mubench/examples/directives/CallOnDTE.java
   method: main(String[])
 fix:

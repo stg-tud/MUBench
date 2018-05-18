@@ -4,7 +4,7 @@ violations:
 - missing/condition/value_or_state
 description: >
   Uses DES which is considered unsafe.
-location:
+locations:
   file: server/generateChecksumPostsAndReplies.java
   method: "main(String[])"
 internal: true
