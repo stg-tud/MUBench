@@ -122,32 +122,36 @@ class MisuseTest extends SlimTestCase
 
     function testGetTagsOfReviewerWhenNotConclusive()
     {
-        $this->createRunWithFindingInLine(10);
-        $reviewController = new ReviewsController($this->container);
-        $reviewController->updateOrCreateReview(1, 2, '-comment-', [['hit' => 'Yes', 'violations' => []]]);
-        $reviewController->updateOrCreateReview(1, 3, '-comment-', [['hit' => 'No', 'violations' => []]]);
-
         $reviewer1 = Reviewer::create(['name' => 'reviewer1']);
         $reviewer2 = Reviewer::create(['name' => 'reviewer2']);
 
+        $this->createRunWithFindingInLine(10);
+        $misuse = Misuse::find(1);
+
+        $this->createReview($misuse, $reviewer1, 'Yes');
+        $this->createReview($misuse, $reviewer2, 'No');
+
         $tagController = new \MuBench\ReviewSite\Controllers\TagsController($this->container);
-        $tagController->addTagToMisuse(1, 'reviewer1-tag', 2);
-        $tagController->addTagToMisuse(1, 'reviewer2-tag', 3);
-        $tags = Misuse::find(1)->getTags($reviewer1);
+        $tagController->addTagToMisuse($misuse->id, 'reviewer1-tag', $reviewer1->id);
+        $tagController->addTagToMisuse($misuse->id, 'reviewer2-tag', $reviewer2->id);
+
+        $tags = $misuse->getTags($reviewer1);
         self::assertEquals(1, $tags->count());
         self::assertEquals('reviewer1-tag', $tags[0]->name);
     }
 
     function testGetNoTagsWithoutReviewerWhenNotConclusive()
     {
+        $reviewer1 = Reviewer::create(['name' => 'reviewer1']);
         $this->createRunWithFindingInLine(10);
-        $reviewController = new ReviewsController($this->container);
-        $reviewController->updateOrCreateReview(1, 1, '-comment-', [['hit' => 'Yes', 'violations' => []]]);
+        $misuse = Misuse::find(1);
+
+        $this->createReview($misuse, $reviewer1, 'Yes');
 
         $tagController = new \MuBench\ReviewSite\Controllers\TagsController($this->container);
-        $tagController->addTagToMisuse(1, 'reviewer1-tag', 1);
+        $tagController->addTagToMisuse($misuse->id, 'reviewer1-tag', $reviewer1->id);
 
-        self::assertEquals(0, Misuse::find(1)->getTags(null)->count());
+        self::assertEquals(0, $misuse->getTags(null)->count());
     }
 
     public function createRunWithFindingInLine($line)

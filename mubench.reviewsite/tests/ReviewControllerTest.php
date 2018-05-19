@@ -153,9 +153,4 @@ class ReviewControllerTest extends SlimTestCase
         $this->createReview($misuse, $this->reviewer2, "Yes");
     }
 
-    private function createReview($misuse, $reviewer, $hit, $violations = [])
-    {
-        $this->reviewController->updateOrCreateReview($misuse->id, $reviewer->id, '-comment-', [['hit' => $hit, 'violations' => $violations]]);
-    }
-
 }
