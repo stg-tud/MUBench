@@ -9,8 +9,7 @@ class SimpleDataTest extends SlimTestCase
 
     function test_simple_test_data_script()
     {
-        $schemaSetup = new SchemaSetup('default');
-        $schemaSetup->run();
+        createTables('default');
         $app = $this->app;
         $container = $this->app->getContainer();
         $capsule = Schema::getFacadeApplication()['db'];
