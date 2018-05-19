@@ -32,9 +32,10 @@ function createTables($connection)
         $table->string('version_muid', 30);
         $table->string('misuse_muid', 30);
         $table->string('file', 32);
+        $table->string('detector_muid', 30)->nullable();
         $table->integer('line');
         $table->text('snippet');
-        $table->unique(['project_muid', 'version_muid', 'misuse_muid', 'file', 'line'], 'misuse_snippets');
+        $table->unique(['project_muid', 'version_muid', 'misuse_muid', 'file', 'line', 'detector_muid'], 'misuse_snippets');
     });
 
     echo 'Creating misuses (metadata)<br/>';
