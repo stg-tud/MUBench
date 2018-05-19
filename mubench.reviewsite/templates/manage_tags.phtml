@@ -54,10 +54,7 @@ use MuBench\ReviewSite\Models\ReviewState;
                     <input id="name-input" name="tags[<?= htmlspecialchars($tag->id); ?>][name]" value="<?= htmlspecialchars($tag->name) ?>">
                 </td>
                 <td>
-                    <div id="color-field-<?= htmlspecialchars($tag->id) ?>" style="background-color:<?= htmlspecialchars($tag->color) ?>;width:15px;height:15px;margin-top:4px"></div>
-                </td>
-                <td>
-                    <input pattern="^#(?:[0-9a-fA-F]{3}){1,2}$" id="color-input-<?= htmlspecialchars($tag->id) ?>" name="tags[<?= htmlspecialchars($tag->id); ?>][color]" oninput="changeColor(this)" value="<?= htmlspecialchars($tag->color) ?>">
+                    <input type="color" id="color-input-<?= htmlspecialchars($tag->id) ?>" name="tags[<?= htmlspecialchars($tag->id); ?>][color]" value="<?= htmlspecialchars($tag->color) ?>">
                 </td>
                 <td>
                     <a href="<?= $pathFor('tags.delete', array('tag_id' => $tag->id)) ?>"><i class="fa fa-trash fa-1"></i></a>
@@ -69,14 +66,5 @@ use MuBench\ReviewSite\Models\ReviewState;
     <input class="button" type="submit" value="Update tags" />
 </form>
 
-<script>
-    function changeColor(src) {
-        var colorFieldName = src.id.replace("input", "field");
-        var colorField = document.getElementById(colorFieldName);
-        colorField.style.backgroundColor = src.value;
-    }
-
-
-</script>
 </body>
 </html>
