@@ -488,7 +488,9 @@ class RunsController extends Controller
             if(!$misuse){
                 $misuse = $this->createMisuse($detector, $experiment, $projectId, $versionId, $misuseId, $run->id);
             }
-            $this->storeFinding($detector, $experiment, $projectId, $versionId, $misuseId, $misuse, $finding);
+            $stored_finding = $this->storeFinding($detector, $experiment, $projectId, $versionId, $misuseId, $misuse, $finding);
+            $run->updated_at = $stored_finding->created_at;
+            $run->save();
             if ($experiment->id === 2) {
                 $this->storeFindingTargetSnippets($detector, $projectId, $versionId, $misuseId, $finding['file'], $finding['target_snippets']);
             }
@@ -525,6 +527,7 @@ class RunsController extends Controller
             $finding[$key] = $value;
         }
         $finding->save();
+        return $finding;
     }
 
     private function createOrUpdateRun(Detector $detector, Experiment $experiment, $projectId, $versionId, $run)
