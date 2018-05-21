@@ -407,6 +407,46 @@ class RunsControllerTest extends SlimTestCase
         self::assertEquals([], $misuses);
     }
 
+    function test_update_run_timestamp_on_new_finding()
+    {
+        $this->runsController->addRun(1, '-d-', '-p-', '-v-', [
+            "result" => "success",
+            "runtime" => 42.1,
+            "number_of_findings" => 23,
+            "timestamp" => 12,
+            "potential_hits" => [
+                [
+                    "misuse" => "-m-",
+                    "rank" => 0,
+                    "target_snippets" => [
+                        ["first_line_number" => 5, "code" => "-code-"]
+                    ]
+                ]
+            ]
+        ]);
+        sleep(1);
+        $this->runsController->addRun(1, '-d-', '-p-', '-v-', [
+            "result" => "success",
+            "runtime" => 42.1,
+            "number_of_findings" => 23,
+            "timestamp" => 12,
+            "potential_hits" => [
+                [
+                    "misuse" => "-m-",
+                    "rank" => 10,
+                    "target_snippets" => [
+                        ["first_line_number" => 5, "code" => "-code-"]
+                    ]
+                ]
+            ]
+        ]);
+
+        $run = Run::of(Detector::find('-d-'))->in(Experiment::find(1))->where(['project_muid' => '-p-', 'version_muid' => '-v-'])->first();
+
+        self::assertNotEquals($run->created_at, $run->updated_at);
+        self::assertEquals($run->updated_at, $run->misuses[0]->findings[1]->created_at);
+    }
+
     private function createSomeRun($id, Experiment $experiment, Detector $detector, $misuses)
     {
         $run = new \MuBench\ReviewSite\Models\Run;
