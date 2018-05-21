@@ -409,7 +409,9 @@ class RunsControllerTest extends SlimTestCase
 
     function test_update_run_timestamp_on_new_finding()
     {
-        $this->runsController->addRun(1, '-d-', '-p-', '-v-', [
+        $experiment = Experiment::find(1);
+
+        $this->runsController->addRun($experiment->id, $this->detector1->muid, '-p-', '-v-', [
             "result" => "success",
             "runtime" => 42.1,
             "number_of_findings" => 23,
@@ -425,7 +427,7 @@ class RunsControllerTest extends SlimTestCase
             ]
         ]);
         sleep(1);
-        $this->runsController->addRun(1, '-d-', '-p-', '-v-', [
+        $this->runsController->addRun($experiment->id, $this->detector1->muid, '-p-', '-v-', [
             "result" => "success",
             "runtime" => 42.1,
             "number_of_findings" => 23,
@@ -441,7 +443,7 @@ class RunsControllerTest extends SlimTestCase
             ]
         ]);
 
-        $run = Run::of(Detector::find('-d-'))->in(Experiment::find(1))->where(['project_muid' => '-p-', 'version_muid' => '-v-'])->first();
+        $run = Run::of($this->detector1)->in($experiment)->where(['project_muid' => '-p-', 'version_muid' => '-v-'])->first();
 
         self::assertNotEquals($run->created_at, $run->updated_at);
         self::assertEquals($run->updated_at, $run->misuses[0]->findings[1]->created_at);
