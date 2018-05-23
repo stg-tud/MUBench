@@ -12,7 +12,7 @@ use Slim\Http\RequestBody;
 use Slim\Http\Response;
 use Slim\Http\Uri;
 
-require_once __DIR__ . '/../setup/schema_util.php';
+require_once __DIR__ . '/../setup/database_setup_utils.php';
 
 
 class SlimTestCase extends TestCase

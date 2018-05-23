@@ -14,7 +14,7 @@ $container = $app->getContainer();
 
 require __DIR__ . '/../bootstrap/db.php';
 
-require_once __DIR__ . '/schema_util.php';
+require_once __DIR__ . '/database_setup_utils.php';
 
 createTables('default');
 
