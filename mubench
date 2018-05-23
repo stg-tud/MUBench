@@ -6,7 +6,6 @@ TASKS=${MUBENCH_ROOT}/mubench.bin
 
 source "${TASKS}/environment"
 
-HELP=f
 if [[ "$*" =~ "-h" ]]; then
   HELP=t
 fi
