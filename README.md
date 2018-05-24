@@ -2,7 +2,7 @@
 
 # MUBench
 
-An automated benchmark for API-misuse detectors.
+MUBench (pronounced "Moo Bench") is an automated benchmark for API-misuse detectors.
 
 Please feel free to [contact Sven Amann](http://www.stg.tu-darmstadt.de/staff/sven_amann), if you have any questions.
 
