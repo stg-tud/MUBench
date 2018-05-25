@@ -69,11 +69,7 @@ class PublishFindingsTask:
                 postable_data = self.__to_postable_data(run_info, result, postable_potential_hits_slice)
                 self.__post(project, version, detector, postable_data, file_paths)
         except RequestException as e:
-            response = e.response
-            if response:
-                logger.error("%d %s: %s", response.status_code, response.reason, response.text)
-            else:
-                logger.error("%s", e)
+            raise PublishFailedException(e)
 
     def __slice_by_number_of_files_and_post_size(self, potential_hits: List['SpecializedFinding']) -> List[List[Finding]]:
         potential_hits_slice = []
@@ -166,3 +162,21 @@ class SpecializedFinding(Finding):
 
     def __sizeof__(self):
         return total_size(self.__dict__) + sum([getsize(file) for file in self.files])
+
+
+class PublishFailedException(Exception):
+    def __init__(self, error: RequestException):
+        reasons = []
+        for suberror in error.args:
+            if hasattr(suberror, 'reason'):
+                reasons.append(str(suberror.reason).split(':', 1)[1].lstrip(' '))
+            else:
+                reasons.append(str(suberror))
+
+        if error.response is not None and error.response.text:
+            reasons.append(error.response.text)
+
+        message = "\n".join(reasons)
+
+        super().__init__(message)
+        self.orig_error = error
