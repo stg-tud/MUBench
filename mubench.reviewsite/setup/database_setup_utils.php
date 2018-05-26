@@ -1,9 +1,7 @@
 <?php
 
 use Illuminate\Database\Schema\Blueprint;
-
-require_once __DIR__ . "/Schema.php";
-
+use MuBench\ReviewSite\Setup\Schema;
 
 function createTables($connection)
 {

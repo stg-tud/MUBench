@@ -1,5 +1,6 @@
 <?php
 
+namespace MuBench\ReviewSite\Setup;
 
 use Illuminate\Support\Facades\Schema as DBSchema;
 
