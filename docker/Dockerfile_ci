@@ -5,7 +5,7 @@ LABEL maintainer="amann@st.informatik.tu-darmstadt.de"
 # Install ca-certificates so that HTTPS works consistently
 RUN apk update \
  && apk add ca-certificates wget \
- && update-ca-certificates \
+ && update-ca-certificates
 
 ENV LANG=C.UTF-8 \
     GRADLE_VERSION=4.0.2 \
@@ -57,19 +57,27 @@ RUN apk update \
       php7-xml \
       php7-xmlwriter \
       php7-zlib \
+      php7-curl \
  \
  # Install Composer
  && wget -q https://getcomposer.org/installer -O composer-setup.php \
  && php composer-setup.php --install-dir=/usr/local/bin --filename=composer \
- && rm composer-setup.php \
+ && rm composer-setup.php
 
 # Setup test environment
 RUN \
  # Install PHPUnit
- && wget -q https://phar.phpunit.de/phpunit.phar -O /usr/local/bin/phpunit \
+ wget -q https://phar.phpunit.de/phpunit.phar -O /usr/local/bin/phpunit \
  && chmod +x /usr/local/bin/phpunit \
  \
  # Install nosetests
- && pip install nose
+ && pip3 install nose
+
+RUN apk add \
+      # Install chromium and chromedriver
+      chromium chromium-chromedriver \
+      #Install selenium
+      && wget -q https://selenium-release.storage.googleapis.com/3.12/selenium-server-standalone-3.12.0.jar \
+      && mv selenium-server-standalone-3.12.0.jar /usr/local/bin/selenium-server-standalone-3.12.0.jar
 
 WORKDIR /mubench
