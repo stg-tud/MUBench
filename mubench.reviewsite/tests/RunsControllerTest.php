@@ -18,6 +18,7 @@ use MuBench\ReviewSite\Models\Misuse;
 use MuBench\ReviewSite\Models\Review;
 use MuBench\ReviewSite\Models\Reviewer;
 use MuBench\ReviewSite\Models\Run;
+use MuBench\ReviewSite\Models\Snippet;
 
 class RunsControllerTest extends SlimTestCase
 {
@@ -367,13 +368,56 @@ class RunsControllerTest extends SlimTestCase
 
     function test_run_deletion()
     {
-        $this->runsController->addRun(3, '-d-', '-p-', '-v-', $this->run_with_two_potential_hits_for_one_misuse);
-        $detector = Detector::where('muid', '=', '-d-')->first();
-        $run = Run::of($detector)->in(Experiment::find(3))->where(['project_muid' => '-p-', 'version_muid' => '-v-'])->first();
+        $metadataController = new MetadataController($this->container);
+        $metadataController->updateMetadata('-p-', '-v-', '-m-', '-desc-',
+            ['diff-url' => '-diff-', 'description' => '-fix-desc-'],
+            ['file' => '-file-location-', 'method' => '-method-location-', 'line' => -1], [], [], [['first_line_number' => 1, 'code' => 'testCode()']]);
+        $experiment = Experiment::find(1);
+        $this->runsController->addRun($experiment->id, $this->detector1->muid, '-p-', '-v-', [
+            "result" =>"success",
+            "runtime" => 42.1,
+            "number_of_findings" => 23,
+            "timestamp" => 12,
+            "potential_hits" => [
+                [
+                    "misuse" => "-m-",
+                    "rank" => 0,
+                    "target_snippets" => [
+                        ["first_line_number" => 5, "code" => "-code-"]
+                    ],
+                ]
+            ]
+        ]);
+        $run = Run::of($this->detector1)->in($experiment)->where(['project_muid' => '-p-', 'version_muid' => '-v-'])->first();
         $misuses = $run->misuses;
+        $snippets = Snippet::all();
 
-        $this->runsController->deleteRunAndRelated($run, $detector->id);
-        $actual_run = Run::of(Detector::find('-d-'))->in(Experiment::find(3))->where('project', '-p-')->where('version', '-v-')->first();
+        $this->runsController->deleteRunAndRelated($run, $this->detector1->id);
+        $actual_run = Run::of($this->detector1)->in($experiment)->where('project', '-p-')->where('version', '-v-')->first();
+
+        self::assertNull($actual_run);
+        self::assertEquals(1, $snippets->count());
+        foreach($misuses as $misuse){
+            self::assertNull(Misuse::find($misuse->id));
+            foreach($misuse->reviews as $review){
+                self::assertNull(Review::find($review->id));
+            }
+        }
+    }
+
+    function test_experiment2_run_deletion()
+    {
+        $experiment = Experiment::find(2);
+        $this->runsController->addRun($experiment->id, $this->detector1->muid, '-p-', '-v-', $this->run_with_two_potential_hits_for_one_misuse);
+        $run = Run::of($this->detector1)->in($experiment)->where(['project_muid' => '-p-', 'version_muid' => '-v-'])->first();
+        $misuses = $run->misuses;
+        $snippets = new Collection;
+        foreach($misuses as $misuse){
+            $snippets = $snippets->merge($misuse->snippets());
+        }
+
+        $this->runsController->deleteRunAndRelated($run, $this->detector1->id);
+        $actual_run = Run::of($this->detector1)->in($experiment)->where('project', '-p-')->where('version', '-v-')->first();
 
         self::assertNull($actual_run);
         foreach($misuses as $misuse){
@@ -381,6 +425,9 @@ class RunsControllerTest extends SlimTestCase
             foreach($misuse->reviews as $review){
                 self::assertNull(Review::find($review->id));
             }
+        }
+        foreach($snippets as $snippet){
+            self::assertNull(Snippet::find($snippet->id));
         }
     }
 

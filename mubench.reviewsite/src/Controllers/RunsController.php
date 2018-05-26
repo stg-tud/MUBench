@@ -202,6 +202,7 @@ class RunsController extends Controller
     function deleteRunAndRelated(Run $run, $detectorId)
     {
         $this->deleteOldImages($run->experiment_id, $detectorId, $run->project_muid, $run->version_muid);
+        /** @var Misuse $misuse */
         foreach($run->misuses as $misuse){
             foreach($misuse->reviews as $review){
                 $findings_reviews = $review->finding_reviews;
@@ -214,6 +215,11 @@ class RunsController extends Controller
             $misuse->reviews()->delete();
             $misuse->metadata()->dissociate();
             $misuse->misuse_tags()->detach();
+            if($run->experiment_id == 2){
+                foreach($misuse->snippets() as $snippet){
+                    $snippet->delete();
+                }
+            }
             $misuse->findings()->delete();
         }
         $run->misuses()->delete();
