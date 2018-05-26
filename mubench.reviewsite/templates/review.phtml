@@ -255,7 +255,7 @@ $origin_path = $origin_path ? $origin_path : $pathFor('experiment.detector', arr
             function is_empty($property, $potential_hits)
             {
                 return array_reduce($potential_hits, function ($carry, $potential_hit) use ($property) {
-                    return $carry && empty($potential_hit[$property]);
+                    return $carry && (is_null($potential_hit[$property]) || $potential_hit[$property] === "");
                 }, true);
             }
             $potential_hits = $misuse->findings;
