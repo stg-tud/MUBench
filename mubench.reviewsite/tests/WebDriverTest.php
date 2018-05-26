@@ -15,7 +15,7 @@ class WebDriverTest extends TestCase
     public function setUp()
     {
         $chromeOptions = new \Facebook\WebDriver\Chrome\ChromeOptions();
-        $chromeOptions->addArguments(array('headless'));
+        $chromeOptions->addArguments(array('headless' , '-no-sandbox')); //
         $capabilities = DesiredCapabilities::chrome();
         $capabilities->setCapability(\Facebook\WebDriver\Chrome\ChromeOptions::CAPABILITY, $chromeOptions);
         $this->driver = RemoteWebDriver::create("http://localhost:4444/wd/hub",
