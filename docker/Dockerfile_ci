@@ -75,7 +75,8 @@ RUN \
 
 RUN apk add \
       # Install chromium and chromedriver
-      chromium chromium-chromedriver \
+      chromium \
+      chromium-chromedriver \
       #Install selenium
       && wget -q https://selenium-release.storage.googleapis.com/3.12/selenium-server-standalone-3.12.0.jar \
       && mv selenium-server-standalone-3.12.0.jar /usr/local/bin/selenium-server-standalone-3.12.0.jar
