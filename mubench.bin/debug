@@ -4,4 +4,17 @@ DNAME=${FILENAME%.*}
 TARGET="/mubench/detectors/${DNAME}/debug"
 shift
 
-docker run --rm -v "$MUBENCH_ROOT":/mubench -v ${MUBENCH_PIPELINE_CHECKOUTS_VOLUME}:/mubench/checkouts -v ${MUBENCH_PIPELINE_FINDINGS_VOLUME}:/mubench/findings -v "${SRC}":"${TARGET}" -p 5005:5005 ${MUBENCH_PIPELINE_DOCKER_IMAGE} python ./mubench.pipeline/benchmark.py run $1 ${DNAME} ${*:2} --force-detect --tag debug --java-options agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=5005
+TMP_DEBUG_DIR="${MUBENCH_ROOT}/tmp/"
+mkdir -p "${TMP_DEBUG_DIR}"
+RELEASES_DEBUG="${TMP_DEBUG_DIR}/releases.yml"
+touch "${RELEASES_DEBUG}"
+
+cat > "${RELEASES_DEBUG}" <<EOL
+- tag: debug
+  cli_version: $1
+EOL
+shift
+
+RELEASES_TARGET="/mubench/detectors/${DNAME}/releases.yml"
+
+docker run --rm -v "$MUBENCH_ROOT":/mubench -v ${MUBENCH_PIPELINE_CHECKOUTS_VOLUME}:/mubench/checkouts -v ${MUBENCH_PIPELINE_FINDINGS_VOLUME}:/mubench/findings -v "${SRC}":"${TARGET}" -v "${RELEASES_DEBUG}":"${RELEASES_TARGET}" -p 5005:5005 ${MUBENCH_PIPELINE_DOCKER_IMAGE} python ./mubench.pipeline/benchmark.py run $1 ${DNAME} ${*:2} --force-detect --tag debug --java-options agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=5005
