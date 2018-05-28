@@ -149,13 +149,8 @@ class RunsControllerTest extends SlimTestCase
             "-custom-stat-" => "-stat-val-",
             "timestamp" => 12,
             "potential_hits" => []];
-        $metadataController = new MetadataController($this->container);
-        $metadataController->updateMetadata('-p-', '-v-', '-m1-', '-desc-',
-            ['diff-url' => '-diff-', 'description' => '-fix-desc-'],
-            ['file' => '-file-location-', 'method' => '-method-location-', 'line' => -1], [], [], []);
-        $metadataController->updateMetadata('-p-', '-v-', '-m2-', '-desc-',
-            ['diff-url' => '-diff-', 'description' => '-fix-desc-'],
-            ['file' => '-file-location-', 'method' => '-method-location-', 'line' => -1], [], [], []);
+        $this->addSimpleMetadata('-m1-');
+        $this->addSimpleMetadata('-m2-');
 
         $this->runsController->addRun(3, '-d-', '-p-', '-v-', $run_without_hits);
 
@@ -174,10 +169,7 @@ class RunsControllerTest extends SlimTestCase
             "-custom-stat-" => "-stat-val-",
             "timestamp" => 12,
             "potential_hits" => []];
-        $metadataController = new MetadataController($this->container);
-        $metadataController->updateMetadata('-p-', '-v-', '-m1-', '-desc-',
-            ['diff-url' => '-diff-', 'description' => '-fix-desc-'],
-            ['file' => '-file-location-', 'method' => '-method-location-', 'line' => -1], [], [], []);
+        $this->addSimpleMetadata();
 
         $this->runsController->addRun(3, '-d-', '-p-', '-v-', $run_without_hits);
         $this->runsController->addRun(3, '-d-', '-p-', '-v-', $run_without_hits);
@@ -196,10 +188,7 @@ class RunsControllerTest extends SlimTestCase
             "-custom-stat-" => "-stat-val-",
             "timestamp" => 12,
             "potential_hits" => []];
-        $metadataController = new MetadataController($this->container);
-        $metadataController->updateMetadata('-p-', '-v-', '-m-', '-desc-',
-            ['diff-url' => '-diff-', 'description' => '-fix-desc-'],
-            ['file' => '-file-location-', 'method' => '-method-location-', 'line' => -1], [], [], []);
+        $this->addSimpleMetadata();
 
         $this->runsController->addRun(2, '-d-', '-p-', '-v-', $run_without_hits);
 
@@ -258,10 +247,7 @@ class RunsControllerTest extends SlimTestCase
     }
 
     function test_get_misuse_ex1(){
-        $metadataController = new MetadataController($this->container);
-        $metadataController->updateMetadata('-p-', '-v-', '-m-', '-desc-',
-            ['diff-url' => '-diff-', 'description' => '-fix-desc-'],
-            ['file' => '-file-location-', 'method' => '-method-location-', 'line' => -1], [], [], []);
+        $this->addSimpleMetadata();
 
         $this->runsController->addRun(1, '-d-', '-p-', '-v-', [
             "result" =>"success",
@@ -368,32 +354,15 @@ class RunsControllerTest extends SlimTestCase
 
     function test_run_deletion()
     {
-        $metadataController = new MetadataController($this->container);
-        $metadataController->updateMetadata('-p-', '-v-', '-m-', '-desc-',
-            ['diff-url' => '-diff-', 'description' => '-fix-desc-'],
-            ['file' => '-file-location-', 'method' => '-method-location-', 'line' => -1], [], [], [['first_line_number' => 1, 'code' => 'testCode()']]);
+        $this->addSimpleMetadata();
         $experiment = Experiment::find(1);
-        $this->runsController->addRun($experiment->id, $this->detector1->muid, '-p-', '-v-', [
-            "result" =>"success",
-            "runtime" => 42.1,
-            "number_of_findings" => 23,
-            "timestamp" => 12,
-            "potential_hits" => [
-                [
-                    "misuse" => "-m-",
-                    "rank" => 0,
-                    "target_snippets" => [
-                        ["first_line_number" => 5, "code" => "-code-"]
-                    ],
-                ]
-            ]
-        ]);
+        $this->runsController->addRun($experiment->id, $this->detector1->muid, '-p-', '-v-', $this->run_with_two_potential_hits_for_one_misuse);
         $run = Run::of($this->detector1)->in($experiment)->where(['project_muid' => '-p-', 'version_muid' => '-v-'])->first();
         $misuses = $run->misuses;
-        $snippets = Snippet::all();
 
         $this->runsController->deleteRunAndRelated($run, $this->detector1->id);
         $actual_run = Run::of($this->detector1)->in($experiment)->where('project', '-p-')->where('version', '-v-')->first();
+        $snippets = Snippet::all();
 
         self::assertNull($actual_run);
         self::assertEquals(1, $snippets->count());
@@ -411,23 +380,18 @@ class RunsControllerTest extends SlimTestCase
         $this->runsController->addRun($experiment->id, $this->detector1->muid, '-p-', '-v-', $this->run_with_two_potential_hits_for_one_misuse);
         $run = Run::of($this->detector1)->in($experiment)->where(['project_muid' => '-p-', 'version_muid' => '-v-'])->first();
         $misuses = $run->misuses;
-        $snippets = new Collection;
-        foreach($misuses as $misuse){
-            $snippets = $snippets->merge($misuse->snippets());
-        }
 
         $this->runsController->deleteRunAndRelated($run, $this->detector1->id);
         $actual_run = Run::of($this->detector1)->in($experiment)->where('project', '-p-')->where('version', '-v-')->first();
+        $snippets = Snippet::all();
 
+        self::assertEmpty($snippets);
         self::assertNull($actual_run);
         foreach($misuses as $misuse){
             self::assertNull(Misuse::find($misuse->id));
             foreach($misuse->reviews as $review){
                 self::assertNull(Review::find($review->id));
             }
-        }
-        foreach($snippets as $snippet){
-            self::assertNull(Snippet::find($snippet->id));
         }
     }
 
@@ -515,5 +479,14 @@ class RunsControllerTest extends SlimTestCase
                 ]
             ]
         ];
+    }
+
+    private function addSimpleMetadata($misuseId = '-m-')
+    {
+        $metadataController = new MetadataController($this->container);
+        $metadataController->updateMetadata('-p-', '-v-', $misuseId, '-desc-',
+            ['diff-url' => '-diff-', 'description' => '-fix-desc-'],
+            ['file' => '-file-location-', 'method' => '-method-location-', 'line' => -1], [], [], [['first_line_number' => 1, 'code' => 'testCode()']]);
+
     }
 }
