@@ -1,1 +1,3 @@
-docker run --rm -v "$MUBENCH_ROOT":/mubench ${MUBENCH_PIPELINE_DOCKER_IMAGE} git pull 
+#!/bin/bash
+
+git pull 
