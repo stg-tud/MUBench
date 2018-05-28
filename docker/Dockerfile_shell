@@ -80,5 +80,7 @@ RUN \
  && touch ./reviewsite-data/reviewsite.sqlite \
  && mv ./mubench.reviewsite/settings.docker.php ./mubench.reviewsite/settings.php
 
+ENV PATH=/mubench/mubench.bin:${PATH}
+
 # Provide review site
  EXPOSE 80
