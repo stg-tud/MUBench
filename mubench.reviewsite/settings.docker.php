@@ -7,7 +7,7 @@ return [
         'db' => [
             'driver' => 'sqlite',
             'host' => 'localhost',
-            'database' => __DIR__ . '/../mubench-reviewsite-data/standalone.sqlite',
+            'database' => __DIR__ . '/../reviewsite-data/reviewsite.sqlite',
             'username' => 'admin',
             'password' => 'admin',
             'charset'   => 'utf8',
@@ -18,11 +18,11 @@ return [
         // Monolog settings
         'logger' => [
             'name' => 'mubench',
-            'path' => __DIR__ . '/../mubench-reviewsite-data/logs/app.log',
+            'path' => __DIR__ . '/../reviewsite-data/logs/app.log',
             'level' => \Monolog\Logger::DEBUG,
         ],
         'site_base_url' => '/',
-        'upload' => __DIR__ . '/../mubench-reviewsite-data/upload',
+        'upload' => __DIR__ . '/../reviewsite-data/upload',
         'default_ex2_review_size' => '20',
         'number_of_required_reviews' => 2
     ],

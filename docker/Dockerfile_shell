@@ -1,0 +1,84 @@
+FROM anapsix/alpine-java:8_jdk
+
+LABEL maintainer="amann@st.informatik.tu-darmstadt.de"
+
+# Install ca-certificates so that HTTPS works consistently
+RUN apk update \
+ && apk add ca-certificates wget \
+ && update-ca-certificates
+
+ENV LANG=C.UTF-8 \
+    GRADLE_VERSION=4.0.2 \
+    GRADLE_HOME=/usr/local/gradle
+ENV PATH=${PATH}:${GRADLE_HOME}/bin
+
+# Setup pipeline environment
+RUN apk update \
+ \
+ # Install Python
+ && apk add \
+      py3-psutil \
+      python3 \
+      yaml-dev \
+ && ln -s /usr/bin/python3 /usr/bin/python \
+ && ln -s /usr/bin/pip3 /usr/bin/pip \
+ \
+ # Install runtime dependencies
+ && apk add \
+      apache-ant \
+      git \
+      graphviz \
+      maven \
+      subversion \
+ \
+ # Install gradle
+ && wget -q https://services.gradle.org/distributions/gradle-$GRADLE_VERSION-bin.zip \
+ && unzip -q gradle-$GRADLE_VERSION-bin.zip -d /usr/local \
+ && rm -f gradle-$GRADLE_VERSION-bin.zip \
+ && ln -s /usr/local/gradle-$GRADLE_VERSION /usr/local/gradle
+
+# Setup reviewsite environment
+RUN apk update \
+ \
+ # Install PHP
+ && apk add \
+      php7 \
+      php7-ctype \
+      php7-dom \
+      php7-json \
+      php7-mbstring \
+      php7-openssl \
+      php7-pdo \
+      php7-pdo_sqlite \
+      php7-phar \
+      php7-session \
+      php7-sqlite3 \
+      php7-tokenizer \
+      php7-xml \
+      php7-xmlwriter \
+      php7-zlib \
+ \
+ # Install Composer
+ && wget -q https://getcomposer.org/installer -O composer-setup.php \
+ && php composer-setup.php --install-dir=/usr/local/bin --filename=composer \
+ && rm composer-setup.php
+
+WORKDIR /mubench
+STOPSIGNAL SIGTERM
+
+COPY . .
+
+RUN \
+ # Install Python dependencies
+ pip install -r mubench.pipeline/requirements.txt
+
+RUN \
+ # Install PHP dependencies
+ composer install -d mubench.reviewsite --no-interaction \
+ && mkdir -p ./reviewsite-data/upload \
+ && mkdir -p ./reviewsite-data/logs \
+ && touch ./reviewsite-data/reviewsite.sqlite \
+ && mv ./mubench.reviewsite/settings.docker.php ./mubench.reviewsite/settings.php
+
+# Provide review site
+ EXPOSE 80
