@@ -23,7 +23,7 @@ release.sh
 
 # local working data
 ## MUBench
-checkouts
+checkouts*
 findings
 **/*.sqlite
 ## logs
@@ -38,5 +38,9 @@ findings
 # irrelevant files
 docker
 meta
+reproduction
+mubench
+mubench.bat
+shippable.yml
 *.yml
 **/.DS_Store
