@@ -64,23 +64,24 @@ RUN apk update \
  && rm composer-setup.php
 
 WORKDIR /mubench
-STOPSIGNAL SIGTERM
-
-COPY . .
 
 RUN \
- # Install Python dependencies
- pip install -r mubench.pipeline/requirements.txt
+ # Fetch MUBench
+ git clone https://github.com/stg-tud/MUBench.git . \
+ \
+ # Install pipeline dependencies
+ && pip install -r mubench.pipeline/requirements.txt \
+ \
+ # Install reviewsite dependencies
+ && composer install -d mubench.reviewsite --no-interaction \
+ && mkdir -p mubench.reviewsite/upload \
+ && mkdir -p mubench.reviewsite/logs \
+ && touch mubench.reviewsite/reviews.sqlite \
+ && mv mubench.reviewsite/settings.docker.php mubench.reviewsite/settings.php
 
-RUN \
- # Install PHP dependencies
- composer install -d mubench.reviewsite --no-interaction \
- && mkdir -p ./reviewsite-data/upload \
- && mkdir -p ./reviewsite-data/logs \
- && touch ./reviewsite-data/reviewsite.sqlite \
- && mv ./mubench.reviewsite/settings.docker.php ./mubench.reviewsite/settings.php
-
+# Add MUBench scripts to $PATH
 ENV PATH=/mubench/mubench.bin:${PATH}
 
 # Provide review site
- EXPOSE 80
+EXPOSE 80
+STOPSIGNAL SIGTERM
