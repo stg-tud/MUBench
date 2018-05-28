@@ -16,7 +16,9 @@
   },
   "autoload": {
     "psr-4": {
-      "MuBench\\ReviewSite\\": "src"
+      "MuBench\\ReviewSite\\": "src",
+      "MuBench\\ReviewSite\\Setup\\": "setup"
+
     },
     "files": [
       "src/route_utils.php",

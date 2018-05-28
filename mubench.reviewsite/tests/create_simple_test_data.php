@@ -4,6 +4,9 @@
 use Illuminate\Support\Facades\Schema;
 
 echo '<br/>Inserting simple test data<br/>';
+$experiment1 = \MuBench\ReviewSite\Models\Experiment::find(1);
+$experiment2 = \MuBench\ReviewSite\Models\Experiment::find(2);
+$experiment3 = \MuBench\ReviewSite\Models\Experiment::find(3);
 
 echo 'Creating test detector<br/>';
 $detector = new \MuBench\ReviewSite\Models\Detector;
