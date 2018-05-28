@@ -40,7 +40,6 @@ RUN apk update \
 WORKDIR /mubench
 CMD python mubench.pipeline/benchmark.py
 
-# TODO copy only mubench.pipeline, VERSION, CRAPL-LICENSE.txt? (data, detectors, mubench(.bat))
 COPY . .
 
 RUN \
