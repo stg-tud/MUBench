@@ -252,15 +252,15 @@ $origin_path = $origin_path ? $origin_path : $pathFor('experiment.detector', arr
              * @param array $potential_hits the potential hits to check
              * @return bool true if none of the potential hits has a value for the property, false otherwise
              */
-            function is_empty($property, $potential_hits)
+            function has_no_value($property, $potential_hits)
             {
                 return array_reduce($potential_hits, function ($carry, $potential_hit) use ($property) {
-                    return $carry && empty($potential_hit[$property]);
+                    return $carry && is_null($potential_hit[$property]);
                 }, true);
             }
             $potential_hits = $misuse->findings;
             $columns = array_filter(array_keys(current($potential_hits->toArray())), function ($key) use ($columns_to_ignore, $potential_hits) {
-                return !in_array($key, $columns_to_ignore) && !is_empty($key, $potential_hits->toArray());
+                return !in_array($key, $columns_to_ignore) && !has_no_value($key, $potential_hits->toArray());
             });
 
             sort($columns);
