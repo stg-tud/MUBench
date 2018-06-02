@@ -20,6 +20,8 @@ class WebDriverTest extends TestCase
         $this->driver = RemoteWebDriver::create("http://localhost:4444/wd/hub",
             $capabilities, 5000
         );
+        $this->driver->get('http://localhost:8080/setup/setup.php');
+        $this->driver->get('http://localhost:8080/tests/create_test_data.php');
     }
 
     public function tearDown()
