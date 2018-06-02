@@ -25,6 +25,7 @@ script:
   - cd mubench.reviewsite
   - ./configure.sh
   - java -jar /usr/local/bin/selenium-server-standalone-3.12.0.jar &
+  - cp settings.default.php settings.php
   - php -S localhost:8080 -t ./ &
   - phpunit --bootstrap vendor/autoload.php tests/
 
