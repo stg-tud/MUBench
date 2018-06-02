@@ -28,7 +28,7 @@ script:
   - php -S localhost:8080 -t /mubench/mubench.reviewsite &> server.log &
   - phpunit --bootstrap vendor/autoload.php tests/
 
-build_on_failure:
+after_script:
   - cat /mubench/mubench.reviewsite/selenium.log
   - cat /mubench/mubench.reviewsite/server.log
 
