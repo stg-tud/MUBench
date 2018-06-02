@@ -149,8 +149,8 @@ class RunsControllerTest extends SlimTestCase
             "-custom-stat-" => "-stat-val-",
             "timestamp" => 12,
             "potential_hits" => []];
-        $this->addSimpleMetadata('-m1-');
-        $this->addSimpleMetadata('-m2-');
+        $this->addSimpleMetadata('-p-', '-v-', '-m1-');
+        $this->addSimpleMetadata('-p-', '-v-', '-m2-');
 
         $this->runsController->addRun(3, '-d-', '-p-', '-v-', $run_without_hits);
 
@@ -169,7 +169,7 @@ class RunsControllerTest extends SlimTestCase
             "-custom-stat-" => "-stat-val-",
             "timestamp" => 12,
             "potential_hits" => []];
-        $this->addSimpleMetadata();
+        $this->addSimpleMetadata('-p-', '-v-', '-m-');
 
         $this->runsController->addRun(3, '-d-', '-p-', '-v-', $run_without_hits);
         $this->runsController->addRun(3, '-d-', '-p-', '-v-', $run_without_hits);
@@ -188,7 +188,7 @@ class RunsControllerTest extends SlimTestCase
             "-custom-stat-" => "-stat-val-",
             "timestamp" => 12,
             "potential_hits" => []];
-        $this->addSimpleMetadata();
+        $this->addSimpleMetadata('-p-', '-v-', '-m-');
 
         $this->runsController->addRun(2, '-d-', '-p-', '-v-', $run_without_hits);
 
@@ -247,7 +247,7 @@ class RunsControllerTest extends SlimTestCase
     }
 
     function test_get_misuse_ex1(){
-        $this->addSimpleMetadata();
+        $this->addSimpleMetadata('-p-', '-v-', '-m-');
 
         $this->runsController->addRun(1, '-d-', '-p-', '-v-', [
             "result" =>"success",
@@ -354,7 +354,7 @@ class RunsControllerTest extends SlimTestCase
 
     function test_run_deletion()
     {
-        $this->addSimpleMetadata();
+        $this->addSimpleMetadata('-p-', '-v-', '-m-');
         $experiment = Experiment::find(1);
         $this->runsController->addRun($experiment->id, $this->detector1->muid, '-p-', '-v-', $this->run_with_two_potential_hits_for_one_misuse);
         $run = Run::of($this->detector1)->in($experiment)->where(['project_muid' => '-p-', 'version_muid' => '-v-'])->first();
@@ -481,7 +481,7 @@ class RunsControllerTest extends SlimTestCase
         ];
     }
 
-    private function addSimpleMetadata($misuseId = '-m-')
+    private function addSimpleMetadata($project, $version, $misuseId)
     {
         $metadataController = new MetadataController($this->container);
         $metadataController->updateMetadata('-p-', '-v-', $misuseId, '-desc-',
