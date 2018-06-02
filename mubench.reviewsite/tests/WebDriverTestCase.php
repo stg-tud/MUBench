@@ -4,7 +4,7 @@ use Facebook\WebDriver\Remote\DesiredCapabilities;
 use Facebook\WebDriver\Remote\RemoteWebDriver;
 use PHPUnit\Framework\TestCase;
 
-class WebDriverTest extends TestCase
+class WebDriverTestCase extends TestCase
 {
     /**
      * @var RemoteWebDriver

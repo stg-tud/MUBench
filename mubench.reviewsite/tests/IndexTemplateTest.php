@@ -2,9 +2,9 @@
 
 use Facebook\WebDriver\WebDriverBy;
 
-require_once 'WebDriverTest.php';
+require_once 'WebDriverTestCase.php';
 
-class IndexTemplateTest extends WebDriverTest
+class IndexTemplateTest extends WebDriverTestCase
 {
     public function testAssertTitle()
     {
