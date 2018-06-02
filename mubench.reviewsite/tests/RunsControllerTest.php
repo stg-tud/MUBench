@@ -2,6 +2,7 @@
 
 require_once "SlimTestCase.php";
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use MuBench\ReviewSite\Controllers\FindingsController;
 use MuBench\ReviewSite\Controllers\FindingsUploader;
@@ -426,7 +427,7 @@ class RunsControllerTest extends SlimTestCase
                 ]
             ]
         ]);
-        sleep(1);
+        Carbon::setTestNow(Carbon::now()->addSecond(10));
         $this->runsController->addRun($experiment->id, $this->detector1->muid, '-p-', '-v-', [
             "result" => "success",
             "runtime" => 42.1,
