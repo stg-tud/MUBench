@@ -24,13 +24,9 @@ script:
   # mubench.reviewsite
   - cd mubench.reviewsite
   - ./configure.sh
-  - java -jar /usr/local/bin/selenium-server-standalone-3.12.0.jar &> selenium.log &
-  - php -S localhost:8080 -t /mubench/mubench.reviewsite &> server.log &
+  - java -jar /usr/local/bin/selenium-server-standalone-3.12.0.jar &
+  - php -S localhost:8080 -t /mubench/mubench.reviewsite &
   - phpunit --bootstrap vendor/autoload.php tests/
-
-after_script:
-  - cat /mubench/mubench.reviewsite/selenium.log
-  - cat /mubench/mubench.reviewsite/server.log
 
 notifications:
   email:
