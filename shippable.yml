@@ -28,6 +28,7 @@ script:
   - cp settings.default.php settings.php
   - touch test.sqlite
   - php -S localhost:8080 -t ./ &
+  - sleep 10
   - phpunit --bootstrap vendor/autoload.php tests/
 
 notifications:
