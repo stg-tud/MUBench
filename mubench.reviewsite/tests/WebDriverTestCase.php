@@ -11,8 +11,11 @@ class WebDriverTestCase extends TestCase
      */
     protected $driver;
 
-    public function setUp()
+    protected $host = "localhost:8080";
+
+    public function __construct()
     {
+        parent::__construct();
         $chromeOptions = new \Facebook\WebDriver\Chrome\ChromeOptions();
         $chromeOptions->addArguments(array('headless' , '-no-sandbox')); //
         $capabilities = DesiredCapabilities::chrome();
@@ -20,12 +23,31 @@ class WebDriverTestCase extends TestCase
         $this->driver = RemoteWebDriver::create("http://localhost:4444/wd/hub",
             $capabilities, 5000
         );
-        $this->driver->get('http://localhost:8080/setup/setup.php');
-        $this->driver->get('http://localhost:8080/tests/create_test_data.php');
+        $this->getRoute("/setup/setup.php");
+        $this->getRoute("/tests/create_test_data.php");
     }
 
-    public function tearDown()
+    public function __destruct()
     {
         $this->driver->quit();
     }
+
+    protected function buildUrl($route, $private = false, $user = "admin", $pass = "pass")
+    {
+        if($private){
+            return "http://{$user}:{$pass}@{$this->host}/private{$route}";
+        }
+        return "http://{$this->host}{$route}";
+    }
+
+    protected function getRoute($route, $private = false, $user = "admin", $pass = "pass")
+    {
+        $this->driver->get($this->buildUrl($route, $private, $user, $pass));
+    }
+
+    protected function assertRoute($route, $private = false, $user = "admin", $pass = "pass")
+    {
+        self::assertEquals($this->buildUrl($route, $private, $user, $pass), $this->driver->getCurrentURL());
+    }
+
 }
