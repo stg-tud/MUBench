@@ -125,7 +125,7 @@ class RunsControllerTest extends SlimTestCase
         self::assertEquals('-val1-', $finding['custom1']);
         self::assertEquals('-val2-', $finding['custom2']);
         self::assertEquals("-code-", $snippet->snippet);
-        self::assertEquals('5', $snippet->line);
+        self::assertEquals('6', $snippet->line);
     }
 
     function test_store_ex3()

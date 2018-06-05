@@ -44,10 +44,8 @@ class Misuse extends Model
 
     public function snippets()
     {
-        $snippets = Snippet::of($this->getProject(), $this->getVersion(), $this->misuse_muid, $this->getFile())->get();
-        if($this->run->experiment_id == 2){
-            $snippets = $snippets->where('detector_muid', $this->detector->muid);
-        }
+        $snippets = Snippet::of($this->getProject(), $this->getVersion(), $this->misuse_muid, $this->getFile())
+            ->where('detector_muid', $this->detector->muid)->orWhereNull('detector_muid')->get();
         $finding_lines = $this->findings->map(function ($finding) {
             return intval($finding['startline']);
         })->toArray();
