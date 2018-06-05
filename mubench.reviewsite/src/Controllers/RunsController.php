@@ -215,10 +215,8 @@ class RunsController extends Controller
             $misuse->reviews()->delete();
             $misuse->metadata()->dissociate();
             $misuse->misuse_tags()->detach();
-            if($run->experiment_id == 2){
-                foreach($misuse->snippets() as $snippet){
-                    $snippet->delete();
-                }
+            foreach($misuse->snippets()->where('detector_muid', '!=',null) as $snippet){
+                $snippet->delete();
             }
             $misuse->findings()->delete();
         }

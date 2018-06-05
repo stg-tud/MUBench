@@ -54,7 +54,7 @@ class Misuse extends Model
         if($this->metadata && $this->metadata->line != -1){
             $finding_lines[] = $this->metadata->line;
         }
-        $fitting_snippets = array();
+        $fitting_snippets = new Collection;
         foreach($snippets as $snippet){
             $snippet_lines = count(preg_split('/\n/', $snippet->snippet));
             $last_line = $snippet->line + $snippet_lines;
