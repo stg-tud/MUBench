@@ -1,0 +1,21 @@
+api:
+- java.lang.Long
+violations:
+- missing/exception_handling
+crash: true
+description: |
+  `Id(String)` calls `java.lang.long.parseLong` without first checking whether the argument parses.
+  This lead to an uncaught `NumberFormatException`: [Oracle Java 7 API specification](http://docs.oracle.com/javase/7/docs/api/java/lang/Long.html#parseLong%28java.lang.String,%20int%29).
+
+  This pull request adds a check with a  more helpful exception message.
+fix:
+  commit: https://github.com/emopers/weiboclient4j/commit/18b596ad7116f55d8c2b25e9aa4954d3b51507fb
+  revision: 18b596ad7116f55d8c2b25e9aa4954d3b51507fb
+internal: false
+location:
+  file: weiboclient4j/params/Id.java
+  method: Id(String)
+report: https://github.com/hoverruan/weiboclient4j/pull/15
+source:
+  name: Owolabi's Dataset ASE'16
+  url: fsl.cs.illinois.edu/spec-eval/

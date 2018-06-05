@@ -1,6 +1,6 @@
 api:
 - org.apache.jackrabbit.jcr2spi.NamespaceStorage
-characteristics:
+violations:
 - missing/condition/value_or_state
 crash: true
 description: >

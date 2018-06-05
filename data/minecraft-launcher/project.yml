@@ -1,0 +1,5 @@
+name: Minecraft-Launcher
+repository:
+  type: git
+  url: https://github.com/Rellynn/Minecraft-Launcher
+url: https://github.com/Rellynn/Minecraft-Launcher

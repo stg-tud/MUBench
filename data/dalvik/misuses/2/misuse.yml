@@ -1,0 +1,15 @@
+api:
+- javax.crypto.Cipher
+violations:
+- missing/condition/value_or_state
+description: >
+  Uses NullCipher as a default which doesn't encrypt the data.
+location:
+  file: src/main/java/javax/crypto/CipherInputStream.java
+  method: "CipherInputStream(InputStream)"
+internal: true
+pattern:
+- single object
+crash: false
+source:
+  name: "MUBench-JCE -- A Misuse-Detection Benchmark for the Java Cryptography Extension API, Mattis Manfred Kämmerer, Bachelor Thesis, 2017"

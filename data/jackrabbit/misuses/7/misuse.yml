@@ -1,7 +1,6 @@
 api:
 - org.apache.jackrabbit.core.state.ItemStateManager
-- org.apache.jackrabbit.core.state.NodeState
-characteristics:
+violations:
 - missing/condition/null_check
 crash: true
 description: >

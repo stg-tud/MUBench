@@ -1,7 +1,8 @@
 api:
 - com.google.gson.JsonElement
-characteristics:
+violations:
 - missing/condition/value_or_state
+- missing/call
 crash: true
 description: >
   Call JsonElement.getAsString() on JsonNullElement.

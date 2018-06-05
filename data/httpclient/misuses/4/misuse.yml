@@ -1,8 +1,8 @@
 api:
 - java.text.SimpleDateFormat
-characteristics:
+violations:
 - missing/call
-- superfluous/call
+- redundant/call
 crash: false
 description: >
   Misses to pass Locale to constructor of SimpleDateFormat.

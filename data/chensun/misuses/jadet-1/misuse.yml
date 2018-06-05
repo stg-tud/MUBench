@@ -1,0 +1,15 @@
+api:
+- java.sql.PreparedStatement
+violations:
+- missing/call
+crash: false
+description: |
+  The `PreparedStatement` opened in line 635 is never closed.
+  (Same finding as `mudetect-19` and `mudetectxp-7`)
+internal: false
+location:
+  file: database/SocialNetworkDatabasePosts.java
+  method: getPost(Connection, String, String, String, int)
+  line: 635
+source:
+  name: Jadet & MuDetect & MUDetectXP

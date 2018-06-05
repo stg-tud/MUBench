@@ -1,14 +1,17 @@
 api:
 - java.util.Iterator
-characteristics:
+violations:
 - missing/condition/value_or_state
+- missing/call
 crash: true
 description: >
-  Iterator.next() is invoked without prior check of hasNext().
+  On line 508, `Iterator.next()` is invoked without prior check that there are
+  sufficiently many elements.
+  (Same finding as `mudetect-2` and `mudetectxp-2`)
 location:
   file: com/itextpdf/text/pdf/PdfWriter.java
   method: "writeCrossReferenceTable(OutputStream, PdfIndirectReference, PdfIndirectReference, PdfIndirectReference, PdfObject, long)"
+  line: 508
 internal: false
 source:
-  name: DMMC
-  url: http://www.monperrus.net/martin/dmmc
+  name: DMMC & MUDetect & MUDetectXP

@@ -1,0 +1,8 @@
+build:
+  classes: target/classes 
+  commands:
+  -  mvn package        #mvn compile    
+  src: src/main/java
+misuses:
+-  SV_CVE_12_2138_1
+revision: org.apache.sling.servlets.post-2.1.0                  

@@ -1,0 +1,17 @@
+api:
+- org.w3c.tools.resources.ResourceReference
+violations:
+- redundant/exception_handling
+crash: false
+description: |
+  On line 266 the `ResourceReference` `root` is locked. The surrounding `try`
+  statement catches `Exception` to capture a locking conflict. This exception
+  type is too general, since it might accidentially hide problems unrelated to
+  lock conflicts.
+internal: true
+location:
+  file: org/w3c/jigedit/tools/ToolsListerFrame.java
+  method: handle(Request, URLDecoder)
+  line: 266
+source:
+  name: MuDetect

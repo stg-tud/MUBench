@@ -1,6 +1,6 @@
 api:
 - org.apache.commons.httpclient.HttpConnection
-characteristics:
+violations:
 - missing/call
 crash: false
 description: >

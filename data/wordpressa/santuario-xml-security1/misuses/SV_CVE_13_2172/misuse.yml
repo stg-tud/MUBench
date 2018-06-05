@@ -1,0 +1,20 @@
+api:
+- 
+characteristics:
+- 
+crash: 
+description: >
+  
+location:
+  file: org/apache/jcp/xml/dsig/internal/dom/DOMCanonicalizationMethod.java
+  method: "assertState(ConnectionState)"
+fix:
+  commit: http://svn.apache.org/viewvc/santuario/xml-security-java/branches/1.5.x-fixes/src/main/java/org/apache/jcp/xml/dsig/internal/dom/DOMCanonicalizationMethod.java?r1=1353876&r2=1493772&pathrev=1493772&diff_format=h
+  description: 
+  revision: 
+  internal: 
+  pattern:
+- single object
+report: 
+  name: 
+  url:

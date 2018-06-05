@@ -1,8 +1,8 @@
 api:
 - java.lang.String
-characteristics:
+violations:
 - missing/call
-- superfluous/call
+- redundant/call
 crash: false
 description: >
   Text is converted to bytes for encoding without an explicit encoding.

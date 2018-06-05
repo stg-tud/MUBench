@@ -1,0 +1,17 @@
+api:
+- java.util.StringTokenizer
+violations:
+- missing/call
+crash: false
+description: >
+  The usage calls `nextToken()` on `StringTokenizer` without checking
+  `hasMoreTokens()`. However, the usage handles `NoSuchElementException`,
+  which is a valid alternative. Therefore, we do not consider this a misuse.
+location:
+  file: "org/w3c/jigsaw/map/MapEntry.java"
+  # There's three methods matching this signature in the file, all of which follow the same implementation pattern
+  method: "parseRestNCSA(String)"
+internal: false
+source:
+  name: Graph-based mining of multiple object usage patterns, Nguyen et al., FSE'09
+  url: http://portal.acm.org/citation.cfm?doid=1595696.1595767

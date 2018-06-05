@@ -13,4 +13,4 @@ build:
   src: org.aspectj.matcher/src/
 misuses:
 - '1'
-revision: 2b43e636bb8929430e75b1c90ddf2c2f6ba86093
+revision: V1_6_3

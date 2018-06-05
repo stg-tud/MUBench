@@ -1,8 +1,8 @@
 api:
 - java.lang.String
-characteristics:
+violations:
 - missing/call
-- superfluous/call
+- redundant/call
 crash: false
 description: >
   An encrypted message is decrypted and then converted back to a string, without

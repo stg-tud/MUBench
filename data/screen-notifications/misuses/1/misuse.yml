@@ -1,7 +1,7 @@
 api:
 - android.content.pm.ApplicationInfo
-characteristics:
-- missing/exception handling
+violations:
+- missing/exception_handling
 crash: true
 description: >
   On some platforms AppInfo.loadIcon() may throw an OutOfMemoryError.

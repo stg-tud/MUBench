@@ -1,0 +1,9 @@
+build:
+  classes: server/build/classes
+  commands:
+  -  mvn --projects server --also-make compile                
+  src: server/src/
+misuses:
+-  SV_CVE_13_6398_1
+-  SV_CVE_13_6398_2
+revision: 709e0c093fc280cee79b30c7ee0a11331ebbae57       #1.2          

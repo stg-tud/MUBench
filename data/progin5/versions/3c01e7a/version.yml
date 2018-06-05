@@ -1,0 +1,9 @@
+build:
+  classes: server/build/classes/
+  commands:
+  - wget http://central.maven.org/maven2/org/json/json/20160810/json-20160810.jar
+  - ant jar -buildfile server/build.xml
+  src: server/src/
+misuses:
+- '1'
+revision: 3c01e7a13eb14d9011f34abc5fc629e61f4c90b7

@@ -1,0 +1,15 @@
+api:
+- java.sql.ResultSet
+violations:
+- missing/call
+crash: false
+description: |
+  The `ResultSet` fetched in line 290 is not closed in case of an exception.
+  (Same finding as `mudetectxp-13`)
+internal: false
+location:
+  file: database/SocialNetworkDatabaseBoards.java
+  method: authorizedGoToBoard(Connection, String, String)
+  line: 290
+source:
+  name: Jadet & MUDetectXP

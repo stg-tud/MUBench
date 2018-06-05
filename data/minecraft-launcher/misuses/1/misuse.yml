@@ -1,0 +1,15 @@
+api:
+- javax.crypto.Cipher
+violations:
+- missing/condition/value_or_state
+description: >
+  Uses PBEWithMD5AndDES which is considered unsafe.
+location:
+  file: net/minecraft/launcher/authentication/BaseAuthenticationService.java
+  method: "getCipher(int, String)"
+internal: false
+pattern:
+- single object
+crash: false
+source:
+  name: "MUBench-JCE -- A Misuse-Detection Benchmark for the Java Cryptography Extension API, Mattis Manfred Kämmerer, Bachelor Thesis, 2017"

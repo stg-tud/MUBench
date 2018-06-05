@@ -1,0 +1,18 @@
+api:
+- [] 
+characteristics:
+- [] 
+crash: false
+description: Apache WSS4J when using TransportBinding, does not properly enforce the SAML SubjectConfirmation method security semantics, which allows remote attackers to conduct spoofing attacks via unspecified vectors. 
+location:
+  file: org/apache/wss4j/dom/validate/SamlAssertionValidator.java
+  method: "verifySubjectConfirmationMethod(SamlAssertionWrapper)"
+fix:
+  commit: http://svn.apache.org/viewvc?view=revision&revision=1624308
+  description: >
+  revision: 
+  internal: 
+report: http://cxf.apache.org/security-advisories.data/CVE-2014-3623.txt.asc?version=1&modificationDate=1414169368000&api=v2
+source:
+  name: 
+  url:

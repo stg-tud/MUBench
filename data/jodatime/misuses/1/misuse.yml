@@ -1,7 +1,6 @@
 api:
-- org.joda.time.contrib.hibernate.PersistentDateTime
 - org.joda.time.Interval
-characteristics:
+violations:
 - missing/condition/null_check
 crash: false
 description: >

@@ -1,0 +1,24 @@
+api:
+- java.util.StringTokenizer
+violations:
+- missing/condition/value_or_state
+- missing/call
+crash: true
+description: |
+  The Zone constructor in org.joda.time.tz.ZoneInfoCompiler.java does not
+  check the number of elements in the StringTokenizer obtained from parsing
+  the timezone file.  There is an assumption that the input TimeZone file
+  will always be valid, leading to runtime exceptions with no good error
+  message when the file is invalid. This pull request adds a potential fix
+  and a test for this issue.
+fix:
+  commit: https://github.com/emopers/joda-time/commit/76fa43737656d859f0943f5326cf2b8565c4b032
+  revision: 76fa43737656d859f0943f5326cf2b8565c4b032
+internal: false
+location:
+  file: org/joda/time/tz/ZoneInfoCompiler.java
+  method: Zone(StringTokenizer)
+report: https://github.com/JodaOrg/joda-time/pull/333
+source:
+  name: Owolabi's Dataset ASE'16
+  url: fsl.cs.illinois.edu/spec-eval/

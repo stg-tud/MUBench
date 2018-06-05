@@ -1,0 +1,19 @@
+api:
+- java.nio.channels.FileChannel
+violations:
+- missing/call
+crash: false
+description: >
+  Misses to flush FileChannel, such that the contents have not been written
+  before the next attempt to read from the underlying resource.
+location:
+  file: mubench/examples/survey/ChannelFlush.java
+  method: needsFlushToEnsureWrite(ByteBuffer)
+fix:
+  description: >
+    Add a call to FileChannel.force() or close() the channel.
+internal: false
+pattern:
+- single object
+source:
+  name: Survey

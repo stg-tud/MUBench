@@ -1,0 +1,8 @@
+build:
+  classes: servlet/target/classes  
+  commands:
+  -  mvn clean install -DskipTests           
+  src: servlet/src/main/java
+misuses:
+-  SV_CVE_14_7816
+revision: 1f44172ba94c4cb9d20b97a79e63001163d37f51                 

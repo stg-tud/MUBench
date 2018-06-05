@@ -1,0 +1,9 @@
+build:
+  classes: bctls-jdk15on-1.58.jar
+  commands:
+  -  wget -U "Any User Agent" http://repo2.maven.org/maven2/org/bouncycastle/bctls-jdk15on/1.58/bctls-jdk15on-1.58.jar
+  #-  gradle :compileJava
+  src: tls/src/main/java
+misuses:
+-  SV_CVE_17_13098  
+revision: r1rv58                               

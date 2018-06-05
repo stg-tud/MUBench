@@ -1,0 +1,17 @@
+api:
+- java.util.Map
+violations:
+- missing/condition/synchronization
+crash: false
+description: >
+  Updates a HashMap concurrently without ensuring synchonziation.
+location:
+  file: mubench/examples/directives/Unsynchronized.java
+  method: onEvent(String, String)
+fix:
+  description: >
+    synchonize on the map.
+internal: false
+source:
+  name: What should developers be aware of? an empirical study on the directives of API documentation., Monperrus et al., ESE'12
+  url: http://link.springer.com/article/10.1007/s10664-011-9186-4

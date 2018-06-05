@@ -1,0 +1,17 @@
+api:
+- java.util.List
+violations:
+- missing/condition/value_or_state
+- missing/call
+crash: true
+description: >
+  On line 176, `List.get(0)` is invoked without prior check of that there is at
+  least one element in the list (the loop that adds elements might be skipped,
+  if an empty list is passed as a parameter).
+location:
+  file: com/google/javascript/jscomp/deps/SortedDependencies.java
+  method: "cycleToString(List)"
+  line: 176
+internal: false
+source:
+  name: MUDetectXP

@@ -1,7 +1,7 @@
 api:
 - java.util.Iterator
-characteristics:
-- missing/missing_call
+violations:
+- missing/call
 crash: false
 description: >
 The last for loop in

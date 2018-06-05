@@ -1,0 +1,18 @@
+api:
+- [] 
+characteristics:
+- [] 
+crash: false
+description: When configured to use the JCE (Java Cryptography Extension) for cryptographic functions, Bouncy Castle prior to version 1.0.3 is susceptible to a chosen ciphertext attack when negotiating an RSA key exchange for any TLS cipher suite. A man-in-the-middle attacker could potentially decrypt HTTPS traffic or impersonate the HTTPS server. This vulnerability is referred to as ROBOT (Return Of Bleichenbacher's Oracle Threat). 
+location:
+  file: org/bouncycastle/tls/crypto/impl/jcajce/JceDefaultTlsCredentialedDecryptor.java
+  method: "TlsSecret safeDecryptPreMasterSecret(TlsCryptoParameters, PrivateKey, byte[])"
+fix:
+  commit: https://issues.apache.org/jira/secure/attachment/12560257/CVE-2012-5784-2.patch
+  description: >
+  revision: 
+  internal: 
+report: https://github.com/bcgit/bc-java/blob/a00b684465b38d722ca9a3543b8af8568e6bad5c/tls/src/main/java/org/bouncycastle/tls/crypto/impl/jcajce/JceDefaultTlsCredentialedDecryptor.java
+source:
+  name: 
+  url:

@@ -1,7 +1,0 @@
-build:
-  classes: $gradle.default.classes
-  commands:
-  - gradle :compileJava
-  src: src/
-misuses:
-- 'flip-2'

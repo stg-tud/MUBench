@@ -1,0 +1,5 @@
+name: Javamelody
+repository:
+  type: git 
+  url: https://github.com/javamelody/javamelody.git
+Url: https://github.com/javamelody/javamelody

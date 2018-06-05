@@ -1,0 +1,18 @@
+apply plugin: 'java'
+
+sourceSets {
+  main {
+    java {
+      srcDir 'CS5430/src'
+    }
+  }
+}
+
+repositories {
+  mavenCentral()
+}
+
+dependencies {
+	// https://mvnrepository.com/artifact/commons-codec/commons-codec
+	compile group: 'commons-codec', name: 'commons-codec', version: '1.10'
+}

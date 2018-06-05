@@ -1,0 +1,15 @@
+api:
+- [] 
+characteristics:
+- [] 
+crash: false
+description: PlainSaslServer.java in Apache Qpid Java, when the broker is configured to allow plaintext passwords, allows remote attackers to cause a denial of service (broker termination) via a crafted authentication attempt, which triggers an uncaught exception.
+location:
+  file: org/apache/qpid/server/security/auth/sasl/plain/PlainSaslServer.java
+  method: "evaluateResponse(byte[])"
+fix:
+  commit: https://svn.apache.org/viewvc/qpid/java/trunk/broker-core/src/main/java/org/apache/qpid/server/security/auth/sasl/plain/PlainSaslServer.java?revision=1744403&view=markup&pathrev=1744403
+  description: >
+  revision: 
+  internal: 
+report: https://svn.apache.org/viewvc?view=revision&revision=1744403

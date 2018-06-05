@@ -1,0 +1,5 @@
+name: Org.apache.sling.servlets.post
+repository:
+  type: git 
+  url: https://github.com/apache/sling-org-apache-sling-servlets-post.git
+Url: https://sling.apache.org/

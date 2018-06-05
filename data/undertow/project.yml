@@ -1,0 +1,5 @@
+name: JBoss Undertow
+repository:
+  type: git 
+  url: https://github.com/undertow-io/undertow.git
+Url: http://undertow.io

@@ -1,0 +1,5 @@
+name: drftpd3 (extended)
+repository:
+  type: git
+  url: https://github.com/f4bio/drftpd3-extended
+url: https://github.com/f4bio/drftpd3-extended/

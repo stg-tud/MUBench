@@ -1,0 +1,18 @@
+api:
+- [] 
+characteristics:
+- [] 
+crash: false
+description: '' 
+location:
+  file: org/apache/http/conn/ssl/AbstractVerifier.java
+  method: "getCNs(X509Certificate)"
+fix:
+  commit: http://svn.apache.org/viewvc/httpcomponents/httpclient/branches/4.2.x/httpclient/src/main/java/org/apache/http/conn/ssl/AbstractVerifier.java?r1=1411705&r2=1411704&pathrev=1411705
+  description: >
+  revision: 
+  internal: 
+report: https://bugzilla.redhat.com/show_bug.cgi?id=1129916
+source:
+  name: 
+  url:

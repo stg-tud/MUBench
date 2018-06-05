@@ -1,0 +1,11 @@
+build:
+  classes: ws-security-dom/target/classes   
+  commands:
+  #-  wget https://archive.apache.org/dist/ws/wss4j/2.0.1/wss4j-2.0.1-source-release.zip 
+  #-  unzip wss4j-2.0.1-source-release.zip  
+  -  mvn clean install -DskipTests               
+  src: ws-security-dom/src/main/javai
+misuses:
+-  SV_CVE_14_3623_1
+#-  SV_CVE_14_3623_2
+revision: 312729590434702e6b34c9c2d3fce8cf50187102       #a59f27b9f1a302accc6f71525c776883b79d5daa         

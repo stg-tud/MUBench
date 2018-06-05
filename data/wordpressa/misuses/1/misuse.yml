@@ -1,7 +1,8 @@
 api:
 - android.app.ListFragment
-characteristics:
+violations:
 - missing/condition/value_or_state
+- missing/call
 crash: true
 description: >
   Calls ListFragment.getListView() without checking that ListFragment.isAdded(),

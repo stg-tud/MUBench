@@ -1,17 +1,20 @@
 api:
 - java.util.StringTokenizer
-characteristics:
+violations:
 - missing/condition/value_or_state
+- missing/call
 crash: true
 description: >
-   StringTokenizer.nextToken() is invoked without prior check of hasMoreTokens().
-   This usage may be safe from context, since the tokenized value is an RBG color
-   value which has a known number of tokens. However, the usage is unsafe against
-   invalid values and we, therefore, consider it a misuse.
+   On line 265, `StringTokenizer.nextToken()` is invoked without prior check of
+   `hasMoreTokens()`. This usage may be safe from context, since the tokenized
+   value is an RBG color value which has a known number of tokens. However, the
+   usage is unsafe against invalid values and we, therefore, consider it a
+   misuse.
+   (Same finding as `mudetectxp-7`)
 location:
   file: com/itextpdf/text/html/WebColors.java
   method: "getRGBColor(String)"
+  line: 265
 internal: false
 source:
-  name: DMMC
-  url: http://www.monperrus.net/martin/dmmc
+  name: DMMC & MUDetectXP

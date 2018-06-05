@@ -1,0 +1,5 @@
+name: APDPlat
+repository:
+  type: git
+  url: https://github.com/ysc/APDPlat
+url: https://github.com/ysc/APDPlat

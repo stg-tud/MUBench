@@ -1,0 +1,5 @@
+name: gae-java-mini-profiler
+repository:
+  type: git
+  url: https://github.com/jriecken/gae-java-mini-profiler.git
+url: http://jriecken.github.io/gae-java-mini-profiler/

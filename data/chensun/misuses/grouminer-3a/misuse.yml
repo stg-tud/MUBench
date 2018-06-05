@@ -1,0 +1,15 @@
+api:
+- java.sql.ResultSet
+violations:
+- missing/call
+crash: false
+description: |
+  The `ResultSet` fetched in line 662 is never closed.
+  (This is the same findings as `jadet-4`)
+internal: false
+location:
+  file: database/SocialNetworkDatabasePosts.java
+  method: getPost(Connection, String, String, String, int)
+  line: 662
+source:
+  name: GrouMiner & Jadet

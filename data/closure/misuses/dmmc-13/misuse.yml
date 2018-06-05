@@ -1,14 +1,15 @@
 api:
 - java.util.Iterator
-characteristics:
+violations:
 - missing/condition/value_or_state
+- missing/call
 crash: true
 description: >
   Iterator.next() is invoked without prior check of hasNext().
+  (Same finding as `mudetect-18` and `mudetectxp-1`)
 location:
   file: com/google/javascript/jscomp/SimpleDefinitionFinder.java
   method: "visit(NodeTraversal, Node, Node)"
 internal: false
 source:
-  name: DMMC
-  url: http://www.monperrus.net/martin/dmmc
+  name: DMMC & MUDetect & MUDetectXP

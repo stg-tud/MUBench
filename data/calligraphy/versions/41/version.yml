@@ -2,7 +2,7 @@ build:
   classes: calligraphy/build/classes/release/
   setup:
     - android update sdk -u -a --filter build-tools-19.0.3
-  commands:
+  attempt-commands:
   - printf "\nsonatypeUsername=foo\nsonatypePassword=bar\n" >> gradle.properties
   - gradle :compileJava
   src: calligraphy/src/main/java/

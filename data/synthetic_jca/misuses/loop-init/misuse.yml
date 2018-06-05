@@ -1,0 +1,22 @@
+api:
+- javax.crypto.Cipher
+violations:
+- redundant/iteration
+crash: false
+description: >
+  The usage iterates over a data stream to encrypt all values fetched from it.
+  During the iteration, the same `Cipher` instance is reused for the encryption
+  tasks---which is fine---, but it is also reinitialized with each iteration.
+  `Cipher` does not support reinitialization and, hence, this may lead to
+  erroneous encryption.
+location:
+  file: mubench/examples/jca/ReinitializingCipher.java
+  method: "misuse(BufferedReader, Key)"
+fix:
+  description: The `init()` call should happen before the loop.
+internal: false
+pattern:
+- single object
+crash: false
+source:
+  name: Came up in a discussion.

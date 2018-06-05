@@ -1,6 +1,6 @@
 api:
 - org.wordpress.android.util.WPEditText
-characteristics:
+violations:
 - missing/condition/null_check
 crash: true
 description: >

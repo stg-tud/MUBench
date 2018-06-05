@@ -1,7 +1,6 @@
 api:
-- java.util.Iterator
 - org.aspectj.weaver.patterns.DeclareParents
-characteristics:
+violations:
 - missing/call
 crash: true
 description: >

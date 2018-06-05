@@ -1,7 +1,6 @@
 api:
 - org.apache.lucene.index.MultiFields
-- org.apache.lucene.util.Bits
-characteristics:
+violations:
 - missing/condition/null_check
 crash: true
 description: >

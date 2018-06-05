@@ -1,0 +1,15 @@
+api:
+- [] 
+characteristics:
+- [] 
+crash: false
+description: Apache CloudStack before 4.3.2 and 4.4.x before 4.4.2 allows remote attackers to obtain private keys via a listSslCerts API call.	 
+location:
+  file: org/apache/cloudstack/network/lb/CertServiceImpl.java
+  method: "createCertResponse(SslCertVO, List<LoadBalancerCertMapVO>)"
+fix:
+  commit: https://reviews.apache.org/r/27464/diff/1#1 
+report: https://issues.apache.org/jira/browse/CLOUDSTACK-7952
+source:
+  name: 
+  url:

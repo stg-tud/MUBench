@@ -1,8 +1,8 @@
 api:
 - java.lang.String
-characteristics:
+violations:
 - missing/call
-- superfluous/call
+- redundant/call
 crash: false
 description: >
   Encoded data is retrieved from a string (from storage) without explicitely

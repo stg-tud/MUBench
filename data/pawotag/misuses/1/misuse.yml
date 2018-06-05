@@ -1,6 +1,6 @@
 api:
 - javax.crypto.Cipher
-characteristics:
+violations:
 - missing/condition/value_or_state
 crash: true
 description: >

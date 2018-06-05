@@ -1,0 +1,20 @@
+api:
+- javax.crypto.spec.SecretKeySpec
+violations:
+- missing/condition/value_or_state
+crash: false
+description: >
+  The key used is defined statically in the code.
+location:
+  file: mubench/examples/jca/Encrypting.java
+  method: encryptWithKey(byte[])
+fix:
+  description: >
+    Generate a non-predictable key.
+internal: false
+pattern:
+- single object
+crash: false
+source:
+  name: Analyse der Verwendung von Kryptographie-APIs in Java-basierten Anwendungen
+

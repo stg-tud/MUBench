@@ -1,0 +1,5 @@
+name: Apache Derby
+repository:
+  type: git 
+  url: https://github.com/apache/derby.git
+Url: ttp://db.apache.org/derby/

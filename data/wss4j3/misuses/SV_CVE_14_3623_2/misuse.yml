@@ -1,0 +1,12 @@
+api:
+- []
+violations:
+- []
+description: >
+location:
+  file: org/apache/wss4j/stax/validate/SamlTokenValidatorImpl.java
+  method: "verifySubjectConfirmationMethod(SamlAssertionWrapper)"
+internal: false
+crash: false
+source:
+  name: ""

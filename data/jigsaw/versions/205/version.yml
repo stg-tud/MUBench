@@ -1,10 +1,15 @@
 build:
-  classes: classes
+  classes: Jigsaw/target/classes
   commands:
     - mkdir classes
-    - cd classes && jar xf ../Jigsaw/classes/jigadmin.jar && jar xf ../Jigsaw/classes/jigedit.jar && jar xf ../Jigsaw/classes/jigsaw.zip && jar xf ../Jigsaw/classes/servlet.jar
+    - sed -i '13iimport org.w3c.www.http.HttpCookie;' Jigsaw/src/classes/org/w3c/www/protocol/http/cookies/CookieFilter.java
+    - sed -i '15iimport org.w3c.www.http.HttpCookie;' Jigsaw/src/classes/org/w3c/jigsaw/filters/CookieFilter.java
+    - sed -i '16iimport org.w3c.www.http.HttpCookie;' Jigsaw/src/classes/org/w3c/jigsaw/servlet/JigsawHttpServletResponse.java
+    - mvn -f Jigsaw/pom.xml compile
   src: Jigsaw/src/classes
 misuses:
-- '1'
+- tikanga-0
+- mudetect-12
+- mudetect-10
 revision: http://jigsaw.w3.org/Devel/Mirror/jigsaw_2.0.5.zip
 md5: e15460a3716c97e342ea7f44e36b2afc

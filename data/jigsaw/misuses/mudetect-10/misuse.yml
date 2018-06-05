@@ -1,0 +1,16 @@
+api:
+- java.util.Enumeration
+violations:
+- missing/condition/value_or_state
+- missing/call
+crash: true
+description: |
+  On line 434, an element is fetched through `Enumeration.nextElement()`
+  without checking that there is such an element.
+internal: false
+location:
+  file: org/w3c/jigsaw/servlet/JigsawHttpServletRequest.java
+  method: getLocale()
+  line: 434
+source:
+  name: MuDetect

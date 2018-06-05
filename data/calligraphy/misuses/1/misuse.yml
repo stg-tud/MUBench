@@ -1,8 +1,8 @@
 api:
 - android.content.Context
 - android.content.res.TypedArray
-characteristics:
-- missing/exception handling
+violations:
+- missing/exception_handling
 crash: true
 description: >
   Context.obtainStyledAttributes().getString() may throw on some platforms.

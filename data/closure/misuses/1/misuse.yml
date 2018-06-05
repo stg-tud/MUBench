@@ -1,8 +1,7 @@
 api:
 - com.google.javascript.rhino.jstype.UnionTypeBuilder
-- com.google.javascript.rhino.jstype.JSType
-characteristics:
-- superfluous/condition/null_check
+violations:
+- redundant/condition/null_check
 crash: false
 description: >
   UnionTypeBuilder.build() returns a JSType that can never be null. Branching

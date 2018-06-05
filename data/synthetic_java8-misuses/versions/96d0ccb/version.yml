@@ -1,0 +1,12 @@
+revision: 96d0ccbea20fd88f93b862908c1f2c9e2888bf1e
+build:
+  classes: $gradle.default.classes
+  commands:
+  - gradle :compileJava
+  src: src/
+misuses:
+- 'optional-map-unchecked-get'
+- 'stream-closed'
+- 'stream-infinite'
+- 'stream-infinite2'
+- 'stream-without-terminal'

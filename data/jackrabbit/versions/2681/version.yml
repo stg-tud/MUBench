@@ -1,6 +1,6 @@
 build:
   classes: jackrabbit-core/$mvn.default.classes
-  commands:
+  attempt-commands:
   - mvn compile -Dmaven.compiler.failOnError=false
   src: jackrabbit-core/src/main/java/
 misuses:
