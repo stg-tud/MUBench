@@ -2,6 +2,7 @@
 
 require_once "SlimTestCase.php";
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use MuBench\ReviewSite\Controllers\FindingsController;
 use MuBench\ReviewSite\Controllers\FindingsUploader;
@@ -405,6 +406,48 @@ class RunsControllerTest extends SlimTestCase
 
         $misuses = $this->runsController->getMisuseResults($experiment, [$this->detector1]);
         self::assertEquals([], $misuses);
+    }
+
+    function test_update_run_timestamp_on_new_finding()
+    {
+        $experiment = Experiment::find(1);
+
+        $this->runsController->addRun($experiment->id, $this->detector1->muid, '-p-', '-v-', [
+            "result" => "success",
+            "runtime" => 42.1,
+            "number_of_findings" => 23,
+            "timestamp" => 12,
+            "potential_hits" => [
+                [
+                    "misuse" => "-m-",
+                    "rank" => 0,
+                    "target_snippets" => [
+                        ["first_line_number" => 5, "code" => "-code-"]
+                    ]
+                ]
+            ]
+        ]);
+        Carbon::setTestNow(Carbon::now()->addSecond(10));
+        $this->runsController->addRun($experiment->id, $this->detector1->muid, '-p-', '-v-', [
+            "result" => "success",
+            "runtime" => 42.1,
+            "number_of_findings" => 23,
+            "timestamp" => 12,
+            "potential_hits" => [
+                [
+                    "misuse" => "-m-",
+                    "rank" => 10,
+                    "target_snippets" => [
+                        ["first_line_number" => 5, "code" => "-code-"]
+                    ]
+                ]
+            ]
+        ]);
+
+        $run = Run::of($this->detector1)->in($experiment)->where(['project_muid' => '-p-', 'version_muid' => '-v-'])->first();
+
+        self::assertNotEquals($run->created_at, $run->updated_at);
+        self::assertEquals($run->updated_at, $run->misuses[0]->findings[1]->created_at);
     }
 
     private function createSomeRun($id, Experiment $experiment, Detector $detector, $misuses)

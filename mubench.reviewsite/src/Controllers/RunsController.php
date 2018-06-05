@@ -319,12 +319,8 @@ class RunsController extends Controller
         if($experiment->id == 1 || $experiment->id == 3){
             $this->createMisusesFromMetadata($detector, $projectId, $versionId, $new_run);
         }
-        if ($potential_hits) {
-            $this->createOrUpdateFindingsTable($detector, $potential_hits);
-            $this->storeFindings($detector, $experiment, $projectId, $versionId, $new_run, $potential_hits);
-        }else{
-            $this->createOrUpdateFindingsTable($detector, []);
-        }
+        $this->createOrUpdateFindingsTable($detector, $potential_hits);
+        $this->storeFindings($detector, $experiment, $projectId, $versionId, $new_run, $potential_hits);
         return True;
     }
 
@@ -481,6 +477,7 @@ class RunsController extends Controller
 
     private function storeFindings(Detector $detector, Experiment $experiment, $projectId, $versionId, Run $run, $findings)
     {
+        $last_finding = null;
         foreach ($findings as $finding) {
             $finding = $finding;
             $misuseId = $finding['misuse'];
@@ -488,10 +485,15 @@ class RunsController extends Controller
             if(!$misuse){
                 $misuse = $this->createMisuse($detector, $experiment, $projectId, $versionId, $misuseId, $run->id);
             }
-            $this->storeFinding($detector, $experiment, $projectId, $versionId, $misuseId, $misuse, $finding);
+            $last_finding = $this->storeFinding($detector, $experiment, $projectId, $versionId, $misuseId, $misuse, $finding);
+
             if ($experiment->id === 2) {
                 $this->storeFindingTargetSnippets($detector, $projectId, $versionId, $misuseId, $finding['file'], $finding['target_snippets']);
             }
+        }
+        if($last_finding){
+            $run->updated_at = $last_finding->created_at;
+            $run->save();
         }
     }
 
@@ -525,6 +527,7 @@ class RunsController extends Controller
             $finding[$key] = $value;
         }
         $finding->save();
+        return $finding;
     }
 
     private function createOrUpdateRun(Detector $detector, Experiment $experiment, $projectId, $versionId, $run)
