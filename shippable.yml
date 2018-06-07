@@ -24,12 +24,13 @@ script:
   # mubench.reviewsite
   - cd mubench.reviewsite
   - ./configure.sh
-  - java -jar /usr/local/bin/selenium-server-standalone-3.12.0.jar &
   - cp settings.default.php settings.php
   - touch test.sqlite
+  - java -jar /usr/local/bin/selenium-server-standalone-3.12.0.jar &
   - php -S localhost:8080 -t ./ &
   - sleep 10
   - phpunit --bootstrap vendor/autoload.php tests/
+  - phpunit --bootstrap vendor/autoload.php test/selenium
 
 notifications:
   email:
