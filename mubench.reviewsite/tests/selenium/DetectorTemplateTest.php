@@ -15,7 +15,6 @@ class DetectorTemplateTest extends WebDriverTestCase
 
     public function testAssertExperimentHeadline()
     {
-        $this->getRoute("/experiments/1/detectors/TestDetector/runs");
         $headline = $this->driver->findElement(
             WebDriverBy::tagName('h1')
         );
@@ -48,11 +47,12 @@ class DetectorTemplateTest extends WebDriverTestCase
 
     public function testOpenFirstMisuseReview()
     {
-        $viewLinks = $this->driver->findElements(
-            WebDriverBy::cssSelector("td > a.button")
+        $misuseRows = $this->driver->findElements(
+            WebDriverBy::cssSelector("table#detector_table > tbody > tr")
         );
-        self::assertEquals(2, count($viewLinks));
-        $viewLinks[0]->click();
+        self::assertEquals(2, count($misuseRows));
+        $viewButton = $misuseRows[0]->findElement(WebDriverBy::cssSelector("a.button"));
+        $viewButton->click();
         $this->assertRoute("/experiments/1/detectors/TestDetector/projects/mubench/versions/42/misuses/1");
     }
 
