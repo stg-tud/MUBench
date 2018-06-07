@@ -29,8 +29,8 @@ script:
   - java -jar /usr/local/bin/selenium-server-standalone-3.12.0.jar &
   - php -S localhost:8080 -t ./ &
   - sleep 10
-  - phpunit --bootstrap vendor/autoload.php tests/
-  - phpunit --bootstrap vendor/autoload.php test/selenium
+  - phpunit --testsuite unit_tests
+  - phpunit --testsuite integration_tests
 
 notifications:
   email:
