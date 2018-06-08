@@ -1,9 +1,7 @@
-api:
-- [] 
-characteristics:
-- [] 
+api: [] 
+violations: [] 
 crash: false
-description: '' 
+description: The virtual router in Apache CloudStack does not preserve the source restrictions in firewall rules after being restarted, which allows remote attackers to bypass intended restrictions via a request. 
 location:
   file: com/cloud/network/router/VirtualNetworkApplianceManagerImpl.java
   method: "configDnsMasq(VirtualRouter, Network, Commands)"

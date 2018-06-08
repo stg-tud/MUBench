@@ -1,7 +1,6 @@
 api:
 - org.apache.commons.jelly 
-characteristics:
-- [] 
+violations: [] 
 crash: false
 description: During Jelly (xml) file parsing with Apache Xerces, if a custom doctype entity is declared with a “SYSTEM” entity with a URL and that entity is used in the body of the Jelly file, during parser instantiation the parser will attempt to connect to said URL. This could lead to XML External Entity (XXE) attacks. 
 location:

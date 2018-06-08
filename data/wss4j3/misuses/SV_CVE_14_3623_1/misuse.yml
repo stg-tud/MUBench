@@ -1,7 +1,5 @@
-api:
-- [] 
-characteristics:
-- [] 
+api: [] 
+violations: [] 
 crash: false
 description: Apache WSS4J when using TransportBinding, does not properly enforce the SAML SubjectConfirmation method security semantics, which allows remote attackers to conduct spoofing attacks via unspecified vectors. 
 location:

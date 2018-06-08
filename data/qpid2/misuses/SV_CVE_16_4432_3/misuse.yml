@@ -1,7 +1,5 @@
-api:
-- [] 
-characteristics:
-- [] 
+api: [] 
+violations: [] 
 crash: false
 description: The AMQP 0-8, 0-9, 0-91, and 0-10 connection handling in Apache Qpid Java might allow remote attackers to bypass authentication and consequently perform actions via vectors related to connection state logging. 
 location:

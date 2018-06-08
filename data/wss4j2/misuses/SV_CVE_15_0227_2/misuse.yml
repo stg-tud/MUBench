@@ -1,9 +1,7 @@
-api:
-- [] 
-characteristics:
-- [] 
+api: [] 
+violations: [] 
 crash: false
-description: '' 
+description: Apache WSS4J allows remote attackers to bypass the requireSignedEncryptedDataElements configuration via a vectors related to wrapping attacks. 
 location:
   file: org/apache/wss4j/dom/processor/EncryptedKeyProcessor.java
   method: "decryptDataRef(Document, String, WSDocInfo, byte[], RequestData)"

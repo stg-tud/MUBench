@@ -1,7 +1,7 @@
 api:
 - javax.xml.transform.TransformerFactory
-description: >
-  Enabling Feature_Secure_Processing will not let Transformer factory to restrict certain features properly thereby allows remote attacker to bypass expected restrictions and load arbitrary classes or access external resources
+violations: []
+description: Enabling Feature_Secure_Processing will not let Transformer factory to restrict certain features properly thereby allows remote attacker to bypass expected restrictions and load arbitrary classes or access external resources
 location:
   file: org/apache/xalan/processor/TransformerFactoryImpl.java 
   method: "getAssociatedStylesheet(Source, String, String, String)"

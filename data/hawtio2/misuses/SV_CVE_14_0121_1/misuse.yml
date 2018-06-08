@@ -1,7 +1,5 @@
-api:
-- [] 
-characteristics:
-- [] 
+api: [] 
+violations: [] 
 crash: false
 description: The admin terminal in Hawt.io does not require authentication, which allows remote attackers to execute arbitrary commands via the k parameter. 
 location:

@@ -1,10 +1,7 @@
-api:
-- 
-characteristics:
-- 
+api: [] 
+violations: []
 crash: 
-description: >
-  
+description: jcp/xml/dsig/internal/dom/DOMCanonicalizationMethod.java in Apache Santuario XML Security for Java allows context-dependent attackers to spoof an XML Signature by using the CanonicalizationMethod parameter to specify an arbitrary weak canonicalization algorithm to apply to the SignedInfo part of the Signature. 
 location:
   file: org/apache/jcp/xml/dsig/internal/dom/DOMCanonicalizationMethod.java
   method: "DOMCanonicalizationMethod(Element, XMLCryptoContext, Provider)"

@@ -1,7 +1,5 @@
-api:
-- [] 
-characteristics:
-- [] 
+api: [] 
+violations: [] 
 crash: false
 description: When configured to use the JCE (Java Cryptography Extension) for cryptographic functions, Bouncy Castle prior to version 1.0.3 is susceptible to a chosen ciphertext attack when negotiating an RSA key exchange for any TLS cipher suite. A man-in-the-middle attacker could potentially decrypt HTTPS traffic or impersonate the HTTPS server. This vulnerability is referred to as ROBOT (Return Of Bleichenbacher's Oracle Threat). 
 location:

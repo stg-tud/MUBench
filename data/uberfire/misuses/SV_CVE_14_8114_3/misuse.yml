@@ -1,9 +1,7 @@
-api:
-- [] 
-characteristics:
-- [] 
+api: [] 
+violations: [] 
 crash: false
-description: The UberFire Framework 0.3.x does not properly restrict paths, which allows remote attackers to (1) execute arbitrary code by uploading crafted content to FileUploadServlet or (2) read arbitrary files via vectors involving FileDownloadServlet	
+description: The UberFire Framework does not properly restrict paths, which allows remote attackers to (1) execute arbitrary code by uploading crafted content to FileUploadServlet or (2) read arbitrary files via vectors involving FileDownloadServlet	
 location:
   file: org/uberfire/server/FileUploadServlet.java
   method: "getFileItem(HttpServletRequest)"

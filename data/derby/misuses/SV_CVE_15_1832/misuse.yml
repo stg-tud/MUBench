@@ -1,7 +1,5 @@
-api:
-- [] 
-characteristics:
-- [] 
+api: [] 
+violations: [] 
 crash: false
 description: XML external entity (XXE) vulnerability in the SqlXmlUtil code in Apache Derby, when a Java Security Manager is not in place, allows context-dependent attackers to read arbitrary files or cause a denial of service (resource consumption) via vectors involving XmlVTI and the XML datatype
 location:

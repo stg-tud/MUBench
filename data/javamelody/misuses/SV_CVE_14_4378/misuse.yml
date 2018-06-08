@@ -1,7 +1,5 @@
-api:
-- [] 
-characteristics:
-- [] 
+api: [] 
+violations: [] 
 crash: false
 description: Cross-site scripting (XSS) vulnerability in HtmlSessionInformationsReport.java in JavaMelody allows remote attackers to inject arbitrary web script or HTML via a crafted X-Forwarded-For header 
 location:

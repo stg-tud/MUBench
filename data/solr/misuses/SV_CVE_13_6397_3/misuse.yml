@@ -1,9 +1,7 @@
-api:
-- [] 
-characteristics:
-- [] 
+api: [] 
+violations: [] 
 crash: false
-description: Directory traversal vulnerability in SolrResourceLoader in Apache Solr before 4.6 allows remote attackers to read arbitrary files via a .. (dot dot) or full pathname in the tr parameter to solr/select/, when the response writer (wt parameter) is set to XSLT.
+description: Directory traversal vulnerability in SolrResourceLoader in Apache Solr allows remote attackers to read arbitrary files via a .. (dot dot) or full pathname in the tr parameter to solr/select/, when the response writer (wt parameter) is set to XSLT.
 location:
   file: org/apache/solr/response/VelocityResponseWriter.java
   method: "getEngine(SolrQueryRequest)"

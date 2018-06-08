@@ -1,7 +1,5 @@
-api:
-- [] 
-characteristics:
-- [] 
+api: [] 
+violations: [] 
 crash: false
 description: Cross-site request forgery (CSRF) vulnerability in the admin terminal in Hawt.io allows remote attackers to hijack the authentication of arbitrary users for requests that run commands on the Karaf server, as demonstrated by running "shutdown -f." 
 location:

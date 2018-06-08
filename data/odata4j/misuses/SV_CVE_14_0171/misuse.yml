@@ -1,7 +1,5 @@
-api:
-- [] 
-characteristics:
-- [] 
+api: [] 
+violations: [] 
 crash: false
 description: XML external entity (XXE) vulnerability in StaxXMLFactoryProvider2 in Odata4j, as used in Red Hat JBoss Data Virtualization before 6.0.0 patch 4, allows remote attackers to read arbitrary files via a crafted request to a REST endpoint.
 location:
