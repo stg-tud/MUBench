@@ -4,29 +4,13 @@ namespace MuBench\ReviewSite\Controllers;
 
 
 use MuBench\ReviewSite\Models\Misuse;
+use MuBench\ReviewSite\Models\Review;
 use MuBench\ReviewSite\Models\Tag;
 use Slim\Http\Request;
 use Slim\Http\Response;
 
 class TagsController extends Controller
 {
-    public function postTag(Request $request, Response $response, array $args)
-    {
-        $formData = $request->getParsedBody();
-        $tag_id = $formData['tag_name'];
-        $misuse_id = $formData['misuse_id'];
-        $reviewer_id = $formData['reviewer_id'];
-
-        $tag = $this->addTagToMisuse($misuse_id, $tag_id, $reviewer_id);
-        $removeUrl = $this->router->pathFor('private.tag.remove', array('experiment_id' => $args["experiment_id"],
-            'detector_muid' => $args["detector_muid"],
-            'project_muid' => $args["project_muid"],
-            'version_muid' => $args["version_muid"],
-            'misuse_muid' => $args["misuse_muid"],
-            'tag_id' => $tag->id));
-        
-        $response->withJson(array("id" => $tag->id, "color" => $tag->color, "fontColor" => $tag->getFontColor(), "removeUrl" => $removeUrl));
-    }
 
     public function manageTags(Request $request, Response $response, array $args)
     {
@@ -43,32 +27,16 @@ class TagsController extends Controller
         return $response->withRedirect($this->router->pathFor('private.tags.manage'));
     }
 
-    public function updateTag($id, $tagInfo){
-        $tag = Tag::find($id);
-        $tag->name = $tagInfo['name'];
-        $tag->color = $tagInfo['color'];
-        $tag->save();
-    }
-
     public function deleteTag(Request $request, Response $response, array $args)
     {
         $tag_id = $args['tag_id'];
-        $this->deleteTagAndRemoveFromMisuses($tag_id);
+        $this->deleteTagAndRemoveFromReviews($tag_id);
         return $response->withRedirect($this->router->pathFor('private.tags.manage'));
-    }
-
-    public function removeTag(Request $request, Response $response, array $args)
-    {
-        $formData = $request->getParsedBody();
-        $tag_id = $args['tag_id'];
-        $misuse_id = $formData['misuse_id'];
-        $reviewer_id = $formData['reviewer_id'];
-
-        $this->deleteTagFromMisuse($misuse_id, $tag_id, $reviewer_id);
     }
 
     public function getTags(Request $request, Response $response, array $args)
     {
+        // TODO: fix tag statistics with reviews
         $tags = Tag::all();
         $results = array(1 => array(), 2 => array(), 3 => array());
         $totals = array(1 => array(), 2 => array(), 3 => array());
@@ -86,34 +54,41 @@ class TagsController extends Controller
             ['results' => $results, 'tags' => $tags]);
     }
 
-    function deleteTagAndRemoveFromMisuses($tag_id)
+    public function updateTag($id, $tagInfo){
+        $tag = Tag::find($id);
+        $tag->name = $tagInfo['name'];
+        $tag->color = $tagInfo['color'];
+        $tag->save();
+    }
+
+    function deleteTagAndRemoveFromReviews($tag_id)
     {
         $tag = Tag::find($tag_id);
-        foreach($tag->misuses as $misuse){
-            $misuse->misuse_tags()->detach($tag_id);
+        /** @var Review $review */
+        foreach($tag->reviews as $review){
+            $review->tags()->detach($tag_id);
         }
         $tag->delete();
     }
 
-    function addTagToMisuse($misuseId, $tagName, $reviewerId)
+    static function syncReviewTags($reviewId, $tagNames)
     {
-        $tag = Tag::where('name', $tagName)->first();
-        if(!$tag){
-            $tag = new Tag();
-            $tag->name = $tagName;
-            $tag->color = '#808080';
-            $tag->save();
+        $tagIds = [];
+        foreach($tagNames as $tagName){
+            $tag = Tag::where('name', $tagName)->first();
+            if(!$tag){
+                $tag = new Tag();
+                $tag->name = $tagName;
+                $tag->color = '#808080';
+                $tag->save();
+            }
+            $tagIds[] = $tag->id;
         }
-
-        $misuse = Misuse::find($misuseId);
-        if($misuse->misuse_tags()->wherePivot('reviewer_id', $reviewerId)->get()->where('id', $tag->id)->count() == 0){
-            $misuse->misuse_tags()->attach([$tag->id => ['reviewer_id' => $reviewerId]]);
-        }
-        return $tag;
+        Review::find($reviewId)->tags()->sync($tagIds);
     }
 
-    function deleteTagFromMisuse($misuseId, $tagId, $reviewerId)
+    static function deleteTagFromReview($reviewId, $tagId)
     {
-        Misuse::find($misuseId)->misuse_tags()->where('id', $tagId)->wherePivot('reviewer_id', $reviewerId)->detach();
+        Review::find($reviewId)->tags()->detach($tagId);
     }
 }

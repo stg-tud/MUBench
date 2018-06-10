@@ -3,6 +3,7 @@
 namespace MuBench\ReviewSite\Models;
 
 
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 
 class Review extends Model
@@ -18,6 +19,11 @@ class Review extends Model
     public function finding_reviews()
     {
         return $this->hasMany(FindingReview::class);
+    }
+
+    public function tags()
+    {
+        return $this->belongsToMany(Tag::class, 'review_tags', 'review_id', 'tag_id');
     }
 
     public function getDecision()

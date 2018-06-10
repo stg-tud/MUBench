@@ -22,11 +22,6 @@ class Misuse extends Model
         return $this->hasMany(Review::class);
     }
 
-    public function misuse_tags()
-    {
-        return $this->belongsToMany(Tag::class, 'misuse_tags', 'misuse_id', 'tag_id')->withPivot(['reviewer_id']);
-    }
-
     public function detector()
     {
         return $this->belongsTo(Detector::class, 'detector_id', 'id');
@@ -233,18 +228,16 @@ class Misuse extends Model
         return false;
     }
 
-    public function getTags($reviewer)
+    public function getTags()
     {
         if(!$this->hasConclusiveReviewState()){
-            if(!$reviewer){
-                return new Collection;
-            }else{
-                return $this->misuse_tags->filter(function ($value, $key) use ($reviewer) {
-                    return $value->pivot->reviewer_id == $reviewer->id;
-                });
-            }
+            return new Collection;
         }else{
-            return $this->misuse_tags->unique('id');
+            $tags = new Collection;
+            foreach($this->reviews as $review){
+                $tags = $tags->merge($review->tags);
+            }
+            return $tags->unique('id');
         }
     }
 
