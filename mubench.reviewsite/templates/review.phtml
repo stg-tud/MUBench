@@ -368,21 +368,12 @@ $origin_path = $origin_path ? $origin_path : $pathFor('experiment.detector', arr
                                         <tr><td>Tags:</td><td><div class="misuse-tag" style="background-color:<?= htmlspecialchars($tag->color) ?>;color:<?= htmlspecialchars($tag->getFontColor()) ?>;">
                                                     <span id="<?= htmlspecialchars("Test") ?>"><?= htmlspecialchars("Test") ?></span>
                                                     <?php if($user) : ?>
-                                                        <button onclick="removeTag('<?= $pathFor('tag.remove', array('experiment_id' => $experiment->id,
-                                                            'detector_muid' => $detectorPathId($detector),
-                                                            'project_muid' => $misuse->getProject(),
-                                                            'version_muid' => $misuse->getVersion(),
-                                                            'misuse_muid' => $misuse->misuse_muid,
-                                                            'tag_id' => $tag->id)) ?>', '<?= $misuse->id ?>', '<?= $reviewer->id ?>', this.parentElement)"style="border:none;outline:none;background-color:<?= htmlspecialchars($tag->color) ?>;margin:0;padding:0"><i class="fa fa-trash"></i></button>
+                                                        <button onclick="removeTag(this.parentElement)"style="border:none;outline:none;background-color:<?= htmlspecialchars($tag->color) ?>;margin:0;padding:0"><i class="fa fa-trash"></i></button>
                                                     <?php endif; ?>
                                                 </div>
                                                 <?php if($user) : ?>
                                                     <div style="display:inline-block;height:100%;padding:4px;">
-                                                        <input id="tag-input" class="tag-input" maxlength="100" list="tags" name="tag_name" placeholder="add new tag" autocomplete="off" onkeypress="if(event.key === 'Enter'){addTag('<?= $pathFor('tag.add', array('experiment_id' => $experiment->id,
-                                                            'detector_muid' => $detectorPathId($detector),
-                                                            'project_muid' => $misuse->getProject(),
-                                                            'version_muid' => $misuse->getVersion(),
-                                                            'misuse_muid' => $misuse->misuse_muid)) ?>', '<?= $misuse->id ?>', '<?= $reviewer->id ?>', this.value)}">
+                                                        <input id="tag-input" class="tag-input" maxlength="100" list="tags" name="tag_name" placeholder="add new tag" autocomplete="off" onkeypress="if(event.key === 'Enter'){addTag(this.value)}">
                                                         <datalist id="tags">
                                                             <?php foreach($tags as $tag) : ?>
                                                             <option value="<?= htmlspecialchars($tag->name); ?>">
