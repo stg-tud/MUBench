@@ -402,3 +402,11 @@ span.stats.invisible {
 #filter-menu label span {
     vertical-align: middle;
 }
+
+.remove-tag-button {
+    border:none;
+    outline:none;
+    background-color: #808080;
+    margin:0;
+    padding:0;
+}

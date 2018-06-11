@@ -1,15 +1,7 @@
-function addTag(url, misuseId, reviewerId, tagName){
-        let misuseTagsDiv = document.getElementById('misuse-tags')
+function addTag(tagName){
+        let misuseTagsDiv = document.getElementById('misuse-tags');
         if (isExistingTag(misuseTagsDiv, tagName)) {
-            let data = {
-                "tag_name": tagName,
-                "misuse_id": misuseId,
-                "reviewer_id": reviewerId
-            };
-            postJson(url, data, function(r){
-                let tag = JSON.parse(r.srcElement.responseText);
-                misuseTagsDiv.innerHTML += getTagTemplate(misuseId, tagName, tag);
-            });
+            misuseTagsDiv.innerHTML += getTagTemplate(tagName);
         }
         event.target.value = "";
 }
@@ -18,18 +10,16 @@ function isExistingTag(misuseTagsDiv, tagName){
     return misuseTagsDiv.querySelectorAll("span#" + tagName).length == 0;
 }
 
-function removeTag(url, misuseId, reviewerId, tagElement){
-    postJson(url, {"misuse_id": misuseId, "reviewer_id": reviewerId}, (r) => {
-        let misuseTagsDiv = document.getElementById('misuse-tags');
-        misuseTagsDiv.removeChild(tagElement);
-    });
+function removeTag(tagElement){
+    let misuseTagsDiv = document.getElementById('misuse-tags');
+    misuseTagsDiv.removeChild(tagElement);
 }
 
-function getTagTemplate(misuseId, tagName, tag){
+function getTagTemplate(tagName){
     let template = `
-        <div class="misuse-tag" style="background-color:${tag.color};color:${tag.fontColor};">
+        <div class="misuse-tag" style="color:white">
             <span id="${tagName}">${tagName}</span>
-            <button onclick="removeTag('${tag.removeUrl}', '${misuseId}', this.parentElement)" style="border:none;outline:none;margin:0;padding:0;background-color:${tag.color}"><i class="fa fa-trash"></i></button>
+            <button class="remove-tag-button" onclick="removeTag(this.parentElement)"><i class="fa fa-trash"></i></button>
         </div>`;
     return template;
 }

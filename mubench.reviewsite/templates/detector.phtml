@@ -253,7 +253,7 @@ $columns_to_ignore = array(
                     <?php endif; ?>
                 </td>
                 <td class="<?= $style_classes ?>">
-                            <?php foreach($misuse->getTags($user) as $tag) : ?>
+                            <?php foreach($misuse->getTags() as $tag) : ?>
                                 <div class="misuse-tag" style="background-color:<?= htmlspecialchars($tag->color) ?>;color:<?= htmlspecialchars($tag->getFontColor()) ?>;">
                                     <span><?= htmlspecialchars($tag->name) ?></span>
                                 </div>
