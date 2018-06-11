@@ -1,5 +1,5 @@
 build:
-  classes: server/build/classes
+  classes: server/target/classes
   commands:
   -  mvn --projects server --also-make compile                
   src: server/src/
