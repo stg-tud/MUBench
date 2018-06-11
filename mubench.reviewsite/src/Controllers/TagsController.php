@@ -41,10 +41,11 @@ class TagsController extends Controller
         $results = array(1 => array(), 2 => array(), 3 => array());
         $totals = array(1 => array(), 2 => array(), 3 => array());
         foreach($tags as $tag){
-            $tagged_misuses = $tag->misuses;
-            foreach($tagged_misuses as $misuse){
-                $results[$misuse->run->experiment_id][$misuse->detector->muid][$tag->name][] = $misuse;
-                $totals[$misuse->run->experiment_id][$tag->name][] = $misuse;
+            /** @var Review $review */
+            foreach($tag->reviews as $review){
+                $misuse = $review->misuse;
+                $results[$misuse->run->experiment_id][$misuse->detector->muid][$tag->name][$misuse->id] = $misuse;
+                $totals[$misuse->run->experiment_id][$tag->name][$misuse->id] = $misuse;
             }
         }
         foreach($totals as $key => $total){

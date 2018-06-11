@@ -26,6 +26,11 @@ class Review extends Model
         return $this->belongsToMany(Tag::class, 'review_tags', 'review_id', 'tag_id');
     }
 
+    public function misuse()
+    {
+        return $this->belongsTo(Misuse::class);
+    }
+
     public function getDecision()
     {
         $decision = Decision::NO;
