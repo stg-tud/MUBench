@@ -451,6 +451,6 @@ $tag->color = '#808080';
 $tag->save();
 
 echo 'Creating MisuseTags<br/>';
-$capsule->table('misuse_tags')->insert(array('misuse_id' => 3, 'tag_id' => 1, 'reviewer_id' => $reviewer1->id));
-$capsule->table('misuse_tags')->insert(array('misuse_id' => 1, 'tag_id' => 2, 'reviewer_id' => $reviewer2->id));
-$capsule->table('misuse_tags')->insert(array('misuse_id' => 3, 'tag_id' => 2, 'reviewer_id' => $reviewer2->id));
+$capsule->table('review_tags')->insert(array('review_id' => 3, 'tag_id' => 1));
+$capsule->table('review_tags')->insert(array('review_id' => 1, 'tag_id' => 2));
+$capsule->table('review_tags')->insert(array('review_id' => 3, 'tag_id' => 2));
