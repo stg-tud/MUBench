@@ -8,13 +8,12 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 use MuBench\ReviewSite\Models\Detector;
 use MuBench\ReviewSite\Models\Experiment;
+use MuBench\ReviewSite\Models\Misuse;
 use MuBench\ReviewSite\Models\Reviewer;
 use SlimTestCase;
 
 class MisuseFilterTest extends SlimTestCase
 {
-    /** @var ReviewsController */
-    private $reviewController;
     /** @var RunsController */
     private $runController;
     /** @var Experiment */
@@ -25,16 +24,8 @@ class MisuseFilterTest extends SlimTestCase
     private $reviewer1;
     /** @var Reviewer */
     private $reviewer2;
-
-    private $undecided_review = [
-        'hit' => '?',
-        'violations' => []
-    ];
-
-    private $decided_review = [
-        'hit' => 'Yes',
-        'violations' => []
-    ];
+    /** @var Misuse */
+    private $misuse;
 
     function setUp()
     {
@@ -46,7 +37,6 @@ class MisuseFilterTest extends SlimTestCase
         $this->detector = Detector::create(['muid' => 'test-detector']);
 
         $this->runController = new RunsController($this->container);
-        $this->reviewController = new ReviewsController($this->container);
 
         $this->runController->addRun(
             $this->experiment->id,
@@ -63,6 +53,7 @@ class MisuseFilterTest extends SlimTestCase
                     ['misuse' => '2', 'rank' => 2, 'file' => '-foo.java-', 'target_snippets' => []]
                 ]
             ]);
+        $this->misuse = Misuse::find(1);
     }
 
     function test_counts_misuse_without_reviews()
@@ -74,7 +65,7 @@ class MisuseFilterTest extends SlimTestCase
 
     function test_counts_misuse_with_single_conclusive_review()
     {
-        $this->reviewController->updateOrCreateReview('1', $this->reviewer1->id, '', [1 => $this->decided_review]);
+        $this->createReview($this->misuse, $this->reviewer1, 'Yes');
 
         $runs = $this->runController->getRuns($this->detector, $this->experiment, 1);
 
@@ -83,8 +74,8 @@ class MisuseFilterTest extends SlimTestCase
 
     function test_counts_misuse_with_multiple_conclusive_reviews()
     {
-        $this->reviewController->updateOrCreateReview('1', $this->reviewer1->id, '', [1 => $this->decided_review]);
-        $this->reviewController->updateOrCreateReview('1', $this->reviewer2->id, '', [1 => $this->decided_review]);
+        $this->createReview($this->misuse, $this->reviewer1, 'Yes');
+        $this->createReview($this->misuse, $this->reviewer2, 'Yes');
 
         $runs = $this->runController->getRuns($this->detector, $this->experiment, 1);
 
@@ -93,7 +84,7 @@ class MisuseFilterTest extends SlimTestCase
 
     function test_ignores_misuse_with_single_inconclusive_review()
     {
-        $this->reviewController->updateOrCreateReview('1', $this->reviewer1->id, '', [1 => $this->undecided_review]);
+        $this->createReview($this->misuse, $this->reviewer1, '?');
 
         $runs = $this->runController->getRuns($this->detector, $this->experiment, 1);
 
@@ -102,8 +93,8 @@ class MisuseFilterTest extends SlimTestCase
 
     function test_ignores_misuse_with_at_least_one_inconclusive_review()
     {
-        $this->reviewController->updateOrCreateReview('1', $this->reviewer1->id, '', [1 => $this->undecided_review]);
-        $this->reviewController->updateOrCreateReview('1', $this->reviewer2->id, '', [1 => $this->decided_review]);
+        $this->createReview($this->misuse, $this->reviewer1, '?');
+        $this->createReview($this->misuse, $this->reviewer2, 'Yes');
 
         $runs = $this->runController->getRuns($this->detector, $this->experiment, 1);
 

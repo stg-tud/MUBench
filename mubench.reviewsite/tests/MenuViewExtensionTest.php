@@ -68,7 +68,7 @@ class MenuViewExtensionTest extends SlimTestCase
 
     function testDetectorNeedsReviewGlobalNotPersonal()
     {
-        $this->reviewController->updateOrCreateReview($this->run->misuses[0]->id, $this->reviewer1->id, '-comment-', [['hit' => "Yes", 'violations' => []]]);
+        $this->reviewController->updateOrCreateReview($this->run->misuses[0]->id, $this->reviewer1->id, '-comment-', [['hit' => "Yes", 'violations' => []]], []);
 
         $menuViewExntesion = new MenuViewExtension($this->container);
         $review_states = $menuViewExntesion->getReviewStates($this->experiment, $this->detector, 20, $this->reviewer1);
@@ -93,8 +93,8 @@ class MenuViewExtensionTest extends SlimTestCase
 
     private function reviewMisuse($reviewer1_decision, $reviewer2_decision)
     {
-        $this->reviewController->updateOrCreateReview($this->run->misuses[0]->id, $this->reviewer1->id, '-comment-', [['hit' => $reviewer1_decision, 'violations' => []]]);
-        $this->reviewController->updateOrCreateReview($this->run->misuses[0]->id, $this->reviewer2->id, '-comment-', [['hit' => $reviewer2_decision, 'violations' => []]]);
+        $this->reviewController->updateOrCreateReview($this->run->misuses[0]->id, $this->reviewer1->id, '-comment-', [['hit' => $reviewer1_decision, 'violations' => []]], []);
+        $this->reviewController->updateOrCreateReview($this->run->misuses[0]->id, $this->reviewer2->id, '-comment-', [['hit' => $reviewer2_decision, 'violations' => []]], []);
     }
 
 }

@@ -110,14 +110,15 @@ class ImportRunsControllerTest extends SlimTestCase
         self::assertAttributesEqualExceptUpdatedAt($expectedMisuse->findings[0], $actualMisuse->findings[0]);
         self::assertNotEmpty($actualMisuse->snippets());
         self::assertEquals($expectedSnippets, $actualMisuse->snippets());
-        self::assertNotEmpty($actualMisuse->misuse_tags);
-        self::assertEquals($expectedMisuse->misuse_tags[0]->getAttributes(), $actualMisuse->misuse_tags[0]->getAttributes());
+
         self::assertNotEmpty($actualMisuse->reviews);
         self::assertAttributesEqualExceptUpdatedAt($expectedMisuse->reviews[0], $actualMisuse->reviews[0]);
         $expectedReview = $expectedMisuse->reviews[0];
         $actualReview = $actualMisuse->reviews[0];
         self::assertEquals($expectedReview->reviewer->name, $actualReview->reviewer->name);
         self::assertNotEmpty($actualReview->finding_reviews);
+        self::assertNotEmpty($actualReview->tags);
+        self::assertEquals($expectedReview->tags[0]->getAttributes(), $actualReview->tags[0]->getAttributes());
         self::assertEquals($expectedReview->finding_reviews[0]->getAttributes(), $actualReview->finding_reviews[0]->getAttributes());
         self::assertEquals($expectedReview->finding_reviews[0]->violations[0]->getAttributes(), $actualReview->finding_reviews[0]->violations[0]->getAttributes());
     }
@@ -191,8 +192,7 @@ class ImportRunsControllerTest extends SlimTestCase
         $violation = Violation::create(['name' => 'missing/call']);
         $metadataController->putMetadataCollection([$this->metadata]);
         $runsController->addRun(1, '-d-', '-p-', '-v-', $this->run_with_two_potential_hits_for_one_misuse);
-        $tagController->addTagToMisuse(1, 'test-dataset', 1);
-        $reviewController->updateOrCreateReview(1, $reviewer->id, '-comment-', [['hit' => 'Yes', 'violations' => [$violation->id]]]);
+        $reviewController->updateOrCreateReview(1, $reviewer->id, '-comment-', [['hit' => 'Yes', 'violations' => [$violation->id]]], ['test-dataset']);
     }
 
     private static function assertAttributesEqualExceptUpdatedAt(Model $expectedModel, Model $actualModel){

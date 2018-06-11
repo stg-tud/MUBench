@@ -6,6 +6,8 @@ require_once "SlimTestCase.php";
 
 use DatabaseTestCase;
 use MuBench\ReviewSite\Models\Misuse;
+use MuBench\ReviewSite\Models\Review;
+use MuBench\ReviewSite\Models\Reviewer;
 use MuBench\ReviewSite\Models\Tag;
 use SlimTestCase;
 
@@ -15,65 +17,61 @@ class TagControllerTest extends SlimTestCase
     private $tagController;
 
     /** @var  Misuse */
-    private $misuse;
+    private $review;
 
     function setUp()
     {
         parent::setUp();
-        $this->tagController = new TagsController($this->container);
+        $reviewer = Reviewer::create(['name' => 'reviewer']);
         $misuse = new Misuse;
         $misuse->metadata_id = 1;
         $misuse->misuse_muid = '1';
         $misuse->run_id = 1;
         $misuse->detector_id = 42;
         $misuse->save();
+        $this->createReview($misuse, $reviewer, 'Yes');
+        $this->review = Review::find(1);
+        $this->tagController = new TagsController($this->container);
     }
 
-    function test_save_misuse_tags()
+    function test_save_review_tags()
     {
-        $this->tagController->addTagToMisuse(1, 'test-dataset', 1);
+        TagsController::syncReviewTags($this->review->id, ['test-dataset']);
 
-        $misuseTags = Misuse::find(1)->misuse_tags;
+        $reviewTags = $this->review->tags;
 
-        self::assertEquals('test-dataset', $misuseTags->first()->name);
-        self::assertEquals(1, $misuseTags->first()->pivot->reviewer_id);
+        self::assertEquals('test-dataset', $reviewTags->first()->name);
     }
 
-    function test_delete_misuse_tag()
+    function test_delete_review_tag()
     {
-        $this->tagController->addTagToMisuse(1, 'test-dataset', 1);
-        $this->tagController->addTagToMisuse(1, 'test-dataset', 2);
-        $this->tagController->deleteTagFromMisuse(1, 2, 2);
+        TagsController::syncReviewTags($this->review->id, ['test-dataset', 'test-dataset2']);
+        TagsController::deleteTagFromReview($this->review->id, 1);
 
-        $misuseTags = Misuse::find(1)->misuse_tags;
+        $reviewTags = $this->review->tags;
 
-        self::assertEquals(1, $misuseTags->count());
-        self::assertEquals('test-dataset', $misuseTags->first()->name);
-        self::assertEquals(1, $misuseTags->first()->pivot->reviewer_id);
+        self::assertEquals(1, $reviewTags->count());
+        self::assertEquals('test-dataset2', $reviewTags->first()->name);
     }
 
     function test_adding_same_tag_twice()
     {
-        $this->tagController->addTagToMisuse(1, 'test-tag', 1);
-        $this->tagController->addTagToMisuse(1, 'test-tag', 1);
+        TagsController::syncReviewTags($this->review->id, ['test-tag']);
+        TagsController::syncReviewTags($this->review->id, ['test-tag']);
 
-        $misuseTags = Misuse::find(1)->misuse_tags;
-
-        self::assertEquals(1, count($misuseTags));
+        self::assertEquals(1, $this->review->tags->count());
     }
 
     function test_add_unknown_tag()
     {
-        $this->tagController->addTagToMisuse(1, 'test-tag', 1);
+        TagsController::syncReviewTags($this->review->id, ['test-tag']);
 
-        $misuseTags = Misuse::find(1)->misuse_tags;
-
-        self::assertEquals('test-tag', $misuseTags->get(0)->name);
+        self::assertEquals('test-tag', $this->review->tags[0]->name);
     }
 
     function test_update_tag()
     {
-        $this->tagController->addTagToMisuse(1, 'test-tag', 1);
+        TagsController::syncReviewTags($this->review->id, ['test-tag']);
 
         $tag = Tag::where('name', 'test-tag')->first();
         $tag_id = $tag->id;
@@ -87,12 +85,12 @@ class TagControllerTest extends SlimTestCase
 
     function test_delete_tag()
     {
-        $this->tagController->addTagToMisuse(1, 'test-tag', 1);
+        TagsController::syncReviewTags($this->review->id, ['test-tag']);
         $tag_id = Tag::where('name', 'test-tag')->first()->id;
 
 
-        $this->tagController->deleteTagAndRemoveFromMisuses($tag_id);
-        self::assertEmpty(Misuse::find(1)->misuse_tags);
+        $this->tagController->deleteTagAndRemoveFromReviews($tag_id);
+        self::assertEmpty($this->review->tags);
         self::assertNull(Tag::find($tag_id));
     }
 }

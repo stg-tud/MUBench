@@ -178,9 +178,9 @@ class SlimTestCase extends TestCase
         $finding->save();
     }
 
-    function createReview($misuse, $reviewer, $hit, $violations = [])
+    function createReview($misuse, $reviewer, $hit, $violations = [], $tags = [])
     {
         $reviewController = new \MuBench\ReviewSite\Controllers\ReviewsController($this->container);
-        $reviewController->updateOrCreateReview($misuse->id, $reviewer->id, '-comment-', [['hit' => $hit, 'violations' => $violations]]);
+        $reviewController->updateOrCreateReview($misuse->id, $reviewer->id, '-comment-', [['hit' => $hit, 'violations' => $violations]], $tags);
     }
 }

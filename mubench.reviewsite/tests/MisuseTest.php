@@ -108,16 +108,16 @@ class MisuseTest extends SlimTestCase
 
     function testGetAllTagsWhenConclusive()
     {
+        $reviewer1 = Reviewer::create(['name' => 'reviewer1']);
+        $reviewer2 = Reviewer::create(['name' => 'reviewer2']);
+
         $this->createRunWithFindingInLine(10);
-        $reviewController = new ReviewsController($this->container);
-        $reviewController->updateOrCreateReview(1, 1, '-comment-', [['hit' => 'Yes', 'violations' => []]]);
-        $reviewController->updateOrCreateReview(1, 2, '-comment-', [['hit' => 'Yes', 'violations' => []]]);
+        $misuse = Misuse::find(1);
 
-        $tagController = new \MuBench\ReviewSite\Controllers\TagsController($this->container);
-        $tagController->addTagToMisuse(1, 'reviewer1-tag', 1);
-        $tagController->addTagToMisuse(1, 'reviewer2-tag', 2);
+        $this->createReview($misuse, $reviewer1, 'Yes', [], ['reviewer1-tag']);
+        $this->createReview($misuse, $reviewer2, 'Yes', [], ['reviewer2-tag']);
 
-        self::assertEquals(2, Misuse::find(1)->getTags(null)->count());
+        self::assertEquals(2, Misuse::find(1)->getTags()->count());
     }
 
     function testGetTagsOfReviewerWhenNotConclusive()
@@ -128,14 +128,10 @@ class MisuseTest extends SlimTestCase
         $this->createRunWithFindingInLine(10);
         $misuse = Misuse::find(1);
 
-        $this->createReview($misuse, $reviewer1, 'Yes');
-        $this->createReview($misuse, $reviewer2, 'No');
+        $this->createReview($misuse, $reviewer1, 'Yes', [], ['reviewer1-tag']);
+        $this->createReview($misuse, $reviewer2, 'No', [], ['reviewer2-tag']);
 
-        $tagController = new \MuBench\ReviewSite\Controllers\TagsController($this->container);
-        $tagController->addTagToMisuse($misuse->id, 'reviewer1-tag', $reviewer1->id);
-        $tagController->addTagToMisuse($misuse->id, 'reviewer2-tag', $reviewer2->id);
-
-        $tags = $misuse->getTags($reviewer1);
+        $tags = $misuse->getReview($reviewer1)->tags;
         self::assertEquals(1, $tags->count());
         self::assertEquals('reviewer1-tag', $tags[0]->name);
     }
@@ -146,12 +142,9 @@ class MisuseTest extends SlimTestCase
         $this->createRunWithFindingInLine(10);
         $misuse = Misuse::find(1);
 
-        $this->createReview($misuse, $reviewer1, 'Yes');
+        $this->createReview($misuse, $reviewer1, 'Yes', [], ['reviewer1-tag']);
 
-        $tagController = new \MuBench\ReviewSite\Controllers\TagsController($this->container);
-        $tagController->addTagToMisuse($misuse->id, 'reviewer1-tag', $reviewer1->id);
-
-        self::assertEquals(0, $misuse->getTags(null)->count());
+        self::assertEquals(0, $misuse->getTags()->count());
     }
 
     public function createRunWithFindingInLine($line)
