@@ -28,35 +28,35 @@ See the configuration of the `maven-assembly-plugin` in [the `pom.xml` file](./p
 
 ## Provide Version Information
 
-Each detector has a `release.yml` file that provides version information.
+Each detector has a `releases.yml` file that provides version information.
 The most-simple version of such a file, which suffices to run a detector locally, might look as follows:
 
 ```yaml
-- cli-version: 0.0.13
+- cli_version: 0.0.13
   md5: foo
 ```
 
-* The `cli-version` names the version of the `mubench.cli` dependency used to implement the respective [MUBench Runner](#implement-a-mubench-runner).
+* The `cli_version` names the version of the `mubench.cli` dependency used to implement the respective [MUBench Runner](#implement-a-mubench-runner).
 * The `md5` might be any string.
   When running experiments, [the MUBench Pipeline](../mubench.pipeline) uses this string only to determine whether the detector changed (by checking whether the `md5` changed) and to invalidate existing results accordingly.
   Only when the detector is integrated into the MUBench detector repository, such that [the MUBench Pipeline](../mubench.pipeline) can download it automatically, the `md5` needs to be changed to the actual hash of the Jar file, for download verification.
 
-It is possible to manage multiple versions of a detector via the `release.yml` file.
+It is possible to manage multiple versions of a detector via the `releases.yml` file.
 The file might then look as follows:
 
 ```yaml
-- cli-version: 0.0.10
+- cli_version: 0.0.10
   md5: 2470067fac02ee118b7d49287246e20a
-- cli-version: 0.0.8
+- cli_version: 0.0.8
   md5: 9e5252816faecf552464f0a6abde714f
   tag: my-tag
 ```
 
-* The `cli-version` names the version of the `mubench.cli` dependency used to implement the respective [MUBench Runner](#implement-a-mubench-runner).
+* The `cli_version` names the version of the `mubench.cli` dependency used to implement the respective [MUBench Runner](#implement-a-mubench-runner).
 * The `md5` is the hash of the respective Jar file.
 * The `tag` is an identifier for the detector version (case insensitive).
   You may specify this identifier when running experiments, using the `--tag` option.
-  If the `--tag` option is not specified, [the MUBench Pipeline](../mubench.pipeline) runs the top-most detector version listed in the `release.yml` file.
+  If the `--tag` option is not specified, [the MUBench Pipeline](../mubench.pipeline) runs the top-most detector version listed in the `releases.yml` file.
   If this detector version has no `tag`, `latest` is used as the default.
   In any case, [the MUBench Pipeline](../mubench.pipeline) expects the respective Jar file at `detectors/<mydetector>/<tag>/<mydetector>.jar`.
 
