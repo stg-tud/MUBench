@@ -1,8 +1,11 @@
 build:
-  classes: solr-4.5.1/dist/solr-core-4.5.1.jar
+  classes: classes/      #solr-4.5.1/dist/solr-core-4.5.1.jar
   commands:
   -  wget http://archive.apache.org/dist/lucene/solr/4.5.1/solr-4.5.1.zip 
   -  unzip solr-4.5.1.zip 
+  -  mkdir classes
+  -  jar xf solr-4.5.1/dist/solr-core-4.5.1.jar
+  -  mv org classes/ 
   #-  ant compile             
   src: solr/core/src/java
 misuses:

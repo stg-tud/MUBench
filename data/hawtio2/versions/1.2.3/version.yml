@@ -1,9 +1,11 @@
 build:
-  classes: hawtio-system-1.2.3.jar
+  classes: classes/     #hawtio-system-1.2.3.jar
   commands:
-  -  wget https://repo.maven.apache.org/maven2/io/hawt/hawtio-system/1.2.3/hawtio-system-1.2.3.jar              
+  -  wget https://repo.maven.apache.org/maven2/io/hawt/hawtio-system/1.2.3/hawtio-system-1.2.3.jar
+  -  mkdir classes
+  -  jar xf hawtio-system-1.2.3.jar
+  -  mv io classes/              
   src: hawtio-system/src/main/java
 misuses:
 -  SV_CVE_14_0121_1
--  SV_CVE_14_0121_2
-revision: hawtio-1.2.3       #4f3a0dae81502e78bdd4075aa37879d32d41360a	         
+revision: hawtio-1.2.3       #4f3a0dae81502e78bdd4075aa37879d32d41360a
