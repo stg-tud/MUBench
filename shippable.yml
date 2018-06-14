@@ -28,6 +28,5 @@ script:
 
 notifications:
   email:
-    - mattis.kaemmerer@gmx.de
     - amann@cs.tu-darmstadt.de
     - jonas.schlitzer@googlemail.com
