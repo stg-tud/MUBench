@@ -1,10 +1,10 @@
 <?php
 
+namespace MuBench\ReviewSite\Tests\Selenium;
+
 use Facebook\WebDriver\WebDriverBy;
 
-require_once 'WebDriverTestCase.php';
-
-class DetectorTemplateTest extends WebDriverTestCase
+class ViewDetectorRunsTestTest extends WebDriverTestCase
 {
 
     public function setUp()

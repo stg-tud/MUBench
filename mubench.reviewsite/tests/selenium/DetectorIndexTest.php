@@ -1,10 +1,10 @@
 <?php
 
+namespace MuBench\ReviewSite\Tests\Selenium;
+
 use Facebook\WebDriver\WebDriverBy;
 
-require_once 'WebDriverTestCase.php';
-
-class IndexTemplateTest extends WebDriverTestCase
+class DetectorIndexTest extends WebDriverTestCase
 {
     public function testAssertTitle()
     {
