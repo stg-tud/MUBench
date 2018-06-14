@@ -363,26 +363,6 @@ $origin_path = $origin_path ? $origin_path : $pathFor('experiment.detector', arr
                             <div class="comment-overlay-button" id="overlay-button" style="z-index:3"><span>This misuse was already reviewed.</span><a class="button" onclick="review(this)">review it anyways</a></div>
                         <?php endif; ?>
                         <table class="invisible">
-                            <tr><td>
-                                    <table class="invisible">
-                                        <tr><td>Tags:</td><td><div class="misuse-tag" style="background-color:<?= htmlspecialchars($tag->color) ?>;color:<?= htmlspecialchars($tag->getFontColor()) ?>;">
-                                                    <span id="<?= htmlspecialchars("Test") ?>"><?= htmlspecialchars("Test") ?></span>
-                                                    <?php if($user) : ?>
-                                                        <button onclick="removeTag(this.parentElement)"style="border:none;outline:none;background-color:<?= htmlspecialchars($tag->color) ?>;margin:0;padding:0"><i class="fa fa-trash"></i></button>
-                                                    <?php endif; ?>
-                                                </div>
-                                                <?php if($user) : ?>
-                                                    <div style="display:inline-block;height:100%;padding:4px;">
-                                                        <input id="tag-input" class="tag-input" maxlength="100" list="tags" name="tag_name" placeholder="add new tag" autocomplete="off" onkeypress="if(event.key === 'Enter'){addTag(this.value)}">
-                                                        <datalist id="tags">
-                                                            <?php foreach($tags as $tag) : ?>
-                                                            <option value="<?= htmlspecialchars($tag->name); ?>">
-                                                                <?php endforeach;?>
-                                                        </datalist>
-                                                    </div>
-                                                <?php endif; ?></td></tr>
-                                    </table>
-                                </td></tr>
                             <tr><td id="review_area" colspan="2" style="visibility: visible">
                                     <?php if($review) : ?>
                                         <textarea id="review_comment" name="review_comment" cols="80" rows="5"><?= htmlspecialchars($review->comment); ?></textarea>

@@ -36,7 +36,6 @@ class TagsController extends Controller
 
     public function getTags(Request $request, Response $response, array $args)
     {
-        // TODO: fix tag statistics with reviews
         $tags = Tag::all();
         $results = array(1 => array(), 2 => array(), 3 => array());
         $totals = array(1 => array(), 2 => array(), 3 => array());
