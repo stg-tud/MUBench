@@ -7,7 +7,10 @@ ENV DEBIAN_FRONTEND noninteractive
 ENV LANG=C.UTF-8 \
     GRADLE_VERSION=4.0.2 \
     GRADLE_HOME=/usr/local/gradle
+ENV JAVA_HOME /usr/lib/jvm/java-8-oracle
+ENV PATH $PATH:$JAVA_HOME/bin
 
+# Setup container environment
 RUN apt-get clean \
       && apt-get update \
       && apt-get install -y \
@@ -18,21 +21,17 @@ RUN apt-get clean \
       && update-ca-certificates \
       && locale-gen en_US en_US.UTF-8 \
       && dpkg-reconfigure locales \
-      && echo "APT::Get::Assume-Yes \"true\";\nAPT::Get::force-yes \"true\";" >> /etc/apt/apt.conf.d/90forceyes
-
-# Install java8
-RUN add-apt-repository ppa:webupd8team/java \
+      && echo "APT::Get::Assume-Yes \"true\";\nAPT::Get::force-yes \"true\";" >> /etc/apt/apt.conf.d/90forceyes \
+      && add-apt-repository ppa:webupd8team/java \
       && apt-get update \
       && echo oracle-java8-installer shared/accepted-oracle-license-v1-1 select true | debconf-set-selections \
-      && apt-get install -y oracle-java8-installer
-
-ENV JAVA_HOME /usr/lib/jvm/java-8-oracle
-ENV PATH $PATH:$JAVA_HOME/bin
-
-RUN update-alternatives --set java "$JAVA_HOME/jre/bin/java" \
+      && apt-get install -y oracle-java8-installer \
+      && update-alternatives --set java "$JAVA_HOME/jre/bin/java" \
       && update-alternatives --set javac "$JAVA_HOME/bin/javac" \
-      && update-alternatives --set javaws "$JAVA_HOME/jre/bin/javaws"
-
+      && update-alternatives --set javaws "$JAVA_HOME/jre/bin/javaws" \
+      && apt-get clean \
+      && apt-get autoclean \
+      && apt-get autoremove
 
 # Setup pipeline environment
 RUN apt-get update \
@@ -69,7 +68,10 @@ RUN apt-get update \
       && wget -q https://services.gradle.org/distributions/gradle-$GRADLE_VERSION-bin.zip \
       && unzip -q gradle-$GRADLE_VERSION-bin.zip -d /usr/local \
       && rm -f gradle-$GRADLE_VERSION-bin.zip \
-      && ln -s /usr/local/gradle-$GRADLE_VERSION/bin/gradle /usr/bin/gradle
+      && ln -s /usr/local/gradle-$GRADLE_VERSION/bin/gradle /usr/bin/gradle \
+      && apt-get clean \
+      && apt-get autoclean \
+      && apt-get autoremove
 
 
 
@@ -86,7 +88,10 @@ RUN LC_ALL=C.UTF-8 add-apt-repository -y ppa:ondrej/php \
       # Install composer
       && wget -q https://getcomposer.org/installer -O composer-setup.php \
       && php composer-setup.php --install-dir=/usr/local/bin --filename=composer \
-      && rm composer-setup.php 
+      && rm composer-setup.php \
+      && apt-get clean \
+      && apt-get autoclean \
+      && apt-get autoremove
 
 # Setup test environment
 RUN \
@@ -103,11 +108,5 @@ RUN \
             && wget -q https://selenium-release.storage.googleapis.com/3.12/selenium-server-standalone-3.12.0.jar \
           && mv selenium-server-standalone-3.12.0.jar /usr/local/bin/selenium-server-standalone-3.12.0.jar \
           && ln /usr/lib/chromium-browser/chromedriver /usr/local/bin/chromedriver
-
-# Cleanup
-RUN apt-get clean \
-      && apt-get remove build-essential \
-      && apt-get autoclean \
-      && apt-get autoremove
 
 WORKDIR /mubench
