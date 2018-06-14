@@ -96,7 +96,7 @@ RUN LC_ALL=C.UTF-8 add-apt-repository -y ppa:ondrej/php \
 # Setup test environment
 RUN \
       # Install PHPUnit
-      wget -q https://phar.phpunit.de/phpunit-6.0.0.phar -O /usr/local/bin/phpunit \
+      wget -q https://phar.phpunit.de/phpunit-6.1.0.phar -O /usr/local/bin/phpunit \
       && chmod +x /usr/local/bin/phpunit \
       # Install nosetests
       && pip3 install nose \
