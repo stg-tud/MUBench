@@ -77,6 +77,34 @@ class MisuseTest extends SlimTestCase
         self::assertEquals(2, count($run->misuses[0]->snippets()));
     }
 
+    public function testSnippetsWithFindingWithoutStartLine()
+    {
+        $runsController = new RunsController($this->container);
+        $runsController->addRun(1, '-d-', '-p-', '-v-', [
+            "result" => "success",
+            "runtime" => 42.1,
+            "number_of_findings" => 23,
+            "-custom-stat-" => "-stat-val-",
+            "timestamp" => 12,
+            "potential_hits" => [
+                [
+                    "misuse" => "-m-",
+                    "rank" => 0,
+                    "target_snippets" => [
+                    ],
+                    "file" => "//src/file",
+                    "custom1" => "-val1-",
+                    "custom2" => "-val2-"
+                ]]
+        ]);
+        $this->createSnippetWithStartLine(12);
+        $this->createSnippetWithStartLine(9);
+
+        $run = Run::of(Detector::find('-d-'))->in(Experiment::find(1))->first();
+
+        self::assertEquals(2, count($run->misuses[0]->snippets()));
+    }
+
     public function createRunWithFindingInLine($line)
     {
         $runsController = new RunsController($this->container);
