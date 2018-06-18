@@ -30,10 +30,14 @@ class RunsControllerTest extends SlimTestCase
     /** @var RunsController */
     private $runsController;
 
+    /** @var ReviewsControllerHelper */
+    private $reviewsControllerHelper;
+
     function setUp()
     {
         parent::setUp();
         $this->runsController = new RunsController($this->container);
+        $this->reviewsControllerHelper = new ReviewsControllerHelper($this->container);
         $this->detector1 = Detector::create(['muid' => '-d1-']);
         $this->detector2 = Detector::create(['muid' => '-d2-']);
 
@@ -472,7 +476,7 @@ class RunsControllerTest extends SlimTestCase
         $run->misuses = new Collection;
         foreach($misuses as $key => $misuse){
             $new_misuse = Misuse::create(['misuse_muid' => $key, 'run_id' => $run->id, 'detector_id' => $detector->id]);
-            $this->createFindingWith($experiment, $detector, $new_misuse);
+            TestHelper::createFindingWith($experiment, $detector, $new_misuse);
             $this->addReviewsForMisuse($new_misuse, $misuse[0], sizeof($misuse) > 1 ? $misuse[1] : null);
             $new_misuse->findings;
             $new_misuse->save();
@@ -486,12 +490,12 @@ class RunsControllerTest extends SlimTestCase
         $reviewController = new ReviewsController($this->container);
         foreach ($decisions as $index => $decision) {
             $reviewer = Reviewer::firstOrCreate(['name' => '-reviewer' . $index . '-']);
-            $this->createReview($misuse, $reviewer, $decision);
+            $this->reviewsControllerHelper->createReview($misuse, $reviewer, $decision);
         }
 
         if ($resolutionDecision) {
             $resolutionReviewer = Reviewer::where(['name' => 'resolution'])->first();
-            $this->createReview($misuse, $resolutionReviewer, $resolutionDecision);
+            $this->reviewsControllerHelper->createReview($misuse, $resolutionReviewer, $resolutionDecision);
         }
     }
 

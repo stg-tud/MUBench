@@ -13,6 +13,16 @@ use MuBench\ReviewSite\Models\Snippet;
 
 class MisuseTest extends SlimTestCase
 {
+
+    /** @var ReviewsControllerHelper */
+    private $reviewsControllerHelper;
+
+    public function setUp()
+    {
+        parent::setUp();
+        $this->reviewsControllerHelper = new ReviewsControllerHelper($this->container);
+    }
+
     public function testHasReviewed()
     {
         $reviewer = Reviewer::create(['name' => ':arbitrary:']);
@@ -110,8 +120,8 @@ class MisuseTest extends SlimTestCase
         $this->createRunWithFindingInLine(10);
         $misuse = Misuse::find(1);
 
-        $this->createReview($misuse, $reviewer1, 'Yes', [], ['reviewer1-tag']);
-        $this->createReview($misuse, $reviewer2, 'Yes', [], ['reviewer2-tag']);
+        $this->reviewsControllerHelper->createReview($misuse, $reviewer1, 'Yes', [], ['reviewer1-tag']);
+        $this->reviewsControllerHelper->createReview($misuse, $reviewer2, 'Yes', [], ['reviewer2-tag']);
 
         self::assertEquals(2, Misuse::find(1)->getTags()->count());
     }
@@ -124,8 +134,8 @@ class MisuseTest extends SlimTestCase
         $this->createRunWithFindingInLine(10);
         $misuse = Misuse::find(1);
 
-        $this->createReview($misuse, $reviewer1, 'Yes', [], ['reviewer1-tag']);
-        $this->createReview($misuse, $reviewer2, 'No', [], ['reviewer2-tag']);
+        $this->reviewsControllerHelper->createReview($misuse, $reviewer1, 'Yes', [], ['reviewer1-tag']);
+        $this->reviewsControllerHelper->createReview($misuse, $reviewer2, 'No', [], ['reviewer2-tag']);
 
         $tags = $misuse->getReview($reviewer1)->tags;
         self::assertEquals(1, $tags->count());
@@ -138,7 +148,7 @@ class MisuseTest extends SlimTestCase
         $this->createRunWithFindingInLine(10);
         $misuse = Misuse::find(1);
 
-        $this->createReview($misuse, $reviewer1, 'Yes', [], ['reviewer1-tag']);
+        $this->reviewsControllerHelper->createReview($misuse, $reviewer1, 'Yes', [], ['reviewer1-tag']);
 
         self::assertEquals(0, $misuse->getTags()->count());
     }

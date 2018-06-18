@@ -11,9 +11,9 @@ use MuBench\ReviewSite\Models\Violation;
 class ReviewControllerTest extends SlimTestCase
 {
     /**
-     * @var ReviewsController $reviewController
+     * @var ReviewsControllerHelper $reviewControllerHelper
      */
-    private $reviewController;
+    private $reviewControllerHelper;
 
     /**
      * @var Reviewer $reviewer1
@@ -28,7 +28,7 @@ class ReviewControllerTest extends SlimTestCase
     function setUp()
     {
         parent::setUp();
-        $this->reviewController = new ReviewsController($this->container);
+        $this->reviewControllerHelper = new ReviewsControllerHelper($this->container);
         $this->reviewer1 = Reviewer::create(['name' => 'reviewer1']);
         $this->reviewer2 = Reviewer::create(['name' => 'reviewer2']);
     }
@@ -38,7 +38,7 @@ class ReviewControllerTest extends SlimTestCase
     {
         $misuse = Misuse::create(['misuse_muid' => '0', 'run_id' => 2, 'detector_id' => 1]);
 
-        $this->createReview($misuse, $this->reviewer1, "Yes");
+        $this->reviewControllerHelper->createReview($misuse, $this->reviewer1, "Yes");
 
         $review = Misuse::find(1)->getReview($this->reviewer1);
         self::assertEquals('-comment-', $review->comment);
@@ -48,8 +48,8 @@ class ReviewControllerTest extends SlimTestCase
     {
         $misuse = Misuse::create(['misuse_muid' => '0', 'run_id' => 2, 'detector_id' => 1]);
 
-        $this->createReview($misuse, $this->reviewer1, "Yes");
-        $this->createReview($misuse, $this->reviewer1, "No");
+        $this->reviewControllerHelper->createReview($misuse, $this->reviewer1, "Yes");
+        $this->reviewControllerHelper->createReview($misuse, $this->reviewer1, "No");
 
         $review = Misuse::find(1)->getReview($this->reviewer1);
         self::assertEquals('-comment-', $review->comment);
@@ -61,7 +61,7 @@ class ReviewControllerTest extends SlimTestCase
         $misuse = Misuse::create(['misuse_muid' => '0', 'run_id' => 2, 'detector_id' => 1]);
         Violation::create(['name' => 'missing/call']);
 
-        $this->createReview($misuse, $this->reviewer1, "Yes", [1]);
+        $this->reviewControllerHelper->createReview($misuse, $this->reviewer1, "Yes", [1]);
 
         $review = Misuse::find(1)->getReview($this->reviewer1);
         $violations = $review->getHitViolations('0');
@@ -76,7 +76,7 @@ class ReviewControllerTest extends SlimTestCase
         $this->createConclusiveReviewState($misuse2);
 
         // current misuse = 1, reviewer = 1
-        list($previous_misuse, $next_misuse, $next_reviewable_misuse, $misuse)  = $this->reviewController->determineNavigationTargets(Misuse::all(), '-p-', '-v-', $misuse1->misuse_muid, $this->reviewer1);
+        list($previous_misuse, $next_misuse, $next_reviewable_misuse, $misuse)  = $this->reviewControllerHelper->reviewController->determineNavigationTargets(Misuse::all(), '-p-', '-v-', $misuse1->misuse_muid, $this->reviewer1);
 
         self::assertEquals($misuse3->misuse_muid, $previous_misuse->misuse_muid);
         self::assertEquals($misuse2->misuse_muid, $next_misuse->misuse_muid);
@@ -92,7 +92,7 @@ class ReviewControllerTest extends SlimTestCase
         $this->createConclusiveReviewState($misuse2);
 
         // current misuse = 3, reviewer = 1
-        list($previous_misuse, $next_misuse, $next_reviewable_misuse, $misuse)  = $this->reviewController->determineNavigationTargets(Misuse::all(), '-p-', '-v-', $misuse3->misuse_muid, $this->reviewer1);
+        list($previous_misuse, $next_misuse, $next_reviewable_misuse, $misuse)  = $this->reviewControllerHelper->reviewController->determineNavigationTargets(Misuse::all(), '-p-', '-v-', $misuse3->misuse_muid, $this->reviewer1);
 
         self::assertEquals($misuse2->misuse_muid, $previous_misuse->misuse_muid);
         self::assertEquals($misuse1->misuse_muid, $next_misuse->misuse_muid);
@@ -104,12 +104,12 @@ class ReviewControllerTest extends SlimTestCase
     {
         list($misuse1, $misuse2, $misuse3) = $this->createRunWithThreeMisuses();
 
-        $this->createReview($misuse1, $this->reviewer2, "Yes");
-        $this->createReview($misuse2, $this->reviewer1, "Yes");
-        $this->createReview($misuse3, $this->reviewer2, "Yes");
+        $this->reviewControllerHelper->createReview($misuse1, $this->reviewer2, "Yes");
+        $this->reviewControllerHelper->createReview($misuse2, $this->reviewer1, "Yes");
+        $this->reviewControllerHelper->createReview($misuse3, $this->reviewer2, "Yes");
 
         // current misuse = 1, reviewer = 1
-        list($previous_misuse, $next_misuse, $next_reviewable_misuse, $misuse)  = $this->reviewController->determineNavigationTargets(Misuse::all(), '-p-', '-v-', $misuse1->misuse_muid, $this->reviewer1);
+        list($previous_misuse, $next_misuse, $next_reviewable_misuse, $misuse)  = $this->reviewControllerHelper->reviewController->determineNavigationTargets(Misuse::all(), '-p-', '-v-', $misuse1->misuse_muid, $this->reviewer1);
 
         self::assertEquals($misuse3->misuse_muid, $previous_misuse->misuse_muid);
         self::assertEquals($misuse2->misuse_muid, $next_misuse->misuse_muid);
@@ -147,8 +147,8 @@ class ReviewControllerTest extends SlimTestCase
 
     private function createConclusiveReviewState($misuse)
     {
-        $this->createReview($misuse, $this->reviewer1, "Yes");
-        $this->createReview($misuse, $this->reviewer2, "Yes");
+        $this->reviewControllerHelper->createReview($misuse, $this->reviewer1, "Yes");
+        $this->reviewControllerHelper->createReview($misuse, $this->reviewer2, "Yes");
     }
 
 }

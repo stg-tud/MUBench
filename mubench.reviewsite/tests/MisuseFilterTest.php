@@ -12,6 +12,8 @@ class MisuseFilterTest extends SlimTestCase
 {
     /** @var RunsController */
     private $runController;
+    /** @var ReviewsControllerHelper */
+    private $reviewControllerHelper;
     /** @var Experiment */
     private $experiment;
     /** @var Detector */
@@ -33,6 +35,7 @@ class MisuseFilterTest extends SlimTestCase
         $this->detector = Detector::create(['muid' => 'test-detector']);
 
         $this->runController = new RunsController($this->container);
+        $this->reviewControllerHelper = new ReviewsControllerHelper($this->container);
 
         $this->runController->addRun(
             $this->experiment->id,
@@ -61,7 +64,7 @@ class MisuseFilterTest extends SlimTestCase
 
     function test_counts_misuse_with_single_conclusive_review()
     {
-        $this->createReview($this->misuse, $this->reviewer1, 'Yes');
+        $this->reviewControllerHelper->createReview($this->misuse, $this->reviewer1, 'Yes');
 
         $runs = $this->runController->getRuns($this->detector, $this->experiment, 1);
 
@@ -70,8 +73,8 @@ class MisuseFilterTest extends SlimTestCase
 
     function test_counts_misuse_with_multiple_conclusive_reviews()
     {
-        $this->createReview($this->misuse, $this->reviewer1, 'Yes');
-        $this->createReview($this->misuse, $this->reviewer2, 'Yes');
+        $this->reviewControllerHelper->createReview($this->misuse, $this->reviewer1, 'Yes');
+        $this->reviewControllerHelper->createReview($this->misuse, $this->reviewer2, 'Yes');
 
         $runs = $this->runController->getRuns($this->detector, $this->experiment, 1);
 
@@ -80,7 +83,7 @@ class MisuseFilterTest extends SlimTestCase
 
     function test_ignores_misuse_with_single_inconclusive_review()
     {
-        $this->createReview($this->misuse, $this->reviewer1, '?');
+        $this->reviewControllerHelper->createReview($this->misuse, $this->reviewer1, '?');
 
         $runs = $this->runController->getRuns($this->detector, $this->experiment, 1);
 
@@ -89,8 +92,8 @@ class MisuseFilterTest extends SlimTestCase
 
     function test_ignores_misuse_with_at_least_one_inconclusive_review()
     {
-        $this->createReview($this->misuse, $this->reviewer1, '?');
-        $this->createReview($this->misuse, $this->reviewer2, 'Yes');
+        $this->reviewControllerHelper->createReview($this->misuse, $this->reviewer1, '?');
+        $this->reviewControllerHelper->createReview($this->misuse, $this->reviewer2, 'Yes');
 
         $runs = $this->runController->getRuns($this->detector, $this->experiment, 1);
 

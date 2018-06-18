@@ -19,6 +19,7 @@ class TagControllerTest extends SlimTestCase
     function setUp()
     {
         parent::setUp();
+        $reviewsControllerHelper = new ReviewsControllerHelper($this->container);
         $reviewer = Reviewer::create(['name' => 'reviewer']);
         $misuse = new Misuse;
         $misuse->metadata_id = 1;
@@ -26,7 +27,7 @@ class TagControllerTest extends SlimTestCase
         $misuse->run_id = 1;
         $misuse->detector_id = 42;
         $misuse->save();
-        $this->createReview($misuse, $reviewer, 'Yes');
+        $reviewsControllerHelper->createReview($misuse, $reviewer, 'Yes');
         $this->review = Review::find(1);
         $this->tagController = new TagsController($this->container);
     }
