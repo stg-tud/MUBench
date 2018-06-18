@@ -1,9 +1,9 @@
 <?php
 
+namespace MuBench\ReviewSite\Tests;
+
 use MuBench\ReviewSite\Controllers\SnippetsController;
 use MuBench\ReviewSite\Models\Snippet;
-
-require_once 'SlimTestCase.php';
 
 class SnippetControllerTest extends SlimTestCase
 {

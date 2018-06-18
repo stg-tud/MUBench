@@ -1,8 +1,8 @@
 <?php
 
-use MuBench\ReviewSite\Models\Tag;
+namespace MuBench\ReviewSite\Tests;
 
-require_once 'SlimTestCase.php';
+use MuBench\ReviewSite\Models\Tag;
 
 class TagTest extends SlimTestCase
 {

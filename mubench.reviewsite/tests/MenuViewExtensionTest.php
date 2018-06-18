@@ -1,5 +1,7 @@
 <?php
 
+namespace MuBench\ReviewSite\Tests;
+
 use MuBench\ReviewSite\Controllers\ReviewsController;
 use MuBench\ReviewSite\Controllers\RunsController;
 use MuBench\ReviewSite\ViewExtensions\MenuViewExtension;
@@ -8,9 +10,6 @@ use MuBench\ReviewSite\Models\Experiment;
 use MuBench\ReviewSite\Models\Reviewer;
 use MuBench\ReviewSite\Models\ReviewState;
 use MuBench\ReviewSite\Models\Run;
-
-require_once "SlimTestCase.php";
-
 
 class MenuViewExtensionTest extends SlimTestCase
 {

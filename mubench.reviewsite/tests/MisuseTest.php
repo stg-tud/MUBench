@@ -1,9 +1,8 @@
 <?php
 
-use MuBench\ReviewSite\Controllers\MetadataController;
-use MuBench\ReviewSite\Controllers\ReviewsController;
+namespace MuBench\ReviewSite\Tests;
+
 use MuBench\ReviewSite\Controllers\RunsController;
-use MuBench\ReviewSite\Controllers\SnippetsController;
 use MuBench\ReviewSite\Models\Detector;
 use MuBench\ReviewSite\Models\Experiment;
 use MuBench\ReviewSite\Models\Misuse;
@@ -11,9 +10,6 @@ use MuBench\ReviewSite\Models\Review;
 use MuBench\ReviewSite\Models\Reviewer;
 use MuBench\ReviewSite\Models\Run;
 use MuBench\ReviewSite\Models\Snippet;
-
-require_once 'SlimTestCase.php';
-
 
 class MisuseTest extends SlimTestCase
 {

@@ -1,16 +1,12 @@
 <?php
 
-require_once "SlimTestCase.php";
+namespace MuBench\ReviewSite\Tests;
 
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
-use MuBench\ReviewSite\Controllers\FindingsController;
-use MuBench\ReviewSite\Controllers\FindingsUploader;
 use MuBench\ReviewSite\Controllers\MetadataController;
-use MuBench\ReviewSite\Controllers\MisuseTagsController;
 use MuBench\ReviewSite\Controllers\ReviewsController;
 use MuBench\ReviewSite\Controllers\RunsController;
-use MuBench\ReviewSite\Controllers\SnippetUploader;
 use MuBench\ReviewSite\Models\Detector;
 use MuBench\ReviewSite\Models\DetectorResult;
 use MuBench\ReviewSite\Models\Experiment;

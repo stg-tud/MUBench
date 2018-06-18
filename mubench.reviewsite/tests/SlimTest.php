@@ -1,6 +1,6 @@
 <?php
 
-require_once "SlimTestCase.php";
+namespace MuBench\ReviewSite\Tests;
 
 class SlimTest extends SlimTestCase
 {

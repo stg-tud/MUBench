@@ -1,15 +1,12 @@
 <?php
 
-namespace MuBench\ReviewSite\Controllers;
+namespace MuBench\ReviewSite\Tests;
 
-require_once "SlimTestCase.php";
-
-use DatabaseTestCase;
+use MuBench\ReviewSite\Controllers\TagsController;
 use MuBench\ReviewSite\Models\Misuse;
 use MuBench\ReviewSite\Models\Review;
 use MuBench\ReviewSite\Models\Reviewer;
 use MuBench\ReviewSite\Models\Tag;
-use SlimTestCase;
 
 class TagControllerTest extends SlimTestCase
 {

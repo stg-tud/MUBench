@@ -1,14 +1,12 @@
 <?php
 
-namespace MuBench\ReviewSite\Controllers;
+namespace MuBench\ReviewSite\Tests;
 
-require_once 'SlimTestCase.php';
-
+use MuBench\ReviewSite\Controllers\RunsController;
 use MuBench\ReviewSite\Models\Decision;
 use MuBench\ReviewSite\Models\Misuse;
 use MuBench\ReviewSite\Models\Reviewer;
 use MuBench\ReviewSite\Models\Violation;
-use SlimTestCase;
 
 class ReviewControllerTest extends SlimTestCase
 {

@@ -1,9 +1,8 @@
 <?php
 
-require_once "SlimTestCase.php";
+namespace MuBench\ReviewSite\Tests;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Schema;
 use MuBench\ReviewSite\Controllers\ImportRunsController;
 use MuBench\ReviewSite\Controllers\MetadataController;
 use MuBench\ReviewSite\Controllers\RunsController;

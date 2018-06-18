@@ -1,6 +1,6 @@
 <?php
 
-require_once 'SlimTestCase.php';
+namespace MuBench\ReviewSite\Tests;
 
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;

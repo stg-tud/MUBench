@@ -1,5 +1,7 @@
 <?php
 
+namespace MuBench\ReviewSite\Tests;
+
 use Illuminate\Container\Container;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;

@@ -1,16 +1,12 @@
 <?php
 
-namespace MuBench\ReviewSite\Controllers;
+namespace MuBench\ReviewSite\Tests;
 
-require_once 'SlimTestCase.php';
-
-use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
+use MuBench\ReviewSite\Controllers\RunsController;
 use MuBench\ReviewSite\Models\Detector;
 use MuBench\ReviewSite\Models\Experiment;
 use MuBench\ReviewSite\Models\Misuse;
 use MuBench\ReviewSite\Models\Reviewer;
-use SlimTestCase;
 
 class MisuseFilterTest extends SlimTestCase
 {

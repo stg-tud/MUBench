@@ -1,14 +1,13 @@
 <?php
 
-namespace MuBench\ReviewSite\Controllers;
+namespace MuBench\ReviewSite\Tests;
 
-require_once "SlimTestCase.php";
-
+use MuBench\ReviewSite\Controllers\MetadataController;
+use MuBench\ReviewSite\Controllers\RunsController;
 use MuBench\ReviewSite\Models\Detector;
 use MuBench\ReviewSite\Models\Experiment;
 use MuBench\ReviewSite\Models\Metadata;
 use MuBench\ReviewSite\Models\Run;
-use SlimTestCase;
 
 class MetadataControllerTest extends SlimTestCase
 {

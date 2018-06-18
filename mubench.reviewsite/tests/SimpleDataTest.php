@@ -1,8 +1,8 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
+namespace MuBench\ReviewSite\Tests;
 
-require_once 'SlimTestCase.php';
+use Illuminate\Support\Facades\Schema;
 
 class SimpleDataTest extends SlimTestCase
 {

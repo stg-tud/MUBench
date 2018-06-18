@@ -1,5 +1,6 @@
 <?php
 
+namespace MuBench\ReviewSite\Tests;
 
 use MuBench\ReviewSite\Controllers\RunsController;
 use MuBench\ReviewSite\Models\Detector;
