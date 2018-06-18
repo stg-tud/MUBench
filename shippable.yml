@@ -30,6 +30,7 @@ script:
   - php -S localhost:8080 -t ./ &
   - sleep 10
   - phpunit --testsuite unit_tests
+  - cat vendor/composer/autoload_psr4.php 
   - phpunit --testsuite integration_tests
 
 notifications:
