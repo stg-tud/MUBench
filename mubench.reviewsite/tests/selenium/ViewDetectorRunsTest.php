@@ -4,7 +4,7 @@ namespace MuBench\ReviewSite\Tests\Selenium;
 
 use Facebook\WebDriver\WebDriverBy;
 
-class ViewDetectorRunsTestTest extends WebDriverTestCase
+class ViewDetectorRunsTest extends WebDriverTestCase
 {
 
     public function setUp()
