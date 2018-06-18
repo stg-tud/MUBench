@@ -106,36 +106,21 @@ $origin_path = $origin_path ? $origin_path : $pathFor('experiment.detector', arr
             <?php if($experiment->id !== 2) : ?>
                 <tr><td><b>Misuse:</b></td><td>misuse '<?= $markdown_parser->text($misuse->misuse_muid); ?>'</td></tr>
             <?php endif; ?>
-            <?php $misuse_tags = $misuse->getReview($reviewer)->tags; ?>
-            <?php if($user || $misuse_tags->count() > 0) : ?>
-                <tr>
-                <td><b>Tags:</b></td>
-                <td>
-                    <div id="misuse-tags" style="margin:0;padding:0;display:inline-block">
-                    <?php if($misuse_tags): ?>
-                        <?php foreach($misuse_tags as $tag) : ?>
-                            <div class="misuse-tag" style="background-color:<?= htmlspecialchars($tag->color) ?>;color:<?= htmlspecialchars($tag->getFontColor()) ?>;">
-                                <span id="<?= htmlspecialchars($tag->name) ?>"><?= htmlspecialchars($tag->name) ?></span>
-                                <?php if($user) : ?>
-                                    <button onclick="removeTag(this.parentElement)"style="border:none;outline:none;background-color:<?= htmlspecialchars($tag->color) ?>;margin:0;padding:0"><i class="fa fa-trash"></i></button>
-                                <?php endif; ?>
-                            </div>
-                        <?php endforeach; ?>
-                    <?php endif; ?>
-                    </div>
-                    <?php if($user) : ?>
-                            <div style="display:inline-block;height:100%;padding:4px;">
-                                    <input id="tag-input" class="tag-input" maxlength="100" list="tags" name="tag_name" placeholder="add new tag" autocomplete="off" onkeypress="if(event.key === 'Enter'){addTag(this.value)}">
-                                    <datalist id="tags">
-                                        <?php foreach($tags as $tag) : ?>
-                                            <option value="<?= htmlspecialchars($tag->name); ?>">
-                                        <?php endforeach;?>
-                                    </datalist>
-                            </div>
-                        <?php endif; ?>
-                </td>
-                </tr>
-            <?php endif; ?>
+            <?php $misuse_tags = $misuse->getReview($reviewer) ? $misuse->getReview($reviewer)->tags : array(); ?>
+            <tr>
+            <td><b>Tags:</b></td>
+            <td>
+                <div id="misuse-tags-top" style="margin:0;padding:0;display:inline-block">
+                <?php if($misuse_tags): ?>
+                    <?php foreach($misuse_tags as $tag) : ?>
+                        <div class="misuse-tag" style="background-color:<?= htmlspecialchars($tag->color) ?>;color:<?= htmlspecialchars($tag->getFontColor()) ?>;">
+                            <span id="<?= htmlspecialchars($tag->name) ?>"><?= htmlspecialchars($tag->name) ?></span>
+                        </div>
+                    <?php endforeach; ?>
+                <?php endif; ?>
+                </div>
+            </td>
+            </tr>
         </table>
         <?php if($experiment->id !== 2) : ?>
             <h2>Misuse Details</h2>
@@ -221,7 +206,7 @@ $origin_path = $origin_path ? $origin_path : $pathFor('experiment.detector', arr
             <?php endif; ?>
         </table>
             <?php if($reviewer && $is_reviewer): ?>
-                <form id="review_form" action="<?= $pathFor('update.review', array('experiment_id' => $experiment->id, 'detector_muid' => $detectorPathId($detector), 'project_muid' => $misuse->getProject(), 'version_muid' => $misuse->getVersion(), 'misuse_muid' => $misuse->misuse_muid, 'reviewer_name' => $reviewer->name), true) ?>" method="post" target="">
+                <form id="review_form" action="<?= $pathFor('update.review', array('experiment_id' => $experiment->id, 'detector_muid' => $detectorPathId($detector), 'project_muid' => $misuse->getProject(), 'version_muid' => $misuse->getVersion(), 'misuse_muid' => $misuse->misuse_muid, 'reviewer_name' => $reviewer->name), true) ?>" onkeypress="return event.keyCode != 13;" method="post" target="">
             <?php endif; ?>
             <?php if($misuse->hasPotentialHits()) : ?>
 
@@ -363,6 +348,31 @@ $origin_path = $origin_path ? $origin_path : $pathFor('experiment.detector', arr
                             <div class="comment-overlay-button" id="overlay-button" style="z-index:3"><span>This misuse was already reviewed.</span><a class="button" onclick="review(this)">review it anyways</a></div>
                         <?php endif; ?>
                         <table class="invisible">
+                            <tr>
+                                <td colspan="2">
+                                    <div style="float:left;margin-left:5px;">Tags:</div>
+                                    <div id="misuse-tags-comment">
+                                        <?php if($misuse_tags): ?>
+                                            <?php foreach($misuse_tags as $tag) : ?>
+                                                <div class="misuse-tag" style="background-color:<?= htmlspecialchars($tag->color) ?>;color:<?= htmlspecialchars($tag->getFontColor()) ?>;">
+                                                    <span id="<?= htmlspecialchars($tag->name) ?>"><?= htmlspecialchars($tag->name) ?></span>
+                                                    <button onclick="return removeTag(this.parentElement);" style="border:none;outline:none;background-color:<?= htmlspecialchars($tag->color) ?>;margin:0;padding:0"><i class="fa fa-trash"></i></button>
+                                                </div>
+                                            <?php endforeach; ?>
+                                        <?php endif; ?>
+                                    </div>
+                                <td>
+                            </tr>
+                            <tr><td colspan="2">
+                                    <div style="height:100%;">
+                                        <input id="tag-input" class="tag-input" maxlength="100" list="tags" name="tag_name" placeholder="add new tag" autocomplete="off" onkeypress="if(event.key === 'Enter'){addTag(this.value)}">
+                                        <datalist id="tags">
+                                            <?php foreach($tags as $tag) : ?>
+                                                <option value="<?= htmlspecialchars($tag->name); ?>">
+                                            <?php endforeach;?>
+                                        </datalist>
+                                    </div>
+                                </td></tr>
                             <tr><td id="review_area" colspan="2" style="visibility: visible">
                                     <?php if($review) : ?>
                                         <textarea id="review_comment" name="review_comment" cols="80" rows="5"><?= htmlspecialchars($review->comment); ?></textarea>
@@ -429,7 +439,7 @@ $origin_path = $origin_path ? $origin_path : $pathFor('experiment.detector', arr
                     <?php if($review): ?>
                     // fix for https://github.com/sparksuite/simplemde-markdown-editor/issues/344
                     document.getElementById("comment-area").style.display="block";
-                    simplemde.value("<?= $review->comment ?>");
+                    simplemde.value(`<?= $review->comment ?>`);
                     simplemde.codemirror.refresh();
                     document.getElementById("comment-area").style.display="none";
                     <?php endif; ?>

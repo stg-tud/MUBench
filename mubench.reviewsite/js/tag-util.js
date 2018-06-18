@@ -1,5 +1,5 @@
 function addTag(tagName){
-        let misuseTagsDiv = document.getElementById('misuse-tags');
+        let misuseTagsDiv = document.getElementById('misuse-tags-comment');
         if (isExistingTag(misuseTagsDiv, tagName)) {
             misuseTagsDiv.innerHTML += getTagTemplate(tagName);
         }
@@ -11,8 +11,9 @@ function isExistingTag(misuseTagsDiv, tagName){
 }
 
 function removeTag(tagElement){
-    let misuseTagsDiv = document.getElementById('misuse-tags');
-    misuseTagsDiv.removeChild(tagElement);
+    let misuseTagsDivComment = document.getElementById('misuse-tags-comment');
+    misuseTagsDivComment.removeChild(tagElement);
+    return false;
 }
 
 function getTagTemplate(tagName){
@@ -22,18 +23,4 @@ function getTagTemplate(tagName){
             <button class="remove-tag-button" onclick="removeTag(this.parentElement)"><i class="fa fa-trash"></i></button>
         </div>`;
     return template;
-}
-
-function postJson(url, msg, callback){
-    let request = new XMLHttpRequest();
-    request.open('POST', url, true);
-    request.setRequestHeader('Content-Type', 'application/json');
-    request.addEventListener('load', (r) => {
-        if(r.currentTarget.status == 200) {
-            callback(r);
-        }else{
-            console.log(r);
-        }
-    });
-    request.send(JSON.stringify(msg));
 }
