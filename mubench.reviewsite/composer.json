@@ -12,17 +12,22 @@
     "illuminate/events": "v5.5.17"
   },
   "require-dev": {
-    "phpunit/phpunit": "5.5.5"
+    "phpunit/phpunit": "^6.0",
+    "facebook/webdriver": "^1.6"
   },
   "autoload": {
     "psr-4": {
       "MuBench\\ReviewSite\\": "src",
       "MuBench\\ReviewSite\\Setup\\": "setup"
-
     },
     "files": [
       "src/route_utils.php",
       "src/csv_utils.php"
     ]
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "MuBench\\ReviewSite\\Tests\\": "tests"
+    }
   }
 }

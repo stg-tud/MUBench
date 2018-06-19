@@ -1,7 +1,7 @@
 build:
   pre_ci_boot:
     image_name: svamann/mubench-ci
-    image_tag: latest
+    image_tag: dev
     pull: true
 
 language: python
@@ -24,7 +24,13 @@ script:
   # mubench.reviewsite
   - cd mubench.reviewsite
   - ./configure.sh
-  - phpunit --bootstrap vendor/autoload.php tests/
+  - cp settings.default.php settings.php
+  - touch test.sqlite
+  - java -jar /usr/local/bin/selenium-server-standalone-3.12.0.jar &
+  - php -S localhost:8080 -t ./ &
+  - sleep 10
+  - phpunit --testsuite unit_tests
+  - phpunit --testsuite integration_tests
 
 notifications:
   email:
