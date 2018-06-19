@@ -47,7 +47,7 @@ class ReviewsController extends Controller
             $this->determineNavigationTargets($all_misuses, $project_muid, $version_muid, $misuse_muid, $reviewer);
 
         $all_violations = Violation::all();
-        $all_tags = Tag::all();
+        $all_tags = Tag::all()->sortBy('name');
         $review = $misuse->getReview($reviewer);
         return $this->renderer->render($response, 'review.phtml', ['reviewer' => $reviewer, 'is_reviewer' => $is_reviewer,
             'misuse' => $misuse, 'experiment' => $experiment,
