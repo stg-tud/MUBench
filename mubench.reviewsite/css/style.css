@@ -233,7 +233,7 @@ table.fw {width:100%;}
 
 .misuse-tag {
     float: left;
-    margin-right: 3px;
+    margin: 0 3px 3px 0;
     padding: 4px;
     border-radius: 2px;
     background-color: gray;
