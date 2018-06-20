@@ -5,7 +5,7 @@ LABEL maintainer="amann@st.informatik.tu-darmstadt.de"
 # Install ca-certificates so that HTTPS works consistently
 RUN apk update \
  && apk add ca-certificates wget \
- && update-ca-certificates \
+ && update-ca-certificates
 
 ENV LANG=C.UTF-8
 
