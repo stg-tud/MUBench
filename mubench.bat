@@ -16,7 +16,7 @@ SET DOC=%MUBENCH_DOCS%%~1.py
 IF EXIST %TASK% (
   SHIFT
   IF %~1 == "-h" (
-    IF EXIST %DOC% (
+    IF EXIST %MUBENCH_ROOT%%DOC% (
       docker run --rm -v "%MUBENCH_ROOT%":/mubench %PIPELINE_DOCKER_IMAGE% python3 %DOC% %*
 	  EXIT 0
 	)
