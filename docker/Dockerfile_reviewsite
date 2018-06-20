@@ -43,7 +43,7 @@ STOPSIGNAL SIGTERM
 
 # Setup review site
 COPY mubench.reviewsite .
-RUN composer install --no-interaction \
+RUN composer install --no-interaction --no-dev \
  && mkdir -p /mubench-reviewsite/upload \
  && mkdir /mubench-reviewsite-data \
  && mkdir /mubench-reviewsite-data/logs \

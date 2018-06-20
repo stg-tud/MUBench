@@ -1,6 +1,6 @@
 if [ "$1" = 'init' ]; then
   echo "Initializing MUBench review site..."
-  docker run --rm -v "$MUBENCH_REVIEWSITE_ROOT":/mubench-reviewsite ${MUBENCH_REVIEWSITE_DOCKER_IMAGE} /bin/sh ./configure.sh
+  docker run --rm -v "$MUBENCH_REVIEWSITE_ROOT":/mubench-reviewsite ${MUBENCH_REVIEWSITE_DOCKER_IMAGE} /bin/sh -c "composer install --no-interaction --no-dev && mkdir -p upload && mkdir -p logs"
 elif [ "$1" = 'start' ]; then
   echo "Starting MUBench review site at http://localhost:${MUBENCH_REVIEWSITE_PORT}..."
   output=$(docker run --rm -itd -p ${MUBENCH_REVIEWSITE_PORT}:80 -v "$MUBENCH_REVIEWSITE_ROOT":/mubench-reviewsite --name ${MUBENCH_REVIEWSITE_DOCKER_CID} ${MUBENCH_REVIEWSITE_DOCKER_IMAGE} 2>&1) || echo $output

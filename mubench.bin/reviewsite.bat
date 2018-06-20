@@ -1,6 +1,6 @@
 IF "%~1" == "init" (
   echo "Initializing MUBench review site..."
-  docker run --rm -v "%REVIEWSITE_ROOT%":/mubench-reviewsite %REVIEWSITE_DOCKER_IMAGE% /bin/bash ./configure.sh
+  docker run --rm -v "%REVIEWSITE_ROOT%":/mubench-reviewsite %REVIEWSITE_DOCKER_IMAGE% /bin/sh -c "composer install --no-interaction --no-dev && mkdir -p upload && mkdir -p logs"
 ) ELSE IF "%~1" == "start" (
   echo "Starting MUBench review site at http://localhost:%REVIEWSITE_PORT%..."
   docker run --rm -itd -p %REVIEWSITE_PORT%:80 -v "%REVIEWSITE_ROOT%":/mubench-reviewsite --name %REVIEWSITE_DOCKER_CID% %DOCKER_IMAGE%

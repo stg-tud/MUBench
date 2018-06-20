@@ -23,7 +23,9 @@ script:
   
   # mubench.reviewsite
   - cd mubench.reviewsite
-  - ./configure.sh
+  - composer install --no-interaction
+  - mkdir -p upload
+  - mkdir -p logs
   - cp settings.default.php settings.php
   - touch test.sqlite
   - java -jar /usr/local/bin/selenium-server-standalone-3.12.0.jar &
