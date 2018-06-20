@@ -24,14 +24,14 @@ Specific requirements depend on the detector you evaluate, but our minimum recom
 ### Linux/OSX
 
 1. Install [Docker](https://www.docker.com/products/overview#/install_the_platform).
-2. `$> cd /mubench/install/path/`
+2. `$> cd <your-install-path>/`
 3. `$> docker run --rm -v $PWD:/mubench svamann/mubench git clone https://github.com/stg-tud/MUBench.git .`
 4. `$> ./mubench check setup`
 
 ### Windows
 
 1. Install [Docker](https://www.docker.com/products/overview#/install_the_platform).
-2. `$> cd X:\mubench\install\path\`
+2. `$> cd <your-install-path>\`
 3. Depending on your system and Docker version you may have to [enable directory mounts for drive X](https://rominirani.com/docker-on-windows-mounting-host-directories-d96f3f056a2c).
 4. `$> docker run --rm -v "%cd:\=/%":/mubench svamann/mubench git clone https://github.com/stg-tud/MUBench.git .`
 5. `$> ./mubench.bat check setup`
