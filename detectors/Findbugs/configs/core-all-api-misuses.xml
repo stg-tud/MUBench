@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FindBugsFilter>
+  <!-- #################################################################### -->
+  <!-- method call ######################################################## -->
+  
+  <!-- missing -->
+  <Match>
+    <Bug pattern="ODR_OPEN_DATABASE_RESOURCE, OS_OPEN_STREAM, OBL_UNSATISFIED_OBLIGATION, CN_IDIOM_NO_SUPER_CALL, UL_UNRELEASED_LOCK, IJU_TEARDOWN_NO_SUPER, IJU_SETUP_NO_SUPER, RV_RETURN_VALUE_IGNORED, RV_RETURN_VALUE_IGNORED_NO_SIDE_EFFECT, RV_RETURN_VALUE_IGNORED_INFERRED, RV_DONT_JUST_NULL_CHECK_READLINE" />
+  </Match>
+  
+  <!-- wrong -->
+  <Match><!-- missing explicit parameter -->
+    <Bug pattern="DM_DEFAULT_ENCODING, DM_CONVERT_CASE" />
+  </Match>
+  <Match><!-- unintended -->
+    <Bug pattern="DMI_USING_REMOVEALL_TO_CLEAR_COLLECTION, DM_BOXED_PRIMITIVE_TOSTRING, DM_BOXED_PRIMITIVE_FOR_PARSING, DM_BOXED_PRIMITIVE_FOR_COMPARE, BX_UNBOXED_AND_COERCED_FOR_TERNARY_OPERATOR, BX_BOXING_IMMEDIATELY_UNBOXED_TO_PERFORM_COERCION, WL_USING_GETCLASS_RATHER_THAN_CLASS_LITERAL, ES_COMPARING_PARAMETER_STRING_WITH_EQ, ES_COMPARING_STRINGS_WITH_EQ, RU_INVOKE_RUN, NO_NOTIFY_NOT_NOTIFYALL, RC_REF_COMPARISON, FE_TEST_IF_EQUAL_TO_NOT_A_NUMBER, SBSC_USE_STRINGBUFFER_CONCATENATION, DM_NEXTINT_VIA_NEXTDOUBLE, QBA_QUESTIONABLE_BOOLEAN_ASSIGNMENT, JML_JSR166_CALLING_WAIT_RATHER_THAN_AWAIT, JLM_JSR166_UTILCONCURRENT_MONITORENTER, JLM_JSR166_LOCK_MONITORENTER, DM_MONITOR_WAIT_ON_CONDITION" />
+  </Match>
+
+  <!-- superfluous -->
+  <Match><!-- generally discouraged or meaningless (e.g., constant-result operation) -->
+    <Bug pattern="DMI_USELESS_SUBSTRING, DM_STRING_TOSTRING, DM_STRING_VOID_CTOR, DM_STRING_CTOR, DM_BOOLEAN_CTOR, DM_NUMBER_CTOR, DM_FP_NUMBER_CTOR, BX_UNBOXING_IMMEDIATELY_REBOXED, BX_BOXING_IMMEDIATELY_UNBOXED, DM_EXIT, DM_RUN_FINALIZERS_ON_EXIT, DM_USELESS_THREAD, DMI_INVOKING_TOSTRING_ON_ARRAY, DMI_INVOKING_TOSTRING_ON_ANONYMOUS_ARRAY, STI_INTERRUPTED_ON_CURRENTTHREAD, RV_01_TO_INT, ICAST_INT_CAST_TO_FLOAT_PASSED_TO_ROUND, ICAST_INT_CAST_TO_DOUBLE_PASSED_TO_CEIL" />
+  </Match>
+  <Match><!-- illegal in this context -->
+    <Bug pattern="DMI_CALLING_NEXT_FROM_HASNEXT" />
+  </Match>
+
+  <!-- #################################################################### -->
+  <!-- null check ######################################################### -->
+  
+  <!-- missing -->
+  <Match>
+    <Bug pattern="NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE, NP_NULL_ON_SOME_PATH_MIGHT_BE_INFEASIBLE, NP_LOAD_OF_KNOWN_NULL_VALUE, NP_IMMEDIATE_DEREFERENCE_OF_READLINE, NP_DEREFERENCE_OF_READLINE_VALUE, NP_NULL_PARAM_DEREF_NONVIRTUAL, NP_NULL_PARAM_DEREF_ALL_TARGETS_DANGEROUS, NP_NULL_PARAM_DEREF, NP_NULL_ON_SOME_PATH_EXCEPTION, NP_NULL_ON_SOME_PATH, NP_NULL_INSTANCEOF, NP_NONNULL_PARAM_VIOLATION, NP_GUARANTEED_DEREF_ON_EXCEPTION_PATH, NP_GUARANTEED_DEREF, NP_CLOSING_NULL, NP_ARGUMENT_MIGHT_BE_NULL, NP_ALWAYS_NULL_EXCEPTION, NP_ALWAYS_NULL" />
+  </Match>
+
+  <!-- superfluous -->
+  <Match>
+    <Bug pattern="RCN_REDUNDANT_NULLCHECK_OF_NULL_VALUE, RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE, RCN_REDUNDANT_COMPARISON_TWO_NULL_VALUES, RCN_REDUNDANT_COMPARISON_OF_NULL_AND_NONNULL_VALUE, NP_SYNC_AND_NULL_CHECK_FIELD" />
+  </Match>
+
+  <!-- misplaced -->
+  <Match>
+    <Bug pattern="RCN_REDUNDANT_NULLCHECK_WOULD_HAVE_BEEN_A_NPE" />
+  </Match>
+  
+  <!-- #################################################################### -->
+  <!-- value/state condition ############################################## -->
+  
+  <!-- missing -->
+  <Match><!-- illegal parameter value: format -->
+    <Bug pattern="VA_FORMAT_STRING_USES_NEWLINE, VA_FORMAT_STRING_BAD_CONVERSION_TO_BOOLEAN, VA_FORMAT_STRING_NO_PREVIOUS_ARGUMENT, VA_FORMAT_STRING_MISSING_ARGUMENT, VA_FORMAT_STRING_ILLEGAL, VA_FORMAT_STRING_EXTRA_ARGUMENTS_PASSED, VA_FORMAT_STRING_EXPECTED_MESSAGE_FORMAT_SUPPLIED, VA_FORMAT_STRING_BAD_CONVERSION, VA_FORMAT_STRING_BAD_ARGUMENT, VA_FORMAT_STRING_BAD_CONVERSION_FROM_ARRAY, RE_POSSIBLE_UNINTENDED_PATTERN, RE_CANT_USE_FILE_SEPARATOR_AS_REGULAR_EXPRESSION, RE_BAD_SYNTAX_FOR_REGULAR_EXPRESSION" />
+  </Match>
+  <Match><!-- illegal parameter value: index out of bounds -->
+    <Bug pattern="DMI_BAD_MONTH, RANGE_STRING_INDEX, RANGE_ARRAY_OFFSET, RANGE_ARRAY_LENGTH, RANGE_ARRAY_INDEX, SQL_BAD_RESULTSET_ACCESS, SQL_BAD_PREPARED_STATEMENT_ACCESS" />
+  </Match>
+  <Match><!-- illegal parameter value: order -->
+    <Bug pattern="DMI_ARGUMENTS_WRONG_ORDER" />
+  </Match>
+  <Match><!-- illegal parameter value: special -->
+    <Bug pattern="DMI_COLLECTIONS_SHOULD_NOT_CONTAIN_THEMSELVES, IL_CONTAINER_ADDED_TO_ITSELF, DMI_THREAD_PASSED_WHERE_RUNNABLE_EXPECTED, IO_APPENDING_TO_OBJECT_OUTPUT_STREAM" />
+  </Match>
+  <Match><!-- illegal parameter value: sanitization -->
+    <Bug pattern="PT_RELATIVE_PATH_TRAVERSAL, PT_ABSOLUTE_PATH_TRAVERSAL, SQL_PREPARED_STATEMENT_GENERATED_FROM_NONCONSTANT_STRING, SQL_NONCONSTANT_STRING_PASSED_TO_EXECUTE" />
+  </Match>
+  <Match><!-- illegal parameter value: casts -->
+    <Bug pattern="ICAST_INT_2_LONG_AS_INSTANT, RV_ABSOLUTE_VALUE_OF_RANDOM_INT, RV_ABSOLUTE_VALUE_OF_HASHCODE" />
+  </Match>
+  <Match><!-- return value -->
+    <Bug pattern="RR_NOT_CHECKED, SR_NOT_CHECKED, RV_RETURN_VALUE_IGNORED_BAD_PRACTICE, RV_RETURN_VALUE_OF_PUTIFABSENT_IGNORED" />
+  </Match>
+  
+  <!-- wrong -->
+  <Match>
+    <Bug pattern="RV_CHECK_COMPARETO_FOR_SPECIFIC_RETURN_VALUE, RV_NEGATING_RESULT_OF_COMPARETO" />
+  </Match>
+  
+  <!-- superfluous -->
+  <Match>
+    <Bug pattern="BC_EQUALS_METHOD_SHOULD_WORK_FOR_ALL_OBJECTS, UC_USELESS_CONDITION_TYPE, UC_USELESS_CONDITION, SIO_SUPERFLUOUS_INSTANCEOF, RpC_REPEATED_CONDITIONAL_TEST" />
+  </Match>
+
+  <!-- #################################################################### -->
+  <!-- context condition ################################################## -->
+
+  <!-- missing -->
+  <Match>
+    <Bug pattern="SW_SWING_METHODS_INVOKED_IN_SWING_THREAD, SC_START_IN_CTOR, DP_DO_INSIDE_DO_PRIVILEGED, DP_CREATE_CLASSLOADER_INSIDE_DO_PRIVILEGED" />
+  </Match>
+
+  <!-- superfluous -->
+  <Match>
+    <Bug pattern="IJU_ASSERT_METHOD_INVOKED_FROM_RUN_METHOD" />
+  </Match>
+
+  <!-- #################################################################### -->
+  <!-- synchronization condition ########################################## -->
+
+  <!-- missing -->
+  <Match><!-- inconsistent synchronization -->
+    <Bug pattern="WS_WRITEOBJECT_SYNC, UG_SYNC_SET_UNSYNC_GET, MWN_MISMATCHED_WAIT, MWN_MISMATCHED_NOTIFY, IS2_INCONSISTENT_SYNC, DC_PARTIALLY_CONSTRUCTED, AT_OPERATION_SEQUENCE_ON_CONCURRENT_ABSTRACTION" />
+  </Match>
+  <Match><!-- thread-shared usage of non-thread-safe object -->
+    <Bug pattern="STCAL_STATIC_SIMPLE_DATE_FORMAT_INSTANCE, STCAL_STATIC_CALENDAR_INSTANCE, STCAL_INVOKE_ON_STATIC_DATE_FORMAT_INSTANCE, STCAL_INVOKE_ON_STATIC_CALENDAR_INSTANCE" />
+  </Match>
+  <Match><!-- manual synchronization -->
+    <Bug pattern="SP_SPIN_ON_FIELD" />
+  </Match>
+  <Match>
+    <Bug pattern="ML_SYNC_ON_UPDATED_FIELD" />
+  </Match>
+
+  <!-- superfluous -->
+  <Match>
+    <Bug pattern="TLW_TWO_LOCK_WAIT, SWL_SLEEP_WITH_LOCK_HELD, RS_READOBJECT_SYNC, ML_SYNC_ON_FIELD_TO_GUARD_CHANGING_THAT_FIELD, ESync_EMPTY_SYNC, DC_DOUBLECHECK" />
+  </Match>
+
+  <!-- misplaced -->
+  <Match>
+    <Bug pattern="LI_LAZY_INIT_STATIC, LI_LAZY_INIT_UPDATE_STATIC" />
+  </Match>
+
+  <!-- #################################################################### -->
+  <!-- exception handling ################################################# -->
+
+  <!-- missing -->
+  <Match>
+    <Bug pattern="ODR_OPEN_DATABASE_RESOURCE_EXCEPTION_PATH, OS_OPEN_STREAM_EXCEPTION_PATH, OBL_UNSATISFIED_OBLIGATION_EXCEPTION_EDGE, UL_UNRELEASED_LOCK_EXCEPTION_PATH, RV_EXCEPTION_NOT_THROWN" />
+  </Match>
+
+  <!-- superfluous -->
+  <Match>
+    <Bug pattern="REC_CATCH_EXCEPTION, DE_MIGHT_DROP, DE_MIGHT_IGNORE, IMSE_DONT_CATCH_IMSE, IT_NO_SUCH_ELEMENT" />
+  </Match>
+
+  <!-- #################################################################### -->
+  <!-- iteration ########################################################## -->
+
+  <!-- missing -->
+  <Match>
+    <Bug pattern="WA_NOT_IN_LOOP, WA_AWAIT_NOT_IN_LOOP, UW_UNCOND_WAIT" />
+  </Match>
+
+  <!-- superfluous -->
+  <Match>
+    <Bug pattern="IL_INFINITE_RECURSIVE_LOOP, IL_INFINITE_LOOP" />
+  </Match>
+
+  <!-- #################################################################### -->
+  <!-- not classified ##################################################### -->
+  <Match>
+    <Bug pattern="DMI_ENTRY_SETS_MAY_REUSE_ENTRY_OBJECTS, PZ_DONT_REUSE_ENTRY_OBJECTS_IN_ITERATORS" />
+  </Match>
+  <Match><!-- notify is called without modification of state (wait condition will not change) -->
+    <Bug pattern="NN_NAKED_NOTIFY" />
+  </Match>
+  <Match><!-- static call (always dispatches to current thread) on instance (other than the current thread) -->
+    <Bug pattern="STI_INTERRUPTED_ON_UNKNOWNTHREAD" />
+  </Match>
+</FindBugsFilter>
