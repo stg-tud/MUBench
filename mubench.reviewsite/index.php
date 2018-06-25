@@ -8,6 +8,8 @@ date_default_timezone_set('Europe/Berlin');
 require __DIR__ . '/vendor/autoload.php';
 
 $settings = require __DIR__ . '/settings.php';
+define("NUMBER_OF_REQUIRED_REVIEWS", $settings["settinngs"]["default_required_reviews"]);
+
 $app = new \Slim\App($settings);
 
 $container = $app->getContainer();

@@ -8,8 +8,6 @@ use Illuminate\Database\Eloquent\Model;
 
 class Misuse extends Model
 {
-    const NUMBER_OF_REQUIRED_REVIEWS = 2;
-
     protected $fillable = ['misuse_muid', 'run_id', 'detector_id', 'metadata_id'];
 
     public function metadata()
@@ -122,7 +120,7 @@ class Misuse extends Model
 
     public function getNumberOfRequiredReviews()
     {
-        return self::NUMBER_OF_REQUIRED_REVIEWS - sizeof($this->getReviews());
+        return NUMBER_OF_REQUIRED_REVIEWS - sizeof($this->getReviews());
     }
 
     public function hasConclusiveReviewState()
