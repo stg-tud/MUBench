@@ -41,10 +41,24 @@ class ReviewsController extends Controller
 
         $runs = RunsController::getRuns($detector, $experiment, $ex2_review_size);
 
-        $all_misuses = $this->collectAllMisuses($runs);
+        $limited_all_misuses = $this->collectAllMisuses($runs);
 
         list($previous_misuse, $next_misuse, $next_reviewable_misuse, $misuse) =
-            $this->determineNavigationTargets($all_misuses, $project_muid, $version_muid, $misuse_muid, $reviewer);
+            $this->determineNavigationTargets($limited_all_misuses, $project_muid, $version_muid, $misuse_muid, $reviewer);
+
+        if(!$misuse){
+            $runs = Run::of($detector)->in($experiment)->orderBy('project_muid')->orderBy('version_muid')->get();
+
+            $all_misuses = $this->collectAllMisuses($runs);
+
+            list($previous_misuse, $next_misuse, $next_reviewable_misuse, $misuse) =
+                $this->determineNavigationTargets($all_misuses, $project_muid, $version_muid, $misuse_muid, $reviewer);
+
+            $next_misuse = $all_misuses->first();
+            if($limited_all_misuses->where('id', $next_reviewable_misuse->id)->isEmpty()){
+                $next_reviewable_misuse = null;
+            }
+        }
 
         $all_violations = Violation::all();
         $all_tags = Tag::all()->sortBy('name');
