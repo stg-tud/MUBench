@@ -23,6 +23,9 @@ class ExperimentResult extends RunsResult
 
     public function getRecall()
     {
+        if($this->number_of_projects == 0){
+            return 0;
+        }
         return parent::getRecall() / $this->number_of_detectors;
     }
 }
