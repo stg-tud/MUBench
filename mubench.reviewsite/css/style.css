@@ -231,10 +231,11 @@ table.fw {width:100%;}
     list-style: decimal inside;
 }
 
-pre.prettyprint{
+pre.prettyprint {
     overflow: auto;
     width: auto;
-    max-height: 600px;
+    resize: vertical;
+    max-height: 1000px;
 }
 
 .misuse-tag {
