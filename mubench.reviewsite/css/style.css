@@ -231,6 +231,13 @@ table.fw {width:100%;}
     list-style: decimal inside;
 }
 
+pre.prettyprint {
+    overflow: auto;
+    width: auto;
+    resize: vertical;
+    max-height: 1000px;
+}
+
 .misuse-tag {
     float: left;
     margin: 0 3px 3px 0;
