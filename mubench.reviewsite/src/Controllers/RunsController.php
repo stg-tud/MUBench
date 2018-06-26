@@ -211,10 +211,10 @@ class RunsController extends Controller
                 }
                 $review->finding_reviews()->delete();
                 $review->reviewer()->dissociate();
+                $review->tags()->detach();
             }
             $misuse->reviews()->delete();
             $misuse->metadata()->dissociate();
-            $misuse->misuse_tags()->detach();
             foreach($misuse->snippets()->where('detector_muid', '!=', null) as $snippet){
                 $snippet->delete();
             }

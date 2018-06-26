@@ -22,11 +22,6 @@ class Misuse extends Model
         return $this->hasMany(Review::class);
     }
 
-    public function misuse_tags()
-    {
-        return $this->belongsToMany(Tag::class, 'misuse_tags', 'misuse_id', 'tag_id');
-    }
-
     public function detector()
     {
         return $this->belongsTo(Detector::class, 'detector_id', 'id');
@@ -231,6 +226,19 @@ class Misuse extends Model
             }
         }
         return false;
+    }
+
+    public function getTags()
+    {
+        if(!$this->hasConclusiveReviewState()){
+            return new Collection;
+        }else{
+            $tags = new Collection;
+            foreach($this->reviews as $review){
+                $tags = $tags->merge($review->tags);
+            }
+            return $tags->unique('id');
+        }
     }
 
 }

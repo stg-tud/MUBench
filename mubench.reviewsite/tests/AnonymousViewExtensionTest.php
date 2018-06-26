@@ -1,11 +1,10 @@
 <?php
 
+namespace MuBench\ReviewSite\Tests;
 
 use MuBench\ReviewSite\Models\Detector;
 use MuBench\ReviewSite\Models\Reviewer;
 use MuBench\ReviewSite\ViewExtensions\AnonymousViewExtension;
-
-require_once "SlimTestCase.php";
 
 class AnonymousViewExtensionTest extends SlimTestCase
 {

@@ -119,10 +119,11 @@ class ReviewsController extends Controller
         $comment = $review['review_comment'];
         $misuse_id = $review['misuse_id'];
         $hits = $review['review_hit'];
+        $tags = array_key_exists('review_tags', $review) ? $review['review_tags'] : array();
 
         $reviewer_name = $args['reviewer_name'];
         $reviewer = Reviewer::findByIdOrName($reviewer_name);
-        $this->updateOrCreateReview($misuse_id, $reviewer->id, $comment, $hits);
+        $this->updateOrCreateReview($misuse_id, $reviewer->id, $comment, $hits, $tags);
 
         if ($review["origin"] != "") {
             return $response->withRedirect("{$review["origin"]}");
@@ -137,12 +138,12 @@ class ReviewsController extends Controller
         }
     }
 
-    public function updateOrCreateReview($misuse_id, $reviewer_id, $comment, $findings_reviews_by_rank)
+    public function updateOrCreateReview($misuse_id, $reviewer_id, $comment, $findings_reviews_by_rank, $tags)
     {
         $review = Review::firstOrNew(['misuse_id' => $misuse_id, 'reviewer_id' => $reviewer_id]);
         $review->comment = $comment;
         $review->save();
-
+        TagsController::syncReviewTags($review->id, $tags);
         foreach ($findings_reviews_by_rank as $rank => $findings_review) {
             $findingReview = FindingReview::firstOrNew(['review_id' => $review->id, 'rank' => $rank]);
             $findingReview->decision = $findings_review['hit'];

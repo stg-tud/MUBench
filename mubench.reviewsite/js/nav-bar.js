@@ -44,6 +44,14 @@ var simplemde = new SimpleMDE({
 
 function saveReview(v){
     var form = document.getElementById("review_form");
+    let tags = document.getElementById("misuse-tags-comment").getElementsByTagName('span');
+    for(let i = 0; i < tags.length; ++i){
+        let tagInput = document.createElement("input");
+        tagInput.type = "hidden";
+        tagInput.name = "review_tags[" + i + "]";
+        tagInput.value = tags[i].id;
+        form.appendChild(tagInput);
+    }
     var input = document.createElement("input");
     input.type = "hidden";
     input.name = "origin";

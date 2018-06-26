@@ -124,9 +124,6 @@ class ImportRunsController extends RunsController
             $imported_metadata->violations()->sync($violations);
         }
 
-        $tag_ids = $this->importTags($misuse);
-        $imported_misuse->misuse_tags()->sync($tag_ids);
-
         foreach ($misuse->reviews as $review) {
             $this->importReviews($review, $imported_misuse);
         }
@@ -151,17 +148,13 @@ class ImportRunsController extends RunsController
             }
             $imported_finding_review->violations()->sync($types);
         }
-    }
-
-    private function importTags($misuse): array
-    {
         $tag_ids = [];
-        foreach ($misuse->misuse_tags as $tag) {
+        foreach($review->tags as $tag){
             $imported_tag = $this->importAndResetConnectionModel($tag);
             $imported_tag->save();
             $tag_ids[] = $imported_tag->id;
         }
-        return $tag_ids;
+        $imported_review->tags()->sync($tag_ids);
     }
 
     private function importMetadataCorrentUsagesAndViolations($misuse, $imported_metadata): array

@@ -394,15 +394,15 @@ $review->save();
 
 
 echo 'Creating reviewers<br/>';
-$reviewer = new \MuBench\ReviewSite\Models\Reviewer;
-$reviewer->name = 'reviewer';
-$reviewer->save();
-$reviewer = new \MuBench\ReviewSite\Models\Reviewer;
-$reviewer->name = 'reviewer2';
-$reviewer->save();
-$reviewer = new \MuBench\ReviewSite\Models\Reviewer;
-$reviewer->name = 'admin';
-$reviewer->save();
+$reviewer1 = new \MuBench\ReviewSite\Models\Reviewer;
+$reviewer1->name = 'reviewer';
+$reviewer1->save();
+$reviewer2 = new \MuBench\ReviewSite\Models\Reviewer;
+$reviewer2->name = 'reviewer2';
+$reviewer2->save();
+$reviewer3 = new \MuBench\ReviewSite\Models\Reviewer;
+$reviewer3->name = 'admin';
+$reviewer3->save();
 
 
 echo 'Creating finding reviews<br/>';
@@ -451,6 +451,6 @@ $tag->color = '#808080';
 $tag->save();
 
 echo 'Creating MisuseTags<br/>';
-$capsule->table('misuse_tags')->insert(array('misuse_id' => 3, 'tag_id' => 1));
-$capsule->table('misuse_tags')->insert(array('misuse_id' => 1, 'tag_id' => 2));
-$capsule->table('misuse_tags')->insert(array('misuse_id' => 3, 'tag_id' => 2));
+$capsule->table('review_tags')->insert(array('review_id' => 3, 'tag_id' => 1));
+$capsule->table('review_tags')->insert(array('review_id' => 1, 'tag_id' => 2));
+$capsule->table('review_tags')->insert(array('review_id' => 3, 'tag_id' => 2));

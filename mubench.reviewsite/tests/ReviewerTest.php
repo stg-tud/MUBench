@@ -1,9 +1,8 @@
 <?php
 
+namespace MuBench\ReviewSite\Tests;
+
 use MuBench\ReviewSite\Models\Reviewer;
-
-require_once 'SlimTestCase.php';
-
 
 class ReviewerTest extends SlimTestCase
 {

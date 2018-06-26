@@ -1,8 +1,8 @@
 <?php
 
-use MuBench\ReviewSite\Controllers\MetadataController;
+namespace MuBench\ReviewSite\Tests;
+
 use MuBench\ReviewSite\Controllers\RunsController;
-use MuBench\ReviewSite\Controllers\SnippetsController;
 use MuBench\ReviewSite\Models\Detector;
 use MuBench\ReviewSite\Models\Experiment;
 use MuBench\ReviewSite\Models\Misuse;
@@ -11,11 +11,18 @@ use MuBench\ReviewSite\Models\Reviewer;
 use MuBench\ReviewSite\Models\Run;
 use MuBench\ReviewSite\Models\Snippet;
 
-require_once 'SlimTestCase.php';
-
-
 class MisuseTest extends SlimTestCase
 {
+
+    /** @var ReviewsControllerHelper */
+    private $reviewsControllerHelper;
+
+    public function setUp()
+    {
+        parent::setUp();
+        $this->reviewsControllerHelper = new ReviewsControllerHelper($this->container);
+    }
+
     public function testHasReviewed()
     {
         $reviewer = Reviewer::create(['name' => ':arbitrary:']);
@@ -103,6 +110,47 @@ class MisuseTest extends SlimTestCase
         $run = Run::of(Detector::find('-d-'))->in(Experiment::find(1))->first();
 
         self::assertEquals(2, count($run->misuses[0]->snippets()));
+    }
+
+    function testGetAllTagsWhenConclusive()
+    {
+        $reviewer1 = Reviewer::create(['name' => 'reviewer1']);
+        $reviewer2 = Reviewer::create(['name' => 'reviewer2']);
+
+        $this->createRunWithFindingInLine(10);
+        $misuse = Misuse::find(1);
+
+        $this->reviewsControllerHelper->createReview($misuse, $reviewer1, 'Yes', [], ['reviewer1-tag']);
+        $this->reviewsControllerHelper->createReview($misuse, $reviewer2, 'Yes', [], ['reviewer2-tag']);
+
+        self::assertEquals(2, Misuse::find(1)->getTags()->count());
+    }
+
+    function testGetTagsOfReviewerWhenNotConclusive()
+    {
+        $reviewer1 = Reviewer::create(['name' => 'reviewer1']);
+        $reviewer2 = Reviewer::create(['name' => 'reviewer2']);
+
+        $this->createRunWithFindingInLine(10);
+        $misuse = Misuse::find(1);
+
+        $this->reviewsControllerHelper->createReview($misuse, $reviewer1, 'Yes', [], ['reviewer1-tag']);
+        $this->reviewsControllerHelper->createReview($misuse, $reviewer2, 'No', [], ['reviewer2-tag']);
+
+        $tags = $misuse->getReview($reviewer1)->tags;
+        self::assertEquals(1, $tags->count());
+        self::assertEquals('reviewer1-tag', $tags[0]->name);
+    }
+
+    function testGetNoTagsWithoutReviewerWhenNotConclusive()
+    {
+        $reviewer1 = Reviewer::create(['name' => 'reviewer1']);
+        $this->createRunWithFindingInLine(10);
+        $misuse = Misuse::find(1);
+
+        $this->reviewsControllerHelper->createReview($misuse, $reviewer1, 'Yes', [], ['reviewer1-tag']);
+
+        self::assertEquals(0, $misuse->getTags()->count());
     }
 
     public function createRunWithFindingInLine($line)

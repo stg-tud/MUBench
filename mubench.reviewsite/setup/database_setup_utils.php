@@ -130,11 +130,11 @@ function createTables($connection)
     });
 
     echo 'Creating MisuseTag<br/>';
-    $schema->dropIfExistsAndCreateTable('misuse_tags', function (Blueprint $table) {
+    $schema->dropIfExistsAndCreateTable('review_tags', function (Blueprint $table) {
         $table->increments('id');
-        $table->integer('misuse_id');
+        $table->integer('review_id');
         $table->integer('tag_id');
-        $table->unique(['tag_id', 'misuse_id']);
+        $table->unique(['review_id', 'tag_id']);
     });
 
     $experiment1 = new \MuBench\ReviewSite\Models\Experiment;

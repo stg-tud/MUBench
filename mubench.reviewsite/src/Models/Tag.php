@@ -11,9 +11,9 @@ class Tag extends Model
     protected $fillable = ['name', 'color'];
     public $timestamps = false;
 
-    public function misuses()
+    public function reviews()
     {
-        return $this->belongsToMany(Misuse::class, 'misuse_tags', 'tag_id', 'misuse_id');
+        return $this->belongsToMany(Review::class, 'review_tags', 'tag_id', 'review_id');
     }
 
     public function getFontColor()

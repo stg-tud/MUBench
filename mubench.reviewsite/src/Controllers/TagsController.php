@@ -4,28 +4,13 @@ namespace MuBench\ReviewSite\Controllers;
 
 
 use MuBench\ReviewSite\Models\Misuse;
+use MuBench\ReviewSite\Models\Review;
 use MuBench\ReviewSite\Models\Tag;
 use Slim\Http\Request;
 use Slim\Http\Response;
 
 class TagsController extends Controller
 {
-    public function postTag(Request $request, Response $response, array $args)
-    {
-        $formData = $request->getParsedBody();
-        $tag_id = $formData['tag_name'];
-        $misuse_id = $formData['misuse_id'];
-
-        $tag = $this->addTagToMisuse($misuse_id, $tag_id);
-        $removeUrl = $this->router->pathFor('private.tag.remove', array('experiment_id' => $args["experiment_id"],
-            'detector_muid' => $args["detector_muid"],
-            'project_muid' => $args["project_muid"],
-            'version_muid' => $args["version_muid"],
-            'misuse_muid' => $args["misuse_muid"],
-            'tag_id' => $tag->id));
-        
-        $response->withJson(array("id" => $tag->id, "color" => $tag->color, "fontColor" => $tag->getFontColor(), "removeUrl" => $removeUrl));
-    }
 
     public function manageTags(Request $request, Response $response, array $args)
     {
@@ -42,27 +27,11 @@ class TagsController extends Controller
         return $response->withRedirect($this->router->pathFor('private.tags.manage'));
     }
 
-    public function updateTag($id, $tagInfo){
-        $tag = Tag::find($id);
-        $tag->name = $tagInfo['name'];
-        $tag->color = $tagInfo['color'];
-        $tag->save();
-    }
-
     public function deleteTag(Request $request, Response $response, array $args)
     {
         $tag_id = $args['tag_id'];
-        $this->deleteTagAndRemoveFromMisuses($tag_id);
+        $this->deleteTagAndRemoveFromReviews($tag_id);
         return $response->withRedirect($this->router->pathFor('private.tags.manage'));
-    }
-
-    public function removeTag(Request $request, Response $response, array $args)
-    {
-        $formData = $request->getParsedBody();
-        $tag_id = $args['tag_id'];
-        $misuse_id = $formData['misuse_id'];
-
-        $this->deleteTagFromMisuse($misuse_id, $tag_id);
     }
 
     public function getTags(Request $request, Response $response, array $args)
@@ -71,10 +40,11 @@ class TagsController extends Controller
         $results = array(1 => array(), 2 => array(), 3 => array());
         $totals = array(1 => array(), 2 => array(), 3 => array());
         foreach($tags as $tag){
-            $tagged_misuses = $tag->misuses;
-            foreach($tagged_misuses as $misuse){
-                $results[$misuse->run->experiment_id][$misuse->detector->muid][$tag->name][] = $misuse;
-                $totals[$misuse->run->experiment_id][$tag->name][] = $misuse;
+            /** @var Review $review */
+            foreach($tag->reviews as $review){
+                $misuse = $review->misuse;
+                $results[$misuse->run->experiment_id][$misuse->detector->muid][$tag->name][$misuse->id] = $misuse;
+                $totals[$misuse->run->experiment_id][$tag->name][$misuse->id] = $misuse;
             }
         }
         foreach($totals as $key => $total){
@@ -84,30 +54,41 @@ class TagsController extends Controller
             ['results' => $results, 'tags' => $tags]);
     }
 
-    function deleteTagAndRemoveFromMisuses($tag_id)
+    public function updateTag($id, $tagInfo){
+        $tag = Tag::find($id);
+        $tag->name = $tagInfo['name'];
+        $tag->color = $tagInfo['color'];
+        $tag->save();
+    }
+
+    function deleteTagAndRemoveFromReviews($tag_id)
     {
         $tag = Tag::find($tag_id);
-        foreach($tag->misuses as $misuse){
-            $misuse->misuse_tags()->detach($tag_id);
+        /** @var Review $review */
+        foreach($tag->reviews as $review){
+            $review->tags()->detach($tag_id);
         }
         $tag->delete();
     }
 
-    function addTagToMisuse($misuseId, $tagName)
+    static function syncReviewTags($reviewId, $tagNames)
     {
-        $tag = Tag::where('name', $tagName)->first();
-        if(!$tag){
-            $tag = new Tag();
-            $tag->name = $tagName;
-            $tag->color = '#808080';
-            $tag->save();
+        $tagIds = [];
+        foreach($tagNames as $tagName){
+            $tag = Tag::where('name', $tagName)->first();
+            if(!$tag){
+                $tag = new Tag();
+                $tag->name = $tagName;
+                $tag->color = '#808080';
+                $tag->save();
+            }
+            $tagIds[] = $tag->id;
         }
-        Misuse::find($misuseId)->misuse_tags()->syncWithoutDetaching($tag->id);
-        return $tag;
+        Review::find($reviewId)->tags()->sync($tagIds);
     }
 
-    function deleteTagFromMisuse($misuseId, $tagId)
+    static function deleteTagFromReview($reviewId, $tagId)
     {
-        Misuse::find($misuseId)->misuse_tags()->detach($tagId);
+        Review::find($reviewId)->tags()->detach($tagId);
     }
 }

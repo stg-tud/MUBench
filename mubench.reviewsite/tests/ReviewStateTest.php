@@ -1,6 +1,6 @@
 <?php
 
-require_once 'SlimTestCase.php';
+namespace MuBench\ReviewSite\Tests;
 
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -13,12 +13,17 @@ use MuBench\ReviewSite\Models\ReviewState;
 
 class ReviewStateTest extends SlimTestCase
 {
+
+    /** @var  ReviewsControllerHelper */
+    private $reviewsControllerHelper;
+
     /** @var  Detector */
     private $detector;
 
     function setUp()
     {
         parent::setUp();
+        $this->reviewsControllerHelper = new ReviewsControllerHelper($this->container);
         $this->detector = Detector::create(['muid' => 'test-detector']);
     }
 
@@ -127,14 +132,14 @@ class ReviewStateTest extends SlimTestCase
     private function someMisuseWithOneFindingAndReviewDecisions($decisions, $resolutionDecision = null)
     {
         $misuse = Misuse::create(['misuse_muid' => "test", 'run_id' => 1, 'detector_id' => $this->detector->id]);
-        $finding = $this->createFindingWith(Experiment::find(2), $this->detector, $misuse);
+        $finding = TestHelper::createFindingWith(Experiment::find(2), $this->detector, $misuse);
         $reviewController = new ReviewsController($this->container);
         foreach ($decisions as $index => $decision) {
             $reviewer = Reviewer::firstOrCreate(['name' => 'reviewer' . $index]);
-            $reviewController->updateOrCreateReview($misuse->id, $reviewer->id, '', [['hit' => $decision, 'violations' => []]]);
+            $this->reviewsControllerHelper->createReview($misuse, $reviewer, $decision);
         }
         if ($resolutionDecision) {
-            $reviewController->updateOrCreateReview($misuse->id, Reviewer::firstOrCreate(['name' => 'resolution'])->id, '', [['hit' => $resolutionDecision, 'violations' => []]]);
+            $this->reviewsControllerHelper->createReview($misuse, Reviewer::firstOrCreate(['name' => 'resolution']), $resolutionDecision);
         }
 
         return $misuse;
