@@ -1,7 +1,7 @@
 build:
   pre_ci_boot:
     image_name: svamann/mubench-ci
-    image_tag: dev
+    image_tag: latest
     pull: true
 
 language: python
