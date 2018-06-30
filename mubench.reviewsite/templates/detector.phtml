@@ -154,7 +154,7 @@ $columns_to_ignore = array(
                     </td>
                 <?php endif; ?>
                     <td class="<?= $style_classes ?>">
-                        <?php $review_state = $misuse->getReviewState() ?>
+                        <?php $review_state = $misuse->getReviewState($default_required_reviews) ?>
                         <?php if ($review_state == ReviewState::NOTHING_TO_REVIEW): ?>
                         <?php elseif ($review_state == ReviewState::NEEDS_REVIEW): ?>
                             <i class="fa fa-search" aria-hidden="true" style="color:red;" title="Needs Review"></i>
@@ -226,7 +226,7 @@ $columns_to_ignore = array(
                     </td>
                     <td class="<?= $style_classes ?>">
                         <?php
-                        $button_classes = "button" . (!$misuse->hasPotentialHits() || ($user && $misuse->hasSufficientReviews() || $misuse->hasReviewed($user)) ? " no-hit" : "")
+                        $button_classes = "button" . (!$misuse->hasPotentialHits() || ($user && $misuse->hasSufficientReviews($default_required_reviews) || $misuse->hasReviewed($user)) ? " no-hit" : "")
                         ?>
                         <?php if (!$user): ?>
                             <a href="<?= $pathFor('view', array('experiment_id' => $experiment->id, 'detector_muid' => $detectorPathId($detector), 'project_muid' => $project, 'version_muid' => $version, 'misuse_muid' => $misuse->misuse_muid)); ?>" class="<?= $button_classes ?>">view</a>
@@ -248,7 +248,7 @@ $columns_to_ignore = array(
                     <?php endif; ?>
                 </td>
                 <td class="<?= $style_classes ?>" style="max-width: 300px;">
-                    <?php if($misuse->hasSufficientReviews() || ($user && $misuse->hasReviewed($user))) : ?>
+                    <?php if($misuse->hasSufficientReviews($default_required_reviews) || ($user && $misuse->hasReviewed($user))) : ?>
                         <?php include "includes/review_modal.phtml"; ?>
                     <?php endif; ?>
                 </td>

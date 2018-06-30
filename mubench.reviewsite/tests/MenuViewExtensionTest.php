@@ -60,7 +60,7 @@ class MenuViewExtensionTest extends SlimTestCase
 
     function testDetectorNeedsReviewGlobalAndPersonal()
     {
-        $menuViewExntesion = new MenuViewExtension($this->container);
+        $menuViewExntesion = new MenuViewExtension($this->container->settings['default_required_reviews']);
         $review_states = $menuViewExntesion->getReviewStates($this->experiment, $this->detector, 20, $this->reviewer1);
         self::assertEquals([ReviewState::NEEDS_REVIEW=>["global" => true, "personal" => true], ReviewState::NEEDS_CLARIFICATION=>false, ReviewState::DISAGREEMENT=>false], $review_states);
     }
@@ -69,7 +69,7 @@ class MenuViewExtensionTest extends SlimTestCase
     {
         $this->reviewController->updateOrCreateReview($this->run->misuses[0]->id, $this->reviewer1->id, '-comment-', [['hit' => "Yes", 'violations' => []]], []);
 
-        $menuViewExntesion = new MenuViewExtension($this->container);
+        $menuViewExntesion = new MenuViewExtension($this->container->settings['default_required_reviews']);
         $review_states = $menuViewExntesion->getReviewStates($this->experiment, $this->detector, 20, $this->reviewer1);
         self::assertEquals([ReviewState::NEEDS_REVIEW=>["global" => true, "personal" => false], ReviewState::NEEDS_CLARIFICATION=>false, ReviewState::DISAGREEMENT=>false], $review_states);
     }
@@ -77,7 +77,7 @@ class MenuViewExtensionTest extends SlimTestCase
     function testDetectorNeedsClarification()
     {
         $this->reviewMisuse("?", "?");
-        $menuViewExntesion = new MenuViewExtension($this->container);
+        $menuViewExntesion = new MenuViewExtension($this->container->settings['default_required_reviews']);
         $review_states = $menuViewExntesion->getReviewStates($this->experiment, $this->detector, 20, $this->reviewer1);
         self::assertEquals([ReviewState::NEEDS_REVIEW=>["global" => false, "personal" => false], ReviewState::NEEDS_CLARIFICATION=>true, ReviewState::DISAGREEMENT=>false], $review_states);
     }
@@ -85,7 +85,7 @@ class MenuViewExtensionTest extends SlimTestCase
     function testDetectorDisagreement()
     {
         $this->reviewMisuse("No", "Yes");
-        $menuViewExntesion = new MenuViewExtension($this->container);
+        $menuViewExntesion = new MenuViewExtension($this->container->settings['default_required_reviews']);
         $review_states = $menuViewExntesion->getReviewStates($this->experiment, $this->detector, 20, $this->reviewer1);
         self::assertEquals([ReviewState::NEEDS_REVIEW=>["global" => false, "personal" => false], ReviewState::NEEDS_CLARIFICATION=>false, ReviewState::DISAGREEMENT=>true], $review_states);
     }

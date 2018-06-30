@@ -39,7 +39,7 @@ class ReviewsController extends Controller
         $resolution_reviewer = Reviewer::where(['name' => 'resolution'])->first();
         $is_reviewer = ($this->user && $reviewer && $this->user->id == $reviewer->id) || ($reviewer && $reviewer->id == $resolution_reviewer->id);
 
-        $runs = RunsController::getRuns($detector, $experiment, $ex2_review_size);
+        $runs = RunsController::getRuns($detector, $experiment, $ex2_review_size, $this->settings['default_required_reviews']);
 
         $all_misuses = $this->collectAllMisuses($runs);
 
@@ -67,11 +67,11 @@ class ReviewsController extends Controller
 
         $open_misuses = [];
         foreach($detectors as $detector){
-            $runs = RunsController::getRuns($detector, $experiment, $this->settings['default_ex2_review_size']);
+            $runs = RunsController::getRuns($detector, $experiment, $this->settings['default_ex2_review_size'], $this->settings['default_required_reviews']);
             foreach($runs as $run){
                 foreach($run->misuses as $misuse) {
                     /** @var Misuse $misuse */
-                    if (!$misuse->hasReviewed($reviewer) && !$misuse->hasSufficientReviews() && sizeof($misuse->findings) > 0) {
+                    if (!$misuse->hasReviewed($reviewer) && !$misuse->hasSufficientReviews($this->settings['default_required_reviews']) && sizeof($misuse->findings) > 0) {
                         $open_misuses[$detector->muid][] = $misuse;
                     }
                 }
@@ -177,7 +177,7 @@ class ReviewsController extends Controller
                 if ($misuse && !$next_misuse) {
                     $next_misuse = $current_misuse;
                 }
-                $is_current_misuse_reviewable = $current_misuse->getReviewState() === ReviewState::NEEDS_REVIEW
+                $is_current_misuse_reviewable = $current_misuse->getReviewState($this->settings['default_required_reviews']) === ReviewState::NEEDS_REVIEW
                     && !$current_misuse->hasReviewed($reviewer);
                 $first_reviewable_misuse = !$next_reviewable_misuse && $is_current_misuse_reviewable;
                 $first_reviewable_misuse_after = $misuse && $is_current_misuse_reviewable;
