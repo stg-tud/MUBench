@@ -6,7 +6,7 @@ location:
   file: org/bouncycastle/tls/crypto/impl/jcajce/JceDefaultTlsCredentialedDecryptor.java
   method: "TlsSecret safeDecryptPreMasterSecret(TlsCryptoParameters, PrivateKey, byte[])"
 fix:
-  commit: https://issues.apache.org/jira/secure/attachment/12560257/CVE-2012-5784-2.patch
+  commit: https://github.com/bcgit/bc-java/commit/a00b684465b38d722ca9a3543b8af8568e6bad5c#diff-3ec860a4ddfa5c0b1efadbff9af791c6
   description: >
   revision: 
   internal: 

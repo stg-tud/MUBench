@@ -6,7 +6,7 @@ location:
   file: com/cloud/network/router/VirtualNetworkApplianceManagerImpl.java
   method: "configDnsMasq(VirtualRouter, Network, Commands)"
 fix:
-  commit: https://issues.apache.org/jira/secure/attachment/12560257/CVE-2012-5784-2.patch
+  commit: https://issues.apache.org/jira/secure/attachment/12615698/0001-Fix-issue-with-sourceCidr-not-being-passed-to-the-VR.patch
   description: >
   revision: 
   internal: 
