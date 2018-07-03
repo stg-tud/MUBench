@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FindBugsFilter>
+
+ <Match>
+ 	<Bug pattern="SERVLET_SERVER_NAME, SERVLET_SESSION_ID" />
+ </Match>
+ 
+ <Match>
+	<Bug pattern="SERVLET_QUERY_STRING, INSECURE_SMTP_SSL" />
+ </Match> 
+
+ <Match>
+ 	<Bug pattern="WEAK_TRUST_MANAGER,  XML_DECODER" />
+ </Match>
+ 
+ <Match>
+ 	<Bug pattern="XXE_XMLREADER, XXE_DOCUMENT,  XXE_DTD_TRANSFORM_FACTORY"/>
+ </Match>
+  
+   <Match>
+  	<Bug pattern="XXE_XMLSTREAMREADER,  XXE_SAXPARSER, XXE_XSLT_TRANSFORM_FACTORY, XPATH_INJECTION, XSS_REQUEST_WRAPPER" />
+  </Match>
+  
+  <Match>
+  	<Bug pattern="DES_USAGE, TDES_USAGE, RSA_NO_PADDING, HARD_CODE_PASSWORD,  HARD_CODE_KEY, RSA_KEY_SIZE" />
+  </Match>
+  
+  <Match>
+  	<Bug pattern="BLOWFISH_KEY_SIZE, CIPHER_INTEGRITY" />
+  </Match>
+  
+    <Match>
+    <Bug pattern="ODR_OPEN_DATABASE_RESOURCE, OS_OPEN_STREAM, OBL_UNSATISFIED_OBLIGATION, CN_IDIOM_NO_SUPER_CALL, UL_UNRELEASED_LOCK, IJU_TEARDOWN_NO_SUPER, IJU_SETUP_NO_SUPER, RV_RETURN_VALUE_IGNORED, RV_RETURN_VALUE_IGNORED_NO_SIDE_EFFECT, RV_RETURN_VALUE_IGNORED_INFERRED, RV_DONT_JUST_NULL_CHECK_READLINE" />
+  </Match>
+  
+  <Match>
+  	<Bug pattern="WEAK_FILENAMEUTILS, WEAK_HOSTNAME_VERIFIER" />
+  </Match>
+  
+  <Match>
+  <Bug pattern="CUSTOM_MESSAGE_DIGEST, NULL_CIPHER" />
+  </Match>
+  
+  <Match>
+  	<Bug pattern="SERVLET_HEADER, SERVLET_HEADER_REFERER" />
+  </Match>
+  
+  <Match>
+  	<Bug pattern="PATH_TRAVERSAL_IN, PATH_TRAVERSAL_OUT" />
+  </Match>
+  
+  <Match>
+  	<Bug pattern="JAXWS_ENDPOINT, JAXRS_ENDPOINT" />
+  </Match>
+  
+  <Match>
+  	<Bug pattern="FILE_UPLOAD_FILENAME" />
+  </Match>
+  
+  <Match>
+  	<Bug pattern="SQL_INJECTION, SQL_INJECTION_TURBINE, SQL_INJECTION_HIBERNATE" />
+  </Match>
+  
+  <Match>
+  	<Bug pattern="SQL_INJECTION_JDO, SQL_INJECTION_JPA, SQL_INJECTION_SPRING_JDBC, SQL_INJECTION_JDBC" />
+  </Match>
+
+  <Match>
+  	<Bug pattern="SERVLET_PARAMETER, SERVLET_CONTENT_TYPE" />
+  </Match>
+  
+  <Match>
+  	<Bug pattern="WEAK_MESSAGE_DIGEST_MD5, WEAK_MESSAGE_DIGEST_SHA1" />
+  </Match>
+  
+  <Match>
+  	<Bug pattern="SSL_CONTEXT" />
+  </Match>
+  
+  <Match>
+  	<Bug pattern="SPRING_CSRF_PROTECTION_DISABLED, SPRING_CSRF_UNRESTRICTED_REQUEST_MAPPING" /> 
+  </Match>
+  
+  <Match>
+  	<Bug pattern="HTTP_RESPONSE_SPLITTING, XSS_SERVLET" />
+  </Match>
+
+  
+  <Match>
+  	<Bug Pattern="OBJECT_DESERIALIZATION, DESERIALIZATION_GADGET" />
+  </Match>
+ 
+   <Match>
+   	<Bug Pattern="INFORMATION_EXPOSURE_THROUGH_AN_ERROR_MESSAGE" />
+   </Match>
+   
+   <Match>
+    <Bug pattern="PREDICTABLE_RANDOM, SERVLET_HEADER_USER_AGENT, ESAPI_ENCRYPTOR" />
+  </Match>
+  
+  <Match>
+  	<Bug pattern="COMMAND_INJECTION, WICKET_ENDPOINT, DEFAULT_HTTP_CLIENT, CUSTOM_INJECTION" />
+  </Match>
+  
+  <Match>
+  	<Bug pattern="EXTERNAL_CONFIG_CONTROL, BAD_HEXA_CONVERSION, UNVALIDATED_REDIRECT, JSP_JSTL_OUT, XSS_JSP_PRINT" />
+  </Match>
+  
+  <Match>
+    <Bug pattern="DMI_ENTRY_SETS_MAY_REUSE_ENTRY_OBJECTS, PZ_DONT_REUSE_ENTRY_OBJECTS_IN_ITERATORS" />
+  </Match>
+  
+</FindBugsFilter>
