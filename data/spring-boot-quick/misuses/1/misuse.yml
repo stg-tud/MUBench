@@ -1,0 +1,15 @@
+api:
+- java.security.MessageDigest
+violations:
+- missing/condition/value_or_state
+description: >
+  First parameter in MessageDigest.getInstance(string) is with value "MD5" which should be any of {SHA-256, SHA-384, SHA-512}
+location:
+  file: com/quick/api/utils/MessageDigestUtil.java
+  method: "base64AndMD5(byte[])"
+  line: 45
+internal:
+pattern:
+crash: false
+source:
+  name:

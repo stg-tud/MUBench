@@ -1,0 +1,14 @@
+api:
+- javax.crypto.spec.SecretKeySpec
+violations: []
+description: >
+  First parameter of type SecretKeySpec in Mac.init(SecretKeySpec) was not properly randomized.
+location:
+  file: com/quick/api/utils/SignUtil.java
+  method: "sign(String,String,String,Map,Map,Map,List)"
+  line: 47
+internal:
+pattern:
+crash: false
+source:
+  name:

@@ -1,0 +1,15 @@
+api:
+- java.security.MessageDigest
+violations:
+- missing/condition/value_or_state
+description: >
+  First parameter in MessageDigest.getInstance(String) is with value "SHA" which should be any of {SHA-256, SHA-384, SHA-512}
+location:
+  file: com/xiaolyuh/utils/EncodeUtil.java
+  method: "sha(String)"
+  line: 32
+internal:
+pattern:
+crash: false
+source:
+  name:

@@ -1,0 +1,14 @@
+api:
+- java.security.Signature
+violations: []
+description: >
+  First parameter in Signature.getInstance(String,String) is with value "SHA1withRSA" should be any of {NONEwithDSA, SHA1withDSA, SHA224withDSA, SHA256withDSA, SHA256withRSA, SHA256withECDSA}
+location:
+  file: com/jpay/unionpay/SecureUtil.java
+  method: "signBySoft(PrivateKey,byte[])"
+  line: 276
+internal:
+pattern:
+crash: false
+source:
+  name:
