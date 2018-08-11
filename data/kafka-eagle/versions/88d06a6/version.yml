@@ -1,8 +1,0 @@
-build:
-  classes: kafka-eagle-common/target/classes  
-  commands:
-  - ./build.sh           
-  src: kafka-eagle-common/src/
-misuses:
-- '1'
-revision: 88d06a628f6b4e94638a980300627c6153a0be17

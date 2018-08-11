@@ -1,0 +1,14 @@
+api:
+- javax.crypto.Cipher
+violations: []
+description: >
+  Second parameter in cipher.init(int,SecretKeySpec,IvParameterSpec) was not properly generatedKey
+location:
+  file: com/github/pig/gateway/component/filter/DecodePasswordFilter.java
+  method: "decryptAES(String,String)"
+  line: 109
+internal:
+pattern:
+crash: false
+source:
+  name:

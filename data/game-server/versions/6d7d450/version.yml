@@ -1,0 +1,10 @@
+build:
+  classes: game-engine/target/classes
+  commands:
+  -  mvn compile              
+  src: game-engine/src/
+misuses:
+- '1'
+- '2'
+- '3'
+revision: 6d7d4506b2dd51a14279e97982f3f988839eb34f

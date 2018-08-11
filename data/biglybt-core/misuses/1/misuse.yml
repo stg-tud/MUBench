@@ -1,0 +1,14 @@
+api:
+- javax.crypto.spec.SecretKeySpec
+violations: []
+description: >
+  First parameter while creating the SecretKeySpec objecct i.e. new SecretKeySpec(byte[], String) was not properly randomized
+location:
+  file: com/biglybt/core/pairing/impl/PairingManagerTunnelHandler.java
+  method: "process(InetSocketAddress,Map)"
+  line: 479
+internal:
+pattern:
+crash: false
+source:
+  name:
