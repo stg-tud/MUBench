@@ -1,0 +1,11 @@
+build:
+  classes: mpush-tools\target\classes
+  commands:
+  - mvn compile              
+  src: mpush-tools/src/
+misuses:
+- '1'
+- '2'
+- '3'
+- '4'
+revision: f8d5c97f30b2bde12f1b60d11709ae1b75587a2e

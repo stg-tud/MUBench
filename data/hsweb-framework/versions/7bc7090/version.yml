@@ -1,0 +1,8 @@
+build:
+  classes: hsweb-authorization/hsweb-authorization-jwt/target/classes
+  commands:
+  -  mvn compile              
+  src: hsweb-authorization/hsweb-authorization-jwt/src/
+misuses:
+- '1'
+revision: 7bc7090e29b61531320c5576edd4af5fe50f5070
