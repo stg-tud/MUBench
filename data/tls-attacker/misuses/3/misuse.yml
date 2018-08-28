@@ -1,0 +1,14 @@
+api:
+- javax.crypto.spec.SecretKeySpec
+violations: []
+description: >
+  First parameter while creating SecretKeySpec object was not properly randomized
+location:
+  file: de/rub/nds/tlsattacker/core/util/StaticTicketCrypto.java
+  method: "decrypt(CipherAlgorithm,byte[],byte[],byte[])"
+  line: 58
+internal:
+pattern:
+crash: false
+source:
+  name:

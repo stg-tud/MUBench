@@ -1,0 +1,14 @@
+api:
+- javax.crypto.spec.SecretKeySpec
+violations: []
+description: >
+  First parameter  while initializing the SecretKeySpec object was not properly randomized.
+location:
+  file: plugins/org.jkiss.dbeaver.ext.import_config/src/org/jkiss/dbeaver/ext/import_config/wizards/navicat/NavicatEncrypt.java
+  method: "initKey()"
+  line: 40
+internal:
+pattern:
+crash: false
+source:
+  name:

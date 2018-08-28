@@ -1,0 +1,15 @@
+api:
+- javax.crypto.Cipher
+violations:
+- missing/condition/value_or_state
+description: >
+  First parameter in Cipher.getInstance(String) is with value "AES" which should be any of AES/{CBC, GCM, PCBC, CTR, CTS, CFB, OFB}.
+location:
+  file: com/jeesuite/common/crypt/AES.java
+  method: "decrypt(byte[],byte[])"
+  line: 54
+internal:
+pattern:
+crash: false
+source:
+  name:

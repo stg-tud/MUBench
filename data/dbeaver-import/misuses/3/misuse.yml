@@ -1,0 +1,15 @@
+api:
+- javax.crypto.Cipher
+violations:
+- missing/condition/value_or_state
+description: >
+  First parameter in Cipher.getInstance(String) is with value "Blowfish/ECB/NoPadding" which should be any of Blowfish/{CBC, PCBC, CTR, CTS, CFB, OFB}.
+location:
+  file: plugins/org.jkiss.dbeaver.ext.import_config/src/org/jkiss/dbeaver/ext/import_config/wizards/navicat/NavicatEncrypt.java
+  method: "initChiperDecrypt()"
+  line: 63
+internal:
+pattern:
+crash: false
+source:
+  name:

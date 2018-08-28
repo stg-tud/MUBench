@@ -1,0 +1,15 @@
+api:
+- java.security.MessageDigest
+violations:
+- missing/condition/value_or_state
+description: >
+  First parameter in Cipher.getInstance(String) is with value "SHA1" which should be any of {SHA-256, SHA-384, SHA-512}.
+location:
+  file: com/alibaba/com/caucho/hessian/security/X509Encryption.java
+  method: "EncryptOutputStream(Hessian2Output)"
+  line: 211
+internal:
+pattern:
+crash: false
+source:
+  name:

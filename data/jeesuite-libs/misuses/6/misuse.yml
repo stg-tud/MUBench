@@ -1,0 +1,14 @@
+api:
+- javax.crypto.Cipher
+violations: []
+description: >
+  Second parameter while initializing the Cipher object was not properly generatedKey.
+location:
+  file: com/jeesuite/common/crypt/RSA.java
+  method: "encrypt(PublicKey,byte[])"
+  line: 371
+internal:
+pattern:
+crash: false
+source:
+  name:

@@ -1,0 +1,14 @@
+api:
+- javax.crypto.spec.SecretKeySpec
+violations: []
+description: >
+  First parameter while initializing the SecretKeySpec object was not properly randomized
+location:
+  file: me/j360/dubbo/modules/util/security/CryptoUtil.java
+  method: "aes(byte[],byte[],byte[],int)"
+  line: 158
+internal:
+pattern:
+crash: false
+source:
+  name:

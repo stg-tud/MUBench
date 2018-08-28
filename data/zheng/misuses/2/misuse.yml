@@ -1,0 +1,15 @@
+api:
+- javax.crypto.Cipher
+violations:
+- missing/condition/value_or_state
+description: >
+  First parameter in Cipher.getInstance(String) is with value "AES" which should be any of AES/{CBC, GCM, PCBC, CTR, CTS, CFB, OFB}.
+location:
+  file: com/zheng/common/util/AESUtil.java
+  method: "aesEncode(String)"
+  line: 47
+internal:
+pattern:
+crash: false
+source:
+  name:

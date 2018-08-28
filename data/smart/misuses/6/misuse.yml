@@ -1,0 +1,14 @@
+api:
+- javax.crypto.spec.IvParameterSpec
+violations: []
+description: >
+  First parameter while initializing the IvParameterSpec object was not properly randomized.
+location:
+  file: com/smart/sso/server/util/AESUtils.java
+  method: "decrypt(String,String)"
+  line: 49
+internal:
+pattern:
+crash: false
+source:
+  name:

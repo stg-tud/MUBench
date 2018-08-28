@@ -1,0 +1,15 @@
+api:
+- java.security.MessageDigest
+violations:
+- missing/condition/value_or_state
+description: >
+  First parameter in MessageDigest.getInstance(String) is with value "SHA-1" which should be any of {SHA-256, SHA-384, SHA-512}.
+location:
+  file: bt/service/CryptoUtil.java
+  method: "getSha1Digest(byte[])"
+  line: 39
+internal:
+pattern:
+crash: false
+source:
+  name:

@@ -1,0 +1,14 @@
+api:
+- javax.crypto.Cipher
+violations: []
+description: >
+  Second parameter while initializing Cipher was not properly generatedKey.
+location:
+  file: org/hongxi/whatsmars/common/util/AESUtils.java
+  method: "decrypt(byte[],byte[])"
+  line: 65
+internal:
+pattern:
+crash: false
+source:
+  name:
