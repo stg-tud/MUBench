@@ -1,7 +1,7 @@
 api:
 - javax.crypto.Cipher
 violations:
-- missing/condition/value_or_state
+- insecure/condition/transformation
 description: >
   First parameter in Cipher.getInstance(String) is with value "RSA/ECB/nopadding" which should be any of "RSA" with (emptyString, "ECB").
 location:

@@ -1,7 +1,8 @@
 build:
   classes: target/classes  
   commands:
-  -  mvn compile              
+  - git stash
+  - mvn compile              
   src: src/
 misuses:
 - '1'

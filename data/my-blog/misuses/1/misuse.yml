@@ -1,6 +1,7 @@
 api:
 - javax.crypto.spec.SecretKeySpec
-violations: []
+violations: 
+- insecure/condition/randomization
 description: >
   While creating the SecretKeySpec object, the first parameter was not properly randomized..
 location:

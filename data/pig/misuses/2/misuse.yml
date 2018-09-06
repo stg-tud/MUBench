@@ -1,7 +1,7 @@
 api:
 - javax.crypto.Cipher
 violations:
-- missing/condition/value_or_state
+- insecure/condition/transformation
 description: >
   First parameter in Cipher.getInstance(String) is with value "AES/CBC/NOPadding" which should be any of AES/CBC/{Empty String, PKCS7Padding, PKCS5Padding, ISO10126Padding}.
 location:

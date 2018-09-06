@@ -1,7 +1,7 @@
 api:
 - javax.crypto.KeyGenerator
 violations:
-- missing/condition/value_or_state
+- insecure/condition/transformation
 description: >
   First parameter in KeyGenerator getInstance(String) is with value "HmacSHA1" which should be any of {AES, Blowfish, DESede, HmacSHA224, HmacSHA256, HmacSHA384, HmacSHA512}.
 location:

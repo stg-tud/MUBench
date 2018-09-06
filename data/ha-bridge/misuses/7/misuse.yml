@@ -1,6 +1,7 @@
 api:
 - javax.crypto.spec.PBEParameterSpec
-violations: []
+violations:
+- insecure/condition/iteration_count
 description: >
   Iteration count in while creating PBEParameterSpec object is 20 which should be greater than 1000.
 location:

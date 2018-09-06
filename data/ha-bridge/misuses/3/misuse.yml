@@ -1,6 +1,7 @@
 api:
 - javax.crypto.spec.PBEParameterSpec
-violations: []
+violations:
+- insecure/condition/randomization
 description: >
   Salt is properly randomized while creating PBEParameterSpec object.
 location:

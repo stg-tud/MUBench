@@ -1,7 +1,7 @@
 api:
 - javax.crypto.Cipher
 violations:
-- missing/condition/value_or_state
+- insecure/condition/transformation
 description: >
   First parameter in Cipher.getInstance(String) is with value "DESede/ECB/PKCS5Padding" where ECB should not be used with DESede
 location:

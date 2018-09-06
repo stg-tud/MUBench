@@ -1,7 +1,7 @@
 api:
 - javax.crypto.SecretKeyFactory
 violations:
-- missing/condition/value_or_state
+- insecure/condition/transformation
 description: >
   cipherALG should be AES with key length between (128, 192, 256) instead of given DES 
 location:

@@ -1,7 +1,7 @@
 api:
 - java.security.MessageDigest
 violations:
-- missing/condition/value_or_state
+- insecure/condition/transformation
 description: >
   First parameter in MessageDigest.getInstance(string) is with value "MD5" which should be any of {SHA-256, SHA-384, SHA-512}
 location:

@@ -1,7 +1,7 @@
 api:
 - javax.crypto.Cipher
 violations:
-- missing/condition/value_or_state
+- insecure/condition/transformation
 description: >
   First parameter in Cipher.getInstance(String) is with value "Blowfish/ECB/NoPadding" which should be any of Blowfish/{CBC, PCBC, CTR, CTS, CFB, OFB}.
 location:

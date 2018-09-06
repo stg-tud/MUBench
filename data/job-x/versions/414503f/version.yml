@@ -1,7 +1,7 @@
 build:
   classes: jobx-common/target/classes
   commands:
-  -  mvn compile            
+  -  mvn clean compile            
   src: jobx-common/src/
 misuses:
 - '1'

@@ -1,6 +1,7 @@
 api:
 - javax.crypto.Cipher
-violations: []
+violations:
+- insecure/condition/key
 description: >
   Second parameter in cipher.init(int, Key) is not properly generatedKey
 location:

@@ -1,6 +1,7 @@
 api:
 - java.security.Signature
-violations: []
+violations:
+- insecure/condition/key
 description: >
   First parameter in Signature.initSign(PrivateKey) is not a properly generatedPrivkey
 location:
