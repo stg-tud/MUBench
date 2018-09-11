@@ -1,13 +1,13 @@
 api:
-- javax.crypto.Cipher
+- javax.crypto.spec.IvParameterSpec
 violations:
-- insecure/condition/key
+- insecure/condition/randomization
 description: >
-  Second parameter while initializing the Cipher object was not properly generatedKey.
+  First parameter while initializing the IvParameterSpec object was not properly randomized.
 location:
   file: com/smart/sso/server/util/AESUtils.java
-  method: "encrypt(String,String)"
-  line: 30
+  method: "decrypt(String,String)"
+  line: 49
 internal:
 pattern:
 crash: false

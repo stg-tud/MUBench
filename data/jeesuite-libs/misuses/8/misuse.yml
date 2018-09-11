@@ -1,13 +1,13 @@
 api:
-- javax.crypto.Cipher
+- java.security.MessageDigest
 violations:
 - missing/condition/value_or_state
 description: >
-  First parameter in Cipher.getInstance(String) is with value "AES" which should be any of AES/{CBC, GCM, PCBC, CTR, CTS, CFB, OFB}.
+  First parameter in MessageDigest.getInstance(String) is with value "SHA-1" which should be any of {SHA-256, SHA-384, SHA-512}.
 location:
-  file: com/jeesuite/common/crypt/AES.java
-  method: "decrypt(byte[],byte[])"
-  line: 54
+  file: com/jeesuite/common/crypt/SHA1.java
+  method: "getSHA1(String,String,String,String)"
+  line: 40
 internal:
 pattern:
 crash: false

@@ -1,13 +1,13 @@
 api:
-- javax.crypto.spec.SecretKeySpec
+- javax.crypto.Cipher
 violations:
-- insecure/condition/randomization
+- insecure/condition/key
 description: >
-  First parameter while initializing the SecretKeySpec object was not properly randomized.
+  Second parameter while initializing the Cipher object was not properly generatedKey.
 location:
   file: com/smart/sso/server/util/AESUtils.java
   method: "decrypt(String,String)"
-  line: 50
+  line: 53
 internal:
 pattern:
 crash: false

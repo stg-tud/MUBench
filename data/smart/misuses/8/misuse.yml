@@ -1,13 +1,13 @@
 api:
-- javax.crypto.Cipher
+- java.security.MessageDigest
 violations:
-- insecure/condition/key
+- insecure/condition/transformation
 description: >
-  Second parameter while initializing the Cipher object was not properly generatedKey.
+  First parameter in MessageDigest.getInstance(String) is with value "MD5" which should be any of {SHA-256, SHA-384, SHA-512}.
 location:
-  file: com/smart/sso/server/util/AESUtils.java
-  method: "decrypt(String,String)"
-  line: 53
+  file: com/smart/sso/server/provider/PasswordProvider.java
+  method: "md5(String)"
+  line: 42
 internal:
 pattern:
 crash: false

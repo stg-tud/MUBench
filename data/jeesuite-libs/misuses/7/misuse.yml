@@ -1,12 +1,13 @@
 api:
 - javax.crypto.Cipher
-violations: []
+violations:
+- missing/condition/value_or_state
 description: >
-  Second parameter while initializing the Cipher object was not properly generatedKey.
+  First parameter in Cipher.getInstance(String) is with value "AES" which should be any of AES/{CBC, GCM, PCBC, CTR, CTS, CFB, OFB}.
 location:
-  file: com/jeesuite/common/crypt/RSA.java
-  method: "decrypt(PrivateKey,byte[])"
-  line: 426
+  file: com/jeesuite/common/crypt/AES.java
+  method: "encrypt(byte[],byte[])"
+  line: 39
 internal:
 pattern:
 crash: false

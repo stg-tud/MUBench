@@ -7,7 +7,7 @@ description: >
 location:
   file: com/snowcattle/game/common/util/AES.java
   method: "encrypt(byte[], String)"
-  line: 34
+  line: 30
 internal:
 pattern:
 crash: false

@@ -1,13 +1,13 @@
 api:
 - javax.crypto.Cipher
 violations:
-- insecure/condition/transformation
+- insecure/condition/key
 description: >
-  First parameter in Cipher.getInstance(String) is with value "AES/CBC/PKCS5PADDING" which should be any of AES/CBC/{Empty String, PKCS7Padding, PKCS5Padding, ISO10126Padding}
+  Second parameter while initializing the Cipher object was not properly generatedKey.
 location:
   file: com/smart/sso/server/util/AESUtils.java
   method: "encrypt(String,String)"
-  line: 29
+  line: 30
 internal:
 pattern:
 crash: false
