@@ -99,3 +99,16 @@ Try adding following line to the `.htaccess` file in the base directory of your 
 ```
 RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization},L]
 ```
+
+If this doesn't work, here's an alternative `.htaccess` file that has been found to work on some servers (make sure to adjust the `RewriteBase` according to your setting):
+
+```
+RewriteEngine On
+RewriteCond %{HTTP:Authorization} ^(.*)
+RewriteRule .* - [e=HTTP_AUTHORIZATION:%1]
+RewriteBase /
+RewriteRule ^index\.php$ - [E=X-HTTP_AUTHORIZATION:%{HTTP:Authorization},QSA,L]
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule . index.php [E=X-HTTP_AUTHORIZATION:%{HTTP:Authorization},QSA,L]
+```
