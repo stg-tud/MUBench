@@ -44,6 +44,7 @@ RUN apk update \
  && apk add \
       php7 \
       php7-ctype \
+      php7-curl \
       php7-dom \
       php7-json \
       php7-mbstring \
