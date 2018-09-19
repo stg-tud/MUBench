@@ -1,0 +1,3 @@
+#!/bin/bash
+
+cat ./mubench.bin/mubench-help.txt
