@@ -1,4 +1,5 @@
 import sys
+from unittest.mock import patch
 
 from nose.tools import assert_raises, assert_equals, nottest
 
@@ -184,3 +185,21 @@ def test_fails_on_negative_limit():
 def test_requires_review_site_username():
     parser = _get_command_line_parser(['DemoDetector'], [], [])
     assert_raises(SystemExit, parser.parse_args, ['publish', 'ex2', 'DemoDetector', '-s'])
+
+
+def test_extends_java_options_on_multiple_occurences():
+    parser = _get_command_line_parser(['valid-detector'], [], [])
+    result = parser.parse_args(['run', 'ex1', 'valid-detector', '--java-options', 'Xmx6144M', 'd64', '--java-options',
+                                'agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=5005'])
+    assert_equals(['Xmx6144M', 'd64', 'agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=5005'],
+                  result.java_options)
+
+
+@patch("utils.config_util.__get_default")
+def test_overrides_default_values(get_default_mock):
+    get_default_mock.side_effect = lambda key, default: ['Xmx6144M', 'd64'] if key == 'java-options' else default
+    parser = _get_command_line_parser(['valid-detector'], [], [])
+
+    result = parser.parse_args(['run', 'ex1', 'valid-detector', '--java-options',
+                                'agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=5005'])
+    assert_equals(['agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=5005'], result.java_options)
