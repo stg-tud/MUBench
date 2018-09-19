@@ -75,7 +75,7 @@ RUN \
  && pip install -r mubench.pipeline/requirements.txt \
  \
  # Install reviewsite dependencies
- && composer install -d mubench.reviewsite --no-interaction \
+ && composer install -d mubench.reviewsite --no-interaction --no-dev \
  && mkdir -p mubench.reviewsite/upload \
  && mkdir -p mubench.reviewsite/logs \
  && touch mubench.reviewsite/reviews.sqlite \
