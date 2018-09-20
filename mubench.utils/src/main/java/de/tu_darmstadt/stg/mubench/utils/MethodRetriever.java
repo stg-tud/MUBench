@@ -81,7 +81,8 @@ class MethodRetriever extends VoidVisitorAdapter<List<MethodExtractor.MethodCode
             // non-static inner class, then the constructor has additional parameters of the surrounding types'
             // types.
             if (typeNestingDepth - 2 >= 0)
-                parameters.add(0, new Parameter(new ClassOrInterfaceType(currentEnclosingType.get(typeNestingDepth - 2)), " "));
+                parameters.add(0,
+                        new Parameter(new ClassOrInterfaceType(currentEnclosingType.get(typeNestingDepth - 2)), " "));
 
             typeNestingDepth--;
         } while (typeNestingDepth >= 0);
@@ -99,7 +100,8 @@ class MethodRetriever extends VoidVisitorAdapter<List<MethodExtractor.MethodCode
     }
 
     @Override
-    public void visit(InitializerDeclaration initializer, List<MethodExtractor.MethodCodeFragment> matchingMethodsCode) {
+    public void visit(InitializerDeclaration initializer,
+                      List<MethodExtractor.MethodCodeFragment> matchingMethodsCode) {
         if (methodSignature.equals(MethodRetriever.bytecodeStaticInitializerId) || methodSignature.equals(MethodRetriever.sourcecodeStaticInitializerId)
                 && initializer.isStatic()) {
             matchingMethodsCode.add(getCode(initializer));
