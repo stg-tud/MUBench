@@ -434,6 +434,17 @@ public class MethodExtractorTest {
 						+ "    }");
 	}
 
+	@Test
+	public void fallsBackToMatchingOnlyByMethodName() throws Exception {
+		testFindsMethod("class C {\n"
+						+ "    void foo(int i) {\n"
+						+ "    }\n"
+						+ "}",
+				"foo()",
+				        "    void foo(int i) {\n"
+						+ "    }");
+	}
+
 	private void testFindsMethodFromFile(String filePath, String methodSignature, String expectedOutput) throws Exception {
 		String input = new String(Files.readAllBytes(Paths.get(filePath)), StandardCharsets.UTF_8);
 		testFindsMethod(input, methodSignature, expectedOutput);

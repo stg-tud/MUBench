@@ -20,16 +20,18 @@ class MethodRetriever extends VoidVisitorAdapter<List<MethodExtractor.MethodCode
     private String methodSignature;
     private Stack<String> currentEnclosingType;
     private List<TypeParameter> typeParameters;
+    private boolean ignoreParameters;
 
-    MethodRetriever(String methodSignature) {
+    MethodRetriever(String methodSignature, boolean ignoreParameters) {
         this.methodSignature = normalize(methodSignature);
+        this.ignoreParameters = ignoreParameters;
         this.currentEnclosingType = new Stack<>();
         this.typeParameters = new ArrayList<>();
     }
 
     private static String normalize(String methodSignature) {
-        if (methodSignature.equals(MethodRetriever.bytecodeStaticInitializerId) ||
-                methodSignature.equals(MethodRetriever.sourcecodeStaticInitializerId)) {
+        if (isSameSignature(methodSignature, MethodRetriever.bytecodeStaticInitializerId, false) ||
+                isSameSignature(methodSignature, MethodRetriever.sourcecodeStaticInitializerId, false)) {
             return methodSignature;
         }
         return removeGenericTypeParameters(removeOuterTypeQualifiers(methodSignature));
@@ -51,7 +53,7 @@ class MethodRetriever extends VoidVisitorAdapter<List<MethodExtractor.MethodCode
         currentEnclosingType.push(type.getName().asString());
         super.visit(type, matchingMethodsCode);
 
-        if (methodSignature.equals(MethodRetriever.ctorId + "()") && matchingMethodsCode.isEmpty()) {
+        if (isSameSignature(methodSignature, MethodRetriever.ctorId + "()", false) && matchingMethodsCode.isEmpty()) {
             MethodExtractor.MethodCodeFragment defaultConstructorFragment = new MethodExtractor.DefaultConstructorFragment();
             defaultConstructorFragment.declaringTypeName = type.getName().asString();
             defaultConstructorFragment.firstLineNumber = type.getBegin().get().line;
@@ -72,7 +74,8 @@ class MethodRetriever extends VoidVisitorAdapter<List<MethodExtractor.MethodCode
             String signature = getSignature(ctorId, parameters, typeParameters);
             String altSignature = getSignature(name, parameters, typeParameters);
 
-            if (methodSignature.equals(signature) || methodSignature.equals(altSignature)) {
+            if (isSameSignature(methodSignature, signature, false)
+                    || isSameSignature(methodSignature, altSignature, false)) {
                 matchingMethodsCode.add(getCode(constructor));
                 return; // stop when we have a match
             }
@@ -93,7 +96,7 @@ class MethodRetriever extends VoidVisitorAdapter<List<MethodExtractor.MethodCode
     @Override
     public void visit(MethodDeclaration method, List<MethodExtractor.MethodCodeFragment> matchingMethodsCode) {
         String signature = getSignature(method.getName().asString(), method.getParameters(), typeParameters);
-        if (methodSignature.equals(signature)) {
+        if (isSameSignature(methodSignature, signature, ignoreParameters)) {
             matchingMethodsCode.add(getCode(method));
         }
         super.visit(method, matchingMethodsCode);
@@ -102,7 +105,8 @@ class MethodRetriever extends VoidVisitorAdapter<List<MethodExtractor.MethodCode
     @Override
     public void visit(InitializerDeclaration initializer,
                       List<MethodExtractor.MethodCodeFragment> matchingMethodsCode) {
-        if (methodSignature.equals(MethodRetriever.bytecodeStaticInitializerId) || methodSignature.equals(MethodRetriever.sourcecodeStaticInitializerId)
+        if ((isSameSignature(methodSignature, MethodRetriever.bytecodeStaticInitializerId, false)
+                || isSameSignature(methodSignature, MethodRetriever.sourcecodeStaticInitializerId, false))
                 && initializer.isStatic()) {
             matchingMethodsCode.add(getCode(initializer));
         }
@@ -177,5 +181,16 @@ class MethodRetriever extends VoidVisitorAdapter<List<MethodExtractor.MethodCode
             }
         }
         return typeName;
+    }
+
+    private static boolean isSameSignature(String methodSignature1, String methodSignature2,
+                                           boolean ignoreParameters) {
+        if (ignoreParameters) {
+            String methodSignature1WithoutParameters = methodSignature1.substring(0, methodSignature1.indexOf('('));
+            String methodSignature2WithoutParameters = methodSignature2.substring(0, methodSignature1.indexOf('('));
+            return methodSignature1WithoutParameters.equals(methodSignature2WithoutParameters);
+        } else {
+            return methodSignature1.equals(methodSignature2);
+        }
     }
 }
