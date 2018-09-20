@@ -1,3 +1,7 @@
 #!/bin/bash
 
-git pull 
+echo "Updating MUBench..."
+git pull
+
+echo "Updating MUBench dependencies"
+/mubench/mubench.bin/install-dependencies

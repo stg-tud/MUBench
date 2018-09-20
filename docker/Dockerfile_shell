@@ -22,6 +22,7 @@ RUN apk update \
       yaml-dev \
  && ln -s /usr/bin/python3 /usr/bin/python \
  && ln -s /usr/bin/pip3 /usr/bin/pip \
+ && pip install --upgrade pip \
  \
  # Install runtime dependencies
  && apk add \
@@ -70,16 +71,14 @@ RUN \
  # Fetch MUBench
  git clone https://github.com/stg-tud/MUBench.git . \
  \
- # Install pipeline dependencies
- pip install --upgrade pip \
- && pip install -r mubench.pipeline/requirements.txt \
- \
- # Install reviewsite dependencies
- && composer install -d mubench.reviewsite --no-interaction --no-dev \
+ # Setup reviewsite
  && mkdir -p mubench.reviewsite/upload \
  && mkdir -p mubench.reviewsite/logs \
+ # Setup reviewsite standalone configuration
  && touch mubench.reviewsite/reviews.sqlite \
- && mv mubench.reviewsite/settings.docker.php mubench.reviewsite/settings.php
+ && mv mubench.reviewsite/settings.docker.php mubench.reviewsite/settings.php \
+ \
+ && mubench.bin/install-dependencies
 
 # Configure interactive-shell environment
 ENV PATH=/mubench/mubench.bin:${PATH}
