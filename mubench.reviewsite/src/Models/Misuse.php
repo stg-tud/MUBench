@@ -226,9 +226,9 @@ class Misuse extends Model
         return false;
     }
 
-    public function getTags()
+    public function getTags($default_required_reviews)
     {
-        if(!$this->hasConclusiveReviewState()){
+        if(!$this->hasConclusiveReviewState($default_required_reviews)){
             return new Collection;
         }else{
             $tags = new Collection;
