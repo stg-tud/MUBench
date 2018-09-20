@@ -83,6 +83,9 @@ RUN \
 
 # Add MUBench scripts to $PATH
 ENV PATH=/mubench/mubench.bin:${PATH}
+RUN echo '[ ! -z "$TERM" ] && echo -n "Welcome! " && /mubench/mubench.bin/mubench-help' >> ~/.bashrc \
+  && echo 'export PS1="mubench > "' >> ~/.bashrc
+CMD ["bash"]
 
 # Provide review site
 EXPOSE 80
