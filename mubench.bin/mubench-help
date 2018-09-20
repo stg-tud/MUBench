@@ -1,3 +1,18 @@
 #!/bin/bash
 
-cat ./mubench.bin/mubench-help.txt
+read -d '' USAGE << EOM
+This is the MUBench interactive shell.
+
+Commands:
+  pipeline    Run benchmarking experiments, including checkout and compilation
+              of target projects, execution of detectors, and publishing data
+              to a review site.
+  reviewsite  Fire up a review site inside this container.
+  update      Update MUBench.
+
+Run \\\`<command> -h\\\` for further details.
+EOM
+
+echo ""
+echo "$USAGE"
+echo ""
