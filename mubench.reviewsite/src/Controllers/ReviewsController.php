@@ -10,7 +10,6 @@ use MuBench\ReviewSite\Models\FindingReview;
 use MuBench\ReviewSite\Models\Misuse;
 use MuBench\ReviewSite\Models\Review;
 use MuBench\ReviewSite\Models\Reviewer;
-use MuBench\ReviewSite\Models\ReviewState;
 use MuBench\ReviewSite\Models\Run;
 use MuBench\ReviewSite\Models\Tag;
 use MuBench\ReviewSite\Models\Violation;
@@ -39,26 +38,10 @@ class ReviewsController extends Controller
         $resolution_reviewer = Reviewer::where(['name' => 'resolution'])->first();
         $is_reviewer = ($this->user && $reviewer && $this->user->id == $reviewer->id) || ($reviewer && $reviewer->id == $resolution_reviewer->id);
 
-        $runs = RunsController::getRuns($detector, $experiment, $ex2_review_size);
-
-        $limited_all_misuses = $this->collectAllMisuses($runs);
+        $runs = Run::of($detector)->in($experiment)->orderBy('project_muid')->orderBy('version_muid')->get();
 
         list($previous_misuse, $next_misuse, $next_reviewable_misuse, $misuse) =
-            $this->determineNavigationTargets($limited_all_misuses, $project_muid, $version_muid, $misuse_muid, $reviewer);
-
-        if(!$misuse){
-            $runs = Run::of($detector)->in($experiment)->orderBy('project_muid')->orderBy('version_muid')->get();
-
-            $all_misuses = $this->collectAllMisuses($runs);
-
-            list($previous_misuse, $next_misuse, $next_reviewable_misuse, $misuse) =
-                $this->determineNavigationTargets($all_misuses, $project_muid, $version_muid, $misuse_muid, $reviewer);
-
-            $next_misuse = $all_misuses->first();
-            if($limited_all_misuses->where('id', $next_reviewable_misuse->id)->isEmpty()){
-                $next_reviewable_misuse = null;
-            }
-        }
+            $this->determineNavigationTargets($runs, $experiment, $project_muid, $version_muid, $misuse_muid, $reviewer, $ex2_review_size);
 
         $all_violations = Violation::all();
         $all_tags = Tag::all()->sortBy('name');
@@ -166,52 +149,115 @@ class ReviewsController extends Controller
         }
     }
 
-    private function collectAllMisuses($runs)
+    function determineNavigationTargets(Collection $runs, $experiment, $project_muid, $version_muid, $misuse_muid, $reviewer, $ex2_review_size)
     {
-        $all_misuses = new Collection;
-        foreach ($runs as $run) {
-            $all_misuses = $all_misuses->merge($run->misuses);
-        }
-        return $all_misuses;
-    }
-
-    function determineNavigationTargets(Collection $all_misuses, $project_muid, $version_muid, $misuse_muid, $reviewer)
-    {
-        $previous_misuse = $all_misuses->last();
+        $previous_misuse = NULL;
         $misuse = NULL;
         $next_misuse = NULL;
         $next_reviewable_misuse = NULL;
+        $last_run = $runs->last();
 
-        foreach ($all_misuses as $current_misuse) { /** @var Misuse $current_misuse */
-            if (!$misuse && $current_misuse->getProject() === $project_muid
-                && $current_misuse->getVersion() === $version_muid
-                && $current_misuse->misuse_muid === $misuse_muid) {
-                $misuse = $current_misuse;
-            } else {
-                if ($misuse && !$next_misuse) {
-                    $next_misuse = $current_misuse;
+        foreach ($runs as $run) {
+            if ($misuse && !$next_misuse) {
+                $next_misuse = $run->getMisuses($experiment, $ex2_review_size)->first();
+            }
+            if (!$misuse && $run->project_muid == $project_muid && $run->version_muid == $version_muid) {
+                $this->findMisuse($run->getMisuses($experiment, $ex2_review_size), $misuse_muid, $reviewer, $previous_misuse, $misuse, $next_misuse, $next_reviewable_misuse);
+                if($misuse && !$previous_misuse){
+                    $previous_misuse = $last_run->getMisuses($experiment, $ex2_review_size)->last();
                 }
-                $is_current_misuse_reviewable = $current_misuse->getReviewState() === ReviewState::NEEDS_REVIEW
-                    && !$current_misuse->hasReviewed($reviewer);
-                $first_reviewable_misuse = !$next_reviewable_misuse && $is_current_misuse_reviewable;
-                $first_reviewable_misuse_after = $misuse && $is_current_misuse_reviewable;
-                if ($first_reviewable_misuse || $first_reviewable_misuse_after) {
-                    $next_reviewable_misuse = $current_misuse;
-                    if ($misuse) {
-                        break;
+                if(!$misuse){
+                    // search for misuse out of review scope
+                    foreach($run->misuses as $current_misuse){
+                        if($current_misuse->misuse_muid == $misuse_muid){
+                            $misuse = $current_misuse;
+                            break;
+                        }
+                        $previous_misuse = $current_misuse;
                     }
                 }
+            } elseif ($misuse && !$next_reviewable_misuse) {
+                $next_reviewable_misuse = $this->findNextReviewableMisuse($run->getMisuses($experiment, $ex2_review_size), $reviewer);
+            }
+
+            if ($next_misuse && $next_reviewable_misuse) {
+                break;
+            }
+            $last_run = $run;
+        }
+        if ($misuse && !$next_misuse) {
+            $next_misuse = $runs->first()->getMisuses($experiment, $ex2_review_size)->first();
+        }
+        if(!$next_reviewable_misuse){
+            $next_reviewable_misuse = $this->findNextReviewableBeforeMisuse($runs, $experiment, $project_muid, $version_muid, $misuse, $reviewer, $ex2_review_size);
+        }
+        if(!$previous_misuse){
+            $previous_misuse = $this->findPreviousMisuse($runs, $misuse);
+        }
+        return array($previous_misuse, $next_misuse, $next_reviewable_misuse, $misuse);
+    }
+
+    private function findMisuse(Collection $misuses, $misuse_muid, $reviewer, &$previous_misuse, &$misuse, &$next_misuse, &$next_reviewable_misuse)
+    {
+        foreach ($misuses as $current_misuse) {
+            if ($misuse && !$next_misuse) {
+                $next_misuse = $current_misuse;
+            }
+            if ($misuse && !$current_misuse->hasReviewed($reviewer) && !$current_misuse->hasSufficientReviews()) {
+                $next_reviewable_misuse = $current_misuse;
+                break;
+            }
+            if (!$misuse && $current_misuse->misuse_muid == $misuse_muid) {
+                $misuse = $current_misuse;
+
             }
             if (!$misuse) {
                 $previous_misuse = $current_misuse;
             }
         }
+    }
 
-        if (!$next_misuse) {
-            $next_misuse = $all_misuses->first();
+    private function findPreviousMisuse(Collection $runs, $misuse)
+    {
+        $previous_misuse = NULL;
+        $idx = sizeof($runs) - 1;
+        while(!$previous_misuse && $idx >= 0){
+            $run = $runs->get($idx);
+            $previous_misuse = $run->misuses->last();
+            if($previous_misuse && ($misuse->id == $previous_misuse->id)){
+                $previous_misuse = NULL;
+            }
+            $idx--;
         }
+        return $previous_misuse;
+    }
 
-        return array($previous_misuse, $next_misuse, $next_reviewable_misuse, $misuse);
+    private function findNextReviewableMisuse(Collection $misuses, $reviewer)
+    {
+        $next_reviewable_misuse = NULL;
+        foreach ($misuses as $current_misuse) {
+            if (!$current_misuse->hasReviewed($reviewer) && !$current_misuse->hasSufficientReviews()) {
+                $next_reviewable_misuse = $current_misuse;
+                break;
+            }
+        }
+        return $next_reviewable_misuse;
+    }
+
+    private function findNextReviewableBeforeMisuse(Collection $runs, $experiment, $project_muid, $version_muid, $misuse, $reviewer, $ex2_review_size)
+    {
+        $next_reviewable_misuse = NULL;
+        foreach($runs as $run){
+            $next_reviewable_misuse = $this->findNextReviewableMisuse($run->getMisuses($experiment, $ex2_review_size), $reviewer);
+
+            if($run->project_muid == $project_muid && $run->version_muid == $version_muid){
+                break;
+            }
+        }
+        if($next_reviewable_misuse && $misuse->id == $next_reviewable_misuse->id) {
+            return NULL;
+        }
+        return $next_reviewable_misuse;
     }
 
 }
