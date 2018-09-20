@@ -81,10 +81,9 @@ RUN \
  && touch mubench.reviewsite/reviews.sqlite \
  && mv mubench.reviewsite/settings.docker.php mubench.reviewsite/settings.php
 
-# Add MUBench scripts to $PATH
+# Configure interactive-shell environment
 ENV PATH=/mubench/mubench.bin:${PATH}
-RUN echo '[ ! -z "$TERM" ] && echo -n "Welcome! " && /mubench/mubench.bin/mubench-help' >> ~/.bashrc \
-  && echo 'export PS1="mubench > "' >> ~/.bashrc
+COPY mubench.bin/bashrc /root/.bashrc
 CMD ["bash"]
 
 # Provide review site

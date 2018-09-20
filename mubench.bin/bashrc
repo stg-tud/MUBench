@@ -1,0 +1,7 @@
+help () {
+  python /mubench/mubench.docs/mubench.py
+}
+
+[ ! -z "$TERM" ] && echo -n "Welcome! " && help
+
+export PS1="mubench > "
