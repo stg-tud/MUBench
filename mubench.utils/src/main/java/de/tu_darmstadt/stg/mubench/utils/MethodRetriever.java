@@ -69,8 +69,8 @@ class MethodRetriever extends VoidVisitorAdapter<List<MethodExtractor.MethodCode
 
         int typeNestingDepth = currentEnclosingType.size();
         do {
-            String signature = getSignature(ctorId, parameters);
-            String altSignature = getSignature(name, parameters);
+            String signature = getSignature(ctorId, parameters, typeParameters);
+            String altSignature = getSignature(name, parameters, typeParameters);
 
             if (methodSignature.equals(signature) || methodSignature.equals(altSignature)) {
                 matchingMethodsCode.add(getCode(constructor));
@@ -91,7 +91,7 @@ class MethodRetriever extends VoidVisitorAdapter<List<MethodExtractor.MethodCode
 
     @Override
     public void visit(MethodDeclaration method, List<MethodExtractor.MethodCodeFragment> matchingMethodsCode) {
-        String signature = getSignature(method.getName().asString(), method.getParameters());
+        String signature = getSignature(method.getName().asString(), method.getParameters(), typeParameters);
         if (methodSignature.equals(signature)) {
             matchingMethodsCode.add(getCode(method));
         }
@@ -129,7 +129,8 @@ class MethodRetriever extends VoidVisitorAdapter<List<MethodExtractor.MethodCode
         return Joiner.on(".").join(currentEnclosingType);
     }
 
-    private String getSignature(String methodName, List<Parameter> parameters) {
+    private static String getSignature(String methodName, List<Parameter> parameters,
+                                       List<TypeParameter> typeParameters) {
         StringBuilder signature = new StringBuilder(methodName).append("(");
         boolean first = true;
         for (Parameter parameter : parameters) {
@@ -139,7 +140,7 @@ class MethodRetriever extends VoidVisitorAdapter<List<MethodExtractor.MethodCode
             String typeName = parameter.getType().toString();
             typeName = stripPackageQualifier(typeName);
             typeName = stripTypeParameters(typeName);
-            typeName = applyTypeErasure(typeName);
+            typeName = applyTypeErasure(typeName, typeParameters);
             signature.append(typeName);
             if (parameter.isVarArgs()) {
                 signature.append("[]");
@@ -149,7 +150,7 @@ class MethodRetriever extends VoidVisitorAdapter<List<MethodExtractor.MethodCode
         return signature.append(")").toString();
     }
 
-    private String stripPackageQualifier(String typeName) {
+    private static String stripPackageQualifier(String typeName) {
         int endOfQualifier = typeName.lastIndexOf('.');
         if (endOfQualifier > -1) {
             typeName = typeName.substring(endOfQualifier + 1);
@@ -157,16 +158,16 @@ class MethodRetriever extends VoidVisitorAdapter<List<MethodExtractor.MethodCode
         return typeName;
     }
 
-    private String stripTypeParameters(String typeName) {
+    private static String stripTypeParameters(String typeName) {
         int startOfTypeParameters = typeName.indexOf('<');
         int endOfTypeParameters = typeName.lastIndexOf('>');
         if (startOfTypeParameters > -1 && endOfTypeParameters > -1) {
-typeName = typeName.substring(0, startOfTypeParameters) + typeName.substring(endOfTypeParameters + 1, typeName.length());
-}
+            typeName = typeName.substring(0, startOfTypeParameters) + typeName.substring(endOfTypeParameters + 1);
+        }
         return typeName;
     }
 
-    private String applyTypeErasure(String typeName) {
+    private static String applyTypeErasure(String typeName, List<TypeParameter> typeParameters) {
         for (TypeParameter typeParameter : typeParameters) {
             String typeParameterName = typeParameter.getName().asString();
             if (typeName.startsWith(typeParameterName)) {
