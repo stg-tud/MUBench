@@ -2,7 +2,7 @@ build:
   classes: blog-common/target/classes
   commands:
   - mvn clean compile
-  src: blog-common/src/
+  src: blog-common/src/main/java/
 misuses:
 - '1'
 - '2'

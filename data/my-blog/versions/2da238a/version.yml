@@ -2,7 +2,7 @@ build:
   classes: target/classes  
   commands:
   -  mvn compile              
-  src: src/
+  src: src/main/java/
 misuses:
 - '1'
 - '2'

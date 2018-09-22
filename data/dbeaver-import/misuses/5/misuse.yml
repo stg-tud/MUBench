@@ -5,7 +5,7 @@ violations:
 description: >
   First parameter in MessageDigest.getInstance(String) is with value "SHA1" which should be any of {SHA-256, SHA-384, SHA-512}.
 location:
-  file: plugins/org.jkiss.dbeaver.ext.import_config/src/org/jkiss/dbeaver/ext/import_config/wizards/navicat/NavicatEncrypt.java
+  file: org.jkiss.dbeaver.ext.import_config/src/org/jkiss/dbeaver/ext/import_config/wizards/navicat/NavicatEncrypt.java
   method: "initKey()"
   line: 37
 internal:

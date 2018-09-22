@@ -6,7 +6,7 @@ description: >
   First parameter while creating the SecretKeySpec objecct i.e. new SecretKeySpec(byte[], String) was not properly randomized
 location:
   file: com/biglybt/core/pairing/impl/PairingManagerTunnelHandler.java
-  method: "handleLocalTunnel(TrackerWebPageRequest,TrackerWebPageResponse)"
+  method: "handleLocalTunnel(TrackerWebPageRequest, TrackerWebPageResponse)"
   line: 960
 internal:
 pattern:

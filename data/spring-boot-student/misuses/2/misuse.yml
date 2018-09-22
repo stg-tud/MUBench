@@ -6,7 +6,7 @@ description: >
   First parameter in Cipher.getInstance(String) is with value "AES" which should be any of AES/{CBC, GCM, PCBC, CTR, CTS, CFB, OFB}
 location:
   file: com/xiaolyuh/utils/AESUtil.java
-  method: "decrypt(byte[],String)"
+  method: "decrypt(byte[], String)"
   line: 75
 internal:
 pattern:

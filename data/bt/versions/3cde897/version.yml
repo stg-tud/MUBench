@@ -2,7 +2,7 @@ build:
   classes: bt-core/target/classes
   commands:
   - mvn compile              
-  src: bt-core/src/
+  src: bt-core/src/main/java/
 misuses:
 - '1'
 - '2'

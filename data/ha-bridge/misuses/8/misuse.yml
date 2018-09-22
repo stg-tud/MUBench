@@ -5,7 +5,7 @@ violations:
 description: >
   Salt is properly randomized while creating PBEParameterSpec object.
 location:
-  file: src/main/java/com/bwssystems/HABridge/BridgeSecurity.java
+  file: com/bwssystems/HABridge/BridgeSecurity.java
   method: "decrypt(String)"
   line: 343
 internal:

@@ -2,7 +2,7 @@ build:
   classes: mpush-tools/target/classes
   commands:
   - mvn compile              
-  src: mpush-tools/src/
+  src: mpush-tools/src/main/java/
 misuses:
 - '1'
 - '2'

@@ -6,7 +6,7 @@ description: >
   Second parameter in cipher.init(int,SecretKeySpec,IvParameterSpec) was not properly generatedKey
 location:
   file: com/github/pig/gateway/component/filter/DecodePasswordFilter.java
-  method: "decryptAES(String,String)"
+  method: "decryptAES(String, String)"
   line: 109
 internal:
 pattern:

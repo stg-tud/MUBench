@@ -6,7 +6,7 @@ description: >
   First parameter while initializing the SecretKeySpec object was not properly randomized.
 location:
   file: me/j360/dubbo/modules/util/security/CryptoUtil.java
-  method: "aes(byte[],byte[],int)"
+  method: "aes(byte[], byte[], int)"
   line: 139
 internal:
 pattern:

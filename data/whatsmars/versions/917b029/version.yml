@@ -2,7 +2,7 @@ build:
   classes: whatsmars-common/target/classes
   commands:
   - mvn clean compile
-  src: whatsmars-common/src/
+  src: whatsmars-common/src/main/java/
 misuses:
 - '1'
 - '2'

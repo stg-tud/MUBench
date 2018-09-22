@@ -2,7 +2,7 @@ build:
   classes: smart-sso/smart-sso-server/target/classes
   commands:
   - mvn clean compile
-  src: smart-sso/smart-sso-server/src/
+  src: smart-sso/smart-sso-server/src/main/java/
 misuses:
 - '1'
 - '2'

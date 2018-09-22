@@ -2,7 +2,7 @@ build:
   classes: game-engine/target/classes
   commands:
   -  mvn compile              
-  src: game-engine/src/
+  src: game-engine/src/main/java/
 misuses:
 - '1'
 - '2'

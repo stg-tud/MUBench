@@ -2,7 +2,7 @@ build:
   classes: TLS-Core/target/classes
   commands:
   - mvn clean compile              
-  src: TLS-Core/src/
+  src: TLS-Core/src/main/java/
 misuses:
 - '1'
 - '2'

@@ -5,7 +5,7 @@ violations:
 description: >
   Iteration count in while creating PBEParameterSpec object is 20 which should be greater than 1000.
 location:
-  file: src/main/java/com/bwssystems/HABridge/BridgeSecurity.java
+  file: com/bwssystems/HABridge/BridgeSecurity.java
   method: "decrypt(String)"
   line: 343
 internal:

@@ -6,7 +6,7 @@ description: >
   First parameter in Cipher.getInstance(String) is with value "AES" which should be any of AES/{CBC, GCM, PCBC, CTR, CTS, CFB, OFB}.
 location:
   file: me/j360/dubbo/modules/util/security/CryptoUtil.java
-  method: "aes(byte[],byte[],int)"
+  method: "aes(byte[], byte[], int)"
   line: 140
 internal:
 pattern:

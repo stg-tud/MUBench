@@ -2,7 +2,7 @@ build:
   classes: pig-gateway/target/classes  
   commands:
   -  mvn compile              
-  src: pig-gateway/src/
+  src: pig-gateway/src/main/java/
 misuses:
 - '1'
 - '2'

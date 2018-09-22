@@ -2,7 +2,7 @@ build:
  classes: hessian-lite/target/classes
  commands:
   - mvn -pl :hessian-lite -am clean install
- src: hessian-lite/src/
+ src: hessian-lite/src/main/java/
 misuses:
 - '1'
 - '2'   

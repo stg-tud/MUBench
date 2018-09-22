@@ -6,7 +6,7 @@ description: >
   First parameter in SecretKeySpec(byte[], String) was not properly randomized
 location:
   file: org/brunocvcunha/instagram4j/util/InstagramHashUtil.java
-  method: "generateHash(String,String)"
+  method: "generateHash(String, String)"
   line: 128
 internal:
 pattern:

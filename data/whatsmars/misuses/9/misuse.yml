@@ -6,7 +6,7 @@ description: >
   First parameter in Cipher.getInstance(String) is with value "AES/ECB/PKCS5Padding" which should be any of AES/{CBC, GCM, PCBC, CTR, CTS, CFB, OFB}.
 location:
   file: org/hongxi/whatsmars/common/util/AESUtils.java
-  method: "decrypt(byte[],byte[])"
+  method: "decrypt(byte[], byte[])"
   line: 64
 internal:
 pattern:

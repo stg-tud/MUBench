@@ -2,7 +2,7 @@ build:
   classes: openzaly-common/target/classes  
   commands:
   -  mvn compile              
-  src: openzaly-common/src/
+  src: openzaly-common/src/main/java/
 misuses:
 - '1'
 - '2'

@@ -6,7 +6,7 @@ description: >
   First parameter while initializing SecretKeySpec was not properly randomized.
 location:
   file: org/hongxi/whatsmars/common/util/AESUtils.java
-  method: "decrypt(byte[],byte[])"
+  method: "decrypt(byte[], byte[])"
   line: 61
 internal:
 pattern:

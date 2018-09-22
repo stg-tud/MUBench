@@ -6,7 +6,7 @@ description: >
   Second parameter while initializing Cipher was not properly generatedKey.
 location:
   file: org/hongxi/whatsmars/common/util/DESUtils.java
-  method: "decrypt(byte[],byte[])"
+  method: "decrypt(byte[], byte[])"
   line: 57
 internal:
 pattern:

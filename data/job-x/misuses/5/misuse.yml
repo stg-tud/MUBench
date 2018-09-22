@@ -6,7 +6,7 @@ description: >
   Second parameter in cipher.init(int, SecretKeySpec) was not properly generatedKey
 location:
   file: com/jobxhub/common/util/DigestUtils.java
-  method: "aesDecrypt(String,String)"
+  method: "aesDecrypt(String, String)"
   line: 482
 internal:
 pattern:

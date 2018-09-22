@@ -3,7 +3,7 @@ build:
   commands:
   - ant ivy-bootstrap
   - ant compile              
-  src: solr/core/src
+  src: solr/core/src/java/
 misuses:
 - '1'
 - '2'

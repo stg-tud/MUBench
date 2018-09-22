@@ -6,7 +6,7 @@ description: >
   First parameter in Cipher getInstance(String) is with value "AES" which should be any of AES/{CBC, GCM, PCBC, CTR, CTS, CFB, OFB}.
 location:
   file: com/vip/vjtools/vjkit/security/CryptoUtil.java
-  method: "aes(byte[],byte[],int)"
+  method: "aes(byte[], byte[], int)"
   line: 134
 internal:
 pattern:

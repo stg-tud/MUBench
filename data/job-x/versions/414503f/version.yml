@@ -2,7 +2,7 @@ build:
   classes: jobx-common/target/classes
   commands:
   -  mvn clean compile            
-  src: jobx-common/src/
+  src: jobx-common/src/main/java/
 misuses:
 - '1'
 - '2'

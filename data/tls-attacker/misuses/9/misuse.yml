@@ -6,7 +6,7 @@ description: >
   First parameter while creating SecretKeySpec object was not properly randomized
 location:
   file: de/rub/nds/tlsattacker/core/crypto/cipher/JavaCipher.java
-  method: "decrypt(byte[],byte[],byte[])"
+  method: "decrypt(byte[], byte[], byte[])"
   line: 124
 internal:
 pattern:

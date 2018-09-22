@@ -2,7 +2,7 @@ build:
   classes: zheng-common/target/classes
   commands:
   - mvn clean compile
-  src: zheng-common/src/
+  src: zheng-common/src/main/java/
 misuses:
 - '1'
 - '2'

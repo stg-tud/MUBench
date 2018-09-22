@@ -6,7 +6,7 @@ description: >
   Second parameter in cipher.init(int, Key) is not properly generatedKey
 location:
   file: com/jpay/unionpay/SecureUtil.java
-  method: "decryptData(PrivateKey,byte[])"
+  method: "decryptData(PrivateKey, byte[])"
   line: 441
 internal:
 pattern:

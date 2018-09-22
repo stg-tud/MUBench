@@ -2,7 +2,7 @@ build:
   classes: quick-wx-api/target/classes  
   commands:
   -  mvn compile              
-  src: quick-wx-api/src/
+  src: quick-wx-api/src/main/java/
 misuses:
 - '1'
 - '2'

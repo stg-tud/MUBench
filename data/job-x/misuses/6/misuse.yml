@@ -6,7 +6,7 @@ description: >
   First parameter in while creating SecretKeySpec object i.e. SecretKeySpec(byte[], String) was not properly randomized
 location:
   file: com/jobxhub/common/util/DigestUtils.java
-  method: "aesDecrypt(String,String)"
+  method: "aesDecrypt(String, String)"
   line: 480
 internal:
 pattern:

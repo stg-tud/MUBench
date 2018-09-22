@@ -6,7 +6,7 @@ description: >
   First parameter in Signature.initSign(PrivateKey) is not a properly generatedPrivkey
 location:
   file: com/jpay/unionpay/SecureUtil.java
-  method: "signBySoft(PrivateKey,byte[])"
+  method: "signBySoft(PrivateKey, byte[])"
   line: 277
 internal:
 pattern:

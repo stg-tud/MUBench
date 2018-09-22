@@ -2,7 +2,7 @@ build:
   classes: vjkit/target/classes  
   commands:
   -  mvn compile              
-  src: vjkit/src/
+  src: vjkit/src/main/java/
 misuses:
 - '1'
 - '2'

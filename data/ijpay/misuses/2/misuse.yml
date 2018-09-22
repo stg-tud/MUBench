@@ -6,7 +6,7 @@ description: >
   First parameter in initVerify(publicKey) is not a properly generatedPubkey
 location:
   file: com/jpay/unionpay/SecureUtil.java
-  method: "validateSignBySoft(PublicKey,byte[],byte[])"
+  method: "validateSignBySoft(PublicKey, byte[], byte[])"
   line: 302
 internal:
 pattern:

@@ -5,7 +5,7 @@ violations:
 description: >
   First parameter in Cipher.getInstance(String) is with value "RSA/ECB/nopadding" which should be any of "RSA" with (emptyString, "ECB").
 location:
-  file: solr/core/src/java/org/apache/solr/util/CryptoKeys.java
+  file: org/apache/solr/util/CryptoKeys.java
   method: "encrypt(ByteBuffer)"
   line: 321
 internal:

@@ -6,7 +6,7 @@ description: >
   While creating the SecretKeySpec object, the first parameter was not properly randomized.
 location:
   file: org/hswebframework/web/authorization/jwt/JwtConfig.java
-  method: "SecretKey generalKey()"
+  method: "generalKey()"
   line: 47
 internal:
 pattern:

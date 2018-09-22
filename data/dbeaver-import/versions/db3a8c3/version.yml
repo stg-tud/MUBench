@@ -2,7 +2,7 @@ build:
   classes: plugins/org.jkiss.dbeaver.ext.import_config/target/classes
   commands:
   - mvn package
-  src: plugins/org.jkiss.dbeaver.ext.import_config/src
+  src: plugins/
 misuses:
 - '1'
 - '2'

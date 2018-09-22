@@ -5,7 +5,7 @@ description: >
   Third parameter while initializing the Cipher object was not properly preparedIV.
 location:
   file: com/jeesuite/common/crypt/DES.java
-  method: "encrypt(String,String)"
+  method: "encrypt(String, String)"
   line: 38
 internal:
 pattern:

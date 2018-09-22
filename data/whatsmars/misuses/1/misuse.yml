@@ -6,7 +6,7 @@ description: >
   First parameter in Cipher.getInstance(String) is with value "DES/ECB/PKCS5Padding" which should be any of {AES, Blowfish, DESede, PBEWithHmacSHA224AndAES_128, PBEWithHmacSHA256AndAES_128, PBEWithHmacSHA384AndAES_128, PBEWithHmacSHA512AndAES_128, PBEWithHmacSHA224AndAES_256, PBEWithHmacSHA256AndAES_256, PBEWithHmacSHA384AndAES_256, PBEWithHmacSHA512AndAES_256, RSA}
 location:
   file: org/hongxi/whatsmars/common/util/DESUtils.java
-  method: "decrypt(byte[],byte[])"
+  method: "decrypt(byte[], byte[])"
   line: 56
 internal:
 pattern:
