@@ -74,7 +74,7 @@ $container['renderer'] = function ($container) {
         'number_of_required_reviews' => $container->settings["number_of_required_reviews"],
 
         'markdown_parser' => $markdown_parser,
-        'menuViewExtension' => new MenuViewExtension($container->settings['number_of_required_reviews']),
+        'menuViewExtension' => new MenuViewExtension($container),
         'detectorName' => array($anonymousViewExtension, "getDetectorName"),
         'reviewerName' => array($anonymousViewExtension, "getReviewerName"),
         'detectorPathId' => array($anonymousViewExtension,"getDetectorPathId"),
