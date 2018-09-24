@@ -23,7 +23,8 @@ return [
         ],
         'site_base_url' => '/',
         'upload' => __DIR__ . '/../mubench-reviewsite-data/upload',
-        'default_ex2_review_size' => '20'
+        'default_ex2_review_size' => '20',
+        'number_of_required_reviews' => 2
     ],
     'users' => [
         "reviewer1" => "standalone",

@@ -3,28 +3,25 @@
 namespace MuBench\ReviewSite\ViewExtensions;
 
 
-class AnonymousViewExtension
+class AnonymousViewExtension extends ViewExtension
 {
-    private $blind_mode;
-    private $detector_blind_names;
-
-    public function __construct($container)
+    private function isInBlindMode()
     {
-        $this->blind_mode = $container->settings['blind_mode']['enabled'];
-        $this->detector_blind_names = $container->settings['blind_mode']['detector_blind_names'];
+        return $this->settings['blind_mode']['enabled'];
     }
 
     public function getDetectorName($detectorName)
     {
-        if($this->blind_mode && array_key_exists($detectorName, $this->detector_blind_names)){
-            return $this->detector_blind_names[$detectorName];
+        $detector_blind_names = $this->settings['blind_mode']['detector_blind_names'];
+        if($this->isInBlindMode() && array_key_exists($detectorName, $detector_blind_names)){
+            return $detector_blind_names[$detectorName];
         }
         return $detectorName;
     }
 
     public function getReviewerName($reviewer)
     {
-        if($this->blind_mode){
+        if($this->isInBlindMode()){
             return "reviewer-" . $reviewer->id;
         }
         return $reviewer->name;
@@ -32,7 +29,7 @@ class AnonymousViewExtension
 
     public function getDetectorPathId($detector)
     {
-        if($this->blind_mode){
+        if($this->isInBlindMode()){
             return $detector->id;
         }
         return $detector->muid;
@@ -40,10 +37,9 @@ class AnonymousViewExtension
 
     public function getReviewerPathId($reviewer)
     {
-        if($this->blind_mode){
+        if($this->isInBlindMode()){
             return $reviewer->id;
         }
         return $reviewer->name;
     }
-
 }

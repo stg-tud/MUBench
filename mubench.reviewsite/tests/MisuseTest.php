@@ -123,7 +123,7 @@ class MisuseTest extends SlimTestCase
         $this->reviewsControllerHelper->createReview($misuse, $reviewer1, 'Yes', [], ['reviewer1-tag']);
         $this->reviewsControllerHelper->createReview($misuse, $reviewer2, 'Yes', [], ['reviewer2-tag']);
 
-        self::assertEquals(2, Misuse::find(1)->getTags()->count());
+        self::assertEquals(2, Misuse::find(1)->getTags($this->container->settings["number_of_required_reviews"])->count());
     }
 
     function testGetTagsOfReviewerWhenNotConclusive()
@@ -150,7 +150,7 @@ class MisuseTest extends SlimTestCase
 
         $this->reviewsControllerHelper->createReview($misuse, $reviewer1, 'Yes', [], ['reviewer1-tag']);
 
-        self::assertEquals(0, $misuse->getTags()->count());
+        self::assertEquals(0, $misuse->getTags($this->container->settings["number_of_required_reviews"])->count());
     }
 
     public function createRunWithFindingInLine($line)

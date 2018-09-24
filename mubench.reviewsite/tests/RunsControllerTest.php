@@ -282,11 +282,11 @@ class RunsControllerTest extends SlimTestCase
         $stats = [
             new DetectorResult(
                 $this->detector1
-                , new Collection([$run1])),
+                , new Collection([$run1]), $this->container->settings['number_of_required_reviews']),
             new DetectorResult(
                 $this->detector2
-                , new Collection([$run2]))];
-        $stats["total"] = new ExperimentResult($stats);
+                , new Collection([$run2]), $this->container->settings['number_of_required_reviews'])];
+        $stats["total"] = new ExperimentResult($stats, $this->container->settings['number_of_required_reviews']);
 
         $expected_csv = $this->createCSV(["detector,project,synthetics,misuses,potential_hits,open_reviews,need_clarification,yes_agreements,no_agreements,total_agreements,yes_no_agreements,no_yes_agreements,total_disagreements,kappa_p0,kappa_pe,kappa_score,hits,recall",
             "-d1-,1,0,1,1,2,0,0,0,0,0,0,0,0,0,0,0,0",
@@ -303,11 +303,11 @@ class RunsControllerTest extends SlimTestCase
         $stats = [
             new DetectorResult(
                 $this->detector1
-                , new Collection([$run1])),
+                , new Collection([$run1]), $this->container->settings['number_of_required_reviews']),
             new DetectorResult(
                 $this->detector2
-                , new Collection([$run2]))];
-        $stats["total"] = new ExperimentResult($stats);
+                , new Collection([$run2]), $this->container->settings['number_of_required_reviews'])];
+        $stats["total"] = new ExperimentResult($stats, $this->container->settings['number_of_required_reviews']);
         $expected_csv = $this->createCSV(["detector,project,potential_hits,open_reviews,need_clarification,yes_agreements,no_agreements,total_agreements,yes_no_agreements,no_yes_agreements,total_disagreements,kappa_p0,kappa_pe,kappa_score,hits,precision",
             "-d1-,1,1,2,0,0,0,0,0,0,0,0,0,0,0,0",
             "-d2-,1,1,0,0,1,0,1,0,0,0,1,0,1,1,1",
@@ -323,11 +323,11 @@ class RunsControllerTest extends SlimTestCase
         $stats = [
             new DetectorResult(
                 $this->detector1
-                , new Collection([$run1])),
+                , new Collection([$run1]), $this->container->settings['number_of_required_reviews']),
             new DetectorResult(
                 $this->detector2
-                , new Collection([$run2]))];
-        $stats["total"] = new ExperimentResult($stats);
+                , new Collection([$run2]), $this->container->settings['number_of_required_reviews'])];
+        $stats["total"] = new ExperimentResult($stats, $this->container->settings['number_of_required_reviews']);
         $expected_csv = $this->createCSV([
             "detector,project,misuses,potential_hits,open_reviews,need_clarification,yes_agreements,no_agreements,total_agreements,yes_no_agreements,no_yes_agreements,total_disagreements,kappa_p0,kappa_pe,kappa_score,hits,recall",
             "-d1-,1,1,1,2,0,0,0,0,0,0,0,0,0,0,0,0",
@@ -350,7 +350,7 @@ class RunsControllerTest extends SlimTestCase
             "-p-,-v-,success,23,42.1,2,1,,"
         ]);
 
-        self::assertEquals($expected_csv, RunsController::exportRunStatistics($runs));
+        self::assertEquals($expected_csv, RunsController::exportRunStatistics($runs, $this->container->settings['number_of_required_reviews']));
     }
 
     function test_run_deletion()

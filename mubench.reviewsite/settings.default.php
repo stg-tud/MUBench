@@ -24,6 +24,9 @@ return [
         // The default number of findings to display in Experiment P (Precision).
         'default_ex2_review_size' => '20',
 
+        // The number of reviews required per misuse/finding.
+        'number_of_required_reviews' => 2,
+
         // Configuration to put the site in blind-review mode. When enabled,
         // reviewer names are replaced by 'reviewer-1', 'reviewer-2', etc. in
         // both the website itself and the URLs.
