@@ -88,6 +88,15 @@ class MisuseTest extends SlimTestCase
         self::assertCount(2, $finding->snippets());
     }
 
+    public function testReturnsAllSnippetsIfStartLineIsNotSet()
+    {
+        $finding = $this->createMisuseWithFinding(null);
+        $this->createThreeLineSnippet($finding, 12);
+        $this->createThreeLineSnippet($finding, 9);
+
+        self::assertCount(2, $finding->snippets());
+    }
+
     function testGetAllTagsWhenConclusive()
     {
         $reviewer1 = Reviewer::create(['name' => 'reviewer1']);
