@@ -3,6 +3,10 @@ from operator import attrgetter
 
 import sys, os
 
+sys.path.append(os.path.dirname(os.path.abspath(__file__)) + "/../mubench.pipeline")
+from utils.shell import Shell, CommandFailedError
+
+
 class CustomHelpFormatter(HelpFormatter):
     def _format_action(self, action):
         if type(action) == _SubParsersAction:
@@ -13,11 +17,18 @@ class CustomHelpFormatter(HelpFormatter):
         else:
             return super(CustomHelpFormatter, self)._format_action(action)
 
+try:
+    __version__ = Shell.exec('version').strip()
+except CommandFailedError as e:
+    __version__ = "v???"
+
 parser = ArgumentParser(
     usage=SUPPRESS,
-    description="This is the MUBench interactive shell.",
+    description="This is the MUBench Interactive Shell " + __version__ + ".",
     epilog="For details, check out `<command> -h` or https://github.com/stg-tud/MUBench.",
     formatter_class=CustomHelpFormatter)
+    
+parser.add_argument('-v', '--version', action='version', version=__version__, help=SUPPRESS)
 
 parser._positionals.title = "Control MUBench via the following commands"
 subparsers = parser.add_subparsers(dest='command')
