@@ -1,0 +1,9 @@
+#!/bin/bash
+
+[[ -d /mubench ]] && cd /mubench
+
+if [ -d .git ]; then
+  echo "$(git show -s --format=%cd --date=format:v%Y-%m-%d.%H%m HEAD).$(git rev-parse --short HEAD)"
+else
+  echo "$(date '+%Y-%m-%d.%H%M').dev"
+fi
