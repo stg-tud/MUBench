@@ -11,9 +11,9 @@ class DetectorResult extends RunsResult
 
     public $runs;
 
-    function __construct(Detector $detector, $runs, $required_reviews)
+    function __construct(Detector $detector, $runs, $number_of_required_reviews)
     {
-        parent::__construct($runs, $required_reviews);
+        parent::__construct($runs, $number_of_required_reviews);
         $this->detector = $detector;
         $this->runs = $runs;
     }

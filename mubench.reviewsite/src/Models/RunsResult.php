@@ -18,7 +18,7 @@ abstract class RunsResult
 
     public $number_of_hits = 0;
 
-    function __construct($runs, $default_required_reviews)
+    function __construct($runs, $number_of_required_reviews)
     {
         $projects = array();
         $misuses = array();
@@ -41,10 +41,10 @@ abstract class RunsResult
                 if (sizeof($misuse->findings) > 0) {
                     $this->misuses_to_review++;
                 }
-                $reviewState = $misuse->getReviewState($default_required_reviews);
+                $reviewState = $misuse->getReviewState($number_of_required_reviews);
                 switch ($reviewState) {
                     case ReviewState::NEEDS_REVIEW:
-                        $this->open_reviews += $misuse->getNumberOfRequiredReviews($default_required_reviews);
+                        $this->open_reviews += $misuse->getNumberOfRemainingRequiredReviews($number_of_required_reviews);
                         break;
                     case ReviewState::AGREEMENT_YES:
                         $this->yes_agreements++;

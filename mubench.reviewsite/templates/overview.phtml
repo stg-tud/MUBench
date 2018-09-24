@@ -74,7 +74,7 @@ use MuBench\ReviewSite\Models\ReviewState;
                 $resolution_review = $pathFor('review', array('experiment_id' => $experiment->id, 'detector_muid' => $detectorPathId($misuse->detector), 'project_muid' => $misuse->getProject(), 'version_muid' => $misuse->getVersion(), 'misuse_muid' => $misuse->misuse_muid, 'reviewer_name' => $reviewerPathId($resolution_reviewer)));
                 ?>
                 <td class="<?= $style_classes ?>">
-                    <?php $review_state = $misuse->getReviewState($default_required_reviews) ?>
+                    <?php $review_state = $misuse->getReviewState($number_of_required_reviews) ?>
                     <?php if ($review_state == ReviewState::NOTHING_TO_REVIEW): ?>
                     <?php elseif ($review_state == ReviewState::NEEDS_REVIEW): ?>
                         <i class="fa fa-search" aria-hidden="true" style="color:red;" title="Needs Review"></i>

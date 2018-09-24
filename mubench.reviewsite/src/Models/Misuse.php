@@ -118,9 +118,9 @@ class Misuse extends Model
         return $this->getReviewState($number_of_required_reviews) > ReviewState::NEEDS_REVIEW;
     }
 
-    public function getNumberOfRequiredReviews($default_required_reviews)
+    public function getNumberOfRemainingRequiredReviews($number_of_required_reviews)
     {
-        return $default_required_reviews - sizeof($this->getReviews());
+        return $number_of_required_reviews - sizeof($this->getReviews());
     }
 
     public function hasConclusiveReviewState($number_of_required_reviews)
@@ -226,9 +226,9 @@ class Misuse extends Model
         return false;
     }
 
-    public function getTags($default_required_reviews)
+    public function getTags($number_of_required_reviews)
     {
-        if(!$this->hasConclusiveReviewState($default_required_reviews)){
+        if(!$this->hasConclusiveReviewState($number_of_required_reviews)){
             return new Collection;
         }else{
             $tags = new Collection;

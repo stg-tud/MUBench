@@ -36,7 +36,7 @@ class RunsController extends Controller
 
         $ex2_review_size = $request->getQueryParam("ex2_review_size", $this->settings['default_ex2_review_size']);
 
-        $runs = $this->getRuns($detector, $experiment, $ex2_review_size, $this->settings['default_required_reviews']);
+        $runs = $this->getRuns($detector, $experiment, $ex2_review_size, $this->settings['number_of_required_reviews']);
 
         return $this->renderer->render($response, 'detector.phtml', [
             'experiment' => $experiment,
@@ -54,9 +54,9 @@ class RunsController extends Controller
         $experiment = Experiment::find($experiment_id);
         $ex2_review_size = $request->getQueryParam("ex2_review_size", $this->settings['default_ex2_review_size']);
 
-        $runs = $this->getRuns($detector, $experiment, $ex2_review_size, $this->settings['default_required_reviews']);
+        $runs = $this->getRuns($detector, $experiment, $ex2_review_size, $this->settings['number_of_required_reviews']);
 
-        return download($response, self::exportRunStatistics($runs, $this->settings['default_required_reviews']), $detector->muid . ".csv");
+        return download($response, self::exportRunStatistics($runs, $this->settings['number_of_required_reviews']), $detector->muid . ".csv");
     }
 
     public function getResults(Request $request, Response $response, array $args)
@@ -224,7 +224,7 @@ class RunsController extends Controller
         $run->delete();
     }
 
-    static function getRuns($detector, $experiment, $max_reviews, $required_reviews)
+    static function getRuns($detector, $experiment, $max_reviews, $number_of_required_reviews)
     {
         $runs = Run::of($detector)->in($experiment)->orderBy('project_muid')->orderBy('version_muid')->get();
 
@@ -244,7 +244,9 @@ class RunsController extends Controller
                         break;
                     }
                     $filtered_misuses->add($misuse);
-                    if ($misuse->hasConclusiveReviewState($required_reviews) || (!$misuse->hasSufficientReviews($required_reviews) && !$misuse->hasInconclusiveReview($required_reviews))) {
+                    if ($misuse->hasConclusiveReviewState($number_of_required_reviews)
+                        || (!$misuse->hasSufficientReviews($number_of_required_reviews)
+                            && !$misuse->hasInconclusiveReview($number_of_required_reviews))) {
                         $conclusive_reviews++;
                     }
                 }
@@ -261,7 +263,7 @@ class RunsController extends Controller
         return $runs;
     }
 
-    public static function exportRunStatistics($runs, $required_reviews)
+    public static function exportRunStatistics($runs, $number_of_required_reviews)
     {
         $rows = [];
         foreach ($runs as $run) {
@@ -276,9 +278,9 @@ class RunsController extends Controller
                 $row = $run_details;
 
                 $row["misuse"] = $misuse->misuse_muid;
-                $row["decision"] = $misuse->getReviewState($required_reviews);
-                if ($misuse->hasResolutionReview($required_reviews)) {
-                    $resolution = $misuse->getResolutionReview($required_reviews);
+                $row["decision"] = $misuse->getReviewState($number_of_required_reviews);
+                if ($misuse->hasResolutionReview($number_of_required_reviews)) {
+                    $resolution = $misuse->getResolutionReview($number_of_required_reviews);
                     $row["resolution_decision"] = $resolution->getDecision();
                     $row["resolution_comment"] = escapeText($resolution->comment);
                 } else {
@@ -584,7 +586,7 @@ class RunsController extends Controller
                 }elseif($experiment->id === 2 && $ex2_review_size > -1){
                     $number_of_misuses = 0;
                     foreach ($misuses as $misuse) {
-                        if ($misuse->getReviewState($this->settings['default_required_reviews']) != ReviewState::UNRESOLVED) {
+                        if ($misuse->getReviewState($this->settings['number_of_required_reviews']) != ReviewState::UNRESOLVED) {
                             $filtered_misuses->add($misuse);
                             $number_of_misuses++;
                         }
@@ -596,9 +598,9 @@ class RunsController extends Controller
                 }
                 $run->misuses = $filtered_misuses;
             }
-            $results[$detector->muid] = new DetectorResult($detector, $runs, $this->settings['default_required_reviews']);
+            $results[$detector->muid] = new DetectorResult($detector, $runs, $this->settings['number_of_required_reviews']);
         }
-        $results["total"] = new ExperimentResult($results, $this->settings['default_required_reviews']);
+        $results["total"] = new ExperimentResult($results, $this->settings['number_of_required_reviews']);
         return $results;
     }
 

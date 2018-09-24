@@ -63,7 +63,7 @@ use MuBench\ReviewSite\Models\RunsResult;
                             <?php if(array_key_exists($detector->muid, $misuse)): ?>
                                 <?php $current_misuse = $misuse[$detector->muid]; ?>
                                 <?php if($current_misuse->run->result === 'success'): ?>
-                                    <?php $review_state = $current_misuse->getReviewState($default_required_reviews) ?>
+                                    <?php $review_state = $current_misuse->getReviewState($number_of_required_reviews) ?>
                                     <?php if($current_misuse->findings->isEmpty()): ?>
                                         <i class="fa fa-thumbs-o-down" aria-hidden="true" style="color:darkred;" title="No findings"></i>
                                     <?php elseif ($review_state == ReviewState::NOTHING_TO_REVIEW): ?>
