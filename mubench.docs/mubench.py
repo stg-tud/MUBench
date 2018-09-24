@@ -26,6 +26,7 @@ parser = ArgumentParser(
     usage=SUPPRESS,
     description="This is the MUBench Interactive Shell " + __version__ + ".",
     epilog="For details, check out `<command> -h` or https://github.com/stg-tud/MUBench.",
+    add_help=False,
     formatter_class=CustomHelpFormatter)
     
 parser.add_argument('-v', '--version', action='version', version=__version__, help=SUPPRESS)
