@@ -17,6 +17,8 @@ class MisuseTest extends SlimTestCase
     /** @var ReviewsControllerHelper */
     private $reviewsControllerHelper;
 
+    private $FINDING_SRC_FILE = "//src/file";
+
     public function setUp()
     {
         parent::setUp();
@@ -51,112 +53,98 @@ class MisuseTest extends SlimTestCase
 
     public function testFindsSnippetForFinding()
     {
-        $this->createRunWithFindingInLine(11);
+        $finding = $this->createMisuseWithFinding(11);
+        $snippet = $this->createThreeLineSnippet($finding, 10);
 
-        Snippet::createIfNotExists("-p-", "-v-", "-m-", "//src/file", 10, "m(A){\n\ta(A);\n}");
-
-        $run = Run::of(Detector::find('-d-'))->in(Experiment::find(1))->first();
-
-        self::assertEquals(1, count($run->misuses[0]->snippets()));
-        self::assertEquals(10, $run->misuses[0]->snippets()[0]->line);
+        self::assertCount(1, $finding->snippets());
+        self::assertEquals($snippet->id, $finding->snippets()[0]->id);
     }
 
-    public function testFiltersUnrelatedSnippet()
+    public function testFiltersUnrelatedSnippetByLine()
     {
-        $this->createRunWithFindingInLine(11);
-        $this->createSnippetWithStartLine(9);
-        $this->createSnippetWithStartLine(15);
+        $finding = $this->createMisuseWithFinding(11);
+        $snippet = $this->createThreeLineSnippet($finding, 9);
+        $this->createThreeLineSnippet($finding, 15);
 
-        $run = Run::of(Detector::find('-d-'))->in(Experiment::find(1))->first();
-
-        self::assertEquals(1, count($run->misuses[0]->snippets()));
-        self::assertEquals(9, $run->misuses[0]->snippets()[0]->line);
+        self::assertCount(1, $finding->snippets());
+        self::assertEquals($snippet->id, $finding->snippets()[0]->id);
     }
 
-    public function testNoMatchingSnippetsDisplayAll()
+    public function testFiltersUnrelatedSnippetsWithoutStartLine()
     {
-        $this->createRunWithFindingInLine(20);
-        $this->createSnippetWithStartLine(12);
-        $this->createSnippetWithStartLine(9);
+        $finding = $this->createMisuseWithFinding(null);
+        $this->createThreeLineSnippet($finding, 1337);
+        Snippet::createIfNotExists('-otherProject-', '-v-', '-m-', '//other/file', 42, 'foo(){}');
 
-        $run = Run::of(Detector::find('-d-'))->in(Experiment::find(1))->first();
-
-        self::assertEquals(2, count($run->misuses[0]->snippets()));
+        self::assertCount(1, $finding->snippets());
     }
 
-    public function testSnippetsWithFindingWithoutStartLine()
+    public function testReturnsAllSnippetsIfNoneMatchByLine()
     {
-        $runsController = new RunsController($this->container);
-        $runsController->addRun(1, '-d-', '-p-', '-v-', [
-            "result" => "success",
-            "runtime" => 42.1,
-            "number_of_findings" => 23,
-            "-custom-stat-" => "-stat-val-",
-            "timestamp" => 12,
-            "potential_hits" => [
-                [
-                    "misuse" => "-m-",
-                    "rank" => 0,
-                    "target_snippets" => [
-                    ],
-                    "file" => "//src/file",
-                    "custom1" => "-val1-",
-                    "custom2" => "-val2-"
-                ]]
-        ]);
-        $this->createSnippetWithStartLine(12);
-        $this->createSnippetWithStartLine(9);
+        $finding = $this->createMisuseWithFinding(20);
+        $this->createThreeLineSnippet($finding, 12);
+        $this->createThreeLineSnippet($finding, 9);
 
-        $run = Run::of(Detector::find('-d-'))->in(Experiment::find(1))->first();
+        self::assertCount(2, $finding->snippets());
+    }
 
-        self::assertEquals(2, count($run->misuses[0]->snippets()));
+    public function testReturnsAllSnippetsIfStartLineIsNotSet()
+    {
+        $finding = $this->createMisuseWithFinding(null);
+        $this->createThreeLineSnippet($finding, 12);
+        $this->createThreeLineSnippet($finding, 9);
+
+        self::assertCount(2, $finding->snippets());
     }
 
     function testGetAllTagsWhenConclusive()
     {
         $reviewer1 = Reviewer::create(['name' => 'reviewer1']);
         $reviewer2 = Reviewer::create(['name' => 'reviewer2']);
-
-        $this->createRunWithFindingInLine(10);
-        $misuse = Misuse::find(1);
+        $misuse = $this->createMisuseWithFinding(10);
 
         $this->reviewsControllerHelper->createReview($misuse, $reviewer1, 'Yes', [], ['reviewer1-tag']);
         $this->reviewsControllerHelper->createReview($misuse, $reviewer2, 'Yes', [], ['reviewer2-tag']);
 
-        self::assertEquals(2, Misuse::find(1)->getTags($this->container->settings["number_of_required_reviews"])->count());
+        self::assertCount(2, $misuse->getTags($this->container->settings["number_of_required_reviews"]));
     }
 
     function testGetTagsOfReviewerWhenNotConclusive()
     {
         $reviewer1 = Reviewer::create(['name' => 'reviewer1']);
         $reviewer2 = Reviewer::create(['name' => 'reviewer2']);
-
-        $this->createRunWithFindingInLine(10);
-        $misuse = Misuse::find(1);
+        $misuse = $this->createMisuseWithFinding(10);
 
         $this->reviewsControllerHelper->createReview($misuse, $reviewer1, 'Yes', [], ['reviewer1-tag']);
         $this->reviewsControllerHelper->createReview($misuse, $reviewer2, 'No', [], ['reviewer2-tag']);
 
         $tags = $misuse->getReview($reviewer1)->tags;
-        self::assertEquals(1, $tags->count());
+        self::assertCount(1, $tags);
         self::assertEquals('reviewer1-tag', $tags[0]->name);
     }
 
     function testGetNoTagsWithoutReviewerWhenNotConclusive()
     {
         $reviewer1 = Reviewer::create(['name' => 'reviewer1']);
-        $this->createRunWithFindingInLine(10);
-        $misuse = Misuse::find(1);
+        $misuse = $this->createMisuseWithFinding(10);
 
         $this->reviewsControllerHelper->createReview($misuse, $reviewer1, 'Yes', [], ['reviewer1-tag']);
 
-        self::assertEquals(0, $misuse->getTags($this->container->settings["number_of_required_reviews"])->count());
+        self::assertEmpty($misuse->getTags($this->container->settings["number_of_required_reviews"]));
     }
 
-    public function createRunWithFindingInLine($line)
+    /**
+     * @param int $startLine
+     * @return Misuse
+     */
+    public function createMisuseWithFinding($startLine = null)
     {
+        $experimentId = 1;
+        $detectorId = '-d-';
+        $projectId = '-p-';
+        $versionId = '-v-';
         $runsController = new RunsController($this->container);
-        $runsController->addRun(1, '-d-', '-p-', '-v-', [
+        $runsController->addRun($experimentId, $detectorId, $projectId, $versionId, [
             "result" => "success",
             "runtime" => 42.1,
             "number_of_findings" => 23,
@@ -168,15 +156,19 @@ class MisuseTest extends SlimTestCase
                     "rank" => 0,
                     "target_snippets" => [
                     ],
-                    "file" => "//src/file",
-                    "startline" => $line,
+                    "file" => $this->FINDING_SRC_FILE,
+                    "startline" => $startLine,
                     "custom1" => "-val1-",
                     "custom2" => "-val2-"
                 ]]
         ]);
+        return Run::of(Detector::find($detectorId))->in(Experiment::find($experimentId))
+            ->where('project_muid', $projectId)->where('version_muid', $versionId)->first()->misuses[0];
     }
 
-    public function createSnippetWithStartLine($line){
-        Snippet::createIfNotExists("-p-", "-v-", "-m-", "//src/file", $line, "m(A){\n\ta(A);\n}");
+    private function createThreeLineSnippet(Misuse $misuse, $line)
+    {
+        return Snippet::createIfNotExists($misuse->getProject(), $misuse->getVersion(), $misuse->misuse_muid,
+            $this->FINDING_SRC_FILE, $line, "m(A){\n\ta(A);\n}");
     }
 }

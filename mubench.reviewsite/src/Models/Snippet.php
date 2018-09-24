@@ -30,11 +30,12 @@ class Snippet extends Model
         }
         $snippet = $query->first();
         if (!$snippet) {
-            Snippet::create([
+            $snippet = Snippet::create([
                 'project_muid'=> $projectId, 'version_muid' => $versionId, 'misuse_muid' => $misuseId,
                 'file' => $file, 'line' => $line, 'snippet' => $code, 'detector_muid' => $detectorId
             ]);
         }
+        return $snippet;
     }
 
     private static function hashFile($file)
