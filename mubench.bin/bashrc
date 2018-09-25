@@ -2,6 +2,7 @@ help () {
   python /mubench/mubench.docs/mubench.py
 }
 
-[ ! -z "$TERM" ] && echo -n "Welcome! " && help
+echo -n "Welcome! " && help
 
 export PS1="mubench> "
+export MUBENCH_INTERACTIVE_SHELL=1
