@@ -1,6 +1,6 @@
 #!/bin/bash
 
-python /mubench/mubench.docs/debug.py ${*} && exit 1
+python /mubench/mubench.docs/debug.py ${*} || exit 1
 
 CLI_VERSION=$1
 EXPERIMENT=$2
