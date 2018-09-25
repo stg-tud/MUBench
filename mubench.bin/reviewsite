@@ -3,8 +3,16 @@
 python /mubench/mubench.docs/reviewsite.py ${*} || exit 1
 
 if [ "$1" = 'start' ]; then
-  echo "Starting MUBench review site on localhost..."
-  php -S 0.0.0.0:80 -t ./mubench.reviewsite > /dev/null 2>&1 &
+  echo "Starting MUBench review site on localhost... "
+  if [[ ! -z "$MUBENCH_INTERACTIVE_SHELL" ]]; then
+    # Run non-blocking when in interactive mode.
+    php -S 0.0.0.0:80 -t ./mubench.reviewsite > /dev/null 2>&1 &
+    echo "Run 'reviewsite stop' to quit."
+  else
+    # Run blocking otherwise.
+    echo "Press Ctrl+C to quit."
+    php -S 0.0.0.0:80 -t ./mubench.reviewsite > /dev/null
+  fi
 elif [ "$1" = 'stop' ]; then
   echo "Stopping MUBench review site..."
   killall -9 php
