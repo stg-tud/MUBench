@@ -10,66 +10,64 @@ To use MUBench, you need to either obtain an account for an existing review site
 
 ## Server Requirements
 
-* PHP 7 with the following extensions:
-  * `ctype`
-  * `dom`
-  * `json`
-  * `mbstring`
-  * `openssl`
-  * `pdo`
-  * `session`
-  * `tokenizer`
-  * `xml`
-  * `xmlwriter`
-  * `zlib`
-* An SQL database and the respective PHP PDO extension
-  * (Tested with SQLite and MySQL)
+* PHP 7.x (for a list of the necessary PHP extensions, check our [Dockerfile](../docker/Dockerfile_shell)).
+* An SQL database and the respective PHP PDO extension (tested with SQLite and MySQL).
 
 
 ## Setup
+
+For testing purposes or private use, you may [host a review site standalone](#standalone) using our Docker image.
+Note, however, that this uses [PHP's built-in webserver](http://php.net/manual/en/features.commandline.webserver.php), which is not a full-featured webserver and discouraged for use on a public network.
+For hosting a public review site, we recommend [installing the review-site application on a webserver](#on-a-webserver) of your choice.
 
 ### On a Webserver 
 
 To setup a MUBench review site on a webserver, proceed as follows:
 
-1. [Setup the MUBench Pipeline](../mubench.pipeline/#setup)
-2. `$> ./mubench reviewsite init`
-3. Copy [`mubench.reviewsite/settings.default.php`](settings.default.php) to `mubench.reviewsite/settings.php`.
+1. Copy the review-site application from our Docker image:
+    1. `$> id=$(docker create svamann/mubench:stable)`
+    2. `$> docker cp $id:/mubench/mubench.reviewsite - > reviewsite.tar`
+    3. `$> docker rm -v $id`
+    3. Unpack the tar file on your machine.
+2. Copy [`mubench.reviewsite/settings.default.php`](settings.default.php) to `mubench.reviewsite/settings.php` (override the existing `settings.php`, which contains the configuration for running standalone within a Docker container).
 4. Adjust `settings.php` to your environment:
     * Enter your database-connection details below `db`.
-    * Enter your `site_base_url`.
+    * Enter your `site_base_url`, e.g., `/mubench`
     * List your reviewer credentials below `users`.
-5. Upload the contents of `mubench.reviewsite/` to your webserver.
+5. Upload the application to your webserver, e.g., `http://your.site/mubench/`.
 6. Grant the server read/write permissions on the `upload` and `logs` directories.
-7. Go to `http://<your-site.url/`[`setup/setup.php`](https://github.com/stg-tud/MUBench/blob/master/mubench.reviewsite/setup/setup.php) to initialize your database. **This will override existing tables!**
+7. Go to `http://your.site/mubench/`, which will initialize your database on the first visit.
 8. Delete the `setup` folder from your webserver.
-9. [Publish misuse metadata](#publish-misuse-metadata) to your review site.
+9. Use your review site:
+    * [Publish misuse metadata](#publish-misuse-metadata)
+    * [Publish detector findings](#publish-detector-findings)
+    * Review detector findings
 
 ### Standalone
 
 To run a MUBench review site locally on your machine, proceed as follows:
 
-1. [Setup the MUBench Pipeline](../mubench.pipeline/#setup)
-2. `$> ./mubench reviewsite init`
-3. Copy [`mubench.reviewsite/settings.default.php`](settings.default.php) to `mubench.reviewsite/settings.php`.
-4. List your reviewer credentials in `settings.php` below `users`.
-5. `$> ./mubench reviewsite start`
-6. Go to `http://localhost:8080/`[`setup/setup.php`](https://github.com/stg-tud/MUBench/blob/master/mubench.reviewsite/setup/setup.php) to initialize your database.
-7. [Publish misuse metadata](#publish-misuse-metadata) to `http://localhost:8080/`.
+1. `$> docker run -it --rm -p 8080:80 -v mubench:/mubench svamann/mubench:stable`
+2. `mubench> reviewsite start`
+6. Go to `http://localhost:8080/`, which will initialize your database on the first visit.
+9. Use the review site:
+    * [Publish misuse metadata](#publish-misuse-metadata)
+    * [Publish detector findings](#publish-detector-findings)
+    * Review detector findings
 
-Check `./mubench reviewsite -h` for further details.
+Check `reviewsite -h` for further details.
 
-*Hint:* To shutdown the review site, run `./mubench reviewsite stop`.
+*Hint:* To shutdown the review site, run `reviewsite stop`.
 
 
 ## Publish Misuse Metadata
 
-To correctly display potential hits for known misuses in the dataset, the review site needs the misuse metadata, such as the description, the misuse location, and the misuse code.
+To correctly display potential hits for known misuses from the dataset, the review site needs the misuse metadata, such as the description, the misuse location, and the misuse code.
 To upload the metadata to your review site, simply execute:
 
-    $> ./mubench publish metadata -s http://<your-site.url>/ -u <user> -p <password>
+    mubench> pipeline publish metadata -s http://your.site/mubench/ -u <user> -p <password>
 
-Check `./mubench publish metadata -h` for further details.
+Check `pipeline publish metadata -h` for further details.
 
 *Hint:* You may want to use the filter options (`--datasets`, `--only`, `--skip`) to upload metadata selectively.
 
@@ -78,11 +76,11 @@ Check `./mubench publish metadata -h` for further details.
 
 After running experiments with a detector, you may publish the detector's findings to your review site using:
 
-    $> ./mubench publish <experiment> <detector> -s http://<your-sites.url>/ -u <user> -p <password>
+    mubench> publish <experiment> <detector> -s http://your.site/mubench/ -u <user> -p <password>
 
 This will [run the respective experiment](../mubench.pipeline/), if you did not do so before.
 
-Check `./mubench publish -h` for further details.
+Check `pipeline publish -h` for further details.
 
 *Hint:* You may want to use the filter options (`--datasets`, `--only`, `--skip`, `--limit`) to upload findings selectively.
 
@@ -92,21 +90,21 @@ Check `./mubench publish -h` for further details.
 ### Cannot login as a reviewer
 
 *Scenario:* You configured a user in your `settings.php`, but when you click `Login` and enter the credentials, the login prompt just reappears, as if you had typed in wrong credentials.
+This happens if your server is not forwarding the Basic Auth headers to the review-site application.
 
-*Solution:* The problem might be how PHP Basic Auth is configured on your server.
-Try adding following line to the `.htaccess` file in the base directory of your MUBench review site:
+*Solution:* Try adding following line to the `.htaccess` file in the base directory of your MUBench review site:
 
 ```
 RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization},L]
 ```
 
-If this doesn't work, here's an alternative `.htaccess` file that has been found to work on some servers (make sure to adjust the `RewriteBase` according to your setting):
+If this doesn't work, you may try to replace the entire contents of the `.htaccess` file with the following configuration that has been found to work on some servers (make sure to adjust the `RewriteBase` according to your setting):
 
 ```
 RewriteEngine On
 RewriteCond %{HTTP:Authorization} ^(.*)
 RewriteRule .* - [e=HTTP_AUTHORIZATION:%1]
-RewriteBase /
+RewriteBase /mubench/
 RewriteRule ^index\.php$ - [E=X-HTTP_AUTHORIZATION:%{HTTP:Authorization},QSA,L]
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
