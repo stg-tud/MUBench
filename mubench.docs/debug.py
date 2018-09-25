@@ -10,7 +10,6 @@ from utils.config_util import SortingHelpFormatter, __sort_subactions_by_name,\
 from data.detector import get_available_detector_ids, Detector
 from utils.dataset_util import get_available_dataset_ids
 
-import sys
 
 available_datasets = get_available_dataset_ids(__DATASETS_FILE_PATH)
 
@@ -24,7 +23,7 @@ parser.add_argument('cli_version', help="The MUBench CLI version that the detect
 
 debug_subparsers = parser.add_subparsers(dest='experiment',
                                          help="MUBench supports several experiments. "
-                                              "Run `mubench-debug <experiment> -h` for details.")
+                                              "Run `debug <experiment> -h` for details.")
 __sort_subactions_by_name(debug_subparsers)
 debug_subparsers.required = True
 
