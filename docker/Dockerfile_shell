@@ -65,26 +65,28 @@ RUN apk update \
  && php composer-setup.php --install-dir=/usr/local/bin --filename=composer \
  && rm composer-setup.php
 
+# Install MUBench
 WORKDIR /mubench
-
-RUN \
- # Fetch MUBench
- git clone https://github.com/stg-tud/MUBench.git . \
- \
- # Setup reviewsite
- && mkdir -p mubench.reviewsite/upload \
- && mkdir -p mubench.reviewsite/logs \
- # Setup reviewsite standalone configuration
- && touch mubench.reviewsite/reviews.sqlite \
- && mv mubench.reviewsite/settings.docker.php mubench.reviewsite/settings.php \
- \
- && mubench.bin/install-dependencies
+COPY . .
 
 # Configure interactive-shell environment
 ENV PATH=/mubench/mubench.bin:${PATH}
 COPY mubench.bin/bashrc /root/.bashrc
 CMD ["bash"]
 
-# Provide review site
+RUN \
+ # Setup pipeline
+ pip install -r /mubench/mubench.pipeline/requirements.txt \
+ \
+ # Setup reviewsite
+ && composer install -d mubench.reviewsite --no-interaction --no-dev \
+ && mkdir -p mubench.reviewsite/upload \
+ && mkdir -p mubench.reviewsite/logs \
+ \
+ # Setup reviewsite standalone configuration
+ && touch mubench.reviewsite/reviews.sqlite \
+ && mv mubench.reviewsite/settings.docker.php mubench.reviewsite/settings.php
+
+# Provide standalone reviewsite
 EXPOSE 80
 STOPSIGNAL SIGTERM

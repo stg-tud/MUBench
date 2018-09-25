@@ -1,4 +1,0 @@
-#!/bin/bash
-
-pip install -r /mubench/mubench.pipeline/requirements.txt
-composer install -d mubench.reviewsite --no-interaction --no-dev

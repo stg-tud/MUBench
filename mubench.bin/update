@@ -2,41 +2,10 @@
 
 RED='\033[0;31m'
 NC='\033[0m'
-indent() { sed 's/^/  /'; }
 
-printf "${RED}###############################################################################
-#                                  WARNING                                    #
-###############################################################################
-
-While we do our best to maintain forward compatibility, we cannot guarantee
-that existing experiment data, especially on the review site, will migrate to
-newer versions of MUBench in all cases. We recommend backing up all your data.
-
-${NC}"
-
-echo "Your current version is: $(version)
-"
-
-read -p "Proceed updating at your own risk? (y/N) " -n 1 -r
-
-printf "\n"
-
-if [[ $REPLY =~ ^[Yy]$ ]]
-then
-  echo "
-Updating MUBench..."
-  git pull 2>&1 | indent
-
-  echo "
-Updating MUBench dependencies..."
-  /mubench/mubench.bin/install-dependencies 2>&1 | indent
-
-  printf "${RED}
-Unfortunately, updating from within the MUBench interactive shell is not
+printf "${RED}Unfortunately, updating from within the MUBench interactive shell is not
 generally possible, since we cannot (permanently) update the environment.
 Therefore, please exit this shell and run
-  ${NC}docker pull svamann/mubench:stable${RED}
-before running any further MUBench commands.
+${NC}docker pull svamann/mubench:stable${RED} or ${NC}docker pull svamann/mubench:latest${RED}
+to update to the latest stable or development version, respectively.
 ${NC}"
-
-fi
