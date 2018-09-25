@@ -9,21 +9,21 @@ Afterwards, you may publish the detector findings to a review site for manual as
 
 ## Experiment P (Precision)
 
-    ./mubench run ex2 DMMC --tag TSE17 --datasets TSE17-ExPrecision --timeout 7200 --java-options Xmx16G
-    ./mubench run ex2 GrouMiner --tag TSE17 --datasets TSE17-ExPrecision --timeout 7200 --java-options Xmx16G
-    ./mubench run ex2 Jadet --tag TSE17 --datasets TSE17-ExPrecision --timeout 7200 --java-options Xmx16G Dorg.softevo.oumextractor.javajarsdirs=/opt/jdk/jre/lib
-    ./mubench run ex2 Tikanga --tag TSE17 --datasets TSE17-ExPrecision --timeout 7200 --java-options Xmx16G Dorg.softevo.oumextractor.javajarsdirs=/opt/jdk/jre/lib
+    mubench> pipeline run ex2 DMMC --tag TSE17 --datasets TSE17-ExPrecision --timeout 7200 --java-options Xmx16G
+    mubench> pipeline run ex2 GrouMiner --tag TSE17 --datasets TSE17-ExPrecision --timeout 7200 --java-options Xmx16G
+    mubench> pipeline run ex2 Jadet --tag TSE17 --datasets TSE17-ExPrecision --timeout 7200 --java-options Xmx16G Dorg.softevo.oumextractor.javajarsdirs=/opt/jdk/jre/lib
+    mubench> pipeline run ex2 Tikanga --tag TSE17 --datasets TSE17-ExPrecision --timeout 7200 --java-options Xmx16G Dorg.softevo.oumextractor.javajarsdirs=/opt/jdk/jre/lib
 
 ## Experiment RUB (Recall Upper Bound)
 
-    ./mubench run ex1 DMMC --tag TSE17 --datasets TSE17-ExRecallUpperBound --java-options Xmx16G
-    ./mubench run ex1 GrouMiner --tag TSE17 --datasets TSE17-ExRecallUpperBound --java-options Xmx16G
-    ./mubench run ex1 Jadet --tag TSE17 --datasets TSE17-ExRecallUpperBound --java-options Xmx16G Dorg.softevo.oumextractor.javajarsdirs=/opt/jdk/jre/lib
-    ./mubench run ex1 Tikanga --tag TSE17 --datasets TSE17-ExRecallUpperBound --java-options Xmx16G Dorg.softevo.oumextractor.javajarsdirs=/opt/jdk/jre/lib
+    mubench> pipeline run ex1 DMMC --tag TSE17 --datasets TSE17-ExRecallUpperBound --java-options Xmx16G
+    mubench> pipeline run ex1 GrouMiner --tag TSE17 --datasets TSE17-ExRecallUpperBound --java-options Xmx16G
+    mubench> pipeline run ex1 Jadet --tag TSE17 --datasets TSE17-ExRecallUpperBound --java-options Xmx16G Dorg.softevo.oumextractor.javajarsdirs=/opt/jdk/jre/lib
+    mubench> pipeline run ex1 Tikanga --tag TSE17 --datasets TSE17-ExRecallUpperBound --java-options Xmx16G Dorg.softevo.oumextractor.javajarsdirs=/opt/jdk/jre/lib
 
 ## Experiment R (Recall)
 
-    ./mubench run ex3 DMMC --tag TSE17 --datasets TSE17-ExRecall TSE17-ExPrecision-TruePositives --timeout 7200 --java-options Xmx16G
-    ./mubench run ex3 GrouMiner --tag TSE17 --datasets TSE17-ExRecall TSE17-ExPrecision-TruePositives --timeout 7200 --java-options Xmx16G
-    ./mubench run ex3 Jadet --tag TSE17 --datasets TSE17-ExRecall TSE17-ExPrecision-TruePositives --timeout 7200 --java-options Xmx16G Dorg.softevo.oumextractor.javajarsdirs=/opt/jdk/jre/lib
-    ./mubench run ex3 Tikanga --tag TSE17 --datasets TSE17-ExRecall TSE17-ExPrecision-TruePositives --timeout 7200 --java-options Xmx16G Dorg.softevo.oumextractor.javajarsdirs=/opt/jdk/jre/lib
+    mubench> pipeline run ex3 DMMC --tag TSE17 --datasets TSE17-ExRecall TSE17-ExPrecision-TruePositives --timeout 7200 --java-options Xmx16G
+    mubench> pipeline run ex3 GrouMiner --tag TSE17 --datasets TSE17-ExRecall TSE17-ExPrecision-TruePositives --timeout 7200 --java-options Xmx16G
+    mubench> pipeline run ex3 Jadet --tag TSE17 --datasets TSE17-ExRecall TSE17-ExPrecision-TruePositives --timeout 7200 --java-options Xmx16G Dorg.softevo.oumextractor.javajarsdirs=/opt/jdk/jre/lib
+    mubench> pipeline run ex3 Tikanga --tag TSE17 --datasets TSE17-ExRecall TSE17-ExPrecision-TruePositives --timeout 7200 --java-options Xmx16G Dorg.softevo.oumextractor.javajarsdirs=/opt/jdk/jre/lib

@@ -2,15 +2,19 @@
 
 # MUBench : Detector Interface
 
-Setting up your own detector for evaluation in MUBench is simple:
+If you want to integrate your detector into MUBench, please follow these steps:
 
 1. [Implement a MUBench Runner](#implement-a-mubench-runner) for your detector.
-2. Place an executable JAR with your runner at `detectors/<mydetector>/latest/<mydetector>.jar`.
-3. Add [detector version and CLI version information](#provide-version-information) to `/detectors/<mydetector>/releases.yml`.
-4. [Run benchmarking experiments](../mubench.pipeline/) using `<mydetector>` as the detector id.
+2. Create an executable JAR with the MUBench Runner as its entry point.
+  1. To permanently integrate your detector:
+    1. Fork and clone this repository.
+    1. Place the executable JAR at `detectors/<mydetector>/latest/<mydetector>.jar`.
+    2. Add [detector version and CLI version information](#provide-version-information) to `detectors/<mydetector>/releases.yml`.
+    3. Mount your detector into MUBench, by adding `-v /.../detectors/<mydetector>:/mubench/detectors/<mydetector>` to the Docker command running MUBench.
+    4. (Optional) Create a Pull Request with these new files, to get them published with the benchmark.
+  2. To test your runner, you may use [MUBench's debugging support](#debugging).
 
-If you have a detector set up for running on MUBench, please [contact Sven Amann](http://www.stg.tu-darmstadt.de/staff/sven_amann) to publish it with the benchmark.
-Feel free to do so as well, if you have questions or require assistance.
+Feel free to [contact Sven Amann](http://www.stg.tu-darmstadt.de/staff/sven_amann), if you have questions or require assistance.
 
 
 ## Implement a MUBench Runner
@@ -22,7 +26,8 @@ We provide infrastructure for implementing runners in the Maven dependency `de.t
 
 Check the [MUBench CLI documentation](http://www.st.informatik.tu-darmstadt.de/artifacts/mubench/cli/) for details on how to implement runners and other utilities available through this dependency.
 
-Once you configured the runner, you need to bundle it together with your detector into an executable Jar. This Jar must have the runner as its entry point.
+Once you configured the runner, you need to bundle it together with your detector into an executable Jar.
+This Jar must have the runner as its entry point.
 See the configuration of the `maven-assembly-plugin` in [the `pom.xml` file](./pom.xml) for an example of how we do this for our `DemoDetector`.
 
 
@@ -61,13 +66,31 @@ The file might then look as follows:
   In any case, [the MUBench Pipeline](../mubench.pipeline) expects the respective Jar file at `detectors/<mydetector>/<tag>/<mydetector>.jar`.
 
 
-## Debugging
+## Debugging a Detector
 
-To debug a [MUBench Runner](#implement-a-mubench-runner) it is more convenient to run it directly from an IDE, instead of bundling an executable Jar to run it in MUBench after every change.
-To do this, proceed as follows:
+When debugging a [MUBench Runner](#implement-a-mubench-runner) it can be cumbersome to always copy the changed Jar file into the Docker environment and update the `release.yml` file.
+Therefore, you may debug your detector as follows:
 
-1. Run `./mubench run <E> <mydetector> --only <P>`, where `<E>` is [the experiment](../mubench.pipeline/#experiments) you want to debug and `P` is [the project or project version](../data/#filtering) you want to debug with, e.g., `aclang`.
-2. Abort this run, as soon as the detector was started.
-3. Open the newest log file in `./logs` and look for a line saying something like `Executing 'java -jar <mydetector>.jar ...'`.
-3. Copy the command-line parameters of this Java invocation (the `...` above).
-4. Invoke your runner's `main()` method with these parameters from your IDE.
+### Preparation
+
+1. Mount the directory where your build process writes you executable Jar file to, e.g., the `target/` directory of your Maven project, into MUBench, by adding `-v /.../target/:/mubench/debug` to the Docker command running MUBench.
+2. Forward port `5005` from the shell to your host system, to allow attaching a remote debugger, by adding `-p 5005:5005` to the Docker command running MUBench.
+3. Start a MUBench Interactive Shell using the modified command.
+
+### Debugging
+
+1. Generate your executable Jar file.
+2. Run
+
+   `mubench> debug <CLI> <E> <D> <F>`
+   
+   Where
+
+  * `<CLI>` names the version of the `mubench.cli` dependency used to implement the respective [MUBench Runner](#implement-a-mubench-runner),
+  * `<E>` is the [id of the experiment](#experiments) to run,
+  * `<D>` is the id of your detector, i.e., the base name of your executable Jar file, and
+  * `<F>` specifies [a filter](../data/#filtering) for a single project version (because debug will halt on every(!) project version).
+3. Attach a remote debugger from the IDE of your choice to the local process, once MUBench started the detector.
+4. Debug, make changes, and repeat from 1., as necessary.
+
+Example: `debug 0.0.13 ex2 DemoDetector --only aclang.587`

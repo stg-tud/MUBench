@@ -8,21 +8,19 @@ See [the review site of our TSE article 'A Systematic Evaluation of Static API-M
 To use MUBench, you need to either obtain an account for an existing review site or [setup your own](#setup).
 
 
-## Server Requirements
-
-* PHP 7.x (for a list of the necessary PHP extensions, check our [Dockerfile](../docker/Dockerfile_shell)).
-* An SQL database and the respective PHP PDO extension (tested with SQLite and MySQL).
-
-
 ## Setup
 
 For testing purposes or private use, you may [host a review site standalone](#standalone) using our Docker image.
-Note, however, that this uses [PHP's built-in webserver](http://php.net/manual/en/features.commandline.webserver.php), which is not a full-featured webserver and discouraged for use on a public network.
 For hosting a public review site, we recommend [installing the review-site application on a webserver](#on-a-webserver) of your choice.
 
 ### On a Webserver 
 
-To setup a MUBench review site on a webserver, proceed as follows:
+#### Webserver Requirements
+
+* PHP 7.x (for a list of the necessary PHP extensions, check our [Dockerfile](../docker/Dockerfile_shell)).
+* An SQL database and the respective PHP PDO extension (tested with SQLite and MySQL).
+
+#### Setup Instructions
 
 1. Copy the review-site application from our Docker image:
     1. `$> id=$(docker create svamann/mubench:stable)`
@@ -45,19 +43,14 @@ To setup a MUBench review site on a webserver, proceed as follows:
 
 ### Standalone
 
-To run a MUBench review site locally on your machine, proceed as follows:
+You may run a MUBench review site using our Docker container.
+Note, however, that this uses [PHP's built-in webserver](http://php.net/manual/en/features.commandline.webserver.php), which is not a full-featured webserver and discouraged for use on a public network.
 
-1. `$> docker run -it --rm -p 8080:80 -v mubench:/mubench svamann/mubench:stable`
-2. `mubench> reviewsite start`
-6. Go to `http://localhost:8080/`, which will initialize your database on the first visit.
-9. Use the review site:
-    * [Publish misuse metadata](#publish-misuse-metadata)
-    * [Publish detector findings](#publish-detector-findings)
-    * Review detector findings
+1. Run `mubench> reviewsite start`. To access the site from your host system, you need to forward port `80` from the shell to your host system, e.g., by specifying `-p 8080:80` in the docker command that opens the shell.
+2. Go to `http://localhost:8080/`, which will initialize your database on the first visit.
+3. [Publish misuse metadata](#publish-misuse-metadata), [publish detector findings](#publish-detector-findings), and review detector findings.
 
 Check `reviewsite -h` for further details.
-
-*Hint:* To shutdown the review site, run `reviewsite stop`.
 
 
 ## Publish Misuse Metadata
