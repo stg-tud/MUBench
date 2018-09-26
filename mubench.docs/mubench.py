@@ -45,6 +45,8 @@ subparsers.add_parser("reviewsite",
 subparsers.add_parser("debug",
                       help="Run benchmark experiments for remote debugger of "
                            "of a detector from the host system.")
+subparsers.add_parser("help",
+                      help="Print this help message.")
 subparsers.add_parser("update",
                       help="Update MUBench.")
 
