@@ -34,8 +34,8 @@ After you completed your reviews, the site automatically computes experiment sta
 
 ### Setup
 
-1. MUBench comes with a [Docker](https://www.docker.com/) to allow platform-independent execution of experiments.
-   Therefore, you first need to [install Docker](https://www.docker.com/products/overview#/install_the_platform).
+1. MUBench comes with a [Docker](https://www.docker.com/) image to allow platform-independent execution of experiments.
+   Therefore, you first need to [install Docker](https://www.docker.com/get-started).
 2. Afterwards, you can start the MUBench Interactive Shell using
    
     `$> docker run -it -v mubench-checkouts:/mubench/checkouts -v mubench-findings:/mubench/findings --rm -p 8080:80 svamann/mubench:stable`
@@ -55,16 +55,16 @@ For all usage examples in this documentation, we assume that you [opened a MUBen
 Alternatively, you may execute individual commands by passing them as arguments to [the docker command for running MUBench](#setup).
 
 1. [Run experiments](mubench.pipeline/#run-experiments).
-2. [Publish misuse metadata to a review site](mubench.reviewsite/#pubilsh-misuse-metadata).
+2. [Publish misuse metadata to a review site](mubench.reviewsite/#publish-misuse-metadata).
 2. [Publish detector findings to a review site](mubench.reviewsite/#publish-detector-findings).
-3. [Debug a detector](mubnech.cli/#debugging-a-detector).
+3. [Debug a detector (runner)](mubench.cli/#debugging-a-detector).
 
 ## Contribute
 
 We want MUBench to grow, so please be welcome to
 
-* [Add Your Own Project or Misuse to the Dataset](data/).
-* [Add Your Own Detector to the Benchmark](mubench.cli/).
+* [Add your own projects or misuses to the dataset](data/).
+* [Add your own detector to the benchmark](mubench.cli/).
 
 ## License
 
