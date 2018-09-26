@@ -24,14 +24,14 @@ except CommandFailedError as e:
 
 parser = ArgumentParser(
     usage=SUPPRESS,
-    description="This is the MUBench Interactive Shell " + __version__ + ".",
-    epilog="For details, check out `<command> -h` or https://github.com/stg-tud/MUBench.",
+    description="This is MUBench " + __version__ + ".",
+    epilog="For details, check out `<command> -h` or https://github.com/stg-tud/MUBench. ",
     add_help=False,
     formatter_class=CustomHelpFormatter)
     
 parser.add_argument('-v', '--version', action='version', version=__version__, help=SUPPRESS)
 
-parser._positionals.title = "Control MUBench via the following commands"
+parser._positionals.title = "MUBench provides the following commands"
 subparsers = parser.add_subparsers(dest='command')
 
 subparsers.add_parser("pipeline",
