@@ -5,7 +5,7 @@ return [
         'db' => [
             'driver' => 'sqlite',
             'host' => 'localhost',
-            'database' => __DIR__ . '/reviews.sqlite',
+            'database' => __DIR__ . '/../findings/reviews.sqlite',
             'username' => 'admin',
             'password' => 'admin',
             'charset'   => 'utf8',
