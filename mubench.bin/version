@@ -1,9 +1,9 @@
 #!/bin/bash
 
-[[ -d /mubench ]] && cd /mubench
+VERSION_FILE=/mubench/VERSION
 
-if [ -d .git ]; then
-  echo "$(git show -s --format=%cd --date=format:v%Y-%m-%d.%H%m HEAD).$(git rev-parse --short HEAD)"
+if [[ -f $VERSION_FILE ]]; then
+  cat $VERSION_FILE
 else
-  echo "$(date '+%Y-%m-%d.%H%M').dev"
+  echo "v???"
 fi

@@ -65,16 +65,16 @@ RUN apk update \
  && php composer-setup.php --install-dir=/usr/local/bin --filename=composer \
  && rm composer-setup.php
 
-# Install MUBench
+# Install MUBench and configure interactive shell
 WORKDIR /mubench
 COPY . .
-
-# Configure interactive-shell environment
+ARG mubench_version=v???
 ENV PATH=/mubench/mubench.bin:${PATH}
 CMD ["bash"]
 
 RUN \
  ln -s /mubench/mubench.bin/bashrc /root/.bashrc \
+ && echo $mubench_version > VERSION \
  # Setup pipeline
  && pip install -r /mubench/mubench.pipeline/requirements.txt \
  \
