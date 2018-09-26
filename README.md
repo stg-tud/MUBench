@@ -65,6 +65,7 @@ We want MUBench to grow, so please be welcome to
 
 * [Add your own projects or misuses to the dataset](data/).
 * [Add your own detector to the benchmark](mubench.cli/).
+* [Contribute to the benchmarking platform](CONTRIBUTE.md)
 
 ## License
 
