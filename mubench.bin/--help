@@ -1,0 +1,3 @@
+#!/bin/bash
+
+python /mubench/mubench.docs/mubench.py
