@@ -3,7 +3,7 @@
 # MUBench
 
 MUBench (pronounced "Moo Bench") is an automated benchmark for API-misuse detectors, based on [the MUBench benchmarking dataset](data).
-If you encounter any problems using MUBench, please [report them to us](/stg-tud/MUBench/issues/new).
+If you encounter any problems using MUBench, please [report them to us](https://github.com/stg-tud/MUBench/issues/new).
 If you have any questions, please [contact Sven Amann](http://www.stg.tu-darmstadt.de/staff/sven_amann).
 
 CI Status: [![CI Status](https://api.shippable.com/projects/570d22d52a8192902e1bfa79/badge?branch=master)](https://app.shippable.com/projects/570d22d52a8192902e1bfa79)
@@ -38,7 +38,7 @@ After you completed your reviews, the site automatically computes experiment sta
    Therefore, you first need to [install Docker](https://www.docker.com/get-started).
 2. Afterwards, you can start the MUBench Interactive Shell using
    
-    `$> docker run -it -v mubench-checkouts:/mubench/checkouts -v mubench-findings:/mubench/findings --rm -p 8080:80 svamann/mubench:stable`
+       $> docker run -it -v mubench-checkouts:/mubench/checkouts -v mubench-findings:/mubench/findings --rm -p 8080:80 svamann/mubench:stable
    
    This docker command starts in interactive shell (`-it`) based on our Docker image `svamann/mubench` in the latest `stable` version.
    It persists experiment data on [Docker volumes](https://docs.docker.com/storage/volumes/) named `mubench-checkouts` and `mubench-findings` (`-v`), while disposing of all other state on exit (`--rm`).
@@ -63,7 +63,7 @@ Alternatively, you may execute individual commands by passing them as arguments 
 
 We want MUBench to grow, so please be welcome to
 
-* [Add your own projects or misuses to the dataset](data/).
+* [Add your own projects or misuses to the benchmarking dataset](data/).
 * [Add your own detector to the benchmark](mubench.cli/).
 * [Contribute to the benchmarking platform](CONTRIBUTE.md)
 
