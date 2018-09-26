@@ -71,12 +71,12 @@ COPY . .
 
 # Configure interactive-shell environment
 ENV PATH=/mubench/mubench.bin:${PATH}
-COPY mubench.bin/bashrc /root/.bashrc
 CMD ["bash"]
 
 RUN \
+ ln -s /mubench/mubench.bin/bashrc /root/.bashrc \
  # Setup pipeline
- pip install -r /mubench/mubench.pipeline/requirements.txt \
+ && pip install -r /mubench/mubench.pipeline/requirements.txt \
  \
  # Setup reviewsite
  && composer install -d mubench.reviewsite --no-interaction --no-dev \
