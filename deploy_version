@@ -1,0 +1,5 @@
+#!/bin/bash
+
+tag=$1
+
+echo "v$(git show -s --format=%cd --date=format:%Y-%m-%d.%H%m HEAD).$(git rev-parse --short HEAD).$tag"
