@@ -1,20 +1,31 @@
-SRC=$(dirname $1)
-FILENAME=$(basename -- $1)
-DNAME=${FILENAME%.*}
-TARGET="/mubench/detectors/${DNAME}/debug"
-shift
+#!/bin/bash
 
-TMP_DEBUG_DIR="${MUBENCH_ROOT}/tmp/"
-mkdir -p "${TMP_DEBUG_DIR}"
-RELEASES_DEBUG="${TMP_DEBUG_DIR}/releases.yml"
-touch "${RELEASES_DEBUG}"
+python /mubench/mubench.docs/debug.py ${*} || exit 1
 
-cat > "${RELEASES_DEBUG}" <<EOL
+CLI_VERSION=$1
+EXPERIMENT=$2
+DETECTORS_DIR="/mubench/detectors"
+DETECTOR_NAME=$3
+DETECTOR_JAR="/mubench/debug/${DETECTOR_NAME}.jar"
+DETECTOR_PATH="${DETECTORS_DIR}/${DETECTOR_NAME}/debug"
+DETECTOR_RELEASES="${DETECTORS_DIR}/${DETECTOR_NAME}/releases.yml"
+
+# Ensure JAR file exists or die
+if [[ ! -f "${DETECTOR_JAR}" ]]; then
+  echo "Please mount your detector JAR to ${DETECTOR_JAR}" 1>&2; exit 1
+fi
+
+# Copy JAR file to correct destination
+mkdir -p "${DETECTOR_PATH}"
+cp "${DETECTOR_JAR}" "${DETECTOR_PATH}/${DETECTOR_NAME}.jar"
+
+# Fake releases.yml with MUBench CLI version
+touch "${DETECTOR_RELEASES}"
+cat > "${DETECTOR_RELEASES}" <<EOL
 - tag: debug
-  cli_version: $1
+  cli_version: ${CLI_VERSION}
 EOL
 shift
 
-RELEASES_TARGET="/mubench/detectors/${DNAME}/releases.yml"
-
-docker run --rm -v "$MUBENCH_ROOT":/mubench -v ${MUBENCH_PIPELINE_CHECKOUTS_VOLUME}:/mubench/checkouts -v ${MUBENCH_PIPELINE_FINDINGS_VOLUME}:/mubench/findings -v "${SRC}":"${TARGET}" -v "${RELEASES_DEBUG}":"${RELEASES_TARGET}" -p 5005:5005 ${MUBENCH_PIPELINE_DOCKER_IMAGE} python ./mubench.pipeline/benchmark.py run $1 ${DNAME} ${*:2} --force-detect --tag debug --java-options agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=5005
+# Run the detector with settings for remote debugging
+pipeline run ${*} --force-detect --tag debug --java-options agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=5005

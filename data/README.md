@@ -22,11 +22,10 @@ When [running experiments](../mubench.pipeline/#run-experiments), we recommend t
 
 ### Datasets
 
-The easiest way is to use predefined experiment datasets, by passing their Id as an argument to the `--datasets` command-line option.
+The easiest way is to use predefined experiment datasets, by passing their Ids to the `--datasets` command-line option.
 Available datasets are declared in the [datasets.yml](datasets.yml) file.
-You may also add your own datasets to this file, by listing the [individual dataset entities](#individual-entities) you want to include.
 
-Example: `$> ./mubench run ex2 DemoDetector --datasets TSE17-ExPrecision`
+Example: `mubench> pipeline run ex2 DemoDetector --datasets TSE17-ExPrecision`
 
 ### Individual Entities
 
@@ -38,7 +37,7 @@ Their Ids are constructed as follows:
 * The version Id has the form `<project-id>.<version-id>`, where the version Id is the name of the respective directory in `<project-id>/versions/`.
 * The misuse Id has the form `<project-id>.<version-id>.<misuse-id>`, where the misuse Id is the name of the respective directory in `<project-id>/misuses/`.
 
-Example: `$> ./mubench run ex1 DemoDetector --only aclang.587`
+Example: `mubench> pipeline run ex1 DemoDetector --only aclang.587`
 
 *Hint:* You may exclude individual entities using the `--skip` command-line option. Exclusion takes precedence over inclusion.
 
@@ -48,9 +47,9 @@ Example: `$> ./mubench run ex1 DemoDetector --only aclang.587`
 The MUBench dataset is continuously growing.
 To get up-to-date statistics on the dataset, please [install the MUBench Pipeline](../mubench.pipeline/#setup) and run
 
-    $> ./mubench stats general
+    mubench> pipeline stats general
 
-Check `./mubench stats -h` for further details on other available dataset statistics and [filter options](#filtering).
+Check `pipeline stats -h` for further details on other available dataset statistics and [filter options](#filtering).
 
 We subsequently report statistics on the subsets of the MUBench Dataset that were used in previous publications.
 
@@ -89,3 +88,5 @@ For each misuse, please try to provide
 * A link to the project's publicly-readable version-control system, and a commit id to a version with the misuse or, ideally, to the commit that fixes the misuse.
 * The misuse's location (file, method, and misused API).
 * Instructions on how to compile the project in the respective version.
+
+You may also add your own datasets to the [datasets.yml](datasets.yml) file, by listing the [individual dataset entities](#individual-entities) you want to include.
