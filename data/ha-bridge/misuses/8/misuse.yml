@@ -3,7 +3,7 @@ api:
 violations:
 - insecure/condition/randomization
 description: >
-  Salt is properly randomized while creating PBEParameterSpec object.
+  Salt is not properly randomized while creating PBEParameterSpec object.
 location:
   file: com/bwssystems/HABridge/BridgeSecurity.java
   method: "decrypt(String)"

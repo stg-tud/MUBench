@@ -44,7 +44,7 @@ public class MD5Util {
 		if (originStr != null) {
 			try {
 				// 创建具有指定算法名称的信息摘要
-				MessageDigest md = MessageDigest.getInstance("SHA-256");
+				MessageDigest md = MessageDigest.getInstance("SHA-256"); //updated from MD5 since that is insecure algo
 				// 使用指定的字节数组对摘要进行最后的更新，然后完成摘要计算
 				char[] _charStr = originStr.toCharArray();
 				byte[] _byteStr = new byte[_charStr.length];
