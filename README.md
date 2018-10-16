@@ -10,11 +10,13 @@ CI Status: [![CI Status](https://api.shippable.com/projects/570d22d52a8192902e1b
 
 ## Contributors
 
-* [Sven Amann](http://www.sven-amann.de) (Project Lead, Since 01/2016)
+The people (in alphabetical order by their last name) who actively contributed to the concept, the dataset, or the codebase of MUBench since the project's inception in October 2015:
+
+* [Sven Amann](http://www.sven-amann.de) (Project Lead, Since 10/2015)
 * [Mattis Kämmerer](https://github.com/M8is) (Developer, 03/2016 - 03/2018)
-* [Sarah Nadi](http://www.sarahnadi.org/) (Dataset Reviewer, 01/2016 - 05/2016)
-* [Hoan Anh Nguyen](https://sites.google.com/site/nguyenanhhoan/) (Dataset Reviewer, 01/2016 - 05/2016)
-* [Tien N. Nguyen](http://home.eng.iastate.edu/~tien/) (Dataset Reviewer, 01/2016 - 05/2016)
+* [Sarah Nadi](http://www.sarahnadi.org/) (Dataset Reviewer, 10/2015 - 05/2016)
+* [Hoan Anh Nguyen](https://sites.google.com/site/nguyenanhhoan/) (Dataset Reviewer, 10/2015 - 05/2016)
+* [Tien N. Nguyen](http://home.eng.iastate.edu/~tien/) (Dataset Reviewer, 10/2015 - 05/2016)
 * [Jonas Schlitzer](https://github.com/joschli) (Developer, 10/2016 - 07/2018)
 
 ## Publications
