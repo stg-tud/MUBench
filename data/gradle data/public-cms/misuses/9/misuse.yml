@@ -1,0 +1,15 @@
+api:
+- java.security.MessageDigest
+violations:
+- missing/condition/value_or_state
+description: >
+  First parameter in MessageDigest.getInstance(String) can have values {SHA-1 or MD5} when this function is called which should be any of {SHA-256, SHA-384, SHA-512}
+location:
+  file: publiccms-parent/publiccms-common/src/main/java/com/publiccms/common/tools/VerificationUtils.java
+  method: "encode(String,String)"
+  line: 246
+internal:
+pattern:
+crash: false
+source:
+  name:

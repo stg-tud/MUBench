@@ -1,0 +1,14 @@
+api:
+- javax.crypto.spec.PBEParameterSpec
+violations: []
+description: >
+  Iteration count should be greater than 1000, here is it set to 3
+location:
+  file: symmetric-util/src/main/java/org/jumpmind/security/SecurityService.java
+  method: "initializeCipher(Cipher,int)"
+  line: 185
+internal:
+pattern:
+crash: false
+source:
+  name:

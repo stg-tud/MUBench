@@ -1,0 +1,11 @@
+build:
+  classes: symmetric-util/build/classes/java/main
+  commands:
+  - cd symmetric-assemble
+  - gradle :compileJava
+  src: symmetric-util/src/
+misuses:
+- '1'
+- '2'
+- '3'   
+revision: c42f0e067b6f7761c81e8db7d19f953795e43a25
