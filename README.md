@@ -19,6 +19,9 @@ The people (in alphabetical order by their last name) who actively contributed t
 * [Tien N. Nguyen](http://home.eng.iastate.edu/~tien/) (Dataset Reviewer, 10/2015 - 05/2016)
 * [Jonas Schlitzer](https://github.com/joschli) (Developer, 10/2016 - 07/2018)
 
+The MUBench project was developed at the [Software Technology Group of Technische Universität Darmstadt](https://www.stg.tu-darmstadt.de) from October 2015 to September 2018.
+From October 2018, it is being maintained by [Sven Amann](http://www.sven-amann.de) as an independent Open Source project.
+
 ## Publications
 
 * ['*MUBench: A Benchmark for API-Misuse Detectors*'](http://sven-amann.de/publications/2016-05-MSR-MUBench-dataset.html) ([MSR '16 Data Showcase](http://2016.msrconf.org/#/data))
