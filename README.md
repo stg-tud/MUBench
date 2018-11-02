@@ -1,55 +1,30 @@
-﻿<meta name="google-site-verification" content="ta5K0oMHGiDvtNp4HoHA-2-jd00GJtrq7_fW6lvTLlQ" />
-<script type="application/ld+json">
-{
-  "@context":"http://schema.org/",
-  "@type":"Dataset",
-  "name":"Anam Dodhy STG TU DARMSTADT JCA",
-  "description":"Testing Anam Dodhy STG TU DARMSTADT JCA",
-  "url":"https://catalog.data.gov/dataset/ncdc-storm-events-database",
-  "sameAs":"https://gis.ncdc.noaa.gov/geoportal/catalog/search/resource/details.page?id=gov.noaa.ncdc:C00510",
-  "keywords":[
-     "ATMOSPHERE > ATMOSPHERIC PHENOMENA > CYCLONES",
-     "ATMOSPHERE > ATMOSPHERIC PHENOMENA > DROUGHT",
-     "ATMOSPHERE > ATMOSPHERIC PHENOMENA > FOG",
-     "ATMOSPHERE > ATMOSPHERIC PHENOMENA > FREEZE"
-  ],
-  "creator":{
-     "@type":"Organization",
-     "url": "https://www.ncei.noaa.gov/",
-     "name":"OC/NOAA/NESDIS/NCEI > National Centers for Environmental Information, NESDIS, NOAA, U.S. Department of Commerce",
-     "contactPoint":{
-        "@type":"ContactPoint",
-        "contactType": "customer service",
-        "telephone":"+1-828-271-4800",
-        "email":"ncei.orders@noaa.gov"
-     }
-  },
-  "includedInDataCatalog":{
-     "@type":"DataCatalog",
-     "name":"data.gov"
-  },
-  "distribution":[
-     {
-        "@type":"DataDownload",
-        "encodingFormat":"CSV",
-        "contentUrl":"http://www.ncdc.noaa.gov/stormevents/ftp.jsp"
-     },
-     {
-        "@type":"DataDownload",
-        "encodingFormat":"XML",
-        "contentUrl":"http://gis.ncdc.noaa.gov/all-records/catalog/search/resource/details.page?id=gov.noaa.ncdc:C00510"
-     }
-  ],
-  "temporalCoverage":"1950-01-01/2013-12-18",
-  "spatialCoverage":{
-     "@type":"Place",
-     "geo":{
-        "@type":"GeoShape",
-        "box":"18.0 -65.0 72.0 172.0"
-     }
-  }
-}
-</script>
+﻿<div itemscope itemtype="http://schema.org/Person">
+  <span itemprop="name">Jane Doe</span>
+  <img src="janedoe.jpg" itemprop="image" alt="Photo of Jane Joe"/>
+
+  <span itemprop="jobTitle">Professor</span>
+  <div itemprop="address" itemscope itemtype="http://schema.org/PostalAddress">
+    <span itemprop="streetAddress">
+      20341 Whitworth Institute
+      405 N. Whitworth
+    </span>
+    <span itemprop="addressLocality">Seattle</span>,
+    <span itemprop="addressRegion">WA</span>
+    <span itemprop="postalCode">98052</span>
+  </div>
+  <span itemprop="telephone">(425) 123-4567</span>
+  <a href="mailto:jane-doe@xyz.edu" itemprop="email">
+    jane-doe@xyz.edu</a>
+
+  Jane's home page:
+  <a href="http://www.janedoe.com" itemprop="url">janedoe.com</a>
+
+  Graduate students:
+  <a href="http://www.xyz.edu/students/alicejones.html" itemprop="colleague">
+    Alice Jones</a>
+  <a href="http://www.xyz.edu/students/bobsmith.html" itemprop="colleague">
+    Bob Smith</a>
+</div>
 <img align="right" width="320" height="320" alt="MUBench Logo" src="./meta/logo.png?raw=true" />
 
 # MUBench
