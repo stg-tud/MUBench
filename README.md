@@ -1,3 +1,4 @@
+﻿<meta name="google-site-verification" content="ta5K0oMHGiDvtNp4HoHA-2-jd00GJtrq7_fW6lvTLlQ" />
 <script type="application/ld+json">
 {
   "@context":"http://schema.org/",
