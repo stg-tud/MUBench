@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html>
 <body>
-<div itemscope>
-  <h1>Avatar</h1>
-  <span>Director: James Cameron (born August 16, 1954) </span>
-  <span>Science fiction</span>
-  <a href="../movies/avatar-theatrical-trailer.html">Trailer</a>
+<div itemscope itemtype ="http://schema.org/Movie">
+  <h1 itemprop="name">Avatar</h1>
+  <div itemprop="director" itemscope itemtype="http://schema.org/Person">
+  Director: <span itemprop="name">James Cameron</span> (born <span itemprop="birthDate">August 16, 1954</span>)
+  </div>
+  <span itemprop="genre">Science fiction</span>
+  <a href="../movies/avatar-theatrical-trailer.html" itemprop="trailer">Trailer</a>
 </div>
 
 </body>
