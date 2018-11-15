@@ -1,32 +1,4 @@
-﻿<div itemscope itemtype="http://schema.org/Person">
-  <span itemprop="name">ANAM DODHY</span>
-  <img src="ANAMDODHY.jpg" itemprop="image" alt="ANAM DODHY"/>
-
-  <span itemprop="jobTitle">ANAM DODHY</span>
-  <div itemprop="address" itemscope itemtype="http://schema.org/PostalAddress">
-    <span itemprop="streetAddress">
-      Darmstadt
-    </span>
-    <span itemprop="addressLocality">Seattle</span>,
-    <span itemprop="addressRegion">WA</span>
-    <span itemprop="postalCode">98052</span>
-  </div>
-  <span itemprop="telephone">(425) 123-4567</span>
-  <a href="mailto:ANAM-DODHY@xyz.edu" itemprop="email">
-    jane-doe@xyz.edu</a>
-
-  Jane's home page:
-  <a href="http://www.janedoe.com" itemprop="url">ANAMDODHY.com</a>
-
-  Graduate students:
-  <a href="http://www.xyz.edu/students/alicejones.html" itemprop="colleague">
-    Alice Jones</a>
-  <a href="http://www.xyz.edu/students/bobsmith.html" itemprop="colleague">
-    ANAM DODHY</a>
-</div>
-<img align="right" width="320" height="320" alt="MUBench Logo" src="./meta/logo.png?raw=true" />
-
-# MUBench
+﻿# MUBench
 
 MUBench (pronounced "Moo Bench") is an automated benchmark for API-misuse detectors, based on [the MUBench benchmarking dataset](data).
 If you encounter any problems using MUBench, please [report them to us](/stg-tud/MUBench/issues/new).
