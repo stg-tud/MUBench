@@ -1,6 +1,7 @@
 api:
 - javax.crypto.spec.IvParameterSpec
-violations: []
+violations:
+- insecure/condition/randomization
 description: >
   While creating the object for IvParameterSpec, the first parameter was not properly randomized..
 location:

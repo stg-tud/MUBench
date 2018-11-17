@@ -1,9 +1,8 @@
 build:
-  classes: dragonite-sdk/build/classes/java/main/
+  classes: dragonite-sdk/build/classes/java/main
   commands:
   - gradle build              
-  src: dragonite-sdk/src/main/java/
+  src: dragonite-sdk/src/
 misuses:
-- '1'
 - '2'
 revision: e26ffff0b0705ec72769bbd174b61df370f5ee2e

@@ -1,0 +1,15 @@
+api:
+- java.security.MessageDigest
+violations:
+- insecure/condition/transformation
+description: >
+  First parameter (with value "MD5") should be any of {SHA-256, SHA-384, SHA-512}
+location:
+  file: org/telegram/mtproto/secure/CryptoUtils.java
+  method: "initialValue()"
+  line: 29
+internal:
+pattern:
+crash: false
+source:
+  name:

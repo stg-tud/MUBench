@@ -1,0 +1,15 @@
+api:
+- javax.crypto.Cipher
+violations:
+- insecure/condition/transformation
+description: >
+  First parameter (with value "RSA/ECB/nopadding") should be any of "RSA" with (emptyString, "ECB")
+location:
+  file: org/telegram/mtproto/secure/CryptoUtils.java
+  method: "RSA(byte[], BigInteger, BigInteger)"
+  line: 60
+internal:
+pattern:
+crash: false
+source:
+  name:
