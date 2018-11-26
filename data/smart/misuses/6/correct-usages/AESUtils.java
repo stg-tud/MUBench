@@ -59,8 +59,18 @@ public class AESUtils {
 	 */
 	public static String decrypt(String key, String encrypted) {
 		try {
-			IvParameterSpec iv = new IvParameterSpec(INIT_VECTOR.getBytes("UTF-8"));
-			SecretKeySpec skeySpec = new SecretKeySpec(key.getBytes("UTF-8"), "AES");
+			//randomization of the key
+			byte[] keyMaterial = key.getBytes("UTF-8");
+			SecureRandom secRandom = new SecureRandom();
+			secRandom.nextBytes(keyMaterial);
+
+			//randomization of the init_vector
+			byte[] init_vector = INIT_VECTOR.getBytes("UTF-8");
+			SecureRandom ivSecRandom = new SecureRandom();
+			ivSecRandom.nextBytes(init_vector);
+
+			IvParameterSpec iv = new IvParameterSpec(init_vector);
+			SecretKeySpec skeySpec = new SecretKeySpec(keyMaterial, "AES");
 
 			Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5PADDING");
 			cipher.init(Cipher.DECRYPT_MODE, skeySpec, iv);
