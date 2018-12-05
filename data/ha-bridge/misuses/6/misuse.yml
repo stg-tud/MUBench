@@ -1,7 +1,7 @@
 api:
 - javax.crypto.spec.PBEKeySpec
 violations:
-- missing/condition/value_or_state
+- missing/condition/iteration_count
 description: >
   PBEKeySpec(char[]) constructor is forbidden from being used as per CrySL rules, the constructor used should be PBEKeySpec(pw, salt, it, keylength);
 location:
