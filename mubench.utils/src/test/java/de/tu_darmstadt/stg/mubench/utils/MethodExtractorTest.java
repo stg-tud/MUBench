@@ -4,6 +4,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
 import java.io.ByteArrayInputStream;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 import org.junit.Test;
 
@@ -355,6 +358,85 @@ public class MethodExtractorTest {
 				"m()");
 		String[] candidates = output.split("===");
 		assertEquals(2, candidates.length);
+	}
+
+	@Test
+	public void handlesWhitespaceAfterMethodName() throws Exception {
+		testFindsMethod("class HTTPFrame {\n"
+						+ "    public Reply browse (Request request) {}\n"
+						+ "}",
+				"browse(Request)",
+				"    public Reply browse (Request request) {}");
+	}
+
+	@Test
+	public void handlesGenericsInParameterType() throws Exception {
+		testFindsMethod("class Tarjan<T> {\n"
+						+ "    private void run(T v) {}\n"
+						+ "}",
+				"run(Object)",
+				"    private void run(T v) {}");
+	}
+
+	@Test
+	public void handlesGenericArrayTypes() throws Exception {
+		testFindsMethod("class Utils {\n"
+						+ "    public static XmlClass[] classesToXmlClasses(Class<?>[] classes) {}\n"
+						+ "}",
+				"classesToXmlClasses(Class[])",
+				"    public static XmlClass[] classesToXmlClasses(Class<?>[] classes) {}");
+	}
+
+	@Test
+	public void handlesNestedTypeParameters() throws Exception {
+		testFindsMethod("class C {\n"
+						+ "    void foo(Object<T1<?>, T2>[] c) {}\n"
+						+ "}",
+				"foo(Object[])",
+				"    void foo(Object<T1<?>, T2>[] c) {}");
+	}
+
+	@Test
+	public void handlesStaticInitializationBlock() throws Exception {
+		testFindsMethod("class C {\n"
+						+ "    static {}\n"
+						+ "}",
+				"<clinit>()",
+				"    static {}");
+	}
+
+	@Test
+	public void handlesDefaultConstructor() throws Exception {
+		testFindsMethod("class C {}",
+				"<init>()",
+				"C() { /* compiler-generated default constructor -- may contain field initialization code */ }");
+	}
+
+	@Test
+	public void handlesStaticInitializationBlockOnSourceCodeDetection() throws Exception {
+		testFindsMethod("class C {\n"
+						+ "    static {}\n"
+						+ "}",
+				"static()",
+				"    static {}");
+	}
+
+	@Test
+	public void acceptsEnumAsIdentifier() throws Exception {
+		testFindsMethod("class C {\n"
+						+ "    void foo() {\n"
+						+ "        Object enum;\n"
+						+ "    }\n"
+						+ "}",
+				"foo()",
+						"    void foo() {\n"
+						+ "        Object enum;\n"
+						+ "    }");
+	}
+
+	private void testFindsMethodFromFile(String filePath, String methodSignature, String expectedOutput) throws Exception {
+		String input = new String(Files.readAllBytes(Paths.get(filePath)), StandardCharsets.UTF_8);
+		testFindsMethod(input, methodSignature, expectedOutput);
 	}
 
 	private void testFindsMethod(String input, String methodSignature, String expectedOutput) throws Exception {

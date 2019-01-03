@@ -8,27 +8,33 @@ language: python
 
 before_script:
   - mkdir -p shippable/testresults
-  - sudo chmod +x ./mubench.pipeline/benchmark.py
-  - sudo chmod +x ./mubench.reviewsite/configure.sh
 
 script: 
   # mubench.cli
-  - mvn install -f mubench.cli/pom.xml
-  - cp mubench.cli/target/DemoDetector.jar detectors/DemoDetector/DemoDetector.jar
+  - mvn verify -f mubench.cli/pom.xml
   
   # mubench.utils
   - mvn verify -f mubench.utils/pom.xml
   
   # mubench.pipeline
   - nosetests -w mubench.pipeline --with-xunit --xunit-file=shippable/testresults/nosetests.xml
-  - "./mubench.pipeline/benchmark.py detect DemoDetector 1 --only synthetic"
+  - cp mubench.cli/target/DemoDetector.jar detectors/DemoDetector/DemoDetector.jar
+  - python ./mubench.pipeline/benchmark.py run ex1 DemoDetector --only synthetic_survey
   
   # mubench.reviewsite
-  - ./mubench.reviewsite/configure.sh
-  - phpunit --bootstrap mubench.reviewsite/vendor/autoload.php mubench.reviewsite/tests/
+  - cd mubench.reviewsite
+  - composer install --no-interaction
+  - mkdir -p upload
+  - mkdir -p logs
+  - cp settings.default.php settings.php
+  - touch test.sqlite
+  - java -jar /usr/local/bin/selenium-server-standalone-3.12.0.jar &
+  - php -S localhost:8080 -t ./ &
+  - sleep 10
+  - phpunit --testsuite unit_tests
+  - phpunit --testsuite integration_tests
 
 notifications:
   email:
-    - mattis.kaemmerer@gmx.de
     - amann@cs.tu-darmstadt.de
     - jonas.schlitzer@googlemail.com

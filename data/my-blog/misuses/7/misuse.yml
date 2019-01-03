@@ -1,0 +1,15 @@
+api:
+- java.security.MessageDigest
+violations:
+- insecure/condition/transformation
+description: >
+  First parameter in MessageDigest.getInstance(String) with value "MD5" should be any of {SHA-256, SHA-384, SHA-512}
+location:
+  file: com/my/blog/website/utils/TaleUtils.java
+  method: "MD5encode(String)"
+  line: 106
+internal:
+pattern:
+crash: false
+source:
+  name:

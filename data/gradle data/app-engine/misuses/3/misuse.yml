@@ -1,0 +1,15 @@
+api:
+- javax.crypto.spec.SecretKeySpec
+violations:
+- insecure/condition/randomization
+description: >
+  First parameter was not properly randomized
+location:
+  file: com/appengine/common/encrypt/AESEncrypter.java
+  method: "loadAesKey(String)"
+  line: 98
+internal:
+pattern:
+crash: false
+source:
+  name:

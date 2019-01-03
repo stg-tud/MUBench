@@ -1,0 +1,1 @@
+docker run --rm -v "%MUBENCH_ROOT%":/mubench -v %PIPELINE_CHECKOUTS_VOLUME%:/mubench/checkouts -v %PIPELINE_FINDINGS_VOLUME%:/mubench/findings %PIPELINE_DOCKER_IMAGE% python ./mubench.pipeline/benchmark.py %*

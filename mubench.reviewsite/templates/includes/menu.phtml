@@ -1,11 +1,9 @@
 <?php
 /**
- * @var string $user the logged in user, if any
- *
- * @var string $site_base_url
- * @var string $public_url_prefix
- * @var string $private_url_prefix
- * @var string $url_prefix the public or private url prefix, depending on whether the user is logged in
+ * @var \MuBench\ReviewSite\Models\Reviewer $reviewer the logged in user, if any
+ * @var callable $pathFor function to resolve router paths
+ * @var callable $isCurrentPath function to check if a path is the current path
+ * @var callable $srcUrlFor function to resolve resources
  *
  * @var string $path the current route path
  * @var string $origin_param url parameter that carries the $path
@@ -15,47 +13,68 @@
  * @var array $detectors detectors (Detector) with results per experiment
  * @var Experiment $experiment the selected experiment, if any
  * @var Detector $detector the selected detector, if any
+ * @var Reviewer $user the logged in user
  */
-use MuBench\ReviewSite\Model\Detector;
-use MuBench\ReviewSite\Model\Experiment;
+
+use MuBench\ReviewSite\Models\Detector;
+use MuBench\ReviewSite\Models\Experiment;
 
 ?>
 <div id="header">
     <div id="title">
         <a href="https://github.com/stg-tud/MUBench" title="MUBench Project">
-            <img id="logo" src="<?= $site_base_url ?>/assets/images/mubench_logo.png" />
+            <img id="logo" src="<?= $srcUrlFor('assets/images/mubench_logo.png') ?>" />
         </a>
-        <a href="<?= $url_prefix ?>" title="Home">Review<br/>Site</a>
+        <a href="<?= $pathFor('/') ?>" title="Home">Review<br/>Site</a>
     </div>
 
     <nav role="navigation">
         <ol>
-            <?php $this_exp = $experiment ?>
+            <?php $this_exp = isset($experiment) ? $experiment : null ?>
             <?php foreach ($experiments as $experiment): ?>
                 <?php include "menu-experiment.phtml" ?>
             <?php endforeach ?>
             <?php $experiment = $this_exp ?>
-            <li class="<?= strpos($path, "/stats") !== false ? "active" : "" ?>">
+            <li class="<?= strpos($path, '/stats') !== false ? "active" : "" ?>">
                 <span>Statistics</span>
                 <ul>
-                    <li class="<?= strpos($path, "/stats") !== false ? "active" : "" ?>">
-                        <a href="<?= $public_url_prefix ?>stats/tags">Tags</a></li>
+                    <li class="<?= $isCurrentPath('stats.tags') ? "active" : "" ?>">
+                        <a href="<?= $pathFor('stats.tags') ?>">Tags</a>
                     </li>
-                    <li class="<?= strpos($path, "/stats") !== false ? "active" : "" ?>">
-                        <a href="<?= $public_url_prefix ?>stats/types">Types</a></li>
+                    <li class="<?= $isCurrentPath('stats.violations') ? "active" : "" ?>">
+                        <a href="<?= $pathFor('stats.violations') ?>">Violations</a>
                     </li>
-                    <li class="<?= strpos($path, "/stats") !== false ? "active" : "" ?>">
-                        <a href="<?= $public_url_prefix ?>stats/results">Results</a></li>
+                    <li class="<?= $isCurrentPath('stats.results') ? "active" : "" ?>">
+                        <a href="<?= $pathFor('stats.results') ?>">Results</a>
                     </li>
+                    <?php foreach($experiments as $experiment): ?>
+                        <li class="<?= $isCurrentPath('stats.exp.results', array('experiment_id' => $experiment->id)) ? "active" : "" ?>">
+                            <a style="padding-left:20px;" href="<?= $pathFor('stats.exp.results', array('experiment_id' => $experiment->id)) ?>">Experiment <?= $experiment->id ?></a>
+                        </li>
+                    <?php endforeach; ?>
                 </ul>
             </li>
+            <?php $experiment = $this_exp ?>
             <?php if($user) : ?>
-                <li class="right <?= strpos($path, "/overview") !== false ? "active" : "" ?>">
-                    <a href="<?= $private_url_prefix ?>overview">My Reviews</a></li>
-                <li class="right <?= strpos($path, "/todo") !== false ? "active" : "" ?>">
-                    <a href="<?= $private_url_prefix ?>todo">Open Reviews</a></li>
+                    <li class="right <?= strpos($path, '/stats') !== false ? "active" : "" ?>">
+                    <span>Reviewer: <?= htmlspecialchars($user->name) ?></span>
+                    <ul>
+                <?php if($experiment) : ?>
+                    <li class="right <?= $isCurrentPath('overview', array('experiment_id' => $experiment->id, 'reviewer_name' => $user->name)) ? "active" : "" ?>">
+                            <a href="<?= $pathFor('overview', array('experiment_id' => $experiment->id, 'reviewer_name' => $user->name)) ?>">My Reviews</a></li>
+                        <li class="right <?= $isCurrentPath('todo',  array('experiment_id' => $experiment->id, 'reviewer_name' => $user->name)) ? "active" : "" ?>">
+                            <a href="<?= $pathFor('todo', array('experiment_id' => $experiment->id, 'reviewer_name' => $user->name)) ?>">Open Reviews</a></li>
+                <?php endif; ?>
+                        <li class="right <?= $isCurrentPath('manage.runs') ? "active" : "" ?>">
+                            <a href="<?= $pathFor('manage.runs') ?>">Manage runs</a></li>
+                        <li class="right <?= $isCurrentPath('tags.manage') ? "active" : "" ?>">
+                            <a href="<?= $pathFor('tags.manage') ?>">Manage tags</a></li>
+                        <li class="right <?= $isCurrentPath('import') ? "active" : "" ?>">
+                            <a href="<?= $pathFor('import') ?>">Import data</a></li>
+                    </ul>
+                    </li>
             <?php else: ?>
-                <li class="right"><a href="<?= $private_url_prefix . $path ?>">Login</a></li>
+                <li class="right"><a href="<?= $loginPath ?>">Login</a></li>
             <?php endif; ?>
         </ol>
     </nav>

@@ -1,0 +1,14 @@
+<project name="MUBench CLI">
+    <bannerLeft>
+        <name>MUBench CLI</name>
+        <src>https://raw.githubusercontent.com/stg-tud/MUBench/master/meta/logo_160.png</src>
+        <href>https://github.com/stg-tud/MUBench/</href>
+    </bannerLeft>
+    <body>
+        <links>
+            <item name="MUBench" href="https://github.com/stg-tud/MUBench/" />
+        </links>
+
+        <menu ref="reports"/>
+    </body>
+</project>

@@ -1,3 +1,4 @@
+import zipfile
 from os import makedirs
 from os.path import join, dirname, exists, isfile
 from shutil import rmtree
@@ -6,7 +7,8 @@ from tempfile import mkdtemp
 import yaml
 from nose.tools import assert_raises, assert_equals
 
-from utils.io import create_file, create_file_path, safe_open, safe_write, remove_tree, copy_tree, write_yaml
+from utils.io import create_file, create_file_path, safe_open, safe_write, remove_tree, copy_tree, write_yaml, \
+    zip_dir_contents, safe_read
 
 
 class TestIo:
@@ -82,6 +84,56 @@ class TestIo:
         src = join(self.temp_dir, "src")
         with assert_raises(FileNotFoundError):
             copy_tree(src, "-irrelevant-")
+
+    def test_zip_dir_contents(self):
+        src1 = join(self.temp_dir, "src1")
+        src2 = join(self.temp_dir, "src2")
+        create_file(join(src1, "file1"))
+        create_file(join(src2, "file2"))
+        sources = [src1, src2]
+        destination = join(self.temp_dir, "archive")
+
+        zip_dir_contents(sources, destination)
+
+        extract_destination = join(self.temp_dir, "extracted")
+        with zipfile.ZipFile(destination, 'r') as zip_file:
+            zip_file.extractall(extract_destination)
+
+        assert exists(join(extract_destination, "file1"))
+        assert exists(join(extract_destination, "file2"))
+
+    def test_zip_dir_contents_skips_file_on_conflict(self):
+        src1 = join(self.temp_dir, "src1")
+        src2 = join(self.temp_dir, "src2")
+        safe_write("a", join(src1, "-conflict-"), False)
+        safe_write("b", join(src2, "-conflict-"), False)
+        sources = [src1, src2]
+        destination = join(self.temp_dir, "archive")
+
+        zip_dir_contents(sources, destination)
+
+        extract_destination = join(self.temp_dir, "extracted")
+        with zipfile.ZipFile(destination, 'r') as zip_file:
+            zip_file.extractall(extract_destination)
+
+        assert_equals("a\n", safe_read(join(extract_destination, "-conflict-")))
+
+    def test_zip_dir_contents_suffix_is_not_a_conflict(self):
+        src1 = join(self.temp_dir, "src1")
+        src2 = join(self.temp_dir, "src2")
+        safe_write("b", join(src1, "-subdir-", "-conflict-"), False)
+        safe_write("a", join(src2, "-conflict-"), False)
+        sources = [src1, src2]
+        destination = join(self.temp_dir, "archive")
+
+        zip_dir_contents(sources, destination)
+
+        extract_destination = join(self.temp_dir, "extracted")
+        with zipfile.ZipFile(destination, 'r') as zip_file:
+            zip_file.extractall(extract_destination)
+
+        assert exists(join(extract_destination, "-conflict-")) and \
+            exists(join(extract_destination, "-subdir-", "-conflict-"))
 
 
 class TestIOYaml:

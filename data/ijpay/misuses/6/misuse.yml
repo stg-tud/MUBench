@@ -1,0 +1,15 @@
+api:
+- java.security.Signature
+violations:
+- insecure/condition/key
+description: >
+  First parameter in Signature.initVerify(publicKey) is not a properly generatedPubkey
+location:
+  file: com/jpay/unionpay/SecureUtil.java
+  method: "validateSignBySoft256(PublicKey, byte[], byte[])"
+  line: 310
+internal:
+pattern:
+crash: false
+source:
+  name:

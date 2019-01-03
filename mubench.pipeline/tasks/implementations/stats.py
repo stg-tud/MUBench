@@ -7,11 +7,10 @@ import yaml
 from data.misuse import Misuse
 from data.project import Project
 from data.project_version import ProjectVersion
-from tasks.project_version_misuse_task import ProjectVersionMisuseTask
 
 
-class StatCalculator(ProjectVersionMisuseTask):
-    def process_project_version_misuse(self, project: Project, version: ProjectVersion, misuse: Misuse):
+class StatCalculatorTask:
+    def run(self, project: Project, version: ProjectVersion, misuse: Misuse):
         raise NotImplementedError
 
     def end(self):
@@ -19,62 +18,90 @@ class StatCalculator(ProjectVersionMisuseTask):
 
 
 def get_available_calculators() -> List[type]:
-    return StatCalculator.__subclasses__()
+    return StatCalculatorTask.__subclasses__()
 
 
 def get_available_calculator_names() -> List[str]:
     return [calculator.__name__ for calculator in get_available_calculators()]
 
 
-def get_calculator(name: str) -> Optional[StatCalculator]:
+def get_calculator(name: str) -> Optional[StatCalculatorTask]:
     for calculator in get_available_calculators():
         if calculator.__name__.lower() == name.lower():
             return calculator()
 
 
-class general(StatCalculator):
+class general(StatCalculatorTask):
     def __init__(self):
         super().__init__()
         self.number_of_misuses = 0
+        self.number_of_misuses_with_corresponding_correct_usages = 0
+        self.number_of_multitype_misuses = 0
+        self.number_of_internal_API_misuses = 0
         self.number_of_crashes = 0
         self.projects = set()
+        self.versions = set()
         self.sources = set()
+        self.apis = set()
 
         self.logger = logging.getLogger('stats.general')
 
-    def process_project_version_misuse(self, project: Project, version: ProjectVersion, misuse: Misuse):
+    def run(self, project: Project, version: ProjectVersion, misuse: Misuse):
+        self.sources.add(misuse.source)
+        if not project.id.startswith("synthetic_"):
+            self.projects.add(project.id)
+            self.versions.add(version.id)
+
         self.number_of_misuses += 1
+
+        if len(misuse.apis) > 1:
+            self.number_of_multitype_misuses += 1
+
+        if misuse.is_apis_are_internal:
+            self.number_of_internal_API_misuses += 1
+
         if misuse.is_crash:
             self.number_of_crashes += 1
 
-        self.sources.add(misuse.source)
-        self.projects.add(project.name)
+        if misuse.correct_usages:
+            self.number_of_misuses_with_corresponding_correct_usages += 1
+
+        self.apis.add(tuple(sorted(misuse.apis)))
 
     def end(self):
-        self.logger.info("MUBench contains:")
-        self.logger.info("- %d misuses" % self.number_of_misuses)
-        self.logger.info(
-            "- %d crashes (%.1f%%)" % (self.number_of_crashes, (self.number_of_crashes / self.number_of_misuses * 100)))
-        self.logger.info("- %d sources" % len(self.sources))
-        self.logger.info("- %d projects" % len(self.projects))
+        self.log("Property", "Value")
+        self.log("-" * 33, "")
+        self.log("Sources", len(self.sources))
+        self.log("Projects", len(self.projects))
+        self.log("Versions", len(self.versions))
+        self.log("Misuses", self.number_of_misuses)
+        self.log("    Multi-Type", self.number_of_multitype_misuses, self.number_of_misuses)
+        self.log("    Internal-API", self.number_of_internal_API_misuses, self.number_of_misuses)
+        self.log("    Crash", self.number_of_crashes, self.number_of_misuses)
+        self.log("    Correct Usage", self.number_of_misuses_with_corresponding_correct_usages, self.number_of_misuses)
+        self.log("Misused APIs", len(self.apis))
+
+    def log(self, key, value, total=None):
+        percentage = "({: >5.1f}%)".format(value / total * 100) if total else ""
+        self.logger.info("{: <18} {: >5} {}".format(key, value, percentage))
 
 
-class violation(StatCalculator):
+class violation(StatCalculatorTask):
     def __init__(self):
         super().__init__()
         self.statistics = {}
+        self.total = " total"
+        self.logger = logging.getLogger('stats.violation')
 
-        self.logger = logging.getLogger('stats.characteristic')
-
-    def process_project_version_misuse(self, project: Project, version: ProjectVersion, misuse: Misuse):
-        chars = misuse.characteristics
+    def run(self, project: Project, version: ProjectVersion, misuse: Misuse):
+        chars = misuse.violations
         for char in chars:
             seg = char.split('/')
             statname = seg[0] + " " + seg[1]
-            stat = self.statistics.get(statname, {" total": {"misuses": 0, "crashes": 0}})
-            stat[" total"]["misuses"] += 1
+            stat = self.statistics.get(statname, {self.total: {"misuses": 0, "crashes": 0}})
+            stat[self.total]["misuses"] += 1
             if misuse.is_crash:
-                stat[" total"]["crashes"] += 1
+                stat[self.total]["crashes"] += 1
 
             if len(seg) > 2:
                 segstat = stat.get(seg[2], {"misuses": 0, "crashes": 0})
@@ -86,25 +113,32 @@ class violation(StatCalculator):
             self.statistics[statname] = stat
 
     def end(self):
-        self.logger.info("%30s %25s %7s %14s" % ("Characteristic", "SubCharacteristic", "Misuses", "Crashes"))
+        self.logger.info("{: <30} {: <7} {}".format("Violation", "Misuses", "Crashes"))
+        self.logger.info("{}".format("-" * 52))
 
-        for statistic in sorted(self.statistics.items(), key=lambda s: s[1][" total"]["misuses"], reverse=True):
+        for statistic in sorted(self.statistics.items(), key=lambda s: s[0]):
             statistic_name = statistic[0]
             statistic_values = statistic[1]
             for segstat in sorted(statistic_values):
-                self.logger.info("%30s %25s %7d %7d% 6.1f%%" % (
-                    statistic_name, segstat, statistic_values[segstat]["misuses"], statistic_values[segstat]["crashes"],
-                    (statistic_values[segstat]["crashes"] / statistic_values[segstat]["misuses"] * 100)))
+                if segstat == self.total:
+                    violation = statistic_name
+                else:
+                    violation = "    {}".format(segstat)
+
+                self.logger.info("{: <30} {: >7} {: >4} ({: >5.1f}%)".format(
+                    violation,
+                    statistic_values[segstat]["misuses"], statistic_values[segstat]["crashes"],
+                    statistic_values[segstat]["crashes"] / statistic_values[segstat]["misuses"] * 100))
 
 
-class project(StatCalculator):
+class project(StatCalculatorTask):
     def __init__(self):
         super().__init__()
         self.projects = {}
 
         self.logger = logging.getLogger('stats.project')
 
-    def process_project_version_misuse(self, project: Project, version: ProjectVersion, misuse: Misuse):
+    def run(self, project: Project, version: ProjectVersion, misuse: Misuse):
         projectname = project.name
         project = self.projects.get(projectname, {"misuses": 0, "crashes": 0})
         project["misuses"] += 1
@@ -120,7 +154,7 @@ class project(StatCalculator):
                 projectname, project["misuses"], project["crashes"], (project["crashes"] / project["misuses"] * 100)))
 
 
-class source(StatCalculator):
+class source(StatCalculatorTask):
     def __init__(self):
         super().__init__()
         self.sources = {}
@@ -136,7 +170,7 @@ class source(StatCalculator):
                 sources[source]["crashes"] = 0
         self.sources = sources
 
-    def process_project_version_misuse(self, project: Project, version: ProjectVersion, misuse: Misuse):
+    def run(self, project: Project, version: ProjectVersion, misuse: Misuse):
         sourcename = misuse.source
         source = self.sources[sourcename]
         source["misuses"] += 1
@@ -154,7 +188,7 @@ class source(StatCalculator):
                 (source["crashes"] / source["misuses"] * 100)))
 
 
-class misusesbytype(StatCalculator):
+class misusesbytype(StatCalculatorTask):
     def __init__(self):
         super().__init__()
         self.index = {}  # type: Dict[str, List[Misuse]]
@@ -162,17 +196,17 @@ class misusesbytype(StatCalculator):
     def start(self):
         self.index.clear()
 
-    def process_project_version_misuse(self, project: Project, version: ProjectVersion, misuse: Misuse):
-        for characteristic in misuse.characteristics:
-            if characteristic not in self.index:
-                self.index[characteristic] = []
+    def run(self, project: Project, version: ProjectVersion, misuse: Misuse):
+        for violation in misuse.violations:
+            if violation not in self.index:
+                self.index[violation] = []
 
-            self.index[characteristic].append(misuse)
+            self.index[violation].append(misuse)
 
     def end(self):
         logger = logging.getLogger('stats.misusesbytype')
         logger.info("%35s %s", "Violation Type", "Misuse")
-        for characteristic in sorted(self.index):
-            logger.info("%35s ----------------------------", characteristic)
-            for misuse in self.index[characteristic]:
+        for violation in sorted(self.index):
+            logger.info("%35s ----------------------------", violation)
+            for misuse in self.index[violation]:
                 logger.info("%35s %s", "", misuse.id)

@@ -1,0 +1,15 @@
+api:
+- javax.crypto.Cipher
+violations:
+- insecure/condition/transformation
+description: >
+  First parameter (with value "AES") should be any of AES/{CBC, GCM, PCBC, CTR, CTS, CFB, OFB}
+location:
+  file: com/appengine/common/encrypt/AESEncrypter.java
+  method: "encrypt(String)"
+  line: 62
+internal:
+pattern:
+crash: false
+source:
+  name:

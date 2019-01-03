@@ -1,15 +1,31 @@
 import os
 import re
 from os.path import join
+from typing import List
 
 from utils import io
 from utils.java_utils import exec_util
-from utils.shell import CommandFailedError
 
 
-def get_snippets(source_base_path, file, method):
+def get_snippets(source_base_paths: List[str], file: str, method: str, target_line_number: int = -1) -> List['Snippet']:
+    snippets = []
+
+    for source_base_path in source_base_paths:
+        try:
+            snippets.extend(__get_snippets(source_base_path, file, method, target_line_number))
+        except SnippetUnavailableException:
+            continue
+
+    if not snippets:
+        raise SnippetUnavailableException(file, method)
+
+    return snippets
+
+
+def __get_snippets(source_base_path: str, file: str, method: str, target_line_number: int) -> List['Snippet']:
     target_file = join(source_base_path, file)
     snippets = []
+    snippets_with_matching_line_number = []
     try:
         if file and method:
             # output comes as:
@@ -31,14 +47,20 @@ def get_snippets(source_base_path, file, method):
             if output:
                 methods = output.split("\n===\n")
                 for method in methods:
-                    info = method.split(":", 2)
-                    snippets.append(Snippet("""class {} {{\n{}\n}}""".format(info[1], info[2]), int(info[0]) - 1))
+                    first_line, class_name, code = method.split(":", 2)
+                    first_line = int(first_line)
+                    snippet = Snippet("""class {} {{\n{}\n}}""".format(class_name, code), first_line - 1)
+                    snippets.append(snippet)
+
+                    last_line = first_line + code.count("\n")
+                    if first_line <= target_line_number <= last_line:
+                        snippets_with_matching_line_number.append(snippet)
         elif file and os.path.exists(target_file):
             snippets.append(Snippet(io.safe_read(target_file), 1))
 
     except Exception as e:
-        raise SnippetUnavailableException(target_file, e)
-    return snippets
+        raise SnippetUnavailableException(target_file, method, e)
+    return snippets_with_matching_line_number if snippets_with_matching_line_number else snippets
 
 
 class Snippet:
@@ -57,9 +79,10 @@ class Snippet:
 
 
 class SnippetUnavailableException(UserWarning):
-    def __init__(self, file: str, exception: Exception):
-        self.exception = exception
+    def __init__(self, file: str, method: str, exception: Exception = None):
         self.file = file
+        self.method = method
+        self.exception = exception if exception else "no matches"
 
     def __str__(self):
-        return "Could not extract snippet from '{}': {}".format(self.file, self.exception)
+        return "Could not extract snippet for '{}' from '{}': {}".format(self.method, self.file, self.exception)

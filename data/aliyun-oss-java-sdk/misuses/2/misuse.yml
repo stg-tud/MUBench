@@ -1,0 +1,15 @@
+api:
+- javax.crypto.spec.SecretKeySpec
+violations:
+- insecure/condition/randomization
+description: >
+  First parameter while initializing SecretKeySpec object was not properly randomized.
+location:
+  file: com/aliyun/oss/common/utils/BinaryUtil.java
+  method: "sign(byte[], byte[])"
+  line: 87
+internal:
+pattern:
+crash: false
+source:
+  name:

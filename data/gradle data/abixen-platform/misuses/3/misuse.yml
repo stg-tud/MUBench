@@ -1,0 +1,15 @@
+api:
+- javax.crypto.Cipher
+violations:
+- insecure/condition/transformation
+description: >
+  First parameter in Cipher.getInstance(String) is with value "AES/CBC/PKCS5PADDING" which should be any of AES/CBC/{Empty String, PKCS7Padding, PKCS5Padding, ISO10126Padding}.
+location:
+  file: com/abixen/platform/service/businessintelligence/multivisualisation/domain/model/util/AES128Encoder.java
+  method: "decryptPassword(String)"
+  line: 65
+internal:
+pattern:
+crash: false
+source:
+  name:

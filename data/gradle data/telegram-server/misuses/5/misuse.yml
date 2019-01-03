@@ -1,0 +1,15 @@
+api:
+- java.security.MessageDigest
+violations:
+- insecure/condition/transformation
+description: >
+  First parameter (with value "SHA-1") should be any of {SHA-256, SHA-384, SHA-512}
+location:
+  file: org/telegram/mtproto/Utilities.java
+  method: "computeSHA1(byte[], int, int)"
+  line: 200
+internal:
+pattern:
+crash: false
+source:
+  name:

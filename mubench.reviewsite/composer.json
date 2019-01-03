@@ -7,14 +7,27 @@
     "slim/php-view": "2.1.0",
     "tuupola/slim-basic-auth": "^2.2",
     "usmanhalalit/pixie": "2.0.0",
-    "erusev/parsedown": "^1.6"
+    "erusev/parsedown": "^1.6",
+    "illuminate/database": "v5.5.2",
+    "illuminate/events": "v5.5.17"
   },
   "require-dev": {
-    "phpunit/phpunit": "5.5.5"
+    "phpunit/phpunit": "^6.0",
+    "facebook/webdriver": "^1.6"
   },
   "autoload": {
     "psr-4": {
-      "MuBench\\ReviewSite\\": "src"
+      "MuBench\\ReviewSite\\": "src",
+      "MuBench\\ReviewSite\\Setup\\": "setup"
+    },
+    "files": [
+      "src/route_utils.php",
+      "src/csv_utils.php"
+    ]
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "MuBench\\ReviewSite\\Tests\\": "tests"
     }
   }
 }

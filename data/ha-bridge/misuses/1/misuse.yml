@@ -1,0 +1,15 @@
+api:
+- javax.crypto.SecretKeyFactory
+violations:
+- insecure/condition/transformation
+description: >
+  cipherALG in SecretKeyFactory.getInstance(String) should be AES with key length between (128, 192, 256) instead of given PBEWithMD5AndDES.
+location:
+  file: com/bwssystems/HABridge/BridgeSecurity.java
+  method: "encrypt(String)"
+  line: 328
+internal:
+pattern:
+crash: false
+source:
+  name:

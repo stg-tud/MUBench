@@ -12,4 +12,4 @@ location:
   method: getPost(Connection, String, String, String, int)
   line: 636
 source:
-  name: Jadet & MuDetect & MUDetect
+  name: Jadet & MuDetect & MUDetectXP

@@ -1,0 +1,15 @@
+api:
+- javax.crypto.spec.SecretKeySpec
+violations:
+- insecure/condition/randomization
+description: >
+  First parameter while creating the SecretKeySpec object i.e. new SecretKeySpec(byte[],String) was not properly randomized
+location:
+  file: com/github/pig/gateway/component/filter/DecodePasswordFilter.java
+  method: "decryptAES(String, String)"
+  line: 107
+internal:
+pattern:
+crash: false
+source:
+  name:

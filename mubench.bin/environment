@@ -1,0 +1,10 @@
+MUBENCH_PIPELINE_CHECKOUTS_VOLUME=mubench-checkouts 
+MUBENCH_PIPELINE_FINDINGS_VOLUME=mubench-findings 
+MUBENCH_PIPELINE_DOCKER_IMAGE=svamann/mubench-pipeline:latest
+MUBENCH_REVIEWSITE_ROOT=${MUBENCH_ROOT}/mubench.reviewsite
+MUBENCH_REVIEWSITE_DOCKER_CID=mubench-reviewsite-standalone 
+MUBENCH_REVIEWSITE_PORT=8080 
+MUBENCH_REVIEWSITE_DATA_VOLUME=mubench-reviewsite-data
+MUBENCH_REVIEWSITE_DOCKER_IMAGE=svamann/mubench-reviewsite:latest
+
+MUBENCH_DOCS=mubench.docs

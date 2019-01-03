@@ -1,159 +1,102 @@
 <?php
 
-require_once "DatabaseTestCase.php";
+namespace MuBench\ReviewSite\Tests;
 
-use MuBench\ReviewSite\Controller\FindingsUploader;
-use MuBench\ReviewSite\Controller\ReviewUploader;
-use MuBench\ReviewSite\Model\Misuse;
-use MuBench\ReviewSite\Model\Review;
+use MuBench\ReviewSite\Controllers\RunsController;
+use MuBench\ReviewSite\Models\Detector;
+use MuBench\ReviewSite\Models\Experiment;
+use MuBench\ReviewSite\Models\Misuse;
+use MuBench\ReviewSite\Models\Reviewer;
 
-class MisuseFilterTest extends DatabaseTestCase
+class MisuseFilterTest extends SlimTestCase
 {
-    private $request_body;
-
-    private $undecided_review = [
-        'review_name' => 'reviewer1',
-        'review_exp' => 'ex2',
-        'review_detector' => '-d-',
-        'review_project' => '-p-',
-        'review_version' => '-v-',
-        'review_misuse' => 1,
-        'review_comment' => '-comment-',
-        'review_hit' => [
-            0 => [
-                'hit' => '?',
-                'types' => [
-                    'missing/call'
-                ]
-            ]
-        ]
-    ];
-
-    private $decided_review = [
-        'review_name' => 'reviewer2',
-        'review_exp' => 'ex2',
-        'review_detector' => '-d-',
-        'review_project' => '-p-',
-        'review_version' => '-v-',
-        'review_misuse' => 1,
-        'review_comment' => '-comment-',
-        'review_hit' => [
-            0 => [
-                'hit' => 'Yes',
-                'types' => [
-                    'missing/call'
-                ]
-            ]
-        ]
-    ];
+    /** @var RunsController */
+    private $runController;
+    /** @var ReviewsControllerHelper */
+    private $reviewControllerHelper;
+    /** @var Experiment */
+    private $experiment;
+    /** @var Detector */
+    private $detector;
+    /** @var Reviewer */
+    private $reviewer1;
+    /** @var Reviewer */
+    private $reviewer2;
+    /** @var Misuse */
+    private $misuse;
 
     function setUp()
     {
         parent::setUp();
 
-        $this->request_body = [
-            "detector" => "-d-",
-            "project" => "-p-",
-            "version" => "-v-",
-            "result" => "success",
-            "runtime" => 42.1,
-            "number_of_findings" => 23,
-            "potential_hits" => [
-                [
-                    "misuse" => "-m1-",
-                    "rank" => 0,
-                    "target_snippets" => []
-                ],
-                [
-                    "misuse" => "-m2-",
-                    "rank" => 1,
-                    "target_snippets" => []
-                ],
-                [
-                    "misuse" => "-m3-",
-                    "rank" => 2,
-                    "target_snippets" => []
-                ]]
-        ];
+        $this->reviewer1 = Reviewer::create(['name' => 'test-reviewer1']);
+        $this->reviewer2 = Reviewer::create(['name' => 'test-reviewer2']);
+        $this->experiment = Experiment::find(2);
+        $this->detector = Detector::create(['muid' => 'test-detector']);
 
+        $this->runController = new RunsController($this->container);
+        $this->reviewControllerHelper = new ReviewsControllerHelper($this->container);
+
+        $this->runController->addRun(
+            $this->experiment->id,
+            $this->detector->muid,
+            '-project-muid-',
+            '-version-muid-',
+            [
+                'timestamp' => 1337,
+                'result' => 'success',
+                'runtime' => 42.0,
+                'number_of_findings' => 3,
+                'potential_hits' => [
+                    ['misuse' => '1', 'rank' => 1, 'file' => '-foo.java-', 'target_snippets' => []],
+                    ['misuse' => '2', 'rank' => 2, 'file' => '-foo.java-', 'target_snippets' => []]
+                ]
+            ]);
+        $this->misuse = Misuse::find(1);
     }
 
-    function test_no_reviews()
+    function test_counts_misuse_without_reviews()
     {
-        $uploader = new FindingsUploader($this->db, $this->logger);
+        $runs = $this->runController->getRuns($this->detector, $this->experiment, 1);
 
-        $data = json_decode(json_encode($this->request_body));
-        $uploader->processData("ex2", $data);
-        $detector = $this->db->getOrCreateDetector("-d-");
-        $runs = $this->db->getRuns($detector, "ex2", 2);
-
-        self::assertEquals(2, sizeof($runs[0]['misuses']));
+        self::assertEquals(1, sizeof($runs[0]->misuses));
     }
 
-    function test_inconclusive_reviews()
+    function test_counts_misuse_with_single_conclusive_review()
     {
-        $uploader = new FindingsUploader($this->db, $this->logger);
-        $review_uploader = new ReviewUploader($this->db, $this->logger);
-        $data = json_decode(json_encode($this->request_body));
+        $this->reviewControllerHelper->createReview($this->misuse, $this->reviewer1, 'Yes');
 
-        $uploader->processData("ex2", $data);
-        $review_uploader->processReview($this->decided_review);
-        $review_uploader->processReview($this->undecided_review);
+        $runs = $this->runController->getRuns($this->detector, $this->experiment, 1);
 
-        $detector = $this->db->getOrCreateDetector("-d-");
-        $runs = $this->db->getRuns($detector, "ex2", 2);
-
-
-        self::assertEquals(3, sizeof($runs[0]['misuses']));
+        self::assertEquals(1, sizeof($runs[0]->misuses));
     }
 
-    function test_conclusive_reviews()
+    function test_counts_misuse_with_multiple_conclusive_reviews()
     {
-        $uploader = new FindingsUploader($this->db, $this->logger);
-        $review_uploader = new ReviewUploader($this->db, $this->logger);
-        $data = json_decode(json_encode($this->request_body));
+        $this->reviewControllerHelper->createReview($this->misuse, $this->reviewer1, 'Yes');
+        $this->reviewControllerHelper->createReview($this->misuse, $this->reviewer2, 'Yes');
 
-        $uploader->processData("ex2", $data);
-        $review_uploader->processReview($this->decided_review);
-        $decided_reviewer2 = $this->undecided_review;
-        $decided_reviewer2["review_hit"][0]["hit"] = "Yes";
-        $review_uploader->processReview($decided_reviewer2);
+        $runs = $this->runController->getRuns($this->detector, $this->experiment, 1);
 
-        $detector = $this->db->getOrCreateDetector("-d-");
-        $runs = $this->db->getRuns($detector, "ex2", 2);
-
-
-        self::assertEquals(2, sizeof($runs[0]['misuses']));
+        self::assertEquals(1, sizeof($runs[0]->misuses));
     }
 
-    function test_one_inconclusive_review()
+    function test_ignores_misuse_with_single_inconclusive_review()
     {
-        $uploader = new FindingsUploader($this->db, $this->logger);
-        $review_uploader = new ReviewUploader($this->db, $this->logger);
-        $data = json_decode(json_encode($this->request_body));
+        $this->reviewControllerHelper->createReview($this->misuse, $this->reviewer1, '?');
 
-        $uploader->processData("ex2", $data);
-        $review_uploader->processReview($this->undecided_review);
+        $runs = $this->runController->getRuns($this->detector, $this->experiment, 1);
 
-        $detector = $this->db->getOrCreateDetector("-d-");
-        $runs = $this->db->getRuns($detector, "ex2", 2);
-
-        self::assertEquals(3, sizeof($runs[0]['misuses']));
+        self::assertEquals(2, sizeof($runs[0]->misuses));
     }
 
-    function test_one_conclusive_review()
+    function test_ignores_misuse_with_at_least_one_inconclusive_review()
     {
-        $uploader = new FindingsUploader($this->db, $this->logger);
-        $review_uploader = new ReviewUploader($this->db, $this->logger);
-        $data = json_decode(json_encode($this->request_body));
+        $this->reviewControllerHelper->createReview($this->misuse, $this->reviewer1, '?');
+        $this->reviewControllerHelper->createReview($this->misuse, $this->reviewer2, 'Yes');
 
-        $uploader->processData("ex2", $data);
-        $review_uploader->processReview($this->decided_review);
+        $runs = $this->runController->getRuns($this->detector, $this->experiment, 1);
 
-        $detector = $this->db->getOrCreateDetector("-d-");
-        $runs = $this->db->getRuns($detector, "ex2", 2);
-
-        self::assertEquals(2, sizeof($runs[0]['misuses']));
+        self::assertEquals(2, sizeof($runs[0]->misuses));
     }
-
 }

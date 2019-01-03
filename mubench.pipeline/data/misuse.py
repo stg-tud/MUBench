@@ -5,20 +5,22 @@ from typing import Set, List
 
 import yaml
 
-from data.pattern import Pattern
+from data.misuse_compile import MisuseCompile
+from data.correct_usage import CorrectUsage
 from data.snippets import get_snippets, Snippet
 
 
 class Location:
-    def __init__(self, file: str, method: str):
+    def __init__(self, file: str, method: str, line: int):
         self.file = file
         self.method = method
+        self.line = line
 
     def __str__(self):
         return "Location({}, {})".format(self.file, self.method)
 
     def __eq__(self, other):
-        return self.file == other.file and self.method == other.method
+        return self.file == other.file and self.method == other.method and self.line == other.line
 
 
 class Fix:
@@ -35,11 +37,12 @@ class Misuse:
     def is_misuse(path: str) -> bool:
         return isfile(join(path, Misuse.MISUSE_FILE))
 
-    def __init__(self, base_path: str, project_id: str, misuse_id: str):
+    def __init__(self, base_path: str, project_id: str, version_id: str, misuse_id: str):
         self._base_path = base_path
         self.project_id = project_id
+        self.version_id = version_id
         self.misuse_id = misuse_id
-        self.id = "{}.{}".format(project_id, misuse_id)
+        self.id = "{}.{}.{}".format(project_id, version_id, misuse_id).lower()
 
         from data.project import Project
         self.__project = Project(base_path, project_id)
@@ -51,33 +54,37 @@ class Misuse:
         self.__fix = None
 
         self._YAML = None
-        self._PATTERNS = []
+        self._CORRECT_USAGES = []
 
     @property
     def _yaml(self):
-        if not self._YAML:
+        if self._YAML is None:
             with open(self.misuse_file, 'r') as stream:
                 self._YAML = yaml.load(stream)
         return self._YAML
 
     @property
-    def patterns(self) -> Set[Pattern]:
-        if not self._PATTERNS:
-            pattern_path = join(self.path, "patterns")
-            if isdir(pattern_path):
-                self._PATTERNS = set(
-                    [Pattern(pattern_path, y[len(pattern_path) + 1:]) for x in os.walk(pattern_path) for y in
+    def correct_usages(self) -> Set[CorrectUsage]:
+        if not self._CORRECT_USAGES:
+            correct_usage_path = self.correct_usage_path
+            if isdir(correct_usage_path):
+                self._CORRECT_USAGES = set(
+                    [CorrectUsage(correct_usage_path, y[len(correct_usage_path) + 1:]) for x in os.walk(correct_usage_path) for y in
                      glob(os.path.join(x[0], '*.java'))])
             else:
-                self._PATTERNS = set()
+                self._CORRECT_USAGES = set()
 
-        return self._PATTERNS
+        return self._CORRECT_USAGES
+
+    @property
+    def correct_usage_path(self) -> str:
+        return join(self.path, "correct-usages")
 
     @property
     def location(self) -> Location:
         if not self.__location:
             location = self._yaml["location"]
-            self.__location = Location(location.get("file", ""), location.get("method", ""))
+            self.__location = Location(location.get("file", ""), location.get("method", ""), location.get("line", -1))
         return self.__location
 
     @property
@@ -115,13 +122,20 @@ class Misuse:
         return self._apis
 
     @property
-    def characteristics(self):
-        if getattr(self, '_characteristics', None) is None:
-            self._characteristics = self._yaml.get('characteristics', [])
-        return self._characteristics
+    def is_apis_are_internal(self):
+        return self._yaml.get('internal', False)
 
-    def get_snippets(self, source_base_path: str) -> List[Snippet]:
-        return get_snippets(source_base_path, self.location.file, self.location.method)
+    @property
+    def violations(self):
+        if getattr(self, '_violations', None) is None:
+            self._violations = self._yaml.get('violations', [])
+        return self._violations
+
+    def get_snippets(self, source_base_paths: List[str]) -> List[Snippet]:
+        return get_snippets(source_base_paths, self.location.file, self.location.method, self.location.line)
+
+    def get_misuse_compile(self, base_path: str) -> MisuseCompile:
+        return MisuseCompile(join(base_path, self.project_id, "misuses", self.misuse_id), self.correct_usages)
 
     def __str__(self):
         return "misuse '{}'".format(self.id)

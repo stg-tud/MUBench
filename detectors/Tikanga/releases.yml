@@ -1,3 +1,8 @@
-- tag: FSE17
-  cli_version: 0.0.7
+- tag: fse18
+  cli_version: 0.0.11
+  md5: 0ead354669eba8d2dfe258d00fe50265
+- tag: tse17
+  cli_version: 0.0.8
   md5: 2c0d830aa83287464809d3f78c458377
+- cli_version: 0.0.7
+  md5: 8870b164d5a80ffa913324858e36ab50

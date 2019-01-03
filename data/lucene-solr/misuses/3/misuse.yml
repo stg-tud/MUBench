@@ -1,0 +1,15 @@
+api:
+- javax.crypto.Cipher
+violations:
+- insecure/condition/transformation
+description: >
+  First parameter in Cipher.getInstance(String) is with value "RSA/ECB/nopadding" which should be any of "RSA" with (emptyString, "ECB").
+location:
+  file: org/apache/solr/util/CryptoKeys.java
+  method: "decryptRSA(byte[], PublicKey)"
+  line: 273
+internal:
+pattern:
+crash: false
+source:
+  name:

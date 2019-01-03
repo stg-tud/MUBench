@@ -1,0 +1,15 @@
+api:
+- java.security.MessageDigest
+violations:
+- insecure/condition/transformation
+description: >
+  First parameter (with value "SHA-1") should be any of {SHA-256, SHA-384, SHA-512}
+location:
+  file: main/java/apksigner/ApkSignerTool.java
+  method: "verify(String[])"
+  line: 419
+internal:
+pattern:
+crash: false
+source:
+  name:

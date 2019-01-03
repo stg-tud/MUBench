@@ -1,0 +1,15 @@
+api:
+- java.security.Signature
+violations:
+- insecure/condition/transformation
+description: >
+  First parameter in Signature.getInstance(String) is with value "SHA1withRSA" which should be any of ("NONEwithDSA", "SHA1withDSA", "SHA224withDSA", "SHA256withDSA", "SHA256withRSA", "SHA256withECDSA").
+location:
+  file: org/apache/solr/util/CryptoKeys.java
+  method: "verify(PublicKey, byte[], ByteBuffer)"
+  line: 110
+internal:
+pattern:
+crash: false
+source:
+  name:

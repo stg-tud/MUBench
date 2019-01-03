@@ -1,18 +1,29 @@
-#!/bin/sh
+#!/bin/bash
 
-realpath() {
-    [[ $1 = /* ]] && echo "$1" || echo "$PWD/${1#./}"
-}
+SCRIPT_DIR=$(dirname "$([[ "$0" = /* ]] && echo "$0" || echo "$PWD/${0#./}")")
+MUBENCH_ROOT=$SCRIPT_DIR
+TASKS=${MUBENCH_ROOT}/mubench.bin
 
-SCRIPT_DIR=$(dirname "$(realpath "$0")")
+source "${TASKS}/environment"
 
-if [ "$1" = 'configure' ]; then 
-  if [ "$2" = 'review-site' ]; then
-    docker run --rm -v "$SCRIPT_DIR":/mubench svamann/mubench-ci /bin/bash ./mubench.reviewsite/configure.sh
-  else
-    echo "Unknown configuration target:" $2
-    echo "Chose one of {review-site}"
-  fi;
+if [[ "$*" =~ "-h" ]]; then
+  HELP=t
+fi
+
+if [ $HELP ] && [ $# = 1 ]; then
+  docker run --rm -v "$MUBENCH_ROOT":/mubench ${MUBENCH_PIPELINE_DOCKER_IMAGE} python3 ${MUBENCH_DOCS}/mubench.py "$@"
+  exit 0
 else
-  docker run --rm -v "$SCRIPT_DIR":/mubench svamann/mubench python ./mubench.pipeline/benchmark.py "$@" 
+  TASK="${TASKS}/$1"
+  DOC="${MUBENCH_DOCS}/$1.py"
+  if [ -f "${TASK}" ]; then
+    shift  # remove requested task argument
+    if [ $HELP ] && [ -f "${MUBENCH_ROOT}/${DOC}" ]; then
+      docker run --rm -v "$MUBENCH_ROOT":/mubench ${MUBENCH_PIPELINE_DOCKER_IMAGE} python3 ${DOC} "$@"
+      exit 0
+    fi;
+    source "${TASK}" "$@"
+  else
+    source "${TASKS}/pipeline" "$@"
+  fi;
 fi;

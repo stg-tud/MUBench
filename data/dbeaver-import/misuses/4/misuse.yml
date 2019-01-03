@@ -1,0 +1,15 @@
+api:
+- javax.crypto.Cipher
+violations:
+- insecure/condition/key
+description: >
+  Second parameter while initializing the Cipher object was not properly generatedKey.
+location:
+  file: org/jkiss/dbeaver/ext/import_config/wizards/navicat/NavicatEncrypt.java
+  method: "initChiperDecrypt()"
+  line: 64
+internal:
+pattern:
+crash: false
+source:
+  name:

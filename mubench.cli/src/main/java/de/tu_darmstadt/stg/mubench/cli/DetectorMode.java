@@ -11,16 +11,16 @@ public enum DetectorMode {
 		this.code = code;
 	}
 
-	public String getCode() {
+	protected String getCode() {
 		return code;
 	}
 
-	public static DetectorMode fromCode(String code) {
+	protected static DetectorMode fromCode(String code) {
 		for (DetectorMode mode : DetectorMode.values()) {
 			if (mode.code.equals(code)) {
 				return mode;
 			}
 		}
-		throw new IllegalArgumentException("no such more: '" + code + "'");
+		throw new IllegalArgumentException("no such mode: '" + code + "'");
 	}
 }

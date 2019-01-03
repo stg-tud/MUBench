@@ -1,0 +1,15 @@
+api:
+- javax.crypto.spec.IvParameterSpec
+violations:
+- insecure/condition/randomization
+description: >
+  First parameter while initializing the IvParameterSpec object was not properly randomized
+location:
+  file: com/jeesuite/common/crypt/DES.java
+  method: "decrypt(String, String)"
+  line: 64
+internal:
+pattern:
+crash: false
+source:
+  name:

@@ -154,11 +154,14 @@ hs_err_pid*
 
 # Benchmark created folders
 checkouts/
+checkouts-xp/
 findings/
 out.log*
 mubench.reviewsite/upload/
 mubench.reviewsite/vendor/
 mubench.reviewsite/composer.phar
+mubench.reviewsite/settings.php
+
 
 # review-site database for local testing
 mubench.reviewsite/*.sqlite
@@ -169,9 +172,6 @@ mubench.reviewsite/*.sqlite
 # convenience scripts to build detector versions/run experiments
 build_*
 run_*
-
-# data from cross-project study
-mubench.pipeline/boa/results
 
 # strange log file that keeps being created by some detector…
 log.txt

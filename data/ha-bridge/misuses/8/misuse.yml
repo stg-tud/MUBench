@@ -1,0 +1,15 @@
+api:
+- javax.crypto.spec.PBEParameterSpec
+violations:
+- insecure/condition/randomization
+description: >
+  Salt is not properly randomized while creating PBEParameterSpec object.
+location:
+  file: com/bwssystems/HABridge/BridgeSecurity.java
+  method: "decrypt(String)"
+  line: 343
+internal:
+pattern:
+crash: false
+source:
+  name:

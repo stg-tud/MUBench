@@ -1,0 +1,15 @@
+api:
+- javax.crypto.spec.SecretKeySpec
+violations:
+- insecure/condition/randomization
+description: >
+  First parameter while creating SecretKeySpec object was not properly randomized
+location:
+  file: de/rub/nds/tlsattacker/core/crypto/cipher/JavaCipher.java
+  method: "encrypt(byte[], byte[], byte[])"
+  line: 52
+internal:
+pattern:
+crash: false
+source:
+  name:

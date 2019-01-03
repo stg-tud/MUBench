@@ -1,0 +1,42 @@
+# git files
+.git
+.gitignore
+
+# development environment
+## Eclipse
+**/.project
+**/.classpath
+**/.settings
+## IntelliJ IDEA
+**/.idea
+**/*.iml
+## PythonEnv
+.python-version
+## PHP
+**/composer.phar
+
+# local config
+default.config
+build_*
+run_*
+release.sh
+
+# local working data
+## MUBench
+checkouts
+findings
+**/*.sqlite
+## logs
+**/log.txt
+**/logs
+**/*.log
+## build output
+**/*.jar
+**/target
+**/__pycache__
+
+# irrelevant files
+docker
+meta
+*.yml
+**/.DS_Store

@@ -1,0 +1,15 @@
+api:
+- javax.crypto.spec.SecretKeySpec
+violations:
+- insecure/condition/randomization
+description: >
+  First parameter while initializing SecretKeySpec was not properly randomized.
+location:
+  file: org/hongxi/whatsmars/common/util/AESUtils.java
+  method: "encrypt(byte[], byte[])"
+  line: 35
+internal:
+pattern:
+crash: false
+source:
+  name:

@@ -1,0 +1,15 @@
+api:
+- javax.crypto.spec.SecretKeySpec
+violations:
+- insecure/condition/randomization
+description: >
+  First parameter while initializing the SecretKeySpec object was not properly randomized.
+location:
+  file: com/abixen/platform/service/businessintelligence/multivisualisation/domain/model/util/AES128Encoder.java
+  method: "generateKey(String)"
+  line: 39
+internal:
+pattern:
+crash: false
+source:
+  name:

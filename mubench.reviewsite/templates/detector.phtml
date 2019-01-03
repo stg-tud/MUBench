@@ -1,10 +1,15 @@
 <?php
 /**
- * @var string $user the logged in user, if any
+ * @var \MuBench\ReviewSite\Models\Reviewer $user the logged in user, if any
  *
  * @var string $site_base_url
  * @var string $public_url_prefix
  * @var string $private_url_prefix
+ * @var callable $pathFor function to resolve router paths
+ * @var callable $detectorName function to resolve detector names if blinded
+ * @var callable $detectorPathId function to return detector id if blinded
+ * @var callable $reviewerName function to return anonymous reviewer name if blinded else the reviewer name
+ * @var callable $reviewerPathId function to return reviewer id if blinded else the reviewer name
  * @var string $url_prefix the public or private url prefix, depending on whether the user is logged in
  *
  * @var string $path the current route path
@@ -16,13 +21,15 @@
  * @var Experiment $experiment the selected experiment, if any
  * @var Detector $detector the selected detector, if any
  *
+ * @var Parsedown $markdown_parser markdown parser
+ *
  * @var array $runs the detectors experiment runs
  */
-use MuBench\ReviewSite\Model\Detector;
-use MuBench\ReviewSite\Model\Experiment;
-use MuBench\ReviewSite\Model\Decision;
-use MuBench\ReviewSite\Model\Review;
-use MuBench\ReviewSite\Model\ReviewState;
+
+use MuBench\ReviewSite\Models\Decision;
+use MuBench\ReviewSite\Models\Detector;
+use MuBench\ReviewSite\Models\Experiment;
+use MuBench\ReviewSite\Models\ReviewState;
 
 $columns_to_ignore = array(
     'exp',
@@ -32,33 +39,51 @@ $columns_to_ignore = array(
     'detector',
     'result',
     'number_of_findings',
-    'runtime'
+    'runtime',
+    'id',
+    'experiment_id',
+    'version_muid',
+    'project_muid'
 );
-
-$markdown_parser = new Parsedown();
 
 ?>
 <html>
 <head>
     <title>MuBench :: Review Site</title>
-    <link rel="stylesheet" type="text/css" href="<?= $site_base_url ?>style/style.css"/>
-    <link rel="stylesheet" type="text/css" href="<?= $site_base_url ?>style/modal.css"/>
+    <link rel="stylesheet" type="text/css" href="<?= $site_base_url ?>css/style.css"/>
+    <link rel="stylesheet" type="text/css" href="<?= $site_base_url ?>css/modal.css"/>
     <link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
 </head>
 <body>
 <?php include "includes/menu.phtml"; ?>
 
-<h1>Experiment <?= $experiment->getNumber() ?>: <?= htmlspecialchars($experiment->getTitle()) ?></h1>
-<h2>Detector: <?= htmlspecialchars($detector->name); ?></h2>
-<a class="button" href="<?=$public_url_prefix?>download/<?=$experiment->getId()?>/<?=$detector->name?>"><i class="fa fa-download" aria-hidden="true"> download csv</i></a>
-        <?php if(strcmp($experiment->getId(), "ex2") == 0) : ?>
-            <form action="" method="get">
-                <label for="ex2_review_size">Max. Reviews per Project</label>:
-                <input type="text" id="ex2_review_size" name="ex2_review_size" value="<?= $ex2_review_size ?>" />
-                <input type="submit" value="update" />
-            </form>
-        <?php endif; ?>
-<table>
+<h1>Experiment <?= /* @var Experiment */ $experiment->id ?>: <?= htmlspecialchars($experiment->name) ?></h1>
+<h2>Detector: <?= htmlspecialchars($detectorName($detector->muid)); ?></h2>
+<a class="button" href="<?= $pathFor('download.runs', ['experiment_id' => $experiment->id, 'detector_muid' => $detectorPathId($detector)]); ?>"><i class="fa fa-download" aria-hidden="true"> download csv</i></a>
+<?php if($experiment->id === 2) : ?>
+    <form action="" method="get">
+        <label for="ex2_review_size">Max. Reviews per Project</label>:
+        <input type="text" id="ex2_review_size" name="ex2_review_size" value="<?= $ex2_review_size ?>" />
+        <input type="submit" value="update" />
+    </form>
+<?php endif; ?>
+<?php if($user): ?>
+    <div id="filter-menu">
+        <label class="filter-label">
+            <input class="filter-checkbox" onclick="filter(this)" type="checkbox" value="i.fa.fa-search">
+            <span>Needs Review</span>
+        </label>
+        <label class="filter-label">
+            <input class="filter-checkbox" onclick="filter(this)" type="checkbox" value="i.fa.fa-question-circle">
+            <span>Needs Clarification</span>
+        </label>
+        <label class="filter-label">
+            <input class="filter-checkbox" onclick="filter(this)" type="checkbox" value="i.fa.fa-exclamation-triangle">
+            <span>Disagreement</span>
+        </label>
+    </div>
+<?php endif; ?>
+<table id="detector_table">
     <thead>
     <tr>
         <th>Project</th>
@@ -68,75 +93,66 @@ $markdown_parser = new Parsedown();
         <th>Runtime</th>
         <th></th>
         <th>Misuse</th>
-        <?php if ($experiment->getId() !== "ex2") : ?>
-            <th>Violation Types</th><?php endif ?>
+        <?php if ($experiment->id !== 2) : ?>
+            <th>Violations</th><?php endif ?>
         <th>Decision</th>
         <th>Reviews</th>
         <th>Your Review</th>
-        <th>Your Comment</th>
+        <th></th>
         <th>Tags</th>
     </tr>
     </thead>
     <tbody>
-    <?php $last_project = "" ?>
+    <?php
+        $last_project = ""
+    ?>
     <?php foreach ($runs as $run) : ?>
         <?php
-        $project = $run["project"];
-        $new_project = strcmp($last_project, $run["project"]) !== 0;
+        $project = $run->project_muid;
+        $new_project = $last_project !== $run->project_muid;
         $last_project = $project;
-        $version = $run["version"];
+        $version = $run->version_muid;
         $new_version = true;
-        $additional_stats = array_filter(array_keys($run), function ($key) use ($columns_to_ignore, $run) {
-            return !in_array($key, $columns_to_ignore) && array_key_exists($key, $run) && !empty($run[$key]);
+        $attr = $run->getAttributes();
+        $additional_stats = array_filter(array_keys($attr), function ($key) use ($columns_to_ignore, $attr) {
+            return !in_array($key, $columns_to_ignore) && array_key_exists($key, $attr) && !empty($attr[$key]);
         });
         sort($additional_stats);
         ?>
-        <?php foreach ($run['misuses'] as $misuse) : /* @var $misuse \MuBench\ReviewSite\Model\Misuse */ ?>
+        <?php foreach ($run->misuses as $misuse) : /* @var $misuse \MuBench\ReviewSite\Models\Misuse */ ?>
             <?php
             $classes = [];
             if ($new_project) $classes[] = "top";
-            if (!$misuse->hasPotentialHits()) $classes[] = "no-hit";
+            if(!$misuse->hasPotentialHits()) $classes[] = "no-hit";
             $style_classes = implode(" ", $classes);
             ?>
             <tr>
                 <td class="<?= $style_classes ?>">
-                    <?= $new_project ? $markdown_parser->text($project) : ""; ?></td>
+                    <span class="stats <?= $new_project ? "" : "invisible" ?>"><?= $markdown_parser->text($project) ?></span></td>
                 <td class="<?= $style_classes ?>">
-                    <?= $new_version ? $markdown_parser->text($version) : ""; ?></td>
+                    <span class="stats <?= $new_version ? "" : "invisible" ?>"><?= $markdown_parser->text($version) ?></span></td>
                 <td class="<?= $style_classes ?>">
-                    <?= $new_version ? $markdown_parser->text($run['result']) : ""; ?></td>
+                    <span class="stats <?= $new_version ? "" : "invisible" ?>"><?= $markdown_parser->text($run->result) ?></span></td>
                 <td class="<?= $style_classes ?> right">
-                    <?= $new_version ? $markdown_parser->text($run['number_of_findings']) : ""; ?></td>
+                    <span class="stats <?= $new_version ? "" : "invisible" ?>"><?= $markdown_parser->text($run->number_of_findings) ?></span></td>
                 <td class="<?= $style_classes ?> right">
-                    <?= $new_version ? $markdown_parser->text(number_format(floatval($run['runtime']), 1)) . "s" : ""; ?></td>
+                    <span class="stats <?= $new_version ? "" : "invisible" ?>"><?= $markdown_parser->text(number_format($run->runtime, 1)) . "s" ?></span></td>
                 <td class="<?= $style_classes ?> right">
-                    <?php if ($new_version) : ?>
-                        <?php include "includes/modal.phtml"; ?>
-                    <?php endif; ?>
+                    <span class="stats <?= $new_version ? "" : "invisible" ?>">
+                        <i value="<?= htmlspecialchars($project) ?>_<?= htmlspecialchars($version) ?>" onclick="showModal(this)" class="fa fa-info-circle clickable-icon" aria-hidden="true"></i>
+                    </span>
                 </td>
                 <td class="<?= $style_classes ?>">
-                    <?= $markdown_parser->text($misuse->getShortId()); ?></td>
-                <?php if ($experiment->getId() !== "ex2") : ?>
+                    <?= $markdown_parser->text($misuse->misuse_muid); ?></td>
+                <?php if ($experiment->id !== 2) : ?>
                     <td class="<?= $style_classes ?>">
                         <ul>
-                            <?php foreach($misuse->getViolationTypes() as $type): ?>
-                                <li><?= htmlspecialchars($type) ?></li>
+                            <?php foreach($misuse->getViolations() as $type): ?>
+                                <li><?= htmlspecialchars($type->name) ?></li>
                             <?php endforeach; ?>
                         </ul>
                     </td>
                 <?php endif; ?>
-                <?php
-                $review_url = $url_prefix .
-                    htmlspecialchars($experiment->getId()) .
-                    "/" .
-                    htmlspecialchars($detector->name) .
-                    "/" .
-                    htmlspecialchars($project) .
-                    "/" .
-                    htmlspecialchars($version) .
-                    "/" .
-                    htmlspecialchars($misuse->id);
-                ?>
                     <td class="<?= $style_classes ?>">
                         <?php $review_state = $misuse->getReviewState() ?>
                         <?php if ($review_state == ReviewState::NOTHING_TO_REVIEW): ?>
@@ -145,22 +161,22 @@ $markdown_parser = new Parsedown();
                         <?php elseif ($review_state == ReviewState::NEEDS_CLARIFICATION): ?>
                             <i class="fa fa-question-circle" aria-hidden="true" style="color:blue;" title="Needs Clarification"></i>
                         <?php elseif ($review_state == ReviewState::DISAGREEMENT): ?>
-                        <a href="<?= $review_url ?>/resolution"><i class="fa fa-exclamation-triangle" aria-hidden="true" style="color:red;" title="Disagreement"></i></a>
+                        <a href="<?= $pathFor('review', array('experiment_id' => $experiment->id, 'detector_muid' => $detectorPathId($detector), 'project_muid' => $project, 'version_muid' => $version, 'misuse_muid' => $misuse->misuse_muid, 'reviewer_name' => $reviewerPathId($resolution_reviewer))) ?>"><i class="fa fa-exclamation-triangle" aria-hidden="true" style="color:red;" title="Disagreement"></i></a>
                         <?php elseif ($review_state == ReviewState::AGREEMENT_YES): ?>
                             <i class="fa fa-thumbs-o-up" aria-hidden="true" style="color:green;" title="Agreement: Yes"></i>
                         <?php elseif ($review_state == ReviewState::AGREEMENT_NO): ?>
                             <i class="fa fa-thumbs-o-down" aria-hidden="true" style="color:darkred;" title="Agreement: No"></i>
                         <?php elseif ($review_state == ReviewState::RESOLVED_YES): ?>
                             <i class="fa fa-thumbs-o-up" aria-hidden="true" style="color:green;" title="Resolved: Yes"></i>
-                            (<a href="<?= $review_url ?>/resolution"><i class="fa fa-handshake-o" aria-hidden="true" title="Resolution"></i></a>)
+                            (<a href="<?= $pathFor('review', array('experiment_id' => $experiment->id, 'detector_muid' => $detectorPathId($detector), 'project_muid' => $project, 'version_muid' => $version, 'misuse_muid' => $misuse->misuse_muid, 'reviewer_name' => $reviewerPathId($resolution_reviewer))) ?>"><i class="fa fa-handshake-o" aria-hidden="true" title="Resolution"></i></a>)
                         <?php elseif ($review_state == ReviewState::RESOLVED_NO): ?>
                             <i class="fa fa-thumbs-o-down" aria-hidden="true" style="color:darkred;" title="Resolved: No"></i>
-                            (<a href="<?= $review_url ?>/resolution"><i class="fa fa-handshake-o" aria-hidden="true" title="Resolution"></i></a>)
+                            (<a href="<?= $pathFor('review', array('experiment_id' => $experiment->id, 'detector_muid' => $detectorPathId($detector), 'project_muid' => $project, 'version_muid' => $version, 'misuse_muid' => $misuse->misuse_muid, 'reviewer_name' => $reviewerPathId($resolution_reviewer))) ?>"><i class="fa fa-handshake-o" aria-hidden="true" title="Resolution"></i></a>)
                         <?php endif; ?>
-                        <?php if($user && $misuse->hasReviewed($user)): ?>
+                        <?php if($misuse->hasReviewed($user)): ?>
                             <?php
                                 $user_review = $misuse->getReview($user);
-                                $reviews = $misuse->getReviews();
+                                $reviews = $misuse->reviews;
                             ?>
                             <?php if(true) : ?>
                                 <?php if($review_state == ReviewState::NEEDS_REVIEW && $user_review->identifiesHit()) : ?>
@@ -180,7 +196,7 @@ $markdown_parser = new Parsedown();
                                         <?php
                                             $same_rank = strcmp($user_review->getLowestHitRank(), $review->getLowestHitRank()) === 0;
                                         ?>
-                                        <?php if(strcmp($review->getReviewerName(), $user) !== 0 && !$same_rank) : ?>
+                                        <?php if(strcmp($review->reviewer->name, $user->name) !== 0 && !$same_rank) : ?>
                                             <?php
                                                 $number_in_circle = $review->getLowestHitRank();
                                                 $circle_color="darkred";
@@ -200,9 +216,11 @@ $markdown_parser = new Parsedown();
                     </td>
                     <td class="<?= $style_classes ?>">
                         <ul class="inline">
-                            <?php foreach($misuse->getReviews() as $review) : /** @var Review $review */ ?>
-                                <?php $reviewer_name = htmlspecialchars($review->getReviewerName()) ?>
-                                <li style="display:inline"><a href="<?= $review_url ?>/<?= $reviewer_name ?>"><?= $reviewer_name ?></a></li>
+                            <?php foreach($misuse->getReviews() as $review) : /** @var /Mubench/ReviewSite/Models/Review $review */ ?>
+                                <?php
+                                    $reviewer_name = $reviewerName($review->reviewer);
+                                ?>
+                                <li style="display:inline"><a href="<?= $pathFor('review', array('experiment_id' => $experiment->id, 'detector_muid' => $detectorPathId($detector), 'project_muid' => $project, 'version_muid' => $version, 'misuse_muid' => $misuse->misuse_muid, 'reviewer_name' => $reviewerPathId($review->reviewer))) ?>"><?= $reviewer_name ?></a></li>
                             <?php endforeach; ?>
                         </ul>
                     </td>
@@ -211,9 +229,9 @@ $markdown_parser = new Parsedown();
                         $button_classes = "button" . (!$misuse->hasPotentialHits() || ($user && $misuse->hasSufficientReviews() || $misuse->hasReviewed($user)) ? " no-hit" : "")
                         ?>
                         <?php if (!$user): ?>
-                            <a href="<?= $review_url; ?>" class="<?= $button_classes ?>">view</a>
+                            <a href="<?= $pathFor('view', array('experiment_id' => $experiment->id, 'detector_muid' => $detectorPathId($detector), 'project_muid' => $project, 'version_muid' => $version, 'misuse_muid' => $misuse->misuse_muid)); ?>" class="<?= $button_classes ?>">view</a>
                         <?php elseif ($misuse->hasReviewed($user)): ?>
-                            <a href="<?= $review_url ?>" class="<?= $button_classes ?>">edit
+                            <a href="<?= $pathFor('review', array('experiment_id' => $experiment->id, 'detector_muid' => $detectorPathId($detector), 'project_muid' => $project, 'version_muid' => $version, 'misuse_muid' => $misuse->misuse_muid, 'reviewer_name' => $reviewerPathId($user))) ?><?= $origin_param ?><?= $experiment->id === 2 ? "&ex2_review_size=$ex2_review_size" : "" ?>" class="<?= $button_classes ?>">edit
                             <?php $your_decision = $misuse->getReview($user)->getDecision() ?>
                             <?php if ($your_decision == Decision::YES): ?>
                                 (<i class="fa fa-thumbs-o-up" aria-hidden="true" style="color:green;" title="Yes"></i>)
@@ -226,20 +244,20 @@ $markdown_parser = new Parsedown();
                             <?php endif; ?>
                         </a>
                     <?php else: ?>
-                        <a href="<?= $review_url; ?>" class="<?= $button_classes ?>">review</a>
+                        <a href="<?= $pathFor('review', array('experiment_id' => $experiment->id, 'detector_muid' => $detectorPathId($detector), 'project_muid' => $project, 'version_muid' => $version, 'misuse_muid' => $misuse->misuse_muid, 'reviewer_name' => $reviewerPathId($user))); ?><?= $origin_param ?><?= $experiment->id === 2 ? "&ex2_review_size=$ex2_review_size" : "" ?>" class="<?= $button_classes ?>">review</a>
                     <?php endif; ?>
                 </td>
                 <td class="<?= $style_classes ?>" style="max-width: 300px;">
-                    <?= $misuse->hasReviewed($user) ? $misuse->getReview($user)->getComment() : "" ?>
+                    <?php if($misuse->hasSufficientReviews() || ($user && $misuse->hasReviewed($user))) : ?>
+                        <?php include "includes/review_modal.phtml"; ?>
+                    <?php endif; ?>
                 </td>
                 <td class="<?= $style_classes ?>">
-                    <? if($misuse->hasConclusiveReviewState()) : ?>
-                        <? foreach($misuse->getTags() as $tag) : ?>
-                            <div class="misuse-tag">
-                                <span><?= htmlspecialchars($tag['name']) ?></span>
-                            </div>
-                        <? endforeach; ?>
-                    <? endif; ?>
+                            <?php foreach($misuse->getTags() as $tag) : ?>
+                                <div class="misuse-tag" style="background-color:<?= htmlspecialchars($tag->color) ?>;color:<?= htmlspecialchars($tag->getFontColor()) ?>;">
+                                    <span><?= htmlspecialchars($tag->name) ?></span>
+                                </div>
+                            <?php endforeach; ?>
                 </td>
             </tr>
             <?php
@@ -247,7 +265,7 @@ $markdown_parser = new Parsedown();
             $new_project = false;
             ?>
         <?php endforeach; ?>
-        <?php if (!$run["misuses"]) : ?>
+        <?php if (count($run->misuses) == 0) : ?>
             <?php
             $classes = ["no-hit"];
             if ($new_project) $classes[] = "top";
@@ -266,11 +284,11 @@ $markdown_parser = new Parsedown();
                     <?= $new_version ? $markdown_parser->text(substr($run['runtime'], 0, 4)) . "s" : ""; ?></td>
                 <td class="<?= $style_classes ?> right">
                     <?php if ($new_version) : ?>
-                        <?php include "includes/modal.phtml"; ?>
+                        <i value="<?= htmlspecialchars($project) ?>_<?= htmlspecialchars($version) ?>" onclick="showModal(this)" class="fa fa-info-circle clickable-icon" aria-hidden="true"></i>
                     <?php endif; ?>
                 </td>
                 <td class="<?= $style_classes ?>"></td>
-                <?php if ($experiment->getId() !== "ex2"): ?>
+                <?php if ($experiment->id !== 2): ?>
                 <td class="<?= $style_classes ?>"></td><?php endif ?>
                 <td class="<?= $style_classes ?>"></td>
                 <td class="<?= $style_classes ?>"></td>
@@ -283,6 +301,13 @@ $markdown_parser = new Parsedown();
     </tbody>
 </table>
 
+<?php foreach ($runs as $run) : ?>
+    <?php
+    $project = $run->project_muid;
+    $version = $run->version_muid;
+    ?>
+    <?php include "includes/stats_modal.phtml"; ?>
+<?php endforeach; ?>
 
 <script>
     function showModal(button) {
@@ -293,7 +318,10 @@ $markdown_parser = new Parsedown();
         if (event.target.className == "modal" || event.target.className == "close") {
             document.getElementById(event.target.id).style.display = "None";
         }
-    }
+    };
 </script>
+<?php if($user) : ?>
+    <script src="<?= $site_base_url ?>js/detector-filter.js"></script>
+<?php endif; ?>
 </body>
 </html>

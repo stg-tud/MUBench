@@ -1,6 +1,6 @@
 <?php
 
-require_once "SlimTestCase.php";
+namespace MuBench\ReviewSite\Tests;
 
 class SlimTest extends SlimTestCase
 {
@@ -12,7 +12,7 @@ class SlimTest extends SlimTestCase
 
     public function testNotFound()
     {
-        $this->get('/ex4');
+        $this->get('/test/t');
         $this->assertEquals('404', $this->response->getStatusCode());
     }
 }

@@ -1,0 +1,43 @@
+<?php
+/**
+ * @var string $user the logged in user, if any
+ *
+ * @var string $site_base_url
+ * @var string $public_url_prefix
+ * @var string $private_url_prefix
+ * @var string $url_prefix the public or private url prefix, depending on whether the user is logged in
+ *
+ * @var string $path the current route path
+ * @var string $origin_param url parameter that carries the $path
+ * @var string $origin_path referrer path
+ *
+ * @var array $experiments all experiments (Experiment)
+ * @var array $detectors detectors (Detector) with results per experiment
+ * @var array $results
+ * @var array $tags
+ * @var int $ex2_review_size max number of reviews (per project) to include in statistics
+ */
+?>
+<html>
+<head>
+    <link rel="stylesheet" type="text/css" href="<?= $site_base_url ?>css/style.css"/>
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+</head>
+<body>
+<?php include "includes/menu.phtml" ?>
+
+<h1>Statistics: Violations (MuC)</h1>
+<table>
+    <tr>
+        <th>Violation</th>
+        <th>Count</th>
+    </tr>
+    <?php foreach ($results as $key => $result) : /** @var $result RunsResult */ ?>
+    <tr>
+        <td><?= htmlspecialchars($key) ?></td>
+        <td><?= htmlspecialchars($result) ?></td>
+    </tr>
+    <?php endforeach; ?>
+</table>
+</body>
+</html>

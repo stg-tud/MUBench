@@ -1,0 +1,15 @@
+api:
+- javax.crypto.Cipher
+violations:
+- insecure/condition/key
+description: >
+  Second parameter while initializing the Cipher object was not properly generatedKey.
+location:
+  file: com/smart/sso/server/util/AESUtils.java
+  method: "encrypt(String, String)"
+  line: 30
+internal:
+pattern:
+crash: false
+source:
+  name:

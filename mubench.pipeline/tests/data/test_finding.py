@@ -3,16 +3,18 @@ from unittest.mock import patch
 
 from nose.tools import assert_equals, assert_raises
 
-from data.snippets import Snippet, SnippetUnavailableException
 from data.finding import Finding
-from utils.shell import CommandFailedError
+from data.snippets import Snippet, SnippetUnavailableException
 from tests.test_utils.data_util import create_misuse
+from utils.shell import CommandFailedError
 
 
 class TestPotentialHit:
     # noinspection PyAttributeOutsideInit
     def setup(self):
         self.misuse = create_misuse('misuse', meta={"location": {"file": "a", "method": "m()"}})
+        self.snippets = []
+        self.misuse.get_snippets = lambda *_: self.snippets
 
     def test_matches_on_file(self):
         self.misuse.location.file = "some-class.java"
@@ -54,13 +56,30 @@ class TestPotentialHit:
         self.misuse.location.method = "method(A)"
         self.assert_potential_hit({"method": "method(p.A)"}, True)
 
+    def test_does_not_match_on_line_without_startline(self):
+        self.misuse.location.method = "method(A)"
+        self.misuse.location.line = 42
+        self.assert_potential_hit({"method": "method(A)"})
+
+    def test_matches_on_line(self):
+        self.misuse.location.method = "method(A)"
+        self.misuse.location.line = 40
+        self.snippets = [Snippet("{\n-some-\n-code-\n}", self.misuse.location.line)]
+        self.assert_potential_hit({"method": "method(A)", "startline": 41})
+
+    def test_no_line_match(self):
+        self.misuse.location.method = "method(A)"
+        self.misuse.location.line = 40
+        self.snippets = [Snippet("{\n-some-\n-code-\n}", self.misuse.location.line)]
+        self.assert_no_potential_hit({"method": "method(A)", "startline": 1337})
+
     def assert_potential_hit(self, finding_data: Dict[str, str], method_name_only: bool=False):
         finding = self.create_finding(finding_data)
-        assert finding.is_potential_hit(self.misuse, method_name_only)
+        assert finding.is_potential_hit(self.misuse, [], method_name_only)
 
     def assert_no_potential_hit(self, finding_data: Dict[str, str]):
         finding = self.create_finding(finding_data)
-        assert not finding.is_potential_hit(self.misuse)
+        assert not finding.is_potential_hit(self.misuse, [])
 
     def create_finding(self, finding_data: Dict[str, str]):
         if "file" not in finding_data:
@@ -78,7 +97,8 @@ class TestTargetCode:
 
         finding = Finding({"file": "-file-"})
 
-        assert_equals(finding.get_snippets("/base"), [])
+        with assert_raises(SnippetUnavailableException):
+            finding.get_snippets(["/base"])
 
     def test_loads_snippet(self, utils_mock):
         utils_mock.side_effect = lambda tool, args:\
@@ -86,7 +106,7 @@ class TestTargetCode:
 
         finding = Finding({"file": "-file-", "method": "-method-"})
 
-        assert_equals([Snippet("class T {\n-code-\n}", 41)], finding.get_snippets("/base"))
+        assert_equals([Snippet("class T {\n-code-\n}", 41)], finding.get_snippets(["/base"]))
 
     def test_loads_snippet_absolute_path(self, utils_mock):
         utils_mock.side_effect = lambda tool, args: \
@@ -94,29 +114,35 @@ class TestTargetCode:
 
         finding = Finding({"file": "/-absolute-file-", "method": "-method-"})
 
-        assert_equals(1, len(finding.get_snippets("/base")))
+        assert_equals(1, len(finding.get_snippets(["/base"])))
 
     def test_loads_multiple_snippets(self, utils_mock):
         utils_mock.return_value = "42:T:t-code\n===\n32:A:a-code"
 
         finding = Finding({"file": "-file-", "method": "-method-"})
 
-        assert_equals(2, len(finding.get_snippets("/base")))
+        assert_equals(2, len(finding.get_snippets(["/base"])))
 
     def test_strips_additional_output(self, utils_mock):
         utils_mock.return_value = "Arbitrary additional output\n1:C:code"
 
         finding = Finding({"file": "-file-", "method": "-method-"})
 
-        assert_equals(1, len(finding.get_snippets("/base")))
+        assert_equals(1, len(finding.get_snippets(["/base"])))
 
     def test_extraction_error(self, utils_mock):
         utils_mock.side_effect = CommandFailedError("cmd", "output")
 
         finding = Finding({"file": "-file-", "method": "-method-"})
 
-        with assert_raises(SnippetUnavailableException) as context:
-            finding.get_snippets("/base")
+        with assert_raises(SnippetUnavailableException):
+            finding.get_snippets(["/base"])
 
-        assert_equals('/base/-file-', context.exception.file)
-        assert_equals(utils_mock.side_effect, context.exception.exception)
+    def test_filters_by_startline(self, utils_mock):
+        utils_mock.return_value = "42:T:t-code\n===\n32:A:a\nb\nc\n===\n22:N:n-code"
+
+        finding = Finding({"file": "-file-", "method": "-method-", "startline": 33})
+
+        snippets = finding.get_snippets(["/base"])
+
+        assert_equals([Snippet("class A {\na\nb\nc\n}", 31)], snippets)

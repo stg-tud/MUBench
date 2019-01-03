@@ -1,0 +1,15 @@
+api:
+- javax.crypto.spec.PBEParameterSpec
+violations:
+- insecure/condition/randomization
+description: >
+  First parameter while creating the PBEParameterSpec object i.e. SALT was not properly randomized
+location:
+  file: symmetric-util/src/main/java/org/jumpmind/security/SecurityService.java
+  method: "initializeCipher(Cipher,int)"
+  line: 185
+internal:
+pattern:
+crash: false
+source:
+  name:

@@ -1,15 +1,27 @@
 @ECHO OFF
 
 SET SCRIPT_DIR=%~dp0
-SET "SCRIPT_DIR=%SCRIPT_DIR:\=/%"
+SET MUBENCH_ROOT=%SCRIPT_DIR%
+SET TASKS=%MUBENCH_ROOT%mubench.bin\
 
-IF "%~1" == "configure" (
-  IF "%~2" = "review-site" (
-    docker run --rm -v "%SCRIPT_DIR%":/mubench svamann/mubench-ci python /bin/bash ./mubench.reviewsite/configure.sh
-  ) ELSE (
-    echo "Unknown configuration target:" %2
-    echo "Choose one of {review-site}"
+CALL %TASKS%environment.bat
+
+IF "%~1" == "-h" (
+  docker run --rm -v "%MUBENCH_ROOT%":/mubench %PIPELINE_DOCKER_IMAGE% python3 %MUBENCH_DOCS%/mubench.py %*
+  EXIT 0
+)
+
+SET TASK=%TASKS%%~1.bat
+SET DOC=%MUBENCH_DOCS%%~1.py
+IF EXIST %TASK% (
+  SHIFT
+  IF %~1 == "-h" (
+    IF EXIST %MUBENCH_ROOT%%DOC% (
+      docker run --rm -v "%MUBENCH_ROOT%":/mubench %PIPELINE_DOCKER_IMAGE% python3 %DOC% %*
+	  EXIT 0
+	)
   )
+  CALL %TASK% %*
 ) ELSE (
-  docker run --rm -v "%SCRIPT_DIR%":/mubench svamann/mubench python ./mubench.pipeline/benchmark.py --use-tmp-wrkdir %*
+  CALL %TASKS%pipeline.bat %*
 )

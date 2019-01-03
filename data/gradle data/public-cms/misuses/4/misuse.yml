@@ -1,0 +1,15 @@
+api:
+- javax.crypto.SecretKeyFactory
+violations:
+- insecure/condition/transformation
+description: >
+  cipherALG in SecretKeyFactory.getInstance(String) should be AES with key length between (128, 192, 256) instead of given DESede.
+location:
+  file: publiccms-parent/publiccms-common/src/main/java/com/publiccms/common/tools/VerificationUtils.java
+  method: "encrypt(String,String)"
+  line: 286
+internal:
+pattern:
+crash: false
+source:
+  name:

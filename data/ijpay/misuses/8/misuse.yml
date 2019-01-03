@@ -1,0 +1,15 @@
+api:
+- java.security.Signature
+violations:
+- insecure/condition/key
+description: >
+  First parameter in Signature.initSign(PrivateKey) is not a properly generatedPrivkey
+location:
+  file: com/jpay/unionpay/SecureUtil.java
+  method: "signBySoft256(PrivateKey, byte[])"
+  line: 293
+internal:
+pattern:
+crash: false
+source:
+  name:

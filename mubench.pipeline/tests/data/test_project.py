@@ -5,8 +5,8 @@ import yaml
 from nose.tools import assert_equals
 
 from data.project import Project
-from utils.io import remove_tree, create_file, safe_open
 from tests.test_utils.data_util import create_version
+from utils.io import remove_tree, create_file, safe_open
 
 
 class TestProject:
@@ -19,6 +19,9 @@ class TestProject:
         self.uut = Project(self.temp_dir, self.project_id)
 
     def mock_meta_data(self, meta):
+        if self.uut._YAML is None:
+            self.uut._YAML = {}
+
         self.uut._YAML.update(meta)
 
     def teardown(self):
@@ -58,7 +61,7 @@ class TestProject:
 
     def test_finds_versions(self):
         version = create_version("v1", project=self.uut)
-        create_file(version._version_file)
+        create_file(version.version_file)
 
         versions = self.uut.versions
 

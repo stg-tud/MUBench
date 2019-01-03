@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>de.tu-darmstadt.stg.mubench</groupId>
 	<artifactId>mubench.utils</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.0.4-SNAPSHOT</version>
 	<name>mubench.cli</name>
 	<url>https://github.com/stg-tud/MUBench</url>
 
@@ -87,7 +87,7 @@
 		<dependency>
 			<groupId>com.github.javaparser</groupId>
 			<artifactId>javaparser-core</artifactId>
-			<version>2.5.1</version>
+			<version>3.5.14</version>
 		</dependency>
 		<dependency>
 			<groupId>com.google.guava</groupId>

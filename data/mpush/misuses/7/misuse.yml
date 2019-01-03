@@ -1,0 +1,15 @@
+api:
+- javax.crypto.spec.SecretKeySpec
+violations:
+- insecure/condition/randomization
+description: >
+  First parameter while initializing SecretKeySpec object was not properly randomized.
+location:
+  file: com/mpush/tools/crypto/MD5Utils.java
+  method: "hmacSha1(String, String)"
+  line: 91
+internal:
+pattern:
+crash: false
+source:
+  name:

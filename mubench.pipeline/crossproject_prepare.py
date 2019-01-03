@@ -1,9 +1,11 @@
+import calendar
 import csv
 import logging
 import os
 import sys
 from datetime import datetime
 from os.path import exists, join
+from typing import List
 
 from boa.BOA import BOA
 from buildtools.maven import Project
@@ -12,9 +14,11 @@ from utils.logging import IndentFormatter
 from utils.shell import CommandFailedError
 
 MUBENCH_ROOT_PATH = os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir))
-CHECKOUTS_PATH = os.path.join(MUBENCH_ROOT_PATH, "checkouts", "_examples")
-INDEX_PATH = os.path.join(CHECKOUTS_PATH, "index.csv")
-SUBTYPES_PATH = os.path.join(CHECKOUTS_PATH, "subtypes.csv")
+XP_CHECKOUTS_PATH = os.path.join(MUBENCH_ROOT_PATH, "checkouts-xp")
+CHECKOUTS_PATH = os.path.join(XP_CHECKOUTS_PATH, "checkouts")
+BOA_RESULTS_PATH = join(XP_CHECKOUTS_PATH, "boa-results")
+INDEX_PATH = os.path.join(XP_CHECKOUTS_PATH, "index.csv")
+SUBTYPES_PATH = os.path.join(XP_CHECKOUTS_PATH, "subtypes.csv")
 MAX_SUBTYPES_SAMPLE_SIZE = 25
 MAX_PROJECT_SAMPLE_SIZE = 50
 
@@ -22,6 +26,9 @@ _SUBTYPES = {}
 
 username = sys.argv[1]
 password = sys.argv[2]
+
+now = datetime.utcnow()
+run_timestamp = calendar.timegm(now.timetuple())
 
 
 def _get_subtypes(target_type):
@@ -35,16 +42,29 @@ def _get_subtypes(target_type):
     return subtypes_sample
 
 
-def _prepare_example_projects(target_type: str, boa: BOA, metadata_path: str):
+def _get_type_and_subtypes_list(target_type):
+    return [target_type] + _get_subtypes(target_type)
+
+
+def _create_type_combinations(target_types: List):
+    if len(target_types) == 1:
+        return ([type] for type in _get_type_and_subtypes_list(target_types[0]))
+    else:
+        return ([target_type] + tail
+                for target_type in _get_type_and_subtypes_list(target_types[0])
+                for tail in _create_type_combinations(target_types[1:]))
+
+
+def _prepare_example_projects(target_types: List, boa: BOA, metadata_path: str):
     data = []
-    for type in [target_type] + _get_subtypes(target_type):
-        projects = boa.query_projects_with_type_usages(target_type, type)
+    for type_combination in _create_type_combinations(target_types):
+        projects = boa.query_projects_with_type_usages(target_types, type_combination)
         for project in projects:
             checkout = project.get_checkout(CHECKOUTS_PATH)
             if not checkout.exists():
                 try:
                     logger.info("  Checking out %r...", str(project))
-                    checkout.create()
+                    checkout.clone()
                 except CommandFailedError as error:
                     logger.warning("    Checkout failed: %r", error)
                     checkout.delete()
@@ -54,9 +74,10 @@ def _prepare_example_projects(target_type: str, boa: BOA, metadata_path: str):
 
             try:
                 project_entry = {"id": project.id, "url": project.repository_url,
-                                 "path": os.path.relpath(checkout.checkout_dir, MUBENCH_ROOT_PATH),
-                                 "source_paths": Project(checkout.checkout_dir).get_sources_paths()}
-                write_yaml(project_entry)
+                                 "path": os.path.relpath(checkout.path, MUBENCH_ROOT_PATH),
+                                 "source_paths": Project(checkout.path).get_sources_paths(),
+                                 "checkout_timestamp": run_timestamp}
+                write_yaml(project_entry)  # check for encoding problems
                 data.append(project_entry)
             except UnicodeEncodeError:
                 logger.warning("    Illegal characters in project data.")
@@ -84,20 +105,25 @@ handler.setFormatter(logging.Formatter('%(asctime)s - %(name)s - %(levelname)s -
 handler.setLevel(logging.DEBUG)
 logger.addHandler(handler)
 
+
 with open(INDEX_PATH) as index:
-    boa = BOA(username, password)
+    boa = BOA(username, password, BOA_RESULTS_PATH)
     for row in csv.reader(index, delimiter="\t"):
+        # skip blank lines, e.g., on trailing newline
+        if not row:
+            continue
+
         project_id = row[0]
         version_id = row[1]
-        target_type = row[6]
+        target_types = sorted(row[6:])
         try:
-            target_example_file = os.path.join(CHECKOUTS_PATH, target_type + ".yml")
+            target_example_file = os.path.join(XP_CHECKOUTS_PATH, "-".join(sorted(target_types)) + ".yml")
             if not exists(target_example_file):
-                logger.info("Preparing examples for %s.%s (type: %s)...", project_id, version_id, target_type)
-                _prepare_example_projects(target_type, boa, target_example_file)
+                logger.info("Preparing examples for %s.%s (type(s): %s)...", project_id, version_id, target_types)
+                _prepare_example_projects(target_types, boa, target_example_file)
             elif is_empty(target_example_file):
-                logger.info("No example projects for %s.%s (type: %s)", project_id, version_id, target_type)
+                logger.info("No example projects for %s.%s (type(s): %s)", project_id, version_id, target_types)
             else:
-                logger.info("Already prepared examples for %s.%s (type: %s)", project_id, version_id, target_type)
+                logger.info("Already prepared examples for %s.%s (type(s): %s)", project_id, version_id, target_types)
         except Exception as error:
             logger.exception("failed", exc_info=error)
