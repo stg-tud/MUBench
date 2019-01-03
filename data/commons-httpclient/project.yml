@@ -1,5 +1,0 @@
-name: Apache httpcomponents-client
-repository:
-  type: git 
-  url: https://github.com/apache/httpcomponents-client.git
-Url: http://hc.apache.org/

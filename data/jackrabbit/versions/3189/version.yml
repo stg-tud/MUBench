@@ -1,8 +1,0 @@
-build:
-  classes: jackrabbit-jca/$mvn.default.classes
-  attempt-commands:
-  - mvn compile -Dmaven.compiler.failOnError=false
-  src: jackrabbit-jca/src/main/java/
-misuses:
-- '12'
-revision: 1232830

@@ -1,5 +1,0 @@
-name: commons-bcel
-repository:
-  type: git
-  url: https://github.com/apache/commons-bcel.git
-url: https://github.com/apache/commons-bcel

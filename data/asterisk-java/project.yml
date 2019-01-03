@@ -1,5 +1,0 @@
-name: asterisk-java
-repository:
-  type: git
-  url: https://github.com/asterisk-java/asterisk-java.git
-url: http://asterisk-java.org

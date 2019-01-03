@@ -1,5 +1,0 @@
-name: ntru
-repository:
-  type: git
-  url: https://github.com/tbuktu/ntru.git
-url: http://tbuktu.github.com/ntru/

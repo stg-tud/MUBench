@@ -1,5 +1,0 @@
-name: 'JMRTD: Machine Readable Travel Documents'
-repository:
-  type: svn
-  url: http://svn.code.sf.net/p/jmrtd/code/passporthostapi/
-url: http://jmrtd.org/

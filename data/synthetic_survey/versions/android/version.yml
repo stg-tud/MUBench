@@ -1,5 +1,0 @@
-build:
-  src: src/
-misuses:
-- 'androidactivity-1'
-- 'androidactivity-2'

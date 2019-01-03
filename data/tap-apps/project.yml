@@ -1,5 +1,0 @@
-name: OpenTAPAS
-repository:
-  type: svn
-  url: http://svn.code.sf.net/p/tap-apps/code/trunk/opentapas/jconduits/
-url: http://tap-apps.sourceforge.net/

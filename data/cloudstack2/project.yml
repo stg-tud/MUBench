@@ -1,5 +1,0 @@
-name: Apache Cloudstack
-repository:
-  type: git 
-  url: https://github.com/apache/cloudstack.git
-Url: http://cloudstack.apache.org/

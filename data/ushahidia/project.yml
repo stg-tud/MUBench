@@ -1,5 +1,0 @@
-name: Ushahidi Android
-repository:
-  type: git
-  url: https://github.com/ushahidi/Ushahidi_Android.git
-url: https://github.com/ushahidi/Ushahidi_Android
