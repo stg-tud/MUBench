@@ -49,7 +49,7 @@ Where
 * `<D>` is the [id of the detector](../detectors), and
 * `<DS>` specifies [the dataset](../data/#filtering) to use for the experiment.
 
-Example: `mubench> pipline run ex2 DemoDetector --datasets TSE17-ExPrecision`
+Example: `mubench> pipeline run ex2 DemoDetector --datasets TSE17-ExPrecision`
 
 *Hint:* The `--datasets` filter is optional.
 We recommend to always [use a filter](../data/#filtering), since running on the entire benchmark requires much disk space and time.
