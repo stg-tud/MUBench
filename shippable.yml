@@ -1,15 +1,17 @@
+language: python
+
+env:
+  global:
+    - DOCKER_REPO=mubench
+    - DOCKER_ACC=svamann
+
 build:
   pre_ci_boot:
     image_name: svamann/mubench-ci
     image_tag: latest
     pull: true
-
-language: python
-
-before_script:
-  - mkdir -p shippable/testresults
-
-script: 
+  
+  ci:
   # mubench.cli
   - mvn verify -f mubench.cli/pom.xml
   
@@ -17,6 +19,7 @@ script:
   - mvn verify -f mubench.utils/pom.xml
   
   # mubench.pipeline
+  - mkdir -p shippable/testresults
   - nosetests -w mubench.pipeline --with-xunit --xunit-file=shippable/testresults/nosetests.xml
   - cp mubench.cli/target/DemoDetector.jar detectors/DemoDetector/DemoDetector.jar
   - python ./mubench.pipeline/benchmark.py run ex1 DemoDetector --only synthetic_survey
@@ -33,8 +36,13 @@ script:
   - sleep 10
   - phpunit --testsuite unit_tests
   - phpunit --testsuite integration_tests
+  - cd ..
+  
+  on_success:
+  # build and deploy Docker image, if this is a regular build on master
+  - if [ $PULL_REQUEST == false ] && [ "$BRANCH" == "master" ]; then ./deploy $DOCKER_ACC/$DOCKER_REPO latest; fi
 
-notifications:
-  email:
-    - amann@cs.tu-darmstadt.de
-    - jonas.schlitzer@googlemail.com
+integrations:
+  hub:
+    - integrationName: dockerhub_svamann
+      type: dockerRegistryLogin

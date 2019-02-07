@@ -48,7 +48,9 @@ public class MethodExtractor {
 		JavaParser javaParser = new JavaParser(new ParserConfiguration().setLanguageLevel(ParserConfiguration.LanguageLevel.RAW));
 		ParseResult<CompilationUnit> parseResult = javaParser.parse(COMPILATION_UNIT, provider(toStream(codeLines)));
 		CompilationUnit cu = parseResult.getResult().get();
-		new MethodRetriever(methodSignature).visit(cu, methods);
+		new MethodRetriever(methodSignature, false).visit(cu, methods);
+		if (methods.isEmpty())
+			new MethodRetriever(methodSignature, true).visit(cu, methods);
 		return methods;
 	}
 	

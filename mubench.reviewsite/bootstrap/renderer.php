@@ -71,6 +71,7 @@ $container['renderer'] = function ($container) {
         'resolution_reviewer' => Reviewer::where('name' ,'resolution')->first(),
 
         'ex2_review_size' => $request->getQueryParam("ex2_review_size", $container->settings["default_ex2_review_size"]),
+        'number_of_required_reviews' => $container->settings["number_of_required_reviews"],
 
         'markdown_parser' => $markdown_parser,
         'menuViewExtension' => new MenuViewExtension($container),

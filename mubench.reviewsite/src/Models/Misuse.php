@@ -8,8 +8,6 @@ use Illuminate\Database\Eloquent\Model;
 
 class Misuse extends Model
 {
-    const NUMBER_OF_REQUIRED_REVIEWS = 2;
-
     protected $fillable = ['misuse_muid', 'run_id', 'detector_id', 'metadata_id'];
 
     public function metadata()
@@ -40,7 +38,10 @@ class Misuse extends Model
     public function snippets()
     {
         $snippets = Snippet::of($this->getProject(), $this->getVersion(), $this->misuse_muid, $this->getFile())
-            ->where('detector_muid', $this->detector->muid)->orWhereNull('detector_muid')->get();
+            ->where(function($query) {
+                $query->where('detector_muid', $this->detector->muid)->orWhereNull('detector_muid');
+            })->get();
+
         $finding_lines = $this->findings->map(function ($finding) {
             return intval($finding['startline']);
         })->toArray();
@@ -115,19 +116,19 @@ class Misuse extends Model
         });
     }
 
-    public function hasSufficientReviews()
+    public function hasSufficientReviews($number_of_required_reviews)
     {
-        return $this->getReviewState() > ReviewState::NEEDS_REVIEW;
+        return $this->getReviewState($number_of_required_reviews) > ReviewState::NEEDS_REVIEW;
     }
 
-    public function getNumberOfRequiredReviews()
+    public function getNumberOfRemainingRequiredReviews($number_of_required_reviews)
     {
-        return self::NUMBER_OF_REQUIRED_REVIEWS - sizeof($this->getReviews());
+        return $number_of_required_reviews - sizeof($this->getReviews());
     }
 
-    public function hasConclusiveReviewState()
+    public function hasConclusiveReviewState($number_of_required_reviews)
     {
-        $review_state = $this->getReviewState();
+        $review_state = $this->getReviewState($number_of_required_reviews);
         return $review_state != ReviewState::NEEDS_REVIEW && $review_state != ReviewState::DISAGREEMENT && $review_state != ReviewState::NEEDS_CLARIFICATION && $review_state != ReviewState::UNRESOLVED;
     }
 
@@ -149,11 +150,11 @@ class Misuse extends Model
         return sizeof($this->snippets()) > 0;
     }
 
-    public function getReviewState()
+    public function getReviewState($number_of_required_reviews)
     {
         if (!$this->hasPotentialHits()) {
             return ReviewState::NOTHING_TO_REVIEW;
-        } elseif (sizeof($this->reviews) < self::NUMBER_OF_REQUIRED_REVIEWS) {
+        } elseif (sizeof($this->reviews) < $number_of_required_reviews) {
             return ReviewState::NEEDS_REVIEW;
         } else {
             $byResolution = $this->hasResolutionReview();
@@ -228,9 +229,9 @@ class Misuse extends Model
         return false;
     }
 
-    public function getTags()
+    public function getTags($number_of_required_reviews)
     {
-        if(!$this->hasConclusiveReviewState()){
+        if(!$this->hasConclusiveReviewState($number_of_required_reviews)){
             return new Collection;
         }else{
             $tags = new Collection;

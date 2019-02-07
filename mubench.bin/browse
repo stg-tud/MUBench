@@ -1,1 +1,0 @@
-docker run --rm -it -v "$MUBENCH_ROOT":/mubench -v ${MUBENCH_PIPELINE_CHECKOUTS_VOLUME}:/mubench/checkouts -v ${MUBENCH_PIPELINE_FINDINGS_VOLUME}:/mubench/findings ${MUBENCH_PIPELINE_DOCKER_IMAGE} /bin/bash

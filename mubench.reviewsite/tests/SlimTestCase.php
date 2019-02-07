@@ -67,6 +67,7 @@ class SlimTestCase extends TestCase
                 'site_base_url' => '/',
                 'upload' => "./upload",
                 'default_ex2_review_size' => '20',
+                'number_of_required_reviews' => 2,
                 'blind_mode' => [
                     'enabled' => false,
                     'detector_blind_names' => []

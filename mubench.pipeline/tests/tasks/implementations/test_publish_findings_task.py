@@ -117,6 +117,20 @@ class TestPublishFindingsTask:
 
         assert_equals(["-file1-", "-file2-"], post_mock.call_args[1]["file_paths"])
 
+    @patch("data.detector_specialising.specialising_util.__create_image")
+    def test_publish_successful_run_convert_graphs_and_replace_by_file_name(self, create_image_mock, post_mock, __):
+        self.test_detector_execution.is_success = lambda: True
+
+        self.test_potential_hits = PotentialHits([
+            self._create_finding({"rank": "-1-", "graph": "digraph G {}"})
+        ])
+
+        self.uut.run(self.project, self.version, self.test_detector_execution, self.test_potential_hits,
+                     self.version_compile, self.detector)
+
+        create_image_mock.assert_called_once_with("digraph G {}", self.test_detector_execution.findings_path, "f-1--Z3JhcGg=.svg")
+        assert_equals("f-1--Z3JhcGg=.svg", post_mock.call_args[0][1]["potential_hits"][0]["graph"])
+
     @patch("tasks.implementations.publish_findings.PublishFindingsTask._convert_graphs_to_files")
     def test_publish_successful_run_in_chunks(self, convert_mock, post_mock, _):
         self.uut.max_files_per_post = 1

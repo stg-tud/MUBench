@@ -1,0 +1,9 @@
+#!/bin/bash
+
+VERSION_FILE=/mubench/VERSION
+
+if [[ -f $VERSION_FILE ]]; then
+  cat $VERSION_FILE
+else
+  echo "v???"
+fi

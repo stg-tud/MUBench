@@ -1,1 +1,11 @@
-docker run --rm -v "$MUBENCH_ROOT":/mubench ${MUBENCH_PIPELINE_DOCKER_IMAGE} git pull 
+#!/bin/bash
+
+RED='\033[0;31m'
+NC='\033[0m'
+
+printf "${RED}Unfortunately, updating from within the MUBench interactive shell is not
+generally possible, since we cannot (permanently) update the environment.
+Therefore, please exit this shell and run
+${NC}docker pull svamann/mubench:stable${RED} or ${NC}docker pull svamann/mubench:latest${RED}
+to update to the latest stable or development version, respectively.
+${NC}"

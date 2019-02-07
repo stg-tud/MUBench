@@ -57,7 +57,7 @@ class MisuseFilterTest extends SlimTestCase
 
     function test_counts_misuse_without_reviews()
     {
-        $runs = $this->runController->getRuns($this->detector, $this->experiment, 1);
+        $runs = $this->runController->getRuns($this->detector, $this->experiment, 1, 2);
 
         self::assertEquals(1, sizeof($runs[0]->misuses));
     }
@@ -66,7 +66,7 @@ class MisuseFilterTest extends SlimTestCase
     {
         $this->reviewControllerHelper->createReview($this->misuse, $this->reviewer1, 'Yes');
 
-        $runs = $this->runController->getRuns($this->detector, $this->experiment, 1);
+        $runs = $this->runController->getRuns($this->detector, $this->experiment, 1, 2);
 
         self::assertEquals(1, sizeof($runs[0]->misuses));
     }
@@ -76,7 +76,7 @@ class MisuseFilterTest extends SlimTestCase
         $this->reviewControllerHelper->createReview($this->misuse, $this->reviewer1, 'Yes');
         $this->reviewControllerHelper->createReview($this->misuse, $this->reviewer2, 'Yes');
 
-        $runs = $this->runController->getRuns($this->detector, $this->experiment, 1);
+        $runs = $this->runController->getRuns($this->detector, $this->experiment, 1, 2);
 
         self::assertEquals(1, sizeof($runs[0]->misuses));
     }
@@ -85,7 +85,7 @@ class MisuseFilterTest extends SlimTestCase
     {
         $this->reviewControllerHelper->createReview($this->misuse, $this->reviewer1, '?');
 
-        $runs = $this->runController->getRuns($this->detector, $this->experiment, 1);
+        $runs = $this->runController->getRuns($this->detector, $this->experiment, 1, 2);
 
         self::assertEquals(2, sizeof($runs[0]->misuses));
     }
@@ -95,7 +95,7 @@ class MisuseFilterTest extends SlimTestCase
         $this->reviewControllerHelper->createReview($this->misuse, $this->reviewer1, '?');
         $this->reviewControllerHelper->createReview($this->misuse, $this->reviewer2, 'Yes');
 
-        $runs = $this->runController->getRuns($this->detector, $this->experiment, 1);
+        $runs = $this->runController->getRuns($this->detector, $this->experiment, 1, 2);
 
         self::assertEquals(2, sizeof($runs[0]->misuses));
     }

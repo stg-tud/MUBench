@@ -101,8 +101,8 @@ class PublishFindingsTask:
 
     def __to_postable_potential_hit(self, potential_hit: Finding, version_compile: VersionCompile,
                                     findings_path, logger) -> 'SpecializedFinding':
-        postable_potential_hit = self._to_markdown_dict(potential_hit)
         files = self._convert_graphs_to_files(potential_hit, findings_path)
+        postable_potential_hit = self._to_markdown_dict(potential_hit)
         postable_potential_hit[_SNIPPETS_KEY] = self.__get_postable_snippets(potential_hit, version_compile, logger)
         return SpecializedFinding(postable_potential_hit, files)
 

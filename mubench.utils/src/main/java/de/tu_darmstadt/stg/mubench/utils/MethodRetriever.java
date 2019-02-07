@@ -20,16 +20,18 @@ class MethodRetriever extends VoidVisitorAdapter<List<MethodExtractor.MethodCode
     private String methodSignature;
     private Stack<String> currentEnclosingType;
     private List<TypeParameter> typeParameters;
+    private boolean ignoreParameters;
 
-    MethodRetriever(String methodSignature) {
+    MethodRetriever(String methodSignature, boolean ignoreParameters) {
         this.methodSignature = normalize(methodSignature);
+        this.ignoreParameters = ignoreParameters;
         this.currentEnclosingType = new Stack<>();
         this.typeParameters = new ArrayList<>();
     }
 
     private static String normalize(String methodSignature) {
-        if (methodSignature.equals(MethodRetriever.bytecodeStaticInitializerId) ||
-                methodSignature.equals(MethodRetriever.sourcecodeStaticInitializerId)) {
+        if (isSameSignature(methodSignature, MethodRetriever.bytecodeStaticInitializerId, false) ||
+                isSameSignature(methodSignature, MethodRetriever.sourcecodeStaticInitializerId, false)) {
             return methodSignature;
         }
         return removeGenericTypeParameters(removeOuterTypeQualifiers(methodSignature));
@@ -51,7 +53,7 @@ class MethodRetriever extends VoidVisitorAdapter<List<MethodExtractor.MethodCode
         currentEnclosingType.push(type.getName().asString());
         super.visit(type, matchingMethodsCode);
 
-        if (methodSignature.equals(MethodRetriever.ctorId + "()") && matchingMethodsCode.isEmpty()) {
+        if (isSameSignature(methodSignature, MethodRetriever.ctorId + "()", false) && matchingMethodsCode.isEmpty()) {
             MethodExtractor.MethodCodeFragment defaultConstructorFragment = new MethodExtractor.DefaultConstructorFragment();
             defaultConstructorFragment.declaringTypeName = type.getName().asString();
             defaultConstructorFragment.firstLineNumber = type.getBegin().get().line;
@@ -69,10 +71,11 @@ class MethodRetriever extends VoidVisitorAdapter<List<MethodExtractor.MethodCode
 
         int typeNestingDepth = currentEnclosingType.size();
         do {
-            String signature = getSignature(ctorId, parameters);
-            String altSignature = getSignature(name, parameters);
+            String signature = getSignature(ctorId, parameters, typeParameters);
+            String altSignature = getSignature(name, parameters, typeParameters);
 
-            if (methodSignature.equals(signature) || methodSignature.equals(altSignature)) {
+            if (isSameSignature(methodSignature, signature, false)
+                    || isSameSignature(methodSignature, altSignature, false)) {
                 matchingMethodsCode.add(getCode(constructor));
                 return; // stop when we have a match
             }
@@ -81,7 +84,8 @@ class MethodRetriever extends VoidVisitorAdapter<List<MethodExtractor.MethodCode
             // non-static inner class, then the constructor has additional parameters of the surrounding types'
             // types.
             if (typeNestingDepth - 2 >= 0)
-                parameters.add(0, new Parameter(new ClassOrInterfaceType(currentEnclosingType.get(typeNestingDepth - 2)), " "));
+                parameters.add(0,
+                        new Parameter(new ClassOrInterfaceType(currentEnclosingType.get(typeNestingDepth - 2)), " "));
 
             typeNestingDepth--;
         } while (typeNestingDepth >= 0);
@@ -91,16 +95,18 @@ class MethodRetriever extends VoidVisitorAdapter<List<MethodExtractor.MethodCode
 
     @Override
     public void visit(MethodDeclaration method, List<MethodExtractor.MethodCodeFragment> matchingMethodsCode) {
-        String signature = getSignature(method.getName().asString(), method.getParameters());
-        if (methodSignature.equals(signature)) {
+        String signature = getSignature(method.getName().asString(), method.getParameters(), typeParameters);
+        if (isSameSignature(methodSignature, signature, ignoreParameters)) {
             matchingMethodsCode.add(getCode(method));
         }
         super.visit(method, matchingMethodsCode);
     }
 
     @Override
-    public void visit(InitializerDeclaration initializer, List<MethodExtractor.MethodCodeFragment> matchingMethodsCode) {
-        if (methodSignature.equals(MethodRetriever.bytecodeStaticInitializerId) || methodSignature.equals(MethodRetriever.sourcecodeStaticInitializerId)
+    public void visit(InitializerDeclaration initializer,
+                      List<MethodExtractor.MethodCodeFragment> matchingMethodsCode) {
+        if ((isSameSignature(methodSignature, MethodRetriever.bytecodeStaticInitializerId, false)
+                || isSameSignature(methodSignature, MethodRetriever.sourcecodeStaticInitializerId, false))
                 && initializer.isStatic()) {
             matchingMethodsCode.add(getCode(initializer));
         }
@@ -129,7 +135,8 @@ class MethodRetriever extends VoidVisitorAdapter<List<MethodExtractor.MethodCode
         return Joiner.on(".").join(currentEnclosingType);
     }
 
-    private String getSignature(String methodName, List<Parameter> parameters) {
+    private static String getSignature(String methodName, List<Parameter> parameters,
+                                       List<TypeParameter> typeParameters) {
         StringBuilder signature = new StringBuilder(methodName).append("(");
         boolean first = true;
         for (Parameter parameter : parameters) {
@@ -139,7 +146,7 @@ class MethodRetriever extends VoidVisitorAdapter<List<MethodExtractor.MethodCode
             String typeName = parameter.getType().toString();
             typeName = stripPackageQualifier(typeName);
             typeName = stripTypeParameters(typeName);
-            typeName = applyTypeErasure(typeName);
+            typeName = applyTypeErasure(typeName, typeParameters);
             signature.append(typeName);
             if (parameter.isVarArgs()) {
                 signature.append("[]");
@@ -149,7 +156,7 @@ class MethodRetriever extends VoidVisitorAdapter<List<MethodExtractor.MethodCode
         return signature.append(")").toString();
     }
 
-    private String stripPackageQualifier(String typeName) {
+    private static String stripPackageQualifier(String typeName) {
         int endOfQualifier = typeName.lastIndexOf('.');
         if (endOfQualifier > -1) {
             typeName = typeName.substring(endOfQualifier + 1);
@@ -157,16 +164,16 @@ class MethodRetriever extends VoidVisitorAdapter<List<MethodExtractor.MethodCode
         return typeName;
     }
 
-    private String stripTypeParameters(String typeName) {
+    private static String stripTypeParameters(String typeName) {
         int startOfTypeParameters = typeName.indexOf('<');
         int endOfTypeParameters = typeName.lastIndexOf('>');
         if (startOfTypeParameters > -1 && endOfTypeParameters > -1) {
-typeName = typeName.substring(0, startOfTypeParameters) + typeName.substring(endOfTypeParameters + 1, typeName.length());
-}
+            typeName = typeName.substring(0, startOfTypeParameters) + typeName.substring(endOfTypeParameters + 1);
+        }
         return typeName;
     }
 
-    private String applyTypeErasure(String typeName) {
+    private static String applyTypeErasure(String typeName, List<TypeParameter> typeParameters) {
         for (TypeParameter typeParameter : typeParameters) {
             String typeParameterName = typeParameter.getName().asString();
             if (typeName.startsWith(typeParameterName)) {
@@ -174,5 +181,16 @@ typeName = typeName.substring(0, startOfTypeParameters) + typeName.substring(end
             }
         }
         return typeName;
+    }
+
+    private static boolean isSameSignature(String methodSignature1, String methodSignature2,
+                                           boolean ignoreParameters) {
+        if (ignoreParameters) {
+            String methodSignature1WithoutParameters = methodSignature1.substring(0, methodSignature1.indexOf('('));
+            String methodSignature2WithoutParameters = methodSignature2.substring(0, methodSignature1.indexOf('('));
+            return methodSignature1WithoutParameters.equals(methodSignature2WithoutParameters);
+        } else {
+            return methodSignature1.equals(methodSignature2);
+        }
     }
 }
