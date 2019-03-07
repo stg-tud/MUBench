@@ -1,0 +1,21 @@
+api:
+- java.util.Map
+violations:
+- missing/condition/null_check
+crash: true
+description: >
+  Map.get() may return null.
+location:
+  file: org/jfree/chart/plot/CategoryPlot.java
+  method: "removeDomainMarker(int, Marker, Layer, boolean)"
+fix:
+  commit: https://sourceforge.net/p/jfreechart/code/811/tree/trunk/source/org/jfree/chart/plot/CategoryPlot.java?diff=50b53b485fcbc92b6542a639:810
+  description: >
+    Check for null.
+  revision: 811
+internal: false
+pattern:
+- multiple objects
+source:
+  name: Defects4J
+  url: https://github.com/rjust/defects4j

@@ -1,0 +1,5 @@
+build:
+  src: org.aspectj.matcher/src/
+misuses:
+- '2'
+revision: V1_5_3_final

@@ -1,0 +1,5 @@
+build:
+  src: src/java/
+misuses:
+- '1'
+revision: 55853

@@ -1,0 +1,25 @@
+api:
+- android.content.Context
+- android.content.IntentFilter
+violations:
+- missing/condition/value_or_state
+crash: true
+description: >
+  Registers an IntentFilter to an arbitrary context, rather than the application
+  context.
+location:
+  file: com/vaguehope/onosendai/update/AlarmReceiver.java
+  method: "onReceive(Context, Intent)"
+fix:
+  commit: https://github.com/haku/Onosendai/commit/0e2a7570ab4491d0c4680ef52ee1008bef33fc02
+  description: >
+    Retrieve the application context via Context.getApplicationContext()
+    an register intent on it.
+  revision: 0e2a7570ab4491d0c4680ef52ee1008bef33fc02
+internal: false
+pattern:
+- multiple objects
+report: https://github.com/haku/Onosendai/issues/100
+source:
+  name: QACrashFix
+  url: http://sei.pku.edu.cn/~gaoqing11/qacrashfix/home.htm

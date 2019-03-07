@@ -1,0 +1,9 @@
+build:
+  classes: build/classes/
+  commands:
+  - sed -i 's/<javac/<javac debug="on"/g' build.xml
+  - ant compile
+  src: src/
+misuses:
+- '1'
+revision: 67289ae4cbaba3ae70cd2e8fb92f3f2898039dfb~1

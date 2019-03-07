@@ -1,0 +1,22 @@
+api:
+- javax.crypto.Cipher
+violations:
+- missing/call
+crash: true
+description: >
+  An instance of Cipher is used twice (the init() method is called again),
+  which is an invalid operation.
+location:
+  file: com/alibaba/druid/filter/config/ConfigTools.java
+  method: "decrypt(PublicKey, String)"
+fix:
+  description: >
+    creates a new instance of Cipher before the second init().
+  commit: https://github.com/alibaba/druid/commit/e10f2849d046265bf17360ab4aa9eb60fd3ab8de
+  revision: e10f2849d046265bf17360ab4aa9eb60fd3ab8de
+internal: false
+pattern:
+- single object
+report: https://github.com/alibaba/druid/issues/222
+source:
+  name: GitHub

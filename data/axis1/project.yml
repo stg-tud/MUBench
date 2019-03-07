@@ -1,0 +1,5 @@
+name: Apache Axis
+repository:
+  type: git 
+  url: https://github.com/apache/axis1-java.git
+Url: https://github.com/apache/axis1-java

@@ -1,0 +1,5 @@
+name: Apache HttpClient
+repository:
+  type: svn
+  url: http://svn.apache.org/repos/asf/jakarta/commons/proper/httpclient/trunk/
+url: http://hc.apache.org/httpcomponents-client-ga/index.html

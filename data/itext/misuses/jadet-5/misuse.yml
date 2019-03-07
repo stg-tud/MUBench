@@ -1,0 +1,16 @@
+api:
+- com.itextpdf.text.pdf.PdfArray
+violations:
+- missing/condition/value_or_state
+- missing/call
+crash: true
+description: >
+  PdfArray.getPdfObject() is invoked without checking that the array contains
+  sufficiently many objects.
+location:
+  file: com/itextpdf/text/pdf/PdfStructureTreeRoot.java
+  method: "nodeProcess(PdfDictionary, PdfIndirectReference)"
+internal: true
+source:
+  name: Jadet
+  url: https://www.st.cs.uni-saarland.de/models/jadet/

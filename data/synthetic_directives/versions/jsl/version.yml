@@ -1,0 +1,16 @@
+build:
+  classes: $gradle.default.classes
+  commands:
+  - gradle :compileJava
+  src: src/
+misuses:
+- 'alreadyondte'
+- 'callondte'
+- 'deadlock'
+- 'latenullcheck'
+- 'maybenull'
+- 'repetitive'
+- 'supresserror'
+- 'toorestrictive'
+- 'unsynchronized'
+- 'wait-loop'

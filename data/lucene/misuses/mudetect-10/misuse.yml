@@ -1,0 +1,18 @@
+api:
+- org.apache.lucene.index.SegmentInfos
+violations:
+- missing/condition/value_or_state
+- missing/call
+crash: true
+description: >
+  If `segmentsSource.size() == 0` in line 4718, then `end = 0` and the loop at
+  line 4736 is skipped. Then `mergeDocStores` (line 4730) remains `false` and
+  the branch accessing `segmentsSource.info(0)` at line 4790 is taken. Since
+  `segmentsSource` is empty, this access causes an exception.
+location:
+  file: org/apache/lucene/index/IndexWriter.java
+  method: "_mergeInit(OneMerge)"
+  line: 4790
+internal: true
+source:
+  name: MUDetect

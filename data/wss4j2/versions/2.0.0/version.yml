@@ -1,0 +1,14 @@
+build:
+  classes: ws-security-dom/target/classes  
+  commands:
+  -  wget https://archive.apache.org/dist/ws/wss4j/2.0.0/wss4j-2.0.0-source-release.zip 
+  -  unzip wss4j-2.0.0-source-release.zip   
+  -  mvn compile               
+  src: ws-security-dom/src/main/java/
+misuses:
+-  SV_CVE_15_0227_1
+-  SV_CVE_15_0227_2
+-  SV_CVE_15_0227_3
+-  SV_CVE_15_0227_4
+
+revision: 181d94d615489e3dbe59be38dd465f0b9e8af007       #2.0.0          

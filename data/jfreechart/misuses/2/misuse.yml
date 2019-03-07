@@ -1,0 +1,21 @@
+api:
+- org.jfree.chart.plot.PlotRenderingInfo
+violations:
+- missing/condition/null_check
+crash: true
+description: >
+  PlotRenderingInfo.getOwner() may return null.
+location:
+  file: org/jfree/chart/axis/Axis.java
+  method: "drawLabel(String, Graphics2D, Rectangle2D, Rectangle2D, RectangleEdge, AxisState, PlotRenderingInfo)"
+fix:
+  commit: https://sourceforge.net/p/jfreechart/code/103/tree/trunk/source/org/jfree/chart/axis/Axis.java?diff=50b53b485fcbc92b6542a639:102
+  description: >
+    Check for null.
+  revision: 103
+internal: true
+pattern:
+- multiple objects
+source:
+  name: Defects4J
+  url: https://github.com/rjust/defects4j

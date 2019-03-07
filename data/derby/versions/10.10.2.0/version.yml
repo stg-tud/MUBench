@@ -1,0 +1,12 @@
+build:
+  classes: classes/          #db-derby-10.10.2.0-bin/lib/derby.jar  
+  commands:
+  -  wget http://archive.apache.org/dist/db/derby/db-derby-10.10.2.0/db-derby-10.10.2.0-bin.zip 
+  -  unzip db-derby-10.10.2.0-bin.zip 
+  -  mkdir classes
+  -  jar xf db-derby-10.10.2.0-bin/lib/derby.jar
+  -  mv org classes/
+  src: java/engine
+misuses:
+-  SV_CVE_15_1832
+revision: 10.10.2.0       #c36334a5539d45aa0389ea4c358640400f512e83          

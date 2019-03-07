@@ -1,0 +1,17 @@
+api:
+- org.w3c.tools.resources.ResourceReference
+violations:
+- missing/call
+crash: false
+description: |
+  In line 284 the `ResourceReference` `root` is locked, but there is no
+  matching `unlock()` assuming normal execution (there is one for an
+  exceptional case in line 297).
+  (Same finding as `mudetect-2`)
+internal: true
+location:
+  file: org/w3c/jigsaw/proxy/ProxyFrame.java
+  method: lookupOther(LookupState, LookupResult)
+  line: 284
+source:
+  name: Tikanga & MuDetect

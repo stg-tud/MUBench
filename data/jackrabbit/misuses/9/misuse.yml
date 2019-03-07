@@ -1,0 +1,23 @@
+api:
+- org.apache.jackrabbit.jcr2spi.NamespaceStorage
+violations:
+- missing/condition/value_or_state
+crash: true
+description: >
+  NamespaceStorage maps from prefixes to URIs. It's method unregisterNamespace
+  expects an URI, but was give a prefix instead.
+location:
+  file: org/apache/jackrabbit/jcr2spi/NamespaceRegistryImpl.java
+  method: unregisterNamespace(String)
+fix:
+  description: >
+    Resolves the prefix to a URI using the storage.
+  commit: http://svn.apache.org/viewvc/jackrabbit/trunk/jackrabbit-jcr2spi/src/main/java/org/apache/jackrabbit/jcr2spi/NamespaceRegistryImpl.java?r1=1133332&r2=1133331&pathrev=1133332&diff_format=h
+  revision: 1133332
+internal: true
+pattern:
+- single object
+report: https://issues.apache.org/jira/browse/JCR-2984
+source:
+  name: BugClassify
+  url: https://www.st.cs.uni-saarland.de/softevo//bugclassify/

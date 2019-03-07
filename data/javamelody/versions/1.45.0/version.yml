@@ -1,0 +1,10 @@
+build:
+  classes: javamelody-core/target/classes  
+  commands:
+  #- replace "<version>1.45.0" "<version>1.45.0-SNAPSHOT" -- javamelody/javamelody-core/#pom.xml
+  - sed -i 's/<version>1.45.0/<version>1.45.0-SNAPSHOT/g' javamelody-core/pom.xml
+  -  mvn compile              
+  src: javamelody-core/src/main/java
+misuses:
+-  SV_CVE_14_4378
+revision: 65b00743a8726aebeabf2c2d6548a51706726a67                

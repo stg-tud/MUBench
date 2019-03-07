@@ -1,0 +1,5 @@
+name: JFreeChart
+repository:
+  type: svn
+  url: http://svn.code.sf.net/p/jfreechart/code/trunk/
+url: www.jfree.org/jfreechart/

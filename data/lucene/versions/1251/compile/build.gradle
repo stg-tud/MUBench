@@ -1,0 +1,11 @@
+apply plugin: 'java'
+sourceCompatibility = 1.4
+targetCompatibility = 1.4
+
+sourceSets {
+    main {
+        java {
+            srcDir 'src/java'
+        }
+    }
+}

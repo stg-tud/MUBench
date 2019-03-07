@@ -1,0 +1,20 @@
+api:
+- java.lang.Object
+violations:
+- missing/condition/null_check
+- redundant/condition/null_check
+crash: true
+description: >
+  Checks that an object is null before calling a method on it.
+location:
+  file: mubench/examples/directives/MayBeNull.java
+  method: "misuse(Object)"
+fix:
+  description: >
+    Check for not null instead of null.
+internal: false
+pattern:
+- single node
+source:
+  name: What should developers be aware of? an empirical study on the directives of API documentation., Monperrus et al., ESE'12
+  url: http://link.springer.com/article/10.1007/s10664-011-9186-4

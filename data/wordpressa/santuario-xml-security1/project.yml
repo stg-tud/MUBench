@@ -1,0 +1,5 @@
+name: Apache Qpid
+repository:
+  type: git 
+  url: https://github.com/apache/qpid-broker-j.git
+Url: https://github.com/apache/qpid-broker-j.git.   #https://qpid.apache.org

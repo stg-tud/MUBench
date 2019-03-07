@@ -1,0 +1,26 @@
+api:
+- java.util.Iterator
+- java.util.List
+characteristics:
+- misplaced/call
+crash: false
+description: >
+  This method doesn't do
+what it should. Its
+last reference to i2
+should change to a
+reference to i1.
+location:
+  file: org/argouml/uml/util/PathComparator.java
+  method: "comparePaths(Object o1, Object o2)"
+fix:
+  commit: 
+  description: >
+  revision: 
+internal: true
+pattern:
+- 
+report: 
+source:
+  name: 
+  url: 

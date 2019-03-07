@@ -1,0 +1,5 @@
+name: Jigsaw
+repository:
+  type: zip
+  url: http://jigsaw.w3.org/
+url:

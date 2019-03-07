@@ -1,0 +1,12 @@
+build:
+  classes: $gradle.default.classes
+  commands:
+  - mv src/java/test src/java_test
+  - gradle :compileJava
+  src: src/java/
+misuses:
+- '1'
+- '2'
+- '3'
+- '4'
+revision: 877

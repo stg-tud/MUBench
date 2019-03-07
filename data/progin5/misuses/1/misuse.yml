@@ -1,0 +1,16 @@
+api:
+- javax.crypto.Cipher
+violations:
+- missing/condition/value_or_state
+description: >
+  Uses AES with default mode and padding. 
+  Since these values might chance per crypto provider this is considered a bad practice.
+location:
+  file: encryption/RSA.java
+  method: "encrypt(String, PublicKey)"
+internal: true
+pattern:
+- single object
+crash: false
+source:
+  name: "MUBench-JCE -- A Misuse-Detection Benchmark for the Java Cryptography Extension API, Mattis Manfred Kämmerer, Bachelor Thesis, 2017"

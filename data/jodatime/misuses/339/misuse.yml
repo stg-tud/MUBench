@@ -1,0 +1,18 @@
+api:
+- java.io.ObjectOutputStream
+violations:
+- missing/call
+crash: false
+description: |
+  When a DataOutputStream instance is created, it is a good practice to call flush/close explicitly after finish writing to the stream as mentioned for example [here](http://stackoverflow.com/questions/2984538/how-to-use-bytearrayoutputstream-and-dataoutputstream-simultaneously-java).
+fix:
+  commit: https://github.com/emopers/joda-time/commit/60be421469dd85893978bfc645b41e94c63ba1b1
+  revision: 60be421469dd85893978bfc645b41e94c63ba1b1
+internal: false
+location:
+  file: org/joda/time/tz/DateTimeZoneBuilder.java
+  method: writeTo(String, OutputStream)
+report: https://github.com/JodaOrg/joda-time/pull/343
+source:
+  name: Owolabi's Dataset ASE'16
+  url: fsl.cs.illinois.edu/spec-eval/

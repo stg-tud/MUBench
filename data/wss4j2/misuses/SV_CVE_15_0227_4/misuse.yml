@@ -1,0 +1,16 @@
+api: [] 
+violations: [] 
+crash: false
+description: Apache WSS4J allows remote attackers to bypass the requireSignedEncryptedDataElements configuration via a vectors related to wrapping attacks. 
+location:
+  file: org/apache/wss4j/dom/util/WSSecurityUtil.java
+  method: "verifySignedElement(Element, Document, Element)"
+fix:
+  commit: http://svn.apache.org/viewvc?view=revision&revision=1619359
+  description: >
+  revision: 
+  internal: 
+report: http://ws.apache.org/wss4j/advisories/CVE-2015-0227.txt.asc
+source:
+  name: 
+  url:

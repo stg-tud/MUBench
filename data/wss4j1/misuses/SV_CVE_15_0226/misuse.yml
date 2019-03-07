@@ -1,0 +1,16 @@
+api: [] 
+violations: [] 
+crash: false
+description: Apache WSS4J improperly leaks information about decryption failures when decrypting an encrypted key or message data, which makes it easier for remote attackers to recover the plaintext form of a symmetric key via a series of crafted messages 
+location:
+  file: org/apache/wss4j/dom/processor/EncryptedKeyProcessor.java
+  method: "getRandomKey(List<String>, Document, WSDocInfo)"
+fix:
+  commit: http://svn.apache.org/viewvc?view=revision&revision=1619359
+  description: >
+  revision: 
+  internal: 
+report: https://ws.apache.org/wss4j/advisories/CVE-2015-0226.txt.asc
+source:
+  name: 
+  url:

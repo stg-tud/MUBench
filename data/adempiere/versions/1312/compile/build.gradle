@@ -1,0 +1,17 @@
+apply plugin: 'java'
+
+sourceSets {
+  main {
+    java {
+      srcDir 'src'
+    }
+  }
+}
+
+repositories {
+  mavenCentral()
+}
+
+dependencies {
+    compile group: 'com.jgoodies', name: 'looks', version: '2.2.2'
+}

@@ -1,0 +1,10 @@
+build:
+  classes: $mvn.default.classes
+  commands:
+  - sed -i 's/<javac/<javac encoding="iso-8859-1"/g' build.xml
+  - ant compile
+  src: src/java/
+misuses:
+- '1'
+- mudetect-14
+revision: 134493

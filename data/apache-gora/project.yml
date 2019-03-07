@@ -1,0 +1,5 @@
+name: gora
+repository:
+  type: git
+  url: https://github.com/apache/gora.git
+url: https://github.com/apache/gora

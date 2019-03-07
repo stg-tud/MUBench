@@ -1,0 +1,14 @@
+build:
+  classes: classes/    #qpid-broker/6.0.1/lib/qpid-broker-core-6.0.1.jar  
+  commands:
+  -  wget https://archive.apache.org/dist/qpid/java/6.0.1/binaries/qpid-broker-6.0.1-bin.zip 
+  -  unzip qpid-broker-6.0.1-bin.zip
+  -  mkdir classes
+  -  jar xf qpid-broker/6.0.1/lib/qpid-broker-core-6.0.1.jar
+  -  mv org classes/              
+  src: broker-plugins/amqp-0-8-protocol/src/main/java
+misuses:
+-  SV_CVE_16_4432_1
+-  SV_CVE_16_4432_2
+-  SV_CVE_16_4432_3
+revision: 6.0.1

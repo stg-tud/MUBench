@@ -1,0 +1,5 @@
+name: Apache Wss4j
+repository:
+  type: git 
+  url: https://github.com/apache/wss4j.git
+Url: https://ws.apache.org/wss4j/

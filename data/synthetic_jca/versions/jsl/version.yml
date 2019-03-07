@@ -1,0 +1,9 @@
+build:
+  classes: $gradle.default.classes
+  commands:
+  - gradle :compileJava
+  src: src/
+misuses:
+- 'aes-ecb-mode'
+- 'static-key'
+- 'loop-init'

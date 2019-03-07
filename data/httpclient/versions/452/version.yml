@@ -1,0 +1,10 @@
+build:
+  classes: $mvn.default.classes
+  commands:
+  - sed -i 's/<javac/<javac encoding="iso-8859-1"/g' build.xml
+  - sed -i 's/<property name="compile.debug"           value="false"/<property name="compile.debug" value="true"/g' build.xml
+  - ant compile
+  src: src/java/
+misuses:
+- '4'
+revision: 190479

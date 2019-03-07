@@ -1,0 +1,28 @@
+api:
+- org.argouml.persistence.ZargoFilePersister
+characteristics:
+- missing/exception_handling
+crash: true
+description: >
+  This method does not
+handle zip files that
+do not have a xmi
+entry, because it
+expects them to have
+one, even though it
+handles all other
+errors.
+location:
+  file: org/argouml/persistence/ZargoFilePersister.java
+  method: "doLoad(File file)"
+fix:
+  commit: 
+  description: >
+  revision: 
+internal: true
+pattern:
+- 
+report: 
+source:
+  name: 
+  url: 

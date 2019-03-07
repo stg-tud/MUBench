@@ -1,0 +1,5 @@
+name: Apache Jackrabbit
+repository:
+  type: svn
+  url: http://svn.apache.org/repos/asf/jackrabbit/trunk/
+url: https://jackrabbit.apache.org/jcr/index.html

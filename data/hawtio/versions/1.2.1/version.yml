@@ -1,0 +1,16 @@
+build:
+  classes: hawtio-karaf-terminal/target/classes  
+  commands:
+  #-  export JAVA_HOME=/Library/Java/JavaVirtualMachines/jdk1.8.0_171.jdk/Contents/Home
+  #-  mvn clean install -DskipTests --projects hawtio-karaf-terminal --also-make compile             
+  #-  mvn dependency:get -Dartifact=io.hawt:hawtio-git:1.2.1
+  #-  wget https://repo.maven.apache.org/maven2/io/hawt/hawtio-karaf/1.2.1/hawtio-karaf-1.2.1.jar
+  -  sed -i 's#<war-plugin-version>2.1.1</war-plugin-version>#<war-plugin-version>2.6</war-plugin-version>#g'
+     pom.xml
+  -  sed -i 's#<karaf-version>2.3.0.${perfectus-build}</karaf-version>#<karaf-version>2.3.0.redhat-60083</karaf-version>#g'
+     pom.xml
+  -  mvn clean install -DskipTests --projects hawtio-karaf-terminal --also-make compile
+  src: hawtio-karaf-terminal/src/main/java
+misuses:
+-  SV_CVE_14_0120_1
+revision: hawtio-1.2.1       #2fab7af652bd715dc1df3125b5c86679311b1411	         

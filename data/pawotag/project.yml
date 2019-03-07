@@ -1,0 +1,5 @@
+name: Stripes
+repository:
+  type: svn
+  url: http://svn.code.sf.net/p/stripes/code/trunk/stripes/
+url: http://www.stripesframework.org/

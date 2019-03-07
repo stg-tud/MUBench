@@ -1,0 +1,10 @@
+build:
+  classes: jackrabbit-spi-commons/$mvn.default.classes
+  commands:
+  - sed -i '137,143 d' jackrabbit-spi2jcr/pom.xml
+  - sed -i '93,99 d' jackrabbit-spi2jcr/pom.xml
+  - mvn compile
+  src: jackrabbit-spi-commons/src/main/java/
+misuses:
+- '5'
+revision: 698245

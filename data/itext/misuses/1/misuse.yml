@@ -1,0 +1,20 @@
+api:
+- javax.crypto.Cipher
+violations:
+- missing/exception_handling
+crash: true
+description: >
+  Cipher.init may throw InvalidKeyException.
+location:
+  file: com/itextpdf/text/pdf/PdfPublicKeySecurityHandler.java
+  method: "computeRecipientInfo(X509Certificate, byte[])"
+fix:
+  commit: https://sourceforge.net/p/itext/code/5091/tree/trunk/itext/src/main/java/com/itextpdf/text/pdf/PdfPublicKeySecurityHandler.java?diff=5041fbafbfc09e48583d0e45:5090
+  description: >
+    Add try/catch and fallback handling.
+  revision: 5091
+internal: false
+pattern:
+- multiple objects
+source:
+  name: SourceForge

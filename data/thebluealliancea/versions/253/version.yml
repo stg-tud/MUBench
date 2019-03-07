@@ -1,0 +1,5 @@
+build:
+  src: android/src/main/java/
+misuses:
+- '1'
+revision: d373815aeb3f065160f14986b3c952a45207bb15~1

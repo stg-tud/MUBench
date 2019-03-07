@@ -1,0 +1,22 @@
+api:
+- android.database.Cursor
+violations:
+- missing/call
+crash: true
+description: >
+  Fails to release Cursor.
+location:
+  file: com/ushahidi/android/app/database/OpenGeoSmsDao.java
+  method: getReportState(long)
+fix:
+  commit: https://github.com/ushahidi/Ushahidi_Android/commit/16adf0c3cfc9ebef01e7e9042b13d3b5b4da965f
+  description: >
+    Call Cursor.close().
+  revision: 16adf0c3cfc9ebef01e7e9042b13d3b5b4da965f
+internal: false
+pattern:
+- single object
+report: https://github.com/ushahidi/Ushahidi_Android/issues/100
+source:
+  name: QACrashFix
+  url: http://sei.pku.edu.cn/~gaoqing11/qacrashfix/home.htm

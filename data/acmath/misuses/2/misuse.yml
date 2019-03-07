@@ -1,0 +1,22 @@
+api:
+- org.apache.commons.math3.geometry.euclidean.twod.Line
+violations:
+- missing/condition/null_check
+crash: true
+description: >
+  SubLine.intersection() may return null.
+location:
+  file: org/apache/commons/math3/geometry/euclidean/twod/SubLine.java
+  method: "intersection(SubLine, boolean)"
+fix:
+  commit: http://svn.apache.org/viewvc/commons/proper/math/trunk/src/main/java/org/apache/commons/math3/geometry/euclidean/twod/SubLine.java?r1=1488866&r2=1488865&pathrev=1488866&diff_format=h
+  description: >
+    Check result for null before using.
+  revision: d270055e874148a2742604be36ab977eec030fba
+internal: true
+pattern:
+- single object
+report: https://issues.apache.org/jira/browse/MATH-988
+source:
+  name: Defects4J
+  url: https://github.com/rjust/defects4j

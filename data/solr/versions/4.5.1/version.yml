@@ -1,0 +1,15 @@
+build:
+  classes: classes/      #solr-4.5.1/dist/solr-core-4.5.1.jar
+  commands:
+  -  wget http://archive.apache.org/dist/lucene/solr/4.5.1/solr-4.5.1.zip 
+  -  unzip solr-4.5.1.zip 
+  -  mkdir classes
+  -  jar xf solr-4.5.1/dist/solr-core-4.5.1.jar
+  -  mv org classes/ 
+  #-  ant compile             
+  src: solr/core/src/java
+misuses:
+-  SV_CVE_13_6397_1
+-  SV_CVE_13_6397_2
+-  SV_CVE_13_6397_3
+revision: releases/lucene-solr/4.5.1   #62ffee2bba5d2b46ff619d385eb67a8b7910c7fd         

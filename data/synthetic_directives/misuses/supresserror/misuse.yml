@@ -1,0 +1,17 @@
+api:
+- java.lang.Throwable
+violations:
+- redundant/exception handling
+crash: false
+description: >
+  Catches Throwable, which might supress Errors, like OutOfMemory, TheadDeath, ...
+location:
+  file: mubench/examples/directives/SupressError.java
+  method: "misuse(Target)"
+fix:
+  description: >
+    Catch specific exception.
+internal: false
+source:
+  name: Improving API documentation usability with knowledge pushing, Herbsleb et al., ICSE'09
+  url: https://dl.acm.org/citation.cfm?id=1555047

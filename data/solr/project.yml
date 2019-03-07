@@ -1,0 +1,5 @@
+name: solr
+repository:
+  type: git 
+  url: https://github.com/apache/lucene-solr.git
+Url: https://github.com/apache/lucene-solr/

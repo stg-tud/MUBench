@@ -1,0 +1,5 @@
+name: jclouds
+repository:
+  type: git
+  url: https://github.com/nterry/jclouds
+url: https://github.com/nterry/jclouds

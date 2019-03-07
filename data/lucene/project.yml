@@ -1,0 +1,5 @@
+name: Apache Lucene
+repository:
+  type: git
+  url: https://git-wip-us.apache.org/repos/asf/lucene-solr
+url: https://lucene.apache.org/core/

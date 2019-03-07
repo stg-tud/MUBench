@@ -1,0 +1,5 @@
+build:
+  src: lucene/contrib/benchmark/src/java/
+misuses:
+- '4'
+revision: f81a5d9bf6fdcdab23bff680dee8075209bae8cf~1

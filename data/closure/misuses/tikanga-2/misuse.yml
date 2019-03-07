@@ -1,0 +1,15 @@
+api:
+- java.util.Iterator
+violations:
+- missing/condition/value_or_state
+- missing/call
+crash: true
+description: >
+  Iterator.next() is invoked without prior check of hasNext().
+  (Same finding as `mudetect-10` and `mudetectxp-4`)
+location:
+  file: com/google/javascript/jscomp/JSModuleGraph.java
+  method: "getDeepestCommonDependencyInclusive(Collection)"
+internal: false
+source:
+  name: Tikanga & MUDetect & MUDetectXP

@@ -1,0 +1,5 @@
+build:
+  src: jackrabbit-core/src/main/java/
+misuses:
+- '11'
+revision: 1178891

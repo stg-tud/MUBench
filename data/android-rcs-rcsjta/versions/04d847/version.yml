@@ -1,0 +1,10 @@
+build:
+  classes: core/build/
+  attempt-commands:
+  - cd core
+  - android update project --path .
+  - "export JAVA_HOME=? & export ANDROID_HOME=? & ant -f build-local.xml sdk"
+  src: core/src/
+misuses:
+- '1'
+revision: 04d84799daa51ed7cc0ad270f0eea51ffaf7a53a~1

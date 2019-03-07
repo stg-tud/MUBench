@@ -1,0 +1,17 @@
+apply plugin: 'java'
+
+sourceSets {
+  main {
+    java {
+      srcDir 'src'
+    }
+  }
+}
+
+repositories {
+  mavenCentral()
+}
+
+dependencies {
+  compile group: 'org.bouncycastle', name: 'bcprov-jdk14', version: '1.38'
+}

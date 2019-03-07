@@ -1,0 +1,8 @@
+build:
+  classes: jackrabbit-jcr-server/$mvn.default.classes
+  commands:
+  - mvn compile
+  src: jackrabbit-jcr-server/src/main/java/
+misuses:
+- '2'
+revision: 677892

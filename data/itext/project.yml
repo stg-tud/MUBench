@@ -1,0 +1,5 @@
+name: "iText\xC2\xAE, a JAVA PDF library"
+repository:
+  type: svn
+  url: http://svn.code.sf.net/p/itext/code/trunk/itext/
+url: https://sourceforge.net/projects/itext/

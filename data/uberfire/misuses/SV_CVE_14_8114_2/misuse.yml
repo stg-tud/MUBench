@@ -1,0 +1,13 @@
+api: [] 
+violations: [] 
+crash: false
+description: The UberFire Framework does not properly restrict paths, which allows remote attackers to (1) execute arbitrary code by uploading crafted content to FileUploadServlet or (2) read arbitrary files via vectors involving FileDownloadServlet
+location:
+  file: org/uberfire/server/FileUploadServlet.java
+  method: "doPost(HttpServletRequest, HttpServletResponse)"
+fix:
+  commit: https://github.com/AppFormer/uberfire/commit/21ec50eb150ab976be060848d6dd0e97ec6c8246
+report: 
+source:
+  name: 
+  url:

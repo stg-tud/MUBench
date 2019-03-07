@@ -1,0 +1,8 @@
+build:
+  classes: $gradle.default.classes
+  commands:
+  - gradle :compileJava
+  src: src/
+misuses:
+- '2'
+revision: 66

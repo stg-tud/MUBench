@@ -1,0 +1,5 @@
+name: Red5 Server
+repository:
+  type: git
+  url: https://github.com/naftulikay/red5-server
+url: https://github.com/naftulikay/red5-server

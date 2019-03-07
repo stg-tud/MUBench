@@ -1,0 +1,6 @@
+build:
+  src: LNReader/src/
+misuses:
+- '1'
+- '2'
+revision: 2071b3cb8e977ba19fe51ca7cdb32ccc264563fa~1

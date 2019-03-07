@@ -1,0 +1,17 @@
+api:
+- javax.swing.JFrame
+violations:
+- missing/condition/context
+crash: false
+description: >
+  Creates swing UI component on the main thread.
+location:
+  file: mubench/examples/directives/CallOnDTE.java
+  method: main(String[])
+fix:
+  description: >
+    Use invokeLater() to displatch UI creation to the EDT.
+internal: false
+source:
+  name: What should developers be aware of? An empirical study on the directives of API documentation
+  url: http://link.springer.com/article/10.1007/s10664-011-9186-4

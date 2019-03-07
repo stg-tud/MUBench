@@ -1,0 +1,5 @@
+name: Apache Wicket
+repository:
+  type: git 
+  url: https://github.com/apache/wicket.git
+Url: http://wicket.apache.org

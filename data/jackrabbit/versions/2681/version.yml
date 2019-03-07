@@ -1,0 +1,8 @@
+build:
+  classes: jackrabbit-core/$mvn.default.classes
+  attempt-commands:
+  - mvn compile -Dmaven.compiler.failOnError=false
+  src: jackrabbit-core/src/main/java/
+misuses:
+- '8'
+revision: 965538

@@ -1,0 +1,5 @@
+build:
+  src: WordPress/src/main/java/
+misuses:
+- '3'
+revision: c21e5969154d1cafb15fd0becf252e8e81760b98~1

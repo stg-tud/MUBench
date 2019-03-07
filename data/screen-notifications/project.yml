@@ -1,0 +1,5 @@
+name: Screen Notifications
+repository:
+  type: git
+  url: https://github.com/lkorth/screen-notifications.git
+url: https://play.google.com/store/apps/details?id=com.lukekorth.screennotifications

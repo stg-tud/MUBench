@@ -1,0 +1,22 @@
+api:
+- java.io.InputStream
+violations:
+- missing/call
+crash: false
+description: >
+  InputStream.close() should be called after finished using the stream.
+  The particular stream is passed to QValueFactoryImpl.create() as a parameter, but
+  should be closed by the method, as defined in its contract.
+location:
+  file: org/apache/jackrabbit/spi/commons/value/QValueFactoryImpl.java
+  method: "BinaryQValue(InputStream, boolean)"
+fix:
+  commit: http://svn.apache.org/viewvc/jackrabbit/trunk/jackrabbit-spi-commons/src/main/java/org/apache/jackrabbit/spi/commons/value/QValueFactoryImpl.java?r1=698246&r2=698245&pathrev=698246&diff_format=h
+  revision: 698246
+internal: false
+pattern:
+- single object
+report: https://issues.apache.org/jira/browse/JCR-1750
+source:
+  name: BugClassify
+  url: https://www.st.cs.uni-saarland.de/softevo//bugclassify/

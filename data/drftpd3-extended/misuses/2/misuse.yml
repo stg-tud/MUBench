@@ -1,0 +1,18 @@
+api:
+- javax.crypto.Cipher
+violations:
+- redundant/call
+description: >
+  May call `init()` multiple times on the same Cipher instance.
+location:
+  file: org/drftpd/plugins/sitebot/Blowfish.java
+  method: "encrypt(String)"
+fix:
+  description: >
+    Create a new Cipher instance for each encryption.
+internal: true
+pattern:
+- single object
+crash: false
+source:
+  name: "MUBench-JCE -- A Misuse-Detection Benchmark for the Java Cryptography Extension API, Mattis Manfred Kämmerer, Bachelor Thesis, 2017"

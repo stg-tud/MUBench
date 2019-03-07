@@ -1,0 +1,18 @@
+api:
+- java.util.Iterator
+violations:
+- missing/condition/value_or_state
+- missing/call
+crash: true
+description: >
+  On line 324, `Iterator.next()` is invoked without prior check whether there
+  are sufficiently many elements.
+  
+  (Same finding as `tikanga-12` and `mudetect-0` and `mudetectxp-0`).
+location:
+  file: com/itextpdf/text/pdf/PdfPKCS7.java
+  method: "PdfPKCS7(byte[], byte[], String)"
+  line: 324
+internal: false
+source:
+  name: DMMC & Tikanga & MUDetect & MUDetectXP

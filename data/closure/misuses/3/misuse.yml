@@ -1,0 +1,21 @@
+api:
+- com.google.javascript.rhino.jstype.ObjectType
+violations:
+- missing/condition/null_check
+crash: true
+description: >
+  ObjectType.getImplicitPrototype() may return null.
+location:
+  file: com/google/javascript/jscomp/TypeCheck.java
+  method: "checkInterfaceConflictProperties(NodeTraversal, Node, String, HashMap, HashMap, ObjectType)"
+fix:
+  commit: https://github.com/google/closure-compiler/commit/d1cfe67977d8f3aaa85ec20c262171da394d5977
+  description: >
+    Check result for null before using.
+  revision: d1cfe67977d8f3aaa85ec20c262171da394d5977
+internal: false
+pattern:
+- single object
+source:
+  name: Defects4J
+  url: https://github.com/rjust/defects4j

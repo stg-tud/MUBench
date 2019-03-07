@@ -1,0 +1,5 @@
+name: Mozilla Rhino
+repository:
+  type: git
+  url: https://github.com/mozilla/rhino.git
+url: https://developer.mozilla.org/en-US/docs/Mozilla/Projects/Rhino

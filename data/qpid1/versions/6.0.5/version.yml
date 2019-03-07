@@ -1,0 +1,9 @@
+build:
+  #classes: qpid-broker/6.0.5/lib/qpid-broker-core-6.0.5.jar 
+  classes: broker-core/target/classes
+  commands: 
+  - mvn clean install -DskipTests           
+  src: broker-core/src/main/java
+misuses:
+-  SV_CVE_16_8741
+revision: 6.0.5         

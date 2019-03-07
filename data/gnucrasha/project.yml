@@ -1,0 +1,5 @@
+name: gnucash-android
+repository:
+  type: git
+  url: https://github.com/fefe982/gnucash-android.git
+url: http://play.google.com/store/apps/details?id=org.gnucash.android

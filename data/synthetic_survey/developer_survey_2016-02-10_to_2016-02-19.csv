@@ -1,0 +1,26 @@
+Timestamp,Which types were involved?,Which problem did you experience?,How did you fix the problem?
+2/5/2016 13:20:03,java....BigInteger,BitInteger.setScale does not mutate the state but returns a new object(!),I used the new object.
+2/10/2016 13:57:24,java.util.Map,"You can use the return value by java.util.Set.add to check if there has been the same element in the set before. 
+This allows to write nice and clean code. But, there is no such method on a java.util.Map.
+java.util.Map.put will return the value previously associated with the given key. Though, you can check if that value is != null giving you the same as the boolean result of Set.add. But, if your map allows to store null values this is no longer correct.","Can be solved by checking if the map contains the key in advance. But, this results in ugly boiler plate code in some situations."
+2/10/2016 15:24:27,java.nio.file.Files,tried to WRITE a file which does not exist,can add a CREATE option to the list of options.
+2/18/2016 6:33:35,Array,I did not properly check and ran into IndexOutofBoundsException when accessing array elements,I checked if the index is in range before accessing
+2/18/2016 6:34:56,ArrayList,I did not properly check and ran into IndexOutofBoundsException when getting an element,Checked index before getting
+2/18/2016 6:38:40,Many types,I called a method of an object return from a method call and got NullPointerException,I checked if the returned object is not null before call method
+2/18/2016 15:12:31,"java.io.FileInputStream, java.util.ArrayList, java.util.HashMap, java.util.HashSet","1. java.io.FileInputStream: I opened a file with an incorrect path and got a FileNotFoundException.
+2. java.util.ArrayList: I retrieved an element at an invalid index and got a IndexOutOfBoundsException.
+3. java.util.HashMap: I used a key that did not exist in a HashMap to retrieve an object and got a NullPointerException.
+4. java.util.HashSet: I tried to get one element from a HashSet by using set.iterator().next() and got a NoSuchElementException.
+","1. java.io.FileInputStream: I checked whether a file exists first using file.exists().
+2. java.util.ArrayList: I checked whether the index is within a valid range (0 <= index < arrayList.size()).
+3. java.util.HashMap: I checked whether a key exists first using map.containsKey(key).
+4. java.util.HashSet: I checked whether the set contains one or more elements first using set.isEmpty()."
+2/18/2016 16:55:12,java.util.regex.Pattern,I often using this method for split a string. However it is complicated to use.,I can user java.lang.String.split method instead
+2/19/2016 11:24:27,android.app.Activity,When overriding onCreate() I need to call setContentView() before I can invoke findViewById(). (see http://stackoverflow.com/questions/9753674/force-closing-for-notes-java-sharedprefferences),Call setContentView
+2/19/2016 11:25:41,android.app.Activity,when overriding onCreate() I called super.onCreate() after findViewById() which crashes. see http://stackoverflow.com/questions/32690604/intents-issue-in-eclipse-android/32690754,switch order of calls
+2/19/2016 11:28:08,PrintWriter,forgot to close writer. windows file handles blocked my files then,close or IOUtils in finally block
+2/19/2016 11:29:38,java.util.List,removed elements from a list in a for loop getting a ConcurrentModificationException,use iterator.remove()
+2/19/2016 11:30:48,nio.ByteBuffer,After writing and before reading to a buffer you need to call flip() else there's nothing to read,flip buffer
+2/19/2016 12:17:53,nio filechannel,when writing a log over filechannel I forgot to force the channel to write to file,force or close filechannel after writing
+2/19/2016 12:21:57,"ArrayList, Iterator",to get teh first element of a list I created an iterator from the list and called next() and got exception,check if (hasNext() or list.size or !list.isEmpty
+2/19/2016 12:23:46,jaav.swing.JFrame,I set preferredSize of the frame but it didn't show in correct size,call pack() after setting size

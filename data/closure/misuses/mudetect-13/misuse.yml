@@ -1,0 +1,15 @@
+api:
+- java.util.Iterator
+violations:
+- missing/condition/value_or_state
+- missing/call
+crash: true
+description: >
+  Iterator.next() is invoked without prior check that the iterator has more elements.
+  (Same finding as `mudetectxp-3`)
+location:
+  file: com/google/javascript/jscomp/ReplaceMessages.java
+  method: "constructStringExprNode(Iterator, Node)"
+internal: false
+source:
+  name: MUDetect & MUDetectXP

@@ -1,0 +1,16 @@
+api: [] 
+violations: [] 
+crash: false
+description: The virtual router in Apache CloudStack does not preserve the source restrictions in firewall rules after being restarted, which allows remote attackers to bypass intended restrictions via a request. 
+location:
+  file: com/cloud/network/router/VirtualNetworkApplianceManagerImpl.java
+  method: "configDnsMasq(VirtualRouter, Network, Commands)"
+fix:
+  commit: https://issues.apache.org/jira/secure/attachment/12615698/0001-Fix-issue-with-sourceCidr-not-being-passed-to-the-VR.patch
+  description: >
+  revision: 
+  internal: 
+report: https://issues.apache.org/jira/secure/attachment/12615698/0001-Fix-issue-with-sourceCidr-not-being-passed-to-the-VR.patch
+source:
+  name: 
+  url:

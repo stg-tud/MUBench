@@ -1,0 +1,14 @@
+build:
+  classes: classes/      #apache-wicket-6.0.0-bin/wicket-util-6.0.0.jar
+  commands:
+  #-  mvn clean install -DskipTests   
+  -  wget https://archive.apache.org/dist/wicket/6.0.0/bin/apache-wicket-6.0.0-bin.zip 
+  -  unzip apache-wicket-6.0.0-bin.zip
+  -  mkdir classes
+  #-  cd test && 
+  -  jar xf apache-wicket-6.0.0-bin/wicket-util-6.0.0.jar 
+  -  mv org classes/       
+  src: wicket-util/src/main/java
+misuses:
+-  SV_CVE_16_6793
+revision: wicket-6.0.0        #0d75ee57abb31b4db48c0396870aba39c4d9ddee          

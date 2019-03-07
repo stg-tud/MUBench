@@ -1,0 +1,5 @@
+name: WordPress for Android
+repository:
+  type: git
+  url: https://github.com/wordpress-mobile/WordPress-Android.git
+url: https://play.google.com/store/apps/details?id=org.wordpress.android

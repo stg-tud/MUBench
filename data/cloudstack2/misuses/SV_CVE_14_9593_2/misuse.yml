@@ -1,0 +1,13 @@
+api: [] 
+violations: [] 
+crash: false
+description: Apache CloudStack allows remote attackers to obtain private keys via a listSslCerts API call
+location:
+  file: org/apache/cloudstack/api/response/SslCertResponse.java
+  method: "setPrivatekey(String)"     # does not exist in this version of the project, the whole method is been added in the new version
+fix:
+  commit: https://reviews.apache.org/r/27464/diff/1#1 
+report: https://issues.apache.org/jira/browse/CLOUDSTACK-7952
+source:
+  name: 
+  url:

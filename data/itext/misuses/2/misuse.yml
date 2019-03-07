@@ -1,0 +1,15 @@
+api:
+- java.lang.String
+violations:
+- missing/condition/value_or_state
+- missing/call
+crash: true
+description: |
+  On line 187 `EXTENDED.charAt()` is invoked without ensuring that the
+  respective string actually has sufficiently many characters.
+location:
+  file: com/itextpdf/text/pdf/Barcode39.java
+  method: "getCode39Ex(String)"
+internal: false
+source:
+  name: MUDetect

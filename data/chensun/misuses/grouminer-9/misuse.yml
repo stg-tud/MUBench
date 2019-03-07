@@ -1,0 +1,15 @@
+api:
+- java.sql.PreparedStatement
+violations:
+- missing/call
+crash: false
+description: |
+  The `PreparedStatement` opened in line 702 is never closed.
+  (Same findings as `mudetect-17`)
+internal: false
+location:
+  file: database/SocialNetworkDatabasePosts.java
+  method: addFFAParticipipant(Connection, int, String, String)
+  line: 702
+source:
+  name: GrouMiner & MuDetect

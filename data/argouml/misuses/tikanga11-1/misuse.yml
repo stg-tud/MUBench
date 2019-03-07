@@ -1,0 +1,18 @@
+api:
+- java.util.Iterator
+violations:
+- missing/condition/value_or_state
+- missing/call
+crash: true
+description: >
+  If the zargo file to be loaded contains no `.argo` file, this method will
+  throw an exception at line 261.
+location:
+  file: org/argouml/persistence/ZargoFilePersister.java
+  method: "loadFromZargo(File, ProgressMgr)"
+internal: true
+fix:
+  description: Check that the iterator contains a file to fix this.
+source:
+  name: Mining temporal specifications from object usage, Wasylkowski et al., ASE'11
+  url: https://link.springer.com/article/10.1007/s10515-011-0084-1

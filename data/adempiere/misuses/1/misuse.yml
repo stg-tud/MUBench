@@ -1,0 +1,20 @@
+api:
+- java.lang.String
+violations:
+- missing/call
+- redundant/call
+crash: false
+description: >
+  A string is converted to bytes without specifying an explicit encoding.
+  The bytes are then passed to Cipher.doFinal(). The fix specifies the encoding "UTF-8".
+location:
+  file: org/compiere/util/Secure.java
+  method: encrypt(String)
+fix:
+  commit: http://sourceforge.net/p/adempiere/svn/1312/tree/trunk/looks/src/org/compiere/util/Secure.java?diff=5139a2ef34309d2ec1827857:1311
+  revision: 1312
+internal: false
+pattern:
+- multiple objects
+source:
+  name: SourceForge

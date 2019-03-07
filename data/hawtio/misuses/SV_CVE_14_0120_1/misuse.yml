@@ -1,0 +1,13 @@
+api: [] 
+violations: [] 
+crash: false
+description: Cross-site request forgery (CSRF) vulnerability in the admin terminal in Hawt.io allows remote attackers to hijack the authentication of arbitrary users for requests that run commands on the Karaf server, as demonstrated by running "shutdown -f." 
+location:
+  file: io/hawt/web/plugin/karaf/terminal/TerminalServlet.java
+  method: "doPost(HttpServletRequest, HttpServletResponse)"
+fix:
+  commit: https://github.com/hawtio/hawtio/commit/b4e23e002639c274a2f687ada980118512f06113
+report: https://bugzilla.redhat.com/show_bug.cgi?id=1072681
+source:
+  name: 
+  url:

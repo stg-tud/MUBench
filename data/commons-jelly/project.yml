@@ -1,0 +1,5 @@
+name: Apache Commons-Jelly
+repository:
+  type: git 
+  url: https://github.com/apache/commons-jelly.git
+Url: https://commons.apache.org/proper/commons-jelly/

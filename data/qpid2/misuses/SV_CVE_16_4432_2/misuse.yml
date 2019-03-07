@@ -1,0 +1,13 @@
+api: [] 
+violations: [] 
+crash: false
+description: The AMQP 0-8, 0-9, 0-91, and 0-10 connection handling in Apache Qpid Java might allow remote attackers to bypass authentication and consequently perform actions via vectors related to connection state logging.
+location:
+  file: org/apache/qpid/server/protocol/v0_8/AMQPConnection_0_8.java
+  method: "assertState(ConnectionState)"
+fix:
+  commit: https://svn.apache.org/viewvc/qpid/java/branches/6.0.x/broker-plugins/amqp-0-8-protocol/src/main/java/org/apache/qpid/server/protocol/v0_8/AMQPConnection_0_8.java?view=markup&pathrev=1743393
+  description: >
+  revision: 
+  internal: 
+report: https://svn.apache.org/viewvc?view=revision&revision=1743393

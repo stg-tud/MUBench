@@ -1,0 +1,9 @@
+build:
+  attempt-commands:
+  - wget http://downloads.sourceforge.net/project/jsyncmanager/jsyncmanager-api/v3.0%20final/jsyncmanager-api-v3_0-final.zip
+  - unzip jsyncmanager-api-v3_0-final.zip
+  - gradle :compileJava
+  src: source/
+misuses:
+- '1'
+revision: 61

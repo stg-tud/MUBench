@@ -1,0 +1,12 @@
+build:
+  classes: classes/      #axis-1_2/lib/axis.jar  
+  commands:
+  -  wget https://archive.apache.org/dist/ws/axis/1_2/axis-bin-1_2.tar.gz 
+  -  tar zxvf axis-bin-1_2.tar.gz 
+  -  mkdir classes
+  -  jar xf axis-1_2/lib/axis.jar
+  -  mv org classes/              
+  src: src/
+misuses:
+-  SV_CVE_12_5784_1
+revision: e55e4cffe7ea313173b39c9cdeb8e7a633764ba6       #1.2

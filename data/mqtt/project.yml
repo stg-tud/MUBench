@@ -1,0 +1,5 @@
+name: paho.mqtt.java
+repository:
+  type: git
+  url: https://github.com/eclipse/paho.mqtt.java.git
+url: https://github.com/eclipse/paho.mqtt.java

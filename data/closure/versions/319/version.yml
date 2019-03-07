@@ -1,0 +1,20 @@
+build:
+  classes: build/classes/
+  commands:
+  - sed -i 's/<javac/<javac encoding="UTF8"/g' build.xml
+  - ant compile
+  src: src/
+misuses:
+- '2'
+- 'dmmc-13'
+- 'dmmc-1023'
+- 'mudetect-18'
+- 'mudetect-13'
+- 'mudetect-17'
+- 'mudetect-12'
+- 'mudetectxp-13'
+- 'mudetectxp-16'
+- 'mudetectxp-17'
+- 'tikanga-2'
+- 'tikanga-6'
+revision: 43c245f0ff8d409e81e25687e69d34666b7cf26a~1

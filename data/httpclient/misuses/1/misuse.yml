@@ -1,0 +1,22 @@
+api:
+- org.apache.commons.httpclient.HttpConnection
+violations:
+- missing/call
+crash: false
+description: >
+  Exception on HttpConnection.writeRequest() leaves the connection open.
+location:
+  file: org/apache/commons/httpclient/HttpMethodDirector.java
+  method: executeWithRetry(HttpMethod)
+fix:
+  description: >
+    Introduce close() calls in respective catch blocks.
+  commit: http://svn.apache.org/viewvc/jakarta/commons/proper/httpclient/trunk/src/java/org/apache/commons/httpclient/HttpMethodDirector.java?r1=134493&r2=134494&pathrev=134494&diff_format=h
+  revision: 134494
+internal: true
+pattern:
+- single object
+report: https://issues.apache.org/jira/browse/HTTPCLIENT-302
+source:
+  name: BugClassify
+  url: https://www.st.cs.uni-saarland.de/softevo//bugclassify/

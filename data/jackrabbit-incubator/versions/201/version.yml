@@ -1,0 +1,5 @@
+build:
+  src: contrib/bdb-persistence/src/java/
+misuses:
+- '2'
+revision: 263891

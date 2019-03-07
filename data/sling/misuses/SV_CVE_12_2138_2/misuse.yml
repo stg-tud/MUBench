@@ -1,0 +1,13 @@
+api: [] 
+violations: [] 
+crash: false
+description: Apache Axis did not verify that the server hostname matched the domain name in the subject's Common Name (CN) or subjectAltName field in X.509 certificates. This could allow a man-in-the-middle attacker to spoof an SSL server if they had a certificate that was valid for any domain name. 
+location:
+  file: org/apache/sling/servlets/post/impl/operations/CopyOperation.java
+  method: "isAncestorOrSameNode(Node, Node)"   #method was newly added
+fix:
+  commit: https://issues.apache.org/jira/secure/attachment/12560257/CVE-2012-5784-2.patch 
+report: https://issues.apache.org/jira/browse/AXIS-2883
+source:
+  name: 
+  url:
