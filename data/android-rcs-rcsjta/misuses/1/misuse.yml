@@ -7,7 +7,7 @@ violations:
 crash: false
 description: >
   Exports bytes for Mac.doFinal() without specifying the encoding.
-location:
+locations:
   file: com/orangelabs/rcs/core/ims/service/im/chat/ContributionIdGenerator.java
   method: getContributionId(String)
 fix:

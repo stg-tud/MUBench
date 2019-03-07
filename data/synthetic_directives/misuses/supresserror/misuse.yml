@@ -5,7 +5,7 @@ violations:
 crash: false
 description: >
   Catches Throwable, which might supress Errors, like OutOfMemory, TheadDeath, ...
-location:
+locations:
   file: mubench/examples/directives/SupressError.java
   method: "misuse(Target)"
 fix:

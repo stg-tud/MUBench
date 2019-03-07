@@ -6,7 +6,7 @@ violations:
 crash: true
 description: >
   Below !File.exists() File.mkdir() was called, instead of File.mkdirs().
-location:
+locations:
   file: org/apache/jackrabbit/core/state/bdb/BerkeleyDBPersistenceManager.java
   method: init(PMContext)
 fix:

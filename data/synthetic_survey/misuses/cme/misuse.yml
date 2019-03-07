@@ -9,7 +9,7 @@ description: >
   to use the Iterator afterwards. Often happens with foreach loops.
   
   http://www.st.informatik.tu-darmstadt.de/artifacts/stackoverflow-cme-study/
-location:
+locations:
   file: mubench/examples/survey/CME.java
   method: misuse(Collection)
 fix:

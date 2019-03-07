@@ -7,7 +7,7 @@ description: |
   The `PreparedStatement` opened in line 702 is never closed.
   (Same findings as `mudetect-17`)
 internal: false
-location:
+locations:
   file: database/SocialNetworkDatabasePosts.java
   method: addFFAParticipipant(Connection, int, String, String)
   line: 702

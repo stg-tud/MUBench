@@ -5,7 +5,7 @@ violations:
 crash: true
 description: >
   Iterates until i < l.size(), but starts at i = 1. Therefore, skips the last element.
-location:
+locations:
   file: mubench/examples/directives/TooRestrictive.java
   method: "misuse(List)"
 fix:

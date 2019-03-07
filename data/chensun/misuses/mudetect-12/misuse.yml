@@ -6,7 +6,7 @@ crash: false
 description: |
   The `PreparedStatement addAdminPstmt` opened in line 204 is never closed.
 internal: false
-location:
+locations:
   file: database/SocialNetworkDatabaseBoards.java
   method: createBoard(Connection, String, String)
   line: 204

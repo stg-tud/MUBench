@@ -7,7 +7,7 @@ crash: true
 description: |
   On line 187 `EXTENDED.charAt()` is invoked without ensuring that the
   respective string actually has sufficiently many characters.
-location:
+locations:
   file: com/itextpdf/text/pdf/Barcode39.java
   method: "getCode39Ex(String)"
 internal: false

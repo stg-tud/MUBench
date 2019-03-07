@@ -120,18 +120,18 @@ class MisuseCheckTask:
         return path.relpath(misuse.misuse_file, self.data_base_path)
 
     def _check_misuse_location_exists(self, version: ProjectVersion, misuse: Misuse):
-        if "location" in misuse._yaml:
-            location = misuse.location
-            if location.file and location.method:
-                checkout = version.get_checkout(self.checkout_base_path)
-                if not checkout or not checkout.exists():
-                    self.logger.debug(
-                        'Skipping location check for "{}": requires checkout of "{}".'.format(
-                            misuse.id, version.id))
-                else:
-                    source_base_paths = [join(checkout.base_path, src_dir) for src_dir in version.source_dirs]
-                    if not self._location_exists(source_base_paths, location.file, location.method):
-                        self._report_cannot_find_location(str(location), self._get_rel_misuse_file_path(misuse))
+        if "locations" in misuse._yaml:
+            for location in misuse.locations:
+                if location.file and location.method:
+                    checkout = version.get_checkout(self.checkout_base_path)
+                    if not checkout or not checkout.exists():
+                        self.logger.debug(
+                            'Skipping location check for "{}": requires checkout of "{}".'.format(
+                                misuse.id, version.id))
+                    else:
+                        source_base_paths = [join(checkout.base_path, src_dir) for src_dir in version.source_dirs]
+                        if not self._location_exists(source_base_paths, location.file, location.method):
+                            self._report_cannot_find_location(str(location), self._get_rel_misuse_file_path(misuse))
 
     @staticmethod
     def _location_exists(source_base_paths, file_, method) -> bool:

@@ -68,17 +68,19 @@ class CompileMisuseTask:
 
     @staticmethod
     def _copy_misuse_sources(sources_path, misuse, destination):
-        file = misuse.location.file
-        if exists(join(sources_path, file)):
-            dst = join(destination, file)
-            makedirs(dirname(dst), exist_ok=True)
-            shutil.copy(join(sources_path, file), dst)
+        for location in misuse.locations:
+            file = location.file
+            if exists(join(sources_path, file)):
+                dst = join(destination, file)
+                makedirs(dirname(dst), exist_ok=True)
+                shutil.copy(join(sources_path, file), dst)
 
     @staticmethod
     def _copy_misuse_classes(classes_path, misuse, destination):
-        basepath = join(classes_path, splitext(misuse.location.file)[0])
-        classes = glob(basepath + ".class") + glob(basepath + "$*.class")
-        for class_ in classes:
-            dst = join(destination, relpath(class_, classes_path))
-            makedirs(dirname(dst), exist_ok=True)
-            shutil.copy(class_, dst)
+        for location in misuse.locations:
+            basepath = join(classes_path, splitext(location.file)[0])
+            classes = glob(basepath + ".class") + glob(basepath + "$*.class")
+            for class_ in classes:
+                dst = join(destination, relpath(class_, classes_path))
+                makedirs(dirname(dst), exist_ok=True)
+                shutil.copy(class_, dst)

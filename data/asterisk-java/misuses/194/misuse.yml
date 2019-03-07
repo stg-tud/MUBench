@@ -11,7 +11,7 @@ fix:
   commit: https://github.com/emopers/asterisk-java/commit/41461b41309bf9f027a46f178cb777a1a94b8c3f
   revision: 41461b41309bf9f027a46f178cb777a1a94b8c3f
 internal: false
-location:
+locations:
   file: org/asteriskjava/manager/event/RtcpReceivedEvent.java
   method: setPt(String)
 report: https://github.com/asterisk-java/asterisk-java/pull/132

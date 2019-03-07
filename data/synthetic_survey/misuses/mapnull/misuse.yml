@@ -7,7 +7,7 @@ crash: false
 description: >
   Checks the return value of Map.put() to check whether the key was set
   before. If the Map allows null values, this usage breaks.
-location:
+locations:
   file: mubench/examples/survey/Maps.java
   method: "mapMayContainNull(Map)"
 fix:

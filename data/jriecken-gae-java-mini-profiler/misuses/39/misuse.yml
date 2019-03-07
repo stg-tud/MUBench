@@ -13,7 +13,7 @@ fix:
   commit: https://github.com/emopers/gae-java-mini-profiler/commit/30be31776655f73487a59d443b30c7f7408f251b
   revision: 30be31776655f73487a59d443b30c7f7408f251b
 internal: false
-location:
+locations:
   file: com/google/appengine/tools/appstats/MiniProfilerAppstats.java
   method: getAppstatsDataFor(String, Integer)
 report: https://github.com/jriecken/gae-java-mini-profiler/pull/11

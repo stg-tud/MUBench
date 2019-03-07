@@ -4,7 +4,7 @@ violations:
 - missing/condition/value_or_state
 description: >
   Uses static key.
-location:
+locations:
   file: SaavnFileRunner.java
   method: "decryptPlay(String)"
 internal: false

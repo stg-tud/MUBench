@@ -12,7 +12,7 @@ fix:
   commit: https://github.com/emopers/weiboclient4j/commit/18b596ad7116f55d8c2b25e9aa4954d3b51507fb
   revision: 18b596ad7116f55d8c2b25e9aa4954d3b51507fb
 internal: false
-location:
+locations:
   file: weiboclient4j/params/Uid.java
   method: Uid(String)
 report: https://github.com/hoverruan/weiboclient4j/pull/15

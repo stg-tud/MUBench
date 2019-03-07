@@ -7,7 +7,7 @@ violations:
 crash: true
 description: >
   Open a FileInputStream on a non-existing file throws.
-location:
+locations:
   file: mubench/examples/survey/FISExists.java
   method: misuse(File)
 fix:

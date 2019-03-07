@@ -4,7 +4,7 @@ violations:
 - redundant/call
 description: >
   May call `init()` multiple times on the same Cipher instance.
-location:
+locations:
   file: org/drftpd/plugins/sitebot/Blowfish.java
   method: "encrypt(String)"
 fix:

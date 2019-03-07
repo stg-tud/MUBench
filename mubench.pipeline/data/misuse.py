@@ -50,7 +50,7 @@ class Misuse:
         self.path = join(self.__project.path, Project.MISUSES_DIR, misuse_id)
         self.misuse_file = join(self.path, Misuse.MISUSE_FILE)
 
-        self.__location = None
+        self.__locations = None
         self.__fix = None
 
         self._YAML = None
@@ -69,7 +69,8 @@ class Misuse:
             correct_usage_path = self.correct_usage_path
             if isdir(correct_usage_path):
                 self._CORRECT_USAGES = set(
-                    [CorrectUsage(correct_usage_path, y[len(correct_usage_path) + 1:]) for x in os.walk(correct_usage_path) for y in
+                    [CorrectUsage(correct_usage_path, y[len(correct_usage_path) + 1:]) for x in
+                     os.walk(correct_usage_path) for y in
                      glob(os.path.join(x[0], '*.java'))])
             else:
                 self._CORRECT_USAGES = set()
@@ -81,11 +82,15 @@ class Misuse:
         return join(self.path, "correct-usages")
 
     @property
-    def location(self) -> Location:
-        if not self.__location:
-            location = self._yaml["location"]
-            self.__location = Location(location.get("file", ""), location.get("method", ""), location.get("line", -1))
-        return self.__location
+    def locations(self) -> List[Location]:
+        if not self.__locations:
+            locations = self._yaml["locations"]
+            if isinstance(locations, list):
+                self.__locations = [Location(location.get("file", ""), location.get("method", ""), location.get("line", -1))
+                                    for location in locations]
+            else:
+                self.__locations = [Location(locations.get("file", ""), locations.get("method", ""), locations.get("line", -1))]
+        return self.__locations
 
     @property
     def description(self) -> str:
@@ -132,7 +137,10 @@ class Misuse:
         return self._violations
 
     def get_snippets(self, source_base_paths: List[str]) -> List[Snippet]:
-        return get_snippets(source_base_paths, self.location.file, self.location.method, self.location.line)
+        snippets = []
+        for location in self.locations:
+            snippets.extend(get_snippets(source_base_paths, location.file, location.method, location.line))
+        return snippets
 
     def get_misuse_compile(self, base_path: str) -> MisuseCompile:
         return MisuseCompile(join(base_path, self.project_id, "misuses", self.misuse_id), self.correct_usages)

@@ -6,7 +6,7 @@ violations:
 crash: false
 description: >
   Misses to pass Locale to constructor of SimpleDateFormat.
-location:
+locations:
   file: org/apache/commons/httpclient/util/DateUtil.java
   method: "formatDate(Date, String)"
 fix:

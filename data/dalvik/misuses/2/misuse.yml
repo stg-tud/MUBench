@@ -4,7 +4,7 @@ violations:
 - missing/condition/value_or_state
 description: >
   Uses NullCipher as a default which doesn't encrypt the data.
-location:
+locations:
   file: src/main/java/javax/crypto/CipherInputStream.java
   method: "CipherInputStream(InputStream)"
 internal: true

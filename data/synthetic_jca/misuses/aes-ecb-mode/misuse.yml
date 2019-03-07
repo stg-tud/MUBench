@@ -6,7 +6,7 @@ crash: false
 description: >
   Using "AES" in Cipher.getInstance defaults to "AES/EBC/PKCS5Padding".
   The mode "EBC" is unsafe, hence the default "AES" should not be used.
-location:
+locations:
   file: mubench/examples/jca/Encrypting.java
   method: encrypt(byte[], byte[])
 fix:

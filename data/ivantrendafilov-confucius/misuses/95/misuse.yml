@@ -12,7 +12,7 @@ fix:
   commit: https://github.com/emopers/Confucius/commit/2fefd5eb6d77ab1b83efe3bf50171aabc7128460
   revision: 2fefd5eb6d77ab1b83efe3bf50171aabc7128460
 internal: false
-location:
+locations:
   file: org/trendafilov/confucius/core/AbstractConfiguration.java
   method: getByteList(String, String)
 report: https://github.com/IvanTrendafilov/Confucius/pull/6

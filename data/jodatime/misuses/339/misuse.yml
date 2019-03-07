@@ -9,7 +9,7 @@ fix:
   commit: https://github.com/emopers/joda-time/commit/60be421469dd85893978bfc645b41e94c63ba1b1
   revision: 60be421469dd85893978bfc645b41e94c63ba1b1
 internal: false
-location:
+locations:
   file: org/joda/time/tz/DateTimeZoneBuilder.java
   method: writeTo(String, OutputStream)
 report: https://github.com/JodaOrg/joda-time/pull/343

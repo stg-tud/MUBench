@@ -5,7 +5,7 @@ violations:
 description: >
   Uses AES with default mode and padding. 
   Since these values might change per crypto provider this is considered a bad practice.
-location:
+locations:
   file: com/corona/crypto/AESCypher.java
   method: "setDecryptKey(byte[])"
 internal: true

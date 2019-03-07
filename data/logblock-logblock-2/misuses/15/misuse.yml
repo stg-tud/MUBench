@@ -12,7 +12,7 @@ fix:
   commit: https://github.com/emopers/LogBlock-2/commit/64c15f9d88df84837a9e5e294100aaeeb69c7123
   revision: 64c15f9d88df84837a9e5e294100aaeeb69c7123
 internal: false
-location:
+locations:
   file: org/logblock/entry/BlobTest.java
   method: paintingTest()
 report: https://github.com/LogBlock/LogBlock-2/pull/9

@@ -7,7 +7,7 @@ description: >
   Map.get() and Map.put() are called with different (types of) objects
   as key. There is another Map, for which the accidentially used key is the correct
   key.
-location:
+locations:
   file: org/apache/lucene/search/FieldCacheImpl.java
   method: "get(IndexReader, Object)"
 fix:

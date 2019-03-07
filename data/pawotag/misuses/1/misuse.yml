@@ -6,7 +6,7 @@ crash: true
 description: >
   Passes zero-bytes array to Cipher.doFinal(). (Problem specific to IBM
   JVM 6)
-location:
+locations:
   file: net/sourceforge/stripes/util/CryptoUtil.java
   method: encrypt(String)
 fix:

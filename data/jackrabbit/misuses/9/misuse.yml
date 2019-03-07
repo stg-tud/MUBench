@@ -6,7 +6,7 @@ crash: true
 description: >
   NamespaceStorage maps from prefixes to URIs. It's method unregisterNamespace
   expects an URI, but was give a prefix instead.
-location:
+locations:
   file: org/apache/jackrabbit/jcr2spi/NamespaceRegistryImpl.java
   method: unregisterNamespace(String)
 fix:

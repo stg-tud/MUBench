@@ -10,7 +10,7 @@ description: >
   (which delegates to FileSytem.fileExists()). FileSystem.deleteFile() throws, if
   the file does not exist. A refactoring was performed in the course of the fix, to
   remove duplication.
-location:
+locations:
   file: "?"
   method: "?"
 fix:

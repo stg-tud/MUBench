@@ -6,7 +6,7 @@ crash: false
 description: >
   Object.wait() should be called in a loop that iteratively checks the
   condition waited for.
-location:
+locations:
   file: mubench/examples/directives/WaitWithoutLoop.java
   method: misuse(Target)
 fix:

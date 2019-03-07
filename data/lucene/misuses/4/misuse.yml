@@ -5,7 +5,7 @@ violations:
 crash: true
 description: >
   MultiFields.getDeletedDocs() may return null.
-location:
+locations:
   file: org/apache/lucene/benchmark/byTask/tasks/DeleteByPercentTask.java
   method: doLogic()
 fix:

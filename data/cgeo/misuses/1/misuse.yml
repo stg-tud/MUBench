@@ -6,7 +6,7 @@ crash: true
 description: >
   Passes invalid mime-type to Intent.setDataAndType().
   http://stackoverflow.com/questions/6573541/no-intent-to-view-jpg-on-honeycomb
-location:
+locations:
   file: cgeo/geocaching/cgeoimages.java
   method: viewImageInStandardApp(BitmapDrawable)
 fix:

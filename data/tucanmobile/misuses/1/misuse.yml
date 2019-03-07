@@ -6,7 +6,7 @@ violations:
 crash: true
 description: >
   Calls Dialog.dismiss() on dialog that is not showing.
-location:
+locations:
   file: com/dalthed/tucan/Connection/SimpleSecureBrowser.java
   method: onPostExecute(AnswerObject)
 fix:

@@ -6,7 +6,7 @@ crash: false
 description: >
   Dispatches work on a UI element to the DTE, while the current execution
   context is already the DTE.
-location:
+locations:
   file: mubench/examples/directives/AlreadyOnDTE.java
   method: misuse()
 fix:

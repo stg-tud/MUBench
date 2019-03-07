@@ -6,7 +6,7 @@ crash: true
 description: >
   Overrides SherlockActivity.onDestroy(), but does not call the super
   method. Leads to exception with unreleased resources.
-location:
+locations:
   file: com/erakk/lnreader/activity/DisplayLightNovelContentActivity.java
   method: onDestroy()
 fix:

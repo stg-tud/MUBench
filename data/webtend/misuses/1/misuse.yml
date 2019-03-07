@@ -4,7 +4,7 @@ violations:
 - missing/condition/value_or_state
 description: >
   Uses AES with default mode and padding which is considered a bad practice.
-location:
+locations:
   file: webtend/webtend/utils/Crypto.java
   method: "encryptAES(String, String)"
 internal: false

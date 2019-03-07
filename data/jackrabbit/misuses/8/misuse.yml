@@ -8,7 +8,7 @@ description: >
   Boolean.parseBoolean() turns a string to a boolean, while Boolean.getBoolean()
   looks up the boolean value of a system property. The latter method was called here,
   where it should have been the former.
-location:
+locations:
   file: org/apache/jackrabbit/core/persistence/xml/XMLPersistenceManager.java
   method: "readState(DOMWalker, PropertyState)"
 fix:

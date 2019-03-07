@@ -6,7 +6,7 @@ crash: false
 description: >
   The results of ConfigurationParser.getAttribute() should be processed
   by ConfigurationParser.replaceVariables(). This step was missing.
-location:
+locations:
   file: org/apache/jackrabbit/core/config/RepositoryConfigurationParser.java
   method: parseClusterConfig(Element)
 fix:

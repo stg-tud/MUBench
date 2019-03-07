@@ -6,7 +6,7 @@ violations:
 crash: true
 description: >
   Theme.obtainStyledAttributes().getString() may throw on some platforms.
-location:
+locations:
   file: uk/co/chrisjenx/calligraphy/CalligraphyUtils.java
   method: "pullFontPathFromTheme(Context, int, int)"
 fix:

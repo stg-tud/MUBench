@@ -6,7 +6,7 @@ violations:
 crash: false
 description: >
   Text is converted to bytes for encoding without an explicit encoding.
-location:
+locations:
   file: de/battleforge/util/BFProperties.java
   method: "setProperty(BFProps, String, boolean)"
 internal: false

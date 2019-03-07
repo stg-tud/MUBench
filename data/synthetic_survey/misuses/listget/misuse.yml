@@ -6,7 +6,7 @@ violations:
 crash: true
 description: >
   Call List.get() without checking if the index is valid.
-location:
+locations:
   file: mubench/examples/survey/ListGet.java
   method: "misuse(List, int)"
 fix:

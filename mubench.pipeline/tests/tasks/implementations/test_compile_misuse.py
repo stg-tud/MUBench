@@ -28,7 +28,7 @@ class TestCompilePatterns:
         self.compile = self.version.get_compile(self.compile_base_path)
         self.compile.get_full_classpath = lambda: join(self.temp_dir, "dependencies.jar")
 
-        create_file(join(self.compile.original_sources_paths[0], self.misuse.location.file))
+        create_file(join(self.compile.original_sources_paths[0], self.misuse.locations[0].file))
 
         self.misuse_compile = self.misuse.get_misuse_compile(self.compile_base_path)
         self.misuse.get_misuse_compile = lambda *_: self.misuse_compile
@@ -89,7 +89,7 @@ class TestCompilePatterns:
         uut = CompileMisuseTask(self.compile_base_path, 0, force_compile=False)
 
         create_file(join(self.compile.original_sources_paths[0], "mu.file"))
-        misuse = create_misuse("1", meta={"location": {"file": "mu.file"}}, project=self.project, version=self.version)
+        misuse = create_misuse("1", meta={"locations": {"file": "mu.file"}}, project=self.project, version=self.version)
 
         correct_usage_compile = uut.run(misuse, self.compile)
 
@@ -100,7 +100,7 @@ class TestCompilePatterns:
 
         create_file(join(self.compile.original_sources_paths[0], "mu.java"))
         create_file(join(self.compile.original_classes_paths[0], "mu.class"))
-        misuse = create_misuse("1", meta={"location": {"file": "mu.java"}}, project=self.project, version=self.version)
+        misuse = create_misuse("1", meta={"locations": {"file": "mu.java"}}, project=self.project, version=self.version)
 
         correct_usage_compile = uut.run(misuse, self.compile)
 
@@ -109,7 +109,7 @@ class TestCompilePatterns:
     def test_copies_misuse_inner_classes(self):
         uut = CompileMisuseTask(self.compile_base_path, 0, force_compile=False)
 
-        misuse = create_misuse("1", meta={"location": {"file": "mu.java"}}, project=self.project, version=self.version)
+        misuse = create_misuse("1", meta={"locations": {"file": "mu.java"}}, project=self.project, version=self.version)
         create_file(join(self.compile.original_sources_paths[0], "mu.java"))
         create_file(join(self.compile.original_classes_paths[0], "mu.class"))
         create_file(join(self.compile.original_classes_paths[0], "mu$1.class"))

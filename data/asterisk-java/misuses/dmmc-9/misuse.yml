@@ -9,7 +9,7 @@ description: |
   without prior check that there is such an element. In fact, the check in
   line 403 suggests that `getChildEvents()` might even return `null`.
 internal: false
-location:
+locations:
   file: org/asteriskjava/manager/internal/EventBuilderImpl.java
   method: buildEvent(Object, Map)
   line: 410

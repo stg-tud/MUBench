@@ -6,7 +6,7 @@ crash: false
 description: >
   Misses to flush FileChannel, such that the contents have not been written
   before the next attempt to read from the underlying resource.
-location:
+locations:
   file: mubench/examples/survey/ChannelFlush.java
   method: needsFlushToEnsureWrite(ByteBuffer)
 fix:

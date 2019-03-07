@@ -13,7 +13,7 @@ fix:
   commit: https://github.com/cbeust/testng/commit/cd807910fcc3a0eb646834bad911a549259be9d2
   revision: cd807910fcc3a0eb646834bad911a549259be9d2
 internal: false
-location:
+locations:
   file: org/testng/reporters/jq/Model.java
   method: init()
 report: https://github.com/cbeust/testng/pull/929

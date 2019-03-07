@@ -5,7 +5,7 @@ violations:
 crash: false
 description: >
   Updates a HashMap concurrently without ensuring synchonziation.
-location:
+locations:
   file: mubench/examples/directives/Unsynchronized.java
   method: onEvent(String, String)
 fix:

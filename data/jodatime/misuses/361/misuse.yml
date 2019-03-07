@@ -15,7 +15,7 @@ fix:
   commit: https://github.com/emopers/joda-time/commit/f49c671d9926eb677490a76cc8317970e5be433c
   revision: f49c671d9926eb677490a76cc8317970e5be433c
 internal: false
-location:
+locations:
   file: org/joda/time/tz/ZoneInfoCompiler.java
   method: Rule(StringTokenizer)
 report: https://github.com/JodaOrg/joda-time/pull/319

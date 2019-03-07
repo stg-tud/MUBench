@@ -8,7 +8,7 @@ description: |
   pushed ("suite-content"). This tag is never poped, which results in a missing
   closing tag in the XML retrieved via `toXML()` in line 119.
 internal: true
-location:
+locations:
   file: org/testng/reporters/JqReporter.java
   method: generateSuites(List, List, XMLStringBuffer)
   line: 55

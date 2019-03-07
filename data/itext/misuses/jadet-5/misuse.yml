@@ -7,7 +7,7 @@ crash: true
 description: >
   PdfArray.getPdfObject() is invoked without checking that the array contains
   sufficiently many objects.
-location:
+locations:
   file: com/itextpdf/text/pdf/PdfStructureTreeRoot.java
   method: "nodeProcess(PdfDictionary, PdfIndirectReference)"
 internal: true

@@ -7,7 +7,7 @@ description: >
   On line 239, an element is fetched from a map and immediately iterated over.
   If the map does not have an element for the key (or maps the key to `null`),
   the lookup returns `null` and the iteration attempt crashes.
-location:
+locations:
   file: com/google/javascript/jscomp/SimpleDefinitionFinder.java
   method: "visit(NodeTraversal, Node, Node)"
   line: 239

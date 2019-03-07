@@ -4,7 +4,7 @@ violations:
 - missing/condition/value_or_state
 description: >
   Uses DSA with defaults which is considered a bad practice.
-location:
+locations:
   file: org/network/stcp/server/SecureConnectionHandler.java
   method: "run()"
 internal: false

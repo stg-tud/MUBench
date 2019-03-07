@@ -12,7 +12,7 @@ fix:
   commit: https://github.com/emopers/paho.mqtt.java/commit/e91206c5865934d12e5133b14acde8d0adff0fe8
   revision: e91206c5865934d12e5133b14acde8d0adff0fe8
 internal: false
-location:
+locations:
   file: org/eclipse/paho/client/mqttv3/internal/wire/MqttSubscribe.java
   method: getPayload()
 report: https://github.com/eclipse/paho.mqtt.java/pull/3

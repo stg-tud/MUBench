@@ -5,7 +5,7 @@ violations:
 crash: true
 description: >
   StrBuilder.getNullText() may return null.
-location:
+locations:
   file: org/apache/commons/lang/text/StrBuilder.java
   method: "appendFixedWidthPadLeft(Object, int, char)"
 fix:

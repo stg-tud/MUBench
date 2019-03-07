@@ -4,7 +4,7 @@ violations:
 - redundant/call
 description: >
   May call Mac.init(...) multiple times on the same instance
-location:
+locations:
   file: com/jason/property/encrypte/DesEncrypter.java
   method: "calculateHMAC_SHA256(byte[], byte[])"
 internal: false

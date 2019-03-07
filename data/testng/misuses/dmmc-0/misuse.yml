@@ -6,7 +6,7 @@ crash: false
 description: |
   In line 70, a `StringBuilder` is created, but the instance is not used.
 internal: false
-location:
+locations:
   file: org/testng/mustache/Model.java
   method: resolveValueToString(String)
   line: 70

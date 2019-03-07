@@ -5,7 +5,7 @@ violations:
 crash: false
 description: >
   Iterator.next() is not preceded by a Iterator.hasNext()
-location:
+locations:
   file: org/aspectj/weaver/patterns/PointcutRewriter.java
   method: "simplifyAnd(AndPointcut apc)"
 fix:

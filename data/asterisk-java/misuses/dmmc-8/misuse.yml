@@ -8,7 +8,7 @@ description: |
   In line 323 the `value` is cast to `List` and its `i`s element is accessed
   without prior check that such an element exists.
 internal: false
-location:
+locations:
   file: org/asteriskjava/manager/internal/EventBuilderImpl.java
   method: buildEvent(Object, Map)
   line: 323

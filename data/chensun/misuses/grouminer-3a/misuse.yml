@@ -7,7 +7,7 @@ description: |
   The `ResultSet` fetched in line 662 is never closed.
   (This is the same findings as `jadet-4`)
 internal: false
-location:
+locations:
   file: database/SocialNetworkDatabasePosts.java
   method: getPost(Connection, String, String, String, int)
   line: 662

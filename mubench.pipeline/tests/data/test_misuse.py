@@ -42,9 +42,13 @@ class TestMisuse:
         correct_usage = self.create_correct_usage_file(self.uut, join("mypackage", "Pattern.java"))
         assert_equals(self.uut.correct_usages, {correct_usage})
 
-    def test_reads_location(self):
-        uut = create_misuse('', meta={"location": {"file": "file.name", "method": "foo()", "line": 42}})
-        assert_equals(Location("file.name", "foo()", 42), uut.location)
+    def test_reads_locations(self):
+        uut = create_misuse('', meta={"locations": [{"file": "file.name", "method": "foo()", "line": 42}, {"file": "file.name2", "method": "bar()", "line": 1337}]})
+        assert_equals([Location("file.name", "foo()", 42), Location("file.name2", "bar()", 1337)], uut.locations)
+
+    def test_reads_single_location(self):
+        uut = create_misuse('', meta={"locations": {"file": "file.name", "method": "foo()", "line": 42}})
+        assert_equals([Location("file.name", "foo()", 42)], uut.locations)
 
     def test_reads_description(self):
         misuse = create_misuse("", meta={"description": "bla bla bla"})

@@ -4,7 +4,7 @@ violations:
 - missing/condition/value_or_state
 description: >
   Uses AES with ECB mode.
-location:
+locations:
   file: com/JHapps/eKool/SecurePreferences.java
   method: "SecurePreferences(Context, String, boolean)"
 fix:

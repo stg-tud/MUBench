@@ -14,7 +14,7 @@ fix:
   commit: https://github.com/emopers/ntru/commit/4fd7cb8b4bb97dbf7be98e2fa55f36f5028807d2
   revision: 4fd7cb8b4bb97dbf7be98e2fa55f36f5028807d2
 internal: false
-location:
+locations:
   file: net/sf/ntru/encrypt/EncryptionParameters.java
   method: writeTo(OutputStream)
 report: https://github.com/tbuktu/ntru/pull/4

@@ -5,7 +5,7 @@ violations:
 crash: false
 description: >
   RandomAccessFile.close() maybe skipped if previous call throws.
-location:
+locations:
   file: org/apache/lucene/store/FSDirectory.java
   method: close()
 fix:

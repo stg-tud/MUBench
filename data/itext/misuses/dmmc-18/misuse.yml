@@ -11,7 +11,7 @@ description: >
    usage is unsafe against invalid values and we, therefore, consider it a
    misuse.
    (Same finding as `mudetectxp-7`)
-location:
+locations:
   file: com/itextpdf/text/html/WebColors.java
   method: "getRGBColor(String)"
   line: 265

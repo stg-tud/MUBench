@@ -7,7 +7,7 @@ crash: true
 description: >
   Iterator.next() is invoked without prior check of hasNext().
   (Same finding as `mudetect-1` and `mudetectxp-0`)
-location:
+locations:
   file: org/apache/lucene/util/AttributeSource.java
   method: "computeCurrentState()"
 internal: false

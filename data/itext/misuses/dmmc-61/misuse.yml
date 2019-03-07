@@ -8,7 +8,7 @@ description: >
   On line 1599, `Iterator.next()` is invoked without prior check that there are
   sufficiently many elements.
   (Same finding as `mudetect-1` and `mudetectxp-1`)
-location:
+locations:
   file: com/itextpdf/awt/PdfGraphics2D.java
   method: "drawImage(Image, Image, AffineTransform, Color, ImageObserver)"
   line: 1599

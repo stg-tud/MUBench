@@ -5,7 +5,7 @@ violations:
 crash: true
 description: >
   The result of WPEditText.getText() may be null.
-location:
+locations:
   file: org/wordpress/android/ui/posts/EditPostContentFragment.java
   method: onClick(View)
 fix:

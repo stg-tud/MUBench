@@ -6,7 +6,7 @@ crash: true
 description: >
   Loops over a collection, only to ensure it is not empty (every subsequent
   iteration performs the exact same computation).
-location:
+locations:
   file: mubench/examples/directives/Repetitive.java
   method: "misuse(Collection)"
 fix:

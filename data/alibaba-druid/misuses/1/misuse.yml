@@ -6,7 +6,7 @@ crash: true
 description: >
   An instance of Cipher is used twice (the init() method is called again),
   which is an invalid operation.
-location:
+locations:
   file: com/alibaba/druid/filter/config/ConfigTools.java
   method: "decrypt(PublicKey, String)"
 fix:

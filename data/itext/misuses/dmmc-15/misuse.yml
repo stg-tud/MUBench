@@ -11,7 +11,7 @@ description: >
    usage is unsafe against invalid values and we, therefore, consider it a
    misuse.
    (Same finding as `mudetectxp-3`)
-location:
+locations:
   file: com/itextpdf/text/pdf/SimpleBookmark.java
   method: "iterateOutlines(PdfWriter, PdfIndirectReference, List, boolean)"
   line: 549

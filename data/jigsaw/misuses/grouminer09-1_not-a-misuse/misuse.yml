@@ -7,7 +7,7 @@ description: >
   The usage calls `nextToken()` on `StringTokenizer` without checking
   `hasMoreTokens()`. However, the usage handles `NoSuchElementException`,
   which is a valid alternative. Therefore, we do not consider this a misuse.
-location:
+locations:
   file: "org/w3c/jigsaw/map/MapEntry.java"
   # There's three methods matching this signature in the file, all of which follow the same implementation pattern
   method: "parseRestNCSA(String)"

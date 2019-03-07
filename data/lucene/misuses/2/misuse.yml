@@ -5,7 +5,7 @@ violations:
 crash: true
 description: >
   Should catch NoSuchElementException around SortedMap.firstKey()
-location:
+locations:
   file: org/apache/lucene/index/ParallelReader.java
   method: ParallelTermEnum()
 fix:

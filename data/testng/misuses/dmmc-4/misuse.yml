@@ -10,7 +10,7 @@ description: |
   be `null`, empty, or contain exactly one element.
   (Same as finding as `tikanga-0` and `mudetect-0` and `mudetectxp-0`)
 internal: false
-location:
+locations:
   file: org/testng/xml/SuiteGenerator.java
   method: createCustomizedSuite(String, Collection, Collection, Collection, Collection, Map, String, int)
   line: 69

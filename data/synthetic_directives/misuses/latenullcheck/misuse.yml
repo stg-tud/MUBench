@@ -6,7 +6,7 @@ violations:
 crash: true
 description: >
   Calls a method on an object and later checks it for null.
-location:
+locations:
   file: mubench/examples/directives/LateNullCheck.java
   method: "misuse(Object)"
 fix:
