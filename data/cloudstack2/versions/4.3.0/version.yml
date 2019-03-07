@@ -1,9 +1,0 @@
-build:
-  classes: server/target/classes  
-  commands:
-  -  mvn clean install -DskipTests --projects server --also-make compile             
-  src: server/src/
-misuses:
--  SV_CVE_14_9593_1
--  SV_CVE_14_9593_2
-revision: 4.3.0       #c116ca968e552f079e1ebfe855b4bfa02d368f74          

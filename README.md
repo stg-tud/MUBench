@@ -1,4 +1,6 @@
-﻿# MUBench
+﻿<img align="right" width="320" height="320" alt="MUBench Logo" src="./meta/logo.png?raw=true" />
+
+# MUBench
 
 MUBench (pronounced "Moo Bench") is an automated benchmark for API-misuse detectors, based on [the MUBench benchmarking dataset](data).
 If you encounter any problems using MUBench, please [report them to us](https://github.com/stg-tud/MUBench/issues/new).

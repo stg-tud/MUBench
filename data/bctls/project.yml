@@ -1,5 +1,0 @@
-name: BouncyCastle TLS
-repository:
-  type: git 
-  url: https://github.com/bcgit/bc-java.git
-Url: https://github.com/bcgit/bc-java
