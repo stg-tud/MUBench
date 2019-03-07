@@ -1,5 +1,0 @@
-name: Apache Sanctuario-xml-security
-repository:
-  type: git 
-  url:  https://github.com/apache/santuario-java.git
-Url: https://github.com/apache/santuario-java
