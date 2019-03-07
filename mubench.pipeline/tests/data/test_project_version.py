@@ -1,16 +1,14 @@
-import yaml
 from os.path import join
 from tempfile import mkdtemp
 
+import yaml
 from nose.tools import assert_equals, assert_raises
 
 from data.project import Project
 from data.project_checkout import GitProjectCheckout, SVNProjectCheckout, SyntheticProjectCheckout, ZipProjectCheckout
 from data.project_version import ProjectVersion
-from utils.io import remove_tree, create_file, safe_open
-
-
 from tests.test_utils.data_util import create_project, create_version, create_misuse
+from utils.io import remove_tree, create_file, safe_open
 
 
 class TestProjectVersion:
@@ -32,12 +30,12 @@ class TestProjectVersion:
         assert not ProjectVersion.is_project_version(self.temp_dir)
 
     def test_accepts_project_version_directory(self):
-        create_file(self.uut._version_file)
+        create_file(self.uut.version_file)
         assert ProjectVersion.is_project_version(self.uut.path)
 
     def test_reads_version_file(self):
         test_dict = {"revision": "42"}
-        with safe_open(self.uut._version_file, 'w+') as stream:
+        with safe_open(self.uut.version_file, 'w+') as stream:
             yaml.dump(test_dict, stream)
 
         assert_equals(test_dict, self.uut._yaml)
@@ -72,19 +70,19 @@ class TestProjectVersion:
 
     def test_creates_build_config(self):
         self.uut._YAML = {"build": {"src": "src/java/", "commands": ["mvn compile"], "classes": "target/classes/"}}
-        assert_equals("src/java/", self.uut.source_dir)
+        assert_equals(["src/java/"], self.uut.source_dirs)
         assert_equals(["mvn compile"], self.uut.compile_commands)
-        assert_equals("target/classes/", self.uut.classes_dir)
+        assert_equals(["target/classes/"], self.uut.classes_dirs)
 
     def test_replaces_classes_variables_in_build_config(self):
         self.uut._YAML = {"build": {"classes": "$gradle.default.classes"}}
-        assert_equals("build/classes/java/main/", self.uut.classes_dir)
+        assert_equals(["build/classes/java/main/"], self.uut.classes_dirs)
 
     def test_creates_build_config_with_defaults(self):
         self.uut._YAML = {"-no-build-key-": ""}
-        assert_equals("", self.uut.source_dir)
+        assert_equals([""], self.uut.source_dirs)
         assert_equals([], self.uut.compile_commands)
-        assert_equals("", self.uut.classes_dir)
+        assert_equals([""], self.uut.classes_dirs)
 
     def test_id(self):
         assert_equals("{}.{}".format(self.project_id, self.version_id), self.uut.id)
@@ -92,12 +90,23 @@ class TestProjectVersion:
     def test_derives_additional_compile_sources_path(self):
         assert_equals(join(self.uut.path, "compile"), self.uut.additional_compile_sources)
 
-    def test_derives_compile_base_path(self):
+    def test_derives_build_dir(self):
+        self.uut._YAML = {"build": {"src": "src/java/", "classes": "/target/classes/"}}
         self.uut._MISUSES = [create_misuse("m")]  # prevent version from loading misuses
 
-        project_compile = self.uut.get_compile("/base/path")
+        version_compile = self.uut.get_compile("/base/path")
 
-        assert_equals(join("/base/path", self.project_id, self.version_id), project_compile.base_path)
+        assert_equals(join("/base/path/", self.project_id, self.version_id, "build"), version_compile.build_dir)
+
+    def test_is_not_compilable(self):
+        self.uut._YAML = {"build": {}}
+        assert not self.uut.is_compilable
+
+    def test_is_compilable(self):
+        self.uut._YAML = {"build": {"src": "src/java/",
+                                    "commands": ["mvn compile"],
+                                    "classes": "/target/classes/"}}
+        assert self.uut.is_compilable
 
 
 class TestProjectCheckout:
@@ -114,7 +123,7 @@ class TestProjectCheckout:
         project = create_project("-project-", meta={"repository": {"type": "git", "url": "ssh://foobar.git"}})
         version = create_version("-version-", meta={"revision": "-revision-"}, project=project)
 
-        checkout = version.get_checkout( "-base_path-")
+        checkout = version.get_checkout("-base_path-")
 
         assert isinstance(checkout, GitProjectCheckout)
         assert_equals("ssh://foobar.git", checkout.url)

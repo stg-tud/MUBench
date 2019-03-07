@@ -1,0 +1,31 @@
+#!/bin/bash
+
+python /mubench/mubench.docs/debug.py ${*} || exit 1
+
+CLI_VERSION=$1
+EXPERIMENT=$2
+DETECTORS_DIR="/mubench/detectors"
+DETECTOR_NAME=$3
+DETECTOR_JAR="/mubench/debug/${DETECTOR_NAME}.jar"
+DETECTOR_PATH="${DETECTORS_DIR}/${DETECTOR_NAME}/debug"
+DETECTOR_RELEASES="${DETECTORS_DIR}/${DETECTOR_NAME}/releases.yml"
+
+# Ensure JAR file exists or die
+if [[ ! -f "${DETECTOR_JAR}" ]]; then
+  echo "Please mount your detector JAR to ${DETECTOR_JAR}" 1>&2; exit 1
+fi
+
+# Copy JAR file to correct destination
+mkdir -p "${DETECTOR_PATH}"
+cp "${DETECTOR_JAR}" "${DETECTOR_PATH}/${DETECTOR_NAME}.jar"
+
+# Fake releases.yml with MUBench CLI version
+touch "${DETECTOR_RELEASES}"
+cat > "${DETECTOR_RELEASES}" <<EOL
+- tag: debug
+  cli_version: ${CLI_VERSION}
+EOL
+shift
+
+# Run the detector with settings for remote debugging
+pipeline run ${*} --force-detect --tag debug --java-options agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=5005

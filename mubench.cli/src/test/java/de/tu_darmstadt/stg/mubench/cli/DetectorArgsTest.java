@@ -1,6 +1,5 @@
 package de.tu_darmstadt.stg.mubench.cli;
 
-import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 
 import java.io.FileNotFoundException;
@@ -35,13 +34,12 @@ public class DetectorArgsTest {
 	}
 
 	@Test
-	public void parsesTrainingPath() throws FileNotFoundException {
+	public void parsesTrainingPaths() throws FileNotFoundException {
 		DetectorArgs actual = DetectorArgs.parse(
 				new String[] { DetectorArgs.keyTrainingSrcPath, "psrc", DetectorArgs.keyTrainingClassPath, "pclasspath" });
 
-		CodePath patternPath = actual.getPatternPath();
-		assertEquals("psrc", patternPath.srcPath);
-		assertEquals("pclasspath", patternPath.classPath);
+        assertEquals("psrc", actual.getTrainingSrcPaths()[0]);
+		assertEquals("pclasspath", actual.getTrainingClassPath().getClasspath());
 	}
 
 	@Test
@@ -49,15 +47,29 @@ public class DetectorArgsTest {
 		DetectorArgs actual = DetectorArgs
 				.parse(new String[] { DetectorArgs.keyTargetSrcPath, "msrc", DetectorArgs.keyTargetClassPath, "mclasspath" });
 
-        CodePath targetPath = actual.getTargetPath();
-        assertEquals("msrc", targetPath.srcPath);
-		assertEquals("mclasspath", targetPath.classPath);
+        String[] targetSrcPaths = actual.getTargetSrcPaths();
+        ClassPath targetClassPaths = actual.getTargetClassPath();
+        assertEquals("msrc", targetSrcPaths[0]);
+		assertEquals("mclasspath", targetClassPaths.getClasspath());
 	}
+
+	@Test
+    public void parsesTargetPaths() throws FileNotFoundException {
+        DetectorArgs actual = DetectorArgs
+                .parse(new String[] { DetectorArgs.keyTargetSrcPath, "msrc1:msrc2",
+                                      DetectorArgs.keyTargetClassPath, "mclasspath1:mclasspath2" });
+
+        String[] targetSrcPaths = actual.getTargetSrcPaths();
+        ClassPath targetClassPath = actual.getTargetClassPath();
+        assertEquals("msrc1", targetSrcPaths[0]);
+        assertEquals("msrc2", targetSrcPaths[1]);
+        assertEquals("mclasspath1:mclasspath2", targetClassPath.getClasspath());
+    }
 
 	@Test
 	public void parsesDependenciesClassPath() throws Exception {
 		DetectorArgs actual = DetectorArgs.parse(new String[]{DetectorArgs.keyDependenciesClassPath, "foo:bar"});
-		assertArrayEquals(new String[] {"foo", "bar"}, actual.getDependencyClassPath());
+		assertEquals("foo:bar", actual.getDependencyClassPath().getClasspath());
 	}
 
 	@Test(expected = IllegalArgumentException.class)
@@ -82,17 +94,17 @@ public class DetectorArgsTest {
 
     @Test(expected = FileNotFoundException.class)
     public void throwsOnNoTrainingSrcPath() throws FileNotFoundException {
-        DetectorArgs.parse(new String[0]).getPatternSrcPath();
+        DetectorArgs.parse(new String[0]).getTrainingSrcPaths();
     }
 
     @Test(expected = FileNotFoundException.class)
     public void throwsOnNoTrainingClassPath() throws FileNotFoundException {
-        DetectorArgs.parse(new String[0]).getPatternClassPath();
+        DetectorArgs.parse(new String[0]).getTrainingClassPath();
     }
 
     @Test(expected = FileNotFoundException.class)
     public void throwsOnNoTargetSrcPath() throws FileNotFoundException {
-        DetectorArgs.parse(new String[0]).getTargetSrcPath();
+        DetectorArgs.parse(new String[0]).getTargetSrcPaths();
     }
 
     @Test(expected = FileNotFoundException.class)
@@ -101,8 +113,8 @@ public class DetectorArgsTest {
     }
 
     @Test
-    public void noDependencyClassPath() throws FileNotFoundException {
+    public void noDependencyClassPath() {
         DetectorArgs actual = DetectorArgs.parse(new String[0]);
-        assertArrayEquals(new String[0], actual.getDependencyClassPath());
+        assertEquals("", actual.getDependencyClassPath().getClasspath());
     }
 }

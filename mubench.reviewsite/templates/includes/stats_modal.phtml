@@ -1,0 +1,48 @@
+<?php
+/**
+* @var string $project
+* @var string $version
+* @var array $run all run information
+* @var array $additional_stats all stat columns from the run information besides project, version, runtime, result and number_of_findings
+* @var Parsedown $markdown_parser markdown parser
+*/
+?>
+
+<div id="<?= htmlspecialchars($project) ?>_<?= htmlspecialchars($version) ?>" class="modal">
+    <div class="modal-content">
+                            <span class="close"
+                                  id="<?= htmlspecialchars($project) ?>_<?= htmlspecialchars($version) ?>">&times;</span>
+        <table class="invisible">
+            <tr>
+                <td><h2>Run Details</h2></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td><b>Project:</b></td>
+                <td><?= $markdown_parser->text($project); ?></td>
+            </tr>
+            <tr>
+                <td><b>Version:</b></td>
+                <td><?= $markdown_parser->text($version); ?></td>
+            </tr>
+            <tr>
+                <td><b>Result:</b></td>
+                <td><?= $markdown_parser->text($run->result); ?></td>
+            </tr>
+            <tr>
+                <td><b># of Findings:</b></td>
+                <td><?= $markdown_parser->text($run->number_of_findings); ?></td>
+            </tr>
+            <tr>
+                <td><b>Runtime:</b></td>
+                <td><?= $markdown_parser->text($run->runtime) . "s"; ?></td>
+            </tr>
+            <?php foreach ($additional_stats as $stat) : ?>
+                <tr>
+                    <td><b><?= $markdown_parser->text($stat) ?>:</b></td>
+                    <td><?= $markdown_parser->text($run[$stat]); ?></td>
+                </tr>
+            <?php endforeach; ?>
+        </table>
+    </div>
+</div>

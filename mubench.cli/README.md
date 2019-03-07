@@ -2,82 +2,94 @@
 
 # MUBench : Detector Interface
 
-Setting up your own detector for evaluation in MUBench is simple:
+If you want to integrate your detector into MUBench, please follow these steps:
 
-1. Implement a [MUBench Runner](#runner) for your detector.
-2. Place an executable JAR with your runner as its entry point in `detectors/mydetector/mydetector.jar`.
-3. Create [/detectors/mydetector/releases.yml](#list-of-detector-releases), to provide version information.
-4. Create [/detectors/mydetector/detector.py](#detector.py), to post process your detector's findings.
-5. [Run Benchmarking Experiments](../mubench.pipeline/) using `mydetector` as the detector id.
+1. [Implement a MUBench Runner](#implement-a-mubench-runner) for your detector.
+2. Create an executable Jar file with the MUBench Runner as its entry point.
+3. Decide on a detector Id, e.g., `YourDetector`.
+4. Integrate the detector into the benchmark:
+   - To test `YourDetector`, you may use [MUBench's debugging support](#debugging).
+   - To run experiments on `YourDetector`:
+     1. Create a folder for your detector locally on you machine, say, `.../YourDetector`.
+     2. Place the executable Jar file at `.../YourDetector/latest/YourDetector.jar`.
+     3. Add [detector-version and CLI-version information](#provide-version-information) to `.../YourDetector/releases.yml`.
+     4. Mount your detector into MUBench by adding `-v .../YourDetector:/mubench/detectors/YourDetector` to [the Docker command running MUBench](../#setup).
+     5. [Run experiments](../mubench.pipeline/#run-experiments) using `YourDetector` as the detector Id.
+   - To get `YourDetector` published with MUBench:
+     1. Fork and clone this repository.
+     2. Place the executable Jar file at `detectors/YourDetector/latest/YourDetector.jar`.
+     3. Add [detector-version and CLI-version information](#provide-version-information) to `.../YourDetector/releases.yml`.
+     4. Create a Pull Request with these new files.
 
-If you have a detector set up for running on MUBench, please [contact Sven Amann](http://www.stg.tu-darmstadt.de/staff/sven_amann) to publish it with the benchmark. Feel free to do so as well, if you have questions or require assistance.
+Feel free to [contact Sven Amann](http://www.stg.tu-darmstadt.de/staff/sven_amann), if you have questions or require assistance.
 
-## Runner
 
-To interface with MUBench, all you need is to implement the `MuBenchRunner` interface, which comes with the Maven dependency `de.tu-darmstadt.stg:mubench.cli` via our repository at http://www.st.informatik.tu-darmstadt.de/artifacts/mubench/mvn/ (check [the pom.xml](pom.xml) for the most-recent version).
+## Implement a MUBench Runner
 
-A typical runner looks like this:
+To run your detector in MUBench experiments, you need to implement a MUBench Runner that invokes your detector and reports its findings.
+We provide infrastructure for implementing runners in the Maven dependency `de.tu-darmstadt.stg:mubench.cli` via our repository
 
-```java
-public class MyRunner extends MuBenchRunner {
-  public static void main(String[] args) {
-    new MyRunner().run(args);
-  }
-  
-  @Override
-  protected void detectOnly(DetectorArgs args, DetectorOutput output) throws Exception {
-    // Run detector in Experiment 1 configuration...
-  }
-  
-  @Override
-  protected void mineAndDetect(DetectorArgs args, DetectorOutput output) throws Exception {
-    // Run detector in Experiment 2/3 configuration...
-  }
-}
-```
+    http://www.st.informatik.tu-darmstadt.de/artifacts/mubench/mvn/
 
-It supports two run modes:
+Check the [MUBench CLI documentation](http://www.st.informatik.tu-darmstadt.de/artifacts/mubench/cli/) for details on how to implement runners and other utilities available through this dependency.
 
-1. "Detect Only" (Experiment 1), where the detector is provided with hand-crafted patterns (a one-method class implementing the correct usage) and some target code to find violations of these patterns in.
-2. "Mine and Detect" (Experiment 2/3), where the detector should mine its own patterns in the provided codebase and find violations in that same codebase.
+Once you implemented the runner, you need to bundle it together with your detector into an executable Jar file.
+This Jar file must have the runner as its entry point and must be named after your detector, e.g., `YourDetector.jar`.
+See the configuration of the `maven-assembly-plugin` in [the `pom.xml` file of our `DemoDetector`](./pom.xml) for an example of how to do this.
 
-In either mode, the `DetectorArgs` provide all input as both the Java source code and the corresponding Bytecode. Additionally, it provides the classpath of all the code's dependencies.
 
-The `DetectorOutput` is essentially a collection where you add your detector's findings, specifying their file and method location and any other property that may assist manuel reviews of the findings. MUBench expects you to add the findings ordered by the detector's confidence, descending. You may also output general statistics about the detector run.
+## Provide Version Information
 
-## Releases.yml
-
-This file must be at `detectors/mydetector/releases.yml` and contain a list of releases of your detector.
-
-Entries look like this:
+Each detector has a `releases.yml` file that provides version information.
+The most-simple version of such a file, which suffices to run a detector locally, might look as follows:
 
 ```yaml
-- cli-version: 0.0.10
+- cli_version: 0.0.13
+  md5: foo
+```
+
+* The `cli_version` names the version of the `mubench.cli` dependency used to implement the respective [MUBench Runner](#implement-a-mubench-runner).
+* The `md5` might be any string.
+  When running experiments, [the MUBench Pipeline](../mubench.pipeline) uses this string only to determine whether the detector changed (by checking whether the `md5` changed) and to invalidate existing results accordingly.
+  Only when the detector is integrated into the MUBench detector repository, such that [the MUBench Pipeline](../mubench.pipeline) can download it automatically, the `md5` needs to be changed to the actual hash of the Jar file, for download verification.
+
+It is possible to manage multiple versions of a detector via the `releases.yml` file.
+The file might then look as follows:
+
+```yaml
+- cli_version: 0.0.10
   md5: 2470067fac02ee118b7d49287246e20a
-- cli-version: 0.0.8
+- cli_version: 0.0.8
   md5: 9e5252816faecf552464f0a6abde714f
   tag: my-tag
 ```
 
-The must contain at least one entry. By default, MUBench uses the newest version listed. Each entry consists of the following keys:
+* The `cli_version` names the version of the `mubench.cli` dependency used to implement the respective [MUBench Runner](#implement-a-mubench-runner).
+* The `md5` is the hash of the respective Jar file.
+* The `tag` is an identifier for the detector version (case insensitive).
+  You may specify this identifier when running experiments, using the `--tag` option.
+  If the `--tag` option is not specified, [the MUBench Pipeline](../mubench.pipeline) runs the top-most detector version listed in the `releases.yml` file.
+  If this detector version has no `tag`, `latest` is used as the default.
+  In any case, [the MUBench Pipeline](../mubench.pipeline) expects the respective Jar file at `detectors/<mydetector>/<tag>/<mydetector>.jar`.
 
-* `cli-version` - The [MUBench Runner](#runner) version implemented by the respective detector release. This information is used to invoke your detector.
-* `md5` (Optional) - The MD5 hash of the `detector/mydetector/mydetector.jar` file. MUBench will use this value to check the integrity of the detector, if it is loaded from the remote detector registry. The MD5 is mandatory in this case.
-* `tag` (Optional) - Used to reference specific detector releases. To request a specific detector release, add `--tag my-tag` to the MuBench command.
 
-## Detector.py
+## Debugging a Detector
 
-To post process your detector's results, you need to create `detectors/mydetector/mydetector.py` with a class `mydetector`, which implements [`data.detector.Detector`](https://github.com/stg-tud/MUBench/blob/master/mubench.pipeline/data/detector.py) with the method `_specialize_finding(self, findings_path: str, finding: Finding) -> SpecializedFinding`. A specialized finding prepares a finding of a detector for display on the review page, for example, by converting dot graphs to images. The [`data.detector_specialising.specialising_util`](https://github.com/stg-tud/MUBench/blob/master/mubench.pipeline/data/detector_specialising/specialising_util.py) module contains utilities for this purpose.
+MUBench supports testing and debugging [MUBench Runners](#implement-a-mubench-runner) in its Docker environment using a remote debugger.
 
-Here is an example of a basic implementation which does no post processing:
+### Preparation
 
-```python
-from data.detector import Detector
-from data.finding import Finding, SpecializedFinding
+1. Mount the directory containing your executable Jar file, e.g., the `target/` directory of your Maven project, into MUBench, by adding `-v /.../target/:/mubench/debug` to [the Docker command running MUBench](../#setup).
+2. Forward port `5005` from the shell to your host system, to allow attaching a remote debugger, by adding `-p 5005:5005` to [the Docker command running MUBench](../#setup).
 
-class MyDetector(Detector):
-    def _specialize_finding(self, findings_path: str, finding: Finding) -> SpecializedFinding:
-        return SpecializedFinding(finding)
-```
+### Debugging
 
-Consider [MuDetect.py](https://github.com/stg-tud/MUBench/blob/master/detectors/MuDetect/MuDetect.py) for a more advanced example with post processing.
+1. Generate `YourDetector.jar`.
+2. Run `mubench> debug <CLI> <E> MyDetector <F>`, where
+   * `<CLI>` names the version of the `mubench.cli` dependency used to implement your [MUBench Runner](#implement-a-mubench-runner),
+   * `<E>` is the [id of the experiment](../mubench.pipeline/#experiments) to run, and
+   * `<F>` specifies [a filter](../data/#filtering) (we recommend debugging on individual project versions or misuses, because debug will halt on every(!) single entity).
+3. Attach a remote debugger from the IDE of your choice to the local process on port `5005`, once MUBench started the detector.
+4. Debug, make changes, and repeat from 1., as necessary.
+
+Example: `debug 0.0.13 ex2 DemoDetector --only aclang.587`

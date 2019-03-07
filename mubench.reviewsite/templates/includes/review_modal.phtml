@@ -1,0 +1,71 @@
+<?php
+/**
+ * @var string $project
+ * @var string $version
+ * @var Misuse $misuse
+ * @var array $run all run information
+ * @var array $additional_stats all stat columns from the run information besides project, version, runtime, result and number_of_findings
+ * @var Parsedown $markdown_parser markdown parser
+ * @var callable $detectorName function to resolve detector names if blinded
+ * @var callable $reviewerName function to return anonymous reviewer name if blinded else the reviewer name
+ */
+
+use MuBench\ReviewSite\Models\Misuse;
+?>
+
+<i value="<?= htmlspecialchars($project) ?>_<?= htmlspecialchars($version) ?>_<?= htmlspecialchars($misuse->id) ?>" onclick="showModal(this)" class="fa fa-comments-o clickable-icon" aria-hidden="true"></i>
+<div id="<?= htmlspecialchars($project) ?>_<?= htmlspecialchars($version) ?>_<?= htmlspecialchars($misuse->id) ?>" class="modal">
+    <div class="modal-content">
+                            <span class="close"
+                                  id="<?= htmlspecialchars($project) ?>_<?= htmlspecialchars($version) ?>_<?= htmlspecialchars($misuse->id) ?>">&times;</span>
+        <table class="invisible">
+            <tr><td><b>Detector:</b></td><td><?= htmlspecialchars($detectorName($detector->muid)); ?></td></tr>
+            <tr><td><b>Target:</b></td><td>project '<?= $markdown_parser->text($misuse->getProject()); ?>' version <?= $markdown_parser->text($misuse->getVersion()); ?></td></tr>
+            <tr><td><b>Misuse:</b></td><td>misuse '<?= $markdown_parser->text($misuse->misuse_muid); ?>'</td></tr>
+        </table>
+        <h2>Reviews:</h2>
+            <?php foreach($misuse->reviews as $review) : ?>
+                <div class="card-shadow">
+                <table class="invisible">
+                    <tr>
+                        <td><b>Reviewer:</b></td>
+                        <td><a href="<?= $pathFor('review', array('experiment_id' => $experiment->id, 'detector_muid' => $detectorPathId($detector), 'project_muid' => $project, 'version_muid' => $version, 'misuse_muid' => $misuse->misuse_muid, 'reviewer_name' => $reviewerPathId($review->reviewer))) ?>"><?= htmlspecialchars($reviewerName($review->reviewer)) ?></a></td>
+                    </tr>
+                    <tr><td><b>Tags:</b></td>
+                        <td>
+                            <?php foreach($review->tags as $tag) : ?>
+                                <div class="misuse-tag">
+                                    <span><?= htmlspecialchars($tag->name) ?></span>
+                                </div>
+                            <?php endforeach; ?>
+                        </td>
+                    </tr>
+                    <tr style="padding-top:0;margin-top:0;">
+                        <td><b>Decision:</b></td>
+                                <td>
+                                    <?php if($review->identifiesHit()) : ?>
+                                        <i class="fa fa-thumbs-o-up" aria-hidden="true" style="color:green;" title="Yes"></i>
+                                        <?php
+                                        $number_in_circle = $review->getLowestHitRank();
+                                        $circle_color = "black";
+                                        include "number_circle.phtml";
+                                        ?>
+                                    <?php elseif($review->getDecision() == \MuBench\ReviewSite\Models\Decision::NO) : ?>
+                                        <i class="fa fa-thumbs-o-down" aria-hidden="true" style="color:darkred;" title="No"></i>
+                                    <?php else : ?>
+                                        <i class="fa fa-question-circle" aria-hidden="true" style="color:blue;" title="Needs Clarification"></i>
+                                    <?php endif; ?>
+                                </td>
+                    </tr>
+                    <tr>
+                        <td><b>Comment:</b></td>
+
+                    </tr>
+                    <tr><td colspan="2">
+                            <?= $markdown_parser->text($review->comment); ?>
+                        </td></tr>
+                </table>
+                </div>
+            <?php endforeach; ?>
+    </div>
+</div>

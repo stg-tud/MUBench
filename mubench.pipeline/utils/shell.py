@@ -2,7 +2,7 @@ import locale
 import logging
 import os
 from platform import platform
-from subprocess import PIPE, STDOUT, CalledProcessError, run, TimeoutExpired
+from subprocess import PIPE, CalledProcessError, run, TimeoutExpired
 from typing import Optional
 
 
@@ -15,7 +15,7 @@ class Shell:
             # On our Debian server subprocess does not return until after the process finished, but then correctly
             # raises TimeoutExpired, if the process took to long. We use `timeout` to ensure that the process terminates
             # eventually.
-            if "Linux" in platform() and timeout is not None:
+            if "debian" in platform() and timeout is not None:
                 command = "timeout {} {}".format(timeout + 60, command)
 
             output = Shell.__exec(command, cwd, timeout, encoding)

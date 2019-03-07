@@ -1,0 +1,419 @@
+@import url(reset.css);
+
+body {
+	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+	font-size: 14px;
+	padding: 20px;
+}
+
+h1 {
+	font-size: 160%;
+    font-weight: bolder;
+	margin: 20pt 0 10pt;
+}
+h2 {
+    font-size: 140%;
+	font-weight: bolder;
+	margin: 20px 0 10pt;
+}
+
+p {
+    margin: 10pt 0;
+    display: inline;
+}
+
+ul {
+    list-style: disc inside;
+}
+ul ul {
+	margin-left: 15px;
+}
+
+#header {
+    display: block;
+    width: 100%;
+    height: 135px;
+    margin-bottom: 30pt;
+}
+
+#title {
+    float: left;
+    margin-right: 30pt;
+}
+
+#title a {
+    vertical-align: middle;
+    font-size: 50pt;
+    color: black;
+    text-decoration: none;
+}
+
+#logo {
+    float: left;
+    margin-right: 10pt;
+}
+
+nav ol {
+    counter-reset: item;
+    list-style-type: decimal;
+    padding: 0;
+    margin: 0;
+}
+
+nav ol li {
+    display: block;
+    position: relative;
+    float: left;
+    min-width: 160px;
+    margin: 0 5pt 5pt 0;
+    cursor: pointer;
+    background: white;
+    border: 1px solid grey;
+}
+
+nav ol li.right {
+    float: right;
+}
+
+nav ol li.active {
+    background: lightgrey;
+    font-style: italic;
+    border-width: 2px;
+}
+
+nav ol li span {
+    display: block;
+    padding: .5em;
+    white-space: nowrap;
+    color: black;
+    font-weight: bold;
+}
+
+nav ol li a {
+    display: block;
+    padding: .5em;
+    text-decoration: none;
+    white-space: nowrap;
+    color: black;
+    font-weight: bold;
+}
+
+nav ol li:hover { background: lightgrey; }
+
+nav li ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: none;
+    z-index: 1000;
+}
+
+nav li:hover > ul {
+    display: block;
+    position: absolute;
+}
+
+nav li:hover li {
+    float: none;
+    margin: 0;
+}
+
+nav ol:before,
+nav ol:after {
+    content: " "; /* 1 */
+    display: table; /* 2 */
+}
+
+nav ol:after { clear: both; }
+
+ul#experiments {
+    list-style-type: none;
+}
+
+ul#experiments > li {
+    float: left;
+    min-width: 25%;
+    padding: 15pt;
+    margin: 5pt;
+    border: 1px solid grey;
+}
+
+ul#experiments span {
+    font-weight: bold;
+}
+
+ul#experiments ul {
+    list-style-type: circle;
+    margin-top: 10pt;
+}
+
+ul#experiments ul li {
+    display: block;
+    padding: 5pt;
+}
+
+sub {
+    vertical-align: sub;
+    font-size: smaller;
+}
+
+table {
+    border-spacing: 0;
+    border-style: solid none solid;
+    border-color: black;
+    border-width: 2px;
+}
+
+table.invisible {
+    border-style: none;
+}
+
+th {
+    border-bottom: solid 1px black;
+    font-weight: bold;
+    text-align: left;
+    padding: 5px;
+}
+th:empty {
+    border-style: none;
+}
+th[colspan] {
+    text-align: center;
+}
+td { vertical-align: top; padding: 5px; }
+td.top { border-top: 1px solid black; }
+td.right { text-align: right; }
+
+td.no-hit { color: lightgray; }
+a.button.no-hit { color: #AAAAAA; }
+
+table.potential_hits th {
+    border: 2px solid black;
+}
+
+table.potential_hits td {
+    border: 2px solid grey;
+}
+
+a.button, input.button {
+    background-color: #CCCCCC;
+    border: none;
+    color: black;
+    padding: 5px 10px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 12px;
+    margin: 4px 2px;
+    cursor: pointer;
+}
+
+ul.inline {
+    display: inline;
+    list-style: none;
+}
+
+ul.inline li {
+    display: inline;
+}
+
+ul.inline li:after {
+    content: ", ";
+}
+
+ul.inline li:last-child:after {
+    content: "";
+}
+
+table.fw {width:100%;}
+.vtop {vertical-align:top}
+.prettyprint ol.linenums > li {
+    list-style: decimal inside;
+}
+
+pre.prettyprint {
+    overflow: auto;
+    width: auto;
+    resize: vertical;
+    max-height: 1000px;
+}
+
+.misuse-tag {
+    float: left;
+    margin: 0 3px 3px 0;
+    padding: 4px;
+    border-radius: 2px;
+    background-color: gray;
+    color: lightgray;
+}
+
+.tag-input {
+    margin-left: 5px;
+    padding: 4px;
+    width: 100%;
+    height: 100%;
+    border: 0;
+    outline: none;
+}
+
+.clickable-icon {
+    cursor:pointer;
+}
+
+.card-shadow {
+    border: 1px solid;
+    box-shadow: 5px 5px #888888;
+    width: 350px;
+    float: left;
+    margin: 10px;
+}
+
+
+/*
+ * SimpleMDE editor
+ */
+
+.CodeMirror,
+.CodeMirror-scroll {
+    height: 100px;
+    min-height: 0;
+    max-width: 500px;
+}
+
+a, a:visited, a:hover, a:active {
+    color: inherit;
+}
+
+.dropdown {
+    position: relative;
+    display: inline-block;
+    padding:0;
+    margin:0;
+}
+
+.dropdown.button {
+    margin: 0;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #f9f9f9;
+    min-width: 146px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+}
+
+.dropdown-content a {
+    color: black;
+    padding: 5px 5px;
+    text-decoration: none;
+    display: block;
+    cursor: pointer;
+}
+
+.dropdown-content a.disabled{
+    color: grey;
+    cursor: default;
+    background-color: lightgray;
+}
+
+.dropdown-content a:hover {background-color: #f1f1f1}
+
+.dropdown:hover .dropbtn {
+    background-color: lightgray;
+}
+
+a.disabled {
+    pointer-events: none;
+    color: gray;
+    cursor: default;
+    background-color: lightgray;
+}
+
+.review-nav-bar {
+    position:fixed;
+    bottom:0;
+    left:0;
+    width:100%;
+    background-color:#f1f1f1;
+    z-index:1;
+    padding:5px;
+}
+
+.floating-comment {
+    position:fixed;
+    background-color:#f9f9f9;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index:1;
+    width:300px;
+    display:none;
+}
+
+.comment-overlay {
+    display:flex;
+    position:absolute;
+    background-color:black;
+    height:100%;
+    width:100%;
+    opacity:0.5;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+
+.comment-overlay-button {
+    position:absolute;
+    width: 50%;
+    display:flex;
+    background-color: #f1f1f1;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    text-align:center;
+    border: 1px solid;
+    box-shadow: 5px 5px #888888;
+    bottom: 30%;
+    right: 20%;
+    margin: 10px;
+    padding: 5px;
+}
+
+.row-hover:hover {
+    background-color: #f1f1f1;
+}
+
+.row-hover:hover td {
+    background-color: #f1f1f1;
+}
+
+span.stats.invisible {
+    display:none;
+}
+
+#filter-menu {
+    margin: 5px;
+}
+
+#filter-menu label {
+    padding-right: 10px;
+    margin: 5px;
+    cursor: pointer;
+}
+#filter-menu input {
+    vertical-align: middle;
+    width:15px;
+    height:15px;
+    cursor: pointer;
+}
+#filter-menu label span {
+    vertical-align: middle;
+}
+
+.remove-tag-button {
+    border:none;
+    outline:none;
+    background-color: #808080;
+    margin:0;
+    padding:0;
+}

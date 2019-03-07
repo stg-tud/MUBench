@@ -1,0 +1,3 @@
+#!/bin/bash
+
+docker run -it -v mubench-checkouts:/mubench/checkouts -v mubench-findings:/mubench/findings --rm -p 8080:80 svamann/mubench:stable ${*}

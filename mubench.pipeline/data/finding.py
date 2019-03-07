@@ -6,12 +6,12 @@ from data.snippets import get_snippets, Snippet
 
 class Finding(Dict[str, str]):
     def __init__(self, data: Dict[str, str]):
-        super().__init__()
-        self.update(data)
+        super().__init__(data)
 
-    def is_potential_hit(self, misuse: Misuse, method_name_only: bool = False):
+    def is_potential_hit(self, misuse: Misuse, source_base_paths: List[str], method_name_only: bool = False):
         return self.__is_match_by_file(misuse.location.file) and \
-               self.__is_match_by_method(misuse.location.method, method_name_only)
+               self.__is_match_by_method(misuse.location.method, method_name_only) and \
+               self.__is_match_by_line(misuse, source_base_paths)
 
     def __is_match_by_file(self, misuse_file: str):
         finding_file = self.__file()
@@ -41,14 +41,23 @@ class Finding(Dict[str, str]):
 
         return misuse_method.startswith(finding_method)
 
+    def __is_match_by_line(self, misuse: Misuse, source_base_paths: List[str]):
+        if self.__startline() < 0:
+            return True
+
+        snippets = misuse.get_snippets(source_base_paths)
+        for snippet in snippets:
+            snippet_last_line_number = snippet.first_line_number + snippet.code.count("\n")
+            if snippet.first_line_number < self.__startline() < snippet_last_line_number:
+                return True
+
+        return False
+
     def __method(self):
         return self.get("method", "")
 
-    def get_snippets(self, source_base_path: str) -> List[Snippet]:
-        return get_snippets(source_base_path, self.__file(), self.__method())
+    def __startline(self):
+        return self.get("startline", -1)
 
-
-class SpecializedFinding(Finding):
-    def __init__(self, data: Dict[str, str], files: List[str] = None):
-        super().__init__(data)
-        self.files = files or []
+    def get_snippets(self, source_base_paths: List[str]) -> List[Snippet]:
+        return get_snippets(source_base_paths, self.__file(), self.__method(), self.__startline())

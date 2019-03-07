@@ -13,105 +13,108 @@
  *
  * @var array $experiments all experiments (Experiment)
  * @var array $detectors detectors (Detector) with results per experiment
+ *
+ * @var Parsedown $markdown_parser markdown parser
+ *
  * @var array $misuses
+ * @var callable $detectorName function to resolve detector names if blinded
+ * @var callable $detectorPathId function to return detector id if blinded
+ * @var callable $reviewerName function to return anonymous reviewer name if blinded else the reviewer name
+ * @var callable $reviewerPathId function to return reviewer id if blinded else the reviewer name
  */
-use MuBench\ReviewSite\Model\ReviewState;
-use Parsedown;
 
-$markdown_parser = new Parsedown();
+use MuBench\ReviewSite\Models\ReviewState;
 
 ?>
 <html>
 <head>
     <title>MuBench :: Open Reviews</title>
-    <link rel="stylesheet" type="text/css" href="<?= $site_base_url ?>style/style.css" />
+    <link rel="stylesheet" type="text/css" href="<?= $site_base_url ?>css/style.css" />
     <link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
 </head>
 <body>
 <?php include "includes/menu.phtml"; ?>
 
-<?php foreach($misuses as $experiment => $detectors) : ?>
-    <h1>Experiment: <?= htmlspecialchars($experiment); ?></h1>
-    <table>
-        <thead>
+<h1>Experiment: <?= htmlspecialchars($experiment->id); ?></h1>
+<table>
+    <thead>
+    <tr>
+        <th>Detector</th>
+        <th>Project</th>
+        <th>Version</th>
+        <th>Misuse</th>
+        <th>Decision</th>
+        <th>Reviews</th>
+        <th></th>
+    </tr>
+    </thead>
+    <tbody>
+    <?php $last_project = ""; $version = ""; ?>
+    <?php foreach($open_misuses as $detector => $misuses) : ?>
+    <?php foreach($misuses as $misuse) : /** @var \MuBench\ReviewSite\Models\Misuse $misuse */ ?>
+        <?php
+        $project = $misuse->getProject();
+        $new_project = strcmp($last_project, $misuse->getProject()) !== 0;
+        $last_project = $project;
+        $new_version = strcmp($version, $misuse->getVersion()) !== 0;
+        $version = $misuse->getVersion();
+        ?>
+        <?php
+        $classes = [];
+        if($new_project) $classes[] = "top";
+        $style_classes = implode(" ", $classes);
+        ?>
         <tr>
-            <th>Detector</th>
-            <th>Project</th>
-            <th>Version</th>
-            <th>Misuse</th>
-            <th>Decision</th>
-            <th>Reviews</th>
-            <th></th>
+            <td class="<?= $style_classes ?>">
+                <?= $new_project ? $markdown_parser->text($detectorName($detector)) : ""; ?></td>
+            <td class="<?= $style_classes ?>">
+                <?= $new_project ? $markdown_parser->text($project) : ""; ?></td>
+            <td class="<?= $style_classes ?>">
+                <?= $new_version ? $markdown_parser->text($version) : ""; ?></td>
+            <td class="<?= $style_classes ?>">
+                <?= $markdown_parser->text($misuse->misuse_muid); ?></td>
+            <?php
+            $resolution_review = $pathFor('review', array('experiment_id' => $experiment->id, 'detector_muid' => $detectorPathId($misuse->detector), 'project_muid' => $misuse->getProject(), 'version_muid' => $misuse->getVersion(), 'misuse_muid' => $misuse->misuse_muid, 'reviewer_name' => $reviewerPathId($resolution_reviewer)));
+            ?>
+            <td class="<?= $style_classes ?>">
+                <?php $review_state = $misuse->getReviewState($number_of_required_reviews) ?>
+                <?php if ($review_state == ReviewState::NOTHING_TO_REVIEW): ?>
+                <?php elseif ($review_state == ReviewState::NEEDS_REVIEW): ?>
+                    <i class="fa fa-search" aria-hidden="true" style="color:red;" title="Needs Review"></i>
+                <?php elseif ($review_state == ReviewState::NEEDS_CLARIFICATION): ?>
+                    <i class="fa fa-question-circle" aria-hidden="true" style="color:blue;" title="Needs Clarification"></i>
+                <?php elseif ($review_state == ReviewState::DISAGREEMENT): ?>
+                    <a href="<?= $resolution_review ?>"><i class="fa fa-exclamation-triangle" aria-hidden="true" style="color:red;" title="Disagreement"></i></a>
+                <?php elseif ($review_state == ReviewState::AGREEMENT_YES): ?>
+                    <i class="fa fa-thumbs-o-up" aria-hidden="true" style="color:green;" title="Agreement: Yes"></i>
+                <?php elseif ($review_state == ReviewState::AGREEMENT_NO): ?>
+                    <i class="fa fa-thumbs-o-down" aria-hidden="true" style="color:darkred;" title="Agreement: No"></i>
+                <?php elseif ($review_state == ReviewState::RESOLVED_YES): ?>
+                    <i class="fa fa-thumbs-o-up" aria-hidden="true" style="color:green;" title="Resolved: Yes"></i>
+                    (<a href="<?= $resolution_review ?><?= $origin_param ?>"><i class="fa fa-handshake-o" aria-hidden="true" title="Resolution"></i></a>)
+                <?php elseif ($review_state == ReviewState::RESOLVED_NO): ?>
+                    <i class="fa fa-thumbs-o-down" aria-hidden="true" style="color:darkred;" title="Resolved: No"></i>
+                    (<a href="<?= $resolution_review ?><?= $origin_param ?>"><i class="fa fa-handshake-o" aria-hidden="true" title="Resolution"></i></a>)
+                <?php endif; ?>
+            </td>
+            <td class="<?= $style_classes ?>">
+                <ul class="inline">
+                    <?php foreach($misuse->getReviews() as $review) : /** @var \MuBench\ReviewSite\Models\Review $review */ ?>
+                    <?php $reviewer_name = htmlspecialchars($reviewerName($review->reviewer)) ?>
+                        <li style="display:inline"><a href="<?= $pathFor('review', array('experiment_id' => $experiment->id, 'detector_muid' => $detectorPathId($misuse->detector), 'project_muid' => $misuse->getProject(), 'version_muid' => $misuse->getVersion(), 'misuse_muid' => $misuse->misuse_muid, 'reviewer_name' => $reviewerPathId($review->reviewer))) ?><?= $reviewerName($review->reviewer) ?>"></a></li>
+                    <?php endforeach; ?>
+                </ul>
+            </td>
+            <td><a href="<?= $pathFor('review', array('experiment_id' => $experiment->id, 'detector_muid' => $detectorPathId($misuse->detector), 'project_muid' => $misuse->getProject(), 'version_muid' => $misuse->getVersion(), 'misuse_muid' => $misuse->misuse_muid, 'reviewer_name' => $reviewerPathId($user)));
+                            ?><?= $origin_param ?>" class="button">review</a></td>
         </tr>
-        </thead>
-        <tbody>
-        <?php $last_project = ""; $version = ""; ?>
-        <?php foreach($detectors as $detector => $misuses) : ?>
-        <?php foreach($misuses as $misuse) : /** @var \MuBench\ReviewSite\Model\Misuse $misuse */ ?>
-            <?php
-            $project = $misuse->getProject();
-            $new_project = strcmp($last_project, $misuse->getProject()) !== 0;
-            $last_project = $project;
-            $new_version = strcmp($version, $misuse->getVersion()) !== 0;
-            $version = $misuse->getVersion();
-            ?>
-            <?php
-            $classes = [];
-            if($new_project) $classes[] = "top";
-            $style_classes = implode(" ", $classes);
-            ?>
-            <tr>
-                <td class="<?= $style_classes ?>">
-                    <?= $new_project ? $markdown_parser->text($detector) : ""; ?></td>
-                <td class="<?= $style_classes ?>">
-                    <?= $new_project ? $markdown_parser->text($project) : ""; ?></td>
-                <td class="<?= $style_classes ?>">
-                    <?= $new_version ? $markdown_parser->text($version) : ""; ?></td>
-                <td class="<?= $style_classes ?>">
-                    <?= $markdown_parser->text($misuse->getShortId()); ?></td>
-                <?php
-                $review_url = $url_prefix . htmlspecialchars($experiment) . "/" . htmlspecialchars($detector) . "/" .
-                    htmlspecialchars($project) . "/" . htmlspecialchars($version) . "/" . htmlspecialchars($misuse->id);
-                ?>
-                <td class="<?= $style_classes ?>">
-                    <?php $review_state = $misuse->getReviewState() ?>
-                    <?php if ($review_state == ReviewState::NOTHING_TO_REVIEW): ?>
-                    <?php elseif ($review_state == ReviewState::NEEDS_REVIEW): ?>
-                        <i class="fa fa-search" aria-hidden="true" style="color:red;" title="Needs Review"></i>
-                    <?php elseif ($review_state == ReviewState::NEEDS_CLARIFICATION): ?>
-                        <i class="fa fa-question-circle" aria-hidden="true" style="color:blue;" title="Needs Clarification"></i>
-                    <?php elseif ($review_state == ReviewState::DISAGREEMENT): ?>
-                        <a href="<?= $review_url ?>/resolution"><i class="fa fa-exclamation-triangle" aria-hidden="true" style="color:red;" title="Disagreement"></i></a>
-                    <?php elseif ($review_state == ReviewState::AGREEMENT_YES): ?>
-                        <i class="fa fa-thumbs-o-up" aria-hidden="true" style="color:green;" title="Agreement: Yes"></i>
-                    <?php elseif ($review_state == ReviewState::AGREEMENT_NO): ?>
-                        <i class="fa fa-thumbs-o-down" aria-hidden="true" style="color:darkred;" title="Agreement: No"></i>
-                    <?php elseif ($review_state == ReviewState::RESOLVED_YES): ?>
-                        <i class="fa fa-thumbs-o-up" aria-hidden="true" style="color:green;" title="Resolved: Yes"></i>
-                        (<a href="<?= $review_url ?>/resolution<?= $origin_param ?>"><i class="fa fa-handshake-o" aria-hidden="true" title="Resolution"></i></a>)
-                    <?php elseif ($review_state == ReviewState::RESOLVED_NO): ?>
-                        <i class="fa fa-thumbs-o-down" aria-hidden="true" style="color:darkred;" title="Resolved: No"></i>
-                        (<a href="<?= $review_url ?>/resolution<?= $origin_param ?>"><i class="fa fa-handshake-o" aria-hidden="true" title="Resolution"></i></a>)
-                    <?php endif; ?>
-                </td>
-                <td class="<?= $style_classes ?>">
-                    <ul class="inline">
-                        <?php foreach($misuse->getReviews() as $review) : /** @var \MuBench\ReviewSite\Model\Review $review */ ?>
-                            <?php $reviewer_name = htmlspecialchars($review->getReviewerName()) ?>
-                            <li style="display:inline"><a href="<?= $review_url ?>/<?= $reviewer_name ?>"><?= $reviewer_name ?></a></li>
-                        <?php endforeach; ?>
-                    </ul>
-                </td>
-                <td><a href="<?= $review_url; ?><?= $origin_param ?>" class="button">review</a></td>
-            </tr>
-            <?php
-            $new_version = false;
-            $new_project = false;
-            ?>
-        <?php endforeach; ?>
-        <?php endforeach; ?>
-        </tbody>
-    </table>
-<?php endforeach; ?>
+        <?php
+        $new_version = false;
+        $new_project = false;
+        ?>
+    <?php endforeach; ?>
+    <?php endforeach; ?>
+    </tbody>
+</table>
 </body>
 </html>

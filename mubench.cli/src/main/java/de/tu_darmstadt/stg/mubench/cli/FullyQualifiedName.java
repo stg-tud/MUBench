@@ -1,5 +1,8 @@
 package de.tu_darmstadt.stg.mubench.cli;
 
+/**
+ * Represents a fully-qualified Java type name.
+ */
 public class FullyQualifiedName {
     private final String fqn;
 
@@ -18,5 +21,10 @@ public class FullyQualifiedName {
         } else {
             return fqn;
         }
+    }
+
+    @Override
+    public String toString() {
+        return fqn;
     }
 }

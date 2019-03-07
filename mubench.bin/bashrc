@@ -1,0 +1,8 @@
+help () {
+  python /mubench/mubench.docs/mubench.py
+}
+
+printf "Welcome to the MUBench Interactive Shell.\n\n" && help
+
+export PS1="mubench> "
+export MUBENCH_INTERACTIVE_SHELL=1

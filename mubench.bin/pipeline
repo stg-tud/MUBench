@@ -1,0 +1,3 @@
+#!/bin/bash
+
+python ./mubench.pipeline/benchmark.py "$@"

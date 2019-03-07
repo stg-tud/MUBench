@@ -1,6 +1,5 @@
-from tempfile import mktemp
-
 from os.path import join
+from tempfile import mktemp
 
 from nose.tools import assert_equals
 

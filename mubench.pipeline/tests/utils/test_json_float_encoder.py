@@ -1,4 +1,5 @@
 import json
+
 from nose.tools import assert_equals
 
 from utils.json_float_encoder import JSONFloatEncoder

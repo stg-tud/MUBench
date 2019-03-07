@@ -1,3 +1,4 @@
-- cli_version: 0.0.10
-  md5: 5bc3949c1b914ab63c1639e5b79cb244
-  tag: icse18
+- tag: fse18
+  cli_version: 0.0.11
+  md5: 720180958805fe42a0bf387e1fd519a1
+  commit-id: ff297d2ccc0d8a400230376178dd4da0417631e7

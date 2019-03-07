@@ -1,126 +1,147 @@
 <?php
 
-use MuBench\ReviewSite\Model\Misuse;
-use MuBench\ReviewSite\Model\Review;
-use MuBench\ReviewSite\Model\ReviewState;
+namespace MuBench\ReviewSite\Tests;
 
-class ReviewStateTest extends \PHPUnit\Framework\TestCase
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+use MuBench\ReviewSite\Controllers\ReviewsController;
+use MuBench\ReviewSite\Models\Detector;
+use MuBench\ReviewSite\Models\Experiment;
+use MuBench\ReviewSite\Models\Misuse;
+use MuBench\ReviewSite\Models\Reviewer;
+use MuBench\ReviewSite\Models\ReviewState;
+
+class ReviewStateTest extends SlimTestCase
 {
+
+    /** @var  ReviewsControllerHelper */
+    private $reviewsControllerHelper;
+
+    /** @var  Detector */
+    private $detector;
+
+    function setUp()
+    {
+        parent::setUp();
+        $this->reviewsControllerHelper = new ReviewsControllerHelper($this->container);
+        $this->detector = Detector::create(['muid' => 'test-detector']);
+    }
+
     function test_no_potential_hits()
     {
-        $misuse = new Misuse(["misuse" => "test"], [], []);
-
-        self::assertEquals(ReviewState::NOTHING_TO_REVIEW, $misuse->getReviewState());
+        $misuse = Misuse::create(['misuse_muid' => "test", 'run_id' => 1, 'detector_id' => $this->detector->id]);
+        $finding = new \MuBench\ReviewSite\Models\Finding;
+        $finding->setDetector($this->detector);
+        Schema::create($finding->getTable(), function (Blueprint $table) {
+            $table->increments('id');
+            $table->integer('experiment_id');
+            $table->integer('misuse_id');
+            $table->string('project_muid', 30);
+            $table->string('version_muid', 30);
+            $table->string('misuse_muid', 30);
+            $table->integer('startline');
+            $table->integer('rank');
+            $table->integer('additional_column')->nullable();
+            $table->text('file');
+            $table->text('method');
+            $table->dateTime('created_at');
+            $table->dateTime('updated_at');
+        });
+        self::assertEquals(ReviewState::NOTHING_TO_REVIEW, $misuse->getReviewState($this->container->settings["number_of_required_reviews"]));
     }
 
     function test_needs_2_reviews()
     {
-        $misuse = new Misuse(["misuse" => "test"], [["rank" => "0"]], []);
+        $misuse = $this->someMisuseWithOneFindingAndReviewDecisions([/* none */]);
 
-        self::assertEquals(ReviewState::NEEDS_REVIEW, $misuse->getReviewState());
+        self::assertEquals(ReviewState::NEEDS_REVIEW, $misuse->getReviewState($this->container->settings["number_of_required_reviews"]));
     }
 
     function test_needs_1_review()
     {
-        $misuse = new Misuse(["misuse" => "test"], [["rank" => "0"]], [
-            new Review(["name" => "sven", "finding_reviews" => ["0" => ["decision" => "Yes"]]])
-        ]);
+        $misuse = $this->someMisuseWithOneFindingAndReviewDecisions(['Yes']);
 
-        self::assertEquals(ReviewState::NEEDS_REVIEW, $misuse->getReviewState());
+        self::assertEquals(ReviewState::NEEDS_REVIEW, $misuse->getReviewState($this->container->settings["number_of_required_reviews"]));
     }
 
     function test_needs_review_overrules_needs_carification()
     {
-        $misuse = new Misuse(["misuse" => "test"], [["rank" => "0"]], [
-            new Review(["name" => "sven", "finding_reviews" => ["0" => ["decision" => "?"]]])
-        ]);
+        $misuse = $this->someMisuseWithOneFindingAndReviewDecisions(['?']);
 
-        self::assertEquals(ReviewState::NEEDS_REVIEW, $misuse->getReviewState());
+        self::assertEquals(ReviewState::NEEDS_REVIEW, $misuse->getReviewState($this->container->settings["number_of_required_reviews"]));
     }
 
     function test_agreement_yes()
     {
-        $misuse = new Misuse(["misuse" => "test"], [["rank" => "0"]], [
-            new Review(["name" => "sven", "finding_reviews" => ["0" => ["decision" => "Yes"]]]),
-            new Review(["name" => "hoan", "finding_reviews" => ["0" => ["decision" => "Yes"]]])
-        ]);
+        $misuse = $this->someMisuseWithOneFindingAndReviewDecisions(['Yes', 'Yes']);
 
-        self::assertEquals(ReviewState::AGREEMENT_YES, $misuse->getReviewState());
+        self::assertEquals(ReviewState::AGREEMENT_YES, $misuse->getReviewState($this->container->settings["number_of_required_reviews"]));
     }
 
     function test_agreement_no()
     {
-        $misuse = new Misuse(["misuse" => "test"], [["rank" => "0"]], [
-            new Review(["name" => "sven", "finding_reviews" => ["0" => ["decision" => "No"]]]),
-            new Review(["name" => "hoan", "finding_reviews" => ["0" => ["decision" => "No"]]])
-        ]);
+        $misuse = $this->someMisuseWithOneFindingAndReviewDecisions(['No', 'No']);
 
-        self::assertEquals(ReviewState::AGREEMENT_NO, $misuse->getReviewState());
+        self::assertEquals(ReviewState::AGREEMENT_NO, $misuse->getReviewState($this->container->settings["number_of_required_reviews"]));
     }
 
     function test_disagreement()
     {
-        $misuse = new Misuse(["misuse" => "test"], [["rank" => "0"]], [
-            new Review(["name" => "sven", "finding_reviews" => ["0" => ["decision" => "Yes"]]]),
-            new Review(["name" => "hoan", "finding_reviews" => ["0" => ["decision" => "No"]]])
-        ]);
+        $misuse = $this->someMisuseWithOneFindingAndReviewDecisions(['Yes', 'No']);
 
-        self::assertEquals(ReviewState::DISAGREEMENT, $misuse->getReviewState());
+        self::assertEquals(ReviewState::DISAGREEMENT, $misuse->getReviewState($this->container->settings["number_of_required_reviews"]));
     }
 
     function test_needs_clarification()
     {
         // NEEDS_REVIEW takes precedence over NEEDS_CLARIFICATION, hence, we need at least two reviews for this state.
-        $misuse = new Misuse(["misuse" => "test"], [["rank" => "0"]], [
-            new Review(["name" => "sven", "finding_reviews" => ["0" => ["decision" => "?"]]]),
-            new Review(["name" => "hoan", "finding_reviews" => ["0" => ["decision" => "Yes"]]])
-        ]);
+        $misuse = $this->someMisuseWithOneFindingAndReviewDecisions(['Yes', '?']);
 
-        self::assertEquals(ReviewState::NEEDS_CLARIFICATION, $misuse->getReviewState());
+        self::assertEquals(ReviewState::NEEDS_CLARIFICATION, $misuse->getReviewState($this->container->settings["number_of_required_reviews"]));
     }
 
     function test_resolution_yes()
     {
-        $misuse = new Misuse(["misuse" => "test"], [["rank" => "0"]], [
-            new Review(["name" => "sven", "finding_reviews" => ["0" => ["decision" => "Yes"]]]),
-            new Review(["name" => "hoan", "finding_reviews" => ["0" => ["decision" => "No"]]]),
-            new Review(["name" => "resolution", "finding_reviews" => ["0" => ["decision" => "Yes"]]])
-        ]);
+        $misuse = $this->someMisuseWithOneFindingAndReviewDecisions(['Yes', 'No'], 'Yes');
 
-        self::assertEquals(ReviewState::RESOLVED_YES, $misuse->getReviewState());
+        self::assertEquals(ReviewState::RESOLVED_YES, $misuse->getReviewState($this->container->settings["number_of_required_reviews"]));
     }
 
     function test_resolution_no()
     {
-        $misuse = new Misuse(["misuse" => "test"], [["rank" => "0"]], [
-            new Review(["name" => "sven", "finding_reviews" => ["0" => ["decision" => "Yes"]]]),
-            new Review(["name" => "hoan", "finding_reviews" => ["0" => ["decision" => "No"]]]),
-            new Review(["name" => "resolution", "finding_reviews" => ["0" => ["decision" => "No"]]])
-        ]);
+        $misuse = $this->someMisuseWithOneFindingAndReviewDecisions(['Yes', 'No'], 'No');
 
-        self::assertEquals(ReviewState::RESOLVED_NO, $misuse->getReviewState());
+        self::assertEquals(ReviewState::RESOLVED_NO, $misuse->getReviewState($this->container->settings["number_of_required_reviews"]));
     }
 
     function test_resolution_unresolved()
     {
-        $misuse = new Misuse(["misuse" => "test"], [["rank" => "0"]], [
-            new Review(["name" => "sven", "finding_reviews" => ["0" => ["decision" => "Yes"]]]),
-            new Review(["name" => "hoan", "finding_reviews" => ["0" => ["decision" => "No"]]]),
-            new Review(["name" => "resolution", "finding_reviews" => ["0" => ["decision" => "?"]]])
-        ]);
+        $misuse = $this->someMisuseWithOneFindingAndReviewDecisions(['Yes', 'No'], '?');
 
-        self::assertEquals(ReviewState::UNRESOLVED, $misuse->getReviewState());
+        self::assertEquals(ReviewState::UNRESOLVED, $misuse->getReviewState($this->container->settings["number_of_required_reviews"]));
     }
 
     function test_resolution_is_absolute()
     {
         // Resolution determines the result, even if there are too few reviews and requests for clarification.
-        $misuse = new Misuse(["misuse" => "test"], [["rank" => "0"]], [
-            new Review(["name" => "sven", "finding_reviews" => ["0" => ["decision" => "?"]]]),
-            new Review(["name" => "hoan", "finding_reviews" => ["0" => ["decision" => "Yes"]]]),
-            new Review(["name" => "resolution", "finding_reviews" => ["0" => ["decision" => "No"]]])
-        ]);
+        $misuse = $this->someMisuseWithOneFindingAndReviewDecisions(['?', 'Yes'], 'No');
 
-        self::assertEquals(ReviewState::RESOLVED_NO, $misuse->getReviewState());
+        self::assertEquals(ReviewState::RESOLVED_NO, $misuse->getReviewState($this->container->settings["number_of_required_reviews"]));
+    }
+
+    private function someMisuseWithOneFindingAndReviewDecisions($decisions, $resolutionDecision = null)
+    {
+        $misuse = Misuse::create(['misuse_muid' => "test", 'run_id' => 1, 'detector_id' => $this->detector->id]);
+        $finding = TestHelper::createFindingWith(Experiment::find(2), $this->detector, $misuse);
+        $reviewController = new ReviewsController($this->container);
+        foreach ($decisions as $index => $decision) {
+            $reviewer = Reviewer::firstOrCreate(['name' => 'reviewer' . $index]);
+            $this->reviewsControllerHelper->createReview($misuse, $reviewer, $decision);
+        }
+        if ($resolutionDecision) {
+            $this->reviewsControllerHelper->createReview($misuse, Reviewer::firstOrCreate(['name' => 'resolution']), $resolutionDecision);
+        }
+
+        return $misuse;
     }
 }
