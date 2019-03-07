@@ -1,13 +1,20 @@
 <img align="right" width="320" height="320" alt="MUBench Logo" src="https://raw.githubusercontent.com/stg-tud/MUBench/master/meta/logo.png" />
 
-# Dataset Parametric Cryptographic API misuses
+# MUBench : Dataset
 
-This Dataset in the MUBench data format references projects with known parametric cryptographic API misuses.
+The MUBench Dataset references projects with known API misuses.
 Each subfolder of this directory identifies one project.
-For each project, the dataset references one version that contain the known misuse.
+For each project, the dataset references one or more project versions that contain the known misuses (usually the version immediately before a particular misuse was fixed).
 The dataset also specifies the misuses themselves and links misuses and project versions.
 
-For more details on MUBench and the original dataset, visit [MUBench dataset](https://github.com/stg-tud/MUBench/tree/master/data).
+Building up the MUBench dataset required imense manual effort.
+Any [contribution](#contribute) is welcome.
+At this point, we want to thank several people for their support:
+
+* Mattis Kämmerer and Jonas Schlitzer for their hard work to try compile tons of arbitrary project checkouts.
+* Michael Pradel for providing list of findings from his previous studies.
+* Owolabi Legunsen for providing the dataset from ["How Good are the Specs? A Study of the Bug-Finding Effectiveness of Existing Java API Specifications" (ASE'16)](http://fsl.cs.illinois.edu/spec-eval/)
+
 
 ## Filtering
 
@@ -43,17 +50,6 @@ To get up-to-date statistics on the dataset, please [install the MUBench Pipelin
     mubench> pipeline stats general
 
 Check `pipeline stats -h` for further details on other available dataset statistics and [filter options](#filtering).
-
-
-## Parametric Cryptographic Misuse Details
-
-<div itemscope itemtype="http://schema.org/Dataset">
-  <h3 itemprop="name"> Parametric Cryptographic Misuses </h3>
-  <p itemprop="description"> The parametric cryptographic misuse dataset contains misuses of cryptographic APIs due to passing a parameter to a function which is considered as insecure. All misuses are collected in 2018 in GitHub projects. </p>
-  <a href="https://github.com/akwick/MUBench/tree/thesis-2018-dodhy/data" itemprop="url"> URL to the dataset folder </a>
-  <p itemprop="version"> 1.0 </a>
-  <p itemprop="creator"> Anam Dodhy and Anna-Katharina Wickert </p>
-</div>
 
 We subsequently report statistics on the subsets of the MUBench Dataset that were used in previous publications.
 
@@ -254,4 +250,3 @@ Please create a [new issue](https://github.com/stg-tud/MUBench/issues/new) with 
 * Instructions how to checkout and compile the project with the misuse from version control.
 * The exact location of the misuse in the project's source code (file, class, and method).
 * (Optional) A link to an issue report that uncovered the misuse.
-
