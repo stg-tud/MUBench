@@ -1,5 +1,5 @@
 build:
-  classes: security/target/classes  
+  classes: security/$mvn.default.classes
   commands:
   -  mvn compile              
   src: security/src/main/java/

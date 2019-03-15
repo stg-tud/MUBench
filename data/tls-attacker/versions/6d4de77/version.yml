@@ -1,5 +1,5 @@
 build:
-  classes: TLS-Core/target/classes
+  classes: TLS-Core/$mvn.default.classes
   commands:
   - mvn clean compile              
   src: TLS-Core/src/main/java/

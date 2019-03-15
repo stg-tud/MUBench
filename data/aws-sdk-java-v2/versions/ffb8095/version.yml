@@ -1,5 +1,5 @@
 build:
-  classes: core/auth/target/classes
+  classes: core/auth/$mvn.default.classes
   commands:
   - mvn -pl :aws-core -am clean compile
   src: core/auth/src/main/java/

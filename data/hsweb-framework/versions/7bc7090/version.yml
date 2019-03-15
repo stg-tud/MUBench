@@ -1,5 +1,5 @@
 build:
-  classes: hsweb-authorization/hsweb-authorization-jwt/target/classes
+  classes: hsweb-authorization/hsweb-authorization-jwt/$mvn.default.classes
   commands:
   -  mvn compile              
   src: hsweb-authorization/hsweb-authorization-jwt/src/main/java/

@@ -1,5 +1,5 @@
 build:
-  classes: openzaly-common/target/classes  
+  classes: openzaly-common/$mvn.default.classes
   commands:
   -  mvn compile              
   src: openzaly-common/src/main/java/

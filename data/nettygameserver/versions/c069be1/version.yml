@@ -1,5 +1,5 @@
 build:
-  classes: game-common/target/classes  
+  classes: game-common/$mvn.default.classes
   commands:
   -  mvn compile              
   src: game-common/src/main/java/

@@ -1,5 +1,5 @@
 build:
-  classes: jeesuite-common/target/classes
+  classes: jeesuite-common/$mvn.default.classes
   commands:
   - mvn clean compile
   src: jeesuite-common/src/main/java/

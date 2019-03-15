@@ -1,5 +1,5 @@
 build:
-  classes: vjkit/target/classes  
+  classes: vjkit/$mvn.default.classes
   commands:
   -  mvn compile              
   src: vjkit/src/main/java/

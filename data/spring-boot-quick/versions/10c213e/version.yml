@@ -1,5 +1,5 @@
 build:
-  classes: quick-wx-api/target/classes  
+  classes: quick-wx-api/$mvn.default.classes
   commands:
   -  mvn compile              
   src: quick-wx-api/src/main/java/

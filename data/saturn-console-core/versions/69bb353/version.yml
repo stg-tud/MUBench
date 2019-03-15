@@ -1,5 +1,5 @@
 build:
-  classes: saturn-console-core/target/classes
+  classes: saturn-console-core/$mvn.default.classes
   commands:
   - mvn clean compile
   src: saturn-console-core/src/main/java/

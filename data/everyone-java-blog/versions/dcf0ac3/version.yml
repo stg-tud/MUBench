@@ -1,5 +1,5 @@
 build:
-  classes: blog-common/target/classes
+  classes: blog-common/$mvn.default.classes
   commands:
   - mvn clean compile
   src: blog-common/src/main/java/

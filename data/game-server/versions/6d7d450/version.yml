@@ -1,5 +1,5 @@
 build:
-  classes: game-engine/target/classes
+  classes: game-engine/$mvn.default.classes
   commands:
   -  mvn compile              
   src: game-engine/src/main/java/

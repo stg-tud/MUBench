@@ -1,5 +1,5 @@
 build:
-  classes: jobx-common/target/classes
+  classes: jobx-common/$mvn.default.classes
   commands:
   -  mvn clean compile            
   src: jobx-common/src/main/java/

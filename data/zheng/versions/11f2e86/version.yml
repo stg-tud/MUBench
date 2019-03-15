@@ -1,5 +1,5 @@
 build:
-  classes: zheng-common/target/classes
+  classes: zheng-common/$mvn.default.classes
   commands:
   - mvn clean compile
   src: zheng-common/src/main/java/

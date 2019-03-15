@@ -1,5 +1,5 @@
 build:
-  classes: pig-gateway/target/classes  
+  classes: pig-gateway/$mvn.default.classes
   commands:
   -  mvn compile              
   src: pig-gateway/src/main/java/

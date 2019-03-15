@@ -1,5 +1,5 @@
 build:
-  classes: publiccms-parent/publiccms-common/target/classes
+  classes: publiccms-parent/publiccms-common/$mvn.default.classes
   commands:
   - cd publiccms-parent
   - mvn clean compile

@@ -1,5 +1,5 @@
 build:
-  classes: plugins/org.jkiss.dbeaver.core/target/classes
+  classes: plugins/org.jkiss.dbeaver.core/$mvn.default.classes
   commands:
   - mvn package
   src: plugins/org.jkiss.dbeaver.core/src/

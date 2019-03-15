@@ -1,5 +1,5 @@
 build:
-  classes: bt-core/target/classes
+  classes: bt-core/$mvn.default.classes
   commands:
   - mvn compile              
   src: bt-core/src/main/java/

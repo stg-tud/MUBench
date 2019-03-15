@@ -1,5 +1,5 @@
 build:
-  classes: spring-boot-student-encode/target/classes 
+  classes: spring-boot-student-encode/$mvn.default.classes
   commands:
   -  mvn compile              
   src: spring-boot-student-encode/src/main/java/

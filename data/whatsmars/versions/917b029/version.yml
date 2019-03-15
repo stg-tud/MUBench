@@ -1,5 +1,5 @@
 build:
-  classes: whatsmars-common/target/classes
+  classes: whatsmars-common/$mvn.default.classes
   commands:
   - mvn clean compile
   src: whatsmars-common/src/main/java/

@@ -1,5 +1,5 @@
 build:
-  classes: uis/target/classes
+  classes: uis/$mvn.default.classes
   commands:
   -  mvn compile              
   src: uis/src/

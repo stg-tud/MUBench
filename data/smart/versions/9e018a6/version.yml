@@ -1,5 +1,5 @@
 build:
-  classes: smart-sso/smart-sso-server/target/classes
+  classes: smart-sso/smart-sso-server/$mvn.default.classes
   commands:
   - mvn clean compile
   src: smart-sso/smart-sso-server/src/main/java/
