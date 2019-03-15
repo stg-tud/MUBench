@@ -1,4 +1,4 @@
-﻿<img align="right" width="320" height="320" alt="MUBench Logo" src="./meta/logo.png?raw=true" />
+<img align="right" width="320" height="320" alt="MUBench Logo" src="./meta/logo.png?raw=true" />
 
 # MUBench
 
