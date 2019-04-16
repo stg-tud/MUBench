@@ -950,7 +950,7 @@ JCA-Param-All: # All parametric cryptographic misuses identified in the set.
   - zheng.11f2e86.2
   - zheng.11f2e86.3
 
-JCA-Param-WithoutGradle: # All parametric cryptographic misuses without the projects which did not compile in MUBench due to issue #409
+JCA-Param-WithoutGradle: # All parametric cryptographic misuses without the projects which did not compile in MUBench due to issue [#409](https://github.com/stg-tud/MUBench/issues/409)
   - aliyun-oss-java-sdk.196cf71.1
   - aliyun-oss-java-sdk.196cf71.2
   - aws-sdk-java-v2.ffb8095.1
