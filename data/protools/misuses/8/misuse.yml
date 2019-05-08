@@ -11,5 +11,5 @@ location:
 internal:
 pattern:
 crash: false
-source: MSR 2019 Data Showcase A Dataset of Parametric Cryptographic Misuses by Wickert, Reif, Eichberg, Dodhy, and Mezini
+source: 
   name:
