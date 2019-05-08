@@ -2,7 +2,50 @@
 ### Datasets that group misuses by the source we identified them from.
 ###
 
+BugClassify: # All misuses identified in the bug dataset.
+  - httpclient.302.1
+  - httpclient.444.2
+  - httpclient.444.3
+  - httpclient.452.4
+  - jackrabbit.1601.1
+  - jackrabbit.1678.2
+  - jackrabbit.1694.3a
+  - jackrabbit.1694.3b
+  - jackrabbit.1750.5
+  - jackrabbit.2385.6
+  - jackrabbit.2580.7
+  - jackrabbit.2681.8
+  - jackrabbit.2984.9
+  - jackrabbit.3050.10
+  - jackrabbit.3090.11
+  - jackrabbit.3189.12
+  - jackrabbit-incubator.14.1
+  - jackrabbit-incubator.201.2
+  - lucene.207.3
+  - lucene.754.5
+  - lucene.1251.1
+  - lucene.1918.2
+  - lucene.2521.4
+  - rhino.286251.1
 
+Defects4J: # All misuses identified in the bug dataset.
+  - aclang.587.1
+  - aclang.587.2
+  - acmath.998.1
+  - acmath.998.2
+  - closure.114.1
+  - closure.319.2
+  - closure.884.3
+  - jfreechart.103.2
+  - jfreechart.164.3a
+  - jfreechart.164.3b
+  - jfreechart.164.4a
+  - jfreechart.164.4b
+  - jfreechart.881.7a
+  - jfreechart.881.7b
+  - jfreechart.1025.1
+  - jfreechart.2183.5
+  - jfreechart.2266.6
 
 iBugs: # All misuses identified in the bug dataset.
   - jodatime.1231.1
