@@ -1,5 +1,5 @@
 build:
-  classes: symmetric-util/build/classes/java/main
+  classes: symmetric-util/$gradle.default.classes
   commands:
   - cd symmetric-assemble
   - gradle :compileJava

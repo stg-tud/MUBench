@@ -1,5 +1,5 @@
 build:
-  classes: Telegram-Server/build/classes/java/main
+  classes: Telegram-Server/$gradle.default.classes
   commands:
   - gradle compileJava
   src: Telegram-Server/src/main/java

@@ -1,5 +1,5 @@
 build:
-  classes: AndResGuard/AndResGuard-core/build/classes/java/main
+  classes: AndResGuard/AndResGuard-core/$gradle.default.classes
   commands:
   - gradle build
   src: AndResGuard/AndResGuard-core/src

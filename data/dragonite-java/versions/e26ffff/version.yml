@@ -1,5 +1,5 @@
 build:
-  classes: dragonite-sdk/build/classes/java/main
+  classes: dragonite-sdk/$gradle.default.classes
   commands:
   - gradle build              
   src: dragonite-sdk/src/

@@ -1,5 +1,5 @@
 build:
-  classes: app-engine/common/build/classes/java/main
+  classes: app-engine/common/$gradle.default.classes
   commands:
   - gradle compileJava
   src: app-engine/common/src/main/java

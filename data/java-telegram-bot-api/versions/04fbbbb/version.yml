@@ -1,5 +1,5 @@
 build:
-  classes: java-telegram-bot-api/library/build/classes/java/main
+  classes: java-telegram-bot-api/library/$gradle.default.classes
   commands:
   - gradle compileJava
   src: java-telegram-bot-api/library/src/main/java
