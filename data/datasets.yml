@@ -1159,8 +1159,11 @@ JCA-Param-WithoutGradle: # All parametric cryptographic misuses without the proj
   - zheng.11f2e86.2
   - zheng.11f2e86.3
 
+###
+### The dataset used for the experiments in the MSR'19 paper,
+####    
 
-MSR19-FindBugs: # Misuses used to evaluate FindBugs
+MSR19-FindBugs-Exp2-and-Exp3:  
   - ha-bridge.c25f08f.1
   - ha-bridge.c25f08f.2
   - ha-bridge.c25f08f.3
