@@ -1,5 +1,6 @@
 package com.bwssystems.HABridge;
 
+<<<<<<< HEAD
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.security.GeneralSecurityException;
@@ -403,3 +404,10 @@ public class BridgeSecurity {
 		return theUser;
 	}
 }
+=======
+constructSecretKeyFactory{
+	pattern() {
+		SecretKeyFactory skf = SecretKeyFactory.getInstance("PBEWithHmacSHA512AndAES_128");
+	}
+}
+>>>>>>> 96296681... Minimize corrected examples for misuses
