@@ -1,8 +1,7 @@
 build:
   classes: publiccms-parent/publiccms-common/$mvn.default.classes
   commands:
-  - cd publiccms-parent
-  - mvn clean compile
+  - cd publiccms-parent & mvn clean compile
   src: publiccms-parent/publiccms-common/src
 misuses:
 - '1'
