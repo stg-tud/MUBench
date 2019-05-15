@@ -3,12 +3,12 @@ api:
 violations:
 - insecure/condition/iteration_count
 description: >
-  The third parameter of PBEKeySpec(passPhrase.toCharArray(), byte[], int) is the Iteration count with 17 value which should be greater than 1000
+  The third parameter of PBEKeySpec(passPhrase.toCharArray(), byte[], int) is the Iteration count with 17 value which should be greater than 10000
 location:
   file: com/snowcattle/game/common/util/DesEncrypter.java
   method: "DesEncrypter(String, byte[])"
   line: 34
-internal:
+internal: true
 pattern:
 crash: false
 source: 

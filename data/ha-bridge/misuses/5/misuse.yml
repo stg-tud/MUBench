@@ -8,7 +8,7 @@ location:
   file: com/bwssystems/HABridge/BridgeSecurity.java
   method: "decrypt(String)"
   line: 340
-internal:
+internal: true
 pattern:
 crash: false
 source: 

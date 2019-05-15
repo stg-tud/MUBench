@@ -3,7 +3,7 @@ api:
 violations:
 - insecure/condition/iteration_count
 description: >
-  Iteration count in while creating PBEParameterSpec object is 20 which should be greater than 1000.
+  The parameter iteration count for the constructor of PBEParameterSpec is 20 and should be greater than 10000. 
 location:
   file: com/bwssystems/HABridge/BridgeSecurity.java
   method: "decrypt(String)"
