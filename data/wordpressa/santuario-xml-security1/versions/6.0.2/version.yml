@@ -1,8 +1,0 @@
-build:
-  classes: $mvn.default.classes  
-  commands:
-     - mvn compile                
-  src: src/main/java
-  misuses:
-     - SV_CVE_16_4432
-revision:  60622dfdd4fc384bd5943910079bcb3b9fae41ea                  
