@@ -912,8 +912,6 @@ JCA-Param-All: # All parametric cryptographic misuses identified in the set.
   - nettygameserver.c069be1.2
   - nettygameserver.c069be1.3
   - nettygameserver.c069be1.4
-  - openzaly.91bd03b.1
-  - openzaly.91bd03b.2
   - pig.579bc2c.1
   - pig.579bc2c.2
   - pig.579bc2c.3
@@ -1099,8 +1097,6 @@ JCA-Param-WithoutGradle: # All parametric cryptographic misuses without the proj
   - nettygameserver.c069be1.2
   - nettygameserver.c069be1.3
   - nettygameserver.c069be1.4
-  - openzaly.91bd03b.1
-  - openzaly.91bd03b.2
   - pig.579bc2c.1
   - pig.579bc2c.2
   - pig.579bc2c.3
