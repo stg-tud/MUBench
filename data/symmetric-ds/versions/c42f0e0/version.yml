@@ -1,8 +1,7 @@
 build:
   classes: symmetric-util/$gradle.default.classes
   commands:
-  - cd symmetric-assemble
-  - gradle :compileJava
+  - cd symmetric-assemble & ./gradlew develop
   src: symmetric-util/src/
 misuses:
 - '1'
