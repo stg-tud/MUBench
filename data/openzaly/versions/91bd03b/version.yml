@@ -1,9 +1,0 @@
-build:
-  classes: openzaly-common/$mvn.default.classes
-  commands:
-  -  mvn compile              
-  src: openzaly-common/src/main/java/
-misuses:
-- '1'
-- '2'
-revision: 91bd03be6c9b26a35641aca32ddc7ad9cf123bc6
