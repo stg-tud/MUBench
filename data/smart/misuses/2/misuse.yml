@@ -8,7 +8,7 @@ location:
   file: com/smart/sso/server/util/AESUtils.java
   method: "encrypt(String, String)"
   line: 26
-internal:
+internal: false
 pattern:
 crash: false
 source: 

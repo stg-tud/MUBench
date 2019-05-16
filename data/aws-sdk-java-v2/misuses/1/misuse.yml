@@ -8,7 +8,7 @@ location:
   file: software/amazon/awssdk/auth/signer/internal/AbstractAwsSigner.java
   method: "sign(byte[], byte[], SigningAlgorithm)"
   line: 146
-internal:
+internal: false
 pattern:
 crash: false
 source: 

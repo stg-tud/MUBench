@@ -8,7 +8,7 @@ location:
   file: com/mpush/tools/crypto/RSAUtils.java
   method: "sign(byte[], String)"
   line: 150
-internal:
+internal: false
 pattern:
 crash: false
 source: 

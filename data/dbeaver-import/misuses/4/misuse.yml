@@ -8,7 +8,7 @@ location:
   file: org/jkiss/dbeaver/ext/import_config/wizards/navicat/NavicatEncrypt.java
   method: "initChiperDecrypt()"
   line: 64
-internal:
+internal: false
 pattern:
 crash: false
 source: 

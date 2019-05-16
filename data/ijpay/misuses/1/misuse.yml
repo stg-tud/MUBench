@@ -8,7 +8,7 @@ location:
   file: com/jpay/unionpay/SecureUtil.java
   method: "sha1(byte[])"
   line: 167
-internal:
+internal: false
 pattern:
 crash: false
 source: 

@@ -8,7 +8,7 @@ location:
   file: org/brunocvcunha/instagram4j/util/InstagramHashUtil.java
   method: "generateHash(String, String)"
   line: 128
-internal: true
+internal: false 
 pattern:
 crash: false
 source: 

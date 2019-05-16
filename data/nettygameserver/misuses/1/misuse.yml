@@ -8,7 +8,7 @@ location:
   file: com/snowcattle/game/common/util/DesEncrypter.java
   method: "DesEncrypter(String, byte[])"
   line: 34
-internal: true
+internal: false
 pattern:
 crash: false
 source: 

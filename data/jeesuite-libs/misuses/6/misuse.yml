@@ -8,7 +8,7 @@ location:
   file: com/jeesuite/common/crypt/AES.java
   method: "decrypt(byte[], byte[])"
   line: 54
-internal:
+internal: false
 pattern:
 crash: false
 source: 

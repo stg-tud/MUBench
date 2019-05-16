@@ -8,7 +8,7 @@ location:
   file: com/jeesuite/common/crypt/DES.java
   method: "encrypt(String, String)"
   line: 38
-internal:
+internal: false
 pattern:
 crash: false
 source: 

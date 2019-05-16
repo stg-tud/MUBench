@@ -8,7 +8,7 @@ location:
   file: com/xiaolyuh/utils/AESUtil.java
   method: "encryptString(String, String)"
   line: 46
-internal:
+internal: false
 pattern:
 crash: false
 source: 

@@ -8,7 +8,7 @@ location:
   file: com/actiontech/dble/backend/mysql/SecurityUtil.java
   method: "scramble411(byte[], byte[])"
   line: 21
-internal:
+internal: false
 pattern:
 crash: false
 source: 

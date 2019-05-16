@@ -8,7 +8,7 @@ location:
   file: com/snowcattle/game/common/util/MD5Util.java
   method: "encodeByMD5(String)"
   line: 47
-internal:
+internal: false
 pattern:
 crash: false
 source: 

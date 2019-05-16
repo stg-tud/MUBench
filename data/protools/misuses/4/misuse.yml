@@ -8,7 +8,7 @@ location:
   file: pro/tools/security/ToolDESede.java
   method: "decrypt(byte[], byte[])"
   line: 81
-internal:
+internal: false
 pattern:
 crash: false
 source: 

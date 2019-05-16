@@ -8,7 +8,7 @@ location:
   file: com/zuoxiaolong/blog/common/utils/EncodeDecodeUtils.java
   method: "encryptDes(String, String)"
   line: 80
-internal:
+internal: false
 pattern:
 crash: false
 source: 

@@ -8,7 +8,7 @@ location:
   file: com/akaxin/common/crypto/AESCrypto.java
   method: "decrypt(byte[], byte[])"
   line: 95
-internal:
+internal: false
 pattern:
 crash: false
 source: 

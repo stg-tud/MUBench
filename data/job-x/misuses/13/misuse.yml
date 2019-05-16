@@ -8,7 +8,7 @@ location:
   file: com/jobxhub/common/util/DigestUtils.java
   method: "sha1(String)"
   line: 147
-internal:
+internal: false
 pattern:
 crash: false
 source: 

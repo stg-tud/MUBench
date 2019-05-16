@@ -8,7 +8,7 @@ location:
   file: com/snowcattle/game/common/util/AES.java
   method: "decrypt(byte[], String)"
   line: 44
-internal:
+internal: false
 pattern:
 crash: false
 source: 

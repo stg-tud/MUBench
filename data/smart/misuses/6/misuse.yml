@@ -8,7 +8,7 @@ location:
   file: com/smart/sso/server/util/AESUtils.java
   method: "decrypt(String, String)"
   line: 50
-internal:
+internal: false
 pattern:
 crash: false
 source: 

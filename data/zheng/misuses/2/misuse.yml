@@ -8,7 +8,7 @@ location:
   file: com/zheng/common/util/AESUtil.java
   method: "aesEncode(String)"
   line: 47
-internal:
+internal: false
 pattern:
 crash: false
 source: 

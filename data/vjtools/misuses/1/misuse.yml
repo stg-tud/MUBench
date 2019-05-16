@@ -8,7 +8,7 @@ location:
   file: com/vip/vjtools/vjkit/security/CryptoUtil.java
   method: "aes(byte[], byte[], int)"
   line: 134
-internal:
+internal: false
 pattern:
 crash: false
 source: 

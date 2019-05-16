@@ -8,7 +8,7 @@ location:
   file: com/quick/api/utils/SignUtil.java
   method: "sign(String, String, String, Map, Map, Map, List)"
   line: 47
-internal:
+internal: false
 pattern:
 crash: false
 source: 

@@ -8,7 +8,7 @@ location:
   file: publiccms-parent/publiccms-common/src/main/java/com/publiccms/common/tools/VerificationUtils.java
   method: "decrypt(byte[],String)"
   line: 288
-internal:
+internal: false
 pattern:
 crash: false
 source: 

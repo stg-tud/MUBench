@@ -8,7 +8,7 @@ location:
   file: pro/tools/security/ToolDES.java
   method: "encrypt(byte[], byte[])"
   line: 109
-internal:
+internal: false
 pattern:
 crash: false
 source: 

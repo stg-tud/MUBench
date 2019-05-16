@@ -8,7 +8,7 @@ location:
   file: com/my/blog/website/utils/Tools.java
   method: "enAes(String, String)"
   line: 59
-internal:
+internal: false
 pattern:
 crash: false
 source: 

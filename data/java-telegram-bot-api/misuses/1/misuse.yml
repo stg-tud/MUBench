@@ -8,7 +8,7 @@ location:
   file: com/pengrad/telegrambot/passport/decrypt/RsaOaep.java
   method: "decrypt(String, byte[])"
   line: 29
-internal:
+internal: false
 pattern:
 crash: false
 source: 

@@ -8,7 +8,7 @@ location:
   file: com/appengine/common/encrypt/AESEncrypter.java
   method: "loadAesKey(String)"
   line: 98
-internal:
+internal: false
 pattern:
 crash: false
 source: 

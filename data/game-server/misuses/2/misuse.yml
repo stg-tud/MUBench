@@ -8,7 +8,7 @@ location:
   file: com/jzy/game/engine/util/CipherUtil.java
   method: "md5(byte[])"
   line: 16
-internal:
+internal: false
 pattern:
 crash: false
 source: 

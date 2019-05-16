@@ -8,7 +8,7 @@ location:
   file: com/my/blog/website/utils/Tools.java
   method: "deAes(String, String)"
   line: 67
-internal:
+internal: false
 pattern:
 crash: false
 source: 

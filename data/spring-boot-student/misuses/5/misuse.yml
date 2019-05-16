@@ -8,7 +8,7 @@ location:
   file: com/xiaolyuh/utils/EncodeUtil.java
   method: "sha(String)"
   line: 32
-internal:
+internal: false
 pattern:
 crash: false
 source: 

@@ -8,7 +8,7 @@ location:
   file: com/biglybt/ui/swt/config/PasswordParameter.java
   method: "handleEvent(Event)"
   line: 89
-internal:
+internal: false
 pattern:
 crash: false
 source: 

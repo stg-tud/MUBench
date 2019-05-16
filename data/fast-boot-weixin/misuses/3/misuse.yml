@@ -8,7 +8,7 @@ location:
   file: com/mxixm/fastboot/weixin/service/WxXmlCryptoService.java
   method: "afterPropertiesSet()"
   line: 100
-internal:
+internal: false
 pattern:
 crash: false
 source: 

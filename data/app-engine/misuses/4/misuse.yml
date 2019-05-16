@@ -8,7 +8,7 @@ location:
   file: com/appengine/common/encrypt/Digests.java
   method: "digest(InputStream, String)"
   line: 95
-internal:
+internal: false
 pattern:
 crash: false
 source: 

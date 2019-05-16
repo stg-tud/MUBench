@@ -8,7 +8,7 @@ location:
   file: bt/protocol/crypto/MSECipher.java
   method: "getDigest(String)"
   line: 133
-internal:
+internal: false
 pattern:
 crash: false
 source: 

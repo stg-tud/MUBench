@@ -8,7 +8,7 @@ location:
   file: de/rub/nds/tlsattacker/core/crypto/cipher/JavaCipher.java
   method: "decrypt(byte[], byte[], byte[])"
   line: 124
-internal:
+internal: false
 pattern:
 crash: false
 source: 

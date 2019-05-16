@@ -9,7 +9,7 @@ location:
   file: com/bwssystems/HABridge/BridgeSecurity.java
   method: "encrypt(String)"
   line: 331
-internal: true
+internal: false 
 pattern:
 crash: false
 source: 

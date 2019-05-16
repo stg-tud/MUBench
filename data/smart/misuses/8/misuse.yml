@@ -8,7 +8,7 @@ location:
   file: com/smart/sso/server/provider/PasswordProvider.java
   method: "md5(String)"
   line: 42
-internal:
+internal: false
 pattern:
 crash: false
 source: 

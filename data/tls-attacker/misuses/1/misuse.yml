@@ -8,7 +8,7 @@ location:
   file: de/rub/nds/tlsattacker/core/crypto/PseudoRandomFunction.java
   method: "computeTls12(byte[], String, byte[], int, String)"
   line: 124
-internal:
+internal: false
 pattern:
 crash: false
 source: 

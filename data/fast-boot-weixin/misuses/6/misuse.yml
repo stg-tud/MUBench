@@ -8,7 +8,7 @@ location:
   file: com/mxixm/fastboot/weixin/util/CryptUtils.java
   method: "encryptSHA1(String)"
   line: 57
-internal:
+internal: false
 pattern:
 crash: false
 source: 

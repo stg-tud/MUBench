@@ -8,7 +8,7 @@ location:
   file: pro/tools/security/ToolDESede.java
   method: "toKey(byte[])"
   line: 53
-internal:
+internal: false
 pattern:
 crash: false
 source: 

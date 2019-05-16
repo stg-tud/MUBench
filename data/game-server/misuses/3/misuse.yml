@@ -8,7 +8,7 @@ location:
   file: com/jzy/game/engine/mina/websocket/WebSocketUtils.java
   method: "getWebSocketKeyChallengeResponse(String)"
   line: 52
-internal:
+internal: false
 pattern:
 crash: false
 source: 

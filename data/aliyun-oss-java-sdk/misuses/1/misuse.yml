@@ -8,7 +8,7 @@ location:
   file: com/aliyun/oss/common/utils/BinaryUtil.java
   method: "calculateMd5(byte[])"
   line: 43
-internal:
+internal: false
 pattern:
 crash: false
 source: 

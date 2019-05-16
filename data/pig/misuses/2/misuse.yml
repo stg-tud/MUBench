@@ -8,7 +8,7 @@ location:
   file: com/github/pig/gateway/component/filter/DecodePasswordFilter.java
   method: "decryptAES(String, String)"
   line: 106
-internal:
+internal: false
 pattern:
 crash: false
 source: 

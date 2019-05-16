@@ -8,7 +8,7 @@ location:
   file: com/mpush/tools/crypto/MD5Utils.java
   method: "hmacSha1(String, String)"
   line: 91
-internal:
+internal: false
 pattern:
 crash: false
 source: 

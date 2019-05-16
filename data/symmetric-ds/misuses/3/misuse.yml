@@ -8,7 +8,7 @@ location:
   file: symmetric-util/src/main/java/org/jumpmind/security/SecurityService.java
   method: "initializeCipher(Cipher,int)"
   line: 189
-internal:
+internal: false
 pattern:
 crash: false
 source: 

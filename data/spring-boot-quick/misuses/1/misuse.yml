@@ -8,7 +8,7 @@ location:
   file: com/quick/api/utils/MessageDigestUtil.java
   method: "base64AndMD5(byte[])"
   line: 45
-internal:
+internal: false
 pattern:
 crash: false
 source: 

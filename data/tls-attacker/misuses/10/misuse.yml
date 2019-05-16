@@ -8,7 +8,7 @@ location:
   file: de/rub/nds/tlsattacker/core/crypto/HKDFunction.java
   method: "extract(HKDFAlgorithm, byte[], byte[])"
   line: 81
-internal:
+internal: false
 pattern:
 crash: false
 source: 

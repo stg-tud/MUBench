@@ -8,7 +8,7 @@ location:
   file: com/alibaba/com/caucho/hessian/security/X509Encryption.java
   method: "EncryptOutputStream(Hessian2Output)"
   line: 237
-internal:
+internal: false
 pattern:
 crash: false
 source: 

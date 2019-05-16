@@ -8,7 +8,7 @@ location:
   file: bt/service/CryptoUtil.java
   method: "getSha1Digest(byte[])"
   line: 39
-internal:
+internal: false
 pattern:
 crash: false
 source: 

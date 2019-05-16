@@ -8,7 +8,7 @@ location:
   file: com/xiaolyuh/utils/AESUtil.java
   method: "decrypt(byte[], String)"
   line: 75
-internal:
+internal: false
 pattern:
 crash: false
 source: 

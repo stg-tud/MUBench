@@ -8,7 +8,7 @@ location:
   file: com/zuoxiaolong/blog/common/utils/EncodeDecodeUtils.java
   method: "encodeByMd5(byte[])"
   line: 112
-internal:
+internal: false
 pattern:
 crash: false
 source: 

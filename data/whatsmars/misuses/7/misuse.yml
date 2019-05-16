@@ -8,7 +8,7 @@ location:
   file: org/hongxi/whatsmars/common/util/AESUtils.java
   method: "encrypt(byte[], byte[])"
   line: 39
-internal:
+internal: false
 pattern:
 crash: false
 source: 

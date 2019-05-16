@@ -8,7 +8,7 @@ location:
   file: publiccms-parent/publiccms-common/src/main/java/com/publiccms/common/tools/VerificationUtils.java
   method: "encrypt(String,String)"
   line: 286
-internal:
+internal: false
 pattern:
 crash: false
 source: 

@@ -8,7 +8,7 @@ location:
   file: com/vecsight/dragonite/sdk/cryptor/AESCryptor.java
   method: "decryptImpl(byte[])"
   line: 76
-internal: true
+internal: false 
 pattern:
 crash: false
 source: 

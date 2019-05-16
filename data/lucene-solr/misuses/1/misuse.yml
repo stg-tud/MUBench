@@ -8,7 +8,7 @@ location:
   file: org/apache/solr/util/CryptoKeys.java
   method: "verify(PublicKey, byte[], ByteBuffer)"
   line: 110
-internal:
+internal: false
 pattern:
 crash: false
 source: 

@@ -8,7 +8,7 @@ location:
   file: com/jzy/game/engine/mina/code/ClientProtocolDecoder.java
   method: "decryptAES(byte[])"
   line: 156
-internal:
+internal: false
 pattern:
 crash: false
 source: 

@@ -8,7 +8,7 @@ location:
   file: me/j360/dubbo/modules/util/security/CryptoUtil.java
   method: "aes(byte[], byte[], byte[], int)"
   line: 158
-internal:
+internal: false
 pattern:
 crash: false
 source: 

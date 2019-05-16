@@ -8,7 +8,7 @@ location:
   file: com/xiaolyuh/utils/EncodeUtil.java
   method: "md5(String)"
   line: 58
-internal:
+internal: false
 pattern:
 crash: false
 source: 

@@ -8,7 +8,7 @@ location:
   file: pro/tools/security/ToolPBE.java
   method: "decrypt(byte[], String, byte[])"
   line: 147
-internal:
+internal: false
 pattern:
 crash: false
 source: 

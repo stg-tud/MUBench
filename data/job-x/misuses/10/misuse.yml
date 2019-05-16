@@ -8,7 +8,7 @@ location:
   file: com/jobxhub/common/util/DigestUtils.java
   method: "aesEncrypt(String, String)"
   line: 514
-internal:
+internal: false
 pattern:
 crash: false
 source: 

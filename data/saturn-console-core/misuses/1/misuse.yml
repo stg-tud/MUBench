@@ -8,7 +8,7 @@ location:
   file: com/vip/saturn/job/console/utils/MD5Utils.java
   method: "getMD5Code(byte[])"
   line: 22
-internal:
+internal: false
 pattern:
 crash: false
 source: 

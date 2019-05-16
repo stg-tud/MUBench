@@ -8,7 +8,7 @@ location:
   file: com/jeesuite/common/crypt/SHA1.java
   method: "getSHA1(String, String, String, String)"
   line: 40
-internal:
+internal: false
 pattern:
 crash: false
 source: 

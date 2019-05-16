@@ -8,7 +8,7 @@ location:
   file: com/aliyun/oss/common/utils/BinaryUtil.java
   method: "sign(byte[], byte[])"
   line: 87
-internal:
+internal: false
 pattern:
 crash: false
 source: 

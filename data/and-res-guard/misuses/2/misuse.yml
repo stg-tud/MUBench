@@ -8,7 +8,7 @@ location:
   file: main/java/apksigner/ApkSignerTool.java
   method: "verify(String[])"
   line: 420
-internal:
+internal: false
 pattern:
 crash: false
 source: 

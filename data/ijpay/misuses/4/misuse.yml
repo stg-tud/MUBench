@@ -8,7 +8,7 @@ location:
   file: com/jpay/unionpay/SecureUtil.java
   method: "signBySoft(PrivateKey, byte[])"
   line: 277
-internal:
+internal: false
 pattern:
 crash: false
 source: 

@@ -8,7 +8,7 @@ location:
   file: publiccms-parent/publiccms-common/src/main/java/com/publiccms/common/tools/VerificationUtils.java
   method: "publicKeyVerify(byte[],byte[],byte[])"
   line: 119
-internal:
+internal: false
 pattern:
 crash: false
 source: 

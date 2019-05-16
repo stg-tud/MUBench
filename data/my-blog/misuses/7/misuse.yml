@@ -8,7 +8,7 @@ location:
   file: com/my/blog/website/utils/TaleUtils.java
   method: "MD5encode(String)"
   line: 106
-internal:
+internal: false
 pattern:
 crash: false
 source: 

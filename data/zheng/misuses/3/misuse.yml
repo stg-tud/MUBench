@@ -8,7 +8,7 @@ location:
   file: com/zheng/common/util/MD5Util.java
   method: "md5(String)"
   line: 20
-internal:
+internal: false
 pattern:
 crash: false
 source: 

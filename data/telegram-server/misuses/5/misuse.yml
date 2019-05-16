@@ -8,7 +8,7 @@ location:
   file: org/telegram/mtproto/Utilities.java
   method: "computeSHA1(byte[], int, int)"
   line: 200
-internal:
+internal: false
 pattern:
 crash: false
 source: 

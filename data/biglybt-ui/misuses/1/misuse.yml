@@ -8,7 +8,7 @@ location:
   file: com/biglybt/ui/swt/views/tableitems/files/FileHashItemBase.java
   method: "runSupport()"
   line: 280
-internal:
+internal: false
 pattern:
 crash: false
 source: 

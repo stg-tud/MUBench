@@ -8,7 +8,7 @@ location:
   file: com/jobxhub/common/util/DigestUtils.java
   method: "desDecrypt(byte[], byte[])"
   line: 461
-internal:
+internal: false
 pattern:
 crash: false
 source: 

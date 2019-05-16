@@ -8,7 +8,7 @@ location:
   file: org/telegram/mtproto/Utilities.java
   method: "MD5(String)"
   line: 326
-internal:
+internal: false
 pattern:
 crash: false
 source: 

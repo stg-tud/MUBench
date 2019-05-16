@@ -8,7 +8,7 @@ location:
   file: com/jobxhub/common/io/Bytes.java
   method: "getMessageDigest()"
   line: 877
-internal:
+internal: false
 pattern:
 crash: false
 source: 

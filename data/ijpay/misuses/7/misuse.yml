@@ -8,7 +8,7 @@ location:
   file: com/jpay/unionpay/SecureUtil.java
   method: "decryptData(PrivateKey, byte[])"
   line: 441
-internal:
+internal: false
 pattern:
 crash: false
 source: 
