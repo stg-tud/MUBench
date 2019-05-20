@@ -1,4 +1,5 @@
-FROM anapsix/alpine-java:8_jdk
+FROM openjdk:8-jdk-alpine
+
 
 LABEL maintainer="amann@st.informatik.tu-darmstadt.de"
 
@@ -31,6 +32,7 @@ RUN apk update \
       graphviz \
       maven \
       subversion \
+      bash \
  \
  # Install gradle
  && wget -q https://services.gradle.org/distributions/gradle-$GRADLE_VERSION-bin.zip \
