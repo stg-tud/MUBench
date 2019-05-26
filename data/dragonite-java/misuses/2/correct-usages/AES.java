@@ -1,7 +1,9 @@
 import javax.crypto.spec.IvParameterSpec;
 import java.security.SecureRandom;
 
-ConstructRandomizedIV(offset int, len int) {
-	random = SecureRandom();
-	iv = new IvParameterSpec(random);
+public class ConstructRandomizedIV{
+	public void pattern(int offset, int len) {
+		SecureRandom random = SecureRandom();
+		IVParameterSpec iv = new IvParameterSpec(random);
+	}
 }
