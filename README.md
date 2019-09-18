@@ -24,8 +24,10 @@ From October 2018, it is being maintained by [Sven Amann](http://www.sven-amann.
 
 ## Publications
 
-* ['*MUBench: A Benchmark for API-Misuse Detectors*'](http://sven-amann.de/publications/2016-05-MSR-MUBench-dataset.html) ([MSR '16 Data Showcase](http://2016.msrconf.org/#/data))
+* ['*Exposing Library API Misuses via Mutation Analysis*'](http://home.cse.ust.hk/~mwenaa/paper/ICSE2019A.pdf) ([ICSE '19](https://2019.icse-conferences.org/details/icse-2019-Technical-Papers/56/Exposing-Library-API-Misuses-via-Mutation-Analysis))
+* ['*Investigating Next Steps in Static API-Misuse Detection*'](http://sven-amann.de/publications/2019-03-Investigating-Next-Steps-In-Static-API-Misuse-Detection/) (MSR '19)
 * ['*A Systematic Evaluation of Static API-Misuse Detectors*'](http://sven-amann.de/publications/2018-03-A-Systematic-Evalution-of-Static-API-Misuse-Detectors/) (TSE '18)
+* ['*MUBench: A Benchmark for API-Misuse Detectors*'](http://sven-amann.de/publications/2016-05-MSR-MUBench-dataset.html) ([MSR '16 Data Showcase](http://2016.msrconf.org/#/data))
 
 We provide [instructions to reproduce the MUBench experiments](reproduction/) presented in the above publications.
 
