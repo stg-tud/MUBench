@@ -7,8 +7,6 @@ ENV DEBIAN_FRONTEND noninteractive
 ENV LANG=C.UTF-8 \
     GRADLE_VERSION=4.0.2 \
     GRADLE_HOME=/usr/local/gradle
-#ENV JAVA_HOME /usr/lib/jvm/java-8-oracle
-#ENV PATH $PATH:$JAVA_HOME/bin
 
 # Setup container environment
 RUN apt-get clean \
