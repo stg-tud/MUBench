@@ -20,6 +20,7 @@ class WebDriverTestCase extends TestCase
         parent::__construct();
         $chromeOptions = new \Facebook\WebDriver\Chrome\ChromeOptions();
         $chromeOptions->addArguments(array('headless' , '-no-sandbox')); //
+        $chromeOptions->setExperimentalOption('w3c', true); // Fix https://stackoverflow.com/questions/56556709/codeception-undefined-index-element-error
         $capabilities = DesiredCapabilities::chrome();
         $capabilities->setCapability(\Facebook\WebDriver\Chrome\ChromeOptions::CAPABILITY, $chromeOptions);
         $this->driver = RemoteWebDriver::create("http://localhost:4444/wd/hub",
