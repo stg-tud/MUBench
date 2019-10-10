@@ -2,4 +2,4 @@ name: "iText\xC2\xAE, a JAVA PDF library"
 repository:
   type: git
   url: https://github.com/itext/itextpdf.git
-url: https://sourceforge.net/projects/itext/
+url: http://itextpdf.com
