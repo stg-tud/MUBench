@@ -1,4 +1,4 @@
-PyYaml==3.11
+PyYaml==5.1
 requests
 psutil
 hurry.filesize
