@@ -33,10 +33,10 @@ We provide [instructions to reproduce the MUBench experiments](reproduction/) pr
 
 ## Getting Started
 
-With MUBench, you may run [different API-misuse detectors](detectors/) in [a number of experiments](mubench.pipeline/#experiments) to determine their precision and recall.
-To this end, MUBench provides [a curated dataset of real-world projects and known misuses](data/).
+With MUBench, you may run [different API-misuse detectors](detectors/#mubench---detectors) in [a number of experiments](mubench.pipeline/#experiments) to determine their precision and recall.
+To this end, MUBench provides [a curated dataset of real-world projects and known misuses](data/#mubench---dataset).
 In each experiment run, the respective detector emits findings which you need to review manually.
-To this end, MUBench publishes (a subset of) the findings to [a review website](mubench.reviewsite/).
+To this end, MUBench publishes (a subset of) the findings to [a review website](mubench.reviewsite/#mubench---review-website).
 After you completed your reviews, the site automatically computes experiment statistics.
 
 ### Setup
@@ -70,8 +70,8 @@ Alternatively, you may execute individual commands by passing them as arguments 
 
 We want MUBench to grow, so please be welcome to
 
-* [Add your own projects or misuses to the benchmarking dataset](data/).
-* [Add your own detector to the benchmark](mubench.cli/).
+* [Add your own projects or misuses to the benchmarking dataset](data/#contribute).
+* [Add your own detector to the benchmark](mubench.cli/#mubench---detector-interface).
 * [Contribute to the benchmarking platform](CONTRIBUTE.md)
 
 ## License
