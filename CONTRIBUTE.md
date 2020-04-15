@@ -13,6 +13,14 @@ The MUBench platform consists of several components.
 The subsequent documentation presents the purpose and covers specifics regarding the development of each of these components, as well as the project's [Continuous Integration/Deployment](#continuous-integration-and-deployment).
 
 
+## The MUBench Dataset
+
+Is a dataset of known API misuses in various real-world software projects.
+
+The dataset resides in the [/data](data) directory.
+We encourage anyone to [contribute to the dataset](data/#contribute).
+
+
 ## The MUBench Pipeline
 
 Is a Python application that manages the benchmarking dataset, checkout of subject project code, compilation of subject projects, execution of detectors, and capturing of detector output.
