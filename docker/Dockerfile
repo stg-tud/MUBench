@@ -86,6 +86,7 @@ RUN \
  && mkdir -p mubench.reviewsite/logs \
  \
  # Setup reviewsite standalone configuration
+ && mkdir findings \
  && touch findings/reviews.sqlite \
  && mv mubench.reviewsite/settings.docker.php mubench.reviewsite/settings.php
 
