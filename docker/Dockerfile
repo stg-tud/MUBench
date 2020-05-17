@@ -1,7 +1,7 @@
 FROM openjdk:8-jdk-alpine
 
 
-LABEL maintainer="amann@st.informatik.tu-darmstadt.de"
+MAINTAINER Sven Amann <amann@st.informatik.tu-darmstadt.de>
 
 # Install ca-certificates so that HTTPS works consistently
 RUN apk update \
