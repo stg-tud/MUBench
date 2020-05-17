@@ -1,5 +1,5 @@
 name: Argouml
 repository:
   type: git
-  url: https://github.com/argouml-tigris-org/argouml.git
+  url: https://github.com/MUBench/argouml.git
 url: https://github.com/argouml-tigris-org/argouml
