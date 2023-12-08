@@ -8,7 +8,7 @@ description: >
   Modifying a collection after an Iterator has been created and continue
   to use the Iterator afterwards. Often happens with foreach loops.
   
-  http://www.st.informatik.tu-darmstadt.de/artifacts/stackoverflow-cme-study/
+  http://www.st.informatik.tu-darmstadt.de/artifacts/stackoverflow-cme/
 location:
   file: mubench/examples/survey/CME.java
   method: misuse(Collection)

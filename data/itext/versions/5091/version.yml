@@ -1,8 +1,8 @@
 build:
-  classes: $mvn.default.classes
+  classes: itext/$mvn.default.classes
   commands:
-  - mvn compile
-  src: src/main/java/
+  - mvn compile -f itext/pom.xml
+  src: itext/src/main/java/
 misuses:
 - '1'
 - '2'
@@ -19,4 +19,4 @@ misuses:
 - 'jadet-9'
 - 'mudetect-38'
 - 'mudetect-10'
-revision: 5090
+revision: adda8eb38978eeea6e86aca64ae746754c103dae

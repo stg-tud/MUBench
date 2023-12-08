@@ -1,6 +1,7 @@
-FROM anapsix/alpine-java:8_jdk
+FROM openjdk:8-jdk-alpine
 
-LABEL maintainer="amann@st.informatik.tu-darmstadt.de"
+
+MAINTAINER Sven Amann <amann@st.informatik.tu-darmstadt.de>
 
 # Install ca-certificates so that HTTPS works consistently
 RUN apk update \
@@ -31,6 +32,7 @@ RUN apk update \
       graphviz \
       maven \
       subversion \
+      bash \
  \
  # Install gradle
  && wget -q https://services.gradle.org/distributions/gradle-$GRADLE_VERSION-bin.zip \
@@ -84,7 +86,8 @@ RUN \
  && mkdir -p mubench.reviewsite/logs \
  \
  # Setup reviewsite standalone configuration
- && touch mubench.reviewsite/reviews.sqlite \
+ && mkdir findings \
+ && touch findings/reviews.sqlite \
  && mv mubench.reviewsite/settings.docker.php mubench.reviewsite/settings.php
 
 # Provide standalone reviewsite

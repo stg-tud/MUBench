@@ -24,17 +24,19 @@ From October 2018, it is being maintained by [Sven Amann](http://www.sven-amann.
 
 ## Publications
 
-* ['*MUBench: A Benchmark for API-Misuse Detectors*'](http://sven-amann.de/publications/2016-05-MSR-MUBench-dataset.html) ([MSR '16 Data Showcase](http://2016.msrconf.org/#/data))
+* ['*Exposing Library API Misuses via Mutation Analysis*'](http://home.cse.ust.hk/~mwenaa/paper/ICSE2019A.pdf) ([ICSE '19](https://2019.icse-conferences.org/details/icse-2019-Technical-Papers/56/Exposing-Library-API-Misuses-via-Mutation-Analysis))
+* ['*Investigating Next Steps in Static API-Misuse Detection*'](http://sven-amann.de/publications/2019-03-Investigating-Next-Steps-In-Static-API-Misuse-Detection/) (MSR '19)
 * ['*A Systematic Evaluation of Static API-Misuse Detectors*'](http://sven-amann.de/publications/2018-03-A-Systematic-Evalution-of-Static-API-Misuse-Detectors/) (TSE '18)
+* ['*MUBench: A Benchmark for API-Misuse Detectors*'](http://sven-amann.de/publications/2016-05-MSR-MUBench-dataset.html) ([MSR '16 Data Showcase](http://2016.msrconf.org/#/data))
 
 We provide [instructions to reproduce the MUBench experiments](reproduction/) presented in the above publications.
 
 ## Getting Started
 
-With MUBench, you may run [different API-misuse detectors](detectors/) in [a number of experiments](mubench.pipeline/#experiments) to determine their precision and recall.
-To this end, MUBench provides [a curated dataset of real-world projects and known misuses](data/).
+With MUBench, you may run [different API-misuse detectors](detectors/#mubench---detectors) in [a number of experiments](mubench.pipeline/#experiments) to determine their precision and recall.
+To this end, MUBench provides [a curated dataset of real-world projects and known misuses](data/#mubench---dataset).
 In each experiment run, the respective detector emits findings which you need to review manually.
-To this end, MUBench publishes (a subset of) the findings to [a review website](mubench.reviewsite/).
+To this end, MUBench publishes (a subset of) the findings to [a review website](mubench.reviewsite/#mubench---review-website).
 After you completed your reviews, the site automatically computes experiment statistics.
 
 ### Setup
@@ -68,8 +70,8 @@ Alternatively, you may execute individual commands by passing them as arguments 
 
 We want MUBench to grow, so please be welcome to
 
-* [Add your own projects or misuses to the benchmarking dataset](data/).
-* [Add your own detector to the benchmark](mubench.cli/).
+* [Add your own projects or misuses to the benchmarking dataset](data/#contribute).
+* [Add your own detector to the benchmark](mubench.cli/#mubench---detector-interface).
 * [Contribute to the benchmarking platform](CONTRIBUTE.md)
 
 ## License
